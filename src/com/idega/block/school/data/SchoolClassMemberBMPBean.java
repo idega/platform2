@@ -45,11 +45,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String INVOICE_INTERVAL = "invoice_int";
 	public final static String LATEST_INVOICE_DATE = "latest_invoice_date";
+	// Borgman added field for kompletteringprojekt
+	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 	// Borgman added String constants for INVOICE_INTERVALL column values
 	private final static String PK = "school_class_member.invoice_interval.";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "month";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "term";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_YEAR = PK + "year";
+
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -65,6 +68,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(COMPENSATION_BY_INVOICE, "Compensation by invoice", true, true, Boolean.class);
 		this.addAttribute(INVOICE_INTERVAL, "Invoice interval", true, true, String.class);
 		this.addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
+		/* Borgman 9 sept 2003 */
+		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
 	}
 	public String getEntityName() {
 		return SCHOOLCLASSMEMBER;
@@ -157,6 +162,15 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public void setLatestInvoiceDate(Timestamp date) {
 		setColumn(LATEST_INVOICE_DATE,date);
 	}
+	
+	public String getPlacementParagraph() {
+		return this.getStringColumnValue(PLACEMENT_PARAGRAPH);
+	}
+
+	public void setPlacementParagraph(String placementParagraph) {
+		this.setColumn(PLACEMENT_PARAGRAPH, placementParagraph);
+	}
+
 
 	public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException, RemoteException {
 		return ejbFindBySchoolClass(((Integer)schoolClass.getPrimaryKey()).intValue());
