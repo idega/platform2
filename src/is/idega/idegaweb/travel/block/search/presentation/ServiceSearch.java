@@ -224,6 +224,7 @@ public class ServiceSearch extends Block {
 				ss = (AbstractSearchForm) tmpClass.newInstance();
 				searchForms2.add( ss );
 			} catch (ClassNotFoundException e) {
+				System.err.println("ServiceSearch couldnt instanciate class, engineID = "+engineID);
 				e.printStackTrace();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
