@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/03/18 15:31:50 $ by $Author: joakim $
+ * Last modified: $Date: 2004/03/30 12:33:11 $ by $Author: roar $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.130 $
+ * @version $Revision: 1.131 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -728,10 +728,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	protected void regularPayment() {
 		PostingDetail postingDetail = null;
 		PlacementTimes placementTimes = null;
-		School school;
+		Iterator regularPaymentIter = null;
+		School school = getSchool();
 
 		try {
-			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			if (isTestRun() && school != null){
+				regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndSchool(startPeriod.getDate(), endPeriod.getDate(), school).iterator();
+			}else{
+				regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			}
+			School regPaymentSchool;
+
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
@@ -740,11 +747,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				errorRelated.append(getLocalizedString("invoice.Amount","Amount")+":" + regularPaymentEntry.getAmount());
 				errorRelated.append(getLocalizedString("invoice.School","School")+":" + regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
-				school = regularPaymentEntry.getSchool();
+				regPaymentSchool = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
 				try {
-					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school, regularPaymentEntry.getNote());
-					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), regPaymentSchool, regularPaymentEntry.getNote());
+					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),regPaymentSchool,regularPaymentEntry.getSchoolType(),null);
 					User classMember = regularPaymentEntry.getUser();
 					if (classMember != null){
 						try{
@@ -785,6 +792,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
 			e.printStackTrace();
 		}
+		
+
 	}
 
 	private ArrayList getConditions(SchoolClassMember schoolClassMember, Provider provider) {
