@@ -25,6 +25,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -145,7 +146,7 @@ public class AccountTariffer extends Finance {
 		}
 		if(t_ids.size()>0){
 			String[] tariffIds = (String[]) t_ids.toArray(new String[0]);
-			System.err.println("trying assessTariffsToAcount("+tariffIds.toString()+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
+			System.err.println("trying assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
 			assBuiz.assessTariffsToAccount(tariffIds,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
 		}
 		

@@ -281,6 +281,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
       AR.setAsNew(name);
       AR.store();
 
+		System.err.println("Assessment rount created :"+AR.getPrimaryKey().toString());
       Iterator iter = tariffs.iterator();
       Tariff tariff;
       while(iter.hasNext()){
@@ -303,7 +304,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
     catch(Exception e){
        try {
             transaction.rollback();
-			System.out.println("Assessment transaction rollback");
+			System.err.println("Assessment transaction rollback");
           }
           catch(Exception ex) {
             ex.printStackTrace();
