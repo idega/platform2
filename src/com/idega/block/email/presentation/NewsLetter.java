@@ -311,6 +311,7 @@ public class NewsLetter extends CategoryBlock {
   		Table T = new Table();
   		T.setCellpadding(0);
   		T.setCellspacing(0);
+  		T.setWidth(Table.HUNDRED_PERCENT);
   		SubmitButton send,cancel;
   		if (submitImage != null) {
 			send = new SubmitButton(submitImage, "nl_send");
