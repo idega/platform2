@@ -1,10 +1,16 @@
 package com.idega.block.staff.business;
 
+import java.util.List;
 import java.sql.SQLException;
+import com.idega.presentation.IWContext;
 import com.idega.block.staff.data.*;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.data.*;
+import com.idega.core.user.data.*;
+import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.core.business.UserGroupBusiness;
+import com.idega.core.user.business.UserBusiness;
 
 /**
  * Title:        User
@@ -14,19 +20,14 @@ import com.idega.util.idegaTimestamp;
  * @version 1.0
  */
 
-public class StaffBusiness extends UserBusiness{
+public class StaffBusiness {
 
-  public StaffBusiness() {
-  }
-
-  public static StaffInfo getStaffInfo(int userId) {
-    try {
-      return new StaffInfo(userId);
-    }
-    catch (SQLException e) {
-      return null;
-    }
-  }
+public static final String PARAMETER_MODE = "mode";
+public static final String PARAMETER_DELETE_USER = "user";
+public static final String PARAMETER_DELETE_GROUP = "group";
+public static final String PARAMETER_USER_ID = "user_id";
+public static final String PARAMETER_GROUP_ID = "group_id";
+public static final String PARAMETER_LETTER = "letter";
 
   public static void updateStaff(int user_id, String title, String education, String school, String area, idegaTimestamp began_work) throws SQLException{
     StaffInfo staffToAdd = null;
@@ -70,6 +71,7 @@ public class StaffBusiness extends UserBusiness{
   public static void updateImage(int userId,String imageId) {
     StaffInfo staffToAdd = null;
     boolean update = false;
+    System.out.println("ImageID: "+imageId);
 
     try {
       staffToAdd = new StaffInfo(userId);
@@ -93,11 +95,9 @@ public class StaffBusiness extends UserBusiness{
     try {
       if ( update ) {
         staffToAdd.update();
-        System.out.println("Updated");
       }
       else {
         staffToAdd.insert();
-        System.out.println("Inserted");
       }
     }
     catch (SQLException ex) {
@@ -105,7 +105,99 @@ public class StaffBusiness extends UserBusiness{
     }
   }
 
-  public static void deleteStaff(int userId) throws SQLException {
+  public static void updateMetaData(int userID,String a1,String v1,String a2,String v2,String a3,String v3,String a4,String v4,String a5,String v5,String a6,String v6) {
+    try {
+      StaffMetaData.getStaticInstance().deleteMultiple(StaffMetaData.getColumnNameUserID(),Integer.toString(userID));
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+    }
+
+    EntityBulkUpdater bulk = new EntityBulkUpdater();
+    boolean execute = false;
+
+    StaffMetaData meta = null;
+
+    if ( a1 != null && a1.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a1);
+      if ( v1 != null )
+        meta.setValue(v1);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( a2 != null && a2.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a2);
+      if ( v2 != null )
+        meta.setValue(v2);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( a3 != null && a3.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a3);
+      if ( v3 != null )
+        meta.setValue(v3);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( a4 != null && a4.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a4);
+      if ( v4 != null )
+        meta.setValue(v4);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( a5 != null && a5.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a5);
+      if ( v5 != null )
+        meta.setValue(v5);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( a6 != null && a6.length() > 0 ) {
+      meta = new StaffMetaData();
+      meta.setUserID(userID);
+      meta.setAttribute(a6);
+      if ( v6 != null )
+        meta.setValue(v6);
+      bulk.add(meta,EntityBulkUpdater.insert);
+      execute = true;
+    }
+
+    if ( execute ) {
+      try {
+        bulk.execute();
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+}
+
+  public static void deleteGroup(int groupID) {
+    try {
+      UserGroupBusiness.deleteGroup(groupID);
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  public static void deleteStaff(int userId) {
     try {
       StaffInfo delStaff = new StaffInfo(userId);
       delStaff.delete();
@@ -114,7 +206,7 @@ public class StaffBusiness extends UserBusiness{
     }
 
     try {
-      deleteUser(userId);
+      UserBusiness.deleteUser(userId);
     }
     catch (SQLException e) {
     }

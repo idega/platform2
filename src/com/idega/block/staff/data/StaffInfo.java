@@ -38,7 +38,7 @@ public class StaffInfo extends GenericEntity {
       addAttribute(getColumnNameSchool(),"Skólaganga",true,true,"java.lang.String");
       addAttribute(getColumnNameArea(),"Starfssvið",true,true,"java.lang.String");
       addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
-      addAttribute(getColumnNameImageID(),"Mynd",true,true,"java.lang.Integer","one-to-one","com.idega.jmodule.image.data.ImageEntity");
+      addAttribute(getColumnNameImageID(),"Mynd",true,true,"java.lang.Integer");
       setNullable(getColumnNameUserID(),false);
       setNullable(getColumnNameImageID(),false);
       setAsPrimaryKey(getColumnNameUserID(),true);
@@ -64,7 +64,7 @@ public class StaffInfo extends GenericEntity {
     public static String getColumnNameSchool(){return "school";}
     public static String getColumnNameArea(){return "area";}
     public static String getColumnNameBeganWork(){return "began_work";}
-    public static String getColumnNameImageID(){return "image_id";}
+    public static String getColumnNameImageID(){return "ic_file_id";}
 
     /*  ColumNames end   */
 

@@ -114,7 +114,7 @@ private List usersInNoGroup;
           for ( int b = 0; b < usersInGroup.size(); b++ ) {
             Table userTable = (Table) staffTable.clone();
             User user = (User) usersInGroup.get(b);
-            StaffInfo staff = StaffBusiness.getStaffInfo(user.getID());
+            StaffInfo staff = null;//StaffBusiness.getStaffInfo(user.getID());
             Phone userPhone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
             Email userMail = UserBusiness.getUserMail(user.getID());
 

@@ -7,6 +7,7 @@ import com.idega.core.user.presentation.UserPropertyWindow;
 import com.idega.core.user.presentation.GeneralUserInfoTab;
 import com.idega.core.user.presentation.UserGroupList;
 import com.idega.block.staff.presentation.StaffInfoTab;
+import com.idega.block.staff.presentation.StaffMetaTab;
 import com.idega.core.user.presentation.UserPhoneTab;
 
 /**
@@ -35,7 +36,8 @@ public class StaffPropertyWindow extends UserPropertyWindow{
     panel.addTab(new StaffInfoTab(), 1, iwc);
     panel.addTab(new StaffImageTab(), 2, iwc);
     panel.addTab(new UserPhoneTab(), 3, iwc);
-    panel.addTab(new UserGroupList(), 4, iwc);
+    panel.addTab(new StaffMetaTab(), 4, iwc);
+    //panel.addTab(new UserGroupList(), 4, iwc);
   }
 
 }
