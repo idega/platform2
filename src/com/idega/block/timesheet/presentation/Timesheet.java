@@ -125,6 +125,14 @@ public class Timesheet extends JModuleObject{
 //      obj.FunctColl = this.FunctColl.clone();
       if (this.myDags != null)
       obj.myDags = (Text) this.myDags.clone();
+
+      if (this.header_color != null)
+      obj.header_color = this.header_color;
+      if (this.header_text_color != null)
+      obj.header_text_color = this.header_text_color;
+
+
+
 //      if (this.stamp != null)
 //        obj.stamp = (idegaTimestamp)stamp.clone();
 
@@ -1146,7 +1154,8 @@ public class Timesheet extends JModuleObject{
 
 		if (header_color != null) {
 			myTable.setRowColor(1,header_color);
-			myTable.setRowColor(current_row,header_color);
+			//myTable.setRowColor(current_row,header_color);
+			myTable.setRowColor(current_row,this.color_2);
 		}
 
 
