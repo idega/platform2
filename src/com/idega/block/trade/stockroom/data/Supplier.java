@@ -176,6 +176,13 @@ public class Supplier extends GenericEntity{
     super.update();
   }
 
+  public void insert() throws SQLException {
+    if (newName != null) {
+      setColumn(getColumnNameName(),newName);
+    }
+    super.insert();
+  }
+
   /*
   public Address getAddress() {
       return (Address) getColumnValue("IC_ADDRESS_ID"); where address_type is st_supplier_address

@@ -46,7 +46,7 @@ public class SupplierManager {
   }
 
   private static Supplier createSupplier(int supplierId,String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-
+    try {
     boolean isUpdate = false;
     if (supplierId != -1) isUpdate = true;
 
@@ -84,7 +84,6 @@ public class SupplierManager {
       supp.setDescription(description);
       supp.setGroupId(sGroup.getID());
       supp.setIsValid(true);
-
       supp.insert();
 
       UserBusiness uBus = new UserBusiness();
@@ -127,6 +126,10 @@ public class SupplierManager {
       pCategory.insert();
 
       return supp;
+    }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
     }
   }
 
