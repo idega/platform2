@@ -120,7 +120,9 @@ public class AccountViewer extends Finance {
 		//drpAccounts.setToSubmit();
 		//drpAccounts.setAttribute("style",styleAttribute);
 		//drpAccounts.setSelectedElement(String.valueOf(accountID));
-		T.add(new HiddenInput(prmAccountId, accountID.toString()));
+		if (accountID != null) {
+		    T.add(new HiddenInput(prmAccountId, accountID.toString()));
+		}
 		TextInput tiFromDate = new TextInput(prmFromDate, sFromDate);
 		tiFromDate.setLength(10);
 		tiFromDate.setMarkupAttribute("style", styleAttribute);
@@ -189,7 +191,7 @@ public class AccountViewer extends Finance {
 				T.add(accountLink, col++, row);
 				T.add(getText(eUser.getName()), col++, row);
 				T.add(getText(getDateString(new IWTimestamp(account.getLastUpdated()))), col++, row);
-				double b = eAccount.getBalance();
+				double b = 0;//eAccount.getBalance();
 				
 					b = getFinanceService().getAccountBalance(account.getAccountId());
 					//b = b * tax;
@@ -262,6 +264,11 @@ public class AccountViewer extends Finance {
 	private PresentationObject getEntryTable(FinanceAccount account, IWTimestamp from, IWTimestamp to,
 			boolean showallkeys, boolean clean) throws java.rmi.RemoteException {
 		Collection entries = null;
+		
+		if (account == null) {
+		    return new Text();
+		}
+		
 		try {
 			if (account.getAccountType().equals(getFinanceService().getAccountTypeFinance())) {
 				if (showallkeys) {
