@@ -469,8 +469,9 @@ public class ReportGenerator extends Block {
 				_reportFilePathsMap = new HashMap();
 			}
 
+			_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, "report"));
 			_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
-			//_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, _reportName));
+			
 			_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
 
 		}
@@ -684,7 +685,7 @@ public class ReportGenerator extends Block {
 		reports.mergeCells(1, 1, 2, 1);
 		Link excel = new Link(_reportName, (String) _reportFilePathsMap.get(EXCEL_FORMAT));
 		excel.setTarget(Link.TARGET_NEW_WINDOW);
-//		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
+		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
 		Link html = new Link(_reportName, (String) _reportFilePathsMap.get(HTML_FORMAT));
 		html.setTarget(Link.TARGET_NEW_WINDOW);
 		
@@ -695,7 +696,7 @@ public class ReportGenerator extends Block {
 		reports.add("Excel : ", 1, 2);
 		reports.add(excel, 2, 2);
 		reports.add("PDF : ", 1, 3);
-//		reports.add(pdf, 2, 3);
+		reports.add(pdf, 2, 3);
 		reports.add("HTML : ", 1, 4);
 		reports.add(html, 2, 4);
 
