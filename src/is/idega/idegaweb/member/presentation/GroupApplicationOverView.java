@@ -103,6 +103,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 				int size =applications.size();
 	      userTable = new Table(7, ((size>33)?size:33)+1  );
 	      returnTable.add(userTable,1,1);
+	      returnTable.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 	      userTable.setCellpaddingAndCellspacing(0);
 	      userTable.setLineAfterColumn(1);
 	      userTable.setLineAfterColumn(2);

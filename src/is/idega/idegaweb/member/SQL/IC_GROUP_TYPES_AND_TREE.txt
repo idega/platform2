@@ -12,6 +12,7 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_federa
 insert into ic_group_type(group_type,description,is_visible) values('iwme_union_staff','An employee of a union','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_regional_union_staff','An employee of a regional union','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_staff','An employee of a league','Y')
+insert into ic_group_type(group_type,description,is_visible) values('alias','An alias to another group','Y')
 
 
 insert into ic_group_type_tree values ('iwme_league','iwme_federation')
