@@ -1,9 +1,10 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
+
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -39,7 +40,7 @@ class ChildCareQueueTable extends Table {
 			_initializeStatics = true;
 		}
 	}
-	public ChildCareQueueTable(ChildCareQueueUpdateTable page, SortedSet choices) throws RemoteException {
+	public ChildCareQueueTable(ChildCareQueueUpdateTable page, SortedSet choices) {
 		super(7, choices.size() + 1);
 		initConstants(page);
 		initTable();

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.52 2004/01/12 07:45:21 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.53 2004/01/12 09:18:53 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -83,7 +83,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
-	protected PrintedLetterMessageHome getPrintedLetterMessageHome()throws RemoteException{
+	protected PrintedLetterMessageHome getPrintedLetterMessageHome(){
 		try{
 			return (PrintedLetterMessageHome) this.getIDOHome(PrintedLetterMessage.class);
 		}
@@ -92,7 +92,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
-	protected SystemArchivationMessageHome getSystemArchivationMessageHome()throws RemoteException{
+	protected SystemArchivationMessageHome getSystemArchivationMessageHome(){
 		try{
 			return (SystemArchivationMessageHome) this.getIDOHome(SystemArchivationMessage.class);
 		}
@@ -105,7 +105,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		getMessageHome(messageType).findByPrimaryKey(new Integer(messageID)).remove();
 	}
 	
-	public void deleteUserMessage(int messageID) throws java.rmi.RemoteException {
+	public void deleteUserMessage(int messageID) {
 		try {
 			Message message = getUserMessage(messageID);
 			changeCaseStatus(message, getCaseStatusInactive().getPrimaryKey().toString(), message.getOwner());	
@@ -117,7 +117,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
-	public void markMessageAsRead(Message message) throws RemoteException {
+	public void markMessageAsRead(Message message) {
 		try {
 			changeCaseStatus(message, getCaseStatusGranted().getPrimaryKey().toString(), message.getOwner());	
 		}
@@ -338,107 +338,57 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	/**	 * @return Collection of PrintedLetterMessage that have already been printed	 */
 	public Collection getPrintedLetterMessages()throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findAllPrintedLetters();	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findAllPrintedLetters();	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */
 	public Collection getPrintedLetterMessagesByType(String type)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findPrintedLettersByType(type);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type);	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed, created between dates
 	 */
 	public Collection getPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findPrintedLettersByType(type,from,to);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findPrintedLettersByType(type,from,to);	
 	}
 	
 	public Collection getSinglePrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-			try{	
-				return getPrintedLetterMessageHome().findSinglePrintedLettersByType(type,from,to);	
-			}
-			catch(RemoteException e){
-				throw new IBORuntimeException(e);
-			}
-		}
+		return getPrintedLetterMessageHome().findSinglePrintedLettersByType(type,from,to);	
+	}
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
 	public Collection getUnPrintedLetterMessages()throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findAllUnPrintedLetters();	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findAllUnPrintedLetters();	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
 	public Collection getUnPrintedLetterMessagesByType(String type)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findUnPrintedLettersByType(type);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type);	
 	}
 	
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
 	public Collection getUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,from,to);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findUnPrintedLettersByType(type,from,to);	
 	}
 	
 	public Collection getSingleUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
-			try{	
-				return getPrintedLetterMessageHome().findSingleUnPrintedLettersByType(type,from,to);	
-			}
-			catch(RemoteException e){
-				throw new IBORuntimeException(e);
-			}
-		}
+		return getPrintedLetterMessageHome().findSingleUnPrintedLettersByType(type,from,to);	
+	}
 		
 	public Collection getSingleLettersByTypeAndStatus(String type,String status,IWTimestamp from,IWTimestamp to)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findSingleByTypeAndStatus(type,status,from,to);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findSingleByTypeAndStatus(type,status,from,to);	
 	}
 	
 	public Collection getLettersByBulkFile(int file, String type , String status)throws FinderException{
-		try{	
-			return getPrintedLetterMessageHome().findByBulkFile(file,type,status);	
-		}
-		catch(RemoteException e){
-			throw new IBORuntimeException(e);
-		}
+		return getPrintedLetterMessageHome().findByBulkFile(file,type,status);	
 	}
 	
 	/**

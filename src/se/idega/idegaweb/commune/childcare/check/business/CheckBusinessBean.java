@@ -78,7 +78,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return getCheckHome().findNonApprovedChecks();
 	}
 
-	public boolean allRulesVerified(Check check) throws RemoteException {
+	public boolean allRulesVerified(Check check) {
 		boolean rule3 = check.getRule3();
 		boolean rule4 = check.getRule4();
 		boolean rule5 = check.getRule5();
@@ -147,7 +147,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToArchive(Check check, int userID, String subject, String body) throws RemoteException {
+	public void sendMessageToArchive(Check check, int userID, String subject, String body) {
 		try {
 			Message message = getMessageBusiness().createPrintArchivationMessage(userID, subject, body);
 			message.setParentCase(check);
@@ -157,7 +157,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToPrinter(Check check, int userID, String subject, String body) throws RemoteException {
+	public void sendMessageToPrinter(Check check, int userID, String subject, String body) {
 		try {
 			Message message = getMessageBusiness().createPrintedLetterMessage(userID, subject, body);
 			message.setParentCase(check);
@@ -167,7 +167,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public int getUserID(Check check) throws RemoteException {
+	public int getUserID(Check check) {
 		User user = check.getOwner();
 		int userID = -1;
 		if (user != null)

@@ -323,11 +323,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		if (p != null) {
 			Script S = p.getAssociatedScript();
 			S.addFunction("checkApplication", getSchoolCheckScript());
-			try {
-				S.addFunction("changeFilter", getFilterScript(iwc));
-			}
-			catch (RemoteException re) {
-			}
+			S.addFunction("changeFilter", getFilterScript(iwc));
 		}
 
 		add(form);
@@ -479,7 +475,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return script.toString();
 	}
 
-	private String getFilterScript(IWContext iwc) throws java.rmi.RemoteException {
+	private String getFilterScript(IWContext iwc) {
 		StringBuffer s = new StringBuffer();
 		s.append("function changeFilter(index,area,school){").append(" \n\t");
 		s.append("var areaSelect = area;").append(" \n\t");

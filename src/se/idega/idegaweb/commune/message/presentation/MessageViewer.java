@@ -217,7 +217,7 @@ public class MessageViewer extends CommuneBlock {
 		close(iwc);
 	}
 	
-	private void parse(IWContext iwc) throws RemoteException {
+	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_MESSAGE_ID))
 			_messageID = Integer.parseInt(iwc.getParameter(PARAMETER_MESSAGE_ID));
 		if (iwc.isParameterSet(PARAMETER_SENDER_ID))

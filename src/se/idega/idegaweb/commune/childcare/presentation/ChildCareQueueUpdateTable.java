@@ -9,7 +9,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHomeImpl;
@@ -27,7 +26,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.5 2003/10/03 01:53:10 tryggvil Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.7 2004/01/12 09:21:30 gimmi Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -84,7 +83,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @throws RemoteException
 	 * @throws RemoveException
 	 */
-	private void handleKeepQueueStatus(List l) throws RemoteException, RemoveException {
+	private void handleKeepQueueStatus(List l) {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			String[] status = (String[]) i.next();
@@ -101,7 +100,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	* @param l
 	* @throws RemoteException
 	*/
-	private void handleAcceptStatus(List l) throws RemoteException {
+	private void handleAcceptStatus(List l) {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			AcceptedStatus status = (AcceptedStatus) i.next();
@@ -191,7 +190,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		return CCConstants.NO_ACTION;
 	}
 	
-	private void createRequestInfoConfirmPage(Table layoutTbl) throws RemoteException {
+	private void createRequestInfoConfirmPage(Table layoutTbl) {
 		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_CONFIRM).toString());
 		submitBtn.setAsImageButton(true);
 		layoutTbl.add(new Text("Your request has been sent."), 1, 1);
@@ -205,7 +204,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @param layoutTbl
 	 * @throws RemoteException
 	 */
-	private void createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException {
+	private void createPagePhase1(IWContext iwc, Table layoutTbl) {
 		Collection choices = findChoices(iwc);
 		if (choices.size() == 0) {
 			layoutTbl.add(new Text("No choices have been made for this person."));

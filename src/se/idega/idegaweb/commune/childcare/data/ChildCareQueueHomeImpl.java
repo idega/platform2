@@ -79,7 +79,7 @@ public int getTotalCount(java.lang.String[] p0,boolean p1)throws com.idega.data.
 	return theReturn;
 }
 
-public Collection getDistinctNotExportedChildIds()throws com.idega.data.IDOException {
+public Collection getDistinctNotExportedChildIds() {
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Collection ids = null;
 	Collection col = null;

@@ -52,7 +52,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
 	}
 	
-	public School getProvider() throws RemoteException {
+	public School getProvider() {
 		return _provider;
 	}
 	

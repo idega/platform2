@@ -457,8 +457,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		return drp;
 	}
 
-	private PresentationObject getUnPrintedDatesForm(boolean showStatus)
-		throws RemoteException {
+	private PresentationObject getUnPrintedDatesForm(boolean showStatus) {
 
 		Table T = new Table();
 		T.setWidth(T.HUNDRED_PERCENT);

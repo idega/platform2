@@ -1,15 +1,13 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-
-import javax.ejb.RemoveException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
@@ -41,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.60 2004/01/07 01:27:52 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.61 2004/01/12 09:22:13 gimmi Exp $
  * @since 12.2.2003 
  */
 
@@ -216,7 +214,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 * @throws RemoveException
 	 */
-	private void handleKeepQueueStatus(IWContext iwc, List l) throws RemoteException, RemoveException {
+	private void handleKeepQueueStatus(IWContext iwc, List l) throws RemoteException {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			String[] status = (String[]) i.next();
@@ -452,7 +450,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 */
 
-	private void createRequestInfoConfirmPage(Table layoutTbl) throws RemoteException {
+	private void createRequestInfoConfirmPage(Table layoutTbl) {
 		layoutTbl.add(new Text(localize(REQUEST_CONFIRM)), 1, 1);
 		layoutTbl.setHeight(2, 12);
 		layoutTbl.add(new UserHomeLink(), 1, 3);
@@ -842,7 +840,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @return
 	 * @throws RemoteException
 	 */
-	String getDebugInfo(ChildCareApplication app) throws RemoteException {
+	String getDebugInfo(ChildCareApplication app) {
 		return (getDebug()) ? " (Id:" + app.getNodeID() + " - " + app.getStatus() + " - " + app.getApplicationStatus() + ")" : "";
 	}
 

@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.22 2004/01/11 15:46:06 laddi Exp $
+ * @version $Id: EventList.java,v 1.23 2004/01/12 09:19:36 gimmi Exp $
  * @since 17.3.2003 
  */
 
@@ -233,7 +233,7 @@ public class EventList extends CommuneBlock {
 	}
 
 	private void viewMessages(String[] ids)
-		throws FinderException, RemoteException {
+		throws FinderException {
 		System.out.println("Viewing " + (ids==null?0:ids.length) + " messages");
 		Table layout = new Table();
 		Collection selectedLetters = getPrintedLetter().findLetters(ids);
@@ -313,7 +313,7 @@ public class EventList extends CommuneBlock {
 
 	public Collection getPrintedMessagesByPrimaryKeys(
 		String[] primaryKeys)
-		throws RemoteException, FinderException {
+		throws FinderException {
 		PrintMessageHome msgHome = null;
 		PrintMessage msg;
 		ArrayList coll = new ArrayList(primaryKeys.length);

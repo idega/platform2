@@ -191,7 +191,7 @@ public class ChangeChildCareForm extends CommuneBlock {
 //		iwc.forwardToIBPage(null, getResponsePage());
 	}
 
-	private void submitCancel(IWContext iwc) throws RemoteException{
+	private void submitCancel(IWContext iwc){
 		iwc.forwardToIBPage(null, getResponsePage());
 	}
 

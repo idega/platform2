@@ -7,7 +7,6 @@ import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 
 import com.idega.business.IBOLookup;
 import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 
 /**
@@ -18,7 +17,7 @@ public class ChildCareEventListener implements IWPageEventListener {
 	/**
 	 * @see com.idega.business.IWEventListener#actionPerformed(com.idega.presentation.IWContext)
 	 */
-	public boolean actionPerformed(IWContext iwc) throws IWException {
+	public boolean actionPerformed(IWContext iwc) {
 		try {
 			ChildCareSession session = getChildCareSession(iwc);
 	

@@ -97,7 +97,7 @@ public class CitizenInfomationEditor extends CommuneBlock {
 //		return getResourceBundle().getLocalizedString("unknown_reason","Unknown reason");
 	}
 
-	private boolean updateEmails(IWContext iwc) throws RemoteException{
+	private boolean updateEmails(IWContext iwc){
 	
 		try {
 			String[] emailIds = iwc.getParameterValues(PARAMETER_EMAIL_ID);

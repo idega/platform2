@@ -4,7 +4,6 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageSession;
 
 import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 
 /**
@@ -21,7 +20,7 @@ public class MessageListener implements IWPageEventListener {
 	/**
 	 * @see com.idega.business.IWEventListener#actionPerformed(IWContext)
 	 */
-	public boolean actionPerformed(IWContext iwc) throws IWException {
+	public boolean actionPerformed(IWContext iwc) {
 		try {
 			if (iwc.isParameterSet(PARAM_DELETE_MESSAGE)) {
 				deleteMessages(iwc);
