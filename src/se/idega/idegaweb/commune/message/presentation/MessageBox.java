@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.message.presentation;
 
+import java.text.DateFormat;
 import java.util.*;
 
 import javax.ejb.EJBException;
@@ -113,44 +114,51 @@ public class MessageBox extends CommuneBlock {
     ColumnList messageList = new ColumnList(3);
     f.add(messageList);
     messageList.setBackroundColor("#e0e0e0");
-    messageList.setHeader(localize("message.date","Date"),1);
-    messageList.setHeader(localize("message.subject","Subject"),2);
-
-    Collection messages = getMessageBusiness(iwc).findMessages(Converter.convertToNewUser(iwc.getUser()));
-    Link link = null;
-    Text subject = null;
-    CheckBox deleteCheck = null;
-    boolean isRead = false;
-
-    if ( messages != null ) {
-	    Iterator iter = messages.iterator();
-	    while (iter.hasNext()) {
-	      Message msg = (Message)iter.next();
-	      isRead = getMessageBusiness(iwc).isMessageRead(msg);
-	      link = new Link((new idegaTimestamp(msg.getCreated())).getLocaleDate(iwc));
-	      link.addParameter(PARAM_VIEW_MESSAGE,"true");
-	      link.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-	      if ( isRead )
-	      	link.setBold();
-	      subject = this.getSmallText(msg.getSubject());
-	      if ( isRead )
-	      	subject.setBold();
-	      deleteCheck = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-	      
-	      messageList.add(link);
-	      messageList.add(subject);
-	      messageList.add(deleteCheck);
-	    }
-    }
-
-    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc));
-    deleteButton.setAsImageButton(true);
-
-    messageList.skip(3);
-    PresentationObject[] bottomRow = new PresentationObject[4];
+    messageList.setHeader(localize("message.subject","Subject"),1);
+    messageList.setHeader(localize("message.date","Date"),2);
     
-    bottomRow[3] = deleteButton;
-    messageList.addBottomRow(bottomRow);
+    if ( iwc.isLoggedOn() ) {
+	    Collection messages = getMessageBusiness(iwc).findMessages(Converter.convertToNewUser(iwc.getUser()));
+	    Link subject = null;
+	    Text date = null;
+	    CheckBox deleteCheck = null;
+	    boolean isRead = false;
+	    DateFormat dateFormat = java.text.DateFormat.getDateTimeInstance(2, 2, iwc.getCurrentLocale());
+	
+	    if ( messages != null ) {
+	    	Vector messageVector = new Vector(messages);
+	    	Collections.sort(messageVector,new MessageComparator());
+		    Iterator iter = messageVector.iterator();
+		    while (iter.hasNext()) {
+		      Message msg = (Message)iter.next();
+		      Date msgDate = new Date(msg.getCreated().getTime());
+		      
+		      isRead = getMessageBusiness(iwc).isMessageRead(msg);
+		      subject = new Link(msg.getSubject());
+		      subject.addParameter(PARAM_VIEW_MESSAGE,"true");
+		      subject.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+		      if ( !isRead )
+		      	subject.setBold();
+		      date = this.getSmallText(dateFormat.format(msgDate));
+		      if ( !isRead )
+		      	date.setBold();
+		      deleteCheck = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+		      
+		      messageList.add(subject);
+		      messageList.add(date);
+		      messageList.add(deleteCheck);
+		    }
+	    }
+	
+	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc));
+	    deleteButton.setAsImageButton(true);
+	
+	    messageList.skip(2);
+	    PresentationObject[] bottomRow = new PresentationObject[3];
+	    
+	    bottomRow[2] = deleteButton;
+	    messageList.addBottomRow(bottomRow);
+    }
 
     f.addParameter(PARAM_SHOW_DELETE_INFO,"true");
     add(f);
