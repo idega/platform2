@@ -52,7 +52,8 @@ public class MemberLogin extends Editor{
         this.addToHeader(getMsgText(this.errorMsg));
         this.setBorder(2);
       }
-      catch(SQLException sql){errorMsg = "sql vandræði";}
+      catch(SQLException sql){
+        errorMsg = "sql vandræði";}
     }
     else
       errorMsg =("enginn valinn");
@@ -87,6 +88,7 @@ public class MemberLogin extends Editor{
           register = registerMemberLogin(iMemberId,sLogin,sPasswd,sConfirm);
         }
         catch(SQLException sql){
+          sql.printStackTrace();
           register = false;
           errorMsg = "Villa í gagnagrunni";
         }
@@ -152,6 +154,9 @@ public class MemberLogin extends Editor{
           returner = true;
           errorMsg = "Uppfært";
         }
+        else
+          errorMsg = "Er þegar til";
+          returner = false;
       }
       else {
           returner = false;
