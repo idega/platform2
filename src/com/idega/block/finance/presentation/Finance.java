@@ -31,6 +31,7 @@ public class Finance extends Block implements IWBlock{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
+  public final static String CATEGORY_PROPERTY="finance_category";
   protected boolean isAdmin = false;
   private int iCategoryId = -1;
   protected IWResourceBundle iwrb;
@@ -227,6 +228,8 @@ public class Finance extends Block implements IWBlock{
   public static int parseCategoryId(IWContext iwc){
     if(iwc.isParameterSet("fin_cat_id"))
       return Integer.parseInt(iwc.getParameter("fin_cat_id"));
+    else if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
+      return Integer.parseInt(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
     else
       return -1;
   }

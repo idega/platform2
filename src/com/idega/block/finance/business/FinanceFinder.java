@@ -211,9 +211,7 @@ public class FinanceFinder  {
 
   public static List listOfTariffsByAttribute(String attribute){
      try{
-      EntityFinder.debug = true;
       List L =  EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnAttribute(),attribute);
-      EntityFinder.debug = false;
       return L;
       }
       catch(SQLException e){
@@ -412,13 +410,14 @@ public class FinanceFinder  {
       sql.append(ti.getColumnNameType());
       sql.append( " = '");
       sql.append(type);
-      sql.append("' and");
+      sql.append("' and ");
       sql.append(ti.getColumnCategoryId());
       sql.append(" = ");
       sql.append(iCategoryId);
       sql.append(" order by ");
       sql.append(ti.getIDColumnName());
       sql.append(" desc ");
+      System.err.println(sql);
       List L = EntityFinder.findAll(ti,sql.toString());
       if(L!= null)
         ti =  (TariffIndex) L.get(0);
@@ -426,6 +425,7 @@ public class FinanceFinder  {
         ti =  null;
     }
     catch (SQLException ex) {
+      ex.printStackTrace();
       ti = null;
     }
     return ti;
@@ -457,7 +457,6 @@ public class FinanceFinder  {
             else{
               t.setName(TK.getName());
               t.setInfo(TK.getInfo());
-              System.err.println("putting: "+acckey+" "+t.getName()+" "+t.getPrice());
               tar.put(tarkey,t)  ;
             }
           }
