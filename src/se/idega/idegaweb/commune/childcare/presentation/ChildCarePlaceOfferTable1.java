@@ -234,8 +234,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 			app.getChoiceNumber()
 				+ ": "
 				+ app.getProvider().getName()
-				+ _page.getDebugInfo(app)
-				+ " ("+app.getMessage()+")";
+				+ _page.getDebugInfo(app);
+//				+ " ("+app.getMessage()+")";
 
 		String validUntil =
 			app.getOfferValidUntil() != null
