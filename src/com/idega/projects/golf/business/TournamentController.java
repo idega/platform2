@@ -169,6 +169,17 @@ public class TournamentController{
 
     }
 
+    public static List getMembersInTournamentList(Tournament tournament) throws SQLException {
+        List members = null;
+        try {
+            members = EntityFinder.findRelated(tournament,new com.idega.projects.golf.entity.Member());
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+        return members;
+    }
+
 
 
     public static com.idega.projects.golf.entity.Member[] getMembersInTournament(Tournament tournament) throws SQLException {
@@ -436,13 +447,19 @@ public class TournamentController{
 
 
     public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly) throws SQLException{
+        return TournamentController.getStartingtimeTable(tournament,tournament_round_id,viewOnly,true);
+    }
+
+    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly, boolean useBorder) throws SQLException{
         Form form = new Form();
             form.maintainParameter("action");
             form.add(new HiddenInput("viewOnly",""+viewOnly));
 
 
         Table table = new Table();
-            table.setBorder(5);
+            if (useBorder) {
+                table.setBorder(5);
+            }
             table.setWidth("90%");
             table.setCellpadding(1);
             table.setCellspacing(0);
