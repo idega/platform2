@@ -34,7 +34,6 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_BATCH_RUN_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_ORDER, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_RELATED, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DESCRIPTION, "", true, true, java.lang.String.class, 1000);
