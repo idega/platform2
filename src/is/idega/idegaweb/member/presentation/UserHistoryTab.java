@@ -1,8 +1,11 @@
 package is.idega.idegaweb.member.presentation;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.event.IWLinkEvent;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.IFrame;
 import com.idega.user.data.GroupRelation;
@@ -25,6 +28,10 @@ public class UserHistoryTab extends UserTab {
 
 	private static final String TAB_NAME = "usr_his_tab_name";
 	private static final String DEFAULT_TAB_NAME = "History";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "user_history_tab";
+
 	
 	private IFrame memberofFrame;
 
@@ -66,7 +73,8 @@ public class UserHistoryTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		memberof = this.getTextObject();
+//		memberof = this.getTextObject();
+		memberof = new Text();
 		memberof.setText(iwrb.getLocalizedString("usr_history","History") + ":");
 	}
 
@@ -79,6 +87,7 @@ public class UserHistoryTab extends UserTab {
 
 		this.add(memberof, 1, 1);
 		this.add(memberofFrame, 1, 2);
+		this.add(getHelpButton(),1,3);
 
 	}
 
@@ -121,6 +130,18 @@ public class UserHistoryTab extends UserTab {
 		}
 		
 	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
+	}
+
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
