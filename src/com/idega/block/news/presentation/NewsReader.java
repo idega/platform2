@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.124 2004/02/20 16:37:44 tryggvil Exp $
+ * $Id: NewsReader.java,v 1.125 2004/05/10 18:24:24 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import com.idega.util.text.TextSoap;
 public class NewsReader extends CategoryBlock implements Builderaware {
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
   public final static String CACHE_KEY = "nw_news";
-  private boolean hasEdit = false,hasAdd = false,hasInfo = false;;
+  private boolean hasEdit = false,hasAdd = false,hasInfo = false,hasEditExisting=false;
   private int iCategoryId = -1;
   private String attributeName = null;
   private int attributeId = -1;
@@ -138,6 +138,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
   private static String AddPermisson = "add";
   private static String InfoPermission = "info";
+  private static String EditExistingPermission = "edit_existing";
 
   private IWBundle iwb;
   private IWResourceBundle iwrb ;
@@ -150,6 +151,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
   private int iLayout =SINGLE_FILE_LAYOUT;
   private int newsCount = 0;
+  
+  private int visibleNewsRangeStart = 0;
+  private int visibleNewsRangeEnd = Integer.MAX_VALUE;
 
   public NewsReader(){
     setCacheable(getCacheKey(), 999999999);//cache indefinately
@@ -166,6 +170,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   public void registerPermissionKeys(){
     registerPermissionKey(AddPermisson);
     registerPermissionKey(InfoPermission);
+    registerPermissionKey(EditExistingPermission);
   }
 
   public boolean getMultible(){
@@ -444,7 +449,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
     }
     row++;
     int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-    if(hasEdit || (hasAdd && (ownerId == iwc.getUserId()) )){
+    if(hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()) )){
       T.add(getNewsAdminPart(news,iwc),1,row);
     }
     return T;
@@ -471,10 +476,10 @@ public class NewsReader extends CategoryBlock implements Builderaware {
       //System.err.println(" news count "+count);
       boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
       if(L!=null){
-        int len = L.size();
+        int len = Math.min(visibleNewsRangeEnd,L.size());
         Integer I;
         NewsHelper newsHelper;
-        for (int i = 0; i < len; i++) {
+        for (int i = Math.max(0,(visibleNewsRangeStart-1)); i < len; i++) {
           if (numberOfExpandedNews == i)
             collection = true; // show the rest as collection
           newsHelper = (NewsHelper) L.get(i);
@@ -708,7 +713,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
       //////////// ADMIN PART /////////////////////
       int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-      if(hasEdit || (hasAdd && (ownerId == iwc.getUserId()))){
+      if(hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()))){
 	      T.add(getNewsAdminPart(news,iwc),1,row);
       }
       row++;
@@ -759,7 +764,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	      T.add(headLine, headlineCol, 1);
       }
       int ownerId = newsHelper.getContentHelper().getContent().getUserId();
-      if(hasEdit || (hasAdd && (ownerId == iwc.getUserId()))){
+      if(hasEdit || hasEditExisting || (hasAdd && (ownerId == iwc.getUserId()))){
 	      T.add(getNewsAdminPart(news,iwc),4,1);
       }
     }
@@ -814,6 +819,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
     hasEdit = iwc.hasEditPermission(this);
     hasAdd = iwc.hasPermission(AddPermisson,this);
     hasInfo = iwc.hasPermission(InfoPermission,this);
+    hasEditExisting = iwc.hasPermission(EditExistingPermission,this);
 
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
@@ -1253,4 +1259,26 @@ public void setShowImageInfo(boolean showImageInfo) {
 	addImageInfo = showImageInfo;
 }
 
+
+public void setVisibleNewsRange(int start,int end) {
+	if(end > 0 && start>end) {
+		this.visibleNewsRangeStart = end;
+		this.visibleNewsRangeEnd = start;
+	}else {
+		this.visibleNewsRangeStart = start;
+		this.visibleNewsRangeEnd = (end<1)?Integer.MAX_VALUE:end;
+	}
+}
+/**
+ * @param visibleNewsRangeEnd The visibleNewsRangeEnd to set.
+ */
+public void setVisibleNewsRangeEnd(int visibleNewsRangeEnd) {
+	this.visibleNewsRangeEnd = visibleNewsRangeEnd;
+}
+/**
+ * @param visibleNewsRangeStart The visibleNewsRangeStart to set.
+ */
+public void setVisibleNewsRangeStart(int visibleNewsRangeStart) {
+	this.visibleNewsRangeStart = visibleNewsRangeStart;
+}
 }
