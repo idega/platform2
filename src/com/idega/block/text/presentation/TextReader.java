@@ -57,6 +57,9 @@ public class TextReader extends Block implements IWBlock {
 	private boolean viewall = false;
 	private boolean newobjinst = false;
 	private boolean newWithAttribute = false;
+	
+	private String textStyleName = "body";
+	private String headlineStyleName = "headline";
 
 	public static String prmTextId = "txtr.textid";
 
@@ -161,6 +164,7 @@ public class TextReader extends Block implements IWBlock {
 		//headline.setAttribute("class","headlinetext");
 		if (headlineStyle != null)
 			headline.setFontStyle(headlineStyle);
+		headline.setStyleClass(headlineStyleName);
 
 		String textBody = locText.getBody() != null ? locText.getBody() : "";
 
@@ -194,6 +198,7 @@ public class TextReader extends Block implements IWBlock {
 		//body.setAttribute("class","bodytext");
 		if (textStyle != null)
 			body.setFontStyle(textStyle);
+		body.setStyleClass(textStyleName);
 
 		Image bodyImage;
 
@@ -410,5 +415,28 @@ public class TextReader extends Block implements IWBlock {
 			ex.printStackTrace(System.err);
 		}
 		return obj;
+	}
+
+	/**
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public Map getStyleNames() {
+		HashMap map = new HashMap();
+		String[] styleNames = { headlineStyleName, textStyleName };
+		String[] styleValues = { "", "" };
+
+		for (int a = 0; a < styleNames.length; a++) {
+			map.put(styleNames[a], styleValues[a]);
+		}
+
+		return map;
+	}
+	
+	public void setHeadlineStyleClass(String styleClass) {
+		headlineStyleName = styleClass;	
+	}
+
+	public void setTextStyleClass(String styleClass) {
+		textStyleName = styleClass;	
 	}
 }
