@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.33 2003/02/14 09:33:47 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.34 2003/02/26 15:01:26 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -104,13 +104,25 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		getMessageHome(messageType).findByPrimaryKey(new Integer(messageID)).remove();
 	}
 	
-	public void deleteUserMessage(int messageID) throws FinderException,RemoveException,java.rmi.RemoteException {
-		getUserMessage(messageID).remove();	
+	public void deleteUserMessage(int messageID) throws java.rmi.RemoteException {
+		try {
+			Message message = getUserMessage(messageID);
+			changeCaseStatus(message, getCaseStatusInactive().getPrimaryKey().toString(), message.getOwner());	
+		}
+		catch (FinderException fe) {
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 	
 	public void markMessageAsRead(Message message) throws RemoteException {
-		message.setCaseStatus(this.getCaseStatusGranted());
-		message.store();
+		try {
+			changeCaseStatus(message, getCaseStatusGranted().getPrimaryKey().toString(), message.getOwner());	
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 	
 	public boolean isMessageRead(Message message) throws RemoteException {
@@ -156,7 +168,8 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public Collection findMessages(User user) throws Exception {
-		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user);
+		String[] validStatuses = { getCaseStatusOpen().getPrimaryKey().toString(), getCaseStatusGranted().getPrimaryKey().toString() };
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses);
 	}
 
 	public Message createUserMessage(User user, String subject, String body) {
