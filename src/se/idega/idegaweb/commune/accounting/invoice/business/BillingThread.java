@@ -187,7 +187,7 @@ public abstract class BillingThread extends Thread{
 
 		PostingParameters parameters;
 		//TODO (JJ) fix the  params
-		parameters = postingBusiness.getPostingParameter(currentDate, category, regSpecType, 0, 0);
+		parameters = postingBusiness.getPostingParameter(currentDate, category, regSpecType, "0", 0);
 
 		String ownPosting = parameters.getPostingString();
 		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
