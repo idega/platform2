@@ -52,6 +52,7 @@ public class ProductViewer extends Block {
   boolean _showThumbnail = false;
   String _spaceBetween = "3";
   boolean _showImages = true;
+  boolean _addCategoryID = false;
 
   public ProductViewer() { }
 
@@ -262,6 +263,10 @@ public class ProductViewer extends Block {
 
   public void setShowImages(boolean showImages) {
     _showImages = showImages;
+  }
+
+  public void setAddCategoryID(boolean addID) {
+    _addCategoryID = addID;
   }
 }
 

@@ -1,10 +1,10 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.util.*;
+import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.data.IDOFinderException;
 import com.idega.core.data.ICFile;
 import com.idega.data.EntityFinder;
-import java.util.Vector;
-import java.util.List;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
@@ -140,6 +140,20 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       if ( productViewer._productPage != null )
 	link.setPage(productViewer._productPage);
       link.addParameter(ProductBusiness.PRODUCT_ID, _product.getID());
+
+      if ( productViewer._addCategoryID ) {
+	try {
+	  List list = ProductBusiness.getProductCategories(_product);
+	  if ( list != null ) {
+	    Iterator iter = list.iterator();
+	    while (iter.hasNext()) {
+	      link.addParameter(ProductCatalog.CATEGORY_ID,((ProductCategory)iter.next()).getID());
+	    }
+	  }
+	}
+	catch (IDOFinderException e) {
+	}
+      }
 
       table.add(link,1,++row);
     }
