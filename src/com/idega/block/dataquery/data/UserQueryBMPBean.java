@@ -137,22 +137,37 @@ public class UserQueryBMPBean extends GenericEntity implements UserQuery {
     return ((Timestamp) getColumnValue(COLUMN_NAME_DELETED_WHEN));
   }
 
-	public Collection ejbFindByGroupAndPermission(Group owner, String permission) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getEntityName());
-		sql.appendWhereEquals(COLUMN_NAME_OWNERSHIP, owner);
-		sql.appendAndEqualsQuoted(COLUMN_NAME_PERMISSION, permission);
-		sql.appendAnd().appendLeftParenthesis();
-		sql.appendEqualsQuoted(COLUMN_NAME_DELETED, GenericEntity.COLUMN_VALUE_FALSE);
-		sql.appendOrIsNull(COLUMN_NAME_DELETED);
-		sql.appendRightParenthesis();
-		return this.idoFindPKsByQuery(sql);
-	}
+  public Collection ejbFindByGroup(Group owner) throws FinderException {
+	IDOQuery sql = idoQuery();
+	sql.appendSelectAllFrom(this.getEntityName());
+	sql.appendWhereEquals(COLUMN_NAME_OWNERSHIP, owner);
+	sql.appendAnd().appendLeftParenthesis();
+	sql.appendEqualsQuoted(COLUMN_NAME_DELETED, GenericEntity.COLUMN_VALUE_FALSE);
+	sql.appendOrIsNull(COLUMN_NAME_DELETED);
+	sql.appendRightParenthesis();
+	return this.idoFindPKsByQuery(sql);
+  }
+
+  
+  public Collection ejbFindByGroupAndPermission(Group owner, String permission) throws FinderException {
+	IDOQuery sql = idoQuery();
+	sql.appendSelectAllFrom(this.getEntityName());
+	sql.appendWhereEquals(COLUMN_NAME_OWNERSHIP, owner);
+	sql.appendAndEqualsQuoted(COLUMN_NAME_PERMISSION, permission);
+	sql.appendAnd().appendLeftParenthesis();
+	sql.appendEqualsQuoted(COLUMN_NAME_DELETED, GenericEntity.COLUMN_VALUE_FALSE);
+	sql.appendOrIsNull(COLUMN_NAME_DELETED);
+	sql.appendRightParenthesis();
+	return this.idoFindPKsByQuery(sql);
+  }
 	
-	
-	
+  /** Get all queries but not the deleted ones */
+  public Collection ejbFindAll() throws FinderException {
+	IDOQuery sql = idoQuery();
+	sql.appendSelectAllFrom(this.getEntityName());
+	sql.appendWhereEqualsQuoted(COLUMN_NAME_DELETED, GenericEntity.COLUMN_VALUE_FALSE);
+	sql.appendOrIsNull(COLUMN_NAME_DELETED);
+	return this.idoFindPKsByQuery(sql);
+  }
+  
 }
-
-
-
-

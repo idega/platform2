@@ -13,6 +13,20 @@ public class UserQueryHomeImpl extends com.idega.data.IDOFactory implements User
  }
 
 
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((UserQueryBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((UserQueryBMPBean)entity).ejbFindByGroup(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findByGroupAndPermission(com.idega.user.data.Group p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((UserQueryBMPBean)entity).ejbFindByGroupAndPermission(p0,p1);
