@@ -77,4 +77,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void setAsPriorityApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setAsPriorityApplication(int p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void sendMessageToProvider(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, String subject, String message, com.idega.user.data.User sender) throws java.rmi.RemoteException;
+
 }

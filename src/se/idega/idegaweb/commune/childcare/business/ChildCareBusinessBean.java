@@ -237,7 +237,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void sendMessageToProvider(ChildCareApplication application, String subject, String message, User sender) throws RemoteException {
+		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
+		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
+		
+		if (users != null) {
+			MessageBusiness messageBiz = getMessageBusiness();
+			Iterator it = users.iterator();
+			while (it.hasNext()) {
+				User providerUser = (User) it.next();
+				messageBiz.createUserMessage(application,providerUser, sender, subject, MessageFormat.format(message, arguments), false);
+			}
+		}
+		else
+			System.out.println("Got no users for provider " + application.getProviderId());
+	}
+	
 	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
 		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
 		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
