@@ -1,18 +1,14 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
-import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
-import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
@@ -41,7 +37,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 	private static String GRANTED, VALID_UNTIL;
 
-	private final static String[] SUBMIT_ALERT_1 = new String[] { "ccot_alert_1", "Do you want to commit your choice? This can not be undone afterwards." }, SUBMIT_UNVALID_DATE = new String[] { "ccot_valid_date", "Please select a valid date." }, EDIT_TOOLTIP = new String[] { "ccot_edit_tooltip", "View prognosis and provider queue" }, DELETE_TOOLTIP = new String[] { "ccot_delete_tooltip", "Delete" }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign"}, ALERT_TERMINATE_CONTRACT = new String[] { "ccot_terminate_contract", "After accepting this offer, remember to cancel your active contract./n" };
+	private final static String[] SUBMIT_ALERT_1 = new String[] { "ccot_alert_1", "Do you want to commit your choice? This can not be undone afterwards." }, SUBMIT_UNVALID_DATE = new String[] { "ccot_valid_date", "Please select a valid date." }, EDIT_TOOLTIP = new String[] { "ccot_edit_tooltip", "View prognosis and provider queue" }, DELETE_TOOLTIP = new String[] { "ccot_delete_tooltip", "Delete" }, ALERT_TERMINATE_CONTRACT = new String[] { "ccot_terminate_contract", "After accepting this offer, remember to cancel your active contract./n" };
 
 	private static boolean _initializeStatics = false;
 
@@ -280,52 +276,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(delete, column++, row);
 		}
 		
-		boolean hasBankId = false;
-		try{
-			hasBankId = new NBSLoginBusinessBean().hasBankLogin(app.getOwner().getID());
-		}catch(SQLException ex){
-			//ignore
-		}
-		//todo (roar) remove code
-		System.out.println("hasBankId :" + hasBankId);
-		
-
-		
-		if (hasBankId){
-			Collection contracts = _page.childCarebusiness.getContractsByApplication(app.getNodeID());
-			System.out.println("contract exists: " + contracts.size());
-			Iterator i = contracts.iterator();
-			
-			createSingButton:
-			while(i.hasNext()){
-				Contract c = (Contract) i.next();
-				
-				if (! c.isSigned()){
-					System.out.println("contract not signed");			
-					
-					Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
-					signBtn.setWindowToOpen(ChildCareWindowBig.class);
-					signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
-					signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, c.getPrimaryKey().toString());
-					signBtn.setAsImageButton(true);
-					add(signBtn, column++, row);	
-				
-					break createSingButton;
-				}
-			}
-						
-//			Contract contract = app.getContract();
-//			System.out.println("contract exists " + (contract != null));
-//			System.out.println("contract not signed " + (contract != null && ! contract.isSigned()));			
-//			if (contract != null && ! contract.isSigned()){
-//				Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
-//				signBtn.setWindowToOpen(ChildCareWindowBig.class);
-//				signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
-//				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
-//				signBtn.setAsImageButton(true);
-//				add(signBtn, column++, row);	
-//			}	
-		}		
+	
 
 		if (row % 2 == 0) {
 			setRowColor(row++, _page.getZebraColor1());
