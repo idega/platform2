@@ -8,7 +8,9 @@ package com.idega.jmodule.object;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
-
+import com.idega.jmodule.object.textObject.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.jmodule.image.data.ImageEntity;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -18,6 +20,10 @@ public class Image extends ModuleObject{
 
 private Script theAssociatedScript;
 private String overImageUrl;
+private int maxImageWidth = 200;
+private boolean limitImageWidth = false;
+private int imageId = -1;
+private ModuleObject tableOrImage = null;
 
 public Image(){
 	this("");
@@ -54,19 +60,20 @@ public Image(String name,String url, String overImageUrl){
 
 }
 
-public Image(String name,int image_id, int overImageUrl){
+public Image(String name,int imageId, int overImageUrl){//this does not work
 	super();
+        this.imageId = imageId;
 	String URIString = "/servlet/imageModule";
-	URIString = URIString+"?image_id="+image_id;
+	URIString = URIString+"?image_id="+imageId;
 	setName(name);
 	setURL(URIString);
 	setBorder(0);
 
-	setOverImageURL(""+overImageUrl);
+	setOverImageURL(Integer.toString(overImageUrl));
 
 	String URIString2 = "/servlet/imageModule?image_id="+overImageUrl;
 
-	URIString = URIString+"?image_id="+image_id;
+	URIString = URIString+"?image_id="+imageId;
 	setURL(URIString);
 	setBorder(0);
 
@@ -91,12 +98,18 @@ public Image(String url,String name,int width,int height){
 /**
 *Fetches an image from the database through the imageservlet
 */
-public Image(int image_id) throws SQLException{
-	super();
-	String URIString = "/servlet/imageModule";
-	URIString = URIString+"?image_id="+image_id;
-	setURL(URIString);
-	setBorder(0);
+
+public Image(int imageId) throws SQLException{
+/*  super();
+  this.imageId = imageId;
+  String URIString = "/servlet/imageModule";
+  URIString = URIString+"?image_id="+imageId;
+  setURL(URIString);
+  setBorder(0);*/
+  this.imageId = imageId;
+  setBorder(0);
+  setTableOrImage();
+
 
 }
 
@@ -175,11 +188,81 @@ public Script getAssociatedScript(){
 	return theAssociatedScript;
 }
 
+private void setTableOrImage(){//optimize by writing in pure html
+Table imageTable = null;
+  try{
+    ImageEntity image = new ImageEntity(imageId);
+    String texti = image.getText();
+    String link = image.getLink();
+
+    StringBuffer URIString = new StringBuffer("");
+    URIString.append("/servlet/imageModule?image_id=");
+    URIString.append(imageId);
+
+    Image theImage = new Image(URIString.toString(),image.getName());
+
+    String width = image.getWidth();
+    String height = image.getHeight();
+
+    if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
+      theImage.setWidth(width);
+    }
+    if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
+      theImage.setHeight(height);
+    }
+
+    if( limitImageWidth ) theImage.setMaxImageWidth(maxImageWidth);
+
+    if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
+      imageTable = new Table(1, 2);
+      imageTable.setAlignment("center");
+      imageTable.setAlignment(1,1,"center");
+      imageTable.setAlignment(1,2,"center");
+      imageTable.setVerticalAlignment("top");
+      imageTable.setCellpadding(0);
+
+      Text imageText = new Text(texti);
+      imageText.setFontSize(1);
+
+      if ( (link!=null) && (!"".equalsIgnoreCase(link)) ){
+        Link imageLink = new Link(imageText,link);
+        imageLink.setTarget("_new");
+        imageLink.setFontSize(1);
+        imageTable.add(imageLink, 1, 2);
+        Link imageLink2 = new Link(theImage,link);
+        imageTable.add(imageLink2, 1, 1);
+      }
+      else{
+        imageTable.add(imageText, 1, 2);
+        imageTable.add(theImage, 1, 1);
+      }
+      imageTable.setColor(1,2,"#CCCCCC");
+      tableOrImage = imageTable;
+    }
+    else  tableOrImage = theImage;
+
+
+  }
+  catch(Exception e){
+  e.printStackTrace(System.err);
+  System.out.println(e.getMessage());
+  }
+
+}
+
+public void setMaxImageWidth(int maxImageWidth){
+  this.limitImageWidth=true;
+  this.maxImageWidth = maxImageWidth;
+}
+
+public void limitImageWidth( boolean limitImageWidth ){
+  this.limitImageWidth=true;
+}
+
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if( doPrint(modinfo) ){
 		if (getLanguage().equals("HTML")){
-
 
 			//if (getInterfaceStyle().equals("something")){
 			//}
@@ -194,19 +277,31 @@ public void print(ModuleInfo modinfo)throws IOException{
 					getAssociatedScript().print(modinfo);
 			}*/
 
-
-
+                        //added by eiki
+                        if( tableOrImage == null){
 				if (getName() != null){
 				print("<img alt=\""+getName()+"\""+getAttributeString()+" >");
 				}
 				else{
 					print("<img "+getAttributeString()+" >");
 				}
+
+
+                        }
+                        else{
+
+                           if(limitImageWidth){
+                           setWidth(maxImageWidth);
+                           setHeight("");
+                          }
+                          tableOrImage.print(modinfo);
+                        }
 				//println("</img>");
 			// }
 		}
 	//}
 }
+
 
 
 }
