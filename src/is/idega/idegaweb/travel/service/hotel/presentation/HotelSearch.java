@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.service.hotel.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -66,7 +67,7 @@ public class HotelSearch extends AbstractSearchForm {
 	protected void getResults() throws RemoteException {
 		String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
 		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
-		String sToDate = iwc.getParameter(PARAMETER_TO_DATE);
+		String sManyDays = iwc.getParameter(PARAMETER_MANY_DAYS);
 		String sRoomType[] = iwc.getParameterValues(PARAMETER_ROOM_TYPE);
 		String sRoomTypeCount[] = iwc.getParameterValues(PARAMETER_ROOM_TYPE_COUNT);
 		
@@ -80,31 +81,12 @@ public class HotelSearch extends AbstractSearchForm {
 				}
 			}
 			
-			Object[] postalCodeIds = null;
-			if (sPostalCode != null && sPostalCode.length > 0) {
-				Vector ids = new Vector();
-				PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-				PostalCode tpc;
-				Collection pks;
-				for (int i = 0 ; i < sPostalCode.length; i++) {
-					//System.out.println("postalCodeLength = "+sPostalCode.length+" ... currently working with "+i);
-					pks = pcHome.findByName(sPostalCode[i]);
-					if (pks != null && !pks.isEmpty()) {
-						Iterator iter = pks.iterator();
-						while (iter.hasNext()) {
-							//System.out.println("Adding postalCode to vector");
-							ids.add(iter.next());
-						}
-					}
-				}
-				postalCodeIds = ids.toArray();
-			}
-			
-			
+			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
+
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 			Collection coll = hHome.find(null, null, roomTypeIds, postalCodeIds);
-			coll = checkResults(iwc, coll);
-			listResults(iwc, coll);
+			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
+			listResults(iwc, map);
 			if (coll != null) {
 				add("Found "+coll.size()+" matches !<br>");
 				if (coll.isEmpty()) {
@@ -126,31 +108,17 @@ public class HotelSearch extends AbstractSearchForm {
 	
 	
 	protected void setupSearchForm() {
-		try {
-			PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-			Collection coll = pch.findAllUniqueNames();
-			DropdownMenu menu = new DropdownMenu(PARAMETER_POSTAL_CODE_NAME);
-			if (coll != null && !coll.isEmpty()) {
-				PostalCode pc;
-				Iterator iter = coll.iterator();
-				while (iter.hasNext()) {
-					pc = pch.findByPrimaryKey(iter.next());
-					menu.addMenuElement(pc.getName(), pc.getName());
-				}
-			}
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{menu});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		addAreaCodeInput();
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
 		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);
 		fromDate.setDate(now.getDate());
 		now.addDays(1);
-		DateInput toDate = new DateInput(PARAMETER_TO_DATE);
-		toDate.setDate(now.getDate());
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in"), iwrb.getLocalizedString("travel.search.check_out","Check out")}, new PresentationObject[]{fromDate, toDate});
+		TextInput manyDays = new TextInput(PARAMETER_MANY_DAYS);
+		manyDays.setContent("1");
+		manyDays.setSize(3);
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in"), iwrb.getLocalizedString("travel.search.number_of_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
 		
 		try {
 			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
