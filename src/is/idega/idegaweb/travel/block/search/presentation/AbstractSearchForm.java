@@ -139,6 +139,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected ServiceSearchEngine engine = null;
 	
 	protected Image headerImage;
+	protected Image headerImageTiler;
 	protected Table formTable = new Table();
 	protected int row = 1;
 	protected boolean useSecureServer = true;
@@ -366,11 +367,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		table.setCellpaddingAndCellspacing(0);
 		if (headerImage != null) {
 			table.add(headerImage);
-	//	if (getHeaderImage(iwrb) != null) {
-	//		table.add(getHeaderImage(iwrb));
 		} else {
 			table.add(getHeaderText(getServiceName(iwrb)));
 		}
+		if (headerImageTiler != null) {
+			table.setBackgroundImage(headerImageTiler);
+		}
+		
 		if (headerBackgroundColor != null) {
 			table.setColor(headerBackgroundColor);				
 		}
@@ -1078,6 +1081,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 	public void setHeaderImage(Image image) {
 		this.headerImage = image;
+	}
+	
+	public void setHeaderImageTiler(Image image) {
+		this.headerImageTiler = image;
 	}
 	
 	public void setHeaderBackgroundColor(String color) {

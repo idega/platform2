@@ -48,6 +48,7 @@ public class ServiceSearch extends Block {
 	protected int engineID = -1;
 	
 	private Image headerImage;
+	private Image headerTiler;
 	private Image windowHeaderImage;
 	
 	private IWResourceBundle iwrb;
@@ -177,6 +178,10 @@ public class ServiceSearch extends Block {
 
 	public void setHeaderImage(Image image) {
 		this.headerImage = image;
+	}
+	
+	public void setHeaderTilerImage(Image image) {
+		this.headerTiler = image;
 	}
 	
 	public void setHeaderBackgroundColor(String color) {
