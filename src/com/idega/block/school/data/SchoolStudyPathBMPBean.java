@@ -18,10 +18,9 @@ import com.idega.data.IDORemoveRelationshipException;
  */
 public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudyPath{
 	
-	private static String TABLE_NAME           = "SCH_COURSE";
-	private static String COLUMN_NAME          ="COURSE_NAME";
+	private static String TABLE_NAME           = "SCH_STUDY_PATH";
+	private static String COLUMN_CODE          = "STUDY_PATH_CODE";
 	private static String COLUMN_DESCRIPTION   = "DESCRIPTION";
-	private static String COLUMN_SCHOOL        = "SCH_SCHOOL_ID";
 	private static String COLUMN_SCHOOL_TYPE   = "SCH_SCHOOL_TYPE_ID";
 	private static String COLUMN_IS_VALID      = "IS_VALID";
 	
@@ -31,34 +30,26 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_NAME, "course name", true, true, String.class);
-		addAttribute(COLUMN_DESCRIPTION, "description, ", true, true, String.class, 4000);
+		addAttribute(COLUMN_CODE, "course name", true, true, String.class);
+		addAttribute(COLUMN_DESCRIPTION, "description, ", true, true, String.class);
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
-		this.addManyToOneRelationship(COLUMN_SCHOOL, School.class);
 
 		this.addManyToManyRelationShip(SchoolClassMember.class);
+		this.addManyToManyRelationShip(School.class);
 	}
 
 	public void setDefaultValues() {
 		this.setColumn(COLUMN_IS_VALID, true);	
 	}
 	
-	public String getName() {
-		return getCourseName();
+	public String getCode() {
+		return getStringColumnValue(COLUMN_CODE);
 	}
 
-	public void setName(String name) {
-		setCourseName(name);
-	}
-
-	public String getCourseName() {
-		return getStringColumnValue(COLUMN_NAME);
-	}
-	
-	public void setCourseName(String name) {
-		setColumn(COLUMN_NAME, name);
+	public void setCode(String code) {
+		setColumn(COLUMN_CODE, code);
 	}
 	
 	public String getDescription() {
@@ -69,12 +60,16 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		setColumn(COLUMN_DESCRIPTION, description);
 	}
 
-	public void setSchoolPk(Object schoolPk) {
-		setColumn(COLUMN_SCHOOL, schoolPk);
+	public SchoolType getSchoolType() {
+		return (SchoolType) getColumnValue(COLUMN_SCHOOL_TYPE);
 	}
-
-	public void setSchoolTypePk(Object schoolTypePk) {
-		setColumn(COLUMN_SCHOOL_TYPE, schoolTypePk);
+	
+	public int getSchoolTypeId() {
+		return getIntColumnValue(COLUMN_SCHOOL_TYPE);
+	}
+	
+	public void setSchoolTypeId(Object schoolTypeId) {
+		setColumn(COLUMN_SCHOOL_TYPE, schoolTypeId);
 	}
 
 	public void remove() {
@@ -97,18 +92,34 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	public void removeAllSchoolClassMembers() throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(SchoolClassMember.class);
 	}	
+
+	public void addSchool(School school) throws IDOAddRelationshipException {
+		this.idoAddTo(school);
+	}
 	
-	public Collection ejbHomeFindSchoolCourses(School school) throws IDOLookupException, IDORelationshipException, FinderException {
-		return ejbHomeFindSchoolCourses(school, school.getSchoolTypes());
+	public void removeSchool(School school) throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(school);
+	}
+	
+	public Collection getSchools() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(School.class);
+	}
+	
+	public void removeAllSchools() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(School.class);
+	}	
+
+	public Collection ejbHomeFindStudyPaths(School school) throws IDOLookupException, IDORelationshipException, FinderException {
+		return ejbHomeFindStudyPaths(school, school.getSchoolTypes());
 	}
 
-	public Collection ejbHomeFindSchoolCourses(School school, Object schoolTypePK) throws IDOLookupException, IDORelationshipException, FinderException {
+	public Collection ejbHomeFindStudyPaths(School school, Object schoolTypePK) throws IDOLookupException, IDORelationshipException, FinderException {
 		Vector vector = new Vector();
 		vector.add(schoolTypePK);
-		return ejbHomeFindSchoolCourses(school, vector);
+		return ejbHomeFindStudyPaths(school, vector);
 	}
 
-	public Collection ejbHomeFindSchoolCourses(School school, Collection schoolTypePKs) throws FinderException, IDOLookupException {
+	public Collection ejbHomeFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException, IDOLookupException {
 		boolean useTypes = schoolTypePKs != null && !schoolTypePKs.isEmpty();
 		
 		if (useTypes) {
@@ -123,7 +134,8 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 				}
 			}
 			query.append(")")
-			.append(" AND ").append(COLUMN_SCHOOL).append(" = ").append(school.getPrimaryKey())
+// To do: now many-to-many relationship to School
+//			.append(" AND ").append(COLUMN_SCHOOL).append(" = ").append(school.getPrimaryKey())
 			.append(" AND (").append(COLUMN_IS_VALID).append(" is null")
 			.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
 			

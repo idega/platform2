@@ -146,7 +146,7 @@ public class SchoolStudyPathEditor extends Block {
 			while (iter.hasNext()) {
 				course = (SchoolStudyPath) iter.next();
 				++row;
-				table.add(course.getName(), 1, row);
+				table.add(course.getCode(), 1, row);
 				table.add(course.getDescription(), 2, row);
 				
 				edit = new Link(iwrb.getLocalizedImageButton("school.edit","Edit"));
@@ -187,7 +187,7 @@ public class SchoolStudyPathEditor extends Block {
 				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
 				SchoolStudyPath course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
 				form.maintainParameter(PARAMETER_SCHOOL_COURSE_ID);
-				name.setContent(course.getName());
+				name.setContent(course.getCode());
 				description.setContent(course.getDescription());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -228,10 +228,10 @@ public class SchoolStudyPathEditor extends Block {
 				} else {
 					course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
 				}
-				course.setName(name);
+				course.setCode(name);
 				course.setDescription(description);
-				course.setSchoolPk(school.getPrimaryKey());
-				course.setSchoolTypePk(new Integer(schoolTypeId));
+//				course.setSchoolPk(school.getPrimaryKey());
+				course.setSchoolTypeId(new Integer(schoolTypeId));
 				course.store();
 				return true;
 			} catch (Exception e) {
