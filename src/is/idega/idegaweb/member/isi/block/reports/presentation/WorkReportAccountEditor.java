@@ -22,7 +22,9 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
@@ -37,6 +39,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.datastructures.HashMatrix;
@@ -353,8 +356,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Iterator leagueIterator = workReportLeagues.iterator();
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
-      Integer groupId = (group == null) ? null : group.getGroupId();
-      WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId);
+      // handle the special case that the group id is null
+      String groupName = (group == null) ? IWMemberConstants.MAIN_BOARD : group.getName();
+      Integer groupId = (group == null) ? NULL_GROUP_ID : group.getGroupId();
+      WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
     // define entity browser
@@ -575,10 +580,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // nothing to do
       return;
     }
-    // try to get an existing record
-    if (groupId.equals(NULL_GROUP_ID)) {
-      groupId = null;
-    }
     WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKey);
     if (record == null)   {
       // okay, first create a record
@@ -622,15 +623,17 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   class WorkReportAccountGroupHelper implements EntityRepresentation {
     
     Integer groupId;
+    String groupName;
     
     public WorkReportAccountGroupHelper()  {
     }
     
-    public WorkReportAccountGroupHelper(Integer groupId) {
+    public WorkReportAccountGroupHelper(Integer groupId, String groupName) {
       this.groupId = groupId;
+      this.groupName = groupName;
     }
     
-    public Float getEntry(String accountKeyName) {
+    public Object getEntry(String accountKeyName) {
       Integer primaryKey = (Integer) accountKeyNamePrimaryKey.get(accountKeyName);
       if (primaryKey == null) {
         return new Float(999999);
@@ -645,9 +648,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     public int getGroupId() {
-      if (groupId == null)  {
-        return NULL_GROUP_ID.intValue();
-      }
       return groupId.intValue();
     }
      
@@ -657,6 +657,25 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     public Object getPrimaryKey() {
       return new Integer(getGroupId());
+    }
+    
+    private Object getSpecialValues(String accountKeyName) {
+      if (accountKeyName.equals(LEAGUE_NAME)) {
+        return groupName;
+      }
+//      else if (accountKeyName.equals(INCOME_SUM_KEY)) {
+//      }
+//      else if (accountKeyName.equals(EXPONSES_SUM_KEY)) {
+//      }
+//      else if (accountKeyName.equals(INCOME_EXPONSES_SUM_KEY))  {
+//      }
+//      else if (accountKeyName.equals(ASSET_SUM_KEY))  {
+//      }
+//      else if (accountKeyName.equals(DEBT_SUM_KEY)) {
+//      }
+      else {
+        return "unknown";
+      }
     }
   }
   
@@ -681,6 +700,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
   }       
     
+  class WorkReportAccountTextConverter implements  EntityToPresentationObjectConverter  {    
+    
+    public PresentationObject getHeaderPresentationObject (
+        EntityPath entityPath,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);   
+    }
+    
+    public PresentationObject getPresentationObject(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc) {
+      String name = path.getShortKey();
+      String value = (String) ((EntityRepresentation) entity).getColumnValue(name);
+      return new Text(value);
+    }
+    
+  }
 
 } 
 

@@ -67,4 +67,7 @@ public class IWMemberConstants {
 	public static final String MEMBER_BOARD_MEMBER = "board_member";
 	public static final String MEMBER_CASHIER = "cashier";
 	public static final String MEMBER_SECRETARY = "secretary";
+  
+  // name of the "group" that represents the main board
+  public static final String MAIN_BOARD = "main_board"; 
 }
