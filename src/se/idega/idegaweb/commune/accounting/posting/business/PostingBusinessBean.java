@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.44 2003/11/24 13:37:33 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.45 2003/11/26 16:21:06 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -257,78 +257,30 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		logDebug("schoolYear1_id: " + schoolYear1_id);				
 		logDebug("schoolYear2_id: " + schoolYear2_id);				
 		
+		PostingParameters pp = null;
+		
 		try {
-			int match;
 			PostingParametersHome home = getPostingParametersHome();
 			
-			Collection ppCol = home.findPostingParametersByDate(date);
-			Iterator iter = ppCol.iterator();
-
-			while (iter.hasNext())  {
-				PostingParameters pp = (PostingParameters) iter.next();
-				String the_act_id = pp.getActivity() != null ? 
-						pp.getActivity().getPrimaryKey().toString() : "0";
-				String the_reg_id = pp.getRegSpecType() != null ? 
-						pp.getRegSpecType().getPrimaryKey().toString() : "0";
-				String the_com_id = pp.getCompanyType() != null ? 
-						pp.getCompanyType().getPrimaryKey().toString() : "0";
-				String the_com_bel_id = pp.getCommuneBelonging() != null ? 
-						pp.getCommuneBelonging().getPrimaryKey().toString() : "0";
-
-				String the_school_year1_id = pp.getSchoolYear1() != null ? 
-						pp.getSchoolYear1().getPrimaryKey().toString() : "0";
-
-				String the_school_year2_id = pp.getSchoolYear2() != null ? 
-						pp.getSchoolYear2().getPrimaryKey().toString() : "0";
-				
-				match = 0;
-				
-				if (act_id == 0) { 
-					match++;
-				} else if (Integer.parseInt(the_act_id) == act_id) { 
-					match++; 
-				}
-
-				if (reg_id == 0) { 
-					match++;
-				} else if (Integer.parseInt(the_reg_id) == reg_id) { 
-					match++; 
-				}
-
-				if (com_id == null) { 
-					match++;
-				} else if (the_com_id.equals(com_id)) { 
-					match++; 
-				}
-
-				if (com_bel_id == 0) { 
-					match++;
-				} else if (Integer.parseInt(the_com_bel_id) == com_bel_id) { 
-					match++; 
-				}
-
-				if (schoolYear1_id == 0) { 
-					match++;
-				} else if (Integer.parseInt(the_school_year1_id) == schoolYear1_id) { 
-					match++; 
-				}
-
-				if (schoolYear2_id == 0) { 
-					match++;
-				} else if (Integer.parseInt(the_school_year2_id) == schoolYear2_id) { 
-					match++; 
-				}
-
-				if (match == 6) {
-					return pp;
-				}
+			pp = home.findPostingParameter(
+					date, 
+					act_id,
+					reg_id, 
+					com_id, 
+					com_bel_id, 
+					schoolYear1_id, 
+					schoolYear2_id
+			);
+			if (pp == null) {			
+				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Sökt parameter hittades ej");
 			}
-			throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Sökt parameter hittades ej");
+			
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
 			return null;
 		}
+		return pp;
 	}	
 
 	/**

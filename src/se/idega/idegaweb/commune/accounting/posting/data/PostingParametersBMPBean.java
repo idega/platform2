@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.19 2003/11/12 13:03:27 anders Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.20 2003/11/26 16:21:06 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.19 2003/11/12 13:03:27 anders Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.20 2003/11/26 16:21:06 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -244,6 +244,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.append(COLUMN_ACTIVITY_ID);
 		sql.append(", ");
 		sql.append(COLUMN_REG_SPEC_TYPE_ID);
+		System.out.println("Simple query: "+sql.toString());
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -275,7 +276,58 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Object ejbFindPostingParameter(int act, int reg, int comt, int comb ) throws FinderException {
+	public Object ejbFindPostingParameter(
+			Date date, 
+			int act_id, 
+			int reg_id, 
+			String com_id, 
+			int com_bel_id,
+			int school_year_id1,
+			int school_year_id2
+		 ) throws FinderException {
+		IDOQuery sql = idoQuery();
+
+		sql.appendSelectAllFrom(this);
+
+		if (date != null) {
+			sql.appendWhere(COLUMN_PERIODE_FROM);
+			sql.appendLessThanOrEqualsSign().append("'"+date+"'");
+			sql.appendAnd().append(COLUMN_PERIODE_TO);
+			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		} else {
+			return null;
+		}
+
+		if (act_id > 0) {
+			sql.appendAndEquals(COLUMN_ACTIVITY_ID, act_id);
+		}
+
+		if (reg_id > 0) {
+			sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID, reg_id);
+		}
+
+		if (com_id != null) {
+			if (com_id.length() != 0) {
+				sql.appendAndEqualsQuoted(COLUMN_COMPANY_TYPE, com_id);
+			}
+		}
+
+		if (com_bel_id > 0) {
+			sql.appendAndEquals(COLUMN_COMMUNE_BELONGING_ID, com_bel_id);
+		}
+
+		if (school_year_id1 > 0) {
+			sql.appendAndEquals(COLUMN_SCHOOL_YEAR1_ID, school_year_id1);
+		}
+
+		if (school_year_id2 > 0) {
+			sql.appendAndEquals(COLUMN_SCHOOL_YEAR2_ID, school_year_id2);
+		}
+		return idoFindOnePKByQuery(sql);
+	}
+
+
+	public Object ejbFindPostingParameter(Date date, int act, int reg, int comt, int comb ) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, act);
 		sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg);
@@ -283,6 +335,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, comb);
 		return idoFindOnePKByQuery(sql);
 	}
+
 
 	public Object ejbFindPostingParameter(
 			Date from,

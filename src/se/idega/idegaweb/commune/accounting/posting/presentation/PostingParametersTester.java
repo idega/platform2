@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.8 2003/11/17 12:17:56 roar Exp $
+ * $Id: PostingParametersTester.java,v 1.9 2003/11/26 16:21:06 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.8 2003/11/17 12:17:56 roar Exp $
+ * $Id: PostingParametersTester.java,v 1.9 2003/11/26 16:21:06 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -44,6 +44,8 @@ public class PostingParametersTester extends AccountingBlock {
 	private final static String PARAM_FIELD_COMPANY_TYPE = "field_company_type";
 	private final static String PARAM_FIELD_COM_BELONGING = "field_com_belonging";
 	private final static String PARAM_FIELD_DATE = "field_date";
+	private final static String PARAM_FIELD_SCHOOL_YEAR1 = "field_school1";
+	private final static String PARAM_FIELD_SCHOOL_YEAR2 = "field_school2";
 
 	private String _errorMessage = "";
 
@@ -124,6 +126,14 @@ public class PostingParametersTester extends AccountingBlock {
 
 			table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"), 1, 5);
 			table.add(getTextInput(PARAM_FIELD_COM_BELONGING, iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ? iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
+
+			table.add(getLocalizedLabel("posting_test_school_year1", "Skolår 1"), 1, 6);
+			table.add(getTextInput(PARAM_FIELD_SCHOOL_YEAR1, iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ? iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR1) : ""), 2, 6);
+
+			table.add(getLocalizedLabel("posting_test_school_year2", "Skolår 2"), 1, 7);
+			table.add(getTextInput(PARAM_FIELD_SCHOOL_YEAR2, iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ? iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR2) : ""), 2, 7);
+
+
 			//			table.add(getSmallText("keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
 
 			table.add(getLocalizedButton(PARAM_BUTTON_SEARCH, "posting_test_search", "Sök"), 2, 6);
@@ -142,7 +152,29 @@ public class PostingParametersTester extends AccountingBlock {
 		try {
 			pBiz = getPostingBusiness(iwc);
 
-			pp = pBiz.getPostingParameter(parseDate(iwc.getParameter(PARAM_FIELD_DATE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)), iwc.getParameter(PARAM_FIELD_COMPANY_TYPE), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING)));
+//			parameters = getPostingParameter(date, 
+//			((Integer) type.getPrimaryKey()).intValue(), 
+//			regSpecType, 
+//			provider.getSchool().getManagementTypeId(), 
+//			((Integer) cbt.getPrimaryKey()).intValue());
+
+/*
+			Date date, 
+			int act_id, 
+			int reg_id, 
+			String com_id, 
+			int com_bel_id, 
+			int schoolYear1_id, 
+			int schoolYear2_id
+*/						
+			pp = pBiz.getPostingParameter(
+			parseDate(iwc.getParameter(PARAM_FIELD_DATE)), 
+			Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY).length() != 0 ? iwc.getParameter(PARAM_FIELD_ACTIVITY) : "0"), 
+			Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC).length() != 0 ? iwc.getParameter(PARAM_FIELD_REGSPEC) : "0"), 
+			iwc.getParameter(PARAM_FIELD_COMPANY_TYPE), 
+			Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING).length() != 0 ? iwc.getParameter(PARAM_FIELD_COM_BELONGING) : "0"),
+			Integer.parseInt(iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR1).length() != 0 ? iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR1) : "0"),
+			Integer.parseInt(iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR2).length() != 0 ? iwc.getParameter(PARAM_FIELD_SCHOOL_YEAR2) : "0"));
 		}
 		catch (PostingParametersException e) {
 			_errorMessage = localize(e.getTextKey(), e.getDefaultText());

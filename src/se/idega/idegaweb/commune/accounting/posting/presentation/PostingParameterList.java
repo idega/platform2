@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.27 2003/11/25 23:04:04 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.28 2003/11/26 16:21:06 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.27 2003/11/25 23:04:04 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.28 2003/11/26 16:21:06 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -204,6 +204,7 @@ public class PostingParameterList extends AccountingBlock {
 
 		try {
 			pBiz = getPostingBusiness(iwc);
+			int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
 			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
 			if (items != null) {
 				Iterator iter = items.iterator();
@@ -248,8 +249,6 @@ public class PostingParameterList extends AccountingBlock {
 					} else {
 						list.add(BLANK);					
 					}
-
-					int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
 					list.add(p.getPostingString().substring(0, accountLength));
 					list.add(p.getDoublePostingString().substring(0, accountLength));
 
@@ -274,7 +273,6 @@ public class PostingParameterList extends AccountingBlock {
 					delete.setValueOnClick(PARAM_DELETE_ID, p.getPrimaryKey().toString());
 					delete.setSubmitConfirm(localize(KEY_REMOVE_CONFIRM, "Vill du verkligen radera denna post?"));
 					list.add(delete);
-					
 				}
 			}			
 		} catch (Exception e) {
