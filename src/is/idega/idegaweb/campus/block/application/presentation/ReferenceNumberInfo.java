@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.35 2004/06/06 11:57:14 gimmi Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.36 2004/06/21 16:49:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.application.data.ApplicationHome;
+import com.idega.block.application.presentation.ReferenceNumber;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.ApartmentView;
@@ -47,6 +48,8 @@ import com.idega.block.building.data.ComplexHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -57,7 +60,9 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.CypherText;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  *
@@ -66,6 +71,7 @@ import com.idega.util.IWTimestamp;
  */
 
 public class ReferenceNumberInfo extends CampusBlock {
+	private static final String DUMMY_LOGIN = "DUMMY_LOGIN";
 	public static final String SESSION_REFERENCE_NUMBER = "session_ref_num";
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 	private IWResourceBundle _iwrb = null;
@@ -76,6 +82,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 	private DateFormat dateFormat,dateTimeFormat;
 	private ApplicationService applicationService;
 	private int row = 1;
+	private String ref = null,refnum=null;
 	/**
 	 *
 	 */
@@ -91,17 +98,36 @@ public class ReferenceNumberInfo extends CampusBlock {
 		//System.err.println("referencenumbering");
 		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 		 dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
-		String which = (String) iwc.getSessionAttribute("DUMMY_LOGIN");
-		if (which == null) {
+		//String which = (String) iwc.getSessionAttribute(DUMMY_LOGIN);
+		refnum = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
+		if(refnum!=null && refnum.length()!=10){
+			CypherText cyph = new CypherText();
+			String cypherKey = getCypherKey(iwc);
+
+			ref = cyph.doDeCypher(refnum,cypherKey);
 			addReferenceNumberLookupResults(iwc);
 		}
 		else {
 			addPersonalIDLookupResults(iwc);
 		}
 	}
+	
+	public static String getCypherKey(IWApplicationContext iwc) {
+	    IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+	    CypherText cyph = new CypherText();
+
+	    String cypherKey = iwb.getProperty("cypherKey");
+	    if ((cypherKey == null) || (cypherKey.equalsIgnoreCase(""))) {
+	      cypherKey = cyph.getKey(100);
+	      iwb.setProperty("cypherKey",cypherKey);
+	    }
+
+	    return(cypherKey);
+	  }
 
 	private void addReferenceNumberLookupResults(IWContext iwc)throws RemoteException{
-		String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
+		//String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
+		//String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
 		
 		int aid = 0;
 		try {
@@ -133,6 +159,9 @@ public class ReferenceNumberInfo extends CampusBlock {
 		else if(iwc.isParameterSet("cancelApplication")){
 			cancelApplication(iwc);
 		}
+		
+		// fetch again after changed data
+		holder = applicationService.getApplicationInfo(aid);
 		
 		Table refTable = new Table();
 		refTable.setWidth(this.getWidth());
@@ -283,7 +312,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 						Iterator it1 = wl.iterator();
 						while (it1.hasNext()) {
 							wait = (WaitingList) it1.next();
-							if ((wait.getApartmentTypeId().intValue() == aType.getID()) && (wait.getComplexId().intValue() == complex.getID()))
+							if ((wait.getApartmentTypeId().intValue() == ((Integer)aType.getPrimaryKey()).intValue()) && (wait.getComplexId().intValue() == ((Integer)complex.getPrimaryKey()).intValue()))
 								break;
 							else
 								wait = null;
@@ -360,7 +389,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 		}
 		
 		
-		
+		form.maintainParameter(ReferenceNumber.CAM_REF_NUMBER);
 		form.add(refTable);
 		add(form);
 		add(Text.getBreak());
@@ -592,10 +621,10 @@ public class ReferenceNumberInfo extends CampusBlock {
 
 	private void addPersonalIDLookupResults(IWContext iwc) {
 		debug("Handling display of ssn lookup " + iwc.getParameter("cam_ref_number"));
-		java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
+		java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(refnum);
 		
 		if (li == null || li.size() == 0) {
-			add(new Text("?a? er enginn notandi skr??ur ? ?essa kennit?lu "));
+			add(getErrorText(localize("no_user_with_pid_found","No person found for searched personalID")));
 		}
 		else {
 		
@@ -650,7 +679,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 				table.setColumnVerticalAlignment(1, "top");
 				table.setColumnVerticalAlignment(2, "top");
 				table.mergeCells(1, 4, 2, 4);
-				Image image = table.getTransparentCell(iwc);
+				Image image = Table.getTransparentCell(iwc);
 				image.setHeight(6);
 				table.add(image, 1, 4);
 				table.setColor(1, 4, CampusColors.DARKRED);
@@ -659,7 +688,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 				table.setRowColor(5, CampusColors.WHITE);
 				dummyTable.add(table, 2, 2);
 				add(dummyTable);
-				iwc.removeSessionAttribute("DUMMY_LOGIN");
+				iwc.removeSessionAttribute(DUMMY_LOGIN);
 				iwc.removeSessionAttribute("referenceNumber");
 			}
 		}
