@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.8 2003/09/26 10:19:29 anders Exp $
+ * $Id: ProviderEditor.java,v 1.9 2003/09/29 08:52:21 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,6 +26,8 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
+
+import com.idega.builder.data.IBPage;
 
 import com.idega.core.data.Commune;
 import com.idega.core.data.CommuneHome;
@@ -57,10 +59,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/26 10:19:29 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/29 08:52:21 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -149,6 +151,8 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
+	private IBPage cancelPage = null;
+	
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
@@ -179,6 +183,20 @@ public class ProviderEditor extends AccountingBlock {
 		catch (Exception e) {
 			add(new ExceptionWrapper(e, this));
 		}
+	}
+
+	/**
+	 * Sets the property cancel page.
+	 */
+	public void setCancelPage(IBPage page) {
+		this.cancelPage = page;
+	}
+
+	/**
+	 * Returns the property cancel page.
+	 */
+	public IBPage getCancelPage() {
+		return cancelPage;
 	}
 
 	/*
@@ -478,6 +496,7 @@ public class ProviderEditor extends AccountingBlock {
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "New");
+		bp.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Cancel", cancelPage);
 		return bp;
 	}
 	
