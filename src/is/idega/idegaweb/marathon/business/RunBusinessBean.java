@@ -272,7 +272,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * saves information on the run for the specific user puts user in the right
 	 * group
 	 */
-	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale) {
+	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt, String chipOwnershipStatus, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale) {
 		Group groupRun = null;
 		Group disGroup = null;
 		User user = null;
@@ -329,6 +329,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			r.setRunDistanceGroupID(Integer.parseInt(distance));
 			r.setRunYearGroupID(Integer.parseInt(year));
 			r.setTShirtSize(tshirt);
+			r.setChipOwnershipStatus(chipOwnershipStatus);
 			r.setChipNumber(chipNumber);
 			r.setRunGroupName(groupName);
 			r.setUserNationality(nationality);
