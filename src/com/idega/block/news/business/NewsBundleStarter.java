@@ -143,10 +143,16 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   public boolean testNews(){
     String sql = "select ic_category_id from nw_news where ic_category_id < -3";
+    String sql2 = "select ic_category_id from nw_news where ic_category_id is null";
     try {
-      return SimpleQuerier.execute(sql);
+      if(SimpleQuerier.execute(sql)){
+        String[] s = SimpleQuerier.executeStringQuery(sql2);
+        return !(s!=null && s.length > 0);
+      }
+
     }
     catch (Exception ex) {
+      return false;
       //ex.printStackTrace();
     }
     return false;
