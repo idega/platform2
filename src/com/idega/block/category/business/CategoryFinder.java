@@ -23,7 +23,14 @@ package com.idega.block.category.business;
 
 
 public class CategoryFinder extends com.idega.core.category.business.CategoryFinder{
-
-
+	
+	/**
+	 *  Gets the instance of the CategoryFinder class
+	 *
+	 * @return    The instance value
+	 */
+	public static com.idega.core.category.business.CategoryFinder getInstance() {
+		return com.idega.core.category.business.CategoryFinder.getInstance();
+	}	
 
 }
