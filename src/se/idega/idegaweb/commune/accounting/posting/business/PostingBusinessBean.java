@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.55 2004/01/07 17:00:22 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.56 2004/01/12 08:46:28 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -177,7 +177,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * 
 	 * @author Joakim
 	 */
-	public void validateString(String postingString, Date date) throws MissingMandatoryFieldException, PostingException{
+	public void validateString(String postingString, Date date) throws PostingException{
 		int fieldLength, readPointer = 0;
 		try {
 			PostingStringHome ksHome = getPostingStringHome();
@@ -613,7 +613,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 * 
 	 */
-	public void deletePostingParameter(int ppID) throws java.rmi.RemoteException {
+	public void deletePostingParameter(int ppID) {
 		try {
 			PostingParameters pp = (PostingParameters) findPostingParameter(ppID);
 			pp.remove();
@@ -666,7 +666,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
-	public Object findPostingParameter(int id) throws FinderException {
+	public Object findPostingParameter(int id) {
 		// Move this
 		try {
 			PostingParametersHome home = getPostingParametersHome();
@@ -683,7 +683,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
-	public Object findPostingParameterByPeriod(Date from, Date to) throws FinderException {
+	public Object findPostingParameterByPeriod(Date from, Date to) {
 		// Move this
 		try {
 			PostingParametersHome home = getPostingParametersHome();
@@ -844,9 +844,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}catch(PostingException ex){
 			ex.printStackTrace();
 			throw new PostingException("postingException.posting", "postingException.posting"); 				
-		}catch(MissingMandatoryFieldException ex){
-			ex.printStackTrace();
-			throw new PostingException("postingException.missing_mandatory_field", "postingException.missing_mandatory_field"); 				
 		}catch(PostingParametersException ex){
 			ex.printStackTrace();
 			throw new PostingException("postingException.posting_parameter", "postingException.posting_parameter"); 				

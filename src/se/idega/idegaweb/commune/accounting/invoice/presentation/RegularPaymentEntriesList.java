@@ -10,7 +10,6 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1144,12 +1143,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}
 			public void setSchoolTypeId(int id) {}
-			public void delete() throws SQLException {}
+			public void delete() {}
 			public void store() throws IDOStoreException {}
 			public IDOEntityDefinition getEntityDefinition() {return null;}
 			public EJBLocalHome getEJBLocalHome() throws EJBException {return null;}
 			public Object getPrimaryKey() throws EJBException {return null;}
-			public void remove() throws RemoveException, EJBException {}
+			public void remove() throws EJBException {}
 			public boolean isIdentical(EJBLocalObject arg0) throws EJBException {return false;}
 			public int compareTo(Object arg0) {return 0;}
 
