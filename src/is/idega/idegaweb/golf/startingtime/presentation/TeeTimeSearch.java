@@ -567,7 +567,7 @@ public class TeeTimeSearch extends GolfBlock {
 		}
 		
 		TeetimeSearchResult result = (TeetimeSearchResult)IBOLookup.getSessionInstance(modinfo,TeetimeSearchResult.class);		
-		result.setSublistSize(100);
+		result.setSublistSize(1000);  //Always show all the results, if not the layout has to change(todo)
 		if(Groups != null){
 			Vector myVector = new Vector();
 			Vector boolVector = new Vector();
@@ -657,6 +657,7 @@ public class TeeTimeSearch extends GolfBlock {
 			myForm.add(radio);
 			myForm.add(hmLabel);
 			myForm.add(howMany);
+			
 			if(result.hasPrevious()){
 				Link prev = new Link(localize("prev","Previous"));
 				prev.addParameter("part","prev");

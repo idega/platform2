@@ -43,6 +43,7 @@ public class TournamentRegistrationMobile extends GolfBlock {
 	public static final String LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT_AFTER = "mobile_selection_text_after";
 	public static final String LOCALIZATION_KEY_PREV_LINK_TEXT = "mobile.prev";
 	public static final String LOCALIZATION_KEY_NEXT_LINK_TEXT = "mobile.next";
+	public static final String LOCALIZATION_KEY_ERROR = "mobile_error_occurred";
 	
 	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 	
@@ -58,11 +59,11 @@ public class TournamentRegistrationMobile extends GolfBlock {
 		
 		PresentationObject po;
 		
-		if(iwc.getParameter(PARAM_NAME_SEARCH_DAYS) == null ) {
-			po = getTimeIntervalForm(iwc);
-		} else {
+//		if(iwc.getParameter(PARAM_NAME_SEARCH_DAYS) == null ) {
+//			po = getTimeIntervalForm(iwc);
+//		} else {
 			po = getTournamentSelectionForm(iwc);
-		}
+//		}
 		
 		add(po);
 	}
@@ -75,11 +76,8 @@ public class TournamentRegistrationMobile extends GolfBlock {
 			cont.add(selectionLabel);
 			cont.addBreak();
 			
-			int days = Integer.parseInt(iwc.getParameter(PARAM_NAME_SEARCH_DAYS));
-			IWTimestamp begin = new IWTimestamp();
-			begin.setHour(6);
-			begin.setMinute(0);
-			Tournament[] allTournaments = getTournamentBusiness(iwc).getTournamentsWithRegistration(begin, days);
+			int days = -1; //The rest of the season //Integer.parseInt(iwc.getParameter(PARAM_NAME_SEARCH_DAYS));
+			Tournament[] allTournaments = getTournamentBusiness(iwc).getTournamentsWithRegistration(IWTimestamp.RightNow(), days);
 			int tournamentCount = allTournaments.length;
 			Tournament[] tournaments;
 			int currentChunk = -1; // current chunk, -1 means content not broken into chunks (0 is first chunk)
@@ -118,8 +116,8 @@ public class TournamentRegistrationMobile extends GolfBlock {
 					dayLabel.setText(day);
 					Strong strong = new Strong();
 					strong.add(dayLabel);
-					cont.add(strong);
 					cont.addBreak();
+					cont.add(strong);
 				}
 				String name = t.getName();
 				String place = t.getField().getName();
@@ -140,15 +138,24 @@ public class TournamentRegistrationMobile extends GolfBlock {
 					Link link = new Link();
 					link.addParameter(PARAM_NAME_SEARCH_DAYS, iwc.getParameter(PARAM_NAME_SEARCH_DAYS));
 					link.addParameter(PARAM_NAME_CHUNK, Integer.toString(currentChunk-1));
-					link.setText(_iwrb.getLocalizedString(LOCALIZATION_KEY_PREV_LINK_TEXT, "Prev"));
-					cont.add(link);
+					link.setText(_iwrb.getLocalizedString(LOCALIZATION_KEY_PREV_LINK_TEXT, "Previous"));
+					Strong s = new Strong();
+					s.add(link);
+					cont.add(s);
 				}
+				
+				if(showNext && showPrev){
+					cont.add(" | ");
+				}
+				
 				if(showNext) {
 					Link link = new Link();
 					link.addParameter(PARAM_NAME_SEARCH_DAYS, iwc.getParameter(PARAM_NAME_SEARCH_DAYS));
 					link.addParameter(PARAM_NAME_CHUNK, Integer.toString(currentChunk+1));
 					link.setText(_iwrb.getLocalizedString(LOCALIZATION_KEY_NEXT_LINK_TEXT, "Next"));
-					cont.add(link);
+					Strong s = new Strong();
+					s.add(link);
+					cont.add(s);
 				}
 				cont.addBreak();
 			}
@@ -156,7 +163,9 @@ public class TournamentRegistrationMobile extends GolfBlock {
 		 	return cont;
 		} catch(Exception e) {
 			e.printStackTrace();
-			return new Text();
+			Paragraph p = new Paragraph();
+			p.add(new Text(localize(LOCALIZATION_KEY_ERROR,"Error")));
+			return p;
 		}
 	}
 	

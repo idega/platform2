@@ -100,14 +100,31 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		return tourns;
 	}
 	
+	/**
+	 * @param days How many days in search period.  If days<1 then it returns tournaments for the 
+	 * 		  rest of the season or the next season if the month is 12
+	 */
 	public Tournament[] getTournamentsWithRegistration(IWTimestamp now, int days) throws Exception {
 		Tournament tournament = (Tournament) IDOLookup.instanciateEntity(Tournament.class);
-		IWTimestamp then = new IWTimestamp(now);
-		then.addDays(days);
-		then.setHour(23);
-		Tournament[] tourns = (Tournament[]) tournament.findAll("select * from tournament where ((start_time>= '" + now.toSQLDateString() + "' AND start_time<='" + then.toSQLDateString() + 
-				"') OR (LAST_REGISTRATION_DATE <= '" + then.toSQLDateString() + "' AND FIRST_REGISTRATION_DATE <='" + now.toSQLDateString() + 
-				"'))AND REGISTRATION_ONLINE like 'Y' and LAST_REGISTRATION_DATE > '" + now.toSQLDateString() + "' and FIRST_REGISTRATION_DATE < '" + now.toSQLDateString() + "' order by start_time");
+		IWTimestamp then = (IWTimestamp)now.clone();
+		if(days<1){
+			if(then.getMonth()>11){
+				then.addYears(2);
+			} else {
+				then.addYears(1);
+			}
+			then.setMonth(1);
+			then.setDay(1);
+		} else {
+			then.addDays(days+1);
+		}
+		then.setHour(0);
+		then.setMinute(0);
+		then.setSecond(0);
+		String query = "select * from tournament where REGISTRATION_ONLINE like 'Y' and LAST_REGISTRATION_DATE <= '" + then.toSQLString() +
+		"' AND LAST_REGISTRATION_DATE > '" + now.toSQLString() + "' and FIRST_REGISTRATION_DATE < '" + now.toSQLString() + "' order by start_time, name";
+		System.out.println(query);
+		Tournament[] tourns = (Tournament[]) tournament.findAll(query);
 		return tourns;
 	}
 
