@@ -332,15 +332,15 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       msg.setSender(sendToId);
       msg.setSenderName(name);
 
-      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
+      /*MessageDialog dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
-      dialog.addActionListener(this);
+      dialog.addActionListener(this);*/
 
       SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
-      item.setWindowToOpen(dialog);
-      if( faceLabel!= null ) item.add(faceLabel);
+      //item.setWindowToOpen(dialog);
+      //if( faceLabel!= null ) item.add(faceLabel);
       item.add(new Label(name));
       item.setSize(16,100);
 
