@@ -330,6 +330,16 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		return super.idoFindPKsBySQL(select);
 	}
 
+	public Collection ejbFindAllByAreaTypeManagementCommune(int areaId, int typeId, String managementType, int communeId) throws javax.ejb.FinderException {
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
+				" and " + SCHOOLAREA + " = " + areaId + 
+				" and " + MANAGEMENT_TYPE + " = '" + managementType + "'" +
+				" and " + COMMUNE + " = " + communeId + 
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by s."+NAME;
+		return super.idoFindPKsBySQL(select);
+	}
+
 	public Collection ejbFindAllBySchoolName(String schoolName) throws javax.ejb.FinderException {
 		String select = "select * from " + SCHOOL + " where " + NAME + " = '" + schoolName + "'" +
 				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')";
