@@ -207,7 +207,7 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
