@@ -2,15 +2,18 @@ package com.idega.block.school.data;
 
 import javax.ejb.*;
 
-public interface SchoolType extends com.idega.data.IDOLegacyEntity
+public interface SchoolType extends com.idega.data.IDOEntity
 {
- public void setSchoolCategory(java.lang.String p0);
- public java.lang.String getName();
  public java.lang.String getLocalizationKey();
- public java.lang.String getSchoolTypeName();
+ public int getMaxSchoolAge();
+ public java.lang.String getName();
  public java.lang.String getSchoolCategory();
  public java.lang.String getSchoolTypeInfo();
- public void setSchoolTypeName(java.lang.String p0);
- public void setSchoolTypeInfo(java.lang.String p0);
+ public java.lang.String getSchoolTypeName();
+ public void initializeAttributes();
  public void setLocalizationKey(java.lang.String p0);
+ public void setMaxSchoolAge(java.lang.String p0);
+ public void setSchoolCategory(java.lang.String p0);
+ public void setSchoolTypeInfo(java.lang.String p0);
+ public void setSchoolTypeName(java.lang.String p0);
 }
