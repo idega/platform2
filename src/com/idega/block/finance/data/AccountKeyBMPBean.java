@@ -5,7 +5,11 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.CategoryEntity;
 import com.idega.block.category.data.CategoryEntityBMPBean;
+import com.idega.data.query.InCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
 
 /**
  * Title:
@@ -16,7 +20,7 @@ import com.idega.block.category.data.CategoryEntityBMPBean;
  * @version 1.0
  */
 
-public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountKey,com.idega.block.finance.business.Key {
+public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountKey,CategoryEntity {
 
   public AccountKeyBMPBean() {
     super();
@@ -26,15 +30,17 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
-    addAttribute(getInfoColumnName(),"Lýsing",true,true,"java.lang.String",4000);
-    addAttribute(getTariffKeyIdColumnName(),"Lykill",true,true,"java.lang.Integer");
+    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String",4000);
+    addAttribute(getTariffKeyIdColumnName(),"Tariff key",true,true,"java.lang.Integer");
+    addAttribute(getOrdinalColumnName(),"Ordinal",true,true,"java.lang.Integer");
   }
 
   public static String getAccountKeyEntityName(){return "FIN_ACC_KEY"; }
   public static String getTariffKeyIdColumnName(){return "FIN_TARIFF_KEY_ID";}
   public static String getNameColumnName(){ return "NAME"; }
   public static String getInfoColumnName(){return "INFO";}
+  public static String getOrdinalColumnName(){return "ORDINAL";}
 
 
   public String getEntityName() {
@@ -59,8 +65,22 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
     setColumn(getInfoColumnName(), extra_info);
   }
   
+  public Integer getOrdinal(){
+      return getIntegerColumnValue(getOrdinalColumnName());
+  }
+  
+  public void setOrdinal(Integer ordinal){
+      setColumn(getOrdinalColumnName(),ordinal);
+  }
+  
+  public void setOrdinal(int ordinal){
+      setColumn(getOrdinalColumnName(),ordinal);
+  }
+  
   public Collection ejbFindAll()throws FinderException{
-  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+      SelectQuery query = idoSelectQuery();
+      query.addOrder(idoQueryTable(),getOrdinalColumnName(),true);
+    return super.idoFindPKsByQuery(idoQueryGetSelect());
   }
   
   public Collection ejbFindBySQL(String sql)throws FinderException{
@@ -68,6 +88,17 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
   }
   
   public Collection ejbFindByCategory(Integer categoryID) throws FinderException{
-  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID));
+      SelectQuery query = idoSelectQuery();
+      query.addCriteria(new MatchCriteria(idoQueryTable(),getColumnCategoryId(),MatchCriteria.EQUALS,categoryID));
+      query.addOrder(idoQueryTable(),getOrdinalColumnName(),true);
+      return super.idoFindPKsByQuery(query);
   }
+  
+  public Collection ejbFindByPrimaryKeys(String[] keys) throws FinderException{
+      SelectQuery query = idoSelectQuery();
+      query.addCriteria(new InCriteria(idoQueryTable(),getIDColumnName(),keys));
+      query.addOrder(idoQueryTable(),getOrdinalColumnName(),true);
+      return super.idoFindPKsByQuery(query);
+  }
+
 }

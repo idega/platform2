@@ -118,7 +118,7 @@ public class AccountKeyEditor extends Finance {
     //List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     if(keys !=null && hk!=null){
       int count = keys.size();
-      keyTable = new Table(4,count+1);
+      keyTable = new Table(5,count+1);
       keyTable.setWidth("100%");
       keyTable.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
       keyTable.setRowColor(1,getHeaderColor());
@@ -128,6 +128,7 @@ public class AccountKeyEditor extends Finance {
       keyTable.add(getHeader(localize("name","Name")),2,1);
       keyTable.add(getHeader(localize("info","Info")),3,1);
       keyTable.add(getHeader(localize("tariff_key","Tariff key")),4,1);
+      keyTable.add(getHeader(localize("ordinal","Ordinal")),5,1);
 
       //java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
      
@@ -144,6 +145,8 @@ public class AccountKeyEditor extends Finance {
             Integer tkid = new Integer(key.getTariffKeyId());
             if(hk.containsKey(tkid))
               keyTable.add( getText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
+            if(key.getOrdinal()!=null)
+                keyTable.add(getText(key.getOrdinal().toString()),5,row);
             row++;
           }
         }
@@ -178,12 +181,14 @@ public class AccountKeyEditor extends Finance {
     inputTable.add(getHeader(localize("name","Name")),2,1);
     inputTable.add(getHeader(localize("info","Inro")),3,1);
     inputTable.add(getHeader(localize("tariff_key","Tariff key")),4,1);
-    inputTable.add(getHeader(localize("delete","Delete")),5,1);
+    inputTable.add(getHeader(localize("ordinal","Ordinal")),5,1);
+    inputTable.add(getHeader(localize("delete","Delete")),6,1);
+    
     AccountKey key;
     Iterator iter = keys.iterator();
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
-      TextInput nameInput, infoInput;
+      TextInput nameInput, infoInput,ordinalInput;
       HiddenInput idInput;
       CheckBox delCheck;
       DropdownMenu iDrp =  keyDrp(Tkeys);
@@ -195,25 +200,29 @@ public class AccountKeyEditor extends Finance {
         key  = (AccountKey) iter.next();
         nameInput  = getTextInput("ake_nameinput"+i,(key.getName()));
         infoInput = getTextInput("ake_infoinput"+i,(key.getInfo()));
+        ordinalInput = getTextInput("ake_ordinput"+i,key.getOrdinal()!=null?(key.getOrdinal().toString()):"");
         String sId = key.getPrimaryKey().toString();
         idInput = new HiddenInput("ake_idinput"+i,sId);
         delCheck = getCheckBox("ake_delcheck"+i,"true");
         iDrp.setSelectedElement(String.valueOf(key.getTariffKeyId()));
         
-        inputTable.add(delCheck,5,i+1);
+        inputTable.add(delCheck,6,i+1);
       }
       else{
         nameInput  = getTextInput("ake_nameinput"+i);
         infoInput = getTextInput("ake_infoinput"+i);
         idInput = new HiddenInput("ake_idinput"+i,"-1");
+        ordinalInput = getTextInput("ake_ordinput"+i);
       }
       nameInput.setSize(20);
       infoInput.setSize(40);
+      ordinalInput.setSize(3);
 
       inputTable.add(getText(rownum),1,i+1);
       inputTable.add(nameInput,2,i+1);
       inputTable.add(infoInput,3,i+1);
       inputTable.add(iDrp,4,i+1);
+      inputTable.add(ordinalInput,5,i+1);
       inputTable.add(idInput);
     }
     inputTable.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
@@ -229,22 +238,29 @@ public class AccountKeyEditor extends Finance {
 
   private PresentationObject doUpdate(IWContext iwc){
     int count = Integer.parseInt(iwc.getParameter("ake_count"));
-    String sName,sInfo,sDel,sTKid;
-    Integer ID,TKid;
+    String sName,sInfo,sDel,sTKid,sOrd;
+    Integer ID,TKid,ordinal=null;
 
     for (int i = 1; i < count+1 ;i++){
+        ordinal = null;
       sName = iwc.getParameter("ake_nameinput"+i ).trim();
       sInfo = iwc.getParameter("ake_infoinput"+i).trim();
       sDel = iwc.getParameter("ake_delcheck"+i);
       sTKid = iwc.getParameter("ake_keydrp"+i);
+      sOrd = iwc.getParameter("ake_ordinput"+i);
       TKid = Integer.valueOf(sTKid);
       ID = Integer.valueOf(iwc.getParameter("ake_idinput"+i));
+      try {
+        ordinal = Integer.valueOf(sOrd);
+	    } catch (NumberFormatException e1) {
+	       
+	    }
       try {
 		if(sDel != null && sDel.equalsIgnoreCase("true")){
 		    getFinanceService().removeAccountKey(ID);
 		  }
 		  else if(!sName.equalsIgnoreCase("")){
-		  	getFinanceService().createOrUpdateAccountKey(ID,sName,sInfo,TKid,getFinanceCategoryId());
+		  	getFinanceService().createOrUpdateAccountKey(ID,sName,sInfo,TKid,ordinal,getFinanceCategoryId());
 		  }
 	} catch (RemoteException e) {
 		e.printStackTrace();

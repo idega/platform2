@@ -5,6 +5,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.category.data.CategoryEntity;
+import com.idega.block.category.data.CategoryEntityBMPBean;
+
 /**
  * Title:
  * Description:
@@ -14,7 +17,7 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 
-public class TariffKeyBMPBean extends com.idega.block.category.data.CategoryEntityBMPBean implements com.idega.block.finance.data.TariffKey,com.idega.block.finance.business.Key {
+public class TariffKeyBMPBean extends CategoryEntityBMPBean implements TariffKey,CategoryEntity {
 
   public TariffKeyBMPBean() {
     super();
@@ -24,8 +27,8 @@ public class TariffKeyBMPBean extends com.idega.block.category.data.CategoryEnti
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnName(),"Heiti",true,true,"java.lang.String");
-    addAttribute(getColumnInfo(),"Lýsing",true,true,"java.lang.String",4000);
+    addAttribute(getColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getColumnInfo(),"Info",true,true,"java.lang.String",4000);
   }
   public static String getEntityTableName(){return "FIN_TARIFF_KEY"; }
   public static String getColumnName(){ return "NAME"; }

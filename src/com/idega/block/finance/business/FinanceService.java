@@ -1,56 +1,276 @@
+/*
+ * $Id: FinanceService.java,v 1.5 2004/11/17 22:50:25 aron Exp $
+ * Created on 17.11.2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.finance.business;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
-public interface FinanceService extends com.idega.business.IBOService
-{
- public com.idega.block.finance.data.AccountKey createOrUpdateAccountKey(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,java.lang.Integer p4)throws javax.ejb.CreateException,java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.finance.data.Tariff createOrUpdateTariff(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,boolean p5,java.sql.Timestamp p6,float p7,java.lang.Integer p8,java.lang.Integer p9)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffGroup createOrUpdateTariffGroup(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,boolean p4,java.lang.Integer p5)throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffIndex createOrUpdateTariffIndex(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,float p4,float p5,java.sql.Timestamp p6,java.lang.Integer p7)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffKey createOrUpdateTariffKey(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public double getAccountBalance(java.lang.Integer accountID) throws java.rmi.RemoteException;
- public double getAccountBalance(java.lang.Integer accountID,String roundStatus) throws java.rmi.RemoteException;
- public com.idega.block.finance.business.AccountBusiness getAccountBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountEntryHome getAccountEntryHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountHome getAccountHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountInfoHome getAccountInfoHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountKeyHome getAccountKeyHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountPhoneEntryHome getAccountPhoneEntryHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getAccountTypeFinance() throws java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountTypeHome getAccountTypeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getAccountTypePhone() throws java.rmi.RemoteException;
- public com.idega.block.finance.data.AccountUserHome getAccountUserHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.AssessmentRoundHome getAssessmentRoundHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.EntryGroupHome getEntryGroupHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.business.AssessmentBusiness getFinanceBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.business.FinanceHandler getFinanceHandler(java.lang.Integer p0) throws java.rmi.RemoteException;
- public com.idega.block.finance.data.FinanceHandlerInfoHome getFinanceHandlerInfoHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getKeySortedTariffsByAttribute(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.PaymentTypeHome getPaymentTypeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.RoundInfoHome getRoundInfoHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffGroupHome getTariffGroupHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffHome getTariffHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffIndexHome getTariffIndexHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.finance.data.TariffKeyHome getTariffKeyHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Map mapOfAccountKeys()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Map mapOfTariffIndicesByTypes()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Map mapOfTariffKeys()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public void removeAccountKey(java.lang.Integer p0)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removeTariff(java.lang.Integer p0)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removeTariffIndex(java.lang.Integer p0)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removeTariffKey(java.lang.Integer p0)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public com.idega.block.finance.data.Tariff updateTariffPrice(java.lang.Integer p0,java.lang.Float p1,java.sql.Timestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+import com.idega.block.finance.data.AccountEntryHome;
+import com.idega.block.finance.data.AccountHome;
+import com.idega.block.finance.data.AccountInfoHome;
+import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.AccountKeyHome;
+import com.idega.block.finance.data.AccountPhoneEntryHome;
+import com.idega.block.finance.data.AccountTypeHome;
+import com.idega.block.finance.data.AccountUserHome;
+import com.idega.block.finance.data.AssessmentRoundHome;
+import com.idega.block.finance.data.EntryGroupHome;
+import com.idega.block.finance.data.FinanceHandlerInfoHome;
+import com.idega.block.finance.data.PaymentTypeHome;
+import com.idega.block.finance.data.RoundInfoHome;
+import com.idega.block.finance.data.Tariff;
+import com.idega.block.finance.data.TariffGroup;
+import com.idega.block.finance.data.TariffGroupHome;
+import com.idega.block.finance.data.TariffHome;
+import com.idega.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.TariffIndexHome;
+import com.idega.block.finance.data.TariffKey;
+import com.idega.block.finance.data.TariffKeyHome;
+import com.idega.business.IBOService;
+
 /**
- * @param accountID
- * @return
+ * 
+ *  Last modified: $Date: 2004/11/17 22:50:25 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.5 $
  */
-public java.util.Date getAccountLastUpdate(Integer accountID)throws RemoteException;
-/**
- * @param accountId
- * @return
- */
-public double getAccountBalancePublished(Integer accountId)throws RemoteException;
+public interface FinanceService extends IBOService {
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountHome
+     */
+    public AccountHome getAccountHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountEntryHome
+     */
+    public AccountEntryHome getAccountEntryHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountKeyHome
+     */
+    public AccountKeyHome getAccountKeyHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountInfoHome
+     */
+    public AccountInfoHome getAccountInfoHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountPhoneEntryHome
+     */
+    public AccountPhoneEntryHome getAccountPhoneEntryHome()
+            throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountTypeHome
+     */
+    public AccountTypeHome getAccountTypeHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAssessmentRoundHome
+     */
+    public AssessmentRoundHome getAssessmentRoundHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getRoundInfoHome
+     */
+    public RoundInfoHome getRoundInfoHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getTariffHome
+     */
+    public TariffHome getTariffHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getTariffKeyHome
+     */
+    public TariffKeyHome getTariffKeyHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getTariffGroupHome
+     */
+    public TariffGroupHome getTariffGroupHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getEntryGroupHome
+     */
+    public EntryGroupHome getEntryGroupHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountUserHome
+     */
+    public AccountUserHome getAccountUserHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getTariffIndexHome
+     */
+    public TariffIndexHome getTariffIndexHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getPaymentTypeHome
+     */
+    public PaymentTypeHome getPaymentTypeHome() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getFinanceHandlerInfoHome
+     */
+    public FinanceHandlerInfoHome getFinanceHandlerInfoHome()
+            throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getFinanceHandler
+     */
+    public FinanceHandler getFinanceHandler(Integer handlerInfoID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getFinanceBusiness
+     */
+    public AssessmentBusiness getFinanceBusiness() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountBusiness
+     */
+    public AccountBusiness getAccountBusiness() throws RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#removeAccountKey
+     */
+    public void removeAccountKey(Integer keyID) throws FinderException,
+            RemoteException, RemoveException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#createOrUpdateAccountKey
+     */
+    public AccountKey createOrUpdateAccountKey(Integer ID, String name,
+            String info, Integer tariffKeyID, Integer ordinal,
+            Integer categoryID) throws CreateException, RemoteException,
+            FinderException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#createOrUpdateTariffKey
+     */
+    public TariffKey createOrUpdateTariffKey(Integer ID, String name,
+            String info, Integer categoryID) throws FinderException,
+            RemoteException, CreateException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#createOrUpdateTariff
+     */
+    public Tariff createOrUpdateTariff(Integer ID, String name, String info,
+            String attribute, String index, boolean useIndex,
+            Timestamp indexStamp, float Price, Integer accountKeyID,
+            Integer tariffGroupID) throws FinderException, RemoteException,
+            CreateException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#updateTariffPrice
+     */
+    public Tariff updateTariffPrice(Integer ID, Float Price,
+            Timestamp indexStamp) throws RemoteException, FinderException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#removeTariff
+     */
+    public void removeTariff(Integer ID) throws FinderException,
+            RemoteException, RemoveException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#removeTariffKey
+     */
+    public void removeTariffKey(Integer ID) throws FinderException,
+            RemoteException, RemoveException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#removeTariffIndex
+     */
+    public void removeTariffIndex(Integer ID) throws FinderException,
+            RemoteException, RemoveException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#mapOfTariffIndicesByTypes
+     */
+    public Map mapOfTariffIndicesByTypes() throws RemoteException,
+            FinderException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#createOrUpdateTariffGroup
+     */
+    public TariffGroup createOrUpdateTariffGroup(Integer ID, String name,
+            String info, Integer handlerId, boolean useIndex, Integer categoryId)
+            throws CreateException, FinderException, RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#createOrUpdateTariffIndex
+     */
+    public TariffIndex createOrUpdateTariffIndex(Integer ID, String name,
+            String info, String type, float newvalue, float oldvalue,
+            Timestamp stamp, Integer categoryId) throws RemoteException,
+            CreateException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountTypeFinance
+     */
+    public String getAccountTypeFinance() throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountTypePhone
+     */
+    public String getAccountTypePhone() throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getKeySortedTariffsByAttribute
+     */
+    public Collection getKeySortedTariffsByAttribute(String attribute)
+            throws FinderException, RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#mapOfAccountKeys
+     */
+    public Map mapOfAccountKeys() throws RemoteException, FinderException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#mapOfTariffKeys
+     */
+    public Map mapOfTariffKeys() throws RemoteException, FinderException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountBalancePublished
+     */
+    public double getAccountBalancePublished(Integer accountID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountBalance
+     */
+    public double getAccountBalance(Integer accountID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountBalance
+     */
+    public double getAccountBalance(Integer accountID, String roundStatus)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.finance.business.FinanceServiceBean#getAccountLastUpdate
+     */
+    public Date getAccountLastUpdate(Integer accountID)
+            throws java.rmi.RemoteException;
 
 }

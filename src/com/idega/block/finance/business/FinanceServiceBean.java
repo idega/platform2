@@ -129,7 +129,7 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 	public void removeAccountKey(Integer keyID) throws FinderException, RemoteException, RemoveException {
 		getAccountKeyHome().findByPrimaryKey(keyID).remove();
 	}
-	public AccountKey createOrUpdateAccountKey(Integer ID, String name, String info, Integer tariffKeyID,
+	public AccountKey createOrUpdateAccountKey(Integer ID, String name, String info, Integer tariffKeyID,Integer ordinal,
 			Integer categoryID) throws CreateException, RemoteException, FinderException {
 		AccountKey key = getAccountKeyHome().create();
 		if (ID != null && ID.intValue() > 0) {
@@ -139,6 +139,8 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		key.setInfo(info);
 		key.setTariffKeyId(tariffKeyID.intValue());
 		key.setCategoryId(categoryID.intValue());
+		if(ordinal!=null)
+		    key.setOrdinal(ordinal);
 		key.store();
 		return key;
 	}
