@@ -68,18 +68,22 @@ import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
 
 /**
- * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
- * and payment data, that is sent to external finance system.
- * 
- * @author Joakim
+ * Holds most of the logic for the batchjob that creates the information that is
+ * base for invoicing  and payment data, that is sent to external finance
+ * system.
+ * <p>
+ * Last modified: $Date: 2004/02/09 10:03:23 $ by $Author: staffan $
+ *
+ * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
+ * @version $Revision: 1.119 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public class InvoiceChildcareThread extends BillingThread{
-
-	private static final String HOURS_PER_WEEK = "t/v ";		//Localize this text in the user interfaceC:\emacs\bin/
+	
+	private static final String HOURS_PER_WEEK = "t/v ";
 	private static final String CHECK = "Check ";
 	private static final String DAYS = " dagar";
 	private ChildCareContract contract;
@@ -90,7 +94,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	public InvoiceChildcareThread(Date month, IWContext iwc){
 		super(month,iwc);
 	}
-
+	
 	/**
 	 * The thread that does the acctual work on the batch process
 	 * @see java.lang.Runnable#run()
@@ -99,15 +103,15 @@ public class InvoiceChildcareThread extends BillingThread{
 		try {
 			category = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
-
+			
 			createBatchRunLogger(category);
 			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month,category.getCategory()) == 0){
 				//Create all the billing info derrived from the contracts
-				contracts();
+				createBillingFromContracts();
 				//Create all the billing info derrived from the regular invoices
 				//regularInvoice();
 				//Create all the billing info derrived from the regular payments
-				regularPayment();
+				createBillingFromRegularPayment();
 				//VAT
 				//calcVAT();
 			}else{
@@ -144,8 +148,6 @@ public class InvoiceChildcareThread extends BillingThread{
 	private User getInvoiceReceiver(ChildCareContract contract){
 		//First option is to set it to the invoice receiver according to the contract
 		User invoiceReceiver = contract.getInvoiceReceiver();
-//		errorRelated.append("Contract owner "+contract.getApplication().getOwner().getName());
-//		errorRelated.append("Contract owner P# "+contract.getApplication().getOwner().getPersonalID());
 		User child = contract.getChild();
 		
 		//If non is set in the contract, start looking for parents at the same address
@@ -159,7 +161,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				e2.printStackTrace();
 				createNewErrorMessage(errorRelated,"invoice.CouldNotFindPrimaryKeyForFemaleGender");
 			}
-
+			
 			try {
 				UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 				MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
@@ -211,28 +213,28 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the childcare contracts
 	 */
-	private void contracts() throws NotEmptyException{
+	private void createBillingFromContracts() throws NotEmptyException{
 		//Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
-//		Age age;
+		//		Age age;
 		int hours;
 		PlacementTimes placementTimes = null;
 		long totalSum;
 		InvoiceRecord invoiceRecord, subventionToReduce;
 		int highestOrderNr;
 		School school;
-
+		
 		try {
 			if (hasPlacements()) {
 				throw new NotEmptyException("invoice.must_first_empty_old_data");
 			}
-
+			
 			Collection contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
 			log.info("# of contracts = "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
 			errorOrder = 0;
-
+			
 			//Loop through all contracts
 			while(contractIter.hasNext())
 			{
@@ -240,7 +242,6 @@ public class InvoiceChildcareThread extends BillingThread{
 					contract = (ChildCareContract)contractIter.next();
 					errorRelated = new ErrorLogger();
 					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
-//					errorRelated.append("Contract "+contract.getContractID());
 					errorRelated.append("Contract Start "+contract.getValidFromDate()+"; Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
 					
 					//Moved up for better logging
@@ -254,7 +255,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						throw new NoSchoolClassMemberException("");
 					}
 					errorRelated.append("Child "+contract.getChild().getName());
-//					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType = null;
 					try {
@@ -264,10 +264,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					errorRelated.append("SchoolType "+schoolType.getName());
 					errorRelated.append("Child P# "+contract.getChild().getPersonalID());
-	
+					
 					
 					// **Fetch invoice receiver
-//					custodian = contract.getApplication().getOwner();
+					//					custodian = contract.getApplication().getOwner();
 					custodian = getInvoiceReceiver(contract);
 					//**Fetch the reference at the provider
 					school = contract.getApplication ().getProvider ();
@@ -289,30 +289,24 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
 					}
-//					errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
-				
+					
 					// **Calculate how big part of time period this contract is valid for
 					placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
-	
+					
 					totalSum = 0;
 					subventionToReduce = null;
 					highestOrderNr = -1;
-					//
+					
 					//Get the check for the contract
-					//
 					RegulationsBusiness regBus = getRegulationsBusiness();
-
-					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
-
+					
 					AgeBusiness ageBusiness = (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 					int ageInYears = ageBusiness.getChildAge(contract.getChild().getPersonalID(), startPeriod.getDate());
-//					age = new Age(contract.getChild().getDateOfBirth());
-
+					
 					ArrayList conditions = new ArrayList();
 					errorRelated.append("Hours "+hours);
 					errorRelated.append("Age "+ageInYears+" years");
-//					errorRelated.append("Date of birth "+contract.getChild().getDateOfBirth());
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
@@ -322,43 +316,39 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
 						errorRelated.append("EmploymentType "+employmentType.getLocalizationKey());
 					}
-//					errorRelated.append("calculationDate:"+calculationDate);
 					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
 					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
-//					errorRelated.append("totalSum:"+totalSum);
-//					errorRelated.append("contract:"+contract.getPrimaryKey());
-
+					
 					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-						category.getCategory(),		//The ID that selects barnomsorg in the regulation
-						PaymentFlowConstant.OUT, 	//The payment flow is out
-						calculationDate,					//Current date to select the correct date range
-						RuleTypeConstant.DERIVED,	//The conditiontype
-						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-						conditions,						//The conditions that need to fulfilled
-						totalSum,						//Sent in to be used for "Specialutrakning"
-						contract, null);						//Sent in to be used for "Specialutrakning"
-
+																																															 category.getCategory(),		//The ID that selects barnomsorg in the regulation
+																																															 PaymentFlowConstant.OUT, 	//The payment flow is out
+																																															 calculationDate,					//Current date to select the correct date range
+																																															 RuleTypeConstant.DERIVED,	//The conditiontype
+																																															 RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+																																															 conditions,						//The conditions that need to fulfilled
+																																															 totalSum,						//Sent in to be used for "Specialutrakning"
+																																															 contract, null);						//Sent in to be used for "Specialutrakning"
+					
 					if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
-//					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
-		
+					
 					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
 					errorRelated.append("Regel Spec Typ "+regSpecType);
 					
 					String[] postings = getPostingBusiness().getPostingStrings(
-						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
+																																		 category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
 					String[] checkPost = getPostingBusiness().getPostingStrings(
-						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
+																																			category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
 					createVATPaymentRecord(paymentRecord, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-
+					
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
-							CHECK+school.getName(),contract.getChild().getFirstName()+", "+hours+" "+HOURS_PER_WEEK+ placementTimes.getDays()+DAYS, paymentRecord, 
-							checkPost[0], checkPost[1], placementTimes, school, contract);
-
+																											CHECK+school.getName(),contract.getChild().getFirstName()+", "+hours+" "+HOURS_PER_WEEK+ placementTimes.getDays()+DAYS, paymentRecord, 
+																											checkPost[0], checkPost[1], placementTimes, school, contract);
+					
  					totalSum = AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
 					int siblingOrder;
  					try{
@@ -370,21 +360,20 @@ public class InvoiceChildcareThread extends BillingThread{
 						siblingOrder = 1;
 					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
-							new Integer(siblingOrder)));
+																								new Integer(siblingOrder)));
 					errorRelated.append("Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
-
+					
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-						category.getCategory(),//The ID that selects barnomsorg in the regulation
-						PaymentFlowConstant.IN, 			//The payment flow is out
-						startPeriod.getDate(),							//Current date to select the correct date range
-						RuleTypeConstant.DERIVED,			//The conditiontype
-						null,
-						conditions								//The conditions that need to fulfilled
-						);
-
+																																																	category.getCategory(),//The ID that selects barnomsorg in the regulation
+																																																	PaymentFlowConstant.IN, 			//The payment flow is out
+																																																	startPeriod.getDate(),							//Current date to select the correct date range
+																																																	RuleTypeConstant.DERIVED,			//The conditiontype
+																																																	null,
+																																																	conditions								//The conditions that need to fulfilled
+																																																	);
+					
 					ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
-//					log.info("Found "+regulationArray.size()+" regulations that apply.");
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
@@ -393,17 +382,17 @@ public class InvoiceChildcareThread extends BillingThread{
 							Regulation regulation = (Regulation)regulationIter.next();
 							errorRelated.append("Regel "+regulation.getName());
 							postingDetail = regBus.getPostingDetailForContract(
-								totalSum,
-								contract,
-								regulation,
-								startPeriod.getDate(),
-								conditions,
-								placementTimes);
-								
+																																 totalSum,
+																																 contract,
+																																 regulation,
+																																 startPeriod.getDate(),
+																																 conditions,
+																																 placementTimes);
+							
 							if(postingDetail==null){
 								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
 							}
-
+							
 							errorRelated.append("Posting detail "+postingDetail);
 							// **Create the invoice record
 							//maybe get these strings from the postingDetail instead.
@@ -411,12 +400,12 @@ public class InvoiceChildcareThread extends BillingThread{
 							errorRelated.append("Regspectyp from regulation: "+regulation.getRegSpecType().getLocalizationKey());
 							postingDetail.setRuleSpecType(regulation.getRegSpecType().getLocalizationKey());		//This is a patch, Pallis func should probably return the right one in the first place.
 							errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
-	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+							//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,calculationDate);
 							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
-	
+							
 							//Need to store the subvention row, so that it can be adjusted later if needed
-//							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
+							//							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
 							if(postingDetail.getOrderID()>highestOrderNr){
 								highestOrderNr = postingDetail.getOrderID();
 								subventionToReduce = invoiceRecord;
@@ -479,16 +468,16 @@ public class InvoiceChildcareThread extends BillingThread{
 							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
 						}
 					}
-					regularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
+					createRegularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
 					
 				}catch (NoSchoolClassMemberException e1) {
 					e1.printStackTrace();
-						errorRelated.append(e1);
-						createNewErrorMessage(errorRelated,"invoice.SchoolClassMemberNotSetForContract");
+					errorRelated.append(e1);
+					createNewErrorMessage(errorRelated,"invoice.SchoolClassMemberNotSetForContract");
 				}catch (NoSchoolTypeException e1) {
 					e1.printStackTrace();
-						errorRelated.append(e1);
-						createNewErrorMessage(errorRelated,"invoice.SchoolTypeNotSetForSchoolClassMember");
+					errorRelated.append(e1);
+					createNewErrorMessage(errorRelated,"invoice.SchoolTypeNotSetForSchoolClassMember");
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
@@ -567,7 +556,6 @@ public class InvoiceChildcareThread extends BillingThread{
 					e.printStackTrace();
 					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
 				}
-//				errorRelated.logToConsoleCompact();
 				if(!running){
 					return;
 				}
@@ -591,7 +579,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
-	private void regularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, long totalSum){
+	private void createRegularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, long totalSum){
 		int days = pTimes.getDays();
 		float months = pTimes.getMonths();
 		int childId = ((Number)child.getPrimaryKey()).intValue();
@@ -599,7 +587,6 @@ public class InvoiceChildcareThread extends BillingThread{
 		boolean hasBeenHandled = haveInvoiceEntriesBeenHandledForChild(child);
 		if(!hasBeenHandled){
 			try {
-				//Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndCategory(startPeriod.getDate(), category).iterator();
 				Collection regularInvoices = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndChildAndCategoryExceptLowincome(startPeriod.getDate(),endPeriod.getDate(),childId,category.getPrimaryKey().toString());
 				Iterator regularInvoiceIter = regularInvoices.iterator();
 				//Go through all the regular invoices
@@ -609,7 +596,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//InvoiceHeader invoiceHeader = null;
 						
 						regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-	
+						
 						ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
 						
 						//Get the child and then look up the custodian
@@ -620,20 +607,20 @@ public class InvoiceChildcareThread extends BillingThread{
 						//User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
 						errorRelated.append("Child name "+child.getName());
 						/*Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
-						while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
+							while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
 							custodian = (User) custodianIter.next();
 							//try{
-								//invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
-								custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
-								errorRelated.append("Parent "+custodianID+"<br>");
+							//invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
+							custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
+							errorRelated.append("Parent "+custodianID+"<br>");
 							//} catch (FinderException e) {
-								//That's OK, just keep looking
+							//That's OK, just keep looking
 							//}
-						}*/
+							}*/
 						if(invoiceHeader==null){
-	//					try{
-	//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
-	//					} catch (FinderException e) {
+							//					try{
+							//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
+							//					} catch (FinderException e) {
 							//No header was found so we have to create it
 							invoiceHeader = getInvoiceHeaderHome().create();
 							//Fill in all the field available at this times
@@ -642,9 +629,6 @@ public class InvoiceChildcareThread extends BillingThread{
 							invoiceHeader.setCustodian(custodian);
 							invoiceHeader.setDateCreated(currentDate);
 							invoiceHeader.setCreatedBy(BATCH_TEXT);
-							// SN: posting not applicable in invoice header anymore
-							// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
-							// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 							invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 							invoiceHeader.store();
 							createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
@@ -657,16 +641,16 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setInvoiceHeader(invoiceHeader);
 						invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
 						invoiceRecord.setSchoolClassMember(classMember);
-	
+						
 						invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
 						invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 						invoiceRecord.setDays(days);
-
+						
 						invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
 						invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
 						invoiceRecord.setPeriodStartPlacement(contract.getValidFromDate());
 						invoiceRecord.setPeriodEndPlacement(contract.getTerminatedDate());
-
+						
 						invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
 						invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
 						invoiceRecord.setPeriodStartPlacement(regularInvoiceEntry.getFrom());
@@ -684,12 +668,12 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
-	
+						
 						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
 						invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
 						invoiceRecord.store();
 						markInvoiceEntriesHandledForChild(child);
-
+						
 					} catch (RemoteException e) {
 						e.printStackTrace();
 						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemRemoteException");
@@ -711,8 +695,6 @@ public class InvoiceChildcareThread extends BillingThread{
 		}
 	}	
 	
-	
-	
 	/**
 	 * @param invoiceRecord
 	 * @param child
@@ -721,7 +703,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		Object childPK = child.getPrimaryKey();
 		getIncoiceEntryChildSet().add(childPK);
 	}
-
+	
 	/**
 	 * @param regularInvoiceEntry
 	 * @param child
@@ -738,115 +720,16 @@ public class InvoiceChildcareThread extends BillingThread{
 		}
 		return incoiceEntryChildSet;
 	}
-
+	
 	/**
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
-	/*
-	private void regularInvoice(){
-		int childID;
-		PlacementTimes placementTimes = null;
-		
-		RegularInvoiceEntry regularInvoiceEntry=null;
-		try {
-			Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndCategory(startPeriod.getDate(), category).iterator();
-			//Go through all the regular invoices
-			while(regularInvoiceIter.hasNext()){
-				try{
-					User custodian = null;
-					InvoiceHeader invoiceHeader = null;
-					int custodianID = -1;
-					
-					regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-					ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
-					
-					//Get the child and then look up the custodian
-
-					childID = regularInvoiceEntry.getChildId();
-					errorRelated.append("Child "+childID);
-					MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
-					User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
-					errorRelated.append("Child name "+child.getName());
-					Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
-					while (custodianIter.hasNext() && invoiceHeader == null) {
-						custodian = (User) custodianIter.next();
-						try{
-							invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
-							custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
-							errorRelated.append("Parent "+custodianID);
-						} catch (FinderException e) {
-							//That's OK, just keep looking
-						}
-					}
-					if(invoiceHeader==null){
-//					try{
-//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
-//					} catch (FinderException e) {
-						//No header was found so we have to create it
-						invoiceHeader = getInvoiceHeaderHome().create();
-						//Fill in all the field available at this times
-						invoiceHeader.setSchoolCategory(category);
-						invoiceHeader.setPeriod(startPeriod.getDate());
-						invoiceHeader.setCustodianId(custodianID);
-						invoiceHeader.setDateCreated(currentDate);
-						invoiceHeader.setCreatedBy(BATCH_TEXT);
-						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
-						invoiceHeader.store();
-						createNewErrorMessage(errorRelated,"invoice.CouldNotFindCustodianForRegularInvoice");
-					}
-					errorRelated.append("Note "+regularInvoiceEntry.getNote());
-				
-					placementTimes = calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
-							new Date(regularInvoiceEntry.getTo().getTime()));
-
-					InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
-					invoiceRecord.setInvoiceHeader(invoiceHeader);
-					invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
-
-					invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
-					invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
-					invoiceRecord.setDays(placementTimes.getDays());
-					invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
-					invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-					invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
-					invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
-					invoiceRecord.setDateCreated(currentDate);
-					invoiceRecord.setCreatedBy(BATCH_TEXT);
-					invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*placementTimes.getMonths());
-					invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*placementTimes.getMonths());
-					invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
-					invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
-
-					invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
-					invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
-					invoiceRecord.store();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-					createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
-				} catch (CreateException e) {
-					e.printStackTrace();
-					createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
-				}
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
-		} catch (FinderException e) {
-			e.printStackTrace();
-			createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
-		}
-	}
-*/
-	/**
-	 * Creates all the invoice headers, invoice records, payment headers and payment records
-	 * for the Regular payments
-	 */
-	protected void regularPayment() {
+	private void createBillingFromRegularPayment() {
 		PostingDetail postingDetail = null;
 		PlacementTimes placementTimes = null;
 		School school;
-
+		
 		try {
 			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
 			//Go through all the regular payments
@@ -889,7 +772,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Calculates the sibling order for the child connected to a contract
 	 * and also stores the order for all of its siblings.
@@ -897,114 +780,13 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @param contract
 	 * @return the sibling order for the child connected to the contract
 	 */
-
+	
 	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, RemoteException, SiblingOrderException{
-			User contractChild = contract.getChild ();	
-			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
-			return userInfo.getSiblingOrder(contractChild, siblingOrders, new CalendarMonth (startPeriod));
+		User contractChild = contract.getChild ();	
+		UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
+		return userInfo.getSiblingOrder(contractChild, siblingOrders, new CalendarMonth (startPeriod));
 	}
-
-/*
-	private int getSiblingOrder(ChildCareContract contract) throws EJBException, SiblingOrderException, IDOLookupException, RemoteException, CreateException{
-		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	
-		//First see if the child already has been given a sibling order
-		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
-		Integer order = (Integer)siblingOrders.get(contract.getChild().getPrimaryKey());
-		if(order != null)
-		{
-			return order.intValue();	//Sibling order already calculated.
-		}
-	
-		TreeSet sortedSiblings = new TreeSet();		//Container for the siblings that keeps them in sorted order
-		Address childAddress = userBus.getUsersMainAddress(contract.getChild());
-
-		//Add the child to the sibbling collection right away to make sure it will be in there
-		//This should really happen in the main loop below as well, but this is done since
-		//the realtionships seem to be a bit unreliable
-		sortedSiblings.add(new SortableSibling(contract.getChild()));
-
-		//Gather up a collection of the parents and their cohabitants
-		Collection parents;		//Collection parents only hold the biological parents
-		try {
-			parents = familyLogic.getCustodiansFor(contract.getChild());
-		} catch (NoCustodianFound e1) {
-			throw new SiblingOrderException("No custodians found for the child.");
-		}
-		//Adults hold all the adults that could be living on the same address
-		Collection adults = new ArrayList(parents);
-		Iterator parentIter = parents.iterator();
-		//Itterate through parents
-		while(parentIter.hasNext()){
-			User parent = (User)parentIter.next();
-			try {
-				adults.add(familyLogic.getCohabitantFor(parent));
-			} catch (NoCohabitantFound e) {
-			}
-		}
-
-		//Loop through all adults
-		Iterator adultIter = adults.iterator();
-		while(adultIter.hasNext()){
-			User adult = (User)adultIter.next();
-			Iterator siblingsIter;
-			try {
-				siblingsIter = familyLogic.getChildrenFor(adult).iterator();
-				//Itterate through their kids
-				while(siblingsIter.hasNext())
-				{
-					User sibling = (User) siblingsIter.next();
-			
-					//Check if the sibling has a valid contract of right type
-					try {
-						getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
-						//If kids have same address add to collection
-						Address siblingAddress = userBus.getUsersMainAddress(sibling);
-						if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
-							childAddress.getCity().equals(siblingAddress.getCity()) &&
-							childAddress.getStreetAddress().equals(siblingAddress.getStreetAddress())){
-
-							SortableSibling sortableSibling = new SortableSibling(sibling);
-							if(!sortedSiblings.contains(sortableSibling)){
-								sortedSiblings.add(sortableSibling);
-							}
-						}
-					} catch (FinderException e) {
-						//If sibling don't have a childcare contract we just ignore it
-					} catch (NullPointerException e) {
-						//If sibling doesn't have an address or contract, it won't be counted in the sibling order
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ChildHasNoAddress");
-					}
-				}
-			} catch (RemoteException e2) {
-				e2.printStackTrace();
-				createNewErrorMessage(contract.getChild().getName(),"invoice.DBError");
-			} catch (NoChildrenFound e) {
-				e.printStackTrace();
-				createNewErrorMessage(contract.getChild().getName(),"invoice.NoChildrenFound");
-			}
-		}
-	
-		//Store the sorting order
-		Iterator sortedIter = sortedSiblings.iterator();
-		int orderNr = 1;
-		while(sortedIter.hasNext()){
-			SortableSibling sortableSibling = (SortableSibling)sortedIter.next();
-			siblingOrders.put(sortableSibling.getSibling().getPrimaryKey(),new Integer(orderNr));
-			log.info("Added child "+sortableSibling.getSibling()+" as sibling "+orderNr+" out of "+sortedSiblings.size());
-			orderNr++;
-		}
-	
-		//Look up the order of the child that started the whole thing
-		order = (Integer)siblingOrders.get(contract.getChild().getPrimaryKey());
-		if(order != null)
-		{
-			return order.intValue();
-		}
-		//This should really never happen
-		throw new SiblingOrderException("Could not find the sibling order.");
-	}
-*/
 	/**
 	 * Creates an invoice record with the specific descriptive text for the check.
 	 * @param invoiceHeader
@@ -1018,20 +800,19 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, String text2,
-			PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws RemoteException, CreateException{
+																										PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
+		throws RemoteException, CreateException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		invoiceRecord.setInvoiceText2(text2);
 		errorRelated.append("Created invoice for check "
-//				+header+","+text2+" "+postingDetail.getTerm()
-				+" Invoiceheader "+invoiceHeader.getPrimaryKey());
+												+" Invoiceheader "+invoiceHeader.getPrimaryKey());
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
 	}
-
+	
 	/**
 	 * Creates an invoice record
 	 * @param invoiceHeader
@@ -1043,13 +824,13 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws RemoteException, CreateException{
+		throws RemoteException, CreateException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(postingDetail.getTerm());
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
 	}
-
+	
 	/**
 	 * Does all the work of creating an invoice record that is the same for both check 
 	 * and non-check invoice records
@@ -1063,7 +844,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws RemoteException{
+		throws RemoteException{
 		invoiceRecord.setProvider(school);
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMember());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
@@ -1079,26 +860,21 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
-//		errorRelated.append("Order ID = "+postingDetail.getOrderID());
+		//		errorRelated.append("Order ID = "+postingDetail.getOrderID());
 		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		try {
-		    RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
-		    invoiceRecord.setRegSpecType(regSpecType);
+			RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
+			invoiceRecord.setRegSpecType(regSpecType);
 		} catch (Exception e) {
-		    e.printStackTrace ();
+			e.printStackTrace ();
 		}
-
+		
 		//Set the posting strings
 		invoiceRecord.setOwnPosting(ownPosting);
 		invoiceRecord.setDoublePosting(doublePosting);
 		invoiceRecord.setChildCareContract(contract);
 		invoiceRecord.store();
-	
+		
 		return invoiceRecord;
 	}
-	
-	protected boolean hasInvoices() throws IDOException, RemoteException, EJBException {
-		return getInvoiceRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), calculationDate) > 0;
-	}
-
 }
