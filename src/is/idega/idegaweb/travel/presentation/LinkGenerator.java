@@ -84,7 +84,8 @@ public class LinkGenerator extends TravelWindow {
     if (!http.equals("https")) {
       text.append(":"+iwc.getServerPort());
     }
-    text.append("/servlet/IBMainServlet?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+    
+    text.append(iwc.getIWMainApplication().getBuilderServletURI()+"?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
     
     if (refNumber != null) {
     		text.append("&"+BookingRefunder.PARAMETER_EMAILED_REFERENCE_NUMBER+"="+refNumber);
