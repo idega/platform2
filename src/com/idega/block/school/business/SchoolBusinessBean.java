@@ -505,10 +505,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		//getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);
 	}
 
-	public Collection findAllSchoolsByType(Collection types) {
+	public Collection findAllSchoolsByType(Collection typeIds) {
 		try {
 			SchoolHome shome = getSchoolHome();
-			return shome.findAllBySchoolType(types);
+			return shome.findAllBySchoolType(typeIds);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
