@@ -24,6 +24,13 @@ public class PriceCategoryHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public PriceCategory findByKey(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PriceCategoryBMPBean)entity).ejbFindByKey(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public PriceCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PriceCategory) super.findByPrimaryKeyIDO(pk);
  }

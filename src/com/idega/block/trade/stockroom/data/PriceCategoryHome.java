@@ -8,5 +8,6 @@ public interface PriceCategoryHome extends com.idega.data.IDOHome
  public PriceCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public PriceCategory findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public PriceCategory findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+ public PriceCategory findByKey(java.lang.String p0)throws javax.ejb.FinderException;
 
 }

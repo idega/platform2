@@ -2,7 +2,10 @@ package com.idega.block.trade.stockroom.data;
 
 import java.sql.SQLException;
 
+import javax.ejb.FinderException;
+
 import com.idega.core.data.Address;
+import com.idega.data.IDOQuery;
 
 
 /**
@@ -162,6 +165,13 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
 			}
 		}
 		return vis;
+	}
+	
+	public Object ejbFindByKey(String key) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(getColumnNameIsValid(), "Y")
+		.appendAndEqualsQuoted(getColumnNameKey(), key);
+		return this.idoFindOnePKByQuery(query);
 	}
 	
 	public void setVisibility(int visibility) {
