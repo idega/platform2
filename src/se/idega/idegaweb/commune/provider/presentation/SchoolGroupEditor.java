@@ -133,6 +133,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 			button.addParameterToPage(PARAMETER_ACTION, ACTION_EDIT);
 			Parameter providerPar = getProviderAsParameter();
 			button.addParameterToPage(providerPar.getName(), providerPar.getValueAsString());
+			table.setCellpaddingLeft(1, 5, 12);
 			table.add(button, 1, 5);
 		
 		}
@@ -158,7 +159,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.add(getLocalizedSmallHeader("teachers","Teachers"), column++, row);
 		if (useStyleNames) {
 			table.setRowStyleClass(row, getHeaderRow2Class());
-			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingLeft(1, row++, 12);
 		}
 		else {
 			table.setRowColor(row++, getHeaderColor());

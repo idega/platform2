@@ -142,7 +142,7 @@ public abstract class ProviderBlock extends CommuneBlock {
 		
 		if (showStudyPaths) {
 			table.setWidth(6, 8);
-			table.add(getSmallHeader(localize("school.study_path","Study path")+":"+Text.NON_BREAKING_SPACE),6,row);
+			table.add(getSmallHeader(localize("school.study_path","Study path")+":"+Text.NON_BREAKING_SPACE),7,row);
 			try {
 				List studyPaths = new ArrayList(getSchoolBusiness().getSchoolStudyPathHome().findBySchool(getSession().getProvider()));
 				DropdownMenu paths = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterStudyPathID()), studyPaths, "getCode", getResourceBundle()));
