@@ -3,6 +3,8 @@ import com.idega.core.data.ICFile;
 import com.idega.data.*;
 import com.idega.block.process.data.*;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
+
 import javax.ejb.*;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,7 +17,7 @@ import java.rmi.RemoteException;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean implements SystemArchivationMessage, Message, Case
+public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean implements SystemArchivationMessage, PrintMessage, Case
 {
 	private static final String COLUMN_SUBJECT = "SUBJECT";
 	private static final String COLUMN_BODY = "BODY";
@@ -24,10 +26,12 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	private static final String COLUMN_ATTATCHED_FILE_ID = "ATTATCHED_FILE_ID";
 	private static final String CASE_CODE_KEY = "SYMEARK";
 	private static final String CASE_CODE_DESCRIPTION = "System Archivation Message";
+	public static final String PRINT_TYPE = "ARCH";
 	public String getEntityName()
 	{
 		return "MSG_SYSTEM_ARCH_MESSAGE";
 	}
+	
 	public void initializeAttributes()
 	{
 		addGeneralCaseRelation();
@@ -67,7 +71,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{
 		return this.getStringColumnValue(COLUMN_MESSAGE_TYPE);
 	}
-	public void setMessageType(String type) throws java.rmi.RemoteException
+	public void setMessageType(String type) 
 	{
 		this.setColumn(COLUMN_MESSAGE_TYPE, type);
 	}
@@ -87,19 +91,19 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{ //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, fileID);
 	}
-	public void setAttatchedFile(ICFile file) throws java.rmi.RemoteException
+	public void setAttachedFile(ICFile file) throws java.rmi.RemoteException
 	{ //Temp (test) method
 		this.setColumn(COLUMN_ATTATCHED_FILE_ID, file);
 	}
-	public void setAttatchedFile(int fileID) throws java.rmi.RemoteException
+	public void setAttachedFile(int fileID) throws java.rmi.RemoteException
 	{ //Temp (test) method
 		this.setColumn(COLUMN_ATTATCHED_FILE_ID, fileID);
 	}
-	public ICFile getAttatchedFile() throws java.rmi.RemoteException
+	public ICFile getAttachedFile() throws java.rmi.RemoteException
 	{
 		return (ICFile) this.getColumnValue(COLUMN_ATTATCHED_FILE_ID); //Replace this later
 	}
-	public int getAttatchedFileID() throws java.rmi.RemoteException
+	public int getAttachedFileID() throws java.rmi.RemoteException
 	{
 		return this.getIntColumnValue(COLUMN_ATTATCHED_FILE_ID);
 	}
@@ -124,5 +128,49 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	public Collection ejbFindMessages(User user) throws FinderException, java.rmi.RemoteException
 	{
 		return super.ejbFindAllCasesByUser(user);
+	}
+	
+	public Collection ejbFindPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException,RemoteException {
+		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusReady(),from,to);
+		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		query.append(" desc ");
+		return super.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindUnPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException,RemoteException {
+		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusOpen(),from,to);
+		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		query.append(" desc ");
+		return super.idoFindPKsByQuery(query);
+	}
+	
+	/**
+	 *Counts the number of letters that are of type default and unprinted
+	 */
+	public int ejbHomeGetNumberOfUnPrintedMessages()
+	{
+		try
+		{
+			IDOQuery sql = super.idoQueryGetCountCasesWithStatus(getCaseStatusOpen());
+			return super.idoGetNumberOfRecords(sql);
+		}
+		catch (RemoteException rme)
+		{
+			throw new EJBException(rme.getMessage());
+		}
+		catch (IDOException sqle)
+		{
+			throw new EJBException(sqle.getMessage());
+		}
+	}
+	
+	public String getPrintType(){
+		return PRINT_TYPE;
+	}
+	
+	public String[] ejbHomeGetPrintMessageTypes(){
+		String[] types= new String[1];
+		types[0] = PRINT_TYPE;
+		return types;
 	}
 }

@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.message.data;
 
 import javax.ejb.*;
 
-public interface PrintedLetterMessage extends com.idega.data.IDOEntity,se.idega.idegaweb.commune.message.data.Message,com.idega.block.process.data.Case
+public interface PrintedLetterMessage extends com.idega.data.IDOEntity,se.idega.idegaweb.commune.message.data.PrintMessage,com.idega.block.process.data.Case
 {
  public java.lang.String getBody()throws java.rmi.RemoteException;
  public java.lang.String getCaseCodeDescription();

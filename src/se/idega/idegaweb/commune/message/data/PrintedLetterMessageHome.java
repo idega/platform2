@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.message.data;
 import com.idega.util.IWTimestamp;
 
 
-public interface PrintedLetterMessageHome extends MessageHome
+public interface PrintedLetterMessageHome extends PrintMessageHome
 {
  //public PrintedLetterMessage create() throws javax.ejb.CreateException;
  //public PrintedLetterMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
@@ -25,6 +25,6 @@ public interface PrintedLetterMessageHome extends MessageHome
  public int getNumberOfLettersByStatusAndType(String caseStatus,String LetterType);
  public int getNumberOfUnprintedLettersByType(String letterType);
  public int getNumberOfPrintedLettersByType(String letterType);
- public String[] getLetterTypes();
+ public String[] getPrintMessageTypes();
 
 }

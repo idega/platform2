@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
  * @version 1.0
  */
 
-public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements PrintedLetterMessage, Message, Case {
+public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements PrintedLetterMessage, PrintMessage, Case {
 
 	private static final String COLUMN_SUBJECT = "SUBJECT";
 	private static final String COLUMN_BODY = "BODY";
@@ -436,6 +436,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	public Collection ejbFindPrintedDefaultLetters() throws FinderException {
 		String letterType = LETTER_TYPE_DEFAULT;
 		return ejbFindPrintedLettersByType(letterType);
+	}
+	
+	public String getPrintType()throws RemoteException{
+		return getMessageType();
+	}
+	
+	public String[] ejbHomeGetPrintMessageTypes(){
+		return ejbHomeGetLetterTypes();
 	}
 
 

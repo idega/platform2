@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.24 2002/12/31 00:34:42 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.25 2002/12/31 13:52:32 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -280,6 +280,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		String newCaseStatus=getCaseStatusReady().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
+	
+	public void flagMessageAsPrinted(User performer,Message message)throws RemoteException{
+		String newCaseStatus=getCaseStatusReady().getStatus();
+		super.changeCaseStatus(message,newCaseStatus,performer);
+	}
 
 	public Message createPrintArchivationMessage(User user, String subject, String body) throws CreateException, RemoteException {
 		Message message = createMessage(getTypeArchivationMessage(), user, subject, body);
@@ -321,7 +326,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		try{
 			Message message = createMessage(getTypeArchivationMessage(), forUserID, subject, body);
 			SystemArchivationMessage saMessage = (SystemArchivationMessage)message;
-			saMessage.setAttatchedFile(attatchementFileID);
+			saMessage.setAttachedFile(attatchementFileID);
 			message.store();
 			return saMessage;
 		}

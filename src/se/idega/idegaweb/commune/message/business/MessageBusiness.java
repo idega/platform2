@@ -40,4 +40,5 @@ public interface MessageBusiness extends com.idega.business.IBOService
  public void setIfUserPreferesMessageInMessageBox(com.idega.user.data.User p0,boolean p1) throws java.rmi.RemoteException;
  public void sendMessageToCommuneAdministrators(String subject, String body) throws java.rmi.RemoteException;
  public PrintedLetterMessage createPasswordMessage(com.idega.user.data.User user, String username,String password) throws CreateException, java.rmi.RemoteException ;
+ public void flagMessageAsPrinted(com.idega.user.data.User performer,se.idega.idegaweb.commune.message.data.Message message)throws  java.rmi.RemoteException;
 }

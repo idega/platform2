@@ -170,7 +170,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
       currentType = iwc.getParameter(PARAM_LETTER_TYPE);
     }
     if("".equals(currentType))
-      currentType = getDocumentBusiness(iwc).getPrintedLetterTypes()[0];
+      currentType = getDocumentBusiness(iwc).getPrintMessageTypes()[0];
      
     isBulkType=getDocumentBusiness(iwc).isBulkLetterType(currentType);
      
@@ -209,7 +209,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
 	//getDocumentBusiness(iwc).printAllUnPrintedLetters(userID,currentType);
 	Collection unPrintedLetters = getDocumentBusiness(iwc).getPrintedLetterMessageHome().findUnPrintedLettersByType(currentType);
-	getDocumentBusiness(iwc).writeBulkPDF(unPrintedLetters,iwc.getCurrentUser(),"BulkLetterPDF",iwc.getApplicationSettings().getDefaultLocale());
+	getDocumentBusiness(iwc).writeBulkPDF(unPrintedLetters,iwc.getCurrentUser(),"BulkLetterPDF",iwc.getApplicationSettings().getDefaultLocale(),currentType);
   }
   
   private void printMessage(IWContext iwc) throws Exception {
@@ -237,7 +237,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   
   private void addTypeMenu(IWContext iwc) throws Exception{
   	 
-  	 String[] types = getDocumentBusiness(iwc).getPrintedLetterTypes();
+  	 String[] types = getDocumentBusiness(iwc).getPrintMessageTypes();
   	 if(showTypesAsDropdown){
   	 	DropdownMenu drp = new DropdownMenu(PARAM_LETTER_TYPE);
   	 	for (int i = 0; i < types.length; i++) {
@@ -361,7 +361,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		unPrintedLetterDocs.add(localize("printdoc.unprinted","Unprinted"));
 		//messageList.add("-");
-		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedLettersCountByType(currentType)));
+		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType)));
 
 		Link printLink = new Link(localize("printdoc.print","Print"));
 		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
@@ -376,7 +376,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		
 		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
 		
-			
 			add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
 			addPrintedDatesForm(iwc);
 			add(printedLetterDocs);

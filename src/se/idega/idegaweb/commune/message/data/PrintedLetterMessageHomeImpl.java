@@ -146,10 +146,10 @@ public int getNumberOfUnprintedLettersByType(String letterType){
 	return theReturn;
 }
 
-public String[] getLetterTypes(){
+public String[] getPrintMessageTypes(){
 
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	String[] theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetLetterTypes();
+	String[] theReturn = ((PrintedLetterMessageBMPBean)entity).ejbHomeGetPrintMessageTypes();
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
