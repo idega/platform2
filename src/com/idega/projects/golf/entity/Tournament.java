@@ -406,7 +406,7 @@ public class Tournament extends GolfEntity{
             catch (Exception e) {e.printStackTrace(System.err);}
 
             try {
-                TournamentRound[] rounds = this.getTournamentRounds();
+                TournamentRound[] rounds = getTournamentRounds();
                 if(rounds!=null){
                   for(int i=0;i<rounds.length;i++){
                       try {
@@ -418,7 +418,7 @@ public class Tournament extends GolfEntity{
                           Stmt.close();
                           freeConnection(conn);
                       }
-                      catch (Exception e) {e.printStackTrace(System.err);}
+                      catch (Exception e) {System.err.println("Tournament : deleteAllData() : Deleting tournament_round_startingtime");}
 
                       rounds[i].delete();
                   }
@@ -457,10 +457,21 @@ public class Tournament extends GolfEntity{
 
 
             try {
+                try {
+                    Connection conn = this.getConnection();
+                    Statement Stmt = conn.createStatement();
+
+                    Stmt.executeUpdate("DELETE FROM TOURNAMENT_STARTINGTIME where TOURNAMENT_ID = "+this.getID());
+
+                    Stmt.close();
+                    freeConnection(conn);
+                }
+                catch (Exception e) {System.err.println("Tournament : deleteAllData() : Deleting tournament_startingtime");}
+
                 Startingtime[] stimes = (Startingtime[]) (new Startingtime()).findAll("Select startingtime.* from startingtime ,tournament_startingtime where startingtime.startingtime_id = tournament_startingtime.startingtime_id AND tournament_id = "+this.getID());
                 if (stimes != null) {
                     for (int i = 0; i < stimes.length; i++) {
-                        stimes[i].removeFrom(new Tournament());
+                        stimes[i].removeFrom(this);
                         stimes[i].delete();
                     }
                 }
