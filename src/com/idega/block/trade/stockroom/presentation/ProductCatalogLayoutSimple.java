@@ -29,7 +29,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
     Image spacer = Table.getTransparentCell(iwc);
       spacer.setWidth(5);
 
-    int row = 0;
+    int row = 1;
 
 
     ICCategory pCat;
