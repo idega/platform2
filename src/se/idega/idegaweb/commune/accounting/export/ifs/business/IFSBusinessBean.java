@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2003 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega software. Use is
+ * subject to license terms.
+ *  
  */
 package se.idega.idegaweb.commune.accounting.export.ifs.business;
 
@@ -39,6 +39,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -78,9 +79,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * Returns all <code>JournalLog</code> data beans from the database for the given category.
+	 * Returns all <code>JournalLog</code> data beans from the database for the
+	 * given category.
 	 * 
-	 * @param category A school category primary key (String)
+	 * @param category
+	 *          A school category primary key (String)
 	 * 
 	 * @return A collection of JournalLog beans
 	 */
@@ -100,9 +103,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * Returns all <code>JournalLog</code> data beans from the database for the given category.
+	 * Returns all <code>JournalLog</code> data beans from the database for the
+	 * given category.
 	 * 
-	 * @param category A school category bean
+	 * @param category
+	 *          A school category bean
 	 * 
 	 * @return A collection of JournalLog beans
 	 */
@@ -122,9 +127,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * Returns the <code>IFSCheckHeader</code> data bean from the database for the given category.
+	 * Returns the <code>IFSCheckHeader</code> data bean from the database for
+	 * the given category.
 	 * 
-	 * @param category A school category primary key (String)
+	 * @param category
+	 *          A school category primary key (String)
 	 * 
 	 * @return A IFSCheckHeader bean
 	 */
@@ -166,9 +173,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * Returns a collection of <code>IFSCheckRecord</code> data beans from the database for the given header.
+	 * Returns a collection of <code>IFSCheckRecord</code> data beans from the
+	 * database for the given header.
 	 * 
-	 * @param headerId The primary key id for the header the records belong to.
+	 * @param headerId
+	 *          The primary key id for the header the records belong to.
 	 * 
 	 * @return A Collection of IFSCheckRecord beans
 	 */
@@ -188,12 +197,17 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * A method to create the files to be sent to the IFS system and updates the status of PaymentHeaders/InvoiceHeaders 
-	 * from P to L.
+	 * A method to create the files to be sent to the IFS system and updates the
+	 * status of PaymentHeaders/InvoiceHeaders from P to L.
 	 * 
-	 * @param schoolCategory The string primary key representing the school category we are creating files for.
-	 * @param paymentDate The date the payment is supposed to be done on.
-	 * @param periodText A text to be inserted on the customers bill/providers payment slip.
+	 * @param schoolCategory
+	 *          The string primary key representing the school category we are
+	 *          creating files for.
+	 * @param paymentDate
+	 *          The date the payment is supposed to be done on.
+	 * @param periodText
+	 *          A text to be inserted on the customers bill/providers payment
+	 *          slip.
 	 * 
 	 * @author palli
 	 */
@@ -231,7 +245,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			header.setEventDate(now.getTimestamp());
 			header.store();
 
-			//Create files in folder A. Must get folder info from ExportMappingBean!!!
+			//Create files in folder A. Must get folder info from
+			// ExportMappingBean!!!
 			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 			String folder = mapping.getFileCreationFolder();
 			SchoolCategory childCare = getSchoolBusiness().getCategoryChildcare();
@@ -245,20 +260,20 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName2.append("n24_ifs_lev_bom_");
 				StringBuffer fileName3 = new StringBuffer(folder);
 				fileName3.append("n24_ifs_knd_bom_");
-				fileName1.append(now.getDateString("yyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyMMdd_hhmm"));
-				fileName3.append(now.getDateString("yyMMdd_hhmm"));
+				fileName1.append(now.getDateString("yyMMdd_HHmm"));
+				fileName2.append(now.getDateString("yyMMdd_HHmm"));
+				fileName3.append(now.getDateString("yyMMdd_HHmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
-				createInvoiceFiles(fileName3.toString(), schoolCategory, now, paymentDate, currentLocale, periodText);
+				createInvoiceFiles(fileName3.toString(), schoolCategory, now, currentLocale, periodText);
 			}
 			else if (schoolCategory.equals(school.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
 				fileName1.append("n24_ifs_hvd_gsk_");
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("n24_ifs_lev_gsk_");
-				fileName1.append(now.getDateString("yyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyMMdd_hhmm"));
+				fileName1.append(now.getDateString("yyMMdd_HHmm"));
+				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
@@ -267,8 +282,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				fileName1.append("n24_ifs_hvd_gym_");
 				StringBuffer fileName2 = new StringBuffer(folder);
 				fileName2.append("n24_ifs_lev_gym_");
-				fileName1.append(now.getDateString("yyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyMMdd_hhmm"));
+				fileName1.append(now.getDateString("yyMMdd_HHmm"));
+				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
@@ -648,9 +663,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 	}
 
-	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale, String periodText)
+	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, Locale currentLocale, String periodText)
 		throws FinderException, IOException, StudyPathException, RemoteException {
 		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByStatusAndCategory("P", schoolCategory);
+
+		StringBuffer empty = new StringBuffer("");
+		for (int i = 0; i < 25; i++) {
+			empty.append("          ");
+		}
 
 		if (iHeaders != null && !iHeaders.isEmpty()) {
 			NumberFormat format = NumberFormat.getInstance(currentLocale);
@@ -673,17 +693,17 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			//Posttyp
 			bWriter.write("10");
 			//Rutinkod + kundkod
-			for (int i = 0; i < 8; i++)
-				bWriter.write(' ');
-			//Rutinkod for avsandande rutin	
+			//			for (int i = 0; i < 8; i++)
+			bWriter.write(empty.substring(0, 8));
+			//Rutinkod for avsandande rutin
 			bWriter.write("KU ");
 			//Framstallandedatum
 			bWriter.write(executionDate.getDateString("yyMMdd"));
-			//Klockslag 
+			//Klockslag
 			bWriter.write(executionDate.getDateString("hhmmss"));
 			//Kommentar
-			for (int i = 0; i < 225; i++)
-				bWriter.write(' ');
+			//			for (int i = 0; i < 225; i++)
+			bWriter.write(empty.substring(0, 225));
 			bWriter.newLine();
 
 			int numberOfHeaders = 0;
@@ -698,8 +718,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					//Posttyp
 					bWriter.write("60");
 					//Filler etc
-					for (int i = 0; i < 22; i++)
-						bWriter.write(' ');
+					//					for (int i = 0; i < 22; i++)
+					bWriter.write(empty.substring(0, 22));
 					//Perioden
 					if (periodText.length() < 20) {
 						StringBuffer p = new StringBuffer(periodText);
@@ -728,7 +748,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					}
 					bWriter.write(pnr);
 					//Kundnamn
-					String name = iHead.getCustodian().getNameLastFirst(false);
+					String name = iHead.getCustodian().getName();
 					if (name.length() < 25) {
 						StringBuffer p = new StringBuffer(name);
 						while (p.length() < 25)
@@ -796,24 +816,24 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					}
 					bWriter.write(co);
 					//Filler
-					for (int i = 0; i < 8; i++)
-						bWriter.write(' ');
+					//					for (int i = 0; i < 8; i++)
+					bWriter.write(empty.substring(0, 8));
 					//Er referens
-					StringBuffer bun = new StringBuffer("Kundvalgruppen Tel: 718 00 00");
+					StringBuffer bun = new StringBuffer("Kundvalgruppen Tel: 718 80 00");
 					while (bun.length() < 40) {
 						bun.append(' ');
 					}
 					bWriter.write(bun.toString());
 					//Avsertyp
-					bWriter.write("Barnomsorg");
+					bWriter.write("BARNOMSORG");
 					//Filler
-					for (int i = 0; i < 25; i++)
-						bWriter.write(' ');
+					//					for (int i = 0; i < 25; i++)
+					bWriter.write(empty.substring(0, 25));
 					//Verksamhetskod
 					bWriter.write("BO");
 					//Filler
-					for (int i = 0; i < 15; i++)
-						bWriter.write(' ');
+					//					for (int i = 0; i < 15; i++)
+					bWriter.write(empty.substring(0, 15));
 
 					bWriter.newLine();
 
@@ -824,8 +844,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							//Posttype
 							bWriter.write("62");
 							//Filler
-							for (int i = 0; i < 10; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 10; i++)
+							bWriter.write(empty.substring(0, 10));
 							//Tecken
 							float am = iRec.getAmount();
 							if (am < 0)
@@ -836,14 +856,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							am = Math.abs(am);
 							bWriter.write(format.format(am));
 							//Antal, pris, moms, filler
-							for (int i = 0; i < 29; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 29; i++)
+							bWriter.write(empty.substring(0, 29));
 							//Avser period f.o.m
-							for (int i = 0; i < 8; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 8; i++)
+							bWriter.write(empty.substring(0, 8));
 							//Avser period t.o.m
-							for (int i = 0; i < 8; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 8; i++)
+							bWriter.write(empty.substring(0, 8));
 							//Faktura text 1
 							boolean insertLRow = false;
 							String LText = null;
@@ -863,16 +883,16 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 							bWriter.write(text);
 							//Filler
-							for (int i = 0; i < 11; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 11; i++)
+							bWriter.write(empty.substring(0, 11));
 							//Faktura text 2, 3 and 4
-							for (int i = 0; i < 108; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 108; i++)
+							bWriter.write(empty.substring(0, 108));
 							//Kod
 							bWriter.write('T');
 							//Filler
-							for (int i = 0; i < 33; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 33; i++)
+							bWriter.write(empty.substring(0, 33));
 
 							bWriter.newLine();
 
@@ -880,8 +900,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								//Posttype
 								bWriter.write("62");
 								//Filler
-								for (int i = 0; i < 10; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 10; i++)
+								bWriter.write(empty.substring(0, 10));
 								//Tecken
 								am = iRec.getAmount();
 								if (am < 0)
@@ -892,14 +912,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								am = Math.abs(am);
 								bWriter.write(format.format(am));
 								//Antal, pris, moms, filler
-								for (int i = 0; i < 29; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 29; i++)
+								bWriter.write(empty.substring(0, 29));
 								//Avser period f.o.m
-								for (int i = 0; i < 8; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 8; i++)
+								bWriter.write(empty.substring(0, 8));
 								//Avser period t.o.m
-								for (int i = 0; i < 8; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 8; i++)
+								bWriter.write(empty.substring(0, 8));
 								//Faktura text 1
 								if (LText.length() < 36) {
 									StringBuffer t = new StringBuffer(LText);
@@ -914,21 +934,21 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 								bWriter.write(LText);
 								//Faktura text 2, 3 and 4
-								for (int i = 0; i < 108; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 108; i++)
+								bWriter.write(empty.substring(0, 108));
 								//Kod
 								bWriter.write('L');
 								//Filler
-								for (int i = 0; i < 33; i++)
-									bWriter.write(' ');
+								//								for (int i = 0; i < 33; i++)
+								bWriter.write(empty.substring(0, 33));
 
 								bWriter.newLine();
 							}
 
 							bWriter.write("63");
 							//Filler
-							for (int i = 0; i < 6; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 6; i++)
+							bWriter.write(empty.substring(0, 6));
 							//Tecken
 							am = iRec.getAmount();
 							if (am < 0)
@@ -939,10 +959,16 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							am = Math.abs(am);
 							bWriter.write(format.format(am));
 							//Kvantitet and Apris
-							for (int i = 0; i < 27; i++)
-								bWriter.write(' ');
-							//Ansvar						
-							String tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Ansvar");
+							//							for (int i = 0; i < 27; i++)
+							bWriter.write(empty.substring(0, 27));
+							//Posting string business for check
+							String posting = iRec.getOwnPosting();
+							if (iRec.getRegSpecType().getLocalizationKey().equals(RegSpecConstant.CHECK)) {
+								posting = iRec.getDoublePosting();
+							}
+
+							//Ansvar
+							String tmp = pb.findFieldInStringByName(posting, "Ansvar");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -954,7 +980,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Konto
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Konto");
+							tmp = pb.findFieldInStringByName(posting, "Konto");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -965,8 +991,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								tmp = tmp.substring(0, 10);
 							}
 							bWriter.write(tmp);
-							//Resurs						
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Resurs");
+							//Resurs
+							tmp = pb.findFieldInStringByName(posting, "Resurs");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -978,7 +1004,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Verksamhet
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Verksamhet");
+							tmp = pb.findFieldInStringByName(posting, "Verksamhet");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -990,7 +1016,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Aktivitet
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Aktivitet");
+							tmp = pb.findFieldInStringByName(posting, "Aktivitet");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -1002,7 +1028,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Project
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Projekt");
+							tmp = pb.findFieldInStringByName(posting, "Projekt");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -1014,7 +1040,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Object
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Objekt");
+							tmp = pb.findFieldInStringByName(posting, "Objekt");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -1026,7 +1052,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Motpart
-							tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Motpart");
+							tmp = pb.findFieldInStringByName(posting, "Motpart");
 							if (tmp.length() < 10) {
 								StringBuffer post = new StringBuffer(tmp);
 								while (post.length() < 10)
@@ -1038,14 +1064,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							}
 							bWriter.write(tmp);
 							//Anlaggnings nummber
-							for (int i = 0; i < 10; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 10; i++)
+							bWriter.write(empty.substring(0, 10));
 							//Internranta
-							for (int i = 0; i < 10; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 10; i++)
+							bWriter.write(empty.substring(0, 10));
 							//Filler
-							for (int i = 0; i < 100; i++)
-								bWriter.write(' ');
+							//							for (int i = 0; i < 100; i++)
+							bWriter.write(empty.substring(0, 100));
 
 							bWriter.newLine();
 						}
@@ -1061,13 +1087,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			//Posttyp
 			bWriter.write("50");
 			//Filler
-			for (int i = 0; i < 94; i++)
-				bWriter.write(' ');
-			//Antal poster posttyp 60	
+			//			for (int i = 0; i < 94; i++)
+			bWriter.write(empty.substring(0, 94));
+			//Antal poster posttyp 60
 			bWriter.write(format2.format(numberOfHeaders));
 			//Filler, etc...
-			for (int i = 0; i < 144; i++)
-				bWriter.write(' ');
+			//			for (int i = 0; i < 144; i++)
+			bWriter.write(empty.substring(0, 144));
 			bWriter.newLine();
 
 			bWriter.close();
@@ -1075,10 +1101,12 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * A method to delete the files created for the IFS system. Also reverts the status of PaymentHeaders/InvoiceHeaders 
-	 * to P.
+	 * A method to delete the files created for the IFS system. Also reverts the
+	 * status of PaymentHeaders/InvoiceHeaders to P.
 	 * 
-	 * @param schoolCategory The string primary key representing the school category we are deleting files for.
+	 * @param schoolCategory
+	 *          The string primary key representing the school category we are
+	 *          deleting files for.
 	 * 
 	 * @author palli
 	 */
@@ -1155,8 +1183,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				iHead.store();
 			}
 
-			//Delete files in folder A. Must get folder info from ExportMappingBean!!!
-			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			//Delete files in folder A. Must get folder info from
+			// ExportMappingBean!!!
+			//ExportDataMapping mapping =
+			// getExportBusiness().getExportDataMapping(schoolCategory);
 
 			trans.commit();
 		}
@@ -1173,10 +1203,12 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 
 	/**
-	 * A method to send the files created to the IFS system. Also updates the status of PaymentHeaders/InvoiceHeaders 
-	 * from L to H.
+	 * A method to send the files created to the IFS system. Also updates the
+	 * status of PaymentHeaders/InvoiceHeaders from L to H.
 	 * 
-	 * @param schoolCategory The string primary key representing the school category we are sending files for.
+	 * @param schoolCategory
+	 *          The string primary key representing the school category we are
+	 *          sending files for.
 	 * 
 	 * @author palli
 	 */
@@ -1194,13 +1226,17 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setUser(user);
 			log.store();
 
-			// Palli, thu verdur bara ad drepa mig seinna fyrir ad hafa sett IWContext.getInstance() tharna
+			// Palli, thu verdur bara ad drepa mig seinna fyrir ad hafa sett
+			// IWContext.getInstance() tharna
 			// en klukkan er bara svo mange...
-			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir status ur L i e-d annad.
+			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir status
+			// ur L i e-d annad.
 			getCheckAmountBusiness().sendCheckAmountLists(IWContext.getInstance(), schoolCategory);
 
-			//copy files from folder A to folder B. Must get folder info from ExportMappingBean!!!
-			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			//copy files from folder A to folder B. Must get folder info from
+			// ExportMappingBean!!!
+			//ExportDataMapping mapping =
+			// getExportBusiness().getExportDataMapping(schoolCategory);
 
 			trans.commit();
 		}

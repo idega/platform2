@@ -29,6 +29,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFie
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
@@ -311,9 +312,14 @@ public class InvoiceChildcareThread extends BillingThread{
 								subvention = invoiceRecord;
 							}
 							totalSum += postingDetail.getAmount()*months;
-						}catch (BruttoIncomeException e) {
+						}
+						catch (BruttoIncomeException e) {
 							//Who cares!!!
-						}catch (RegulationException e1) {
+						}
+						catch (LowIncomeException e) {
+							//No low income registered...
+						}
+						catch (RegulationException e1) {
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegulationWhenItWasExpected");
 						}

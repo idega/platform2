@@ -16,6 +16,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
@@ -236,6 +237,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 													catch (BruttoIncomeException e) {
 														//Who cares!!!
 													}
+													catch (LowIncomeException e) {
+														
+													}
 												}
 											}
 										}
@@ -268,7 +272,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 													catch (BruttoIncomeException e) {
 														//Who cares!!!
 													}
-													
+													catch (LowIncomeException e) {
+														
+													}
 												}
 											}
 										}
@@ -330,6 +336,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 										catch (BruttoIncomeException e) {
 											//Who cares!!!
 										}										
+										catch (LowIncomeException e) {
+											
+										}
 									}
 									dispTime("Done regulations for resource");
 								}

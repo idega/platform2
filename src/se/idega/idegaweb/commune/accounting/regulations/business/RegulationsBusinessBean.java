@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.84 2003/12/07 20:24:09 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.85 2003/12/08 11:38:58 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1577,6 +1577,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					}
 					catch(BruttoIncomeException e) {
 					}
+					catch(LowIncomeException e) {
+					}
 				}
 				else if (match.size() > 1) {
 					Iterator regIterator = match.iterator();
@@ -1614,7 +1616,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	//		float totalSum,
 	//		ChildCareContract contract) {
 
-	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) throws BruttoIncomeException {
+	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) throws BruttoIncomeException, LowIncomeException {
 		PostingDetail ret = null;
 		if (reg.getSpecialCalculation() != null) {
 			String type = reg.getSpecialCalculation().getSpecialCalculationType();
@@ -1626,8 +1628,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							(String) reg.getOperation().getPrimaryKey(),
 							reg.getPaymentFlowType().getLocalizationKey(),
 							period,
-							"cacc_condition_type.formula",
-							"z_cacc_reg_spec.checktaxa",
+							RuleTypeConstant.FORMULA,
+							RegSpecConstant.CHECK,
 							conditions,
 							total_sum,
 							contract);
@@ -1665,7 +1667,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					child = placement.getStudent();
 				}
 
-				boolean missingIncome = false;
+				boolean missingIncome = true;
 				float income = 0;
 				if (child != null) {
 					try {
@@ -1679,6 +1681,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUser((Integer) custodian.getPrimaryKey());
 									if (userIncome != null) {
 										income += userIncome.getIncome().floatValue();
+										missingIncome = false;
 									}
 									else {
 										missingIncome = true;
@@ -1697,6 +1700,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								}
 							}
 						}
+					
+						if (!missingIncome) {
+							float perc = reg.getDiscount();
+							float amount = income * perc / 100;
+							if (amount < total_sum) {
+								ret = new PostingDetail();
+								ret.setAmount(amount - total_sum);
+								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+								ret.setTerm(reg.getName());
+								//			ret.setVat(32.0f);
+								//			ret.setVatRegulationID(1);
+							}
+						}
+						else {
+							throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
+						}
 					}
 					catch (NoCustodianFound e) {
 //						e.printStackTrace();
@@ -1705,30 +1724,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 //						e.printStackTrace();
 					}
 
-					if (!missingIncome) {
-						float perc = reg.getDiscount();
-						float amount = income * perc / 100;
-						if (amount < total_sum) {
-							ret = new PostingDetail();
-							ret.setAmount(amount - total_sum);
-							ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
-							ret.setTerm(reg.getName());
-							//			ret.setVat(32.0f);
-							//			ret.setVatRegulationID(1);
-						}
-					}
-					else {
-						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
-					}
 				}
 			}
 			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
-				ret = new PostingDetail();
+				throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+				
+				/*ret = new PostingDetail();
 				ret.setAmount(reg.getAmount().floatValue());
 				ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 				ret.setTerm("Palli will fix this...");
 				ret.setVat(32.0f);
-				ret.setVatRegulationID(1);
+				ret.setVatRegulationID(1);*/
 			}
 		}
 		else {
@@ -1871,7 +1877,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException {
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException {
 		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum);
 	}
 
@@ -1884,7 +1890,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param regulation
 	 * @return
 	 */
-	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException {
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException {
 		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum);
 	}
 
