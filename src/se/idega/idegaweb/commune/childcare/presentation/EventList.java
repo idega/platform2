@@ -56,7 +56,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.4 2003/03/24 17:10:57 roar Exp $
+ * @version $Id: EventList.java,v 1.5 2003/03/25 12:03:17 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -405,13 +405,22 @@ RS*/
   
   }
   
-  private PresentationObject getSearchForm(){
+  private PresentationObject getSearchForm(IWContext iwc){
   	
 	Table T = new Table();
 	TextInput ssn = new TextInput(PRM_SSN);
 	ssn = (TextInput) getStyledInterface(ssn);
+	if (iwc.getParameter(PRM_SSN) != null){
+		ssn.setValue(iwc.getParameter(PRM_SSN));
+	}
+
+
 	TextInput msgid = new TextInput(PRM_MSGID);
 	msgid = (TextInput) getStyledInterface(msgid);
+	if (iwc.getParameter(PRM_MSGID) != null){
+		msgid.setValue(iwc.getParameter(PRM_MSGID));
+	}
+	
 	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
 	search = (SubmitButton)getButton(search);
 
@@ -585,7 +594,7 @@ private void addMessagesList(IWContext iwc)throws Exception{
 	
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
 //	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
-	uT.add(getSearchForm(), 1, urow++);
+	uT.add(getSearchForm(iwc), 1, urow++);
 	uT.add(unPrintedLetterDocs,1,urow++);
 	uT.add(getPrintButton(),1,urow++);
 	uT.add(getCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U,count_u),1,urow++);
