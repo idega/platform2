@@ -653,7 +653,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				catch (IDORelationshipException ex) {
 					String message = "[WorkReportBusiness]: Can't define realtion ship.";
 					System.err.println(message + " Message is: " + ex.getMessage());
-					ex.printStackTrace(System.err);
+				//	ex.printStackTrace(System.err);
 					// do nothing
 				}
 			}
@@ -786,7 +786,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		catch (IDORelationshipException ex) {
 			String message = "[WorkReportBusiness]: Can't define realtion ship.";
 			System.err.println(message + " Message is: " + ex.getMessage());
-			ex.printStackTrace(System.err);
+			//ex.printStackTrace(System.err);
 			// do nothing
 		}
 		workReportDivisionBoard.store();
