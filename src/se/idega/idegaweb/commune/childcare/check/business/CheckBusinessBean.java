@@ -275,7 +275,10 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 
 	public void retrialCheck(Check check,String subject,String body,User performer) throws Exception {
 		changeCaseStatus(check, this.getCaseStatusReview().getPrimaryKey().toString(), performer);
-		sendMessageToCitizen(check,getUserID(check),subject,body+"\n\n"+check.getUserNotes());
+		String userNotes = check.getUserNotes();
+		if(userNotes==null || "".equals(userNotes.trim()))
+		    userNotes = body;
+		sendMessageToCitizen(check,getUserID(check),subject,check.getUserNotes());
 	}
 
 	private UserBusiness getUserBusiness() throws RemoteException {
