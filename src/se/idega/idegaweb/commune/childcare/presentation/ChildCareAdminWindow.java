@@ -1112,7 +1112,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			    // still within deadline
 			    else{
 			    	if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())){ // && today.isEarlierThan(deadlinePeriod.getFirstTimestamp())){
-			    		today.addDays(1);
+			    		today.addDays(2);
 			    		dateInput.setEarliestPossibleDate(today.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
 			    		dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			    	}else {
