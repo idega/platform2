@@ -79,7 +79,7 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock{
 
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
@@ -147,7 +147,6 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected String searchPartBottomBorderWidth = null;
 	protected String searchPartColor = null;
 	protected Image windowHeaderImage;
-	protected boolean cvcIsUsed = true;
 	protected IWResourceBundle iwrb;
 	protected IWBundle bundle;
 	protected ServiceSearchEngine engine = null;
@@ -206,6 +205,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	public void _main(IWContext iwc) throws Exception {
+		this.iwc = iwc;
 		handleSubmit(iwc);
 		super._main(iwc);
 	}
@@ -226,11 +226,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		
 		Form form = new Form();
-//		form.setMethod("GET");
-		form = (Form) addParameters(form, -1, true);
+		form.setMethod("GET");
+		int productId = -1;
+		if (definedProduct != null) {
+			productId = ((Integer) definedProduct.getPrimaryKey()).intValue();
+		}
+
+		form = (Form) addParameters(form, productId, this.isAlwaysSearchForm);
 
 		setupPresentation(form);
-		form.add(getBookingForm().formTable);
+//		form.add(getBookingForm().formTable);
 		form.add(getButtons(form));
 		outTable.add(form);
 /*		outTable.add(Text.BREAK);
@@ -437,7 +442,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		} else if ( action.equals(this.ACTION_BOOKING_FORM)) {
 			STATE = STATE_SHOW_BOOKING_FORM;
 		} else if (action.equals(ACTION_CONFIRM)) {
-			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), cvcIsUsed);
+			bf = getBookingForm();
+			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), bf.useCVC);
+			bf.setErrorFields(errorFields);
 			List tmp = getErrorFormFields();
 			if (tmp != null) {
 				errorFields.addAll(tmp);
@@ -456,7 +463,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	protected void setupPresentation(Form form) throws RemoteException {
+
 		if (isAlwaysSearchForm) {
+			form.add(getBookingForm().formTable);
 			if (getSession(iwc).getState() != STATE_DEFINED_PRODUCT && getSession(iwc).getState() != STATE_SHOW_SEARCH_RESULTS) {
 				getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
 			}
@@ -498,20 +507,21 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					if (isAlwaysSearchForm) {
 						errorFields = i.getErrorFields();
 						getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-						getBookingForm().addErrorWarning(getBookingForm().formTable, row);
+						getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false);
 						setupSearchForm();
 					} else {
 						unsearched();
 					}
 				} catch (FinderException f) {
 					getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-					getBookingForm().addErrorWarning(getBookingForm().formTable, row);
+					getBookingForm().addErrorWarning(getBookingForm().formTable, row, true, false);
 					setupSearchForm();
 				}
 				break;
 			case STATE_SHOW_BOOKING_FORM :
 				try {
-					add(getBookingForm(form));
+					getBookingForm(form);
+//					add(getBookingForm(form));
 				}catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
@@ -660,11 +670,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected TravelBlock getBookingForm(Form form) throws RemoteException {
 		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 
-		
 		Table table = new Table();
 		table.setBorder(0);
 		table.setCellpaddingAndCellspacing(0);
 		table.setWidth("100%");
+//		form.add(table);
+		form.add(frame);
 		int row = 1;
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
@@ -691,7 +702,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 		getBookingForm().setSearchPart(table, row, false, false);
 		if (errorFields != null && !errorFields.isEmpty()) {
-			getBookingForm().addErrorWarning(getBookingForm().getCurrentBookingPart(), getBookingForm().getCurrentBookingPartRow());
+			getBookingForm().addErrorWarning(getBookingForm().getCurrentBookingPart(), getBookingForm().getCurrentBookingPartRow(), true, false);
 			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(1, getBookingForm().getCurrentBookingPartRow(), 8);
 			++row;
 			getBookingForm().setCurrentBookingPartRow(getBookingForm().getCurrentBookingPartRow()+1);
@@ -768,7 +779,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(2, getBookingForm().getCurrentBookingPartRow(), 9);
 			
 			
-			if (cvcIsUsed) {
+			if (getBookingForm().useCVC) {
 				Table ccTable2 = new Table();
 				ccTable2.setCellpaddingAndCellspacing(0);
 				if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
@@ -817,6 +828,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			table.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 			table.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
 			table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
+			table.add(new HiddenInput(PARAMETER_PRODUCT_ID, product.getPrimaryKey().toString()));
 			table.add(new HiddenInput(getBookingForm().getParameterTypeCountName(), iwc.getParameter(getBookingForm().getParameterTypeCountName())));
 			
 	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
@@ -906,6 +918,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			BackButton back = new BackButton(iwrb.getLocalizedImageButton("travelSearch.try_again", "Try again"));
 			table.add(back, 1, row);
 		}
+		getBookingForm().formTable.setBorder(1);
 
 		frame.add(table);
 		return frame;
@@ -1297,6 +1310,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	protected Form addParameters(Form po, int productId, boolean isSearchForm) {
 		if ( po instanceof Form ) {
+
 			if (targetPage != null) {
 				((Form)po).setPageToSubmitTo(targetPage);
 			}
@@ -1672,6 +1686,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected Product getProduct() {
 		try {
 			ProductHome home = (ProductHome) IDOLookup.getHome(Product.class);
+			String tmp = iwc.getParameter(PARAMETER_PRODUCT_ID);
 			return home.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_PRODUCT_ID)));
 		}catch (Exception e) {
 			return null;

@@ -139,7 +139,7 @@ public abstract class BookingForm extends TravelManager{
   protected Booking _booking;
   protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
   protected boolean _multipleBookings = false;
-  protected boolean useCVC = true;
+  public boolean useCVC = true;
   protected CreditCardMerchant ccMerchant = null;
   
   private String creditCardReferenceString = null;
@@ -1688,7 +1688,7 @@ public abstract class BookingForm extends TravelManager{
 		
 		setSearchPart(table, row, false, false);
 		if (errorFields != null && !errorFields.isEmpty()) {
-			addErrorWarning(currentSearchPart, currentSearchPartRow);
+			addErrorWarning(currentSearchPart, currentSearchPartRow, true, true);
 			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 8);
 			++row;
 			++currentSearchPartRow;
@@ -1914,16 +1914,16 @@ public abstract class BookingForm extends TravelManager{
 		return form;
 	}
 	
-	public int addErrorWarning(Table table, int row) {
+	public int addErrorWarning(Table table, int row, boolean createNew, boolean useColors) {
 		if (errorFields != null && !errorFields.isEmpty()) {
-			Table sTable = this.setSearchPart(table, -1, true, true);
+			Table sTable = this.setSearchPart(table, -1, createNew, useColors);
 			sTable.setCellpaddingLeft(1, 1, 10);
 			sTable.setCellpaddingTop(1, 1, 5);
 			sTable.setCellpaddingBottom(1, 1, 5);
 			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
 			sTable.add(error, 1, row);
-			//table.mergeCells(1, row, 3, row);
-			//table.setBorder(1);
+			sTable.mergeCells(1, 1, 2, 1);
+//			sTable.setBorder(1);
 			++row;
 		}
 		return row;
@@ -3626,6 +3626,7 @@ public abstract class BookingForm extends TravelManager{
 				gBooking.setIsValid(false);
 				gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
 				gBooking.store();
+        getBooker(iwc).invalidateCache(((Integer)gBooking.getPrimaryKey()).intValue());
 				GeneralBooking tBook;
 				Iterator iter1 = bookings.iterator();
 				while (iter1.hasNext()) {
@@ -3633,6 +3634,7 @@ public abstract class BookingForm extends TravelManager{
 					tBook.setIsValid(false);
 					tBook.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
 					tBook.store();
+	        getBooker(iwc).invalidateCache(((Integer)tBook.getPrimaryKey()).intValue());
 				}
 				
 				System.out.println("Starting Creditcard Payment : "+IWTimestamp.RightNow().toString());
@@ -3805,6 +3807,7 @@ public abstract class BookingForm extends TravelManager{
         booking = (Booking) bookings.get(counter);
         booking.setIsValid(false);
         booking.store();
+        getBooker(iwc).invalidateCache(((Integer)booking.getPrimaryKey()).intValue());
 
         inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, comment, booking.getID(), _reseller, creditCardReferenceString);
 
@@ -4905,6 +4908,10 @@ public abstract class BookingForm extends TravelManager{
 		}
 		iwc.setSessionAttribute(PublicBooking.PARAMETER_REFERRAL_URL, tmpUrl);
 		return tmpUrl;
+	}
+	
+	public void setErrorFields(List fields) {
+		this.errorFields = fields;
 	}
 
 }
