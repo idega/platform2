@@ -28,6 +28,10 @@ public class IdegaClient extends Applet implements Runnable{
   private static String FRAME_NAME= "IdegaWeb Client";
   private static int FRAME_WIDTH = 295;
   private static int FRAME_HEIGHT = 310;
+  private static String SESSION_ID = "session_id";
+  private static String USER_ID = "user_id";
+  private static String SERVLET_URL = "servlet_url";
+
 
   private Thread t;
 
@@ -63,9 +67,9 @@ public class IdegaClient extends Applet implements Runnable{
   /**Initialize the applet*/
   public void init() {
     try {
-      sessionId = this.getParameter("SessionId", "noId");
-      memberId = this.getParameter("MemberId", "-1");
-      servletURL = this.getParameter("ServletURL", "servlet/ClientServer");
+      sessionId = this.getParameter(SESSION_ID, "noId");
+      memberId = this.getParameter(USER_ID, "-1");
+      servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
     }
     catch(Exception e) {
       e.printStackTrace();
