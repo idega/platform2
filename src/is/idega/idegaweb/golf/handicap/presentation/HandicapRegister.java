@@ -975,7 +975,7 @@ public class HandicapRegister extends GolfBlock {
 							}
 						}
 
-						Statistic[] statID = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAllByColumn("scorecard_id", scorecard_id, "tee_id", String.valueOf(tee_nr));
+						Statistic[] statID = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select * from statistic where scorecard_id = " + scorecard_id + " and tee_id = " + String.valueOf(tee_nr));
 
 						if (statID.length > 0) {
 							statID[statID.length - 1].setFairway(Integer.parseInt(abraut));
