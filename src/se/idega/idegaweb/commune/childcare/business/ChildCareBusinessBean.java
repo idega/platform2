@@ -510,14 +510,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 			
-			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
-			if (classMember != null) {
+			try {
+				SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
 				classMember.setSchoolClassId(groupID);
 				classMember.setRegisterDate(fromDate.getTimestamp());
 				classMember.store();
 			}
-			else
+			catch (FinderException e) {
 				getSchoolBusiness().storeSchoolClassMember(application.getChildId(), groupID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
+			}
 			sendMessageToParents(application, subject, body);
 		}
 		catch (FinderException e) {
