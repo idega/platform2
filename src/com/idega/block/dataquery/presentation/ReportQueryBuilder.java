@@ -120,6 +120,12 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_COND_DESCRIPTION = "cond_description";
 	private static final String PARAM_COND_FIELD_AS_CONDITION = "setFieldsAsDynamicPattern";
 	private static final String PARAM_COND_BOOLEAN_EXPRESSION = "booleanExpression";
+	
+	private static final String PARAM_COND_SET_ON_CHANGE_PARAMETER = "setOnChaPara";
+	private static final String PARAM_COND_SET_ON_CHANGE_NOT_CLICKED = "setOnChaNotClicked";
+	private static final String PARAM_COND_SET_ON_CHANGE_CLICKED = "setOnChaClicked";
+	private static final String SET_ON_CHANGE_SCRIPT = "this.form."+PARAM_COND_SET_ON_CHANGE_PARAMETER+".value='"+PARAM_COND_SET_ON_CHANGE_CLICKED+"';this.form.submit()";
+	
 	// buttons
 	private static final String PARAM_COND_ADD = "add";
 	private static final String PARAM_COND_DROP = "drop";
@@ -1238,7 +1244,7 @@ public class ReportQueryBuilder extends Block {
 	 * @param mapOfFields
 	 * @throws RemoteException
 	 */
-	private void addInputForNewInstanceToConditionTable(IWContext iwc, Table table, int row, HashMatrix mapOfFields, int editId) throws RemoteException {
+	private void addInputForNewInstanceToConditionTable(IWContext iwc, Table table, int row, HashMatrix mapOfFields, int localEditId) throws RemoteException {
 		Map temporaryParameterMap = new HashMap(1);
 		QueryConditionPart newInstance = new QueryConditionPart();
 		if (	! iwc.isParameterSet(PARAM_COND_EDIT_SAVE) && 
@@ -1256,7 +1262,7 @@ public class ReportQueryBuilder extends Block {
 			temporaryParameterMap.put(PARAM_COND_FIELD, iwc.getParameter(PARAM_COND_FIELD));
 			temporaryParameterMap.put(PARAM_COND_FIELD_AS_CONDITION, iwc.getParameter(PARAM_COND_FIELD_AS_CONDITION));
 		}
-		newInstance.setIdUsingPrefix(editId);
+		newInstance.setIdUsingPrefix(localEditId);
 		addEntryToConditionTable(iwc, table, row, newInstance, mapOfFields, temporaryParameterMap);
 	}
 
@@ -1353,8 +1359,11 @@ public class ReportQueryBuilder extends Block {
 		String path = part.getPath();
 		String fieldName= part.getField();
 		if (part.getIdNumber() == editId) {
+			// add a hidden parameter to the form that says that the selection of the hasn't changed
+			form.addParameter(PARAM_COND_SET_ON_CHANGE_PARAMETER, PARAM_COND_SET_ON_CHANGE_NOT_CLICKED);
+			// change the value of the parameter if the selection has changed
 			DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc, PARAM_COND_FIELD);
-			chosenFields.setOnChange("this.form.submit()");
+			chosenFields.setOnChange(SET_ON_CHANGE_SCRIPT);
 			// set the prior selected field
 			String fieldEncoded = null;
 			if (path != null && fieldName != null) {
@@ -1474,10 +1483,16 @@ public class ReportQueryBuilder extends Block {
 		boolean hasMoreThanOnePattern = part.hasMoreThanOnePattern();
 		String singlePattern = (hasMoreThanOnePattern) ? null : part.getPattern();
 		Collection patterns = (hasMoreThanOnePattern) ? part.getPatterns() : null;
+
 		InputHandler inputHandler = (fieldPart ==null) ? null : getInputHandler(fieldPart);
 		
 		// display with editing options
 		if (part.getIdNumber() == editId) {
+				// if another field was chosen ignore the value of the pattern field
+			if (PARAM_COND_SET_ON_CHANGE_CLICKED.equals(iwc.getParameter(PARAM_COND_SET_ON_CHANGE_PARAMETER))) {
+				singlePattern = null;
+				patterns = null;
+			}
 			PresentationObject inputWidget;
 
 			if (inputHandler == null) {
