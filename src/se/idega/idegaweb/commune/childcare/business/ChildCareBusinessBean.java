@@ -3873,6 +3873,89 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public void removeLatestFutureContract(int applicationID, Date earliestAllowedRemoveDate) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+
+		try {
+			t.begin();			
+
+			ChildCareApplication application = getApplication(applicationID);
+			ChildCareContract latestContract = getLatestContract(applicationID);
+			SchoolClassMember latestMember = latestContract.getSchoolClassMember();
+			
+			SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+			
+			boolean removeContract = false;
+			boolean logRemoved = false;
+			
+			if (log != null) {
+				if (log.getStartDate().compareTo(latestContract.getValidFromDate()) > 0) {
+					// Only log needs to be removed
+					if (log.getStartDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+						log.remove();
+						logRemoved = true;
+					}
+				} else if (log.getStartDate().compareTo(latestContract.getValidFromDate()) == 0) {
+					// Log start equals contract start
+					if (log.getStartDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+						log.remove();
+						logRemoved = true;
+						removeContract = true;
+					}
+				}
+			} else if (latestContract.getValidFromDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+				removeContract = true;
+			}
+			
+			if (removeContract) {
+				Contract contract = latestContract.getContract();
+				if (contract != null) {
+					contract.setStatus("T");
+					contract.store();
+				}
+				
+				latestContract.remove();				
+				ChildCareContract newLatestContract = getLatestContract(applicationID);
+
+				if (newLatestContract != null) {
+					newLatestContract.setTerminatedDate(application.getRejectionDate());
+					newLatestContract.store();
+					if (newLatestContract.getSchoolClassMemberId() != ((Integer) latestMember.getPrimaryKey()).intValue()) {
+						latestMember.remove();
+						latestMember = newLatestContract.getSchoolClassMember();
+					}
+				} else {
+					// No contracts, set application to status sent_in
+					application.setContractFileId(null);
+					application.setContractId(null);
+					application.setCareTime(null);
+					application.setStatus(String.valueOf(this.getStatusSentIn()));
+					application.store();
+
+					latestMember.remove();
+				}
+			}
+			
+			if (logRemoved) {
+				// Remove end date on prior log
+				SchoolClassMemberLog priorLog = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(latestMember);
+				if (priorLog != null) {
+					priorLog.setEndDate(application.getRejectionDate());
+					priorLog.store();
+				}
+			}			
+
+			t.commit();			
+		} catch (Exception e) {
+			log(e);
+			try {
+				t.rollback();
+			} catch (SystemException ex) {
+				log(e);
+			}
+		}
+	}
+
 	public boolean removeContract(int childcareContractID, User performer) {
 		try {
 			return removeContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), performer);

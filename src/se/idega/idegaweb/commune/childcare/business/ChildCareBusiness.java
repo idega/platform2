@@ -962,6 +962,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#removeFutureContracts
 	 */
 	public void removeFutureContracts(int applicationID, Date date) throws java.rmi.RemoteException;
+	
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#removeLatestFutureContract
+	 */
+	public void removeLatestFutureContract(int applicationID, Date earliestAllowedRemoveDate) throws java.rmi.RemoteException; 
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#removeContract
