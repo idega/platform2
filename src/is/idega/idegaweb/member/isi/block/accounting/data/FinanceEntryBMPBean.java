@@ -384,8 +384,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendAnd();
 		sql.appendEquals(COLUMN_USER_ID, user);
 		sql.appendAnd();
-		sql.appendEquals(COLUMN_OPEN, true);
-		sql.appendAnd();
 		sql.appendEquals(COLUMN_TYPE, TYPE_PAYMENT);
 		sql.appendOrderBy();
 		sql.append(getIDColumnName());
