@@ -21,7 +21,7 @@ public class CalendarFinder {
 
   public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
     try {
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toSQLString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
         return cal;
       return null;
@@ -45,11 +45,17 @@ public class CalendarFinder {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
         stampPlus.addDays(daysAhead);
+        stampPlus.setMinute(59);
+        stampPlus.setHour(23);
+        stampPlus.setSecond(59);
 
       idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
         stamp.addDays(-daysBack);
+        stampPlus.setMinute(0);
+        stampPlus.setHour(0);
+        stampPlus.setSecond(0);
 
-      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLDateString(),CalendarEntry.getColumnNameEntryDate(),stamp.toSQLDateString(),CalendarEntry.getColumnNameEntryDate(),"<",">=");
+      CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),stamp.toSQLString(),CalendarEntry.getColumnNameEntryDate(),"<",">=");
       if ( cal.length > 0 )
         return cal;
       return null;
@@ -65,11 +71,17 @@ public class CalendarFinder {
       idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
         stampPlus.addMonths(1);
         stampPlus.setDate(1);
+        stampPlus.setMinute(59);
+        stampPlus.setHour(23);
+        stampPlus.setSecond(59);
 
       idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
         stampMinus.setDate(1);
+        stampPlus.setMinute(0);
+        stampPlus.setHour(0);
+        stampPlus.setSecond(0);
 
-      return EntityFinder.findAllByColumnOrdered(CalendarEntry.getStaticInstance(),CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLDateString()+" "+idegaTimestamp.LAST_SECOND_OF_DAY,CalendarEntry.getColumnNameEntryDate(),stampMinus.toSQLDateString()+" "+idegaTimestamp.FIRST_SECOND_OF_DAY,CalendarEntry.getColumnNameEntryDate(),"<",">=","distinct",CalendarEntry.getColumnNameEntryDate());
+      return EntityFinder.findAllByColumnOrdered(CalendarEntry.getStaticInstance(),CalendarEntry.getColumnNameEntryDate(),stampPlus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),stampMinus.toSQLString(),CalendarEntry.getColumnNameEntryDate(),"<",">=","distinct",CalendarEntry.getColumnNameEntryDate());
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
