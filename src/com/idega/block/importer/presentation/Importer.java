@@ -15,6 +15,7 @@ import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -31,15 +32,16 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 
 /**
- * <p>Title: IdegaWeb classes</p>
- * <p>Description: </p>
+ * <p>Title: Importer</p>
+ * <p>Description: This is a block for managing,importing and keeping track of your import files.</p>
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: Idega Software</p>
- * @author <a href="mailto:eiki@idega.is"> Eirikur Sveinn Hrafnsson</a>
+ * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson</a>
  * @version 1.0
  */
 
-public class Importer extends Window {
+public class Importer extends Block {
+	
   private String folderPath;
   private ICFile importFolder;  
   private boolean usingLocalFileSystem,selectFiles,importFiles,selectFileSystemFolder = false;
@@ -137,6 +139,9 @@ public class Importer extends Window {
       	}
       	else if( importFolder!=null ){
       		showIWFileSystemSelection(iwc);      	
+      	}
+      	else{
+      		add(iwrb.getLocalizedString("importer.no.folder.selected","No folder is selected. Open the properties window and select a folder."));	
       	}
 
     }

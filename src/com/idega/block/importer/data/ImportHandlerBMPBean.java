@@ -76,7 +76,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
   
   public void insertStartData() throws SQLException {
 	//temporary remove
-	/*try{
+	try{
 		ImportHandler nacka = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		nacka.setName("Nacka citizen importer");
 		nacka.setDescription("Imports the KIR data for Nacka.");
@@ -101,13 +101,24 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
 	try{
 		ImportHandler KR = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		KR.setName("KR data importer");
-		KR.setDescription("Les inn gogn kn.d. KR.");
+		KR.setDescription("Les inn gögn kn.d. KR.");
 		KR.setClassName("is.idega.idegaweb.member.business.KRImportFileHandler");
       	KR.store();
     }
     catch (Exception ex) {
       ex.printStackTrace();
-    }*/
+    }
+    
+    try{
+		ImportHandler KRclub = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
+		KRclub.setName("KR Club data importer");
+		KRclub.setDescription("Les inn gögn í KR klúbbinn");
+		KRclub.setClassName("is.idega.idegaweb.member.business.KRClubImportFileHandler");
+      	KRclub.store();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
 	
   }
 
