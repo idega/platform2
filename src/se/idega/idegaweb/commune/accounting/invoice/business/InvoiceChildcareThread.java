@@ -214,7 +214,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					errorRelated.append("Category:"+category.getCategory());
 					errorRelated.append("PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT);
-					errorRelated.append("currentDate:"+currentDate);
+					errorRelated.append("calculationDate:"+calculationDate);
 					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
 					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
 					errorRelated.append("conditions:"+conditions.size());
@@ -223,7 +223,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 						category.getCategory(),		//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.OUT, 	//The payment flow is out
-						currentDate,					//Current date to select the correct date range
+						calculationDate,					//Current date to select the correct date range
 						RuleTypeConstant.DERIVED,	//The conditiontype
 						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
 						conditions,						//The conditions that need to fulfilled
@@ -240,9 +240,9 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append("Regel Spec Typ "+regSpecType);
 					
 					String[] postings = getPostingBusiness().getPostingStrings(
-						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
+						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
 					String[] checkPost = getPostingBusiness().getPostingStrings(
-						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,currentDate);
+						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
 					log.info("About to create payment record check");
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
 					log.info("created payment record, Now creating invoice record");
@@ -296,7 +296,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							postingDetail.setRuleSpecType(regulation.getRegSpecType().getLocalizationKey());		//TODO (JJ) This is a patch, Pallis func should probably return the right one in the first place.
 							errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
+							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,calculationDate);
 							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
 	
 							//Need to store the subvention row, so that it can be adjusted later if needed					
@@ -422,7 +422,8 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (UserInfoService.SiblingOrderException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toStringForWeb() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
+						errorRelated.append(e.getMessage ());
+						createNewErrorMessage(errorRelated,"invoice.CouldNotGetSiblingOrder");
 					} else{
 						createNewErrorMessage(contract.getChild().getName() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					}
@@ -982,7 +983,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	}
 	
 	protected boolean hasInvoices() throws FinderException, IDOException, RemoteException, EJBException {
-		return getInvoiceRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0;
+		return getInvoiceRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), calculationDate) > 0;
 	}
 
 }

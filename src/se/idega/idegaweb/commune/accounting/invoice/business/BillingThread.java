@@ -103,7 +103,7 @@ public abstract class BillingThread extends Thread{
 		//Get the payment header
 		try {
 			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
-					findBySchoolCategorySchoolPeriod(school,category,currentDate);
+					findBySchoolCategorySchoolPeriod(school,category,calculationDate);
 		} catch (FinderException e) {
 			//If No header found, create it	
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
@@ -114,9 +114,8 @@ public abstract class BillingThread extends Thread{
 			} else {
 				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
 			}
-			IWTimestamp period = new IWTimestamp(currentDate);
+			IWTimestamp period = new IWTimestamp(startPeriod);
 			period.setAsDate();
-			period.setDay(1);
 			paymentHeader.setPeriod(period.getDate());
 			paymentHeader.store();
 		}
@@ -220,7 +219,7 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void calcVAT(){
 		try {
-			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(category,currentDate).iterator();
+			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(category,calculationDate).iterator();
 			while(paymentHeaderIter.hasNext()){
 				PaymentHeader paymentHeader = (PaymentHeader)paymentHeaderIter.next();
 				Iterator paymentRecordIter;
