@@ -67,12 +67,12 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	}
 
 	/**
-	 * @return a Collection of Group's
+	 * @return the year, Integer
 	 *  
 	 */
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
 		if(values!=null && values.length>0){
-			return values[0];
+			return new Integer(values[0]);
 		}
 		else return null;
 	}
@@ -85,7 +85,7 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	 */
 	public String getDisplayNameOfValue(Object value, IWContext iwc) {
 		if(value!=null){
-			return (String) value;
+			return value.toString();
 		}
 		else return "";
 	}
