@@ -396,7 +396,8 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
   }
 
   public Link getPDFLink(ModuleObject MO){
-    Window W = new Window("PDF","/allocation/contractfile.jsp");
+    //Window W = new Window("PDF","/allocation/contractfile.jsp");
+    Window W = new Window("PDF",ContractFiler.class,com.idega.jmodule.object.Page.class);
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);

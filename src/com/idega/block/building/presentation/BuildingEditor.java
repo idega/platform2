@@ -233,7 +233,8 @@ public class BuildingEditor extends Editor{
     String sImageId = modinfo.getParameter("photoid");
     String sComplexId = modinfo.getParameter("dr_complex");
     String sId = modinfo.getParameter("dr_id");
-    int imageid = 1;
+    String sSerie = modinfo.getParameter("bm_serie");
+    int imageid = 1,iSerie = 0;
     int id = -1;
     int complexid = -1;
     try {  id = Integer.parseInt(sId);  }
@@ -256,6 +257,7 @@ public class BuildingEditor extends Editor{
         ebuilding.setInfo(sInfo);
         ebuilding.setImageId(imageid);
         ebuilding.setComplexId(complexid);
+        ebuilding.setSerie(sSerie);
         if(update)
           ebuilding.update();
         else
@@ -330,6 +332,7 @@ public class BuildingEditor extends Editor{
 
     String sName = modinfo.getParameter("bm_name").trim();
     String sInfo = modinfo.getParameter("bm_info").trim();
+    String sExtraInfo = modinfo.getParameter("extra_info").trim();
     String sId = modinfo.getParameter("dr_id");
     String sRoomCount = modinfo.getParameter("bm_roomcount");
     String sCategoryId = modinfo.getParameter("bm_category");
@@ -343,11 +346,13 @@ public class BuildingEditor extends Editor{
     String sStudy = modinfo.getParameter("bm_study");
     String sLoft = modinfo.getParameter("bm_loft");
     String sFurniture = modinfo.getParameter("bm_furni");
+    String sRent = modinfo.getParameter("bm_rent");
 
     int planid = 1;
     int imageid = 1;
     int id = -1;
     int categoryid = -1;
+    int rent = 0;
     try { id = Integer.parseInt(sId);  }
     catch (NumberFormatException ex) { id = -1;  }
     try { categoryid = Integer.parseInt(sCategoryId);  }
@@ -356,6 +361,8 @@ public class BuildingEditor extends Editor{
     catch (NumberFormatException ex) { imageid = 1;  }
     try{  planid = Integer.parseInt(sPlanId); }
     catch (NumberFormatException ex) { planid = 1;  }
+     try{  rent = Integer.parseInt(sRent); }
+    catch (NumberFormatException ex) { rent = 1;  }
 
     try{
       if(categoryid > 0){
@@ -367,11 +374,13 @@ public class BuildingEditor extends Editor{
         }
         etype.setName(sName);
         etype.setInfo(sInfo);
+        etype.setExtraInfo(sExtraInfo);
         etype.setFloorPlanId(planid);
         etype.setImageId(imageid);
         etype.setApartmentCategoryId(categoryid);
         etype.setArea(Float.parseFloat(sArea));
         etype.setRoomCount(Integer.parseInt(sRoomCount));
+        etype.setRent(rent);
 
         etype.setBalcony(sBalcony!=null?true:false);
         etype.setBathRoom(sBath!=null?true:false);
@@ -405,7 +414,7 @@ public class BuildingEditor extends Editor{
     String sFloorId = modinfo.getParameter("bm_floor");
     String sRentable = modinfo.getParameter("bm_rentable");
     String sImageId = modinfo.getParameter("photoid");
-
+    String sSerie = modinfo.getParameter("bm_serie");
     boolean bRentable = sRentable!=null?true:false;
 
     int id = -1;
@@ -422,8 +431,11 @@ public class BuildingEditor extends Editor{
     catch (NumberFormatException ex) { typeid = -1;  }
 
     try{
+      String slname = sName;
+      StringTokenizer st2 = new StringTokenizer(slname,",");
       StringTokenizer st = new StringTokenizer(sName,":");
       int count = st.countTokens();
+      int count2 = st2.countTokens();
       if( count == 2){
         String sLower = st.nextToken();
         String sUpper = st.nextToken();
@@ -443,11 +455,28 @@ public class BuildingEditor extends Editor{
             apartment.setInfo(sInfo);
             apartment.setRentable(bRentable);
             apartment.setImageId(imageid);
+            apartment.setSerie(sSerie);
             try{
               apartment.insert();
             }
             catch(SQLException sql){sql.printStackTrace();}
           }
+        }
+      }
+      else if(count2 > 0  ){
+        for (int i = 0; i < count2; i++) {
+          Apartment apartment = new Apartment();
+          apartment.setName(st2.nextToken());
+          apartment.setFloorId( floorid);
+          apartment.setApartmentTypeId(typeid);
+          apartment.setInfo(sInfo);
+          apartment.setRentable(bRentable);
+          apartment.setImageId(imageid);
+          apartment.setSerie(sSerie);
+          try{
+            apartment.insert();
+          }
+          catch(SQLException sql){sql.printStackTrace();}
         }
       }
       else{
@@ -505,7 +534,16 @@ public class BuildingEditor extends Editor{
   private ModuleObject makeTextArea(String sInit){
     TextArea TA = new TextArea("bm_info");
     TA.setContent(sInit);
-    TA.setWidth(40);
+    TA.setWidth(50);
+    TA.setHeight(6);
+    setStyle(TA);
+    return TA;
+  }
+
+  private ModuleObject makeTextArea(String name,String sInit){
+    TextArea TA = new TextArea(name);
+    TA.setContent(sInit);
+    TA.setWidth(50);
     TA.setHeight(6);
     setStyle(TA);
     return TA;
@@ -571,6 +609,7 @@ public class BuildingEditor extends Editor{
     String sAddress = e ? eBuilding.getStreet() : "" ;
     String sId = e ? String.valueOf(eBuilding.getID()): "";
     String sComplexId = e ? String.valueOf(eBuilding.getComplexId()):"";
+    String sSerie = e  ? eBuilding.getSerie():"";
     int iPhotoId = e ? eBuilding.getImageId(): 1 ;
 
     Form form = new Form();
@@ -587,6 +626,7 @@ public class BuildingEditor extends Editor{
     Frame.add(T,1,1);
     TextInput name = new TextInput("bm_name",sName);
     TextInput address = new TextInput("bm_address",sAddress);
+    TextInput serie = new TextInput("bm_serie",sSerie);
     HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(BUILDING));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(BUILDING));
     DropdownMenu complex = drpLodgings(new Complex(),"dr_complex","Complex",sComplexId);
@@ -596,8 +636,11 @@ public class BuildingEditor extends Editor{
     setStyle(complex);
     setStyle(name);
     setStyle(address);
+    setStyle(serie);
     name.setLength(30);
     address.setLength(30);
+    serie.setLength(5);
+    serie.setMaxlength(5);
     T.add(houses,1,2);
     T.add(formatText("Name:"),1,3);
     T.add(name,1,4);
@@ -605,8 +648,10 @@ public class BuildingEditor extends Editor{
     T.add(address,1,6);
     T.add(formatText("Complex"),1,7);
     T.add(complex,1,8);
-    T.add(formatText("Info:"),1,9);
-    T.add( makeTextArea(sInfo),1,10);
+    T.add(formatText("Serie"),1,9);
+    T.add(serie,1,10);
+    T.add(formatText("Info:"),1,11);
+    T.add( makeTextArea(sInfo),1,12);
 
     T2.add(formatText("Photo:"),1,1);
     T2.add(this.makeImageInput(iPhotoId,"photoid"),1,2);
@@ -706,6 +751,8 @@ public class BuildingEditor extends Editor{
     String sArea = e ? String.valueOf(eApartmentType.getArea()):"";
     String sRoomCount = e ? String.valueOf(eApartmentType.getRoomCount()):"";
     String sId = e ? String.valueOf(eApartmentType.getID()):"";
+    String sExtraInfo = e ? eApartmentType.getExtraInfo() :"";
+    String sRent = e ? String.valueOf(eApartmentType.getRent()):"0";
 
     boolean bKitch = e ? eApartmentType.getKitchen() : false;
     boolean bBath = e ? eApartmentType.getBathRoom() : false;
@@ -725,10 +772,11 @@ public class BuildingEditor extends Editor{
     Table T = new Table();
       T.setCellpadding(0);
       T.setCellspacing(0);
-    Table T2 = new Table(2,4);
+    Table T2 = new Table(2,6);
       T2.setCellpadding(0);
       T2.setCellspacing(0);
       T2.mergeCells(1,2,2,2);
+      T2.mergeCells(1,4,2,4);
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     Table InnerTable = new Table();
@@ -736,6 +784,8 @@ public class BuildingEditor extends Editor{
     DropdownMenu roomcount = drpCount("bm_roomcount","--",sRoomCount,6);
     TextInput area = new TextInput("bm_area",sArea);
     area.setLength(4);
+    TextInput rent = new TextInput("bm_rent",sRent);
+    rent.setLength(10);
     CheckBox kitch = new CheckBox("bm_kitch","true");
     if(bKitch) kitch.setChecked(true);
     CheckBox bath = new CheckBox("bm_bath","true");
@@ -758,6 +808,7 @@ public class BuildingEditor extends Editor{
     name.setLength(30);
     setStyle(name);
     setStyle(area);
+    setStyle(rent);
     setStyle(roomcount);
     setStyle(kitch);
     setStyle(bath);
@@ -794,13 +845,17 @@ public class BuildingEditor extends Editor{
     InnerTable.add(furni,2,8);
     InnerTable.add(formatText("Balcony"),1,9);
     InnerTable.add(balc,2,9);
+    InnerTable.add(formatText("Rent"),1,10);
+    InnerTable.add(rent,2,10);
     T.add(InnerTable,1,6);
     T2.add(formatText("Info:"),1,1);
     T2.add( makeTextArea(sInfo),1,2);
-    T2.add(formatText("Photo:"),1,3);
-    T2.add(this.makeImageInput(iImageId,"tphotoid"),1,4);
-    T2.add(formatText("Plan:"),2,3);
-    T2.add(this.makeImageInput(iPlanId,"tplanid"),2,4);
+    T2.add(formatText("ExtraInfo:"),1,3);
+    T2.add( makeTextArea("extra_info",sExtraInfo),1,4);
+    T2.add(formatText("Photo:"),1,5);
+    T2.add(this.makeImageInput(iImageId,"tphotoid"),1,6);
+    T2.add(formatText("Plan:"),2,5);
+    T2.add(this.makeImageInput(iPlanId,"tplanid"),2,6);
     form.maintainParameter("tphotoid");
     form.maintainParameter("tplanid");
     Frame.add(HI);
@@ -817,6 +872,7 @@ public class BuildingEditor extends Editor{
     String sType = e ? String.valueOf(eApartment.getApartmentTypeId()) : "";
     String sId = e ? String.valueOf( eApartment.getID()) : "" ;
     String sPhotoId = e ? String.valueOf( eApartment.getImageId()) : "";
+     String sSerie = e ? eApartment.getSerie():"";
     boolean bRentable = e ? eApartment.getRentable() : false ;
     Form form = new Form();
     Table Frame = new Table(3,1);
@@ -836,6 +892,7 @@ public class BuildingEditor extends Editor{
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     TextInput name = new TextInput("bm_name",sName);
+    TextInput serie = new TextInput("bm_serie",sSerie);
     DropdownMenu apartments = drpLodgings(new Apartment(),"dr_id","Apartment",sId);
     apartments.setToSubmit();
     DropdownMenu types = this.drpLodgings(new ApartmentType(),"bm_type","Type",sType);
@@ -850,6 +907,9 @@ public class BuildingEditor extends Editor{
     setStyle(name);
     setStyle(types);
     setStyle(floors);
+    setStyle(serie);
+    serie.setLength(5);
+    serie.setMaxlength(5);
     name.setLength(30);
     //T.add(apartments,1,2);
     int a = 1;
@@ -859,6 +919,8 @@ public class BuildingEditor extends Editor{
     T.add(floors,1,a++);
     T.add(formatText("Type:"),1,a++);
     T.add(types,1,a++);
+    T.add(formatText("Serie"),1,a++);
+    T.add(serie,1,a++);
     T.add(formatText("Rentable"),1,a++);
     T.add(rentable,1,a++);
     T2.add(formatText("Info:"),1,1);
