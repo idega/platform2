@@ -57,6 +57,13 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.setHeight(4, 12);
 			add(table);
 			
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 5, 12);
+				table.setCellpaddingRight(1, 1, 12);
+				table.setCellpaddingRight(1, 5, 12);
+			}
+			
 			table.add(getNavigationTable(), 1, 1);
 			table.add(getChildrenTable(iwc), 1, 3);
 			
@@ -111,10 +118,19 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.setColumns(7);
 		else
 			table.setColumns(6);
-		table.setRowColor(1, getHeaderColor());
+		if (useStyleNames()) {
+			table.setRowStyleClass(1, getHeaderRowClass());
+		}
+		else {
+			table.setRowColor(1, getHeaderColor());
+		}
 		int row = 1;
 		int column = 1;
 			
+		if (useStyleNames()) {
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
@@ -163,10 +179,22 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			move.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_PLACEMENT_ID, student.getPrimaryKey().toString());
 			
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
+			if (useStyleNames()) {
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+			}
+			else {
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+			}
 
 			if (student.getRemovedDate() != null) {
 				showComment = true;
@@ -230,11 +258,17 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.setHeight(row++, 2);
 			if (showNotStartedComment) {
 				table.mergeCells(1, row, table.getColumns(), row);
+				if (useStyleNames()) {
+					table.setCellpaddingLeft(1, row, 12);
+				}
 				table.add(getSmallErrorText("*"), 1, row);
 				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
 			}
 			if (showRemovedComment) {
 				table.mergeCells(1, row, table.getColumns(), row);
+				if (useStyleNames()) {
+					table.setCellpaddingLeft(1, row, 12);
+				}
 				table.add(getSmallErrorText("+"), 1, row);
 				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.ended_placing","Placing has been ended")), 1, row++);
 			}

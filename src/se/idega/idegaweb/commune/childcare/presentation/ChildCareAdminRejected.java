@@ -40,6 +40,10 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			table.setCellspacing(0);
 			table.setWidth(getWidth());
 			table.setHeight(2, 12);
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingRight(1, 1, 12);
+			}
 			
 			table.add(getNavigationForm(), 1, 1);
 			table.add(getApplicationTable(iwc), 1, 3);
@@ -76,11 +80,20 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(7);
-		table.setRowColor(1, getHeaderColor());
+		if (useStyleNames()) {
+			table.setRowStyleClass(1, getHeaderRowClass());
+		}
+		else {
+			table.setRowColor(1, getHeaderColor());
+		}
 		form.add(table);
 		int row = 1;
 		int column = 1;
 			
+		if (useStyleNames()) {
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
@@ -120,10 +133,23 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				else	
 					rejectDate = null;
 						
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
+				if (useStyleNames()) {
+					if (row % 2 == 0) {
+						table.setRowStyleClass(row, getDarkRowClass());
+					}
+					else {
+						table.setRowStyleClass(row, getLightRowClass());
+					}
+					table.setCellpaddingLeft(1, row, 12);
+					table.setCellpaddingRight(table.getColumns(), row, 12);
+				}
+				else {
+					if (row % 2 == 0)
+						table.setRowColor(row, getZebraColor1());
+					else
+						table.setRowColor(row, getZebraColor2());
+				}
+		
 				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 				table.add(getSmallText(name), column++, row);
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
@@ -160,6 +186,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			
 			table.setHeight(row++, 6);
 			table.mergeCells(1, row, table.getColumns(), row);
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, row, 12);
+			}
 			table.add(getSmallText(localize("child_care.number_of_rejected_applications", "Number of rejected applications: ") + String.valueOf(numberOfChildren)), 1, row);
 		}
 			

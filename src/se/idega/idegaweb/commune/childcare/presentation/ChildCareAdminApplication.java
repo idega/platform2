@@ -71,10 +71,26 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			table.add(getApplicationTable(iwc), 1, 3);
 			table.add(getLegendTable(), 1, 5);
 			table.add(getButtonTable(iwc, !isAdministrator), 1, 7);
+			
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 5, 12);
+				table.setCellpaddingLeft(1, 7, 12);
+				table.setCellpaddingRight(1, 1, 12);
+				table.setCellpaddingRight(1, 5, 12);
+				table.setCellpaddingRight(1, 7, 12);
+			}
 		}
 		else {
 			table.add(this.getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
 			table.add(getButtonTable(iwc, false), 1, 3);
+
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 3, 12);
+				table.setCellpaddingRight(1, 1, 12);
+				table.setCellpaddingRight(1, 3, 12);
+			}
 		}
 		
 		add(table);
@@ -230,10 +246,19 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(5);
-		table.setRowColor(1, getHeaderColor());
+		if (useStyleNames()) {
+			table.setRowStyleClass(1, getHeaderRowClass());
+		}
+		else {
+			table.setRowColor(1, getHeaderColor());
+		}
 		int row = 1;
 		int column = 1;
 			
+		if (useStyleNames()) {
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
@@ -260,6 +285,17 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			else
 				isCurrentProvider = false;
 				
+			if (useStyleNames()) {
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+			}
+
 			if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
 				table.setRowColor(row, ACCEPTED_COLOR);
 			}
@@ -270,10 +306,12 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				table.setRowColor(row, CONTRACT_COLOR);
 			}
 			else {
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
+				if (!useStyleNames()) {
+					if (row % 2 == 0)
+						table.setRowColor(row, getZebraColor1());
+					else
+						table.setRowColor(row, getZebraColor2());
+				}
 			}
 
 			if (contractsPage != null) {

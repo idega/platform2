@@ -45,10 +45,26 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			table.add(getInformationTable(iwc), 1, 1);
 			table.add(getPlacingsTable(iwc), 1, 3);
 			table.add(back, 1, 5);
+			
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 5, 12);
+				table.setCellpaddingRight(1, 1, 12);
+				table.setCellpaddingRight(1, 5, 12);
+			}
+			
 		}
 		else {
 			table.add(getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
 			table.add(back, 1, 3);
+			
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 3, 12);
+				table.setCellpaddingRight(1, 1, 12);
+				table.setCellpaddingRight(1, 3, 12);
+			}
+			
 		}
 		
 		add(table);
@@ -60,10 +76,19 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(4);
-		table.setRowColor(1, getHeaderColor());
+		if (useStyleNames()) {
+			table.setRowStyleClass(1, getHeaderRowClass());
+		}
+		else {
+			table.setRowColor(1, getHeaderColor());
+		}
 		int column = 1;
 		int row = 1;
 			
+		if (useStyleNames()) {
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.group","Group"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
@@ -86,10 +111,22 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			if (member.getRemovedDate() != null)
 				terminated = new IWTimestamp(member.getRemovedDate());
 
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
+			if (useStyleNames()) {
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+			}
+			else {
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+			}
 	
 			table.add(getSmallText(provider.getSchoolName()), column++, row);
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);

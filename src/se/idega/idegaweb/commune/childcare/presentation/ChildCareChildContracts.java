@@ -61,21 +61,38 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			parse(iwc);
 			
 			int row = 1;
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(1, row, 12);
+			}
 			table.add(getInformationTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 			if (getBusiness().hasFutureContracts(getSession().getApplicationID()) && getBusiness().hasActiveContract(getSession().getApplicationID())) {
 				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				if (useStyleNames()) {
+					table.setCellpaddingLeft(1, row, 12);
+					table.setCellpaddingRight(1, row, 12);
+				}
 				table.add(getRemoveContractsForm(), 1, row++);
 				table.setHeight(row++, 6);
 			}
 			table.add(getContractsTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(1, row, 12);
+			}
 			table.add(back, 1, row);
 		}
 		else {
 			table.add(getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
 			table.setHeight(2, 12);
 			table.add(back, 1, 3);
+
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, 1, 12);
+				table.setCellpaddingLeft(1, 3, 12);
+			}
 		}
 		
 		add(table);
@@ -87,10 +104,19 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(6);
-		table.setRowColor(1, getHeaderColor());
+		if (useStyleNames()) {
+			table.setRowStyleClass(1, getHeaderRowClass());
+		}
+		else {
+			table.setRowColor(1, getHeaderColor());
+		}
 		int column = 1;
 		int row = 1;
 			
+		if (useStyleNames()) {
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
@@ -150,10 +176,22 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			viewContract.setFile(contract.getContractFileID());
 			viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 					
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
+			if (useStyleNames()) {
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+			}
+			else {
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+			}
 	
 			table.add(getText(provider.getSchoolName(), isActive), column++, row);
 			table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);

@@ -41,11 +41,20 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setColumns(8);
 			else
 				table.setColumns(7);
-			table.setRowColor(1, getHeaderColor());
+			if (useStyleNames()) {
+				table.setRowStyleClass(1, getHeaderRowClass());
+			}
+			else {
+				table.setRowColor(1, getHeaderColor());
+			}
 			int column = 1;
 			int row = 1;
 			IWTimestamp dateNow = new IWTimestamp();
 			
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+			}
 			table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
@@ -83,11 +92,23 @@ public class ChildCareContracts extends ChildCareBlock {
 					child = application.getChild();
 					hasComment = true;
 
-					if (row % 2 == 0)
-						table.setRowColor(row, getZebraColor1());
-					else
-						table.setRowColor(row, getZebraColor2());
-		
+					if (useStyleNames()) {
+						if (row % 2 == 0) {
+							table.setRowStyleClass(row, getDarkRowClass());
+						}
+						else {
+							table.setRowStyleClass(row, getLightRowClass());
+						}
+						table.setCellpaddingLeft(1, row, 12);
+						table.setCellpaddingRight(table.getColumns(), row, 12);
+					}
+					else {
+						if (row % 2 == 0)
+							table.setRowColor(row, getZebraColor1());
+						else
+							table.setRowColor(row, getZebraColor2());
+					}
+					
 					if (contract != null) {
 						created = new IWTimestamp(contract.getCreatedDate());
 						if (application.getFromDate() != null)
@@ -204,11 +225,17 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setHeight(row++, 2);
 				if (showNotActiveComment) {
 					table.mergeCells(1, row, table.getColumns(), row);
+					if (useStyleNames()) {
+						table.setCellpaddingLeft(1, row, 12);
+					}
 					table.add(getSmallErrorText("*"), 1, row);
 					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
 				}
 				if (showRemovedComment) {
 					table.mergeCells(1, row, table.getColumns(), row);
+					if (useStyleNames()) {
+						table.setCellpaddingLeft(1, row, 12);
+					}
 					table.add(getSmallErrorText("+"), 1, row);
 					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.contract_ended","Contract has termination date")), 1, row++);
 				}
