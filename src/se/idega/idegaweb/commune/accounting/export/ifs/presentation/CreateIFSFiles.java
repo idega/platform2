@@ -56,11 +56,11 @@ public class CreateIFSFiles extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_VIEW :
-					viewForm(iwc);
+					viewForm(iwc, false);
 					break;
 				case ACTION_CREATE :
 					createFiles(iwc);
-					viewForm(iwc);
+					viewForm(iwc, true);
 					break;
 			}
 		}
@@ -102,23 +102,28 @@ public class CreateIFSFiles extends AccountingBlock {
 		}
 	}
 
-	private void viewForm(IWContext iwc) {
+	private void viewForm(IWContext iwc, boolean started) {
 		ApplicationForm form = new ApplicationForm(this);
 		form.setLocalizedTitle(KEY_HEADER, "Create files");
-		form.setSearchPanel(getTopPanel(iwc));
+		form.setSearchPanel(getTopPanel(iwc, started));
 		form.setButtonPanel(getButtonPanel());
 		add(form);
 	}
 
-	private Table getTopPanel(IWContext iwc) {
+	private Table getTopPanel(IWContext iwc, boolean started) {
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 
-		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "School category"), 1, 1);
-		table.add(new OperationalFieldsMenu(), 2, 1);
+		int row = 1;
+		if (started){
+			table.add(getLocalizedString("cacc_create_files_batch started", "Batch started", iwc), 1, row++);
+		}
+
+		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "School category"), 1, row);
+		table.add(new OperationalFieldsMenu(), 2, row++);
 
 		int paymentDate = -1;
 		try {
@@ -141,10 +146,10 @@ public class CreateIFSFiles extends AccountingBlock {
 		period.setMaxlength(20);
 		period.setSize(20);
 
-		table.add(getLocalizedLabel(KEY_PAYMENT_DATE, "Payment date"), 1, 2);
-		table.add(date, 2, 2);
-		table.add(getLocalizedLabel(KEY_PERIOD_TEXT, "Period text for bill"), 1, 3);
-		table.add(period, 2, 3);
+		table.add(getLocalizedLabel(KEY_PAYMENT_DATE, "Payment date"), 1, row);
+		table.add(date, 2, row++);
+		table.add(getLocalizedLabel(KEY_PERIOD_TEXT, "Period text for bill"), 1, row);
+		table.add(period, 2, row);
 		
 
 		return table;
