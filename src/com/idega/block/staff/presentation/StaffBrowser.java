@@ -111,6 +111,8 @@ public class StaffBrowser extends Block implements IWBlock {
 
 	private boolean _showDivisionHeader = true;
 
+	private String extraAlignment = Table.HORIZONTAL_ALIGN_CENTER;
+
 	public StaffBrowser() {
 		setDefaultValues();
 	}
@@ -245,7 +247,7 @@ public class StaffBrowser extends Block implements IWBlock {
 		if (_showListTitle)
 			centeredColumn = 3;
 		for (int a = centeredColumn; a <= table.getColumns(); a++)
-			table.setColumnAlignment(a, "center");
+			table.setColumnAlignment(a, extraAlignment);
 		if (_nameWidth != null)
 			table.setWidth(1, _nameWidth);
 		_myTable.add(table, 1, row);
@@ -915,5 +917,9 @@ public class StaffBrowser extends Block implements IWBlock {
 	
 	public void setShowDivisionHeader(boolean showHeader) {
 		_showDivisionHeader = showHeader;
+	}
+	
+	public void setExtraColumnsAlignment(String alignment) {
+		extraAlignment = alignment;
 	}
 }
