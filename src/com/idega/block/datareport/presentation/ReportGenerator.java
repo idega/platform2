@@ -471,6 +471,7 @@ public class ReportGenerator extends Block {
 						} else {
 							_reportDescription = tmpReportDescriptionForCollectingData;
 						}
+						_reportDescription.setLocale(iwc.getCurrentLocale());
 					}
 				}
 
