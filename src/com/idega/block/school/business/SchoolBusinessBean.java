@@ -2526,27 +2526,24 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 	
-	public void addToSchoolClassMemberLog(User user, Date endDate) throws IllegalArgumentException {
-		addToSchoolClassMemberLog(user, null, null, endDate);
+	public void addToSchoolClassMemberLog(SchoolClassMember member, Date endDate, User performer) throws IllegalArgumentException {
+		addToSchoolClassMemberLog(member, null, null, endDate, performer);
 	}
 
-	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date endDate) throws IllegalArgumentException {
-		addToSchoolClassMemberLog(user, schoolClass, null, endDate);
+	public void addToSchoolClassMemberLog(SchoolClassMember member, SchoolClass schoolClass, Date endDate, User performer) throws IllegalArgumentException {
+		addToSchoolClassMemberLog(member, schoolClass, null, endDate, performer);
 	}
 
-	public void addToSchoolClassMemberLog(int userID, int schoolClassID, Date startDate, Date endDate) throws IllegalArgumentException {
+	public void addToSchoolClassMemberLog(int schoolClassMemberID, int schoolClassID, Date startDate, Date endDate, User performer) throws IllegalArgumentException {
 		try {
-			addToSchoolClassMemberLog(getUserBusiness().getUser(userID), getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID)), startDate, endDate);
+			addToSchoolClassMemberLog(getSchoolClassMemberHome().findByPrimaryKey(new Integer(schoolClassMemberID)), getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID)), startDate, endDate, performer);
 		}
 		catch (FinderException fe) {
 			log(fe);
 		}
-		catch (RemoteException re) {
-			log(re);
-		}
 	}
 	
-	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date startDate, Date endDate) throws IllegalArgumentException {
+	public void addToSchoolClassMemberLog(SchoolClassMember member, SchoolClass schoolClass, Date startDate, Date endDate, User performer) throws IllegalArgumentException {
 		boolean logPlacements = false;
 		try {
 			logPlacements = new Boolean(getIWApplicationContext().getIWMainApplication().getBundle("com.idega.block.school").getProperty(PROPERTY_NAME_USE_PLACEMENT_LOGGING, Boolean.FALSE.toString())).booleanValue();
@@ -2565,7 +2562,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		
 		if (startDate == null) {
 			try {
-				SchoolClassMemberLog log = getSchoolClassMemberLogHome().findOpenLogByUserAndSchoolClass(user, schoolClass);
+				SchoolClassMemberLog log = getSchoolClassMemberLogHome().findOpenLogByUserAndSchoolClass(member, schoolClass);
+				log.setUserTerminating(performer);
 				log.setEndDate(endDate);
 				log.store();
 			}
@@ -2576,7 +2574,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		else {
 			try {
 				SchoolClassMemberLog log = getSchoolClassMemberLogHome().create();
-				log.setUser(user);
+				log.setUserPlacing(performer);
 				log.setSchoolClass(schoolClass);
 				log.setStartDate(startDate);
 				log.setEndDate(endDate);

@@ -1,8 +1,8 @@
 /*
- * $Id: SchoolBusiness.java,v 1.89 2005/01/10 13:02:09 anders Exp $
- * Created on 27.12.2004
+ * $Id: SchoolBusiness.java,v 1.90 2005/01/10 14:05:36 laddi Exp $
+ * Created on 10.1.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/10 13:02:09 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.89 $
+ * @version $Revision: 1.90 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -475,15 +475,14 @@ public interface SchoolBusiness extends IBOService {
 	public Collection findAllSchoolTypesInCategory(String Category) throws java.rmi.RemoteException;
 
 	/**
-	 * @see com.idega.block.school.business.SchoolBusinessBean#findAllSchoolTypesInCategoryFreeTime
-	 */
-	public Collection findAllSchoolTypesInCategoryFreeTime(String Category) throws java.rmi.RemoteException;
-	
-	
-	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findAllSchoolTypesInCategory
 	 */
 	public Collection findAllSchoolTypesInCategory(String Category, boolean showFreetimeTypes) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#findAllSchoolTypesInCategoryFreeTime
+	 */
+	public Collection findAllSchoolTypesInCategoryFreeTime(String Category) throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getChildCareSchoolCategory
@@ -629,7 +628,7 @@ public interface SchoolBusiness extends IBOService {
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findStudentsInSchoolByDate
 	 */
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date, boolean showNotYetActive) throws java.rmi.RemoteException;
-	
+
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findStudentsInSchoolByDateChildcare
 	 */
@@ -963,21 +962,21 @@ public interface SchoolBusiness extends IBOService {
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#addToSchoolClassMemberLog
 	 */
-	public void addToSchoolClassMemberLog(User user, Date endDate) throws IllegalArgumentException, java.rmi.RemoteException;
+	public void addToSchoolClassMemberLog(SchoolClassMember member, Date endDate, User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#addToSchoolClassMemberLog
 	 */
-	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date endDate) throws IllegalArgumentException, java.rmi.RemoteException;
+	public void addToSchoolClassMemberLog(SchoolClassMember member, SchoolClass schoolClass, Date endDate, User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#addToSchoolClassMemberLog
 	 */
-	public void addToSchoolClassMemberLog(int userID, int schoolClassID, Date startDate, Date endDate) throws IllegalArgumentException, java.rmi.RemoteException;
+	public void addToSchoolClassMemberLog(int schoolClassMemberID, int schoolClassID, Date startDate, Date endDate, User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#addToSchoolClassMemberLog
 	 */
-	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date startDate, Date endDate) throws IllegalArgumentException, java.rmi.RemoteException;
+	public void addToSchoolClassMemberLog(SchoolClassMember member, SchoolClass schoolClass, Date startDate, Date endDate, User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 
 }

@@ -1,8 +1,8 @@
 /*
- * $Id: SchoolClassMemberLogHomeImpl.java,v 1.1 2005/01/04 13:52:25 laddi Exp $
- * Created on 27.12.2004
+ * $Id: SchoolClassMemberLogHomeImpl.java,v 1.2 2005/01/10 14:05:36 laddi Exp $
+ * Created on 10.1.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -14,14 +14,13 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOFactory;
-import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolClassMemberLogHome {
 
@@ -37,30 +36,30 @@ public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolCl
 		return (SchoolClassMemberLog) super.findByPrimaryKeyIDO(pk);
 	}
 
-	public Collection findAllByUser(User user) throws FinderException {
+	public Collection findAllBySchoolClassMember(SchoolClassMember member) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindAllByUser(user);
+		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindAllBySchoolClassMember(member);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public SchoolClassMemberLog findOpenLogByUser(User user) throws FinderException {
+	public SchoolClassMemberLog findOpenLogByUser(SchoolClassMember member) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindOpenLogByUser(user);
+		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindOpenLogByUser(member);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMemberLog findOpenLogByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException {
+	public SchoolClassMemberLog findOpenLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindOpenLogByUserAndSchoolClass(user, schoolClass);
+		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindOpenLogByUserAndSchoolClass(member, schoolClass);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
 
-	public SchoolClassMemberLog findLatestLogByUser(User user) throws FinderException {
+	public SchoolClassMemberLog findLatestLogByUser(SchoolClassMember member) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindLatestLogByUser(user);
+		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindLatestLogByUser(member);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}

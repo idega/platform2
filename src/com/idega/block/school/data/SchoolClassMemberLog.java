@@ -1,8 +1,8 @@
 /*
- * $Id: SchoolClassMemberLog.java,v 1.1 2005/01/04 13:52:24 laddi Exp $
- * Created on 27.12.2004
+ * $Id: SchoolClassMemberLog.java,v 1.2 2005/01/10 14:05:36 laddi Exp $
+ * Created on 10.1.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -17,22 +17,32 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface SchoolClassMemberLog extends IDOEntity {
 
 	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUser
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUserPlacing
 	 */
-	public User getUser();
+	public User getUserPlacing();
 
 	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUserID
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUserPlacingID
 	 */
-	public int getUserID();
+	public int getUserPlacingID();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUserTerminating
+	 */
+	public User getUserTerminating();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getUserTerminatingID
+	 */
+	public int getUserTerminatingID();
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getSchoolClass
@@ -45,6 +55,16 @@ public interface SchoolClassMemberLog extends IDOEntity {
 	public int getSchoolClassID();
 
 	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getSchoolClassMember
+	 */
+	public SchoolClassMember getSchoolClassMember();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getSchoolClassMemberID
+	 */
+	public int getSchoolClassMemberID();
+
+	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#getStartDate
 	 */
 	public Date getStartDate();
@@ -55,14 +75,24 @@ public interface SchoolClassMemberLog extends IDOEntity {
 	public Date getEndDate();
 
 	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUser
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUserPlacing
 	 */
-	public void setUser(User user);
+	public void setUserPlacing(User user);
 
 	/**
-	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUser
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUserPlacing
 	 */
-	public void setUser(Object userPK);
+	public void setUserPlacing(Object userPK);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUserTerminating
+	 */
+	public void setUserTerminating(User user);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setUserTerminating
+	 */
+	public void setUserTerminating(Object userPK);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setSchoolClass
@@ -73,6 +103,16 @@ public interface SchoolClassMemberLog extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setSchoolClass
 	 */
 	public void setSchoolClass(Object schoolClassPK);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setSchoolClassMember
+	 */
+	public void setSchoolClassMember(SchoolClassMember schoolClassMember);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setSchoolClassMember
+	 */
+	public void setSchoolClassMember(Object schoolClassMemberPK);
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setStartDate

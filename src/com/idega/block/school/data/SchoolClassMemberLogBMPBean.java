@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.1 2005/01/04 13:52:24 laddi Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.2 2005/01/10 14:05:36 laddi Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,17 +25,19 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
 	public final static String ENTITY_NAME = "sch_class_member_log";
 	
-	public final static String USER = "ic_user_id";
+	public final static String USER_PLACING = "placing_user";
+	public final static String USER_TERMINATING = "terminating_user";
 	public final static String SCHOOLCLASS = "sch_school_class_id";
+	public final static String SCHOOLCLASSMEMBER = "sch_class_member_id";
 	public final static String START_DATE = "start_date";
 	public final static String END_DATE = "end_date";
 
@@ -51,19 +53,29 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addManyToOneRelationship(USER, User.class);
+		addManyToOneRelationship(USER_PLACING, User.class);
+		addManyToOneRelationship(USER_TERMINATING, User.class);
 		addManyToOneRelationship(SCHOOLCLASS, SchoolClass.class);
+		addManyToOneRelationship(SCHOOLCLASSMEMBER, SchoolClassMember.class);
 		addAttribute(START_DATE, "Starting date of placement", Date.class);
 		addAttribute(END_DATE, "End date of placement", Date.class);
 	}
 
 	//Getters
-	public User getUser() {
-		return (User) getColumnValue(USER);
+	public User getUserPlacing() {
+		return (User) getColumnValue(USER_PLACING);
 	}
 	
-	public int getUserID() {
-		return getIntColumnValue(USER);
+	public int getUserPlacingID() {
+		return getIntColumnValue(USER_PLACING);
+	}
+	
+	public User getUserTerminating() {
+		return (User) getColumnValue(USER_TERMINATING);
+	}
+	
+	public int getUserTerminatingID() {
+		return getIntColumnValue(USER_TERMINATING);
 	}
 	
 	public SchoolClass getSchoolClass() {
@@ -72,6 +84,14 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	
 	public int getSchoolClassID() {
 		return getIntColumnValue(SCHOOLCLASS);
+	}
+	
+	public SchoolClassMember getSchoolClassMember() {
+		return (SchoolClassMember) getColumnValue(SCHOOLCLASSMEMBER);
+	}
+	
+	public int getSchoolClassMemberID() {
+		return getIntColumnValue(SCHOOLCLASSMEMBER);
 	}
 	
 	public Date getStartDate() {
@@ -83,12 +103,20 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	}
 	
 	//Setters
-	public void setUser(User user) {
-		setColumn(USER, user);
+	public void setUserPlacing(User user) {
+		setColumn(USER_PLACING, user);
 	}
 	
-	public void setUser(Object userPK) {
-		setColumn(USER, userPK);
+	public void setUserPlacing(Object userPK) {
+		setColumn(USER_PLACING, userPK);
+	}
+	
+	public void setUserTerminating(User user) {
+		setColumn(USER_TERMINATING, user);
+	}
+	
+	public void setUserTerminating(Object userPK) {
+		setColumn(USER_TERMINATING, userPK);
 	}
 	
 	public void setSchoolClass(SchoolClass schoolClass) {
@@ -97,6 +125,14 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	
 	public void setSchoolClass(Object schoolClassPK) {
 		setColumn(SCHOOLCLASS, schoolClassPK);
+	}
+	
+	public void setSchoolClassMember(SchoolClassMember schoolClassMember) {
+		setColumn(SCHOOLCLASSMEMBER, schoolClassMember);
+	}
+	
+	public void setSchoolClassMember(Object schoolClassMemberPK) {
+		setColumn(SCHOOLCLASSMEMBER, schoolClassMemberPK);
 	}
 	
 	public void setStartDate(Date startDate) {
@@ -108,27 +144,27 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByUser(User user) throws FinderException {
+	public Collection ejbFindAllBySchoolClassMember(SchoolClassMember member) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		query.addOrder(new Order(new Column(table, START_DATE), true));
 		
 		return idoFindPKsByQuery(query);
 	}
 	
-	public Integer ejbFindOpenLogByUser(User user) throws FinderException {
-		return ejbFindOpenLogByUserAndSchoolClass(user, null);
+	public Integer ejbFindOpenLogByUser(SchoolClassMember member) throws FinderException {
+		return ejbFindOpenLogByUserAndSchoolClass(member, null);
 	}
 	
-	public Integer ejbFindOpenLogByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException {
+	public Integer ejbFindOpenLogByUserAndSchoolClass(SchoolClassMember member, SchoolClass schoolClass) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		if (schoolClass != null) {
 			query.addCriteria(new MatchCriteria(table, SCHOOLCLASS, MatchCriteria.EQUALS, schoolClass));
 		}
@@ -137,12 +173,12 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindLatestLogByUser(User user) throws FinderException {
+	public Integer ejbFindLatestLogByUser(SchoolClassMember member) throws FinderException {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
 		query.addColumn(new WildCardColumn());
-		query.addCriteria(new MatchCriteria(table, USER, MatchCriteria.EQUALS, user));
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
 		query.addOrder(new Order(new Column(table, START_DATE), false));
 		
 		return (Integer) idoFindOnePKByQuery(query);
