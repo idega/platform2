@@ -146,7 +146,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     for (int i = 0; i < files.length; i++) {
     	File file = files[i];
     	long modifiedFile = file.lastModified();
-    	if (currentTime - file.lastModified() > 300000)	{
+    	if (currentTime - modifiedFile > 300000)	{
     		String pathToFile = file.getAbsolutePath();
     		FileUtil.deleteAllFilesInDirectory(pathToFile);
     		file.delete();
