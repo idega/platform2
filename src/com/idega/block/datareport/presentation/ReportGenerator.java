@@ -406,17 +406,19 @@ public class ReportGenerator extends Block {
 									isHidden = iHandler instanceof HiddenInputHandler;
 								}
 
-								if (iHandler != null && !isHidden) {
+								if (iHandler != null) {
 									obj = iHandler.getResultingObject(prmValues, iwc);
 									String displayNameOfValue = iHandler.getDisplayNameOfValue(obj, iwc);
-									if (displayNameOfValue != null) {
+									if (displayNameOfValue != null && !isHidden) {
 										_parameterMap.put(clDesc.getName(), displayNameOfValue);
 									}
 								}
-								else if (!isHidden){
+								else {
 									//ONLY HANDLES ONE VALUE!
 									obj = getParameterObject(iwc, prm, prmClassType);
-									_parameterMap.put(clDesc.getName(), prm);
+									if (!isHidden) {
+										_parameterMap.put(clDesc.getName(), prm);
+									}
 								}
 
 								if (!isHidden) {
