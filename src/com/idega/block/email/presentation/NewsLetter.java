@@ -59,6 +59,7 @@ public class NewsLetter extends CategoryBlock {
 
   private int viewType = DROP;
   private String _inputStyle = "";
+  private String _checkBoxStyle = "";
   private String _checkFontStyle = "";
   private int _inputLength = 0;
   private String _inputWidth = null;
@@ -265,6 +266,7 @@ public class NewsLetter extends CategoryBlock {
 	      while (iter.hasNext()) {
 					EmailTopic tpc = (EmailTopic) iter.next();
 					chk = new CheckBox("nl_list",String.valueOf(tpc.getListId()));
+					chk.setStyleAttribute(_checkBoxStyle);
 					T.add(chk, 1, row);
 					Text tpcName = new Text(tpc.getName());
 					tpcName.setFontStyle(_checkFontStyle);
@@ -417,6 +419,13 @@ public class NewsLetter extends CategoryBlock {
   */
   public void setInputStyle(String inputStyle){
     _inputStyle = inputStyle;
+  }
+  /**
+   * Sets the checkBox style attribute 
+   * @param checkBoxStyle
+   */
+  public void setCheckBoxStyle(String checkBoxStyle) {
+  		_checkBoxStyle = checkBoxStyle;
   }
 
   /**
