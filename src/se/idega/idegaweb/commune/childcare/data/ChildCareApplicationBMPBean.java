@@ -734,7 +734,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
 		if (caseCode != null) {
-			sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
 		}
 
 		return idoGetNumberOfRecords(sql);
