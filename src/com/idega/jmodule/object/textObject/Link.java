@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.43 2001/09/27 12:53:05 laddi Exp $
+ * $Id: Link.java,v 1.44 2001/09/27 13:31:17 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -339,6 +339,20 @@ public class Link extends Text {
    */
   public void setOnBlur(String s) {
     setOnEvent("onblur",s);
+  }
+
+  /**
+   *
+   */
+  public void setOnMouseOver(String s) {
+    setOnEvent("onmouseover",s);
+  }
+
+  /**
+   *
+   */
+  public void setOnMouseOut(String s) {
+    setOnEvent("onmouseout",s);
   }
 
   /**

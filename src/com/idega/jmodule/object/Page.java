@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.24 2001/09/27 12:52:55 laddi Exp $
+ * $Id: Page.java,v 1.25 2001/09/27 13:30:59 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,9 +31,10 @@ public class Page extends ModuleObjectContainer {
   private String _linkColor = "#000000";
   private String _visitedColor = "#000000";
   private String _hoverColor = "#000000";
-  private String _textDecoration = "underline";
+  private String _textDecoration = "none";
+  private String _hoverDecoration = "underline";
   private String _pageStyleFont = Text.FONT_FACE_ARIAL;
-  private String _pageStyleFontSize = Text.FONT_SIZE_7_STYLE_TAG;
+  private String _pageStyleFontSize = Text.FONT_SIZE_10_STYLE_TAG;
   private String _pageStyleFontStyle = Text.FONT_FACE_STYLE_NORMAL;
   private String _styleSheetURL = "/style/style.css";
   private boolean _addStyleSheet = false;
@@ -116,9 +117,9 @@ public class Page extends ModuleObjectContainer {
   }
 
   private void setDefaultValues() {
-	  setStyleDefinition("A:link","color:"+_linkColor+"; text-decoration:"+_textDecoration+";");
-    setStyleDefinition("A:visited","color:"+_visitedColor+"; text-decoration:"+_textDecoration+";");
-    setStyleDefinition("A:hover","color:"+_hoverColor+"; text-decoration:"+_textDecoration+";");
+	  setStyleDefinition("A:link","color:"+_linkColor+"; font-size: "+_pageStyleFontSize+"; text-decoration:"+_textDecoration+";");
+    setStyleDefinition("A:visited","color:"+_visitedColor+"; font-size: "+_pageStyleFontSize+"; text-decoration:"+_textDecoration+";");
+    setStyleDefinition("A:hover","color:"+_hoverColor+"; font-size: "+_pageStyleFontSize+"; text-decoration:"+_hoverDecoration+";");
     setStyleDefinition("body","font-family: "+_pageStyleFont+"; font-size: "+_pageStyleFontSize+"; font-style: "+_pageStyleFontStyle+";");
   }
 
@@ -159,6 +160,13 @@ public class Page extends ModuleObjectContainer {
    */
   public void setTextDecoration(String textDecoration) {
     _textDecoration = textDecoration;
+  }
+
+  /**
+   *
+   */
+  public void setHoverDecoration(String hoverDecoration) {
+    _hoverDecoration = hoverDecoration;
   }
 
   /**
