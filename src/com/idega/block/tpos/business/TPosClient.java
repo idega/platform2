@@ -48,9 +48,12 @@ public class TPosClient {
     else
       path = path + _iwb.getProperty("properties_file");
 
+    System.out.println("Path = " + path);
+
     try {
       _client = new TPOS3Client(path);
       String ipset = _iwb.getProperty(TPOS_IP_SET);
+      System.out.println("ipset = " + ipset);
       _client.setIPSet(Integer.parseInt(ipset));
       _userId = _iwb.getProperty(TPOS_USER_ID);
       _passwd = _iwb.getProperty(TPOS_PASSWD);
@@ -86,6 +89,10 @@ public class TPosClient {
   }
 
   public boolean getCACertifycate() {
+    System.out.println("_merchantId = " + _merchantId);
+    System.out.println("_locationId = " + _locationId);
+    System.out.println("_posId = " + _posId);
+
     _client.setProperty(TPOS3Client.PN_MERCHANTID,_merchantId);
     _client.setProperty(TPOS3Client.PN_LOCATIONID,_locationId);
     _client.setProperty(TPOS3Client.PN_POSID,_posId);
