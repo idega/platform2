@@ -81,8 +81,13 @@ public class CalendarEntryCreator extends Form{
 	public static String modifyOneOrManyRadioButtonParameterName = "oneOrManyRadioButton";
 	public static String modifyOneRadioButtonParameterName = "oneRadioButton";
 	public static String modifyManyRadioButtonParameterName = "manyRadioButton";
+	public static String groupOrLedger = "calendarEntry.group_or_ledger";
 	public static String oneValue = "one";
 	public static String manyValue = "many";
+	
+//	private static final String HELP_TEXT_KEY = "create_entry";
+	
+//	public static boolean isEntrySet = false;
 	
 	private String mainTableStyle = "main";
 	private String borderAllWhite = "borderAllWhite";
@@ -91,6 +96,7 @@ public class CalendarEntryCreator extends Form{
 	private String styledLink = "styledLink";
 	private String boldText = "bold";
 	private String headlineFont = "headline";
+	private String menuTableStyle = "menu";
 	
 	private String oneOrMany = "one";
 		
@@ -117,6 +123,7 @@ public class CalendarEntryCreator extends Form{
 	private Text changeEntryText;
 	private Text modifyOneText;
 	private Text modifyManyText;
+	private Text groupOrLedgerText;
 	
 	//fields
 	private TextInput headlineField;
@@ -163,7 +170,7 @@ public class CalendarEntryCreator extends Form{
 	 * initializes text
 	 * @param iwc
 	 */
-	public void initializeTexts(IWContext iwc) {
+	private void initializeTexts(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		headlineText = new Text(iwrb.getLocalizedString(headlineFieldParameterName,"Name"));
 		headlineText.setStyleClass(boldText);
@@ -203,34 +210,31 @@ public class CalendarEntryCreator extends Form{
 		locationText.setStyleClass(boldText);
 		createNewText = new Text(iwrb.getLocalizedString(createNewEntryParameterName, "Create new entry"));
 		createNewText.setStyleClass(headlineFont);
+		createNewText.setBold();
 		changeEntryText = new Text(iwrb.getLocalizedString(changeEntryParameterName, "Change entry"));
 		changeEntryText.setStyleClass(headlineFont);
-		modifyOneText = new Text(iwrb.getLocalizedString(modifyOneRadioButtonParameterName, "Delete/Change a single entry"));
+		changeEntryText.setBold();
+		modifyOneText = new Text(iwrb.getLocalizedString(modifyOneRadioButtonParameterName, "Change a single entry"));
 		modifyOneText.setStyleClass(boldText);
-		modifyManyText = new Text(iwrb.getLocalizedString(modifyManyRadioButtonParameterName, "Delete/Change group of entries"));
+		modifyManyText = new Text(iwrb.getLocalizedString(modifyManyRadioButtonParameterName, "Change group of entries"));
 		modifyManyText.setStyleClass(boldText);
+		groupOrLedgerText = new Text(iwrb.getLocalizedString(groupOrLedger,"Save entry for group or ledger?"));
+		groupOrLedgerText.setStyleClass(boldText);
 	}
 	/**
 	 * initialized fields
 	 * @param iwc
 	 */
-	public void initializeFields(IWContext iwc) {
+	private void initializeFields(IWContext iwc, CalendarEntry entry) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		CalBusiness calBusiness = getCalBusiness(iwc);
-		CalendarEntry entry = null;
-
-		entryIDString = iwc.getParameter(entryIDParameterName);
-		if(entryIDString == null || entryIDString.equals("")) {
-			entryIDString = "";
-		}
-		else {
-			entry = getCalBusiness(iwc).getEntry(Integer.parseInt(entryIDString));
-		}
 				
 		headlineField = new TextInput(headlineFieldParameterName);
 		
-		generalField =new SelectOption(generalText.toString(),practiceFieldParameterName);
 		practiceField =new SelectOption(practiceText.toString(),generalFieldParameterName);
+		practiceField.setSelected(true);
+		generalField =new SelectOption(generalText.toString(),practiceFieldParameterName);
+		
 		
 		typeField = new DropdownMenu(typeFieldParameterName);
 		
@@ -340,29 +344,29 @@ public class CalendarEntryCreator extends Form{
 		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());
 				
 		//if some entry is selected, data is printed in the fields
-		if(entryIDString != null && !entryIDString.equals("")) {
+//		if(entryIDString != null && !entryIDString.equals("")) {
 			
+		if(entry != null) {
+			
+//			isEntrySet = true;
 			modifyOneRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,oneValue);
 			modifyOneRadioButton.setSelected();
 			modifyManyRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,manyValue);
-						
+			
 			newEntryLink = new Link(iwrb.getLocalizedString("new_entry","New Entry"));
 			newEntryLink.addParameter(entryIDParameterName,"");
 			newEntryLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
-			newEntryLink.setStyleClass(styledLink);
+//			newEntryLink.setStyleClass(styledLink);
+			newEntryLink.setAsImageButton(true,true);
 			
 			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
-			deleteLink.setParameter("del","del");
 			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
-			deleteLink.setToFormSubmit(this);
-//			deleteLink.setOnClick("findObj('"+ modifyOneOrManyRadioButtonParameterName +"').value='"+ u.getPrimaryKey() +"';");
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
-//			deleteLink.addParameter(modifyOneOrManyRadioButtonParameterName,iwc.getParameter(modifyOneOrManyRadioButtonParameterName));
 			deleteLink.addParameter(CalendarView.ACTION,"");
 			deleteLink.setAsImageButton(true,true);
-						
+			
 			headlineField.setContent(entry.getName());
 			typeField.setSelectedElement(entry.getEntryType());
 			repeatField.setSelectedElement(entry.getRepeat());
@@ -376,7 +380,7 @@ public class CalendarEntryCreator extends Form{
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-									
+			
 			
 			IWTimestamp iwFrom = new IWTimestamp(entry.getDate());
 			Date dateF = iwFrom.getDate();
@@ -396,7 +400,10 @@ public class CalendarEntryCreator extends Form{
 			
 			descriptionField.setContent(entry.getDescription());
 			
-		}		
+		}
+			
+			
+//		}		
 		else if(displayingTimeConflict) {
 			String entryAttendees = iwc.getParameter(attendeesFieldParameterName);
 			if(entryAttendees == null || entryAttendees.equals(""))
@@ -426,59 +433,134 @@ public class CalendarEntryCreator extends Form{
 	 * lines up the gui - for editing entries
 	 * @return form containing the gui table
 	 */
-	public Table lineUpEdit(IWContext iwc) {
+	private Table lineUpEdit(IWContext iwc, CalendarEntry entry) {
 		Table table = new Table();
-		table.setStyleClass(mainTableStyle);
+		table.setStyleClass(borderAllWhite);
 		table.setCellspacing(0);
-		table.setCellpadding(2);
-//		table.mergeCells(1,1,4,1);
-//		table.setAlignment(1,1,"center");
-		table.setStyleClass(1,1,borderBottomStyle);
+		table.setCellpadding(0);
+		table.setStyleClass(1,1,menuTableStyle);
+		table.setHeight(1,1,20);
 		
-		table.add(headlineText,1,2);
-		table.add(headlineField,1,3);
-		table.add(typeText,1,4);
-		table.add(typeField,1,5);
-		table.add(repeatText,1,6);
-		table.add(repeatField,1,7);
-		table.add(attendeesText,1,8);
-		table.add(attendeesField,1,9);
-		table.add(ledgerText,1,10);
-		table.add(ledgerField,1,11);
-		table.add(dayFromText,1,12);
-		table.add(dayFromField,1,13);
-		table.add(timeFromText,2,12);
-		table.add(timeFromField,2,13);
-		table.add(dayToText,1,14);
-		table.add(dayToField,1,15);
-		table.add(timeToText,2,14);
-		table.add(timeToField,2,15);
-		table.add(locationText,1,16);
-		table.add(locationField,1,17);
-		table.add(descriptionText,1,18);
-		table.add(descriptionField,1,19);
-		table.setAlignment(4,20,"right");		
-		table.add(save,4,20);
-		table.add(Text.NON_BREAKING_SPACE,4,20);
-		table.add(reset,4,20);
-		String entryIDString = iwc.getParameter(entryIDParameterName);
-		if(entryIDString != null && !entryIDString.equals("")) {
-			table.add(changeEntryText,1,1);
-			table.add(newEntryLink,4,1);
-			table.add(modifyOneRadioButton,1,20);
-			table.add(Text.NON_BREAKING_SPACE,1,20);
-			table.add(modifyOneText,1,20);
-			table.add(Text.BREAK,1,20);
-			table.add(modifyManyRadioButton,1,20);
-			table.add(Text.NON_BREAKING_SPACE,1,20);
-			table.add(modifyManyText,1,20);
-			table.add(Text.NON_BREAKING_SPACE,4,20);
-			table.add(deleteLink,4,20);
+		Table topTable = new Table();
+		topTable.setWidth("100%");
+		topTable.setCellspacing(0);
+		topTable.setCellpadding(0);
+		topTable.setAlignment(1,1,"center");
+		
+		if(entry != null) {
+			topTable.add(changeEntryText,1,1);			
+			Table buttonTableTop = new Table();
+			buttonTableTop.setCellspacing(0);
+			buttonTableTop.setCellpadding(2);
+			buttonTableTop.setWidth("100%");
+			buttonTableTop.add(modifyOneRadioButton,1,1);
+			buttonTableTop.add(Text.NON_BREAKING_SPACE,1,1);
+			buttonTableTop.add(modifyOneText,1,1);
+			buttonTableTop.add(modifyManyRadioButton,1,2);
+			buttonTableTop.add(Text.NON_BREAKING_SPACE,1,2);
+			buttonTableTop.add(modifyManyText,1,2);
+						
+			buttonTableTop.add(newEntryLink,2,1);
+			
+			buttonTableTop.add(deleteLink,3,1);
+			table.add(buttonTableTop,1,2);
 		}
 		else {
-			table.add(createNewText,1,1);
-		}
-		//the hidden inputs are added to maintain parameters
+			topTable.add(createNewText,1,1);
+		}		
+		table.add(topTable,1,1);
+		
+		Table headlineTable = new Table();
+		headlineTable.setCellpadding(2);
+		headlineTable.setCellspacing(0);
+		headlineTable.setWidth("100%");
+		headlineTable.add(headlineText,1,1);
+		headlineTable.add(headlineField,1,2);
+		
+		table.add(headlineTable,1,3);
+		
+		Table typeTable = new Table();
+		typeTable.setCellpadding(2);
+		typeTable.setCellspacing(0);
+		typeTable.setWidth("100%");
+		typeTable.add(typeText,1,1);
+		typeTable.add(typeField,1,2);
+		
+		table.add(typeTable,1,4);
+		
+		Table repeatTable = new Table();
+		repeatTable.setCellpadding(2);
+		repeatTable.setCellspacing(0);
+		repeatTable.setWidth("100%");
+		repeatTable.add(repeatText,1,1);
+		repeatTable.add(repeatField,1,2);
+		
+		table.add(repeatTable,1,5);
+		
+		Table dayTable = new Table();
+		dayTable.setWidth("100%");
+		dayTable.add(dayFromText,1,1);
+		dayTable.add(dayFromField,1,2);
+		dayTable.add(dayToText,2,1);
+		dayTable.add(dayToField,2,2);
+		
+		table.add(dayTable,1,6);
+		
+		Table timeTable = new Table();
+		timeTable.setWidth("100%");
+		timeTable.add(timeFromText,1,1);
+		timeTable.add(timeFromField,1,2);
+		timeTable.add(timeToText,2,1);
+		timeTable.add(timeToField,2,2);
+		
+		table.add(timeTable,1,7);
+		
+		Table locationTable = new Table();
+		locationTable.setCellpadding(2);
+		locationTable.setCellspacing(0);	
+		locationTable.setWidth("100%");
+		locationTable.add(locationText,1,1);
+		locationTable.add(locationField,1,2);
+		
+		table.add(locationTable,1,8);
+		
+		Table descTable = new Table();
+		descTable.setCellpadding(2);
+		descTable.setCellspacing(0);
+		descTable.setWidth("100%");
+		descTable.add(descriptionText,1,1);
+		descTable.add(descriptionField,1,2);
+		
+		table.add(descTable,1,9);
+		
+		Table glTextTable = new Table();
+		glTextTable.setCellpadding(2);
+		glTextTable.setCellspacing(0);
+		glTextTable.setWidth("100%");
+		glTextTable.add(groupOrLedgerText,1,1);
+		
+		table.add(glTextTable,1,10);
+		
+		Table glTable = new Table();
+		glTable.setWidth("100%");
+		glTable.add(ledgerText,1,1);
+		glTable.add(ledgerField,1,2);
+		glTable.add(attendeesText,2,1);
+		glTable.add(attendeesField,2,2);
+		
+		table.add(glTable,1,11);
+		
+		Table buttonTable = new Table();
+		buttonTable.setCellpadding(2);
+		buttonTable.setCellspacing(0);
+		buttonTable.setWidth("100%");
+//		buttonTable.add(help);
+		buttonTable.setAlignment(2,1,"right");		
+		buttonTable.add(save,2,1);
+		buttonTable.add(Text.NON_BREAKING_SPACE,2,1);
+		buttonTable.add(reset,2,1);
+		
+		table.add(buttonTable,1,12);
 
 		return table;
 	}
@@ -528,7 +610,10 @@ public class CalendarEntryCreator extends Form{
 		if(entryLedger != null && !entryLedger.equals("") && !entryLedger.equals("-1")) {
 			ledgerID = Integer.parseInt(entryLedger);
 			CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
-			ledStartTime = ledger.getDate();
+			if(ledger != null) {
+				ledStartTime = ledger.getDate();
+			}
+			
 		}
 
 		if(from.getHours() > to.getHours() || (from.getHours() == to.getHours() && from.getMinutes() > to.getMinutes())) {
@@ -547,20 +632,30 @@ public class CalendarEntryCreator extends Form{
 		}
 		else {
 			if(entryID != null && !entryID.equals("")) {
-				CalendarEntry entry = calBus.getEntry(Integer.parseInt(entryID));
-				List entries = null;
-				if(entryModifyOneOrMany.equals(manyValue)) {
-					entries = new ArrayList(calBus.getEntriesByEntryGroupID(entry.getEntryGroupID()));
-					Iterator entryIter = entries.iterator();
-					while(entryIter.hasNext()) {
-						CalendarEntry currentEntry = (CalendarEntry) entryIter.next();
-						int currentEntryID = currentEntry.getEntryID();
-						calBus.updateEntry(currentEntryID,entryHeadline, user, entryType, entryRepeat, currentEntry.getDate().toString(),entryTimeHour, entryTimeMinute, currentEntry.getEndDate().toString(), entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );
-						
-					}
+				CalendarEntry entry = null;
+				try{
+					entry = calBus.getEntry(Integer.parseInt(entryID));
+				}catch(Exception fe) {
+					entry = null;
 				}
+				if(entry != null) {
+					List entries = null;
+					if(entryModifyOneOrMany.equals(manyValue)) {
+						entries = new ArrayList(calBus.getEntriesByEntryGroupID(entry.getEntryGroupID()));
+						Iterator entryIter = entries.iterator();
+						while(entryIter.hasNext()) {
+							CalendarEntry currentEntry = (CalendarEntry) entryIter.next();
+							int currentEntryID = currentEntry.getEntryID();
+							calBus.updateEntry(currentEntryID,entryHeadline, user, entryType, entryRepeat, currentEntry.getDate().toString(),entryTimeHour, entryTimeMinute, currentEntry.getEndDate().toString(), entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );
+							
+						}
+					}
+					else {
+						calBus.updateEntry(Integer.parseInt(entryID),entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );				
+					}
+				}	
 				else {
-					calBus.updateEntry(Integer.parseInt(entryID),entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );				
+					calBus.createNewEntry(entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);
 				}
 			}
 			else {
@@ -571,24 +666,35 @@ public class CalendarEntryCreator extends Form{
 	
 	public void main(IWContext iwc) {
 		setName("form");
+		CalendarEntry entry = null;
+
+		entryIDString = iwc.getParameter(entryIDParameterName);
+		if(entryIDString == null || entryIDString.equals("")) {
+			entryIDString = "";
+		}
+		else {
+			try {
+				entry = getCalBusiness(iwc).getEntry(Integer.parseInt(entryIDString));
+			}catch(Exception e) {
+				entry = null;
+			}
+			
+		}
+		String s = iwc.getParameter(saveButtonParameterName);
+		if(s != null) {
+			entry = null;
+		}
+		
 		initializeTexts(iwc);
-		initializeFields(iwc);
+		initializeFields(iwc, entry);
 				
 		add(hiddenView);
 		add(hiddenYear);
 		add(hiddenMonth);
 		add(hiddenDay);
 		add(hiddenEntryID);
-		
-		String del = iwc.getParameter("del");
-		System.out.println("del: " + del);
-		
-		if(iwc.getParameter("del") != null && !iwc.getParameter("del").equals("")) {
-			String mod = iwc.getParameter(modifyOneOrManyRadioButtonParameterName);
-			System.out.println("mod: " + mod);
-		}
 
-		add(lineUpEdit(iwc));
+		add(lineUpEdit(iwc,entry));
 	}
 	
 	public String getBundleIdentifier() {

@@ -3,6 +3,7 @@
  */
 package com.idega.block.cal.business;
 
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.cal.data.AttendanceEntity;
 import com.idega.block.cal.data.AttendanceEntityHome;
@@ -54,8 +57,10 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		try {
 			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
 			entry = entryHome.findByPrimaryKey(id);
-		} catch(Exception e) {
-			e.printStackTrace();
+		} catch(FinderException e) {
+			entry = null;
+		} catch(RemoteException re) {
+			re.printStackTrace();
 		}
 		return entry;		
 	}
@@ -202,7 +207,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			CalendarLedgerHome ledgerHome = (CalendarLedgerHome) getIDOHome(CalendarLedger.class);
 			ledger = ledgerHome.findByPrimaryKey(id);
 		} catch(Exception e) {
-			e.printStackTrace();
+			ledger = null;
 		}
 		return ledger;
 	}
@@ -312,8 +317,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	
 	public void deleteEntry(int entryID) {		
 		CalendarEntry entry = getEntry(entryID);
+		int entryGroupID = entry.getEntryGroupID();
+		CalendarEntryGroup entryGroup = getEntryGroup(entryGroupID);
 		if (entry != null) {
 			try {
+				entryGroup.removeOneEntryRelation(entry);
 				entry.remove();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
@@ -874,7 +882,6 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		stamp.setMinutes(0);
 		stamp.setSeconds(0);
 		stamp.setNanos(0);
-		System.out.println("stamp: " + stamp.toString());
 		
 		try {
 			group = getGroupBusiness(iwc).getGroupByGroupID(groupID);

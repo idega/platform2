@@ -55,6 +55,7 @@ public class CalendarView extends Block{
 	private int endHour = 24;
 	private String borderWhiteTableStyle = "borderAllWhite";
 	private String mainTableStyle = "main";
+	private String menuTableStyle = "menu";
 	private String styledLink = "styledLink";
 	private String entryLink = "entryLink";
 	private String entryLinkActive = "entryLinkActive";
@@ -606,14 +607,28 @@ public class CalendarView extends Block{
 					headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
 					headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 					headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
-					headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
+					headlineLink.addParameter(CalendarEntryCreator.entryIDParameterName, entry.getPrimaryKey().toString());
 					if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
 						headlineLink.setWindowToOpen(EntryInfoWindow.class);
 					}
 					headlineLink.setStyleClass(entryLink);
-					String e = iwc.getParameter("entryID");
-					if(e != null && !e.equals("")) {
-						if(e.equals(entry.getPrimaryKey().toString())) {
+					
+					//TODO: something - the headlineLink is entryLinkActive even though calentrycreator is empty
+					String e = iwc.getParameter(CalendarEntryCreator.entryIDParameterName);
+					CalendarEntry ent = null;
+					if(e == null || e.equals("")) {
+						e = "";
+					}
+					else {
+						try {
+							ent = getCalBusiness(iwc).getEntry(Integer.parseInt(e));
+						}catch(Exception ex) {
+							ent = null;
+						}
+						
+					}
+					if(ent != null) {
+						if(ent.getPrimaryKey().equals(entry.getPrimaryKey())) {
 							headlineLink.setStyleClass(entryLinkActive);
 						}
 					}
@@ -853,36 +868,57 @@ public class CalendarView extends Block{
 		
 		if(iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) { 
 			table.setWidth(800);
+			Table headlineTable = new Table();
+			headlineTable.setCellpadding(0);
+			headlineTable.setCellspacing(0);
+			headlineTable.setStyleClass(menuTableStyle);
+			headlineTable.setWidth("100%");
 			Text ledgerText = new Text(iwrb.getLocalizedString("calendarView.ledgers", "Ledgers"));
 			ledgerText.setStyleClass(headline);
-			table.add(ledgerText,3,1);
-			table.add("<br>",3,1);
+			ledgerText.setBold();
+			headlineTable.setAlignment(1,1,"center");
+			headlineTable.add(ledgerText,1,1);
+			table.setStyleClass(3,1,borderWhiteTableStyle);
+			table.add(headlineTable,3,1);
+			
+			int row = 1;
+			Table ledgerListTable = new Table();
+			ledgerListTable.setCellpadding(2);
+			ledgerListTable.setCellspacing(0);
 			
 			Iterator ledgerIter = getCalBusiness(iwc).getAllLedgers().iterator();
 			while(ledgerIter.hasNext()) {
 				CalendarLedger ledger = (CalendarLedger) ledgerIter.next();
 				Link ledgerLink =new Link(ledger.getName());
 				ledgerLink.setStyleClass(styledLink);
-				ledgerLink.addParameter("ledger",ledger.getPrimaryKey().toString());
+				ledgerLink.addParameter(LedgerWindow.LEDGER,ledger.getPrimaryKey().toString());
 				ledgerLink.addParameter(CalendarParameters.PARAMETER_DAY,timeStamp.getDay());
 				ledgerLink.addParameter(CalendarParameters.PARAMETER_MONTH,timeStamp.getMonth());
 				ledgerLink.addParameter(CalendarParameters.PARAMETER_YEAR,timeStamp.getYear());
 				ledgerLink.setWindowToOpen(LedgerWindow.class);
 				if(user != null) {
-					if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID() || user.getPrimaryGroupID() == ledger.getCoachGroupID()) {
-						table.add(ledgerLink,3,1);
-						table.add("<br>",3,1);
+					if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID() || user.getPrimaryGroupID() == ledger.getCoachGroupID()) {						
+						ledgerListTable.add(" - ",1,row);
+						ledgerListTable.add(ledgerLink,1,row++);
 					}			
 				}
 				
 			}
+			table.add(ledgerListTable,3,1);
+			Table newLedgerTable = new Table();
+			newLedgerTable.setWidth("100%");
+			newLedgerTable.setCellpadding(0);
+			newLedgerTable.setCellspacing(0);
 			Text linkText = new Text(iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger"));
 			Link newLedgerLink = new Link(linkText);
-			newLedgerLink.setStyleClass(styledLink);
+//			newLedgerLink.setStyleClass(styledLink);
 			newLedgerLink.setWindowToOpen(CreateLedgerWindow.class);
-			table.add("<br>",3,1);
-			table.setStyleClass(3,1,"main");
-			table.add(newLedgerLink,3,1);
+			newLedgerLink.setAsImageButton(true,true);
+			newLedgerTable.setAlignment(1,1,"right");
+			newLedgerTable.add(newLedgerLink,1,1);
+			
+			table.add(newLedgerTable,3,1);
+			
 			table.setHeight(3,3,"200");
 			table.add(creator,3,3);	
 		}	

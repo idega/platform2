@@ -13,6 +13,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 
 /**
@@ -49,11 +50,11 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
   public void main(IWContext iwc){
       setTitle("Confirm delete");
       
-      String entryOrLedger = iwc.getParameter(PRM_ENTRY_OR_LEDGER);
+      String typeOfObject = iwc.getParameter(PRM_ENTRY_OR_LEDGER);
       
       boolean doConfirm = !(iwc.getParameter(PRM_CONFIRM)!=null || iwc.getParameter(PRM_CONFIRM+".x")!=null);
       if(doConfirm){
-        add(getConfirmBox(iwc),iwc);
+        add(getConfirmBox(iwc,typeOfObject),iwc);
       }
       else{
       	Link l = new Link();
@@ -63,31 +64,33 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
         String id = iwc.getParameter(PRM_DELETE_ID);
         String modifyOneOrMany = iwc.getParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
         try {
-        	if(entryOrLedger.equals(CalendarEntryCreator.ENTRY)) {
+        	if(typeOfObject.equals(CalendarEntryCreator.ENTRY)) {
         		if(modifyOneOrMany.equals(CalendarEntryCreator.oneValue)) {
         			getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
         		}
         		else if(modifyOneOrMany.equals(CalendarEntryCreator.manyValue)) {
-        			getCalendarBusiness(iwc).deleteEntryGroup(Integer.parseInt(id));
+        			getCalendarBusiness(iwc).deleteEntryGroupByEntryID(Integer.parseInt(id));
         		}
-        		l.setWindowToOpen(CalendarWindow.class);
-//       setOnLoad("window.opener.close()"); 
-        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-        		setOnLoad(script);
+        		setOnUnLoad("window.opener.location.reload()"); 
+//        		l.setWindowToOpen(CalendarWindow.class);
+//        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+//        		setOnLoad(script);
         		
         	}
-        	else if(entryOrLedger.equals(LedgerWindow.LEDGER)) {
+        	else if(typeOfObject.equals(LedgerWindow.LEDGER)) {
         		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
-        		l.setWindowToOpen(CalendarWindow.class);
+//        		l.setWindowToOpen(CalendarWindow.class);
+        		setOnLoad("window.opener.parent.parent.location.reload()");
         		setOnLoad("window.opener.close()"); 
-        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-        		setOnLoad(script);
+//        		setOnUnLoad("window.opener.parent.parent.location.reload()");
+//        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+//        		setOnLoad(script);
         		
         	}
-        	else if(entryOrLedger.equals(NewMarkWindow.MARK)) {
+        	else if(typeOfObject.equals(NewMarkWindow.MARK)) {
         		getCalendarBusiness(iwc).deleteMark(Integer.parseInt(id));
 //        		l.setWindowToOpen(LedgerWindow.class);
-        		l.addParameter(LedgerWindow.LEDGER,iwc.getParameter(LedgerWindow.LEDGER));
+ //       		l.addParameter(LedgerWindow.LEDGER,iwc.getParameter(LedgerWindow.LEDGER));
 //        		setOnUnLoad("top.location.reload()"); //window.opener.parent.parent
         		setOnLoad("window.opener.close()"); 
         		
@@ -104,8 +107,8 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
       }
   }
 
-  public PresentationObject getConfirmBox(IWContext iwc){
-    Table t = new Table(1,2);
+  public PresentationObject getConfirmBox(IWContext iwc,String typeOfObject){
+    Table t = new Table();
     t.setStyleClass(borderAllWhite);
     f = new Form();
 
@@ -125,15 +128,36 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     t.setVerticalAlignment(1,1,IWConstants.MIDDLE_ALIGNMENT);
     t.setHeight(1,"70");
     t.setHeight(2,"20");
+    
+    RadioButton modifyOneRadioButton = new RadioButton(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName,"one");
+    modifyOneRadioButton.setSelected();
+    RadioButton modifyManyRadioButton = new RadioButton(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName,"many");
+    
+    
+    Table radioTable = new Table();
+    radioTable.add(modifyOneRadioButton,1,20);
+    radioTable.add(Text.NON_BREAKING_SPACE,1,20);
+    radioTable.add("delete one",1,20);
+    radioTable.add(Text.BREAK,1,20);
+    radioTable.add(modifyManyRadioButton,1,20);
+    radioTable.add(Text.NON_BREAKING_SPACE,1,20);
+    radioTable.add("delete many",1,20);
+    
 
     Text confirmText = new Text(iwrb.getLocalizedString("confirm_delete","Are you sure you want to delete this calendar entry?"));
     this.formatText(confirmText,true);
-    t.add(confirmText,1,1);
+    if(typeOfObject.equals(CalendarEntryCreator.ENTRY)) {
+    	t.add(radioTable,1,3);
+    }
+    else {
+    	t.add(confirmText,1,1);
+    }
+    
 
     SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes", "YES"), PRM_CONFIRM);
     CloseButton closebutton = new CloseButton(iwrb.getLocalizedImageButton("cancel", "CANCEL"));
 
-    Table innerTable = new Table(3,1);
+    Table innerTable = new Table();
     innerTable.add(button,1,1);
     innerTable.add(closebutton,3,1);
     innerTable.setHeight(20);
@@ -142,6 +166,8 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     innerTable.setCellspacing(0);
     t.setAlignment(1, 2, IWConstants.CENTER_ALIGNMENT);
     t.add(innerTable,1,2);
+    
+    
 
     return f;
   }

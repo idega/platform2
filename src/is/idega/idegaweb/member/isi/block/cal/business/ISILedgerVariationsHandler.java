@@ -79,11 +79,6 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 		if( g!= null) {
 			String groupType = g.getGroupType();
 			if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION) || groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
-				String abbrevation = null;
-				if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
-					abbrevation = g.getAbbrevation();
-					System.out.println("abbrevation: " + g.getAbbrevation());
-				}
 				try {
 					playerGroups = grBiz.getChildGroupsRecursiveResultFiltered(g,groupTypes,true);
 				}catch (Exception e) {
@@ -102,7 +97,13 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 						}
 						String n = name;
 						if(n == null || n.equals("")) {
-							n = group.getName();
+							if(getDivisionAbbrevation(group,grBiz,groupTypeDivision) != null) {
+								n = getDivisionAbbrevation(group,grBiz,groupTypeDivision) + " " + group.getName();
+							}
+							else {
+								n = group.getName();
+							}
+							
 						}
 						Integer grID = (Integer) group.getPrimaryKey();
 						calBiz.createNewLedger(n,grID.intValue(),coachName,date,coachGroupID);
@@ -115,7 +116,12 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 					groupType.equals(IWMemberConstants.GROUP_TYPE_TEMPORARY) ||
 					groupType.equals(IWMemberConstants.GROUP_TYPE_GENERAL)){	
 				if(name == null || name.equals("")) {
-					name = g.getName();
+					if(getDivisionAbbrevation(g,grBiz,groupTypeDivision) != null) {
+						name = getDivisionAbbrevation(g,grBiz,groupTypeDivision) + " " + g.getName();
+					}
+					else {
+						name = g.getName();
+					}
 				}
 				calBiz.createNewLedger(name,groupID,coachName,date,coachGroupID);
 				parentPage.close();
@@ -125,6 +131,28 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 				parentPage.setAlertOnLoad(iwrb.getLocalizedString("ledgerwindow.choose_div_or_group_errormessage","The chosen group is neither division nor players group!"));
 			}
 		}		
+	}
+	
+	private String getDivisionAbbrevation(Group childGroup, GroupBusiness grBiz, String[] groupTypeDivision) {
+		String abbrevation = null;
+		Collection parentDiv = null;
+		Group parentDivision = null;
+		try{
+			parentDiv = grBiz.getParentGroupsRecursive(childGroup,groupTypeDivision,true);
+		}catch(RemoteException re) {
+			
+		}	
+		Iterator i = parentDiv.iterator();
+		while(i.hasNext()) {
+			parentDivision = (Group) i.next();
+			if(parentDivision.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+				return parentDivision.getAbbrevation();
+			}
+		}
+		return null;
+		
+		
+		
 	}
 	
 	public Collection getParentGroupRelation(IWContext iwc, User user) {

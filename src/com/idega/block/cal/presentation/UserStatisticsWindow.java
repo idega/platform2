@@ -206,6 +206,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		Table underTable = new Table();
 		underTable.setCellpadding(0);
 		underTable.setCellspacing(2);
+		underTable.setWidth("100%");
 		underTable.setStyleClass(grayBackground);
 		Collection marks = getCalendarBusiness(iwc).getAllMarks();
 		Collection practices = getCalendarBusiness(iwc).getPracticesByLedgerID(ledID);

@@ -487,6 +487,12 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
+				Collections.sort(entryList,new Comparator() {
+					public int compare(Object arg0, Object arg1) {
+						return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
+					}				
+				});
+				
 				Iterator entryIter = entryList.iterator();
 								
 				int column = 1;
@@ -497,7 +503,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					//the userID + underscore + the number of the column is set as the name
 					//of the TextInput - done to make each TextInput name expicit
 					String mark = "";
-					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + entry.getDate().toString());
+					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + entry.getPrimaryKey().toString());// + entry.getDate().toString());
 					input.setMaxlength(1);
 
 					input.setWidth("20");
@@ -745,7 +751,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		int i = ledger.getGroupID();
 		groupID = new Integer(i);
 				
-		Collection users = null;
+		List users = null;
 		List entries = null;
 		List marks = null;
 		
@@ -766,16 +772,29 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
 		
 		try {
-			users = getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+			users = (List) getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
 			entries = (List) getCalendarBusiness(iwc).getPracticesByLedIDandMonth(ledgerID.intValue(),mon,ye);
 			marks = getCalendarBusiness(iwc).getAllMarks();
 			
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		if(users != null) {
+			Collections.sort(users,new Comparator() {
+				public int compare(Object arg0, Object arg1) {
+					return ((User) arg0).getName().compareTo(((User) arg1).getName());
+				}				
+			});
+		}
+		Collections.sort(entries,new Comparator() {
+			public int compare(Object arg0, Object arg1) {
+				return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
+			}				
+		});
 		
 		String close = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETED);
 		if(close != null) {
+			setOnLoad("window.opener.parent.location.reload()");
 			close();
 		}
 		
@@ -814,7 +833,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				while(entryIter.hasNext()) {
 					CalendarEntry entry = (CalendarEntry) entryIter.next();
 					Integer userID = (Integer) user.getPrimaryKey();
-					String mark = iwc.getParameter(userID.toString() + "_" + entry.getDate().toString());
+					String mark = iwc.getParameter(userID.toString() + "_" + entry.getPrimaryKey().toString());// + entry.getDate().toString());
 					if(mark != null) {
 						if(mark.equals("")) {
 							Text emptyWarning = new Text(iwrb.getLocalizedString("ledgerWindow.emptyCellWarning","There is a empty cell, to you want to go on?"));
@@ -845,6 +864,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			}//end while				
 		}//end if(save != null)			
 		add(form,iwc);
+		
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
