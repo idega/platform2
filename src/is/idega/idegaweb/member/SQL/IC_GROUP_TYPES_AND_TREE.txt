@@ -52,7 +52,7 @@ insert into ic_group_type_tree values ('iwme_regional_union_staff','iwme_regiona
 insert into ic_group_type_tree values ('iwme_regional_union_committee','iwme_regional_union')
 insert into ic_group_type_tree values ('iwme_club','iwme_regional_union')
 
-insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
+//insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_member','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_player','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_trainer','iwme_club')
