@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.13 2002/06/12 16:24:51 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.14 2002/06/14 11:09:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -436,8 +436,11 @@ public class CampusApplicationForm extends ApplicationForm {
     inputExtraInfo.setWidth(30);
 
     DateInput input16 = new DateInput("wantHousingFrom");
-    if(iwc.isParameterSet("wantHousingFrom"))
-      input16.setDate(new idegaTimestamp(iwc.getParameter("wantHousingFrom")).getSQLDate());
+    if(iwc.isParameterSet("wantHousingFrom")){
+      String sdate = iwc.getParameter("wantHousingFrom");
+      if(sdate!=null && !"".equals(sdate))
+        input16.setDate(new idegaTimestamp(sdate).getSQLDate());
+    }
     input16.setToCurrentDate();
 
     DataTable t2 = new DataTable();
