@@ -103,6 +103,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		}
 
 		while (name == null) {
+			name = group.getName();
 			name = group.getShortName();
 			name = group.getAbbrevation();
 			name = group.getDescription();
