@@ -8,6 +8,11 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.util.Date;
 
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+
+import com.idega.block.school.data.School;
+import com.idega.user.data.User;
+
 /**
  * @author Roar
  *
@@ -18,6 +23,11 @@ public interface RegularPaymentEntry extends com.idega.data.IDOEntity{
 	Date getFrom();
 	Date getTo();
 	String getPlacing();
+	User getUser();
+	RegulationSpecType getRegSpecType();
+	School getProvider(); 
+	String getOwnPosting();
+	String getDoublePostin();
 	Float getAmount();
 	String getNote();
 	
