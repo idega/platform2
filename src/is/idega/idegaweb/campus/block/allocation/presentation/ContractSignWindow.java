@@ -21,6 +21,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
+import com.idega.core.data.EmailHome;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.Account;
@@ -29,7 +30,15 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.ejb.FinderException;
+
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 
@@ -107,7 +116,16 @@ public class ContractSignWindow extends Window{
       IWTimestamp from = new IWTimestamp(eContract.getValidFrom());
       IWTimestamp to = new IWTimestamp(eContract.getValidTo());
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
-      List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
+      Collection lEmails = null;
+	try {
+		lEmails = ((EmailHome) IDOLookup.getHome(Email.class)).findEmailsForUser(eContract.getUserId().intValue());
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
       List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
       List lPhoneAccounts = FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
@@ -133,7 +151,8 @@ public class ContractSignWindow extends Window{
       SubmitButton signed = new SubmitButton("sign",iwrb.getLocalizedString("signed","Signed"));
       CloseButton close = new CloseButton(iwrb.getLocalizedString("close","Close"));
       PrintButton PB = new PrintButton(iwrb.getLocalizedString("print","Print"));
-      TextInput email = new TextInput("new_email");
+      TextInput emailInput = new TextInput("new_email");
+	  emailInput.setAsEmail(iwrb.getLocalizedString("warning_illlegal_email","Please enter a legal email address"));
       CheckBox accountCheck = new CheckBox("new_fin_account","true");
       accountCheck.setChecked(true);
       CheckBox phoneAccountCheck = new CheckBox("new_phone_account","true");
@@ -176,12 +195,17 @@ public class ContractSignWindow extends Window{
         if(lEmails !=null){
           //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
           int pos = lEmails.size()-1;
-          Edit.setStyle(email);
-          email.setContent(((Email)lEmails.get(pos)).getEmailAddress());
-          T.add(email,2,row);
+          Edit.setStyle(emailInput);
+          Email email =null;
+          for (Iterator iter = lEmails.iterator(); iter.hasNext();) {
+			email = (Email) iter.next();
+		  }
+		  if(email!=null)
+		  emailInput.setContent(email.getEmailAddress());
+          T.add(emailInput,2,row);
         }
         else{
-          T.add(email,2,row);
+          T.add(emailInput,2,row);
         }
         row++;
         if(eGroup != null){
