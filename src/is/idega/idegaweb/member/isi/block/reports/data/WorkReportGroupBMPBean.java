@@ -27,6 +27,7 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	protected final static String ENTITY_NAME = "ISI_WR_GROUP";
 	protected final static String COLUMN_NAME_GROUP_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_GROUP_NAME = "NAME";
+	protected final static String COLUMN_NAME_GROUP_NR= "GROUP_NUMBER";
 	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "SHORT_NAME";
 	protected final static String COLUMN_NAME_GROUP_ID = "IC_GROUP_ID";
 	protected final static String COLUMN_NAME_GROUP_TYPE = "GROUP_TYPE";
@@ -48,6 +49,7 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		addAttribute(COLUMN_NAME_GROUP_YEAR, "Year of the work report",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GROUP_NAME,"Name of group",true,true,String.class);
 		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME,"Short name of group",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_GROUP_NR,"Nr of group",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"many-to-one",Group.class);
 		addAttribute(COLUMN_NAME_GROUP_TYPE, "Group type",true,true,String.class,30,"many-to-one",GroupType.class);
 		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
@@ -90,6 +92,14 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	
 	public String getName() {
 		return getStringColumnValue(COLUMN_NAME_GROUP_NAME);
+	}
+
+	public void setNumber(String number) {
+		setColumn(COLUMN_NAME_GROUP_NR,number);
+	}
+	
+	public String getNumber() {
+		return getStringColumnValue(COLUMN_NAME_GROUP_NR);
 	}
 
 	public void setName(String name) {

@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -53,16 +54,26 @@ public class WorkReportOverViewCloseView extends Block {
   private static final String CHECK_BOX = "checkBox";
 
 
-	private static final String REPORT_YEAR = WorkReport.class.getName()+".YEAR_OF_REPORT";
-	private static final String REGIONAL_UNION_NUMBER = WorkReport.class.getName()+".REG_UNI_NR";
-	private static final String REGIONAL_UNION_ABBR = WorkReport.class.getName()+".REG_UNI_ABBR";
-
-	
-  private static final String GROUP_NUMBER = WorkReportDivisionBoard.class.getName()+".IC_GROUP_ID";
-	private static final String MEMBER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_MEMBERS";
-	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_PLAYERS";
-	private static final String LEAGUE = WorkReportDivisionBoard.class.getName()+".ISI_WR_GROUP_ID";
+	private static final String REPORT_YEAR = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".YEAR_OF_REPORT";
+	private static final String REGIONAL_UNION_NUMBER = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".REG_UNI_NR"; 
+	private static final String REGIONAL_UNION_ABBR = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".REG_UNI_ABBR";
+	private static final String GROUP_NUMBER = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".GROUP_NUMBER";
+	private static final String GROUP_NAME = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".GROUP_NAME";
 	private static final String HAS_NATIONAL_LEAGUE = WorkReportDivisionBoard.class.getName()+".HAS_NATIONAL_LEAGUE";
+	private static final String GROUP_TYPE = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".GROUP_TYPE";
+
+
+	private static final String MEMBER_COUNT = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+".TOTAL_MEMBERS";
+	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_PLAYERS";
+	private static final String COMPETITOR_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_COMPETITIORS";
+	
+	
+	private static final String LEAGUE_NR = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+".GROUP_NUMBER";
+	private static final String LEAGUE_SHORT_NAME = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+".SHORT_NAME";
+
+	private static final String HAS_MEMBERS = "HAS_MEMBERS";
+	private static final String HAS_ACCOUNT = "HAS_ACCOUNT";
+	private static final String HAS_BOARD= "HAS_BOARD";
 	
 	
 	
@@ -141,17 +152,25 @@ public class WorkReportOverViewCloseView extends Block {
     	//memberpart
     	//accountpart
     	//board part arrived
-    
-    
-    
-    
+    /*
+
+		private static final String HAS_MEMBERS = "HAS_MEMBERS";
+		private static final String HAS_ACCOUNT = "HAS_ACCOUNT";
+		private static final String HAS_BOARD= "HAS_BOARD";*/
+		
     Object[] columns = {
     	REPORT_YEAR,null,
+			REGIONAL_UNION_NUMBER,null,
+			REGIONAL_UNION_ABBR,null,
 			GROUP_NUMBER,null,
+			GROUP_NAME,null,
+			HAS_NATIONAL_LEAGUE,null,
+			GROUP_TYPE,null,
 			MEMBER_COUNT,null,
 			PLAYER_COUNT,null,
-			LEAGUE,null,
-			HAS_NATIONAL_LEAGUE,null,
+			COMPETITOR_COUNT,null,
+			LEAGUE_NR,null,
+			LEAGUE_SHORT_NAME,null,
 			"back",new BackButtonConverter(resourceBundle),
 		};
       
@@ -161,6 +180,10 @@ public class WorkReportOverViewCloseView extends Block {
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
+    browser.addEntity(WorkReport.class.getName());
+		browser.addEntity(WorkReportGroup.class.getName());
+    
+    
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     if( entities!=null && !entities.isEmpty()){
 			browser.setDefaultNumberOfRows(entities.size());

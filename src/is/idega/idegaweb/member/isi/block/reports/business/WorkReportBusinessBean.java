@@ -1826,9 +1826,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				wGroup.setGroupId(groupId);
 				wGroup.setName(group.getName());
 				wGroup.setShortName(group.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+				wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 				wGroup.setGroupType(group.getGroupType());
 				wGroup.setYearOfReport(year);
-
+				
 				wGroup.store();
 
 			}
