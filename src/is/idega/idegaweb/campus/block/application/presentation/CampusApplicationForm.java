@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.15 2002/06/20 15:42:52 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.16 2002/07/09 23:55:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -385,6 +385,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
     TextInput inputSpouseSSN = (TextInput)textInputTemplate.clone();
     inputSpouseSSN.setName("spouseSSN");
+    inputSpouseSSN.setMaxlength(10);
     inputSpouseSSN.setLength(12);
     if(iwc.isParameterSet("spouseSSN"))
       inputSpouseSSN.setContent(iwc.getParameter("spouseSSN"));
