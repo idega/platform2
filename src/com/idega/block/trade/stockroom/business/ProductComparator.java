@@ -40,7 +40,7 @@ public class ProductComparator implements Comparator {
 
   public ProductComparator(int toSortBy, int localeId) {
       sortBy = toSortBy;
-      localeId = localeId;
+      this.localeId = localeId;
   }
 
   public void sortBy(int toSortBy) {
