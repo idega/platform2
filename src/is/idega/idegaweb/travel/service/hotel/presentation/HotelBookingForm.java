@@ -28,6 +28,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.util.*;
+
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.presentation.*;
 
@@ -1792,6 +1793,14 @@ public class HotelBookingForm extends BookingForm {
 		}
 		
 		return false;
+	}
+
+	public void saveServiceBooking(
+		IWContext iwc,
+		int bookingId,
+		IWTimestamp stamp)
+		throws RemoteException, IDOException {
+
 	}
 
 }

@@ -21,6 +21,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.util.*;
+
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.interfaces.*;
@@ -1565,7 +1566,23 @@ public class TourBookingForm extends BookingForm{
   }
    */
 
+	public IWTimestamp getNextAvailableDay(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException{
+		return new IWTimestamp(getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, stamp));
+	}
 
+  public void saveServiceBooking(IWContext iwc,	int bookingId, IWTimestamp stamp)	throws RemoteException, IDOException {
+		String pickupPlaceId = iwc.getParameter(parameterPickupId);
+		String roomNumber = iwc.getParameter(parameterPickupInf);
+		
+		int iPickupId = -1;
+		try {
+			iPickupId = Integer.parseInt(pickupPlaceId);
+		}catch (NumberFormatException n) {
+			iPickupId = -1;
+		}
+		getTourBooker(iwc).book(bookingId, iPickupId, roomNumber);
+  }
+/*
   public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException {
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
@@ -1689,7 +1706,7 @@ public class TourBookingForm extends BookingForm{
         }
 
         int betw = 1;
-        /** removedManyDays... */
+        // removedManyDays... 
         //try {
         //  betw = Integer.parseInt(manyDays);
         //}catch (NumberFormatException e) {
@@ -1728,9 +1745,8 @@ public class TourBookingForm extends BookingForm{
         }
 
 
-        /**
-         * removing booking from resellers...
-         */
+         //removing booking from resellers...
+         
         for (int o = 0; o < bookingIds.length; o++) {
           try {
             GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
@@ -1740,9 +1756,9 @@ public class TourBookingForm extends BookingForm{
           catch (IDORemoveRelationshipException sql) {debug(sql.getMessage());}
         }
 
-        /**
-         * adding booking to reseller if resellerUser is chosen from dropdown...
-         */
+        
+         // adding booking to reseller if resellerUser is chosen from dropdown...
+         
         int resId = -7;
         try {
           if (!sUserId.equals("-1")) {
@@ -1857,7 +1873,7 @@ public class TourBookingForm extends BookingForm{
 
       return returner;
   }
-
+*/
 
 
   public int sendInquery(IWContext iwc) throws Exception {
@@ -2333,5 +2349,6 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 
     return table;
   }
+
 
 }
