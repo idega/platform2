@@ -584,11 +584,10 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 	}
 
 	public List getMembersInStartingGroup(Tournament tournament, TournamentRound tournamentRound, int startingGroupNumber) {
-		String SQLDate = new IWTimestamp(tournamentRound.getRoundDate()).toSQLDateString();
 		int fieldId = tournament.getFieldId();
 		List members = new Vector();
 		try {
-			members = com.idega.data.EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), "SELECT member.* FROM member,STARTINGTIME, TOURNAMENT_ROUND_STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.tournament_round_id = " + tournamentRound.getID() + " AND TOURNAMENT_ROUND_STARTINGTIME.startingtime_id = startingtime.startingtime_id AND member.member_id = startingtime.member_id AND STARTINGTIME_DATE = '" + SQLDate + "' AND grup_num =" + startingGroupNumber + " AND field_id=" + tournament.getFieldId());
+			members = com.idega.data.EntityFinder.findAll((Member) IDOLookup.instanciateEntity(Member.class), "SELECT member.* FROM member,STARTINGTIME, TOURNAMENT_ROUND_STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.tournament_round_id = " + tournamentRound.getID() + " AND TOURNAMENT_ROUND_STARTINGTIME.startingtime_id = startingtime.startingtime_id AND member.member_id = startingtime.member_id AND grup_num =" + startingGroupNumber + " AND field_id=" + tournament.getFieldId());
 		}
 		catch (SQLException sq) {
 			sq.printStackTrace(System.err);
