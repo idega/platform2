@@ -535,8 +535,28 @@ public class ReportQueryBuilder extends Block {
 
 	
 	private boolean processFunction(IWContext iwc){
+		//++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		helper.clearFields();
+		String[] fields = null;
+		if (iwc.isParameterSet(PARAM_FIELDS)) {
+			fields = iwc.getParameterValues(PARAM_FIELDS);
+		}
+		// allow to select from the left box only ( no ordering ), shortcut !
+		else if (iwc.isParameterSet(PARAM_FIELDS + "_left")) {
+			fields = iwc.getParameterValues(PARAM_FIELDS + "_left");
+		}
+		if (fields != null) {
+			for (int i = 0; i < fields.length; i++) {
+				QueryFieldPart part = QueryFieldPart.decode(fields[i]);
+				if (part != null)
+					helper.addField(part);
+			}
+			helper.setFieldsLock(iwc.isParameterSet(PARAM_LOCK));
+			//return helper.hasFields();
+		}
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++	
 		String type = iwc.getParameter(PARAM_FUNCTION);
-		String[] fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
+		fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
 		String display = iwc.getParameter("display");
 		if(fields !=null ){
 			Vector dfields = new Vector();
@@ -1097,9 +1117,7 @@ public class ReportQueryBuilder extends Block {
 			//System.out.println(" " + part.getName());
 			String enc = part.encode();
 			if (! fieldMap.containsKey(enc)) {
-				box.getLeftBox().addElement(
-				part.encode(),
-				iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
+				box.getLeftBox().addElement(part.encode(), getDisplay(part));
 			}
 		}
 	}
@@ -1111,9 +1129,7 @@ public class ReportQueryBuilder extends Block {
 		Iterator iter = choiceFields.iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
-			box.getRightBox().addElement(
-			part.encode(),
-			iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
+			box.getRightBox().addElement(part.encode(), getDisplay(part));
 		}
 	}
 	
@@ -1219,7 +1235,7 @@ public class ReportQueryBuilder extends Block {
 			booleanExpressionPart.getBadSyntaxBooleanExpression();
 		}
 		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
-		textInput.setLength(150);
+		textInput.setLength(140);
 		row++;
 		table.mergeCells(4, row, 7, row);
 		table.add(textInput, 4 , row); 
@@ -1447,16 +1463,30 @@ public class ReportQueryBuilder extends Block {
 		QueryService service = getQueryService(iwc);
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
-		if(helper.hasFields()){
-			Iterator iter  = helper.getListOfVisibleFields().iterator();
-			while (iter.hasNext()) {
-				QueryFieldPart part = (QueryFieldPart) iter.next();
-				drpMap.put(part.encode(),part);
-				
-				drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
+
+//		if(helper.hasFields()){
+//			Iterator iter  = helper.getListOfVisibleFields().iterator();
+//			while (iter.hasNext()) {
+//				QueryFieldPart part = (QueryFieldPart) iter.next();
+//				drpMap.put(part.encode(),part);
+//				addMenuElement(drp, part);
+//			}
+//		}
+		
+		if (helper.hasPreviousQuery())	{
+			List resultFields = new ArrayList();
+			QueryHelper previousQuery = helper.previousQuery();
+			String previousQueryName = previousQuery.getName();
+			List fields = previousQuery.getListOfVisibleFields();
+			Iterator iterator = fields.iterator();
+			while (iterator.hasNext())	{
+				QueryFieldPart part = (QueryFieldPart) iterator.next();
+				drpMap.put(part.encode(), part);
+				addMenuElement(drp, part);
 			}
 		}
 
+		
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
 			entities = new Vector();
@@ -1466,26 +1496,38 @@ public class ReportQueryBuilder extends Block {
 		QueryEntityPart entityPart;
 		if (helper.hasSourceEntity()) {
 			entityPart = helper.getSourceEntity();
-			filldropdown(service, entityPart,drpMap,drp);
+			fillDropDown(service, entityPart,drpMap,drp);
 		}
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
-			filldropdown(service, entityPart,drpMap,drp);
+			fillDropDown(service, entityPart,drpMap,drp);
 		}
 		return drp;
 	}
 	
-	private void filldropdown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
+	private void fillDropDown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
 		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
 		String enc;
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			enc = part.encode();
 			if(!drpMap.containsKey(enc)){
-				drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+				addMenuElement(drp, part);
 			}
 		}
 	}
+	
+	private void addMenuElement(DropdownMenu dropdownMenu, QueryFieldPart part) {
+		dropdownMenu.addMenuElement(part.encode(),	getDisplay(part));
+	}
+	
+	private String getDisplay(QueryFieldPart part) {
+		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()));
+		buffer.append(" -> ").append(part.getDisplay()).append(" ( ").append(part.getName()).append(" )");
+		return buffer.toString();
+	}
+
+
 
 	private Text getStepText(String string) {
 		Text text = new Text(string);
