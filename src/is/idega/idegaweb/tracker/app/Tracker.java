@@ -134,6 +134,7 @@ public class Tracker extends IWApplication {
       counter.setUpdateStats(false);
       counter.setShowAgents(true);
       counter.setShowReferers(true);
+      counter.setShowPageList(true);
 
       add(counter);
     }
