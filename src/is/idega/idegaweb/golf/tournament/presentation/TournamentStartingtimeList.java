@@ -14,12 +14,16 @@ import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
+import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -60,6 +64,11 @@ public class TournamentStartingtimeList extends GolfBlock {
 		this.forPrinting = forPrinting;
 		form = new Form();
 	}
+	
+	public TournamentStartingtimeList() {
+		viewOnly = true;
+		forPrinting = false;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -85,6 +94,10 @@ public class TournamentStartingtimeList extends GolfBlock {
 			add(cachedForm);
 		}
 		else {
+			if (tournament == null) {
+				tournament = getTournamentSession(modinfo).getTournament();
+			}
+			
 			form.maintainParameter("action");
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
 
@@ -479,6 +492,15 @@ public class TournamentStartingtimeList extends GolfBlock {
 		}
 	}
 	
+	private TournamentSession getTournamentSession(IWContext iwc) {
+		try {
+			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);	
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+	}
+
 	public void maintainParameter(String parameter) {
 		form.maintainParameter(parameter);
 	}
