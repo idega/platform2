@@ -1144,6 +1144,8 @@ public class QueryBuilder extends Block {
 		iwrb = getResourceBundle(iwc);
 		//TODO thi think about that, ask Aron
 		hasEditPermission = true;
+		hasTemplatePermission = true;
+		hasCreatePermission = true;
 //		hasEditPermission = hasEditPermission();
 //		hasTemplatePermission = hasPermission(this.PERM_TEMPL_EDIT, this, iwc);
 //		hasCreatePermission = hasPermission(this.PERM_CREATE, this, iwc);
