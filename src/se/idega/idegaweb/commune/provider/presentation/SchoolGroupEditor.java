@@ -16,6 +16,9 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.school.business.SchoolCommuneSessionBean;
+
+
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
@@ -32,6 +35,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
@@ -40,6 +44,7 @@ import com.idega.user.presentation.UserChooser;
 
 /**
  * @author laddi
+ * Known subclasses: SchoolGroupEditorAdmin
  */
 public class SchoolGroupEditor extends ProviderBlock {
 
@@ -70,7 +75,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		try {
-			_provider = getSession().getProvider();
+			_provider = getProvider();
 			parseAction(iwc);
 			
 			switch (_action) {
@@ -97,6 +102,12 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 	}
 	
+	protected School getProvider() throws RemoteException, FinderException{
+		return getSession().getProvider();
+	}
+	
+
+	
 	private Table getOverview() throws RemoteException {
 		Table table = new Table(1, 5);
 		table.setCellpadding(0);
@@ -105,13 +116,18 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setHeight(4, 12);
 		
 		table.add(getNavigationForm(), 1, 1);
-		table.add(getGroupTable(), 1, 3);
 		
-		GenericButton button = getButton(new GenericButton("edit", localize("new_group", "New group")));
-		button.setPageToOpen(getParentPageID());
-		button.addParameterToPage(PARAMETER_ACTION, ACTION_EDIT);
-		table.add(button, 1, 5);
+		if (_provider != null){
+			table.add(getGroupTable(), 1, 3);
+			
+			GenericButton button = getButton(new GenericButton("edit", localize("new_group", "New group")));
+			button.setPageToOpen(getParentPageID());
+			button.addParameterToPage(PARAMETER_ACTION, ACTION_EDIT);
+			Parameter providerPar = getProviderAsParameter();
+			button.addParameterToPage(providerPar.getName(), providerPar.getValue());
+			table.add(button, 1, 5);
 		
+		}
 		return table;
 	}
 	
@@ -202,21 +218,28 @@ public class SchoolGroupEditor extends ProviderBlock {
 			Link editLink = new Link(this.getEditIcon(localize("edit_group", "Edit group")));
 			editLink.addParameter(PARAMETER_ACTION, ACTION_EDIT);
 			editLink.addParameter(PARAMETER_GROUP_ID, group.getPrimaryKey().toString());
+			editLink.addParameter(getProviderAsParameter());
 			table.add(editLink, column++, row);
 
 			Link deleteLink = new Link(this.getDeleteIcon(localize("delete_group", "Delete group")));
 			deleteLink.addParameter(PARAMETER_ACTION, ACTION_DELETE);
 			deleteLink.addParameter(PARAMETER_GROUP_ID, group.getPrimaryKey().toString());
+			deleteLink.addParameter(getProviderAsParameter());
 			table.add(deleteLink, column++, row++);
 		}
 		
 		return table;
 	}
 	
+	Parameter getProviderAsParameter(){
+		return new Parameter("", "");
+	}
+	
 	private Form getEditForm() {
 		Form form = new Form();
 		form.addParameter(PARAMETER_GROUP_ID, _groupID);
 		form.addParameter(PARAMETER_ACTION, -1);
+		form.maintainParameter(SchoolCommuneSessionBean.PARAMETER_SCHOOL_ID);
 		
 		Table table = new Table();
 		table.setCellpadding(0);
@@ -391,7 +414,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		
 		try {
-			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getSession().getProviderID(), typeID, seasonID, years, teachers);
+			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getProviderID(), typeID, seasonID, years, teachers);
 			schoolClass.setIsSubGroup(isSubGroup);
 			schoolClass.store();
 		}
@@ -403,18 +426,28 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private Collection getSchoolGroups() {
 		try {
 			if (getSession().getSeasonID() != -1 && getSession().getYearID() != -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndSeasonAndYear(getSession().getProviderID(), getSession().getSeasonID(), getSession().getYearID());
+				return getSchoolBusiness().findSchoolClassesBySchoolAndSeasonAndYear(getProviderID(), getSession().getSeasonID(), getSession().getYearID());
 			else if (getSession().getSeasonID() != -1 && getSession().getYearID() == -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndSeason(getSession().getProviderID(), getSession().getSeasonID());
+				return getSchoolBusiness().findSchoolClassesBySchoolAndSeason(getProviderID(), getSession().getSeasonID());
 			else if (getSession().getSeasonID() == -1 && getSession().getYearID() != -1)
-				return getSchoolBusiness().findSchoolClassesBySchoolAndYear(getSession().getProviderID(), getSession().getYearID());
+				return getSchoolBusiness().findSchoolClassesBySchoolAndYear(getProviderID(), getSession().getYearID());
 			else
-				return getSchoolBusiness().findSchoolClassesBySchool(getSession().getProviderID());
+				return getSchoolBusiness().findSchoolClassesBySchool(getProviderID());
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}
+	
+	private boolean multipleSchools = false;
+	
+	public void setMultipleSchools(boolean multiple) {
+		multipleSchools = multiple;
+	}
+	
+	public boolean getMultipleSchools() {
+		return multipleSchools;
+	}	
 
 	/**
 	 * @param iwc
