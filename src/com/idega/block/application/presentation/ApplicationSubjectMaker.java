@@ -3,9 +3,8 @@ package com.idega.block.application.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
+import javax.faces.component.UIComponent;
 import com.idega.block.application.business.ApplicationService;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.business.IBOLookup;
@@ -138,7 +137,7 @@ public class ApplicationSubjectMaker extends Block{
     return dTable;
   }
 
-  private PresentationObject getSubjectFormTable(IWContext iwc,ApplicationSubject subject){
+  private UIComponent getSubjectFormTable(IWContext iwc,ApplicationSubject subject){
     DataTable dTable = new DataTable();
     dTable.setTitlesHorizontal(true);
     dTable.addTitle(iwrb.getLocalizedString("new_subject","New subject"));
