@@ -179,9 +179,14 @@ public class ProductCategoryEditor extends CategoryWindow {
 
       sdb.addToScripts(this.getParentPage().getAssociatedScript());
 
+      GenericButton add = sdb.getRightButton();
+			add.setOnClick("move( this.form." + sdb.getLeftBox().getName() + ", this.form." + sdb.getRightBox().getName() + " )");
+      GenericButton remove = sdb.getLeftButton();
+			remove.setOnClick("move( this.form." + sdb.getRightBox().getName() + ", this.form." + sdb.getLeftBox().getName() + " )");
+      
       super.addLeft(iwrb.getLocalizedString("available_products","Available products"), sdb.getLeftBox(), true);
-      super.addLeft(iwrb.getLocalizedString("add_selected","Add selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getRightButton(), false);
-      super.addLeft(iwrb.getLocalizedString("remove_selected","Remove selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getLeftButton(), false);
+      super.addLeft(iwrb.getLocalizedString("add_selected","Add selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, add, false);
+      super.addLeft(iwrb.getLocalizedString("remove_selected","Remove selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, remove, false);
       super.addLeft(iwrb.getLocalizedString("selected_products","Selected products"), sdb.getRightBox(), true);
 
       super.addSubmitButton(close);
