@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
@@ -50,7 +51,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 			RegulationsBusiness regBus = getRegulationsBusiness();
 
-			Iterator schoolIter = getSchoolHome().findAllByCategory(category).iterator();
+			Iterator schoolIter = getSchoolHome().findAllInHomeCommuneByCategory(category).iterator();
 			//Go through all elementary schools
 			while(schoolIter.hasNext()){
 				try{
@@ -129,10 +130,16 @@ public abstract class PaymentThreadSchool extends BillingThread{
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			createNewErrorMessage(school.getName(),"invoice.DBError");
+			createNewErrorMessage("invoice.ContractCreation","invoice.DBError");
 		} catch (FinderException e) {
 			e.printStackTrace();
-			createNewErrorMessage(school.getName(),"invoice.CouldNotFindSchoolCategory");
+			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindSchoolCategory");
+		} catch (EJBException e) {
+			e.printStackTrace();
+			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindHomeCommune");
+		} catch (CreateException e) {
+			e.printStackTrace();
+			createNewErrorMessage("invoice.ContractCreation","invoice.CouldNotFindHomeCommune");
 		}
 	}
 	
