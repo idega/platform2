@@ -29,7 +29,9 @@ import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
@@ -784,10 +786,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		/* *******restricting the classes being chosen */
 		Collection types = null;
+		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
+		SchoolCategory typeChildcare = schBuiz.getCategoryChildcare();
+
 		try {
-			types = application.getProvider().findRelatedSchoolTypes();
+			types = application.getProvider().findRelatedSchoolTypes(typeChildcare);
 			
-		} catch (IDORelationshipException e) {
+		}  catch (IDORelationshipException e) {
 			e.printStackTrace();
 		} catch (EJBException e) {
 			e.printStackTrace();
@@ -886,8 +891,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		table.add(new HiddenInput("ccc_old_archive_id",helper.getContract().getPrimaryKey().toString()));
 
+		Date rejectDate = helper.getApplication().getRejectionDate();
+		IWTimestamp rejectionDate = null;
+		if (rejectDate != null)
+			rejectionDate = new IWTimestamp(rejectDate);
+		
+		
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+		
 		
 		if (isUsePredefinedCareTimeValues()) {
 			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
@@ -908,24 +920,31 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		IWTimestamp stamp = new IWTimestamp();
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 		if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
-		    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+		   
 		    // deadline has passed
 		   
 		    if(helper.hasDeadlinePassed()){
 		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
-		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
+		        if (rejectionDate != null)
+		        	dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ")+format.format(rejectionDate.getDate()));
+		        	dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
 		    }
 		    // still within deadline
 		    else{
 		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
-		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+		        if (rejectionDate != null)
+		        	dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ")+format.format(rejectionDate.getDate()));
+		            dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 		    }
 		    
 		}
 		else{
 		    dateInput.setDate(stamp.getDate());
 		    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+		    if (rejectionDate != null)
+		    	dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ")+format.format(rejectionDate.getDate()));
 		}
 		/*
 		if(helper.hasEarliestPlacementDate()){
@@ -997,8 +1016,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		//DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
 		Collection types = null;
+		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
+		SchoolCategory typeChildcare = schBuiz.getCategoryChildcare();
+
 		try {
-			types = helper.getApplication().getProvider().findRelatedSchoolTypes();
+			types = helper.getApplication().getProvider().findRelatedSchoolTypes(typeChildcare);
 			
 		} catch (IDORelationshipException e) {
 			e.printStackTrace();
