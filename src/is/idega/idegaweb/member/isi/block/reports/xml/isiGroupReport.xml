@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- group view for isi (created by Thomas) Nov 26, 2003 -->
+<query name="Hópaskýrsla">
+<query name="abrv">
+<query name="conn">
+<query name="founded">
+<query name="make">
+<query name="member">
+<query name="name">
+<query name="number">
+<query name="operation">
+<query name="premier">
+<query name="regional">
+<query name="short">
+<query name="ssn">
+<query name="status">
+<query name="system">
+<query name="type">
+      <sql>
+      <statement>
+      create view type_view (ic_group_id, clubinfo_type) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_TYPE'
+      </statement>
+      <postStatement>
+      drop view type_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of type -->
+      <sql>
+      <statement>
+      create view system_view (ic_group_id, clubinfo_system) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_SYSTEM'
+      </statement>
+      <postStatement>
+      drop view system_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of system -->
+      <sql>
+      <statement>
+      create view status_view (ic_group_id, clubinfo_status) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_STATUS'
+      </statement>
+      <postStatement>
+      drop view status_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of status -->
+      <sql>
+      <statement>
+      create view ssn_view (ic_group_id, clubinfo_ssn) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_SSN'
+      </statement>
+      <postStatement>
+      drop view ssn_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of ssn -->
+      <sql>
+      <statement>
+      create view short_view (ic_group_id, clubinfo_short) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_SHORT'
+      </statement>
+      <postStatement>
+      drop view short_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of short -->
+      <sql>
+      <statement>
+      create view regional_view (ic_group_id, clubinfo_regional) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_REGIONAL'
+      </statement>
+      <postStatement>
+      drop view regional_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of regional -->
+      <sql>
+      <statement>
+      create view premier_view (ic_group_id, clubinfo_premier) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_PREMIER'
+      </statement>
+      <postStatement>
+      drop view premier_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of premier -->
+      <sql>
+      <statement>
+      create view operation_view (ic_group_id, clubinfo_operation) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_OPERATION'
+      </statement>
+      <postStatement>
+      drop view operation_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of operation -->
+      <sql>
+      <statement>
+      create view number_view (ic_group_id, clubinfo_number) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_NUMBER'
+      </statement>
+      <postStatement>
+      drop view number_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of number -->
+      <sql>
+      <statement>
+      create view name_view (ic_group_id, clubinfo_name) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_NAME'
+      </statement>
+      <postStatement>
+      drop view name_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of name -->
+      <sql>
+      <statement>
+      create view member_view (ic_group_id, clubinfo_member) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id =                        m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_MEMBER'
+      </statement>
+      <postStatement>
+      drop view member_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of member view -->
+      <sql>
+      <statement>
+      create view make_view (ic_group_id, clubinfo_make) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_MAKE'
+      </statement>
+      <postStatement>
+      drop view make_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of make view -->
+      <sql>
+      <statement>
+      create view founded_view (ic_group_id, clubinfo_founded) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_FOUNDED'
+      </statement>
+      <postStatement>
+      drop view founded_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of founded view -->
+      <sql>
+      <statement>
+      create view conn_view (ic_group_id, clubinfo_conn) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_CONN'
+      </statement>
+      <postStatement>
+      drop view conn_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of conn view -->
+      <sql>
+      <statement>
+      create view abrv_view (ic_group_id, clubinfo_abrv) as select g.ic_group_id, m.metadata_value
+      clubinfo_number from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id
+      and metadata_name = 'CLUBINFO_ABRV'
+      </statement>
+      <postStatement>
+      drop view abrv_view
+      </postStatement>
+      </sql>
+      </query>
+<!-- end of abrv view -->
+  <sql>
+  <statement>
+SELECT G.NAME , G.SHORT_NAME , G.DESCRIPTION , G.EXTRA_INFO , A_2.PHONE_NUMBER , A_3.ADDRESS , A_4.STREET_NAME , A_4.STREET_NUMBER , A_4.CITY , A_4.PROVINCE , A_4.P_O_BOX , A_5.POSTAL_CODE , A_6.COUNTRY_NAME , A_7.GROUP_TYPE , A_7.DESCRIPTION GROUPTYPE_DESCRIPTION,
+ABRV_VIEW_A.CLUBINFO_ABRV,
+CONN_VIEW_A.CLUBINFO_CONN,
+FOUNDED_VIEW_A.CLUBINFO_FOUNDED,
+MAKE_VIEW_A.CLUBINFO_MAKE,
+MEMBER_VIEW_A.CLUBINFO_MEMBER,
+NAME_VIEW_A.CLUBINFO_NAME,
+NUMBER_VIEW_A.CLUBINFO_NUMBER,
+OPERATION_VIEW_A.CLUBINFO_OPERATION,
+PREMIER_VIEW_A.CLUBINFO_PREMIER,
+REGIONAL_VIEW_A.CLUBINFO_REGIONAL,
+SHORT_VIEW_A.CLUBINFO_SHORT,
+SSN_VIEW_A.CLUBINFO_SSN,
+STATUS_VIEW_A.CLUBINFO_STATUS,
+SYSTEM_VIEW_A.CLUBINFO_SYSTEM,
+TYPE_VIEW_A.CLUBINFO_TYPE
+FROM ic_group G LEFT JOIN IC_GROUP_ADDRESS A_8 ON (G.IC_GROUP_ID=A_8.IC_GROUP_ID) LEFT JOIN ic_address A_4 ON (A_8.IC_ADDRESS_ID=A_4.IC_ADDRESS_ID) LEFT JOIN IC_POSTAL_CODE A_5 ON (A_4.POSTAL_CODE_ID=A_5.IC_POSTAL_CODE_ID) LEFT JOIN IC_GROUP_TYPE A_7 ON (G.GROUP_TYPE=A_7.GROUP_TYPE) LEFT JOIN IC_GROUP_PHONE A_9 ON (G.IC_GROUP_ID=A_9.IC_GROUP_ID) LEFT JOIN ic_phone A_2 ON (A_9.IC_PHONE_ID=A_2.IC_PHONE_ID) LEFT JOIN ic_country A_6 ON (A_5.IC_COUNTRY_ID=A_6.IC_COUNTRY_ID) LEFT JOIN IC_GROUP_EMAIL A_10 ON (G.IC_GROUP_ID=A_10.IC_GROUP_ID) LEFT JOIN IC_EMAIL A_3 ON (A_10.IC_EMAIL_ID=A_3.IC_EMAIL_ID)
+LEFT JOIN  ABRV_VIEW ABRV_VIEW_A ON (G.IC_GROUP_ID=ABRV_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  CONN_VIEW CONN_VIEW_A ON (G.IC_GROUP_ID=CONN_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  FOUNDED_VIEW FOUNDED_VIEW_A ON (G.IC_GROUP_ID=FOUNDED_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  MAKE_VIEW MAKE_VIEW_A ON (G.IC_GROUP_ID=MAKE_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  MEMBER_VIEW MEMBER_VIEW_A ON (G.IC_GROUP_ID=MEMBER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  NAME_VIEW NAME_VIEW_A ON (G.IC_GROUP_ID=NAME_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  NUMBER_VIEW NUMBER_VIEW_A ON (G.IC_GROUP_ID=NUMBER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  OPERATION_VIEW OPERATION_VIEW_A ON (G.IC_GROUP_ID=OPERATION_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  PREMIER_VIEW PREMIER_VIEW_A ON (G.IC_GROUP_ID=PREMIER_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  REGIONAL_VIEW REGIONAL_VIEW_A ON (G.IC_GROUP_ID=REGIONAL_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  SHORT_VIEW SHORT_VIEW_A ON (G.IC_GROUP_ID=SHORT_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  SSN_VIEW SSN_VIEW_A ON (G.IC_GROUP_ID=SSN_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  STATUS_VIEW STATUS_VIEW_A ON (G.IC_GROUP_ID=STATUS_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  SYSTEM_VIEW SYSTEM_VIEW_A ON (G.IC_GROUP_ID=SYSTEM_VIEW_A.IC_GROUP_ID)
+LEFT JOIN  TYPE_VIEW TYPE_VIEW_A ON (G.IC_GROUP_ID=TYPE_VIEW_A.IC_GROUP_ID)
+<!-- group_access_variable is defined in ReportOverview -->
+where G.IC_GROUP_ID in group_access_variable
+  </statement>
+<!-- G.NAME , G.SHORT_NAME , G.DESCRIPTION , G.EXTRA_INFO -->
+  <result>
+      <resultField>NAME</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>first name</resultDescription>
+  </result>
+  <result>
+      <resultField>SHORT_NAME</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>short name</resultDescription>
+  </result>
+  <result>
+      <resultField>DESCRIPTION</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>description</resultDescription>
+  </result>
+  <result>
+      <resultField>EXTRA_INFO</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>extra info</resultDescription>
+  </result>
+<!-- A_2.PHONE_NUMBER , A_3.ADDRESS , A_4.STREET_NAME , A_4.STREET_NUMBER -->
+  <result>
+      <resultField>PHONE_NUMBER</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>phone number</resultDescription>
+  </result>
+  <result>
+      <resultField>ADDRESS</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>address</resultDescription>
+  </result>
+  <result>
+      <resultField>STREET_NAME</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>street name</resultDescription>
+  </result>
+  <result>
+      <resultField>STREET_NUMBER</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>street number</resultDescription>
+  </result>
+<!-- A_4.CITY , A_4.PROVINCE , A_4.P_O_BOX , A_5.POSTAL_CODE -->
+  <result>
+      <resultField>CITY</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>city</resultDescription>
+  </result>
+  <result>
+      <resultField>PROVINCE</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>province</resultDescription>
+  </result>
+  <result>
+      <resultField>P_O_BOX</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>p.o. box</resultDescription>
+  </result>
+  <result>
+      <resultField>POSTAL_CODE</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>postal code</resultDescription>
+  </result>
+<!-- A_6.COUNTRY_NAME , A_7.GROUP_TYPE , A_7.DESCRIPTION GROUPTYPE_DESCRIPTION -->
+  <result>
+      <resultField>COUNTRY_NAME</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>country name</resultDescription>
+  </result>
+  <result>
+      <resultField>GROUP_TYPE</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>group type</resultDescription>
+      <handler>com.idega.user.presentation.inputhandler.GroupTypeSelectionBoxInputHandler</handler>
+  </result>
+  <result>
+      <resultField>GROUPTYPE_DESCRIPTION</resultField>
+      <resultType>java.lang.String</resultType>
+      <resultDescription>group type description</resultDescription>
+  </result>
+<!-- ABRV_VIEW_A.CLUBINFO_ABRV,
+CONN_VIEW_A.CLUBINFO_CONN,
+FOUNDED_VIEW_A.CLUBINFO_FOUNDED,
+MAKE_VIEW_A.CLUBINFO_MAKE,
+MEMBER_VIEW_A.CLUBINFO_MEMBER -->
+  <result>
+  	<resultField>CLUBINFO_ABRV</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info abbreviation</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_CONN</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info conn</resultDescription>
+	<handler>is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ReportGeneratorLeagueSelectionBox</handler>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_FOUNDED</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info founded</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_MAKE</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info make</resultDescription>
+	<handler>is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu</handler>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_MEMBER</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info member</resultDescription>
+  </result>
+<!-- NAME_VIEW_A.CLUBINFO_NAME,
+NUMBER_VIEW_A.CLUBINFO_NUMBER,
+OPERATION_VIEW_A.CLUBINFO_OPERATION,
+PREMIER_VIEW_A.CLUBINFO_PREMIER,
+REGIONAL_VIEW_A.CLUBINFO_REGIONAL -->
+  <result>
+  	<resultField>CLUBINFO_NAME</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info name</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_NUMBER</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info number</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_OPERATION</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info operation</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_PREMIER</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info premier</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_REGIONAL</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info regional</resultDescription>
+  </result>
+<!-- SHORT_VIEW_A.CLUBINFO_SHORT,
+SSN_VIEW_A.CLUBINFO_SSN,
+STATUS_VIEW_A.CLUBINFO_STATUS,
+SYSTEM_VIEW_A.CLUBINFO_SYSTEM,
+TYPE_VIEW_A.CLUBINFO_TYPE -->
+  <result>
+  	<resultField>CLUBINFO_SHORT</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info short</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_SSN</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info ssn</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_STATUS</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info status</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_SYSTEM</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info system</resultDescription>
+  </result>
+  <result>
+  	<resultField>CLUBINFO_TYPE</resultField>
+	<resultType>java.lang.String</resultType>
+	<resultDescription>club info type</resultDescription>
+  </result>
+<!-- access variable used in ReportOverview -->
+  <variable>
+  	<variableKey>group_access_variable</variableKey>
+	<type>java.lang.String</type>
+	<variableValue>access</variableValue>
+	<variableDescription>access</variableDescription>
+  </variable>
+ </sql>
+</query>
+
