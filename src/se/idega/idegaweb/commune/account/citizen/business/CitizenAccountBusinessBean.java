@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.78 2005/01/07 14:50:52 malin Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.79 2005/01/07 16:02:20 malin Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/01/07 14:50:52 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/07 16:02:20 $ by $Author: malin $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.78 $
+ * @version $Revision: 1.79 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -199,6 +199,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setApplicantName(name != null ? name : "");
 			application.setSsn(ssn != null ? ssn : "");
 			application.setEmail(email != null ? email : "");
+			MessageSession messageSession = null;
+			try {
+				getMessageSession(iwc);	
+			}catch (Exception e){
+				log(e);
+			}
+			if (!"".equals(email)){
+				messageSession.setIfUserPreferesMessageByEmail(true);				
+			}
 			application.setPhoneHome(phoneHome != null ? phoneHome : "");
 			application.setPhoneWork(phoneWork != null ? phoneWork : "");
 			application.setCareOf (careOf == null ? "" : careOf);
