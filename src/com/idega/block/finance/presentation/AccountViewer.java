@@ -335,7 +335,7 @@ public class AccountViewer extends Finance {
 
   private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
     int tableDepth = 4;
-    int cols = 9;
+    int cols = 7;
     if(listEntries != null){
       tableDepth += listEntries.size();
     }
@@ -347,18 +347,13 @@ public class AccountViewer extends Finance {
     T.setWidth(1,"65");
     T.setCellspacing(0);
     T.setCellpadding(2);
-    T.setColumnAlignment(1,"right");
-    T.setColumnAlignment(2,"left");
-    T.setColumnAlignment(3,"left");
-    T.setColumnAlignment(4,"right");
+   
+    T.setColumnAlignment(1,"left");
+    T.setColumnAlignment(2,"right");
     T.setColumnAlignment(cols,"right");
     T.setAlignment(1,1,"left");
     T.setAlignment(1,2,"left");
     T.setWidth(1,"20");
-   // T.setWidth(2,"40%");
-   // T.setWidth(3,"60%");
-    T.setColumnAlignment(cols,"right");
-    //T.setWidth(cols,"40");
     T.setWidth("100%");
 
     T.setHorizontalZebraColored(FinanceColors.LIGHTGREY,FinanceColors.WHITE);
@@ -374,20 +369,17 @@ public class AccountViewer extends Finance {
     T.mergeCells(1,row,cols,row);
     row++;
     Text[] TableTitles = new Text[cols];
-    TableTitles[0] = new Text(iwrb.getLocalizedString("date","Date"));
-    TableTitles[1] = new Text(iwrb.getLocalizedString("anumber","A-Number"));
-    TableTitles[2] = new Text(iwrb.getLocalizedString("subnumber","Sub-Number"));
-    TableTitles[3] = new Text(iwrb.getLocalizedString("number","Number"));
-    TableTitles[4] = new Text(iwrb.getLocalizedString("dating","Dating"));
-    TableTitles[5] = new Text(iwrb.getLocalizedString("night_time","Night time"));
-    TableTitles[6] = new Text(iwrb.getLocalizedString("day_time","Day time"));
-    TableTitles[7] = new Text(iwrb.getLocalizedString("time","Time"));
-    TableTitles[8] = new Text(iwrb.getLocalizedString("amount","Amount"));
+    
+    TableTitles[0] = new Text(iwrb.getLocalizedString("dating","Dating"));
+    TableTitles[1] = new Text(iwrb.getLocalizedString("number","Number"));
+    TableTitles[2] = new Text(iwrb.getLocalizedString("night_time","Night time"));
+    TableTitles[3] = new Text(iwrb.getLocalizedString("day_time","Day time"));
+    TableTitles[4] = new Text(iwrb.getLocalizedString("time","Time"));
+    TableTitles[5] = new Text(iwrb.getLocalizedString("amount","Amount"));
 
 
     for(int i = 0 ; i < TableTitles.length;i++){
       TableTitles[i].setFontSize(fontSize);
-      //TableTitles[i].setFontColor(sWhiteColor);
       T.add(TableTitles[i],i+1,row);
     }
     row++;
@@ -399,28 +391,30 @@ public class AccountViewer extends Finance {
       float totPrice = 0;
       for(int j = 0; j < len; j++){
         AccountPhoneEntry entry = (AccountPhoneEntry) listEntries.get(j);
-        TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
-        TableTexts[1] = new Text(entry.getMainNumber());
-        TableTexts[2] = new Text(entry.getSubNumber());
-        TableTexts[3] = new Text(entry.getPhonedNumber());
-        TableTexts[4] = new Text(new IWTimestamp(entry.getPhonedStamp()).toSQLString());
-        TableTexts[5] = new Text(new java.sql.Time(entry.getNightDuration()*1000).toString());
-        TableTexts[6] = new Text(new java.sql.Time(entry.getDayDuration()*1000).toString());
-        TableTexts[7] = new Text(new java.sql.Time(entry.getDuration()*1000).toString());
+        //TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
+        //TableTexts[1] = new Text(entry.getMainNumber());
+        //TableTexts[0] = new Text(entry.getSubNumber());
+        TableTexts[0] = new Text(entry.getPhonedNumber());
+        TableTexts[1] = new Text(new IWTimestamp(entry.getPhonedStamp()).toSQLString());
+        TableTexts[2] = new Text(new java.sql.Time(entry.getNightDuration()*1000).toString());
+        TableTexts[3] = new Text(new java.sql.Time(entry.getDayDuration()*1000).toString());
+        TableTexts[4] = new Text(new java.sql.Time(entry.getDuration()*1000).toString());
         totNight += entry.getNightDuration();
         totDay += entry.getDayDuration();
         totDur += entry.getDuration();
         float p = entry.getPrice();
         totPrice += p;
         debet = p >= 0 ? true : false ;
-        TableTexts[8] = new Text(NF.format(p));
+        TableTexts[5] = new Text(NF.format(p));
 
         for(int i = 0 ; i < cols;i++){
           TableTexts[i].setFontSize(fontSize);
           TableTexts[i].setFontColor("#000000");
-          if(i == 8){
-            if(debet) TableTexts[i].setFontColor(sDebetColor);
-            else TableTexts[i].setFontColor(sKreditColor);
+          if(i == 5){
+            if(debet) 
+            	TableTexts[i].setFontColor(sDebetColor);
+            else 
+            	TableTexts[i].setFontColor(sKreditColor);
           }
           else
             TableTexts[i].setFontColor("#000000");
@@ -444,10 +438,10 @@ public class AccountViewer extends Finance {
       txTotDur.setFontSize(fontSize);
       txTotPrice.setFontSize(fontSize);
 
-      T.add(txTotNight,6,row);
-      T.add(txTotDay,7,row);
-      T.add(txTotDur,8,row);
-      T.add(txTotPrice,9,row);
+      T.add(txTotNight,3,row);
+      T.add(txTotDay,4,row);
+      T.add(txTotDur,5,row);
+      T.add(txTotPrice,6,row);
     }
     T.mergeCells(1,row,cols,row);
     T.add(image,1,row);
