@@ -42,14 +42,8 @@ public class ClubPageIncluder extends PageIncluder {
     	super.main(iwc);
     	
     	parentPage = this.getParentPage();
-		parentPage.addStyleSheetURL(menuStyleSrc);
+		parentPage.addStyleSheetURL(iwc.getIWMainApplication().getCoreBundle().getVirtualPathWithFileNameString(menuStyleSrc));
     }
-    
-    private String scriptSource(String fileName, IWContext iwc){
-		String url = iwc.getIWMainApplication().getCoreBundle().getResourcesURL();
-		url = url + "/" + fileName;
-		return url;
-	}
     
     protected String finalizeLocationString(String location, IWContext iwc) {
         IWBundle bundle = this.getBundle(iwc);
