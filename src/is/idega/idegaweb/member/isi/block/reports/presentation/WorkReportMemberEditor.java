@@ -398,19 +398,17 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       PresentationObject inputField = getPersonalIdInputField(resourceBundle);
       PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
       PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-      PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
-      Table buttonTable = new Table(5,1);
+      Table buttonTable = new Table(4,1);
       buttonTable.add(inputField,1,1);
       buttonTable.add(newEntryButton,2,1);
       buttonTable.add(deleteEntriesButton,3,1);
-      buttonTable.add(cancelButton, 4,1);
       if (! workReport.isMembersPartDone()) {
-        buttonTable.add(getFinishButton(resourceBundle), 5, 1);
+        buttonTable.add(getFinishButton(resourceBundle), 4, 1);
       }
       else {
         Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part has been finished."));
         text.setBold();
-        buttonTable.add(text, 5 , 1);
+        buttonTable.add(text, 4 , 1);
       }
       mainTable.add(buttonTable,1,2);
     }
@@ -442,20 +440,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     button.setAsImageButton(true);
     return button;
   }  
-
-  private PresentationObject getCancelButton(IWResourceBundle resourceBundle, IWContext iwc)  {
-     String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
-     Link link = new Link(cancelText);
-     link.addParameter( SUBMIT_CANCEL_KEY, "dummy_value");
-     // add maintain parameters
-     Iterator iteratorList = getParametersToMaintain().iterator();
-     while (iteratorList.hasNext())  {
-      String parameter = (String) iteratorList.next();
-      link.maintainParameter(parameter, iwc);
-    }
-    link.setAsImageButton(true);
-    return link;
-  }    
 
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_member_editor_finish", "Finish");
@@ -529,6 +513,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     browser.setColorForEvenRows("#EFEFEF");
     browser.setColorForOddRows("#FFFFFF");
     browser.setColorForHeader("#DFDFDF");
+    browser.setArtificialCompoundId("workreportmembereditor", null);
     return browser;
   }
   
