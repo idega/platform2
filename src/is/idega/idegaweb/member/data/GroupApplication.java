@@ -21,4 +21,5 @@ public interface GroupApplication extends com.idega.data.IDOEntity
  public void setAdminComment(java.lang.String p0) throws java.rmi.RemoteException;
  public void setUserId(int p0) throws java.rmi.RemoteException;
  public void setCreated(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ 
 }
