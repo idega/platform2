@@ -6,6 +6,7 @@
  */
 package is.idega.idegaweb.travel.block.search.presentation;
 
+import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -153,7 +154,7 @@ public abstract class AbstractSearchForm extends Block{
 	
 	protected abstract String getServiceName(IWResourceBundle iwrb);
 	protected abstract void setupSearchForm();
-	protected abstract void getResults() throws RemoteException;
+	protected abstract void getResults() throws RemoteException, InvalidSearchException;
 	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
 	protected abstract String getPriceCategoryKey();
 	protected abstract String getUnitName();
@@ -198,6 +199,7 @@ public abstract class AbstractSearchForm extends Block{
 		form.add(getText());
 		formTable.add(Text.NON_BREAKING_SPACE, 1, row);
 		++row;
+
 		setupPresentation();
 		form.add(formTable);
 		form.add(getButtons());
@@ -363,7 +365,15 @@ public abstract class AbstractSearchForm extends Block{
 				setupSearchForm();
 				break;
 			case STATE_SHOW_SEARCH_RESULTS :
-				getResults();
+				try {
+					getResults();
+				} catch (InvalidSearchException i) {
+					System.out.println("AbstractSearchForm : InvalidSearchException : "+i.getMessage());
+					errorFields = i.getErrorFields();
+					STATE = STATE_SHOW_SEARCH_FORM;
+					addErrorWarning();
+					setupSearchForm();
+				}
 				break;
 			case STATE_SHOW_BOOKING_FORM :
 				try {
@@ -375,6 +385,16 @@ public abstract class AbstractSearchForm extends Block{
 			case STATE_CHECK_BOOKING :
 				checkBooking();
 				break;
+		}
+	}
+	
+	
+	private void addErrorWarning() {
+		if (errorFields != null && !errorFields.isEmpty()) {
+			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
+			formTable.add(error, 1, row);
+			formTable.mergeCells(1, row, 3, row);
+			++row;
 		}
 	}
 	
@@ -427,13 +447,14 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		++row;
 		++row;
-		
+		addErrorWarning();
+		/*
 		if (errorFields != null && !errorFields.isEmpty()) {
 			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
 			formTable.add(error, 1, row);
 			formTable.mergeCells(1, row, 3, row);
 			++row;
-		}
+		}*/
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)});
 		formTable.mergeCells(2, (row-1), 3, (row-1));
 
@@ -787,6 +808,9 @@ public abstract class AbstractSearchForm extends Block{
 	}	
 	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText) {
 		for (int i = 0; i < text.length; i++) {
+			if ( errorFields != null && errorFields.contains(object[i].getName())) {
+				formTable.add(getErrorText("* "), i+1, row);
+			}
 			if (useHeaderText) {
 				formTable.add(getHeaderText(text[i]), i+1, row);
 			} else {
@@ -821,14 +845,11 @@ public abstract class AbstractSearchForm extends Block{
 					try {
 						((InterfaceObject)object[i]).setContent(value);
 					}catch (Exception e) {
-						System.out.println("Error changing po to io");
+						System.out.println("Error changing presentationObject to interfaceObject");
 					}
 				} 
 			}
 
-			if ( errorFields != null && errorFields.contains(object[i].getName())) {
-				formTable.add(getErrorText("*"), i+1, row);
-			}
 			if (formInputStyle != null) {
 				object[i].setStyleAttribute(formInputStyle);
 			}
