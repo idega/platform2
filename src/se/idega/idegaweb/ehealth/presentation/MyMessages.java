@@ -8,6 +8,11 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import se.idega.util.PIDChecker;
+
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -23,6 +28,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 
 
@@ -51,6 +57,39 @@ public class MyMessages extends EHealthBlock {
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
 	
+	private String keyMessage1U1 = prefix + "mess1U1";
+	private String keyReply1U1 = prefix + "repl1U1";
+	private String keyMessage2U1 = prefix + "mess2U1";
+	private String keyReply2U1 = prefix + "repl2U1";
+	private String keyMessage3U1 = prefix + "mess3U1";
+	private String keyReply3U1 = prefix + "repl3U1";
+	private String keyMessage4U1 = prefix + "mess4U1";
+	private String keyReply4U1 = prefix + "repl4U1";
+	private String keyMessage5U1 = prefix + "mess5U1";
+	private String keyReply5U1 = prefix + "repl5U1";
+	
+	private String keyMessage1U2 = prefix + "mess1U2";
+	private String keyReply1U2 = prefix + "repl1U2";
+	private String keyMessage2U2 = prefix + "mess2U2";
+	private String keyReply2U2 = prefix + "repl2U2";
+	private String keyMessage3U2 = prefix + "mess3U2";
+	private String keyReply3U2 = prefix + "repl3U2";
+	private String keyMessage4U2 = prefix + "mess4U2";
+	private String keyReply4U2 = prefix + "repl4U2";
+	private String keyMessage5U2 = prefix + "mess5U2";
+	private String keyReply5U2 = prefix + "repl5U2";
+	
+	private String keyMessage1A1 = prefix + "mess1A1";
+	private String keyReply1A1 = prefix + "repl1A1";
+	private String keyMessage2A1 = prefix + "mess2A1";
+	private String keyReply2A1 = prefix + "repl2A1";
+	private String keyMessage3A1 = prefix + "mess3A1";
+	private String keyReply3A1 = prefix + "repl3A1";
+	private String keyMessage4A1 = prefix + "mess4A1";
+	private String keyReply4A1 = prefix + "repl4A1";
+	private String keyMessage5A1 = prefix + "mess5A1";
+	private String keyReply5A1 = prefix + "repl5A1";
+	
 	private int userID = -1;
 	private User user;
 	IWContext _iwc = null;
@@ -58,7 +97,8 @@ public class MyMessages extends EHealthBlock {
 	public String name = null;
 	public String fname = null;
 	public String lname = null;
-
+	Age age = null;
+	
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
 		userID = iwc.getUserId();
@@ -76,7 +116,13 @@ public class MyMessages extends EHealthBlock {
 		else 
 			name = "-";
 		
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
 		add(getAppointmentHistoryForm());
+		
 	}
 	
 	
@@ -114,30 +160,44 @@ public class MyMessages extends EHealthBlock {
 				myForm.setAssociatedFormScript(timeScript);
 			}
 		}
+		ArrayList info = new ArrayList();
+		if (user !=null && user.getGroupID() == 142 ) {
+			info.add(localize(keyMessage1A1, "Message"));
+			info.add(localize(keyReply1A1, "Reply"));
+			info.add(localize(keyMessage2A1, "Message"));
+			info.add(localize(keyReply2A1, "Reply"));
+			info.add(localize(keyMessage3A1, "Message"));
+			info.add(localize(keyReply3A1, "Reply"));
+			info.add(localize(keyMessage4A1, "Message"));
+			info.add(localize(keyReply4A1, "Reply"));
+			info.add(localize(keyMessage5A1, "Message"));
+			info.add(localize(keyReply5A1, "Reply"));
+		}
+		else if (age != null && age.getYears() >= 70){
+			info.add(localize(keyMessage1U1, "Message"));
+			info.add(localize(keyReply1U1, "Reply"));
+			info.add(localize(keyMessage2U1, "Message"));
+			info.add(localize(keyReply2U1, "Reply"));
+			info.add(localize(keyMessage3U1, "Message"));
+			info.add(localize(keyReply3U1, "Reply"));
+			info.add(localize(keyMessage4U1, "Message"));
+			info.add(localize(keyReply4U1, "Reply"));
+			info.add(localize(keyMessage5U1, "Message"));
+			info.add(localize(keyReply5U1, "Reply"));
+		}
+		else {
+			info.add(localize(keyMessage1U2, "Message"));
+			info.add(localize(keyReply1U2, "Reply"));
+			info.add(localize(keyMessage2U2, "Message"));
+			info.add(localize(keyReply2U2, "Reply"));
+			info.add(localize(keyMessage3U2, "Message"));
+			info.add(localize(keyReply3U2, "Reply"));
+			info.add(localize(keyMessage4U2, "Message"));
+			info.add(localize(keyReply4U2, "Reply"));
+			info.add(localize(keyMessage5U2, "Message"));
+			info.add(localize(keyReply5U2, "Reply"));
+		}
 		
-		
-		String message = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message1 = "Lorem ium dolor, consectetuer adi cing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message2 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message3 = "Lorem dolor ipsum sit amet, consr acing elit, sed diaummy nibh euiod tindut ut lareetlore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message4 = "Lorem ipsum dolort kai amet, tetuer adipiscing elit, sed diam nonum nibh eu tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message5 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message6 = "Lorem ium dolor, consectetuer adi cing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message7 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message8 = "Lorem dolor ipsum sit amet, consr acing elit, sed diaummy nibh euiod tindut ut lareetlore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message9 = "Lorem ipsum dolort kai amet, tetuer adipiscing elit, sed diam nonum nibh eu tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		
-		
-		String infoDiv[] = {"<b>Ärende</b><br>Ont i foten<br><br><b>Meddelande</b><br>" + message,
-				"<b>Ärende</b><br>Sv: Ont i foten<br><br><b>Meddelande</b><br>" + message1,
-				"<b>Ärende</b><br>Halsont<br><br><b>Meddelande</b><br>" + message2,
-				"<b>Ärende</b><br>Sv: Halsont<br><br><b>Meddelande</b><br>" + message3,
-				"<b>Ärende</b><br>Böld på smalbenet<br><br><b>Meddelande</b><br>" + message4,
-				"<b>Ärende</b><br>Sv: Böld på smalbenet<br><br><b>Meddelande</b><br>" + message5,
-				"<b>Ärende</b><br>Feber och huvudvärk<br><br><b>Meddelande</b><br>" + message6,
-				"<b>Ärende</b><br>Sv: Feber och huvudvärk<br><br><b>Meddelande</b><br>" + message7,				
-				"<b>Ärende</b><br>Feber<br><br><b>Meddelande</b><br>" + message8,
-				"<b>Ärende</b><br>Sv: Feber<br><br><b>Meddelande</b><br>" + message9};
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
@@ -150,10 +210,13 @@ public class MyMessages extends EHealthBlock {
 		
 		
 		int theRow;
+		Iterator iter = info.iterator();
+		
 		for (theRow = 1; theRow <= 10; theRow++) {
 			Layer layers = (Layer) layer.clone();
 			layers.setID("lay" + theRow + "_");	
-			layers.add(infoDiv[theRow-1]);
+			String text = (String) iter.next();
+			layers.add(text);
 						
 			T.add(layers, 1, 3);
 		}
