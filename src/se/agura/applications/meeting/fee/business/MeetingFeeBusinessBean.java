@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.7 2004/12/21 15:11:57 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.8 2005/02/08 11:10:24 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,6 +30,7 @@ import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfoHome;
 
 import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -41,7 +42,7 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -246,5 +247,13 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 
 	public void rejectApplication(MeetingFee meetingFee, User performer) {
 		changeCaseStatus(meetingFee, getCaseStatusDenied().getStatus(), performer);
+	}
+
+	public boolean canDeleteCase(Case theCase) {
+		CaseStatus status = theCase.getCaseStatus();
+		if (status.getStatus().equals(getCaseStatusOpenString())) {
+			return true;
+		}
+		return false;
 	}
 }

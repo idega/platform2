@@ -31,6 +31,7 @@ import se.agura.applications.vacation.data.VacationType;
 import se.agura.applications.vacation.data.VacationTypeHome;
 
 import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
@@ -348,5 +349,13 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 
 	public String getExtraInformationType(VacationType type, String key) {
 		return (String) type.getMetaDataTypes().get(key);
+	}
+	
+	public boolean canDeleteCase(Case theCase) {
+		CaseStatus status = theCase.getCaseStatus();
+		if (status.getStatus().equals(getCaseStatusOpenString()) || status.getStatus().equals(getCaseStatusMoved().getStatus())) {
+			return true;
+		}
+		return false;
 	}
 }
