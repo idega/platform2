@@ -29,7 +29,10 @@ private String textBgColor = "#CCCCCC";
 private boolean limitImageWidth = false;
 private boolean zoomView = false;
 private boolean linkOnImage = true;
+//debug
 private boolean useCaching = false;
+//private boolean useCaching = true;
+
 private String align;
 
 private int imageId = -1;
@@ -140,7 +143,7 @@ private void getImage(ModuleInfo modinfo) throws SQLException{
   }
 
   //if(image==null){//if something went wrong or we are not using caching
-  if(image==null&&image2==null){//if something went wrong or we are not using caching
+  if( (image==null) && (image2==null) ){//if something went wrong or we are not using caching
     if( usesOldImageTables ){
       image2 = new com.idega.jmodule.image.data.ImageEntity(imageId);
     }
@@ -457,6 +460,22 @@ public void setMaxImageWidth(int maxImageWidth){
 public void limitImageWidth( boolean limitImageWidth ){
   this.limitImageWidth=limitImageWidth;
 }
+
+/**@todo : replace this with a implementation of the new filesystem
+ * IMPORTANT! for this to work you must have an application property called
+ * IW_USES_OLD_MEDIA_TABLES   (set to anything)
+ * also see getImage() in this class
+ *
+ */
+  public String getMediaServletString(){
+    StringBuffer URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
+    URIBuffer.append(this.getImageID());
+    URIBuffer.append("image?");
+    URIBuffer.append("image_id");
+    URIBuffer.append("=");
+    URIBuffer.append(this.getImageID());
+    return URIBuffer.toString();
+  }
 
   public synchronized Object clone() {
     Image obj = null;

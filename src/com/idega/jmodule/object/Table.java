@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.27 2001/09/26 22:23:41 aron Exp $
+ * $Id: Table.java,v 1.28 2001/09/28 13:13:57 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -192,13 +192,7 @@ public class Table extends ModuleObjectContainer {
       return image.getURL();
     }
     else{
-      StringBuffer URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
-      URIBuffer.append(image.getImageID());
-      URIBuffer.append("image?");
-      URIBuffer.append("image_id");
-      URIBuffer.append("=");
-      URIBuffer.append(image.getImageID());
-      return URIBuffer.toString();
+      return image.getMediaServletString();
     }
 
   }
