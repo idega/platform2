@@ -252,7 +252,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId()) ) {
+					if (!leagueGroupIdList.contains(league.getGroupId()) ) {
 						continue; //don't process this one, go to next
 					}
 					//create a new ReportData for each row
@@ -269,9 +269,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
 					data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
 					
-					if(lastYearReport!=null){
-						Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(lastYearReport,league));
-						data.addData(comparingYearStat,lastYear);
+					if(lastYearReport!=null){//no point if it is
+						WorkReportGroup lastYearLeague=null;
+						try {
+							lastYearLeague = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(league.getGroupId().intValue(),year.intValue()-1);
+			
+							Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(lastYearReport,lastYearLeague));
+							data.addData(comparingYearStat,lastYear);
+						}
+						catch (FinderException e2) {
+							System.err.println("WorkReportStatsBusiness : No report league for year before :"+year);
+							data.addData(comparingYearStat,new Integer(0));
+						}
+					}
+					else{
+						data.addData(comparingYearStat,new Integer(0));
 					}
 					
 					String leagueText = getLeagueIdentifier(league);
@@ -313,7 +325,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//Don't display the main board
 		WorkReportGroup mainBoard = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Integer mainGroupId = mainBoard.getGroupId();
-				
+		
 		List leagueGroupIdList = null;
 		if (leaguesFilter != null && !leaguesFilter.isEmpty()) {
 			leagueGroupIdList = new Vector();
@@ -327,6 +339,23 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				else{
 					if(!((Integer)group.getPrimaryKey()).equals(mainGroupId) ){
 						leagueGroupIdList.add(group.getPrimaryKey());
+					}
+				}
+			}
+		}
+		else{//because we need to remove ADA the main board
+			Collection wrGroups = getWorkReportBusiness().getAllLeagueWorkReportGroupsForYear(year.intValue());
+			leagueGroupIdList = new Vector();
+			Iterator iter = wrGroups.iterator();
+			while (iter.hasNext()) {
+				WorkReportGroup wrGroup = (WorkReportGroup) iter.next();
+		
+				if( returnWithMainBoard ){
+					leagueGroupIdList.add(wrGroup.getGroupId());
+				}
+				else{
+					if(!((Integer)wrGroup.getGroupId()).equals(mainGroupId) ){
+						leagueGroupIdList.add(wrGroup.getGroupId());
 					}
 				}
 			}
@@ -417,7 +446,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
 					String leagueIdentifier = getLeagueIdentifier(league);
@@ -560,7 +589,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					Integer leagueKey = (Integer) league.getPrimaryKey();
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
 					
@@ -731,7 +760,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
 					
@@ -883,7 +912,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
 					
@@ -1661,7 +1690,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					Integer leagueKey = (Integer) league.getPrimaryKey();
 				
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (!leagueGroupIdList.contains(league.getGroupId())) {
 						continue; //don't process this one, go to next
 					}
 				

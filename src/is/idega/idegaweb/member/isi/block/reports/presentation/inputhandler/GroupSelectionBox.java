@@ -1,5 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,7 +32,6 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private String groupType = null;
 	private Map metaDataMap = null;
 	protected GroupBusiness groupBiz = null;
-	private boolean useShortName = false;
 	private String displayNameSeperator = ",";
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
@@ -136,28 +137,20 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	}
 
 	private String getNameForGroup(Group group) {
+		StringBuffer groupName = new StringBuffer();
 		String name;
-		if (useShortName) {
-			name = group.getShortName();
-		}
-		else {
-			name = group.getName();
-		}
+		
+		groupName.append( (group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER)!=null)? group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER)+" " : "" )
+		.append( (group.getShortName()!=null)? group.getShortName() : "");
 
-		if( !"".equals(name) && (name == null) ) {
-			name = group.getName();
-		}
-		if( !"".equals(name) && (name == null) ) {
-			name = group.getShortName();
-		}
-		if( !"".equals(name) && (name == null) ) {
-			name = group.getAbbrevation();
-		}
-		if( !"".equals(name) && (name == null) ) {
-			name = group.getDescription();
-		}
-		if( !"".equals(name) && (name == null) ) {
-			name = group.getPrimaryKey().toString();
+		name=group.toString();
+		if("".equals(name)){
+			if(group.getAbbrevation()!=null){
+				name = group.getAbbrevation();
+			}
+			else{
+				name = (group.getName()!=null)? group.getName() : "No name for group! (id:"+group.getPrimaryKey().toString()+")";
+			}
 		}
 		
 		return name;
@@ -247,20 +240,6 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 */
 	protected void setGroupType(String groupType) {
 		this.groupType = groupType;
-	}
-
-	/**
-	 * @return
-	 */
-	protected boolean isSetToUseShortName() {
-		return useShortName;
-	}
-
-	/**
-	 * @param useShortName
-	 */
-	protected void setToUseShortName(boolean useShortName) {
-		this.useShortName = useShortName;
 	}
 
 	/**
