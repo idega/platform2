@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.4 2002/01/12 02:25:23 aron Exp $
+ * $Id: Contract.java,v 1.5 2002/02/20 23:21:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,6 +45,7 @@ public class Contract extends GenericEntity {
   public static final String statusTerminated = "T";
   public static final String statusEnded = "E";
   public static final String statusResigned = "U";
+  public static final String statusGarbage = "G";
 
   public static String getStatusColumnName(){return status_;}
   public static String getApplicantIdColumnName(){return applicantId_;}
@@ -216,6 +217,7 @@ public class Contract extends GenericEntity {
         (status.equalsIgnoreCase(statusSigned)) ||
         (status.equalsIgnoreCase(statusTerminated))||
         (status.equalsIgnoreCase(statusResigned))||
+        (status.equalsIgnoreCase(statusGarbage))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
       setStatusDate(idegaTimestamp.RightNow().getSQLDate());
@@ -246,5 +248,8 @@ public class Contract extends GenericEntity {
   }
   public void setStatusResigned(){
     setStatus(statusResigned);
+  }
+  public void setStatusGarbage(){
+    setStatus(statusGarbage);
   }
 }
