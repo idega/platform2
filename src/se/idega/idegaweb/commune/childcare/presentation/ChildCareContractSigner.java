@@ -112,7 +112,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 			t.add(new Text(cat.getName()), 2, row);
 						
 			if (contract.isSigned()) {
-				t.add(new Text(iwrb.getLocalizedString("ccconsign_signed", "Signed") + contract.getSignedDate()), 4, row);
+				t.add(new Text(iwrb.getLocalizedString("ccconsign_signed", "Signed ") + contract.getSignedDate()), 4, row);
 			}else {
 
 				Link signBtn = new Link(iwrb.getLocalizedString("ccconsign_signcon","Sign Contract"));
