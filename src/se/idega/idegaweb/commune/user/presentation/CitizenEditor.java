@@ -117,7 +117,7 @@ public class CitizenEditor extends UserEditor {
 			row++;
 			
 			//	parent handling
-			int parentStartRow = row;
+			int parentStartRow = row,custodianStartRow = row; 
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.parents", "Parents")), 1, row);
 			Collection parents = null;
 			try {
@@ -149,7 +149,7 @@ public class CitizenEditor extends UserEditor {
 			}
 			//row++;
 			// custodians handling
-			row = parentStartRow;
+			row = custodianStartRow;
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.custodians", "Custodians")), 5, row);
 			Collection custodians = null;
 			try {
@@ -179,13 +179,10 @@ public class CitizenEditor extends UserEditor {
 			}
 			catch (Exception e1) {
 			}
-			row++;
+			row=Math.max(row,parentStartRow)+1;
 			// biological children handling
 			
-			relationsTable.add(
-				getHeader(iwrb.getLocalizedString("mbe.parential_children", "Parential children")),
-				1,
-				row);
+			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.parential_children", "Parential children")),1,				row);
 			Collection children = null;
 			int childrowstart = row;
 			try {
