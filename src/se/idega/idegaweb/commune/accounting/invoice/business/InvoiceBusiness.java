@@ -26,6 +26,7 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolClassMember[] getSchoolClassMembers(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
  public int getTotAmountWithoutVAT(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,javax.ejb.FinderException,com.idega.data.IDOException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVATRuleRegulation(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean isChildCare(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
  public boolean isHighShool(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
  public void removeInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
  public void removePreliminaryInvoice(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.RemoveException, java.rmi.RemoteException;

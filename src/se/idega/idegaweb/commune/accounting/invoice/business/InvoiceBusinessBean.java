@@ -55,11 +55,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/06 16:04:17 $ by $Author: thomas $
+ * Last modified: $Date: 2004/01/06 17:47:07 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.77 $
+ * @version $Revision: 1.78 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -211,6 +211,12 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 		return false;
 	}
+	
+	public boolean isChildCare(String category) throws IDOLookupException, FinderException {
+		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+		return (sch.findChildcareCategory().getCategory().equals(category));
+	}
+
 	
 	public BatchRun getBatchRunByCategory(String category) throws IDOLookupException, FinderException {
 		SchoolCategory schoolCategory =
