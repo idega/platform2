@@ -26,9 +26,9 @@ public class CalendarViewHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
-    menu.addMenuElement(CalendarBusiness.DAY,CalendarBusiness.PARAMETER_DAY);
-    menu.addMenuElement(CalendarBusiness.MONTH,CalendarBusiness.PARAMETER_MONTH);
-    menu.addMenuElement(CalendarBusiness.YEAR,CalendarBusiness.PARAMETER_YEAR);
+    menu.addMenuElement(CalendarBusiness.DAY,"Day view");
+    menu.addMenuElement(CalendarBusiness.MONTH,"Month view");
+    menu.addMenuElement(CalendarBusiness.YEAR,"Year view");
     menu.setSelectedElement(value);
     return menu;
   }
