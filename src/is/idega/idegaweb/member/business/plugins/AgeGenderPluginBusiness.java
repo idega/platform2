@@ -31,4 +31,5 @@ public interface AgeGenderPluginBusiness extends com.idega.business.IBOService,c
  public void setMale(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public void setNeutral(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public void setUpperAgeLimit(com.idega.user.data.Group p0,int p1) throws java.rmi.RemoteException;
+ public java.util.GregorianCalendar getKeyDateForYearZero(com.idega.user.data.Group p0); 
 }

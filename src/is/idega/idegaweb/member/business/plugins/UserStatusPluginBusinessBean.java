@@ -111,4 +111,8 @@ public class UserStatusPluginBusinessBean extends IBOServiceBean implements User
 	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
 		return null;
 	}
+  
+  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+    return true;
+  }
 }

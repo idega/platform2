@@ -3,11 +3,16 @@ package is.idega.idegaweb.member.business.plugins;
 import is.idega.idegaweb.member.presentation.GroupAgeGenderTab;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
@@ -93,6 +98,11 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
       // return NEUTRAL
       return NEUTRAL;
     Integer genderId = new Integer(genderIdString);
+    return getMyGenderIdForGenderId(genderId);
+  }
+    
+    
+  private int getMyGenderIdForGenderId(Integer genderId) throws RemoteException, FinderException {  
     GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
     Integer maleId = ((Integer) home.getMaleGender().getPrimaryKey());
     if (genderId.equals(maleId))
@@ -263,5 +273,86 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 	public PresentationObject instanciateViewer(Group group) throws RemoteException {
 		return null;
 	}
+
+  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+    // get date of birth
+    Date date = user.getDateOfBirth();
+    GregorianCalendar dateOfBirth = new GregorianCalendar();
+    dateOfBirth.setTime(date);
+    // get gender of user
+    int genderId = user.getGenderID();
+    int myGenderId = -1;
+    boolean genderOkay = false;
+    try {
+      myGenderId = getMyGenderIdForGenderId(new Integer(genderId));
+    // test gender of target group
+    genderOkay = (
+      (isNeutral(targetGroup)) ||
+      (isFemale(targetGroup) && myGenderId == FEMALE) ||
+      (isMale(targetGroup) && myGenderId == MALE));
+    }
+    catch (RemoteException rm)  {
+      throw new RuntimeException(rm.getMessage());
+    }
+    catch (FinderException fex) {
+      throw new EJBException(fex.getMessage());
+    }
+    // do we have to check the age at all?
+    if (! isAgeLimitStringentCondition(targetGroup))  {
+      return genderOkay;
+    }
+    // is gender okay?
+    if (! genderOkay) {
+      return false;
+    }
+    
+    // gender is okay.....
+    
+    // test age of target group
+    GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
+    int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
+    keyDate.set(Calendar.YEAR, yearOfBirth);
+    boolean after = keyDate.after(dateOfBirth);
+    // get age
+    Calendar rightNow = GregorianCalendar.getInstance();
+    int currentYear = rightNow.get(Calendar.YEAR);
+    int userAge = currentYear - yearOfBirth;
+    int lowerAgeLimit = getLowerAgeLimit(targetGroup);
+    int upperAgeLimit = getUpperAgeLimit(targetGroup);
+    // test lower age
+    if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && ! after) ) {
+      return false;
+    }
+    // test upper age
+    if (userAge > upperAgeLimit || (userAge == upperAgeLimit && after) ) {
+      return false;
+    }
+    return true;
+  }
+  
+  public GregorianCalendar getKeyDateForYearZero(Group group) {
+    String keyDateForAge = getKeyDateForAge(group);
+    StringTokenizer keyDate = new StringTokenizer(keyDateForAge," -");  
+    int month = -1;
+    int date = -1;
+    try {
+      if(keyDate.hasMoreTokens()){
+        month = Integer.parseInt(keyDate.nextToken());
+      }
+      if(keyDate.hasMoreTokens()){
+        date = Integer.parseInt(keyDate.nextToken());
+      }
+      if (month < 1 || month > 12 || date < 1 || date > 31) {
+        throw new NumberFormatException("String does not represent a date");
+      }
+    }
+    catch (NumberFormatException ex)  {
+      System.err.println("[AgeGenderPLuginBusiness was not able to read the key date of group "+ group.getPrimaryKey() + " Message was " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    }
+    GregorianCalendar calendar = new GregorianCalendar(0, month, date);
+    return calendar;
+  }   
 
 }

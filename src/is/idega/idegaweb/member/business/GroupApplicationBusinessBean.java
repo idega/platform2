@@ -470,5 +470,9 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 				
 		return list;	
 	}
+  
+  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup)  {
+    return true;
+  }
 
 }
