@@ -12,8 +12,8 @@ import java.util.Locale;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;

@@ -7,14 +7,14 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.accounting.childcare.data;
+package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;

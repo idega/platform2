@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.childcare.check.business;
+package se.idega.idegaweb.commune.childcare.check.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoCustodianFound;
@@ -12,10 +12,10 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.childcare.check.data.Check;
-import se.idega.idegaweb.commune.accounting.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheckHome;
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheckHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 

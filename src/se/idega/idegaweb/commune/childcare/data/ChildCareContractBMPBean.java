@@ -1,7 +1,7 @@
 /*
  * Created on 26.3.2003
  */
-package se.idega.idegaweb.commune.accounting.childcare.data;
+package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
 import java.util.Collection;

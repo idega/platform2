@@ -6,7 +6,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public float getAmount();
  public float getAmountVAT();
  public java.lang.String getChangedBy();
- public se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract getChildCareContract();
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContract getChildCareContract();
  public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
@@ -39,7 +39,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setAmount(float p0);
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
- public void setChildCareContract(se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract p0);
+ public void setChildCareContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);

@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.accounting.childcare.check.data;
+package se.idega.idegaweb.commune.childcare.check.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;

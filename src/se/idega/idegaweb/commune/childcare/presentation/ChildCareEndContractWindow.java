@@ -9,8 +9,8 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import com.idega.presentation.ui.Window;
 import java.rmi.RemoteException;
 import java.util.Calendar;
-import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 

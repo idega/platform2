@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.childcare.check.data;
+package se.idega.idegaweb.commune.childcare.check.data;
 
 
 public class GrantedCheckHomeImpl extends com.idega.data.IDOFactory implements GrantedCheckHome

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.childcare.data;
+package se.idega.idegaweb.commune.childcare.data;
 
 
 public class EmploymentTypeHomeImpl extends com.idega.data.IDOFactory implements EmploymentTypeHome

@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.accounting.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.accounting.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.util.PIDChecker;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.20 2004/10/07 13:42:10 thomas Exp $
+ * $Id: ControlListBusinessBean.java,v 1.21 2004/10/14 10:22:27 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,12 +25,12 @@ import com.idega.block.school.data.School;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 
-import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * This business handles the logic to retrieve a control list after a batch run.
@@ -39,11 +39,11 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/10/07 13:42:10 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/14 10:22:27 $ by $Author: thomas $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
