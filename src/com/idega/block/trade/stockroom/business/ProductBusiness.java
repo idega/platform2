@@ -147,6 +147,15 @@ public class ProductBusiness {
     return getProduct(product.getID());
   }
 
+  public static ProductCategory getProductCategory(int categoryID) {
+    try {
+      return new ProductCategory(categoryID);
+    }
+    catch (SQLException e) {
+      return null;
+    }
+  }
+
   /**
    * @deprecated
    */
@@ -189,15 +198,15 @@ public class ProductBusiness {
 
     if (numberInFront) {
       if (!number.equals("")) {
-        returnString = number + " " + name;
+	returnString = number + " " + name;
       }else {
-        returnString = name;
+	returnString = name;
       }
     }else {
       if (!number.equals("")) {
-        returnString = name + " " + number;
+	returnString = name + " " + number;
       }else {
-        returnString = name;
+	returnString = name;
       }
     }
 
@@ -426,10 +435,10 @@ public class ProductBusiness {
     for (int i = 0; i < productCategories.size(); i++) {
       temp = getProducts((ICCategory) productCategories.get(i));
       for (int j = 0; j < temp.size(); j++) {
-        product = (Product) temp.get(j);
-        if (!returner.contains(product)) {
-          returner.add(product);
-        }
+	product = (Product) temp.get(j);
+	if (!returner.contains(product)) {
+	  returner.add(product);
+	}
       }
     }
 

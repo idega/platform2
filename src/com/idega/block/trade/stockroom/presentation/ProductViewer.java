@@ -1,13 +1,14 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import java.util.Locale;
-import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.core.business.*;
+import com.idega.core.data.*;
+import com.idega.core.localisation.business.*;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
-import com.idega.presentation.Block;
+import com.idega.presentation.text.*;
+import java.util.*;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001
@@ -30,6 +31,7 @@ public class ProductViewer extends Block {
 
   private Class _viewerLayoutClass = ProductViewerLayoutIdega.class;
   private String _width;
+  private List categoryList;
 
   Locale _locale;
   int _localeId = -1;
@@ -37,6 +39,7 @@ public class ProductViewer extends Block {
   String _headerFontStyle;
   Image _seperator = null;
   boolean _useHRasSeperator = false;
+  boolean _showRandom = false;
 
   public ProductViewer() { }
 
@@ -70,11 +73,26 @@ public class ProductViewer extends Block {
     try {
       String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
       if (sProductId != null) {
-        _productId = Integer.parseInt(sProductId);
-        _product = ProductBusiness.getProduct(_productId);
-        if (!_product.getIsValid()) {
-          _product = null;
-        }
+	_productId = Integer.parseInt(sProductId);
+	_product = ProductBusiness.getProduct(_productId);
+	if (!_product.getIsValid()) {
+	  _product = null;
+	}
+      }
+
+      if ( _product != null ) {
+	List list = ProductBusiness.getProductCategories(_product);
+	if ( list != null && categoryList != null ) {
+	  boolean showProduct = false;
+	  Iterator iter = list.iterator();
+	  while (iter.hasNext()) {
+	    if ( categoryList.contains(iter.next()) )
+	      showProduct = true;
+	  }
+	  if ( !showProduct )
+	    _product = null;
+	  System.out.println("ShowProduct: "+showProduct);
+	}
       }
     } catch (Exception e) {
       e.printStackTrace(System.err);
@@ -91,10 +109,21 @@ public class ProductViewer extends Block {
       AbstractProductViewerLayout layout = (AbstractProductViewerLayout) this._viewerLayoutClass.newInstance();
       PresentationObject po = null;
 
+      if ( _product == null && _showRandom ) {
+	System.out.println("Getting random");
+	if ( categoryList != null ) {
+	  List products = ProductBusiness.getProducts(categoryList);
+	  if ( products != null && products.size() > 0 ) {
+	    int random = (int) Math.round(Math.random() * (products.size() - 1));
+	    this._product = (Product) products.get(random);
+	  }
+	}
+      }
+
       if (this._product == null) {
-        po = layout.getDemo(this, iwc);
+	po = layout.getDemo(this, iwc);
       }else {
-        po = layout.getViewer(this, _product, iwc);
+	po = layout.getViewer(this, _product, iwc);
       }
 
       Table table = new Table(1, 1);
@@ -102,7 +131,7 @@ public class ProductViewer extends Block {
       table.setCellspacing(0);
 
       if (_width != null)
-        table.setWidth(_width);
+	table.setWidth(_width);
       table.add(po);
 
       add(table);
@@ -151,6 +180,18 @@ public class ProductViewer extends Block {
 
   public void setUseHorizontalRuleAsSeperator(boolean use) {
     this._useHRasSeperator = use;
+  }
+
+  public void setCategory(String name,String categoryID) {
+    if ( categoryList == null )
+      categoryList = new Vector();
+    ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categoryID));
+    if ( category != null )
+      categoryList.add(category);
+  }
+
+  public void setShowRandomProduct(boolean showRandom) {
+    this._showRandom = showRandom;
   }
 }
 
