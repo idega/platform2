@@ -1,47 +1,47 @@
 package is.idega.idegaweb.campus.presentation;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
-import java.util.List;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.application.data.Applicant;
-import com.idega.block.building.data.*;
-import com.idega.block.building.business.BuildingCacher;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractReSignWindow;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.block.request.presentation.RequestView;
-import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.AccountBusiness;
-import com.idega.block.finance.business.FinanceFinder;
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
-import com.idega.util.text.TextStyler;
-import com.idega.util.text.StyleConstants;
-import java.util.Vector;
-import java.util.Iterator;
+
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.data.AccountInfo;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.StyleConstants;
+import com.idega.util.text.TextStyler;
 
 
 /**
@@ -204,8 +204,8 @@ public class TenantsProfile extends Block {
       myTable.mergeCells(1,1,1,3);
       myTable.setColumnVerticalAlignment(1,"top");
       myTable.setColumnVerticalAlignment(2,"top");
-      myTable.add(getProfile(),1,1);
-      myTable.add(getApartment(),2,1);
+      myTable.add(getProfile(iwc),1,1);
+      myTable.add(getApartment(iwc),2,1);
       myTable.add(getAccount(iwc),2,2);
       myTable.add(getRequests(),2,3);
       myTable.setCellspacing(6);
@@ -223,7 +223,7 @@ public class TenantsProfile extends Block {
   }
 
 
-  private PresentationObject getProfile() {
+  private PresentationObject getProfile(IWContext iwc) {
 
     Form myForm = new Form();
 
@@ -303,7 +303,7 @@ public class TenantsProfile extends Block {
     return table;
   }
 
-  private Table getApartment() {
+  private Table getApartment(IWContext iwc) {
     Table table = new Table();
       table.setCellspacing(1);
       table.setCellpadding(3);
@@ -327,6 +327,14 @@ public class TenantsProfile extends Block {
       table.add(formatText(attributes[a]),1,row);
       table.add(formatText(values[a]),2,row);
       row++;
+    }
+    
+    if (_contract != null) {
+    	Date moving = _contract.getMovingDate();
+    	if (moving != null) {
+    		table.add(_iwrb.getLocalizedString("resignation","Resigned"),1,row);
+    		table.add(new IWTimestamp(moving).getLocaleDate(iwc),2,row++);
+    	}
     }
 
     table.setHorizontalZebraColored(white,lightGray);

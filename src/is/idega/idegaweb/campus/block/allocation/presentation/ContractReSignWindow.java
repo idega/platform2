@@ -144,13 +144,20 @@ public class ContractReSignWindow extends Window{
           T.add(Edit.formatText(new IWTimestamp(eContract.getValidTo()).getLocaleDate(iwc)),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,row);
-          IWTimestamp movdate = eContract.getMovingDate()!=null?new IWTimestamp(eContract.getMovingDate()):null;
+          
+          /**
+           * @todo Hvað er að gerast hérna??? Hvers vegna er þetta input? Og á
+           * það að vera þannig? Tala við Baldvin á eftir....
+           */
+          System.out.println("Entering moving date");
+//          IWTimestamp movdate = eContract.getMovingDate()!=null?new IWTimestamp(eContract.getMovingDate()):null;
           DateInput movDate = new DateInput("mov_date",true);
           IWTimestamp moving = IWTimestamp.RightNow();
-          int termofnotice = 1;
+//          int termofnotice = 1;
+					int termofnoticeMonths = 1;
           if(SysProps !=null)
-            termofnotice = (int)SysProps.getTermOfNoticeDays();
-          moving.addDays(termofnotice);
+            termofnoticeMonths = (int)SysProps.getTermOfNoticeMonths();
+          moving.addDays(termofnoticeMonths); 
 
           if(moving.isLaterThan(new IWTimestamp(eContract.getValidTo())))
             movDate.setDate(eContract.getValidTo());
@@ -160,12 +167,14 @@ public class ContractReSignWindow extends Window{
           //Edit.setStyle(movDate);
           movDate.setStyleAttribute("style",Edit.styleAttribute);
 
-          if(movdate !=null )
-            movDate.setDate(movdate.getSQLDate());
+//          if(movdate !=null )
+//            movDate.setDate(movdate.getSQLDate());
           if(isAdmin || isContractUser)
             T.add(movDate,2,row);
-          else if(movdate !=null)
-            T.add(Edit.formatText(movdate.getLocaleDate(iwc)),2,row);
+          else if(moving !=null)
+            T.add(Edit.formatText(moving.getLocaleDate(iwc)),2,row);
+            
+            
           row++;
           boolean DATESYNC = iwb.getProperty(CampusProperties.PROP_CONTRACT_DATE_SYNC,"false").equals("true");
           if(isAdmin){
@@ -179,17 +188,23 @@ public class ContractReSignWindow extends Window{
             if(DATESYNC)
               T.add(new HiddenInput(prmDateSync,"true"));
           }
+          
+          TextInput newAddress = new TextInput("new_address");
+          newAddress.setAsNotEmpty(iwrb.getLocalizedString("err_new_address","You must enter a new address"));
+					TextInput newZip = new TextInput("new_zip");
+					newZip.setAsNotEmpty(iwrb.getLocalizedString("err_new_zip","You must enter a new zip code"));
+					TextInput newPhone = new TextInput("new_phone");
+					newPhone.setAsNotEmpty(iwrb.getLocalizedString("err_new_phone","You must enter a new phone"));
+          
           T.add(Edit.formatText(iwrb.getLocalizedString("new_address","New address")),1,row);
-          T.add(new TextInput("new_address"),2,row);
+          T.add(newAddress,2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("new_zip","New zip")),1,row);
-          T.add(new TextInput("new_zip"),2,row);
+          T.add(newZip,2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("new_phone","New phone")),1,row);
-          T.add(new TextInput("new_phone"),2,row);
+          T.add(newPhone,2,row);
           row++;
-
-
         }
       }
     }
@@ -261,4 +276,6 @@ public class ContractReSignWindow extends Window{
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
+  
+  
 }

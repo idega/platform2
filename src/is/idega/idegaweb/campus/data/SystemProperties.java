@@ -21,4 +21,6 @@ public interface SystemProperties extends com.idega.data.IDOLegacyEntity
  public void setDefaultGroup(int p0);
  public void setEmailHost(java.lang.String p0);
  public void setTermOfNotice(long p0);
+ public void setTermOfNoticeMonths(long p0);
+ public long getTermOfNoticeMonths();
 }

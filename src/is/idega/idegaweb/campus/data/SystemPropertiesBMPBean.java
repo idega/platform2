@@ -1,212 +1,205 @@
 package is.idega.idegaweb.campus.data;
 
-
-
-
-
 import com.idega.data.*;
-
 import com.idega.util.IWTimestamp;
 
-
-
-
-
 /**
-
  * Title:
-
  * Description:
-
  * Copyright:    Copyright (c) 2001
-
  * Company:
-
  * @author
-
  * @version 1.0
-
  */
-
-
 
 public class SystemPropertiesBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.data.SystemProperties {
 
+	public SystemPropertiesBMPBean() {
+	}
 
+	public void initializeAttributes() {
+		addAttribute(getIDColumnName());
+		addAttribute(getColumnNameContractYears(), "Contract Years", true, true, java.lang.Integer.class);
+		addAttribute(getColumnNameContractDate(), "Contract Date", true, true, java.sql.Date.class);
+		addAttribute(getColumnNameCypherKey(), "Cypher Key", true, true, java.lang.String.class, 4000);
+		addAttribute(getColumnNameAdminEmail(), "Admin email", true, true, java.lang.String.class, 1000);
+		addAttribute(getColumnNameEmailHost(), "email host", true, true, java.lang.String.class, 1000);
+		addAttribute(getColumnNameDefaultGroup(), "default group", true, true, java.lang.Integer.class);
+		addAttribute(getColumnNameTermOfNotice(), "term of notice", true, true, java.lang.Integer.class);
+		addAttribute(getColumnNameTermOfNoticeMonths(), "term of notice months", true, true, java.lang.Integer.class);
+	}
 
-  public SystemPropertiesBMPBean() {
+	public String getEntityName() {
 
+		return getEntityTableName();
 
+	}
 
-  }
+	public static String getEntityTableName() {
+		return "CAM_SYS_PROPS";
+	}
 
-  public void initializeAttributes() {
+	public static String getColumnNameContractYears() {
+		return "CONTRACT_YEARS";
+	}
 
-    addAttribute(getIDColumnName());
+	public static String getColumnNameContractDate() {
+		return "CONTRACT_DATE";
+	}
 
-    addAttribute(getColumnNameContractYears(),"Contract Years",true,true,java.lang.Integer.class);
+	public static String getColumnNameCypherKey() {
+		return "CYPHERKEY";
+	}
 
-    addAttribute(getColumnNameContractDate(),"Contract Date",true,true,java.sql.Date.class);
+	public static String getColumnNameAdminEmail() {
+		return "ADMIN_EMAIL";
+	}
 
-    addAttribute(getColumnNameCypherKey(),"Cypher Key",true,true,java.lang.String.class,4000);
+	public static String getColumnNameEmailHost() {
+		return "EMAIL_HOST";
+	}
 
-    addAttribute(getColumnNameAdminEmail(),"Admin email",true,true,java.lang.String.class,1000);
+	public static String getColumnNameDefaultGroup() {
+		return "DEFAULT_GROUP";
+	}
 
-    addAttribute(getColumnNameEmailHost(),"email host",true,true,java.lang.String.class,1000);
+	public static String getColumnNameTermOfNotice() {
+		return "TERM_OF_NOTICE";
+	}
 
-    addAttribute(getColumnNameDefaultGroup(),"default group",true,true,java.lang.Integer.class);
+	public static String getColumnNameTermOfNoticeMonths() {
+		return "MONTHS_NOTICE";
+	}
 
-    addAttribute(getColumnNameTermOfNotice(),"term of notice",true,true,java.lang.Integer.class);
 
-  }
+	public void setContractYears(int years) {
 
-  public String getEntityName() {
+		setColumn(getColumnNameContractYears(), years);
 
-    return getEntityTableName();
+	}
 
-  }
+	public int getContractYears() {
 
+		return getIntColumnValue(getColumnNameContractYears());
 
+	}
 
-  public static String getEntityTableName(){return "CAM_SYS_PROPS";}
+	public void setContractDate(java.sql.Date date) {
 
-  public static String getColumnNameContractYears(){return "CONTRACT_YEARS";}
+		setColumn(getColumnNameContractDate(), date);
 
-  public static String getColumnNameContractDate(){return "CONTRACT_DATE";}
+	}
 
-  public static String getColumnNameCypherKey(){return "CYPHERKEY";}
+	public java.sql.Date getContractDate() {
 
-  public static String getColumnNameAdminEmail(){return "ADMIN_EMAIL";}
+		return ((java.sql.Date) getColumnValue(getColumnNameContractDate()));
 
-  public static String getColumnNameEmailHost(){return "EMAIL_HOST";}
+	}
 
-  public static String getColumnNameDefaultGroup(){return "DEFAULT_GROUP";}
+	public void setCypherKey(String key) {
 
-  public static String getColumnNameTermOfNotice(){return "TERM_OF_NOTICE";}
+		setColumn(getColumnNameCypherKey(), key);
 
+	}
 
+	public String getCypherKey() {
 
-  public void setContractYears(int years){
+		return getStringColumnValue(getColumnNameCypherKey());
 
-    setColumn(getColumnNameContractYears(),years);
+	}
 
-  }
+	public void setAdminEmail(String email) {
 
-  public int getContractYears(){
+		setColumn(getColumnNameAdminEmail(), email);
 
-    return getIntColumnValue(getColumnNameContractYears());
+	}
 
-  }
+	public String getAdminEmail() {
 
-  public void setContractDate(java.sql.Date date){
+		return getStringColumnValue(getColumnNameAdminEmail());
 
-    setColumn(getColumnNameContractDate(),date);
+	}
 
-  }
+	public void setEmailHost(String host) {
 
-  public java.sql.Date getContractDate(){
+		setColumn(getColumnNameEmailHost(), host);
 
-    return((java.sql.Date)getColumnValue(getColumnNameContractDate()));
+	}
 
-  }
+	public int getDefaultGroup() {
 
-  public void setCypherKey(String key){
+		return getIntColumnValue(getColumnNameDefaultGroup());
 
-    setColumn(getColumnNameCypherKey(),key);
+	}
 
-  }
+	public void setDefaultGroup(int host) {
 
-  public String getCypherKey(){
+		setColumn(getColumnNameDefaultGroup(), host);
 
-    return getStringColumnValue(getColumnNameCypherKey());
+	}
 
-  }
+	public String getEmailHost() {
 
-  public void setAdminEmail(String email){
+		return getStringColumnValue(getColumnNameEmailHost());
 
-    setColumn(getColumnNameAdminEmail(),email);
+	}
 
-  }
+	public void setTermOfNotice(long term) {
 
-  public String getAdminEmail(){
+		setColumn(getColumnNameTermOfNotice(), (int) term);
 
-    return getStringColumnValue(getColumnNameAdminEmail());
+	}
 
-  }
+	public long getTermOfNotice() {
 
-  public void setEmailHost(String host){
+		return (long) getIntColumnValue(getColumnNameTermOfNotice());
 
-    setColumn(getColumnNameEmailHost(),host);
+	}
 
-  }
+	public long getTermOfNoticeDays() {
 
-  public int getDefaultGroup(){
+		return getTermOfNotice();
 
-    return getIntColumnValue(getColumnNameDefaultGroup());
+	}
 
-  }
+	public void setTermOfNoticeMonths(long term) {
 
-  public void setDefaultGroup(int host){
+		setColumn(getColumnNameTermOfNoticeMonths(), (int) term);
 
-    setColumn(getColumnNameDefaultGroup(),host);
+	}
 
-  }
+	public long getTermOfNoticeMonths() {
 
-  public String getEmailHost(){
+		return (long) getIntColumnValue(getColumnNameTermOfNoticeMonths());
 
-    return getStringColumnValue(getColumnNameEmailHost());
+	}
 
-  }
 
-  public void setTermOfNotice(long term){
+	public void insert() throws java.sql.SQLException {
 
-    setColumn(getColumnNameTermOfNotice(),(int)term);
+	}
 
-  }
+	public void delete() throws java.sql.SQLException {
 
-  public long getTermOfNotice(){
+	}
 
-    return (long) getIntColumnValue( getColumnNameTermOfNotice());
+	public java.sql.Date getValidToDate() {
 
-  }
+		int years = this.getContractYears();
 
-  public long getTermOfNoticeDays(){
+		if (this.getContractYears() > 0) {
 
-    return getTermOfNotice();
+			IWTimestamp now = IWTimestamp.RightNow();
 
-  }
+			IWTimestamp iT = new IWTimestamp(1, now.getMonth(), now.getYear() + years);
 
-  public void insert() throws java.sql.SQLException{
+			return iT.getSQLDate();
 
-  }
+		}
 
-  public void delete() throws java.sql.SQLException{
+		else
+			return this.getContractDate();
 
-  }
-
-
-
-  public java.sql.Date getValidToDate(){
-
-    int years = this.getContractYears();
-
-    if(this.getContractYears() > 0){
-
-      IWTimestamp now = IWTimestamp.RightNow();
-
-      IWTimestamp iT = new IWTimestamp(1,now.getMonth(),now.getYear()+years);
-
-      return iT.getSQLDate();
-
-    }
-
-    else
-
-     return this.getContractDate();
-
-  }
-
-
+	}
 
 }
-
