@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.13 2003/08/28 13:01:45 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.14 2003/08/28 15:25:42 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -83,7 +83,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				"  Actual: "+first.length());
 			}
 		} catch (Exception e) {
-			// Todo JJ Throw own exception
+			//TODO (JJ) Throw own exception
 			System.out.println("Error: The postingt definition and the posting strings did not match.");
 			System.out.println("First posting string: '"+first+"'");
 			System.out.println("Second posting string:'"+second+"'");
