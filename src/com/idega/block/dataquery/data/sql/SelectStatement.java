@@ -17,7 +17,8 @@ import java.util.Map;
  */
 public class SelectStatement implements DynamicExpression {
   
-  private final String SELECT = "SELECT";
+	//TODO: thi fix that DISTINCT problem
+  private final String SELECT = "SELECT DISTINCT";
   private final String FROM = "FROM";
   private final String WHERE = "WHERE";
   private final String AND = "AND";
