@@ -41,6 +41,7 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.lowagie.text.Cell;
 import com.lowagie.text.Document;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfWriter;
@@ -96,7 +97,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean {
 					//Link link = new Link(file.getName(),"file://"+file.getAbsolutePath());
 					//add(link);
 
-					SchoolUserBusiness sub = (SchoolUserBusiness) IDOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
+					SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 					Collection headmasters = sub.getHeadmasters(school);
 					Collection assheadmasters = sub.getAssistantHeadmasters(school);
 					Collection users = new Vector();
@@ -229,10 +230,10 @@ public class CheckAmountBusinessBean extends IBOServiceBean {
 					}
 					table.addCell(pla);
 					Cell noPl = new Cell(Integer.toString(placements));
-					noPl.setHorizontalAlignment(Table.ALIGN_RIGHT);
+					noPl.setHorizontalAlignment(Element.ALIGN_RIGHT);
 					table.addCell(noPl);
 					Cell tot = new Cell(Float.toString(paymentRecord.getTotalAmount()));
-					tot.setHorizontalAlignment(Table.ALIGN_RIGHT);
+					tot.setHorizontalAlignment(Element.ALIGN_RIGHT);
 					table.addCell(tot);
 					Cell notes = new Cell("");
 					if (comment != null) {

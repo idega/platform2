@@ -8,7 +8,6 @@ package se.idega.block.pki.presentation;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +74,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			}
 			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
 			
-			DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, iwc.getCurrentLocale());
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 						
 			String toBeSigned = signedEntity.getText() + "\n\n\n" + iwrb.getLocalizedString(LOCAL_SIGNATURE_DATE, "DOCUMENT SIGNED:") + dateFormat.format(new Date());
 			iwc.setSessionAttribute(SIGNED_TEXT, toBeSigned);

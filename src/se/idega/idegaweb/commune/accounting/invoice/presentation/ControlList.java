@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.9 2004/01/11 21:58:33 kjell Exp $
+/* $Id: ControlList.java,v 1.10 2004/01/12 10:02:52 gimmi Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -20,6 +20,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.MediaWritable;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
@@ -43,7 +44,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.9 2004/01/11 21:58:33 kjell Exp $ 
+ * $Id: ControlList.java,v 1.10 2004/01/12 10:02:52 gimmi Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -251,7 +252,7 @@ public class ControlList extends AccountingBlock {
 		link.addParameter(ControlListWriter.compareDate, compareDate.toString());
 		link.addParameter(ControlListWriter.withDate, withDate.toString());
 		link.addParameter(ControlListWriter.opField, opField);
-		link.addParameter(ControlListWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
 		return link;
 	}
 	public Window getFileWindow() {
