@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.14 2001/09/28 15:39:45 palli Exp $
+ * $Id: ModuleObjectContainer.java,v 1.15 2001/10/03 12:51:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -257,25 +257,28 @@ public class ModuleObjectContainer extends ModuleObject {
   }
 
   public ModuleObject getContainedObject(String objectInstanceID) {
-
-    try{
-      return getContainedObject(Integer.parseInt(objectInstanceID));
-    }
-    catch(NumberFormatException e){
-      int objectInstanceIDInt = Integer.parseInt(objectInstanceID.substring(0,objectInstanceID.indexOf(".")));
-
-      String index = objectInstanceID.substring(objectInstanceID.indexOf(".") + 1,objectInstanceID.length());
-      if(index.indexOf(".") == -1){
-        return ((ModuleObjectContainer)getContainedObject(objectInstanceIDInt)).objectAt(Integer.parseInt(index));
+    try {
+      try {
+        return(getContainedObject(Integer.parseInt(objectInstanceID)));
       }
-      else{
-        int xindex = Integer.parseInt(index.substring(0,index.indexOf(".")));
-        int yindex = Integer.parseInt(index.substring(index.indexOf(".") + 1,index.length()));
+      catch(NumberFormatException e) {
+        int objectInstanceIDInt = Integer.parseInt(objectInstanceID.substring(0,objectInstanceID.indexOf(".")));
 
-        return ((Table)getContainedObject(objectInstanceIDInt)).containerAt(xindex,yindex);
+        String index = objectInstanceID.substring(objectInstanceID.indexOf(".")+1,objectInstanceID.length());
+        if (index.indexOf(".") == -1) {
+          return(((ModuleObjectContainer)getContainedObject(objectInstanceIDInt)).objectAt(Integer.parseInt(index)));
+        }
+        else {
+          int xindex = Integer.parseInt(index.substring(0,index.indexOf(".")));
+          int yindex = Integer.parseInt(index.substring(index.indexOf(".")+1,index.length()));
+
+          return(((Table)getContainedObject(objectInstanceIDInt)).containerAt(xindex,yindex));
+        }
       }
     }
-
+    catch (NullPointerException ex) {
+      return(null);
+    }
   }
 
   /*public ModuleObject getContainedObject(String objectTreeID) {
