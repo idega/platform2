@@ -946,7 +946,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       Price.setLength(5);
       Price.setAttribute("style",this.styleAttribute);
       CheckBox chk = new CheckBox("correction","true");
-      chk.setStyle(this.styleAttribute);
+      chk.setStyleClass(this.styleAttribute);
       /*
       TextInput PayDate = new TextInput(this.getDtPrm());
       PayDate.setLength(10);
@@ -1130,7 +1130,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       for(int i = 1 ; i <= 12;i++){
         monthtable.add(formatText(String.valueOf(cal.getMonthName(i).charAt(0))),i,1);
         chk = new CheckBox("months",String.valueOf(i));
-        chk.setStyle(this.styleAttribute);
+        chk.setStyleClass(this.styleAttribute);
         monthtable.add(chk,i,2);
       }
 
