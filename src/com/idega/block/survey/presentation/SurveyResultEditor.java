@@ -158,7 +158,7 @@ public class SurveyResultEditor extends Block {
 		SubmitButton submit = new SubmitButton(prmSubmit,_iwrb.getLocalizedString("submit","  Submit  "));
 		submit.setStyleAttribute(style_submitbutton);
 		
-		add(getText(_iwrb.getLocalizedString("number_of_participants","Number of participants")));
+		table.add(getText(_iwrb.getLocalizedString("number_of_participants","Number of participants")),1,1);
 		table.add(numberOfParticipantsInput,1,1);
 		table.add(submit,1,1);
 		

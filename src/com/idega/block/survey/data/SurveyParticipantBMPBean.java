@@ -74,7 +74,7 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 		return idoGetNumberOfRecords(query);
 	}
 	
-	public Collection ejbHomeGetRandomParticipants(SurveyEntity survey,int maxNumberOfReturnedParticipants, boolean evenChance) throws FinderException{
+	public Collection ejbFindRandomParticipants(SurveyEntity survey,int maxNumberOfReturnedParticipants, boolean evenChance) throws FinderException{
 		Collection toReturn = new Vector();
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(COLUMNNAME_SURVEY,survey);
