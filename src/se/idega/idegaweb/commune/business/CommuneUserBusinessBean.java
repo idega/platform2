@@ -57,6 +57,15 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		try {
             final Group rootGroup = getRootCitizenGroup();
             final UserBusiness business = getUserBusiness();
+
+            System.out.println ("firstname='" + firstname + "'\n" +
+                                "middlename='" + middlename + "'\n" +
+                                "lastname='" + lastname + "'\n" +
+                                "personalID='" + personalID + "'\n" +
+                                "gender='" + gender + "'\n" +
+                                "dateOfBirth='" + dateOfBirth + "'\n" +
+                                "rootGroup='" + rootGroup + "'\n");
+
 			newUser = business.createUser (firstname, middlename, lastname,
                                            personalID, gender, dateOfBirth,
                                            rootGroup);
@@ -91,27 +100,6 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
             // nothing, since the case of "not find" is in finally clause
         } finally {
             if (user == null) {
-                final StringBuffer fullName = new StringBuffer();
-                if (firstName != null && firstName.trim ().length () > 0) {
-                    fullName.append (firstName.trim ());
-                }
-                if (middleName != null && middleName.trim ().length () > 0) {
-                    fullName.append (fullName.length () > 0 ? " " : "");
-                    fullName.append (middleName.trim ());
-                }
-                if (lastName != null && lastName.trim ().length () > 0) {
-                    fullName.append (fullName.length () > 0 ? " " : "");
-                    fullName.append (lastName.trim ());
-                }
-                user.setFullName(fullName.toString());
-                user.setGender((Integer) gender.getPrimaryKey());
-                user.setDateOfBirth(dateOfBirth.getDate());
-                try {
-                    user.setPrimaryGroup(getRootCitizenGroup());
-                } catch (final FinderException e) {
-                    e.printStackTrace ();
-                }
-                user.store();
                 user = createCitizen (firstName, middleName, lastName,
                                       personalID, gender, dateOfBirth);
             }

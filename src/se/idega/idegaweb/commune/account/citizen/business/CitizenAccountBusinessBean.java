@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.19 2002/11/06 10:46:15 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.20 2002/11/06 13:01:29 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.block.process.data.*;
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.*;
+import com.idega.util.IWTimestamp;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
@@ -29,15 +30,15 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
 
-	public boolean insertApplication (User performer, String pid, String email,
+	public boolean insertApplication (User user, String pid, String email,
                                       String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application =
                     ((CitizenAccountHome) IDOLookup.getHome
                      (CitizenAccount.class)).create();
 			application.setPID(pid);
-			if (performer != null)
-				application.setOwner(performer);
+			if (user != null)
+				application.setOwner(user);
 			application.setPhoneHome(phoneHome);
 			if (email != null)
 				application.setEmail(email);
@@ -50,7 +51,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			int applicationID
                     = ((Integer) application.getPrimaryKey()).intValue();
 			if (acceptApplicationOnCreation) {
-                acceptApplication(applicationID, performer);
+                acceptApplication(applicationID, user);
 			}
 		}
 		catch (Exception e) {
@@ -226,12 +227,21 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		final String lastName = spaceIndex != -1
                 ? name.substring(spaceIndex + 1, name.length ())
                 : (name != null ? name : "");
-
+        final GenderHome genderHome
+                = (GenderHome) IDOLookup.getHome(Gender.class);
+        final Integer genderId = applicant.getGenderId ();
+        final Gender gender = (Gender)
+                (genderId != null
+                 ? genderHome.findByPrimaryKeyIDO (genderId) : null);
+        final Date birthDate = applicant.getBirthDate ();
+        final IWTimestamp timestamp = birthDate != null
+                ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
-        //final User user = business.createCitizen (firstName, null, lastName, applicant.getPID ());
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-        (firstName, "", lastName, applicant.getPID ());
-		applicant.setOwner (performer);
+                (firstName, "", lastName, applicant.getPID (), gender,
+                 timestamp);
+		applicant.setOwner (user);
+        applicant.store ();
 		super.acceptApplication (applicationID, performer);
 	}
 
@@ -277,13 +287,44 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * Creates a citizen in the Commune system
 	 */
-	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException {
-		String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
-		String lastName = theCase.getApplicantName().substring(theCase.getApplicantName().lastIndexOf(" ") + 1, theCase.getApplicantName().length());
-		User user = null;
-		user = getUserBusiness().createCitizen(firstName, null, lastName, null);
-		theCase.setOwner(user);
-		return user;
+	protected User createCitizenForApplication (AccountApplication theCase)
+        throws CreateException, RemoteException {
+
+        final CitizenAccount applicant = (CitizenAccount) theCase;
+        final String name = applicant.getApplicantName();
+        final int spaceIndex = name != null ? name.indexOf(" ") : -1;
+		final String firstName
+                = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
+		final String lastName = spaceIndex != -1
+                ? name.substring(spaceIndex + 1, name.length ())
+                : (name != null ? name : "");
+        final GenderHome genderHome
+                = (GenderHome) IDOLookup.getHome(Gender.class);
+        final Integer genderId = applicant.getGenderId ();
+        Gender gender = null;
+        try {
+            gender = (Gender) (genderId != null
+                               ? genderHome.findByPrimaryKeyIDO (genderId)
+                               : null);
+        } catch (FinderException e) {
+            e.printStackTrace ();
+        }
+        final Date birthDate = applicant.getBirthDate ();
+        final IWTimestamp timestamp = birthDate != null
+                ? new IWTimestamp (birthDate.getTime ()) : null;
+        final CommuneUserBusiness userBusiness = getUserBusiness ();
+        final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
+                (firstName, "", lastName, applicant.getPID (), gender,
+                 timestamp);
+        return user;        
+        /*
+          String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
+          String lastName = theCase.getApplicantName().substring(theCase.getApplicantName().lastIndexOf(" ") + 1, theCase.getApplicantName().length());
+          User user = null;
+          user = getUserBusiness().createCitizen(firstName, null, lastName, null);
+          theCase.setOwner(user);
+          return user;
+        */
 	}
 	
 	public String getAcceptMessageSubject()
