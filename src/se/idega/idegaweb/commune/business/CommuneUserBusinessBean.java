@@ -19,6 +19,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.business.AddressBusiness;
@@ -554,6 +555,46 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		throw new FinderException("No childcare found that " + user.getName() + " manages");
 	}
+	
+	public School getProviderForUser(User user) throws FinderException {
+		Group primaryGroup = user.getPrimaryGroup();
+		try {
+			if (primaryGroup.equals(getRootProviderAdministratorGroup()) || primaryGroup.equals(getRootSchoolAdministratorGroup())) {
+				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
+				Collection schoolIds = sub.getSchools(user);
+				if (!schoolIds.isEmpty()) {
+					Iterator iter = schoolIds.iterator();
+					while (iter.hasNext()) {
+						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
+						return school;
+					}
+				}
+			}
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+		catch (FinderException e) {
+			Collection schools;
+			try {
+				schools = ((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+			}
+			catch (RemoteException e1) {
+				throw new IBORuntimeException(e1.getMessage());
+			}
+			if (!schools.isEmpty()) {
+				Iterator iter = schools.iterator();
+				while (iter.hasNext()) {
+					return (School) iter.next();
+				}
+			}
+		}
+		throw new FinderException("No provider found for user: "+user.getPrimaryKey().toString());
+	}
+	
 	public boolean hasCitizenAccount(User user) throws RemoteException {
 		return hasUserLogin(user);
 	}
