@@ -1321,7 +1321,6 @@ public class BuildingEditor extends com.idega.presentation.Block{
   }
 
   public void main(IWContext iwc)  {
-  	debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
