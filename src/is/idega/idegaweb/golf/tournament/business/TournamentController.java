@@ -1045,14 +1045,16 @@ public class TournamentController {
 
 		is.idega.idegaweb.golf.entity.StartingtimeView[] startView = new is.idega.idegaweb.golf.entity.StartingtimeView[0];
 
-		String queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number, false);
+//		String queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number, false);
+		String queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number);
 
 		//System.out.println("GettingStartingtimeView\n" + queryString);
 		try {
 			startView = (StartingtimeView[]) ((StartingtimeView) IDOLookup.instanciateEntity(StartingtimeView.class)).findAll(queryString);
 			//System.out.println("GettingStartingtimeView\n"+queryString);
 			if (startView == null || startView.length < 1) {
-				queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number, true);
+				queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number); 
+//				queryString = getStartingtimeViewSql(tournament_round_id, column_name, column_value, column_name_1, column_value_1, tee_number, order, first_group_number, last_group_number, true);
 				//System.out.println("GettingStartingtimeView 2\n"+queryString);
 				startView = (StartingtimeView[]) ((StartingtimeView) IDOLookup.instanciateEntity(StartingtimeView.class)).findAll(queryString);
 			}
@@ -1066,7 +1068,60 @@ public class TournamentController {
 
 	}
 
-	private static String getStartingtimeViewSql(int tournament_round_id, String column_name, String column_value, String column_name_1, String column_value_1, int tee_number, String order, int first_group_number, int last_group_number, boolean onlyReserved) {
+	private static String getStartingtimeViewSql(int tournament_round_id, String column_name, String column_value, String column_name_1, String column_value_1, int tee_number, String order, int first_group_number, int last_group_number) {
+		boolean onlyReserved = true;
+		String queryString =	"select distinct (st.startingtime_id), st.field_id, st.member_id, st.startingtime_date,st.grup_num, "
+				+ "m.first_name,m.middle_name, m.last_name,m.social_security_number,mi.handicap ,u.abbrevation, u.union_id";
+				if (!onlyReserved) {
+					queryString = queryString + ", tm.paid";
+				}
+				queryString = queryString + " from startingtime st, member m, union_member_info umi, union_ u, member_info mi, tournament_round_startingtime trs, tournament_round tr ";
+				if (!onlyReserved) {
+					queryString = queryString + ", tournament_member tm";
+				}
+				queryString = queryString +	 " where "
+				+ "trs.tournament_round_id = tr.tournament_round_id ";
+				if (!onlyReserved) {
+					queryString = queryString + "AND tr.tournament_id = tm.tournament_id ";
+				}
+				queryString = queryString + "AND trs.startingtime_id = st.startingtime_id AND trs.tournament_round_id = "
+				+ tournament_round_id
+				+ " AND "
+				+ "m.member_id = st.member_id AND "
+				+ "m.member_id = mi.member_id AND "
+				+ "m.member_id = umi.member_id AND ";
+				if (!onlyReserved) {
+					queryString = queryString +  "(m.member_id = tm.member_id OR m.member_id = 1) AND ";
+				} 
+				queryString = queryString + "u.union_id = umi.union_id AND "
+				+ "st.tee_number = "
+				+ tee_number
+				+ " AND "
+				+ "umi.membership_type = 'main' AND "
+				+ "umi.member_status = 'A' ";
+		if (!column_name.equalsIgnoreCase(""))
+		{
+			queryString += " AND " + column_name + " = " + column_value;
+		}
+		if (!column_name_1.equalsIgnoreCase(""))
+		{
+			queryString += " AND " + column_name_1 + " = " + column_value_1;
+		}
+		if (first_group_number > 0)
+		{
+			queryString += "AND st.grup_num >= " + first_group_number;
+		}
+		if (last_group_number > 0)
+		{
+			queryString += "AND st.grup_num <= " + last_group_number;
+		}
+		if (!order.equalsIgnoreCase(""))
+		{
+			queryString += " order by " + order;
+		}
+		return queryString;
+	}
+/*	private static String getStartingtimeViewSql(int tournament_round_id, String column_name, String column_value, String column_name_1, String column_value_1, int tee_number, String order, int first_group_number, int last_group_number, boolean onlyReserved) {
 		String queryString = "select distinct (st.startingtime_id), st.field_id, st.member_id, st.startingtime_date,st.grup_num, " + "m.first_name,m.middle_name, m.last_name,m.social_security_number,mi.handicap ,u.abbrevation, u.union_id";
 		if (!onlyReserved) {
 			queryString = queryString + ", tm.paid";
@@ -1097,7 +1152,7 @@ public class TournamentController {
 		}
 		return queryString;
 	}
-
+*/
 	public static int getInt() {
 
 		return 4;
