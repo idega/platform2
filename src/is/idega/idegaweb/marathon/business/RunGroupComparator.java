@@ -31,32 +31,32 @@ public class RunGroupComparator implements Comparator {
 		
 		Counter counter1 = r0.getCounter();
 		if (counter1 == null) {
-			Counter counter = new Counter();
+			counter1 = new Counter();
 			int index = 0;
 			Iterator iter = map.getCollection(r0).iterator();
 			while (iter.hasNext()) {
 				Run element = (Run) iter.next();
 				if (index < 3) {
-					counter.addSeconds(element.getRunTime());
+					counter1.addSeconds(element.getRunTime());
 				}
 				index++;
 			}
-			r0.setCounter(counter);
+			r0.setCounter(counter1);
 		}
 
 		Counter counter2 = r1.getCounter();
 		if (counter2 == null) {
-			Counter counter = new Counter();
+			counter2 = new Counter();
 			int index = 0;
 			Iterator iter = map.getCollection(r1).iterator();
 			while (iter.hasNext()) {
 				Run element = (Run) iter.next();
 				if (index < 3) {
-					counter.addSeconds(element.getRunTime());
+					counter2.addSeconds(element.getRunTime());
 				}
 				index++;
 			}
-			r1.setCounter(counter);
+			r1.setCounter(counter2);
 		}
 		
 		return counter1.compareTo(counter2);

@@ -22,9 +22,6 @@ public class RunGroup {
 	 * @return Returns the counter.
 	 */
 	public Counter getCounter() {
-		if (counter == null) {
-			counter = new Counter();
-		}
 		return counter;
 	}
 	
