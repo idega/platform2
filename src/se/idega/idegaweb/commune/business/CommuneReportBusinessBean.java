@@ -144,6 +144,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
 		DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+		DateFormat dateTimeFormat = SimpleDateFormat.getDateInstance(DateFormat.DEFAULT,currentLocale);
 		
 		
 		//Child - Fields
@@ -344,8 +345,8 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 		}
 		
-		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dateFormat.format(IWTimestamp.getTimestampRightNow()));
-
+		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dateTimeFormat.format(IWTimestamp.getTimestampRightNow()));
+		
 		return reportData;
 	}
 	
