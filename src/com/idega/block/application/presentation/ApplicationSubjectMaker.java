@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.block.application.business.ApplicationService;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -46,6 +47,7 @@ public class ApplicationSubjectMaker extends Block{
   private final static String IW_BUNDLE_IDENTIFIER="com.block.allocation";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb,core;
+  private Class attributeHandlerClass = null;
 
 
   public ApplicationSubjectMaker() {
@@ -85,7 +87,7 @@ public class ApplicationSubjectMaker extends Block{
         Table T = new Table();
         T.setVerticalAlignment(1,1,"top");
         T.setVerticalAlignment(2,1,"top");
-        T.add(getSubjectFormTable(subject),1,1);
+        T.add(getSubjectFormTable(iwc,subject),1,1);
         T.add(getSubjectTable(iwc,subject),2,1);
         add(T);
 
@@ -136,7 +138,7 @@ public class ApplicationSubjectMaker extends Block{
     return dTable;
   }
 
-  private PresentationObject getSubjectFormTable(ApplicationSubject subject){
+  private PresentationObject getSubjectFormTable(IWContext iwc,ApplicationSubject subject){
     DataTable dTable = new DataTable();
     dTable.setTitlesHorizontal(true);
     dTable.addTitle(iwrb.getLocalizedString("new_subject","New subject"));
@@ -147,7 +149,7 @@ public class ApplicationSubjectMaker extends Block{
     ExpireDate.setStyleAttribute("style",Edit.styleAttribute);
     ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
     TextInput extra = new TextInput("app_subj_extra");
-
+   
     if(subject !=null){
       Description.setContent(subject.getDescription());
       ExpireDate.setDate(subject.getExpires());
@@ -160,7 +162,27 @@ public class ApplicationSubjectMaker extends Block{
     dTable.add(Edit.formatText(iwrb.getLocalizedString("extra_attribute", "Extra attribute")),3,1);
     dTable.add(Description,1,2);
     dTable.add(ExpireDate,2,2);
-    dTable.add(extra,3,2);
+   
+    if(attributeHandlerClass!=null){
+		try {
+			ICPropertyHandler handler =(ICPropertyHandler) attributeHandlerClass.newInstance();
+			String attribute = subject!=null?subject.getExtraAttribute():"";
+			PresentationObject handlerObject = handler.getHandlerObject("app_subj_extra",attribute,iwc);
+			dTable.add(handlerObject,3,2);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	else{
+		 dTable.add(extra,3,2);	
+	}
+
+    
     dTable.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save"));
 
     Form F = new Form();
@@ -217,4 +239,20 @@ public class ApplicationSubjectMaker extends Block{
 	  return (ApplicationService)IBOLookup.getServiceInstance(iwac,ApplicationService.class);
   }
 
+	/**
+	 * @param attributeHandlerClass The attributeHandlerClass to set.
+	 */
+	public void setAttributeHandlerClass(Class attributeHandlerClass) {
+		this.attributeHandlerClass = attributeHandlerClass;
+	}
+	/**
+	 * @param attributeHandlerClass The attributeHandlerClass to set.
+	 */
+	public void setAttributeHandlerClassName(String attributeHandlerClassName) {
+		try {
+			this.attributeHandlerClass = Class.forName(attributeHandlerClassName);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }
