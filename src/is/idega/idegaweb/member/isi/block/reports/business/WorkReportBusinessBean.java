@@ -429,6 +429,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return null;
 		}
 	}
+  
+  /** Returns all leagues, that  belong to the specified work report.
+   * @param  id - id of the work report
+   * @return a collection of WorkReportGroups  
+   */
+  public Collection getLeaguesOfWorkReportById(int id)  throws IDOException {
+    WorkReport workReport = getWorkReportById(id);
+    return workReport.getLeagues();
+  }
+    
 
 	private File getFileObjectForFileId(int fileId) {
 		Cache file = MediaBusiness.getCachedFileInfo(fileId, this.getIWApplicationContext().getApplication());
