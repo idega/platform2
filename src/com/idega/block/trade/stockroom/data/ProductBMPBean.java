@@ -566,7 +566,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
   }
 
   public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException {
-    return ejbHomeGetProducts(supplierId, -1, from, to, ProductCategoryBMPBean.getEntityTableName()+"."+ProductCategoryBMPBean.getColumnName());
+    return ejbHomeGetProducts(supplierId, -1, from, to, ProductCategoryBMPBean.getEntityTableName()+"."+ProductCategoryBMPBean.getColumnName(), -1, -1, false);
   }
 
   public Collection ejbHomeGetProducts(int supplierId) throws FinderException {
@@ -597,6 +597,10 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
   }
 
   public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter) throws FinderException{
+		return ejbHomeGetProducts(supplierId, productCategoryId, from, to, orderBy, localeId, filter, true);
+  }
+  
+  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter, boolean useTimeframes) throws FinderException{
     Collection coll;
 
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
@@ -618,7 +622,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
 
     StringBuffer timeframeSQL = new StringBuffer();
       timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
-      if (from != null && to != null) {
+      if (from != null && to != null && useTimeframes) {
         timeframeSQL.append(", "+Ttable+", "+middleTable);
       }
       if (localeId != -1) {
@@ -628,7 +632,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
       timeframeSQL.append(", "+catMiddle+", "+catTable);
       timeframeSQL.append(" WHERE ");
       timeframeSQL.append(Ptable+"."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
-      if (from != null && to != null) {
+      if (from != null && to != null && useTimeframes) {
         timeframeSQL.append(" AND ");
         timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
         timeframeSQL.append(" AND ");
@@ -666,7 +670,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
       timeframeSQL.append(")");
     }
 
-    if (from != null && to != null) {
+    if (from != null && to != null && useTimeframes) {
       timeframeSQL.append(" AND ");
       timeframeSQL.append("(");
       timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
