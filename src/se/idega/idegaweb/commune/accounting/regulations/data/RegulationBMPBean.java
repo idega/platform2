@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.13 2003/11/05 23:59:20 palli Exp $
+ * $Id: RegulationBMPBean.java,v 1.14 2003/11/06 14:29:27 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.13 2003/11/05 23:59:20 palli Exp $
+ * $Id: RegulationBMPBean.java,v 1.14 2003/11/06 14:29:27 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -278,6 +278,52 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
+	
+	public Collection ejbFindRegulationsByNameNoCase(String name) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(" upper");		
+		sql.appendWithinParentheses(COLUMN_NAME);
+		sql.appendLike();
+		sql.append(" upper");
+		sql.appendWithinParentheses("'"+name+"'");
+		sql.appendOrderBy(COLUMN_PERIOD_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_NAME);
+		return idoFindPKsBySQL(sql.toString());
+	}	
+
+
+	/**
+	 * @param name
+	 * @param validDate
+	 * @return
+	 */
+	public Collection ejbFindRegulationsByNameNoCaseAndDate(String name, Date validDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.append(" upper");		
+		sql.appendWithinParentheses(COLUMN_NAME);
+		sql.appendLike();
+		sql.append(" upper");
+		sql.appendWithinParentheses("'"+name+"'");
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_FROM);
+		sql.appendLessThanOrEqualsSign();
+		sql.append(validDate);
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_TO);
+		sql.appendGreaterThanOrEqualsSign();
+		sql.append(validDate);
+		sql.appendOrderBy(COLUMN_PERIOD_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_NAME);
+		return idoFindPKsBySQL(sql.toString());
+	}
+	
+			
 
 	public Collection ejbFindRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -428,6 +474,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 
 		return idoFindOnePKByQuery(sql);
 	}
+
 	
 	//Find functions for C&P
 	public Collection ejbFindAllBy() throws FinderException {
