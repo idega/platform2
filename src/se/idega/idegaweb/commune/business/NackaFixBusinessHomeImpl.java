@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessHomeImpl.java,v 1.1 2004/12/07 20:36:45 laddi Exp $
+ * $Id: NackaFixBusinessHomeImpl.java,v 1.2 2004/12/07 21:21:54 laddi Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,10 @@ import com.idega.business.IBOHomeImpl;
 
 
 /**
- * Last modified: $Date: 2004/12/07 20:36:45 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/07 21:21:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NackaFixBusinessHomeImpl extends IBOHomeImpl implements NackaFixBusinessHome {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessBean.java,v 1.1 2004/12/07 20:36:45 laddi Exp $
+ * $Id: NackaFixBusinessBean.java,v 1.2 2004/12/07 21:21:54 laddi Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2004/12/07 20:36:45 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/07 21:21:54 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBusiness{
 
@@ -66,7 +66,7 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 		}
 	}
 	
-	public void fixPlacements() {
+	public void fixElementarySchoolPlacements() {
 		try {
 			Collection placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryElementarySchool());
 			int size = placements.size();
@@ -111,7 +111,9 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 		catch (RemoteException re) {
 			log(re);
 		}
-		
+	}
+	
+	public void fixChildCarePlacements() {
 		try {
 			Collection placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare());
 			int size = placements.size();
@@ -129,8 +131,13 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 					Iterator iterator = contracts.iterator();
 					while (iterator.hasNext()) {
 						ChildCareContract contract = (ChildCareContract) iterator.next();
-						IWTimestamp stamp = new IWTimestamp(contract.getTerminatedDate());
-						element.setRemovedDate(stamp.getTimestamp());
+						if (contract.getTerminatedDate() != null) {
+							IWTimestamp stamp = new IWTimestamp(contract.getTerminatedDate());
+							element.setRemovedDate(stamp.getTimestamp());
+						}
+						else {
+							element.setRemovedDate(null);
+						}
 					}
 					element.store();
 				}
