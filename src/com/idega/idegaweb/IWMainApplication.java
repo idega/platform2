@@ -771,13 +771,7 @@ public class IWMainApplication{//implements ServletContext{
   }
 
   public  String getWindowOpenerURI(Class windowToOpen){
-    String url = getWindowOpenerURI();
-    url+="?";
-    url+=PARAM_IW_FRAME_CLASS_PARAMETER;
-    url+="=";
-    url+=getEncryptedClassName(windowToOpen);
-    return url;
-    //return getWindowOpenerURI()+"?"+PARAM_IW_FRAME_CLASS_PARAMETER+"="+windowToOpen.getName();
+    return getWindowOpenerURI()+"?"+PARAM_IW_FRAME_CLASS_PARAMETER+"="+windowToOpen.getName();
   }
 
   public  String getWindowOpenerURI(Class windowToOpen,int ICObjectInstanceIDToOpen){
