@@ -367,6 +367,43 @@ public class BuildingFinder {
     return(v);
   }
 
+  public static Vector getAllApartmentTypesComplex() {
+    Vector v = new Vector();
+    Connection Conn = null;
+
+    String sqlString = "select * from v_cam_aprt_type_complex";
+
+    try {
+      Conn = com.idega.util.database.ConnectionBroker.getConnection();
+      Statement stmt = Conn.createStatement();
+      ResultSet RS  = stmt.executeQuery(sqlString);
+      int a = 0;
+
+      while (RS.next()) {
+        ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
+        int typeId = RS.getInt("bu_aprt_type_id");
+        int complexId = RS.getInt("bu_complex_id");
+        String typeName = RS.getString("aprt_type_name");
+        String complexName = RS.getString("complex_name");
+
+        appHelp.setKey(typeId,complexId);
+        appHelp.setName(typeName + " (" + complexName + ")");
+        v.addElement(appHelp);
+      }
+
+      RS.close();
+      stmt.close();
+    }
+    catch(SQLException e) {
+      System.err.println(e.toString());
+    }
+    finally{
+      com.idega.util.database.ConnectionBroker.freeConnection(Conn);
+    }
+
+    return(v);
+  }
+
   public static List listOfBuildingsInComplex(int id){
      Building B = new Building();
     List L = null;
