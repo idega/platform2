@@ -119,7 +119,9 @@ public class EntryReportBMPBean implements EntryReport{
     try{
       conn = ConnectionBroker.getConnection();
       Stmt = conn.createStatement();
-      ResultSet RS = Stmt.executeQuery(getFindSql(iBuildingId,iAccountKey,from,to));
+      String sql = getFindSql(iBuildingId,iAccountKey,from,to);
+      System.err.println(sql);
+      ResultSet RS = Stmt.executeQuery(sql);
       metaData = RS.getMetaData();
       int count = 1;
       while (RS.next() ){
