@@ -74,15 +74,6 @@ public class ServiceDesigner extends TravelManager {
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
-/*      Text theText = new Text();
-          theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-          theText.setFontFace(Text.FONT_FACE_VERDANA);
-
-      Text smallText = new Text();
-          smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-          smallText.setFontFace(Text.FONT_FACE_VERDANA);
-*/
-
       TextInput name = new TextInput("name_of_trip");
           name.setSize(40);
       TextArea description = new TextArea("description");
