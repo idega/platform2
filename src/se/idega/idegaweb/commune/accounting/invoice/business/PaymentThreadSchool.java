@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/18 14:44:48 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/29 15:51:17 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -311,6 +311,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
 							createPaymentsForOppenVerksamhet(regBus, provider, schoolClassMember, conditions, placementTimes);
+							break;
 						}
 					}
 				}
@@ -319,6 +320,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB))
 							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions, placementTimes);
+							break;
 					}
 				}
 			}
@@ -443,6 +445,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RuleTypeConstant.DERIVED,
 			null, oppenConditions
 		);
+		if(regulationForTypeArray.size()!=1){
+			errorRelated.append("Number of regulations found for fritidsklubb "+regulationForTypeArray.size());
+			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForFritidsklubbNotCorrect");
+		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
 				Regulation regulation = (Regulation) i.next();
@@ -473,6 +479,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RuleTypeConstant.DERIVED, //The conditiontype
 			null, oppenConditions //The conditions that need to fulfilled
 		);
+		if(regulationForTypeArray.size()!=1){
+			errorRelated.append("Number of regulations found for oppen verksamhet "+regulationForTypeArray.size());
+			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForOppenVerksamhetNotCorrect");
+		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
 				Regulation regulation = (Regulation) i.next();

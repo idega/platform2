@@ -101,8 +101,8 @@ public class InvoiceChildcareThread extends BillingThread{
 			category = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 
+			createBatchRunLogger(category);
 			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month,category.getCategory()) == 0){
-				createBatchRunLogger(category);
 				//Create all the billing info derrived from the contracts
 				contracts();
 				//Create all the billing info derrived from the regular invoices
@@ -123,10 +123,18 @@ public class InvoiceChildcareThread extends BillingThread{
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
-			if (null != errorRelated) {
-				errorRelated.logToConsole ();
+			StringBuffer message = new StringBuffer();
+			StackTraceElement[] stackTraceElement = e.getStackTrace();
+			for(int i=0; i<stackTraceElement.length;i++){
+				message.append(stackTraceElement[i].toString());
 			}
-			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			if (null != errorRelated) {
+				errorRelated.append(message.toString());
+				errorRelated.logToConsole();
+				createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
+			}else{
+				createNewErrorMessage(message.toString(),"invoice.DBSetupProblem");
+			}
 			batchRunLoggerDone();
 		}
 	}
@@ -218,31 +226,31 @@ public class InvoiceChildcareThread extends BillingThread{
 			//Loop through all contracts
 			while(contractIter.hasNext())
 			{
-				contract = (ChildCareContract)contractIter.next();
-				errorRelated = new ErrorLogger();
-				errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
-				errorRelated.append("Contract "+contract.getContractID());
-				
-				//Moved up for better logging
-				//Get all the parameters needed to select the correct contract
-				SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
-				User child = schoolClassMember.getStudent();
-				errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
-				SchoolType schoolType = schoolClassMember.getSchoolType();
-				String childcareType =schoolType.getLocalizationKey();
-				errorRelated.append("SchoolType "+schoolType.getName());
-				errorRelated.append("Child "+contract.getChild().getName());
-
-				
-				// **Fetch invoice receiver
-//				custodian = contract.getApplication().getOwner();
-				custodian = getInvoiceReceiver(contract);
-				//**Fetch the reference at the provider
-				school = contract.getApplication ().getProvider ();
-				errorRelated.append("School "+school.getName(),1);
-				// **Get or create the invoice header
-				InvoiceHeader invoiceHeader;
 				try{
+					contract = (ChildCareContract)contractIter.next();
+					errorRelated = new ErrorLogger();
+					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
+					errorRelated.append("Contract "+contract.getContractID());
+					
+					//Moved up for better logging
+					//Get all the parameters needed to select the correct contract
+					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
+					User child = schoolClassMember.getStudent();
+					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
+					SchoolType schoolType = schoolClassMember.getSchoolType();
+					String childcareType =schoolType.getLocalizationKey();
+					errorRelated.append("SchoolType "+schoolType.getName());
+					errorRelated.append("Child "+contract.getChild().getName());
+	
+					
+					// **Fetch invoice receiver
+//					custodian = contract.getApplication().getOwner();
+					custodian = getInvoiceReceiver(contract);
+					//**Fetch the reference at the provider
+					school = contract.getApplication ().getProvider ();
+					errorRelated.append("School "+school.getName(),1);
+					// **Get or create the invoice header
+					InvoiceHeader invoiceHeader;
 					try{
 						invoiceHeader = getInvoiceHeaderHome().findByCustodianAndMonth(custodian,month);
 					} catch (FinderException e) {
@@ -654,10 +662,10 @@ public class InvoiceChildcareThread extends BillingThread{
 
 					} catch (RemoteException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
+						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemRemoteException");
 					} catch (CreateException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
+						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemCreateException");
 					}
 				}
 			} catch (RemoteException e) {
