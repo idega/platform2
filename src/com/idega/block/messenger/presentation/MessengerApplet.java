@@ -231,8 +231,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         /**@todo: send the latest version*/
         packetToServlet.addProperty(new Property(USER_LIST_VERSION,"0"));
 
-
-
         packetToServlet.setSender(sessionId);
      //   isfirstRun = false;
      // }
@@ -312,10 +310,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
              }
           }
         }
-
-
-
-      }
+      }else System.out.println("MessengerApplet: PROPERTIES IS NULL");
 
     }else{
      System.err.println("MessengerApplet : packetFromServlet == null !!");
