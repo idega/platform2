@@ -31,7 +31,9 @@ public abstract class CategoryBlock extends Block{
    *  Returns the first Category bound to this instance
    */
   public int getCategoryId(){
-    return icCategoryIds[0];
+    if(icCategoryIds.length >0)
+      return icCategoryIds[0];
+    return -1;
   }
 
   /**
@@ -59,7 +61,7 @@ public abstract class CategoryBlock extends Block{
    *  Turns Category autocreation on/off
    */
   public void setAutoCreate(boolean autocreate){
-    autocreate = autocreate;
+    this.autocreate = autocreate;
   }
 
   /**

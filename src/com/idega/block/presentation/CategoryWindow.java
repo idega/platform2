@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
-import com.idega.core.data.ICCategory;
+import com.idega.core.business.Category;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.business.CategoryBusiness;
 import com.idega.io.ObjectSerializer;
@@ -31,8 +31,6 @@ import com.idega.io.ObjectSerializer;
  */
 
 public class CategoryWindow extends IWAdminWindow {
-
-  protected boolean isAdmin = false;
 
   private int iCategoryId = -1;
   private int iObjectInstanceId = -1;
@@ -63,7 +61,7 @@ public class CategoryWindow extends IWAdminWindow {
   }
 
   protected void control(IWContext iwc){
-    debugParameters(iwc);
+    //debugParameters(iwc);
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -83,7 +81,7 @@ public class CategoryWindow extends IWAdminWindow {
     multi = iwc.isParameterSet(prmMulti);
     multi = true;
 
-    if(isAdmin){
+    if(true){
 			if(iwc.isParameterSet(actForm)){
         processCategoryForm(iwc);
       }
@@ -139,7 +137,7 @@ public class CategoryWindow extends IWAdminWindow {
 			}
   }
 
-	 private void addCategoryFields(ICCategory eCategory){
+	 private void addCategoryFields(Category eCategory){
 
 	  String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
@@ -217,7 +215,7 @@ public class CategoryWindow extends IWAdminWindow {
 
   }
 
-   private void getCategoryFields(ICCategory eCategory){
+   private void getCategoryFields(Category eCategory){
 
 	  String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
@@ -249,14 +247,14 @@ public class CategoryWindow extends IWAdminWindow {
     boolean formAdded = false;
     if(L !=null){
       java.util.Iterator iter = L.iterator();
-      ICCategory cat ;
+      Category cat ;
       CheckBox box;
       RadioButton rad;
       Link deleteLink;
       int id;
       while(iter.hasNext()){
         col = 1;
-        cat = (ICCategory) iter.next();
+        cat = (Category) iter.next();
         id = cat.getID();
         if(id == chosenId){
           name.setContent(cat.getName());
@@ -333,7 +331,7 @@ public class CategoryWindow extends IWAdminWindow {
     return L;
   }
 
-  public PresentationObject getNameInput(ICCategory node){
+  public PresentationObject getNameInput(Category node){
     TextInput name = new TextInput("name");
     if(node!=null){
       name.setContent(node.getName());
@@ -348,7 +346,6 @@ public class CategoryWindow extends IWAdminWindow {
     String title = iwrb.getLocalizedString("ic_category_editor","Category Editor");
     setTitle(title);
     addTitle(title);
-    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 
