@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.33 2002/06/20 13:57:28 aron Exp $
+ * $Id: CampusApprover.java,v 1.34 2002/06/20 16:24:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.data.Applied;
@@ -636,10 +637,11 @@ public class CampusApprover extends Block {
 	  Left.add(getViewSpouse(spouse,eCampusApplication,iwrb),1,2);
 	  Left.add(getViewChildren(children,eCampusApplication,iwrb),1,3);
 
-	Table Middle =new Table(1,3);
+	Table Middle =new Table(1,4);
 	  Middle.add(getViewApplication(eApplication),1,1);
 	  Middle.add(getViewApartment(eCampusApplication,L,iwc,iwrb),1,2);
 	  Middle.add(getViewApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
+    Middle.add(getOtherInfo(eCampusApplication,iwc,iwrb,false),1,3);
 
 	Table Right =new Table(1,3);
 	  //Right.add(getRemoteControl(iwrb),1,1);
@@ -729,10 +731,11 @@ public class CampusApprover extends Block {
 	  Left.add(getFieldsSpouse(spouse,eCampusApplication,iwrb),1,2);
 	  Left.add(getFieldsChildren(children,eCampusApplication,iwrb),1,3);
 
-	Table Middle =new Table(1,3);
+	Table Middle =new Table(1,4);
 	  Middle.add(getViewApplication(eApplication),1,1);
 	  Middle.add(getFieldsApartment(eCampusApplication,L,iwc,iwrb),1,2);
 	  Middle.add(getFieldsApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
+	  Middle.add(getOtherInfo(eCampusApplication,iwc,iwrb,true),1,4);
 
 	Table Right =new Table(1,3);
 	  //Right.add(getRemoteControl(iwrb),1,1);
@@ -753,96 +756,6 @@ public class CampusApprover extends Block {
     return theForm;
   }
 
-/*  public PresentationObject makeTransferForm(int id, IWContext iwc, IWResourceBundle iwrb) {
-    Form theForm = new Form();
-    theForm.add(new HiddenInput("application_id",String.valueOf(id)));
-    try{
-      Application eApplication = null;
-      Applicant spouse = null;
-      Vector children = null;
-      Applicant eApplicant = null;
-      if(id < -1 && iterator != null){
-	ApplicationHolder AS = null;
-	if( id == -2 && iterator.hasPrevious()){
-	  AS = (ApplicationHolder)iterator.previous();
-	}
-	else if(id == -4 && iterator.hasNext()){
-	  AS = (ApplicationHolder)iterator.next();
-	}
-	if(AS !=null){
-	  eApplication = AS.getApplication();
-	  eApplicant = AS.getApplicant();
-	  id = eApplication.getID();
-	}
-      }
-      else {
-	if (id > 0) {
-	  eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
-	  eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eApplication.getApplicantId());
-	}
-      }
-
-      CampusApplication A = null;
-      CampusApplication eCampusApplication = null;
-      List L = null;
-      if( eApplication !=null && eApplicant != null){
-	java.util.Iterator iter = eApplicant.getChildren();
-	if(iter !=null){
-	  Applicant a;
-	  while(iter.hasNext()){
-	    a = (Applicant) iter.next();
-	    if(a.getStatus().equals("P")){
-	      spouse = a;
-	    }
-	    else if(a.getStatus().equals("C")){
-	      if(children ==null)
-		children = new Vector();
-	      children.add(a);
-	    }
-	  }
-	}
-
-	A = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
-	eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
-	L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
-      }
-
-	int border = 0;
-
-	Table OuterFrame = new Table(3,1);
-	OuterFrame.setCellpadding(2);
-	OuterFrame.setCellspacing(0);
-	OuterFrame.setBorder(border);
-	OuterFrame.setRowVerticalAlignment(1,"top");
-	//OuterFrame.setWidth(1,"550");
-
-	Table Left = new Table(1,3);
-	  Left.add(getFieldsApplicant(eApplicant,eCampusApplication,iwrb),1,1);
-	  Left.add(getFieldsSpouse(spouse,eCampusApplication,iwrb),1,2);
-	  Left.add(getFieldsChildren(children,eCampusApplication,iwrb),1,3);
-
-	Table Middle =new Table(1,3);
-	  Middle.add(getViewApplication(eApplication),1,1);
-	  Middle.add(getFieldsApartment(eCampusApplication,L,iwc,iwrb),1,2);
-	  Middle.add(getFieldsApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
-
-	Table Right =new Table(1,3);
-	  Right.add(getRemoteControl(iwrb),1,1);
-	  Right.add(getKnobs(iwrb),1,2);
-	  String status = eApplication!=null ? eApplication.getStatus():"";
-	  String pStatus = eCampusApplication!=null ? eCampusApplication.getPriorityLevel():"";
-	  Right.add(getButtons(eApplication,status,pStatus,bEdit,iwrb),1,3);
-
-	  OuterFrame.add(Left,1,1);
-	  OuterFrame.add(Middle,2,1);
-	  OuterFrame.add(Right,3,1);
-
-	theForm.add(OuterFrame);
-    }
-    catch(SQLException sql){sql.printStackTrace();}
-    catch(Exception e){e.printStackTrace();}
-    return theForm;
-  }*/
 
   public PresentationObject getViewApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     DataTable T = new DataTable();
@@ -1348,6 +1261,41 @@ public class CampusApprover extends Block {
       return T;
   }
 
+  public PresentationObject getOtherInfo(CampusApplication eCampusApplication, IWContext iwc, IWResourceBundle iwrb, boolean editable) {
+    DataTable T = new DataTable();
+    T.setWidth("100%");
+    T.addTitle(iwrb.getLocalizedString("otherinfo","Other info"));
+    int col = 1;
+    int row = 1;
+    T.add(Edit.formatText(iwrb.getLocalizedString("comment","Comment")),col,row);
+
+    String comment = null;
+
+    if (eCampusApplication != null) {
+      comment = eCampusApplication.getOtherInfo();
+    }
+
+    col = 2;
+    row = 1;
+    TextArea commentArea = new TextArea("ap_comment",comment);
+    if (editable) {
+      commentArea.setAsEditable();
+      commentArea.setHeight(5);
+      commentArea.setWidth(35);
+    }
+    else {
+      commentArea.setAsNotEditable();
+      commentArea.setHeight(5);
+    }
+
+//    commentArea
+    Edit.setStyle(commentArea);
+    T.add(commentArea,col,row);
+
+    return T;
+  }
+
+
   public DropdownMenu drpTypes(Vector v,String name,String selected,boolean firstEmpty){
     DropdownMenu drpTypes = new DropdownMenu(name);
     Edit.setStyle(drpTypes);
@@ -1445,6 +1393,7 @@ public class CampusApprover extends Block {
     String sRentFrom = iwc.getParameter("ap_rentfrom");
     String sFurni = iwc.getParameter("ap_furni");
     String sWait = iwc.getParameter("ap_wait");
+    String comment = iwc.getParameter("ap_comment");
     Vector V = new Vector();
     if(eCampusApplication == null)
       eCampusApplication = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
@@ -1460,6 +1409,9 @@ public class CampusApprover extends Block {
     }
     else
       eCampusApplication.setOnWaitinglist(false);
+
+    if (comment != null)
+      eCampusApplication.setOtherInfo(comment);
 
     String key1 = (String)iwc.getParameter("drp_one");
     String key2 = (String)iwc.getParameter("drp_two");
