@@ -4,7 +4,6 @@
 package com.idega.block.cal.presentation;
 
 import java.util.Date;
-
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
 import com.idega.block.cal.business.LedgerVariationsHandler;
@@ -13,6 +12,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -20,9 +20,9 @@ import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.User;
-import com.idega.user.presentation.GroupChooser;
 
 /**
  * Description: <br>
@@ -56,8 +56,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	//fields
 	private Text coachNameField;
-	private GroupChooser otherCoachesNameField;
-  private GroupChooser groupNameField;
+	private AttendantChooser otherCoachesNameField;
+  private AttendantChooser groupNameField;
   private DatePicker fromDatePickerField;
   private TextInput nameField;
   
@@ -116,8 +116,15 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 			User user =iwc.getCurrentUser();
 			coachNameField = new Text(user.getName());
 		}
+		ImplementorRepository implementorRepository =  ImplementorRepository.getInstance();
+		otherCoachesNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
+		otherCoachesNameField.setChooserParameter(otherCoachesFieldParameterName);
+		groupNameField = (AttendantChooser) implementorRepository.newInstanceOrNull(AttendantChooser.class, this.getClass());
+		groupNameField.setChooserParameter(groupFieldParameterName);
+		/* prior version:
 		otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);
 		groupNameField = new GroupChooser(groupFieldParameterName);
+		*/
 		//fromDate is the start date of the ledger
 		fromDatePickerField =new DatePicker(dateFieldParameterName);
 		//when save button is pushed the new ledger is created
@@ -143,9 +150,11 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		mainTable.add(coachText,1,2);
 		mainTable.add(coachNameField,2,2);
 		mainTable.add(otherCoachesText,1,3);
-		mainTable.add(otherCoachesNameField,2,3);
+		// AttendantChooser is a PresentationObject
+		mainTable.add((PresentationObject) otherCoachesNameField,2,3);
 		mainTable.add(groupText,1,4);
-		mainTable.add(groupNameField,2,4);
+		// AttendantChooser is a PresentationObject
+		mainTable.add((PresentationObject)  groupNameField,2,4);
 		mainTable.add(dateText,1,5);
 		mainTable.add(fromDatePickerField,1,5);
 		mainTable.setAlignment(2,6,"right");

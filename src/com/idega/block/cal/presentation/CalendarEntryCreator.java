@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarEntryType;
@@ -18,6 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -32,10 +32,10 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.user.presentation.GroupChooser;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -140,7 +140,7 @@ public class CalendarEntryCreator extends Form{
 	private DatePicker dayToField;
 	private TimeInput timeFromField;
 	private TimeInput timeToField;
-	private GroupChooser attendeesField;
+	private AttendantChooser attendeesField;
 	private TextArea descriptionField;
 	private SubmitButton save;
 	private ResetButton reset;
@@ -332,7 +332,9 @@ public class CalendarEntryCreator extends Form{
 		
 		
 		
-		attendeesField = new GroupChooser(attendeesFieldParameterName);
+		attendeesField = (AttendantChooser) ImplementorRepository.getInstance().newInstanceOrNull(AttendantChooser.class, this.getClass());
+		attendeesField.setChooserParameter(attendeesFieldParameterName);
+		// prior version: attendeesField = new GroupChooser(attendeesFieldParameterName);
 
 		descriptionField = new TextArea(descriptionFieldParameterName);
 		
@@ -377,7 +379,8 @@ public class CalendarEntryCreator extends Form{
 			Integer groupID = new Integer(entry.getGroupID());
 			try {
 				if(groupID.intValue() != -1) {
-					attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					attendeesField.setChooserValue(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					// prior version:  attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}
 			}catch (Exception e){
 				e.printStackTrace();
@@ -417,7 +420,8 @@ public class CalendarEntryCreator extends Form{
 			if(entryAttendees != null && !entryAttendees.equals("")) {
 				Integer groupID = new Integer(entryAttendees);
 				try {
-					attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					attendeesField.setChooserValue(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					// prior version: attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}catch (Exception e){
 					e.printStackTrace();
 				}
@@ -549,7 +553,8 @@ public class CalendarEntryCreator extends Form{
 		glTable.add(ledgerText,1,1);
 		glTable.add(ledgerField,1,2);
 		glTable.add(attendeesText,2,1);
-		glTable.add(attendeesField,2,2);
+		// AttentantChooser is a PresentationObject
+		glTable.add((PresentationObject) attendeesField,2,2);
 		
 		table.add(glTable,1,11);
 		
