@@ -47,6 +47,7 @@ import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
@@ -77,7 +78,6 @@ import com.idega.user.data.User;
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
-	private String ERROR_DOUBLE_POSTING_NULL = "error_double_posting_null";
 	private String ERROR_OWN_POSTING_NULL = "error_own_posting_null";
 	private String ERROR_PLACING_NULL = "error_placing";
 	private String ERROR_AMOUNT_ITEM_NULL = "error_amount_item";
@@ -88,6 +88,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
 	private String ERROR_CHECK = "error_check";
 	private String ERROR_NO_USER_SESSION = "error_no_user_session";
+	private String ERROR_NO_VAT = "errror_no_vat";
 	
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
@@ -135,7 +136,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
 		 
-	private ICPage _returnPage;	
+	private static ICPage _returnPage;	
 
 	private UserSearcher searcher = null;
 
@@ -294,11 +295,14 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 //			When "huvudverksamhets flow are set to in and "regelspectyp" = check - we should not be able to save
  
-			if (getValue(iwc, PAR_REG_SPEC_TYPE) != null && getValue(iwc, PAR_REG_SPEC_TYPE).length() != 0){
+//			String pk = category.getPrimaryKey().toString();
+//			String cc = SchoolCategoryBMPBean.CATEGORY_CHILD_CARE;
+			if (category.getPrimaryKey().equals(SchoolCategoryBMPBean.CATEGORY_CHILD_CARE) && getValue(iwc, PAR_REG_SPEC_TYPE) != null && getValue(iwc, PAR_REG_SPEC_TYPE).length() != 0){
 			
 				try {
 					ExportDataMapping expMapping = ((ExportDataMappingHome) IDOLookup.getHome(ExportDataMapping.class)).findByPrimaryKey(category.getPrimaryKey());
 					RegulationSpecType regSpecType = ((RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class)).findByPrimaryKey(getValue(iwc, PAR_REG_SPEC_TYPE));
+					
 					if (expMapping.getCashFlowOut() && regSpecType.getRegSpecType().equals(RegSpecConstant.CHECK)){
 						errorMessages.put(ERROR_CHECK, localize(ERROR_CHECK, "Checks must be created/changed in invoice"));
 					}
@@ -400,7 +404,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 			pay.setDateCreated(new Date(System.currentTimeMillis()));
 	
-			int vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
+			int vatType = -1;
+			try{
+				vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
+			}catch(NumberFormatException ex){
+				errorMessages.put(ERROR_NO_VAT, localize(ERROR_NO_VAT, "No Vat type specified"));
+			}
 			pay.setVATRuleRegulation(vatType);
 	//		inv.setVATType(vatType);
 			
@@ -432,9 +441,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				String doublePosting = p.getDoublePosting();
 				if (ownPosting == null || ownPosting.trim().length() == 0){	
 					errorMessages.put(ERROR_OWN_POSTING_NULL, localize(ERROR_OWN_POSTING_NULL, "Own posting must be given"));			
-				}
-				if (doublePosting == null || doublePosting.trim().length() == 0){	
-					errorMessages.put(ERROR_DOUBLE_POSTING_NULL, localize(ERROR_DOUBLE_POSTING_NULL, "Double posting must be given"));			
 				}
 	
 				pay.setOwnPosting(ownPosting);
@@ -688,9 +694,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		if (errorMessages.get(ERROR_OWN_POSTING_NULL) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_OWN_POSTING_NULL)), 2, row++);			
 		} 
-		if (errorMessages.get(ERROR_DOUBLE_POSTING_NULL) != null) {
-			table.add(getErrorText((String) errorMessages.get(ERROR_DOUBLE_POSTING_NULL)), 2, row++);			
-		} 
 		if (postingError != null){
 			table.add(getErrorText(postingError), 2, row++);				
 		}
@@ -719,6 +722,11 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
+		
+		if (errorMessages.get(ERROR_NO_VAT) != null) {
+			table.mergeCells(2, row, 10, row);
+			table.add(getErrorText((String) errorMessages.get(ERROR_NO_VAT)), 2, row++);			
+		}		
 		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, getVatRuleRegulationId(iwc, PAR_VAT_TYPE, reg),  "getVATRule", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
