@@ -94,6 +94,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 					AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 					AR.insert();
 					iRoundId = AR.getID();
+					iRoundId++;
 				}
 				catch (SQLException ex) {
 					ex.printStackTrace();
