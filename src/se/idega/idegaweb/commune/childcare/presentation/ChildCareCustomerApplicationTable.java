@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.sql.Date;
-import java.util.Calendar;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.ArrayList;
@@ -23,12 +22,13 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWTimestamp;
 
 
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.10 2003/04/04 12:39:44 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.11 2003/04/07 08:28:43 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -287,10 +287,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			_status = status;
 	
 			if (day != null && month != null && year != null) {
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(Integer.parseInt(year), Integer.parseInt(month) - 1, Integer.parseInt(day));
+				IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+				/*Calendar calendar = Calendar.getInstance();
+				calendar.set(Integer.parseInt(year), Integer.parseInt(month) - 1, Integer.parseInt(day));*/
 				try{
-					_date = new java.sql.Date(calendar.getTimeInMillis());
+					//_date = new java.sql.Date(calendar.getTimeInMillis());
+					_date = stamp.getDate();
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
 				}
