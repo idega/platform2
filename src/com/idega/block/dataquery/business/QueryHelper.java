@@ -30,6 +30,7 @@ import com.idega.xml.XMLParser;
 
 public class QueryHelper {
 
+	private String name = null;
 	private XMLDocument doc = null;
 	private XMLElement root = null;
 	private QueryEntityPart sourceEntity = null;
@@ -52,8 +53,9 @@ public class QueryHelper {
 		init();
 	}
 
-	public QueryHelper(XMLDocument document) {
+	public QueryHelper(XMLDocument document, String name) {
 		doc = document;
+		this.name = name;
 		init();
 	}
 
@@ -156,29 +158,30 @@ public class QueryHelper {
 					related.addContent(((QueryPart) iter.next()).getQueryElement());
 				}
 				root.addContent(related);
+			}
 
-				//	FIELD PART (STEP 3)
-				if (listOfFields != null && !listOfFields.isEmpty()) {
-					iter = listOfFields.iterator();
-					XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
-					if (fieldsLock)
-						fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			//	FIELD PART (STEP 3)
+			if (listOfFields != null && !listOfFields.isEmpty()) {
+				Iterator iter = listOfFields.iterator();
+				XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
+				if (fieldsLock)
+					fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+				while (iter.hasNext()) {
+					fields.addContent(((QueryPart) iter.next()).getQueryElement());
+				}
+				root.addContent(fields);
+
+				//	CONDITION PART (STEP 4)
+				if (listOfConditions != null && !listOfConditions.isEmpty()) {
+					iter = listOfConditions.iterator();
+					XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
 					while (iter.hasNext()) {
-						fields.addContent(((QueryPart) iter.next()).getQueryElement());
+						conditions.addContent(((QueryPart) iter.next()).getQueryElement());
 					}
-					root.addContent(fields);
-
-					//	CONDITION PART (STEP 4)
-					if (listOfConditions != null && !listOfConditions.isEmpty()) {
-						iter = listOfConditions.iterator();
-						XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
-						while (iter.hasNext()) {
-							conditions.addContent(((QueryPart) iter.next()).getQueryElement());
-						}
-						root.addContent(conditions);
-					}
+					root.addContent(conditions);
 				}
 			}
+			
 		}
 		return doc;
 	}
@@ -556,6 +559,10 @@ public class QueryHelper {
 			}
 		}
 		return false;
+	}
+	
+	public String getName()	{
+		return name;
 	}
 
 }

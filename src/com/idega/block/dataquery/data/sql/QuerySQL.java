@@ -30,6 +30,8 @@ public class QuerySQL {
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
   
+  private String name;
+  
   // bean class name (String)
   private Set entitiesUsedByField = new HashSet();
   // bean class name (String)
@@ -50,6 +52,7 @@ public class QuerySQL {
   private Map beanClassNameTableNameMap = new HashMap();
   
   public void initialize(QueryHelper queryHelper) {
+  	name = queryHelper.getName();
     try {
       query = createQuery(queryHelper);
     }
@@ -95,6 +98,10 @@ public class QuerySQL {
     }
     return displayNames;
   }
+
+	public String getName()	{
+		return name;
+	}
 
   private void setSourceEntity(QueryHelper queryHelper) {
     QueryEntityPart queryEntity = queryHelper.getSourceEntity();

@@ -45,12 +45,14 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 
 	public QueryHelper getQueryHelper(XMLFile xmlFile){
 		XMLData data = XMLData.getInstanceForFile(xmlFile);
-		return new QueryHelper(data.getDocument());
+		String name = data.getName();
+		return new QueryHelper(data.getDocument(), name);
 	}
 	
 	public QueryHelper getQueryHelper(int xmlFileID){
 		XMLData data = XMLData.getInstanceForFile(xmlFileID);
-		return new QueryHelper(data.getDocument());
+		String name = data.getName();
+		return new QueryHelper(data.getDocument(), name);
 	}
 	
 	public QueryHelper getQueryHelper(){
