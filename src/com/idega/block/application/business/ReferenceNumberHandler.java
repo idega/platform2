@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.9 2002/06/20 13:57:38 aron Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.10 2003/08/07 15:34:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class ReferenceNumberHandler implements IWEventListener {
   public boolean actionPerformed(IWContext iwc) throws IWException {
     String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
     if (ref.length() != 10) {
-      System.out.println("Setting upp decyphered reference number");
+      System.out.println("Setting upp decyphered reference number :"+ref);
       CypherText cyph = new CypherText();
       String cypherKey = getCypherKey(iwc);
 
