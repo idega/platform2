@@ -212,9 +212,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(NO_LEAGUE_VALUE, member);
         list.add(helper);
       }
-      String leagueName = league.getName();
-      WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueName, member);
-      list.add(helper);
+      else {
+        String leagueName = league.getName();
+        WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueName, member);
+        list.add(helper);
+      }
     }
     // add a value holder for a new entry if desired
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
@@ -227,13 +229,24 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // sort list
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
+        // check if the element is a new entity, a new entity should be shown first
+        // the element is a new element if the primaryKey is less than zero.
+        Integer primaryKey = (Integer) ((WorkReportBoardMemberHelper) first).getPrimaryKey();
+        if (primaryKey.intValue() < 0) {
+          return -1;
+        }
+        primaryKey = (Integer) ((WorkReportBoardMemberHelper) second).getPrimaryKey();
+        if (primaryKey.intValue() < 0)  {
+          return 1;
+        }
+        // sort according to the name of the league 
         String firstLeague = (String) ((WorkReportBoardMemberHelper) first).getColumnValue(LEAGUE);
         if (NO_LEAGUE_VALUE.equals(firstLeague))  {
-          firstLeague = "";
+          return -1;
         }
         String secondLeague = (String) ((WorkReportBoardMemberHelper) second).getColumnValue(LEAGUE);
         if (NO_LEAGUE_VALUE.equals(secondLeague))  {
-          secondLeague = "";
+          return 1;
         }
         return firstLeague.compareTo(secondLeague);
       }

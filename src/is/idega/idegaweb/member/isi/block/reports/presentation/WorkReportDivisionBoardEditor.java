@@ -213,6 +213,17 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     // sort list
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
+        // check if the element is a new entity, a new entity should be shown first
+        // the element is a new element if the primaryKey is less than zero.
+        Integer primaryKey = (Integer) ((WorkReportDivisionBoardHelper) first).getPrimaryKey();
+        if (primaryKey.intValue() < 0) {
+          return -1;
+        }
+        primaryKey = (Integer) ((WorkReportDivisionBoardHelper) second).getPrimaryKey();
+        if (primaryKey.intValue() < 0)  {
+          return 1;
+        }
+        // sort according to the name of the league 
         String firstLeague = (String) ((WorkReportDivisionBoardHelper) first).getColumnValue(LEAGUE);
         String secondLeague = (String) ((WorkReportDivisionBoardHelper) second).getColumnValue(LEAGUE);
         return firstLeague.compareTo(secondLeague);
