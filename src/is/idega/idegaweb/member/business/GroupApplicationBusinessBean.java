@@ -3,8 +3,10 @@ package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import is.idega.idegaweb.member.presentation.GroupApplicationOverView;
+import is.idega.idegaweb.member.presentation.GroupApplicationTab;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -338,6 +340,23 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		GroupApplicationOverView viewer =  new GroupApplicationOverView();
 		viewer.initialize(group);
 		return viewer;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs()
+	 */
+	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		return null;
+	}
+
+	/**
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs()
+	 */
+	public List getUserPropertiesTabs(User user) throws RemoteException {
+		ArrayList list = new ArrayList();
+		list.add(new GroupApplicationTab(user));	
+				
+		return list;	
 	}
 
 }

@@ -39,8 +39,9 @@ public class GroupApplicationTab extends UserTab {
   private Text childrenText;
   private Text custodiansText;
   private Text siblingsText;
+
   
-  private User user;
+	private User user;
 	private Table frameTable;
 	private Table custodianTable;
 	private Table spouseTable;
@@ -50,6 +51,11 @@ public class GroupApplicationTab extends UserTab {
   public GroupApplicationTab() {
     super();
     super.setName("Applications");
+  }
+  
+  public GroupApplicationTab(User user) {
+    this();
+    this.user = user;
   }
 
   public void init(){}
@@ -71,6 +77,8 @@ public class GroupApplicationTab extends UserTab {
     frameTable = new Table(1,1);
     frameTable.setCellpadding(0);
     frameTable.setCellspacing(0);
+    
+   // getGroupApplicationBusiness(this.getIWApplicationContext()).
     
     frameTable.add(new GroupSelectionDoubleBox());
     this.add(frameTable);
