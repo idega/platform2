@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.17 2003/10/13 21:04:08 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.18 2003/10/15 10:37:48 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.17 2003/10/13 21:04:08 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.18 2003/10/15 10:37:48 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -319,7 +319,7 @@ public class RegulationListEditor extends AccountingBlock {
 		int condTypePK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_CONDITION_TYPE));
 		int regSpecTypePK = Integer.parseInt((String)_pMap.get(PARAM_SELECTOR_REG_SPEC_TYPE));
 
-		if (r != null) {
+		if (r != null && hasNoError()) {
 			mainOpPK = r.getOperation() != null ? 
 					r.getOperation().getPrimaryKey().toString() : 
 					(String)_pMap.get(PARAM_SELECTOR_MAIN_OPERATION);
@@ -362,23 +362,23 @@ public class RegulationListEditor extends AccountingBlock {
 
 //		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, row++);
 		
-		table.add(getTextInput(PARAM_NAME, r != null ? r.getName() : 
+		table.add(getTextInput(PARAM_NAME, r != null && hasNoError() ? r.getName() : 
 				(String) _pMap.get(PARAM_NAME), 200, 40), 2, row++);
 				
-		table.add(getTextInput(PARAM_AMOUNT, r != null ? 
+		table.add(getTextInput(PARAM_AMOUNT, r != null && hasNoError() ? 
 				formatCash(r.getAmount()) : 
 				(String) _pMap.get(PARAM_AMOUNT), 60, 10), 2, row++);
 				
-		table.add(getTextInput(PARAM_DISCOUNT, r != null ? ""+r.getDiscount() : 
+		table.add(getTextInput(PARAM_DISCOUNT, r != null  && hasNoError() ? ""+r.getDiscount() : 
 				(String) _pMap.get(PARAM_DISCOUNT), 40, 5), 2, row);
 		table.add(getSmallText("%"), 2, row++);
 		
-		table.add(getTextInput(PARAM_PERIOD_FROM, (formatDate(r != null ? 
+		table.add(getTextInput(PARAM_PERIOD_FROM, (formatDate(r != null && hasNoError() ? 
 				r.getPeriodFrom() : 
 				parseDate((String) _pMap.get(PARAM_PERIOD_FROM)), 4)), 
 				40, 4), 2, row++);
 				
-		String dts = formatDate(r != null ? r.getChangedDate(): rightNow, 6);	
+		String dts = formatDate(r != null && hasNoError() ? r.getChangedDate(): rightNow, 6);	
 		table.add(getText(r != null ? dts : ""), 2, row++);
 
 		row = startRow;	
@@ -396,11 +396,12 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add("", 4, row++);
 		table.add("", 4, row++);
 
-		table.add(getTextInput(PARAM_MAX_AMOUNT_DISCOUNT, r != null ? ""+r.getMaxAmountDiscount() : 
+		table.add(getTextInput(PARAM_MAX_AMOUNT_DISCOUNT, r != null && hasNoError() ? 
+				""+r.getMaxAmountDiscount() : 
 				(String) _pMap.get(PARAM_MAX_AMOUNT_DISCOUNT), 40, 5), 4, row);
 		table.add(getSmallText("%"), 4, row++);
 
-		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null ? 
+		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null && hasNoError() ? 
 				r.getPeriodTo() : 
 				parseDate((String) _pMap.get(PARAM_PERIOD_TO)), 4)),
 				40, 4), 4, row++);
@@ -413,7 +414,7 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(regSpecTypeSelector(iwc, PARAM_SELECTOR_REG_SPEC_TYPE, regSpecTypePK), 2, row+1);
 		table.add(getLocalizedLabel(KEY_CONDITION_ORDER_HEADER, "Villkorsordning"), 3, row);
 	
-		if (r != null) {
+		if (r != null && hasNoError()) {
 			table.add(getTextInput(PARAM_CONDITION_ORDER, r.getConditionOrder() != null ? 
 					""+r.getConditionOrder().intValue() : 
 					(String) _pMap.get(PARAM_CONDITION_ORDER), 
@@ -499,7 +500,7 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_VAT_ELIGIBLE, "Momsersättning"), 1, 2);
 		table.add(getLocalizedLabel(KEY_HEADER_VAT_REGULATION, "Momsregel"), 1, 3);
 
-		if (r != null) {
+		if (r != null && hasNoError()) {
 			vatYesNoID = r.getVATEligible() != null ? r.getVATEligible().intValue() :
 					 Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_VAT_ELIGIBLE));	
 			vatRulePK = Integer.parseInt(r.getVATRegulation() != null ? 
@@ -815,6 +816,10 @@ public class RegulationListEditor extends AccountingBlock {
 
 	private String formatCash(Integer cash) {
 		return ""+(cash.intValue());
+	}
+
+	private boolean hasNoError() {
+		return _errorText.length() == 0 ? true : false;
 	}
 
 //	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
