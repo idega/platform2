@@ -40,7 +40,8 @@ import com.idega.user.data.User;
 public class CampusContracts extends CampusBlock {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 	private int iGlobalSize = 50;
-	private String sGlobalStatus = "C",ORDER = "-1";
+	private String sGlobalStatus = "C";
+	private Integer ORDER = new Integer(-1);
 	private Integer CLBU = new Integer(-1), CLFL = new Integer(-1), CLCX = new Integer(-1), CLTP = new Integer(-1),
 			CLCT = new Integer(-1);
 	private Integer index = new Integer(0);
@@ -103,11 +104,11 @@ public class CampusContracts extends CampusBlock {
 			CLFL = ((Integer) iwc.getSessionAttribute(prmFl));
 		}
 		if (iwc.isParameterSet(prmOrder)) {
-			this.ORDER = (iwc.getParameter(prmOrder));
+			this.ORDER = Integer.valueOf(iwc.getParameter(prmOrder));
 			iwc.setSessionAttribute(prmOrder, ORDER);
 			storeIndex(iwc, 0);
 		} else if (iwc.getSessionAttribute(prmOrder) != null) {
-			ORDER = ((String) iwc.getSessionAttribute(prmOrder));
+			ORDER = ((Integer) iwc.getSessionAttribute(prmOrder));
 		}
 		if (iwc.getParameter(conPrm) != null) {
 			this.sGlobalStatus = (iwc.getParameter(conPrm));
@@ -223,7 +224,7 @@ public class CampusContracts extends CampusBlock {
 		}
 		return drp;
 	}
-	private DropdownMenu orderDrop(String name, String display, String selected) {
+	private DropdownMenu orderDrop(String name, String display, Integer selected) {
 		DropdownMenu drp = new DropdownMenu(name);
 		if (!"".equals(display)) {
 			drp.addDisabledMenuElement("-1", display);
@@ -245,9 +246,9 @@ public class CampusContracts extends CampusBlock {
 		int contractCount = 0;
 		try {
 			ContractHome cHome =getContractService(iwc).getContractHome();
-			contracts = cHome.findBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, ORDER,
+			contracts = cHome.findBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, ORDER.intValue(),
 					this.iGlobalSize, index.intValue());
-			contractCount = cHome.countBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, ORDER);
+			contractCount = cHome.countBySearchConditions(sGlobalStatus, CLCX, CLBU, CLFL, CLTP, CLCT, ORDER.intValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

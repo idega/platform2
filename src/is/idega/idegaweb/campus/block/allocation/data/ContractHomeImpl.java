@@ -46,7 +46,7 @@ public java.util.Collection findByApplicantInCreatedStatus(java.lang.Integer p0)
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySearchConditions(java.lang.String p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.Integer p4,java.lang.Integer p5,java.lang.String p6,int p7,int p8)throws javax.ejb.FinderException{
+public java.util.Collection findBySearchConditions(java.lang.String p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.Integer p4,java.lang.Integer p5,int p6,int p7,int p8)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ContractBMPBean)entity).ejbFindBySearchConditions(p0,p1,p2,p3,p4,p5,p6,p7,p8);
 	this.idoCheckInPooledEntity(entity);
@@ -58,7 +58,7 @@ public java.util.Collection findBySearchConditions(java.lang.String p0,java.lang
  }
 
 
-public int countBySearchConditions(java.lang.String p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.Integer p4,java.lang.Integer p5,java.lang.String p6)throws com.idega.data.IDOException{
+public int countBySearchConditions(java.lang.String p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.Integer p4,java.lang.Integer p5,int p6)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ContractBMPBean)entity).ejbHomeCountBySearchConditions(p0,p1,p2,p3,p4,p5,p6);
 	this.idoCheckInPooledEntity(entity);

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.13 2004/06/17 11:39:06 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.14 2004/06/24 21:57:52 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,8 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
 
+
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -369,16 +371,16 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 		}
 	 }
 	 
-	 public Collection ejbFindBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,String order,int returnResultSize,int startingIndex)throws FinderException{
+	 public Collection ejbFindBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,int order,int returnResultSize,int startingIndex)throws FinderException{
 	 	 String sql = getSearchConditionSQL(status, complexId, buildingId, floorId, typeId, categoryId, order,false);
 	     return super.idoFindPKsBySQL(sql.toString(),returnResultSize,startingIndex);
 	 }
 	 
-	 public int ejbHomeCountBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,String order)throws IDOException{
+	 public int ejbHomeCountBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,int order)throws IDOException{
 	 	String sql = getSearchConditionSQL(status, complexId, buildingId, floorId, typeId, categoryId, order,true);
 	 	return idoGetNumberOfRecords(sql);
 	 }
-	private String getSearchConditionSQL(String status, Integer complexId, Integer buildingId, Integer floorId, Integer typeId, Integer categoryId, String order,boolean count) {
+	private String getSearchConditionSQL(String status, Integer complexId, Integer buildingId, Integer floorId, Integer typeId, Integer categoryId, int order,boolean count) {
 		StringBuffer sql = new StringBuffer("select ");
 		if(count)
 			sql.append(" count( * )");
@@ -418,9 +420,9 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 	       sql.append(" and bu_aprt_cat_id = ");
 	       sql.append(categoryId);
 	     }
-	     if(order!=null && !"".equals(order)){
+	     if(!count && order>=0){
 	       sql.append(" order by ");
-	       sql.append(order);
+	       sql.append(ContractFinder.getOrderString(order));
 	     }
 		return sql.toString();
 	}
