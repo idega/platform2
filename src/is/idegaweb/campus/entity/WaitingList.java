@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.5 2001/07/12 13:39:24 palli Exp $
+ * $Id: WaitingList.java,v 1.6 2001/07/12 21:44:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ public class WaitingList extends GenericEntity {
   private static final String apartmentTypeId_ = "bu_apartment_type_id";
   private static final String applicantId_ = "app_applicant_id";
   private static final String order_ = "ordered";
-  private static final String type_ = "type";
+  private static final String type_ = "list_type";
 
   public WaitingList() {
     super();
