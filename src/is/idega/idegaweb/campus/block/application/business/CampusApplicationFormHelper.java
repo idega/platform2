@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.22 2004/06/09 17:07:36 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.23 2004/06/30 08:36:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -191,7 +191,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		}
 
 		String e_mail = campusApplication.getEmail();
-		if (e_mail != null) {
+		if (e_mail != null && applicant!=null) {
 			if (e_mail.length() > 0) {
 				try {
 					MailingListService MailingListBusiness = (MailingListService) IBOLookup.getServiceInstance(iwc,MailingListService.class);
