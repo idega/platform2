@@ -1,5 +1,4 @@
 package is.idega.idegaweb.campus.presentation;
-
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
@@ -40,6 +39,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
+
 
 /**
  * Title:
@@ -90,26 +90,28 @@ public class TenantsProfile extends Block {
   public static final String white = CampusColors.WHITE;
   public static final String darkRed = CampusColors.DARKRED;
 
+
   /**
    *
    */
   public TenantsProfile() {
-  }
 
+  }
   /**
    *
    */
   public void main(IWContext iwc) {
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
-
     try {
       _isAdmin = iwc.hasEditPermission(this);
-      _isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
+      _isLoggedOn = iwc.isLoggedOn();
     }
+
     catch(Exception sql) {
       _isAdmin = false;
     }
+
 
     if( _isAdmin || _isLoggedOn ) {
       if ( iwc.getParameter(PARAMETER_USER_ID) != null ) {
@@ -118,7 +120,7 @@ public class TenantsProfile extends Block {
         }
         catch (NumberFormatException e) {
           try {
-            _userID = LoginBusiness.getUser(iwc).getID();
+            _userID =  iwc.getUser().getID();
           }
           catch (Exception ex) {
             _userID = -1;
@@ -127,12 +129,13 @@ public class TenantsProfile extends Block {
       }
       else {
         try {
-          _userID = LoginBusiness.getUser(iwc).getID();
+          _userID = iwc.getUser().getID();
         }
         catch (Exception e) {
           _userID = -1;
         }
       }
+
 
       try {
         _contract = ContractFinder.findApplicant(_userID);
@@ -140,7 +143,7 @@ public class TenantsProfile extends Block {
       catch(Exception e) {
         _contract = null;
       }
-
+    if(_contract !=null){
       try {
         _applicant = ContractFinder.getApplicant(_contract);
       }
@@ -183,13 +186,17 @@ public class TenantsProfile extends Block {
       _image.setHeight(6);
 
       add(myTable);
+      }
+      else add(_iwrb.getLocalizedString("noselecteduser","No user selected"));
     }
     else{
       add(_iwrb.getLocalizedString("accessdenied","Access denied"));
     }
   }
 
+
   private PresentationObject getProfile() {
+
     Form myForm = new Form();
 
     Table table = new Table();
@@ -197,7 +204,6 @@ public class TenantsProfile extends Block {
       table.setCellpadding(3);
       table.mergeCells(1,1,3,1);
       table.setWidth("100%");
-
     table.add(formatText(_iwrb.getLocalizedString("profile","Profile"),"#FFFFFF",true),1,1);
     int row = 2;
 
@@ -261,7 +267,6 @@ public class TenantsProfile extends Block {
 
     Text apartmentStatusText = formatText(_iwrb.getLocalizedString("apartment","Apartment"),"#FFFFFF",true);
       table.add(apartmentStatusText,1,1);
-
     Apartment apartment = BuildingCacher.getApartment(_contract.getApartmentId().intValue());
     Floor floor = BuildingCacher.getFloor(apartment.getFloorId());
     Building building = BuildingCacher.getBuilding(floor.getBuildingId());
@@ -415,138 +420,274 @@ public class TenantsProfile extends Block {
     return table;
   }
 
+
+
   private void save(IWContext iwc) {
+
     String name = iwc.getParameter(NAME);
+
     String ssn = iwc.getParameter(SSN);
+
     String email = iwc.getParameter(EMAIL);
+
     String mobile = iwc.getParameter(MOBILE);
+
     String faculty = iwc.getParameter(FACULTY);
+
     String studyTrack = iwc.getParameter(STUDYTRACK);
+
     String studyBegin = iwc.getParameter(STUDYBEGIN);
+
     String studyEnd = iwc.getParameter(STUDYEND);
+
     String spouseName = iwc.getParameter(SPOUSENAME);
+
     String spouseSSN = iwc.getParameter(SPOUSESSN);
+
     String children = iwc.getParameter(CHILDREN);
 
+
+
     if ( name != null && name.length() > 0 ) {
+
       StringTokenizer tokens = new StringTokenizer(name," ");
+
       int count = 1;
+
       int number = tokens.countTokens();
+
       while ( tokens.hasMoreTokens() ) {
+
         String token = tokens.nextToken();
+
         if ( count == 1 )
+
           _applicant.setFirstName(token);
+
         if ( count > 1 && count < number )
+
           _applicant.setMiddleName(token);
+
         if ( count > 2 && count < number )
+
           _applicant.setMiddleName(" "+token);
+
         if ( count == number )
+
           _applicant.setLastName(token);
+
         count++;
+
       }
+
     }
+
     if ( ssn != null ) {
+
       _applicant.setSSN(ssn);
+
     }
+
     if ( email != null ) {
+
       _campusApplication.setEmail(email);
+
     }
+
     if ( mobile != null ) {
+
       _applicant.setMobilePhone(mobile);
+
     }
+
     if ( faculty != null ) {
+
       _campusApplication.setFaculty(faculty);
+
     }
+
     if ( studyTrack != null ) {
+
       _campusApplication.setStudyTrack(studyTrack);
+
     }
+
     if ( spouseName != null ) {
+
       _campusApplication.setSpouseName(spouseName);
+
     }
+
     if ( spouseSSN != null ) {
+
       _campusApplication.setSpouseSSN(spouseSSN);
+
     }
+
     if ( children != null ) {
+
       _campusApplication.setChildren(children);
+
     }
+
     if ( studyBegin != null && studyBegin.length() > 0 ) {
+
       String studyBeginMo = studyBegin.substring(0,studyBegin.indexOf("."));
+
       String studyBeginYe = studyBegin.substring(studyBegin.indexOf(".")+1);
+
       _campusApplication.setStudyBeginMonth(Integer.parseInt(studyBeginMo));
+
       _campusApplication.setStudyBeginYear(Integer.parseInt(studyBeginYe));
+
     }
+
     if ( studyBegin != null && studyBegin.length() > 0 ) {
+
       String studyEndMo = studyEnd.substring(0,studyEnd.indexOf("."));
+
       String studyEndYe = studyEnd.substring(studyEnd.indexOf(".")+1);
+
       _campusApplication.setStudyEndMonth(Integer.parseInt(studyEndMo));
+
       _campusApplication.setStudyEndYear(Integer.parseInt(studyEndYe));
+
     }
 
+
+
     try {
+
       _applicant.update();
-    }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
+
     }
 
-    try {
-      _campusApplication.update();
-    }
     catch (SQLException e) {
+
       e.printStackTrace(System.err);
+
     }
+
+
+
+    try {
+
+      _campusApplication.update();
+
+    }
+
+    catch (SQLException e) {
+
+      e.printStackTrace(System.err);
+
+    }
+
   }
+
+
 
   private void addToTable(Table table,int row,String attribute,String value,PresentationObject iObj,int width) {
+
     String className = iObj.getClassName().substring(iObj.getClassName().lastIndexOf(".")+1);
+
     table.add(formatText(attribute),1,row);
 
+
+
     if ( _update ) {
+
         if ( className.equalsIgnoreCase("TextInput") ) {
+
           ((TextInput) iObj).setLength(width);
+
           if ( value != null )
+
             ((TextInput) iObj).setContent(value);
+
         }
+
         else if ( className.equalsIgnoreCase("TextArea") ) {
+
           ((TextArea) iObj).setWidth(width);
+
           if ( value != null )
+
             ((TextArea) iObj).setContent(value);
+
         }
+
       iObj.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
+
      table.add(iObj,2,row);
+
     }
+
     else {
+
       table.add(formatText(value),2,row);
+
     }
+
   }
+
+
 
   private Text formatText(String text){
+
     return formatText(text,"#000000",false);
+
   }
+
+
 
   private Text formatText(String text,String color){
+
     return formatText(text,color,false);
+
   }
 
+
+
   private Text formatText(String text,String color,boolean bold){
+
     if ( text == null ) text = "";
+
     Text T =new Text(text);
+
       _styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,color);
+
       if ( bold )
+
         _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
+
       else
+
         _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_NORMAL);
+
+
 
       T.setFontStyle(_styler.getStyleString());
 
+
+
     return T;
+
   }
+
+
 
   public static Parameter getUserParameter(int userID) {
+
     return new Parameter(PARAMETER_USER_ID,Integer.toString(userID));
+
   }
 
+
+
   public String getBundleIdentifier(){
+
     return IW_BUNDLE_IDENTIFIER;
+
   }
+
 }
