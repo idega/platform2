@@ -75,8 +75,23 @@ public class MessengerApplet extends Applet implements Runnable{
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
 
+        java.net.URL url;
+  Image img;
+
+    try {
+      url = SingleLineItem.class.getResource("face_in.gif");
+      img=Toolkit.getDefaultToolkit().getImage(url);
+    }
+    catch (Exception ex) {
+      img = getImage(getDocumentBase(),"face_in.gif");
+      System.out.println("AAAAARRGG:"+getDocumentBase());
+    }
+
+
+
       SingleLineItem test = new SingleLineItem();
       test.setWindowToOpen(new Dialog(new Frame(),"test1"));
+      test.add(img);
       add(test);
 
       SingleLineItem test2 = new SingleLineItem();
