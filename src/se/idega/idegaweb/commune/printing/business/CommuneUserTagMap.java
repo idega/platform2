@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.HashMap;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWApplicationContext;
@@ -103,9 +105,9 @@ public class CommuneUserTagMap extends HashMap {
 		return addr;
 	}
 
-	private UserBusiness getUserBusiness(IWApplicationContext iwac) {
+	private CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
+			return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 		}
 		catch (RemoteException ex) {
 		}
