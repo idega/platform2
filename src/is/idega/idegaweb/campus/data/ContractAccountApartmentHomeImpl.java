@@ -7,37 +7,51 @@ public class ContractAccountApartmentHomeImpl extends com.idega.data.IDOFactory 
   return ContractAccountApartment.class;
  }
 
+
  public ContractAccountApartment create() throws javax.ejb.CreateException{
-  return (ContractAccountApartment) super.idoCreate();
+  return (ContractAccountApartment) super.createIDO();
  }
 
- public ContractAccountApartment createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public ContractAccountApartment findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ContractAccountApartment) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByApartment(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByAssessmentRount(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByAssessmentRount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByType(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByTypeAndStatusAndOverlapPeriod(java.lang.String p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByTypeAndStatusAndOverlapPeriod(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ContractAccountApartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ContractAccountApartment) super.idoFindByPrimaryKey(pk);
+  return (ContractAccountApartment) super.findByPrimaryKeyIDO(pk);
  }
 
- public ContractAccountApartment findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

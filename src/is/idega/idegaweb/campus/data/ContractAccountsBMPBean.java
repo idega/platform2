@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractAccountsBMPBean.java,v 1.1 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.2 2004/03/13 18:38:06 aron Exp $
 
  *
 
@@ -33,6 +33,9 @@ import java.sql.Timestamp;
 import java.lang.IllegalStateException;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 
 
@@ -416,6 +419,10 @@ and fa2.account_type = 'PHONE'
 
 
 
+  }
+  
+  public Collection ejbFindByPeriodOverLap(Date from,Date to)throws FinderException{
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhere().appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to));
   }
 
 }

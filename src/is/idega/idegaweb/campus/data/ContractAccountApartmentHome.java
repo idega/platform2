@@ -4,9 +4,11 @@ package is.idega.idegaweb.campus.data;
 public interface ContractAccountApartmentHome extends com.idega.data.IDOHome
 {
  public ContractAccountApartment create() throws javax.ejb.CreateException;
- public ContractAccountApartment createLegacy();
- public ContractAccountApartment findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public ContractAccountApartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public ContractAccountApartment findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+ public java.util.Collection findAll()throws javax.ejb.FinderException;
+ public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByAssessmentRount(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByType(java.lang.String p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByTypeAndStatusAndOverlapPeriod(java.lang.String p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException;
 
 }

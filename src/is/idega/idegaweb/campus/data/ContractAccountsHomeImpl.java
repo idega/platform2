@@ -7,37 +7,23 @@ public class ContractAccountsHomeImpl extends com.idega.data.IDOFactory implemen
   return ContractAccounts.class;
  }
 
+
  public ContractAccounts create() throws javax.ejb.CreateException{
-  return (ContractAccounts) super.idoCreate();
+  return (ContractAccounts) super.createIDO();
  }
 
- public ContractAccounts createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public ContractAccounts findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ContractAccounts) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByPeriodOverLap(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountsBMPBean)entity).ejbFindByPeriodOverLap(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ContractAccounts findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ContractAccounts) super.idoFindByPrimaryKey(pk);
+  return (ContractAccounts) super.findByPrimaryKeyIDO(pk);
  }
 
- public ContractAccounts findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

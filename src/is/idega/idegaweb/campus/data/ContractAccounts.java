@@ -1,10 +1,8 @@
 package is.idega.idegaweb.campus.data;
 
-import javax.ejb.*;
 
-public interface ContractAccounts extends com.idega.data.IDOLegacyEntity
+public interface ContractAccounts extends com.idega.data.IDOEntity
 {
- public void delete()throws java.sql.SQLException;
  public int getApartmentCategoryId();
  public int getApartmentId();
  public int getApartmentTypeId();

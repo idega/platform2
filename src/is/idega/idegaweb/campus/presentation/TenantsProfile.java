@@ -11,9 +11,12 @@ import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingCacher;
@@ -22,7 +25,11 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
 import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.data.AccountHome;
 import com.idega.block.finance.data.AccountInfo;
+import com.idega.block.finance.data.AccountInfoHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -369,8 +376,17 @@ public class TenantsProfile extends Block {
     table.add(formatText(_iwrb.getLocalizedString("balance","Balance")),3,2);
 
     //Account[] account = AccountManager.findAccounts(_userID);
-    List accounts = FinanceFinder.getInstance().listOfAccountInfoByUserId(_userID);
-    int row = 3;
+    //List accounts = FinanceFinder.getInstance().listOfAccountInfoByUserId(_userID);
+    
+	Collection accounts=null;
+	try {
+		accounts = ((AccountInfoHome)IDOLookup.getHome(AccountInfo.class)).findByOwner(new Integer(_userID));
+	} catch (IDOLookupException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	int row = 3;
 
     if(accounts!=null && !accounts.isEmpty()){
       java.util.Iterator iter = accounts.iterator();

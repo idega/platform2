@@ -1,18 +1,21 @@
 package is.idega.idegaweb.campus.presentation;
 
-import com.idega.block.finance.business.FinanceFinder;
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.building.presentation.ApartmentTypeViewer;
+import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.Tariff;
-import com.idega.block.building.presentation.*;
-import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
 import com.idega.util.Property;
-import com.idega.util.PropertyList;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWUserContext;
-import com.idega.idegaweb.IWResourceBundle;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 
 /**
@@ -42,7 +45,17 @@ public class CampusTypeWindow extends Window {
     ApartmentTypeViewer BE = new ApartmentTypeViewer(id);
     String attributeName = iwrb.getLocalizedString("tariffs","Tariffs");
     String today = com.idega.util.IWTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale());
-    java.util.Collection typeTariffs = FinanceFinder.getInstance().getKeySortedTariffsByAttribute("t_"+id);
+    java.util.Collection typeTariffs=null;
+	try {
+		typeTariffs = ((FinanceService)IBOLookup.getServiceInstance(iwc,FinanceService.class)).getKeySortedTariffsByAttribute("t_"+id);
+	} catch (IBOLookupException e) {
+		e.printStackTrace();
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	//FinanceFinder.getInstance().getKeySortedTariffsByAttribute("t_"+id);
     if(typeTariffs !=null){
       NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getIWMainApplication().getSettings().getDefaultLocale());
       //  String rentString = format.format((long)room.getRent());
@@ -65,7 +78,7 @@ public class CampusTypeWindow extends Window {
     }
 
     add(BE);
-    setTitle("Rugl Viewer");
+    setTitle("Apartment  Viewer");
     //addTitle("Building Editor");
   }
 }

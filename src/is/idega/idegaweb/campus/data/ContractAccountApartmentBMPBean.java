@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartmentBMPBean.java,v 1.2 2002/11/20 14:01:05 palli Exp $
+ * $Id: ContractAccountApartmentBMPBean.java,v 1.3 2004/03/13 18:38:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,14 @@
 package is.idega.idegaweb.campus.data;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:   idegaclasses
@@ -71,6 +75,10 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 		return "CAM_CONTRACT_ID";
 	}
 	
+	public String  getIDColumnName(){
+		return getContractIdColumnName();
+	}
+	
 	public static String getColumnValidFrom() {
 		return "VALID_FROM";
 	}
@@ -84,7 +92,7 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 	}
 	
 	public static String getColumnDeliverdate() {
-		return "DELIVERDATE";
+		return "DELIVER_DATE";
 	}
 	
 	public static String getColumnStatus() {
@@ -167,6 +175,7 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 		addAttribute(getFloorIdColumnName(), "Floor id", true, true, java.lang.Integer.class);
 		addAttribute(getBuildingIdColumnName(), "Building id", true, true, java.lang.Integer.class);
 		addAttribute(getComplexIdColumnName(), "Complex id", true, true, java.lang.Integer.class);
+		setAsPrimaryKey(getIDColumnName(),true);
 	}
 	
 	public String getEntityName() {
@@ -250,4 +259,50 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 	
 	public void delete() throws SQLException {
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+/*	
+	public Object ejbFindByPrimaryKey(Object id)throws FinderException{
+		return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEquals(getContractIdColumnName(),(Integer)id));
+	}
+	*/
+	public Collection ejbFindAll()throws FinderException{
+		return super.idoFindAllIDsBySQL();
+	}
+	
+	public Collection ejbFindByApartment(Integer apartmentID)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),apartmentID));
+	}
+	
+	public Collection ejbFindByType(String type)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountTypeColumnName(),type));
+	}
+	
+	public Collection ejbFindByTypeAndStatusAndOverlapPeriod(String type,String[] status,Date from,Date to)throws FinderException{
+			IDOQuery query = super.idoQueryGetSelect().appendWhereEqualsQuoted(getAccountTypeColumnName(),type);
+			query.appendAnd();
+			query.append(getColumnStatus());
+			query.appendInArrayWithSingleQuotes(status);
+			query.appendAnd();
+			query.appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to);
+			System.out.println(query.toString());
+			return super.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindByAssessmentRount(Integer roundID)throws FinderException{
+		StringBuffer sql = new StringBuffer("select distinct v.* from V_CONT_ACCT_APRT v");
+	    sql.append(" where v.fin_account_id in ( ");
+	    sql.append(" select a.fin_account_id ");
+	    sql.append("from fin_acc_entry e,fin_assessment_round r, fin_account a ");
+	    sql.append(" where a.fin_account_id = e.fin_account_id ");
+	    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+	    sql.append(" and r.fin_assessment_round_id = ");
+	    sql.append(roundID);
+	    sql.append(" )");
+	    return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	
 }
