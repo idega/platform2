@@ -983,12 +983,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				String ssn = getStringValueFromExcelNumberOrStringCell(row,
 						COLUMN_BOARD_MEMBER_SSN);
 				ssn = TextSoap.findAndCut(ssn, "-");
-				try {
-				    ssn = TextSoap.removeWhiteSpace(ssn);
-				}
-				catch (Exception e) {
-				    e.printStackTrace();
-				}
+				ssn = TextSoap.removeWhiteSpace(ssn);
 				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				    
 				String streetName = getStringValueFromExcelNumberOrStringCell(
@@ -1207,12 +1202,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				String ssn = getStringValueFromExcelNumberOrStringCell(row,
 						(short) 3);
 				ssn = TextSoap.findAndCut(ssn, "-");
-				try {
-				    ssn = TextSoap.removeWhiteSpace(ssn);
-				}
-				catch (Exception e) {
-				    e.printStackTrace();
-				}
+				ssn = TextSoap.removeWhiteSpace(ssn);
 				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				String address = getStringValueFromExcelNumberOrStringCell(row,
 						(short) 4);
@@ -1366,12 +1356,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						COLUMN_MEMBER_SSN);
 
 				ssn = TextSoap.findAndCut(ssn, "-");
-				try {
-				    ssn = TextSoap.removeWhiteSpace(ssn);
-				}
-				catch (Exception e) {
-				    System.out.println(e.getMessage());
-				}
+				ssn = TextSoap.removeWhiteSpace(ssn);
 				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				String first_name = "";
 				try {
@@ -1461,6 +1446,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 						//find which leagues the member belongs to
 						//and create the many to many connections
+						boolean firstTimeMemberToBeAddedToMainboard = true;
 						for (int j = 5; j < lastCell; j++) {
 							HSSFCell leagueCell = row.getCell((short) j);
 
@@ -1475,6 +1461,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 								//								boolean isChecked = (check != null &&
 								// !"".equals(check) &&
 								// "X".equals(check.toUpperCase()));
+								check = TextSoap.removeWhiteSpace(check);
 								boolean isChecked = (check != null && !""
 										.equals(check));
 								if (isChecked) {
@@ -1489,7 +1476,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 												//e.printStackTrace();
 											}
 											try {
-												mainBoard.addEntity(member);
+												if (firstTimeMemberToBeAddedToMainboard) {
+													mainBoard.addEntity(member);
+													firstTimeMemberToBeAddedToMainboard = false;
+												}
 											} catch (Exception e) {
 												e.printStackTrace();
 											}
