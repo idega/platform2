@@ -65,10 +65,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/25 10:33:03 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/25 15:29:39 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -152,6 +152,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String OWN_POSTING_DEFAULT = "Egen kontering";
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
+    private static final String PDF_DEFAULT = "PDF";
+    private static final String PDF_KEY = PREFIX + "pdf";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
     private static final String PLACEMENT_DEFAULT = "Placering";
@@ -208,7 +210,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             ACTION_SHOW_RECORD_DETAILS = 7,
             ACTION_SHOW_EDIT_RECORD_FORM = 8,
             ACTION_SAVE_RECORD = 9,
-            ACTION_SHOW_NEW_RECORD_FORM = 10;
+            ACTION_SHOW_NEW_RECORD_FORM = 10,
+            ACTION_GENERATE_COMPILATION_PDF = 11;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -276,6 +279,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     newRecord (context);
                     break;
 
+                case ACTION_GENERATE_COMPILATION_PDF:
+                    generateCompilationPdf (context);
+                    break;
+
                 default:
                     showCompilationList (context);
 					break;					
@@ -284,6 +291,21 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 	}
+
+	private void generateCompilationPdf (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                .getServiceInstance (context, InvoiceBusiness.class);
+        final int docId = business.generateInvoiceCompilationPdf
+                (getInvoiceHeader (context));
+
+        final Table table = new Table ();
+        add (table);
+        final Link viewLink = new Link("Öppna fakturaunderlaget i Acrobat Reader");
+        viewLink.setFile (docId);
+        viewLink.setTarget ("letter_window");
+        table.add (viewLink, 1, 1);
+    }
 
     private void newRecord (final IWContext context)
         throws RemoteException, CreateException, FinderException {
@@ -668,8 +690,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
-        addOperationalFieldRow (table, context, header, row++);
-        int col = 1;
+        addOperationalFieldRow (table, context, header, row);
+        final SubmitButton button
+                = getSubmitButton (ACTION_GENERATE_COMPILATION_PDF, PDF_KEY,
+                                   PDF_DEFAULT);
+        int col = table.getColumns ();
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        table.add (button, col, row);
+        col = 1; row++;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText(table, (null != period ? periodFormatter.format (period)
                              : ""), col++, row);
@@ -1714,7 +1742,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         int col = 1;
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
                         MAIN_ACTIVITY_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
+        table.mergeCells (col, row, table.getColumns () - 1, row);
         addSmallText (table, getSchoolCategoryName (context, header), col++,
                       row);
         final String schoolCategory = header.getSchoolCategoryID ();

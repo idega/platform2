@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import com.lowagie.text.PageSize;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -7,11 +8,22 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
@@ -37,16 +49,17 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
+import com.lowagie.text.Phrase;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/25 15:29:39 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.46 $
+ * @version $Revision: 1.47 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -69,6 +82,50 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			logWarning ("Error: couldn't find any Schoolcategory for billing named " + schoolCategory);
 			throw new SchoolCategoryNotFoundException(
 				"Couldn't find any Schoolcategory for billing named " + schoolCategory);
+		}
+	}
+
+	private static float mmToPoints (final float mm) {
+		return mm*72/25.4f;
+	}
+    
+	/**
+	 * @return int id of document
+	 */
+	public int generateInvoiceCompilationPdf (final InvoiceHeader header)
+        throws RemoteException {
+        final InvoiceRecord [] records
+                = getInvoiceRecordsByInvoiceHeader (header);
+		try{
+			final MemoryFileBuffer buffer = new MemoryFileBuffer ();
+			final OutputStream outStream = new MemoryOutputStream (buffer);
+			final Document document = new Document
+					(PageSize.A4, mmToPoints (30), mmToPoints (30),
+					 mmToPoints (30), mmToPoints (30));
+			final PdfWriter writer = PdfWriter.getInstance(document, outStream);
+			writer.setViewerPreferences
+					(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
+                     PdfWriter.FitWindow | PdfWriter.CenterWindow);
+            final String title = "Fakturaunderlag " + header.getPrimaryKey ();
+			document.addTitle(title);
+			document.addCreationDate();
+			document.open();
+            document.add (new Phrase (new Chunk ("Hallo!")));
+			document.close();
+			final ICFileHome icFileHome
+					= (ICFileHome) getIDOHome(ICFile.class);
+			final ICFile file = icFileHome.create();
+			final InputStream inStream = new MemoryInputStream (buffer);
+			file.setFileValue(inStream);
+			file.setMimeType("application/x-pdf");
+			file.setName("invoice_" + header.getPrimaryKey () + ".pdf");
+			file.setFileSize(buffer.length());
+			file.store();
+			return ((Integer)file.getPrimaryKey()).intValue();
+		} catch (Exception e) {
+			e.printStackTrace ();
+			throw new RemoteException ("Couldn't generate reminder "
+									   + header.getPrimaryKey (), e);
 		}
 	}
 
