@@ -176,10 +176,16 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		setColumn(COLUMN_VAT_TYPE, i);
 	}
 	
+	public Collection ejbFindByPaymentHeader(PaymentHeader paymentHeader) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Integer ejbFindByPaymentHeaderAndRuleSpecType(PaymentHeader paymentHeader, String ruleSpecType) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
-		sql.appendWhereEquals(COLUMN_RULE_SPEC_TYPE, ruleSpecType);
+		sql.appendAndEquals(COLUMN_RULE_SPEC_TYPE, ruleSpecType);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	

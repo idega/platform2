@@ -5,6 +5,7 @@ public interface PaymentHeader extends com.idega.data.IDOEntity
 {
  public java.sql.Date getDateAttested();
  public java.sql.Date getPeriod();
+ public com.idega.block.school.data.School getSchool();
  public int getSchoolCategoryID();
  public int getSchoolID();
  public int getSignatureID();
