@@ -50,11 +50,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/01 07:48:50 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 08:22:29 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -90,7 +90,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
     private static final String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
-    //private static final String HEADER_KEY = PREFIX + "end_period";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String HEADER_KEY = PREFIX + "end_period";
@@ -300,8 +299,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
         addStyledInput (map, VAT_AMOUNT_KEY, record.getTotalAmountVAT ());
 
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final InvoiceBusiness business = getInvoiceBusiness (context);
         final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
                 (business.getAllRegulationSpecTypes ());
         map.put (REGULATION_SPEC_TYPE_KEY, regulationSpecTypeDropdown);
@@ -378,9 +376,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallText (map, REGULATION_SPEC_TYPE_KEY,
                       localize (ruleSpecType, ruleSpecType));
         if (0 < record.getVATType ()) {
-            final InvoiceBusiness business
-                    = (InvoiceBusiness) IBOLookup.getServiceInstance
-                    (context, InvoiceBusiness.class);
+            final InvoiceBusiness business = getInvoiceBusiness (context);
             final VATRule rule = business.getVatRule (record.getVATType ());
             final String ruleName = rule.getVATRule ();
             map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
@@ -414,10 +410,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void showRecordDetails (final IWContext context)
         throws RemoteException, javax.ejb.FinderException {
         // get business objects
-        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
-                .getServiceInstance (context, InvoiceBusiness.class);
-        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                .getServiceInstance (context, SchoolBusiness.class);
+        final InvoiceBusiness business = getInvoiceBusiness (context);
+        final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
 
         // get home objects
         final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
@@ -496,8 +490,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             final Date startPeriod = getPeriodParameter (context,
                                                          START_PERIOD_KEY);
             final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
-                    .getServiceInstance(context, InvoiceBusiness.class);
+            final InvoiceBusiness business = getInvoiceBusiness (context);
             final PaymentRecord [] records = business
                     .getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
                     (schoolCategory, new Integer (providerId),
@@ -549,8 +542,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         row++;
 
         //render
-        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome memberHome
                 = schoolBusiness.getSchoolClassMemberHome ();
         for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
@@ -569,8 +561,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final Set individuals = new HashSet ();
         long totalAmountVatExcluded = 0;
         // get home object
-        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome home
                 = schoolBusiness.getSchoolClassMemberHome ();
 
@@ -649,8 +640,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
          final InvoiceBusiness business)
         throws RemoteException, javax.ejb.FinderException {
         // get home objects
-        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome placementHome
                 = schoolBusiness.getSchoolClassMemberHome ();
         final InvoiceRecordHome home = business.getInvoiceRecordHome ();
@@ -792,8 +782,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private PaymentRecord getPaymentRecord (final IWContext context)
         throws RemoteException, FinderException {
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final InvoiceBusiness business = getInvoiceBusiness (context);
         final Integer recordId = getIntegerParameter (context,
                                                       PAYMENT_RECORD_KEY);
         final PaymentRecordHome recordHome = business.getPaymentRecordHome ();
@@ -802,8 +791,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     
     private PaymentHeader getPaymentHeader (final IWContext context)
         throws RemoteException, FinderException {
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final InvoiceBusiness business = getInvoiceBusiness (context);
         final Integer headerId = context.isParameterSet (PAYMENT_HEADER_KEY)
                 ? getIntegerParameter (context, PAYMENT_HEADER_KEY)
                 : new Integer (getPaymentRecord (context).getPaymentHeader ());
@@ -955,8 +943,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private String getPostingString (final IWContext context,
                                      final String postingKey)
         throws RemoteException {
-        final PostingBusiness business = (PostingBusiness)
-                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final PostingBusiness business = getPostingBusiness (context);
         final StringBuffer result = new StringBuffer ();
         final PostingField [] fields = getCurrentPostingFields (context);
         for (int i = 0; i < fields.length; i++) {
@@ -1202,8 +1189,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private String getSchoolCategoryName (final IWContext context,
                                           final PaymentHeader header) {
         try {
-            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                    .getServiceInstance (context, SchoolBusiness.class);
+            final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
             final SchoolCategoryHome categoryHome
                     = schoolBusiness.getSchoolCategoryHome ();
             final SchoolCategory category = categoryHome.findByPrimaryKey
@@ -1217,8 +1203,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void addProviderDropdown
         (final IWContext context, final Table table, final int row)
         throws RemoteException {
-        final SchoolBusiness business = (SchoolBusiness) IBOLookup
-                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolBusiness business = getSchoolBusiness (context);
         int col = 1;
         addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
         final String schoolCategory = getSession ().getOperationalField ();
@@ -1337,8 +1322,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private PostingField [] getCurrentPostingFields (final IWContext context)
         throws RemoteException {
-        final PostingBusiness business = (PostingBusiness)
-                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final PostingBusiness business = getPostingBusiness (context);
         final Date now = new Date (System.currentTimeMillis ());
         final Collection fields = business.getAllPostingFieldsByDate (now);
         final PostingField [] array = new PostingField [0];
@@ -1436,5 +1420,23 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         (final IWContext context) throws RemoteException {
 		return (SchoolCommuneSession) IBOLookup.getSessionInstance
                 (context, SchoolCommuneSession.class);	
+	}
+
+	private SchoolBusiness getSchoolBusiness
+        (final IWContext context) throws RemoteException {
+		return (SchoolBusiness) IBOLookup.getSessionInstance
+                (context, SchoolBusiness.class);	
+	}
+
+	private PostingBusiness getPostingBusiness
+        (final IWContext context) throws RemoteException {
+		return (PostingBusiness) IBOLookup.getSessionInstance
+                (context, PostingBusiness.class);	
+	}
+
+	private InvoiceBusiness getInvoiceBusiness
+        (final IWContext context) throws RemoteException {
+		return (InvoiceBusiness) IBOLookup.getSessionInstance
+                (context, InvoiceBusiness.class);	
 	}
 }
