@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -54,7 +55,6 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
-import com.idega.block.contract.data.ContractTagBMPBean;
 import com.idega.block.contract.data.ContractTagHome;
 
 import com.idega.block.pdf.ITextXMLHandler;
@@ -67,7 +67,7 @@ import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.business.IBOLookup;
+
 import com.idega.core.data.Address;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.Phone;
@@ -1387,13 +1387,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
 			ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
-						List  pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractTxtURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-						List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+						List  pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+						List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractTxtURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 						if(pdfBuffers !=null && pdfBuffers.size() == 1 && txtBuffers !=null && txtBuffers.size() == 1){
 							String contractText = txtHandler.bufferToString((MemoryFileBuffer)txtBuffers.get(0));
-							
+							contractText= breakString(contractText, 80);
 							//TODO: (roar) remove debug code:
-							System.out.println("CONTRACT TEXT:/n" + contractText);
+							System.out.println("CONTRACT TEXT:\n" + contractText);
 							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)pdfBuffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
@@ -1446,11 +1446,44 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 		
-		///TODO: (roar) remove debug code
-		System.out.println("assignContractToApplication ok");
 		return true;
 	}
 	
+	
+	private String breakString(String page, int maxLineLength) {
+		StringBuffer pageWrapped = new StringBuffer();
+		StringBuffer line = new StringBuffer();
+		StringTokenizer stLine = new StringTokenizer(page, "\n", true);	
+		while (stLine.hasMoreTokens())
+		{	
+			String readLine = stLine.nextToken();
+//			System.out.println("Token: " + readLine);
+			if (readLine.equals("\n")){
+				pageWrapped.append(line.toString().trim());
+				pageWrapped.append("\n");
+				line = new StringBuffer();					
+			}else{
+				StringTokenizer stWord = new StringTokenizer(readLine, " ", true);
+				while (stWord.hasMoreTokens()) {
+					String word = stWord.nextToken();
+					if (line.length() + word.length() > maxLineLength){
+						String trimmedLine = line.toString().trim();
+						if (trimmedLine.length() > 0){
+							pageWrapped.append(trimmedLine);
+							pageWrapped.append("\n");
+						}
+						line = new StringBuffer();						
+					}
+					line.append(word);
+
+				}
+			}
+		}
+		pageWrapped.append(line.toString().trim());
+		
+		return pageWrapped.toString();
+	}
+		
 	private int getContractCategory() {
 		IWBundle bundle = getIWApplicationContext().getApplication().getBundle(getBundleIdentifier());
 		return Integer.parseInt(bundle.getProperty(PROPERTY_CONTRACT_CATEGORY, "2"));
