@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.25 2001/09/24 22:55:54 eiki Exp $
+ * $Id: Table.java,v 1.26 2001/09/25 03:51:43 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.util.*;
 import java.io.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.util.IWColor;
+import com.idega.idegaweb.IWMainApplication;
 
 /**
  * A table class. Note xpos is in [1:cols]
@@ -160,12 +161,40 @@ public class Table extends ModuleObjectContainer {
     addText(Integer.toString(integerToInsert),xpos,ypos);
   }
 
+/**@todo : this must implemented in the print method...like in the Link class
+ * IMPORTANT! for this to work you must have an application property called
+ * IW_USES_OLD_MEDIA_TABLES   (set to anything)
+ *
+ */
   public void setBackgroundImage(int xpos, int ypos, Image backgroundImage){
-    this.setAttribute(xpos,ypos,"background",backgroundImage.getURL());
+    if(backgroundImage!=null){
+      setBackgroundImageURL(xpos,ypos,getImageUrl(backgroundImage));
+    }
   }
-
+/**@todo : this must implemented in the print method...like in the Link class
+ * IMPORTANT! for this to work you must have an application property called
+ * IW_USES_OLD_MEDIA_TABLES   (set to anything)
+ *
+ */
   public void setBackgroundImage(Image backgroundImage){
-    this.setAttribute("background",backgroundImage.getURL());
+    if(backgroundImage!=null){
+      setBackgroundImageURL( getImageUrl(backgroundImage) );
+    }
+  }
+/**@todo : replace this with a implementation in print
+ * IMPORTANT! for this to work you must have an application property called
+ * IW_USES_OLD_MEDIA_TABLES   (set to anything)
+ *
+ */
+  private String getImageUrl(Image image){
+    StringBuffer URIBuffer;
+    URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
+    URIBuffer.append(image.getImageID());
+    URIBuffer.append("image?");
+    URIBuffer.append("image_id");
+    URIBuffer.append("=");
+    URIBuffer.append(image.getImageID());
+    return URIBuffer.toString();
   }
 
   public void setBackgroundImageURL(String backgroundImageURL){
