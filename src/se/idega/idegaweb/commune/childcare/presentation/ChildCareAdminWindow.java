@@ -1059,7 +1059,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			deadlinePeriod = helper.getValidPeriod();
 			
 			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
-			dateInput.setDate(stamp.getDate());
+			///dateInput.setDate(stamp.getDate());
 			//if (restrictDates)
 			//	dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
 			if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
@@ -1078,7 +1078,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			    
 			}
 			else{
-			    dateInput.setDate(stamp.getDate());
+			    ///dateInput.setDate(stamp.getDate());
 			    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
 			}
 			dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
