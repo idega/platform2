@@ -118,10 +118,12 @@ public ImageInserter(Class WindowToOpen) {
         }
         //image.setName("rugl");
         String s = image.getMediaServletString();
-        getParentPage().getAssociatedScript().addFunction("imchange",getImageChangeJSFunction());
-        //image.setAttribute("onMouseOver",getFunction(108));
-        //image.setAttribute("onMouseOut",getFunction(97));
-
+        Page P = getParentPage();
+        if(P!=null){
+          Script S = P.getAssociatedScript();
+          if(S!=null)
+            S.addFunction("imchange",getImageChangeJSFunction());
+        }
 
       Link imageAdmin = null;
       if(adminURL == null){
