@@ -6,7 +6,10 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import com.idega.block.school.data.School;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
@@ -48,11 +51,11 @@ public class ChildCareProviderSelect extends ChildCareBlock implements IWPageEve
 
 	public boolean actionPerformed(IWContext iwc) throws IWException {
 		try {
-			if (iwc.isParameterSet(getSession().getParameterChildCareID())) {
-				School provider = getBusiness().getSchoolBusiness().getSchool(new Integer(iwc.getParameter(getSession().getParameterChildCareID())));
+			if (iwc.isParameterSet(getSession(iwc).getParameterChildCareID())) {
+				School provider = getBusiness(iwc).getSchoolBusiness().getSchool(new Integer(iwc.getParameter(getSession(iwc).getParameterChildCareID())));
 				if (provider != null) {
-					getSession().setProvider(provider);
-					getSession().setChildCareID(((Integer) provider.getPrimaryKey()).intValue());
+					getSession(iwc).setProvider(provider);
+					getSession(iwc).setChildCareID(((Integer) provider.getPrimaryKey()).intValue());
 				}
 			}
 		}
@@ -60,5 +63,13 @@ public class ChildCareProviderSelect extends ChildCareBlock implements IWPageEve
 			throw new IBORuntimeException(re);
 		}
 		return false;
+	}
+
+	private ChildCareBusiness getBusiness(IWContext iwc) throws RemoteException {
+		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
+	}
+	
+	private ChildCareSession getSession(IWContext iwc) throws RemoteException {
+		return (ChildCareSession) IBOLookup.getSessionInstance(iwc, ChildCareSession.class);	
 	}
 }
