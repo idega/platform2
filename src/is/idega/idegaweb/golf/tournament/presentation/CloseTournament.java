@@ -280,8 +280,6 @@ public class CloseTournament extends TournamentBlock {
 	}
 
 	public void main3(String tournament_id, IWContext modinfo) throws IOException, SQLException {
-		String update = modinfo.getParameter("");
-
 		Tournament tournament = null;
 		try {
 			tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
@@ -293,7 +291,8 @@ public class CloseTournament extends TournamentBlock {
 		stampur.addDays(-2);
 
 		boolean calculate = true;
-		String query = modinfo.getParameter("calculate.x");
+
+		String query = modinfo.getParameter("calculate");
 		if (query == null) {
 			calculate = false;
 		}
