@@ -113,6 +113,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
 				check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
+				if (check == null)
+					_noCheckError = true;
 			}
 			catch (RemoteException re) {
 				_noCheckError = true;
