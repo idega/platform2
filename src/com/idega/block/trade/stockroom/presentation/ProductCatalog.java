@@ -210,7 +210,9 @@ public class ProductCatalog extends CategoryBlock {
 			detachLink.setToolTip(iwrb.getLocalizedString("trade.product_catalog.select_categories", "Select categories"));
 			if (hasEditPermission()) {
 				add(createLink);
-				add(detachLink);
+				if (!_useParameterCategory) {
+					add(detachLink);
+				}
 			}
 			layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
 			productCategories = new Vector();
