@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.52 2004/01/05 11:36:12 sigtryggur Exp $
+ * $Id: PostingBusinessBean.java,v 1.53 2004/01/05 13:43:50 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -134,7 +134,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		int fieldLength=0;							//Length of next field. Fetched from the definition 
 
 		try {
-			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getDate() != IWTimestamp.getTimestampRightNow().getDate())
+			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getTime() != IWTimestamp.getTimestampRightNow().getTime())
 				createFieldsList();
 			Iterator iter = getFieldsList().iterator();
 			while (iter.hasNext()) {
