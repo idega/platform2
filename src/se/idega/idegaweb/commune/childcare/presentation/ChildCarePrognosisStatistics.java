@@ -184,6 +184,10 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 				else {
 					table.add(getSmallText("-"), column++, row);
 					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row);
+					table.add(getSmallText("-"), column++, row);
 					table.add(getSmallText("-"), column++, row++);
 				}
 			}
