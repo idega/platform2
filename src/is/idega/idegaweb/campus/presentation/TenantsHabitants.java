@@ -116,7 +116,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
       myTable.add(getLinkTable(),1,1);
       myTable.add(getTenantsTable(iwc),1,2);
 
-      image = myTable.getTransparentCell(iwc);
+      image = Table.getTransparentCell(iwc);
         image.setHeight(6);
       return myTable;
   }
@@ -139,7 +139,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
 			 complex = (Complex) iter.next();
 		
 		    link = new Link(formatText(complex.getName(),"#000000",true));
-		      link.addParameter(PARAMETER_CAMPUS_ID,complex.getID());
+		      link.addParameter(PARAMETER_CAMPUS_ID,complex.getPrimaryKey().toString());
 //          link.addParameter(CampusMenu.getParameter(TEN_HABITANTS));
 //          link.addParameter(TabAction.sAction,22);
 
@@ -300,7 +300,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
 
 
     if ( _campusID == -1 && complex !=null ) {
-      _campusID = complex.getID();
+      _campusID = ((Integer)complex.getPrimaryKey()).intValue();
     }
 
     if(complex !=null)

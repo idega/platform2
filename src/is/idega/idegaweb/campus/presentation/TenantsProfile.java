@@ -25,6 +25,7 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Floor;
 import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountInfoHome;
+import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -40,6 +41,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextStyler;
@@ -89,11 +91,13 @@ public class TenantsProfile extends CampusBlock {
   private int _userID = -1;
  
   private boolean _update = false;
+  private boolean allowUserUpdate = true;
 
 
   private Contract contract;
   private ApartmentView apartmentView;
   private Applicant _applicant;
+  private User user;
   
   private Applicant spouse;
   private Vector children;
@@ -150,9 +154,7 @@ public class TenantsProfile extends CampusBlock {
           userID = -1;
         }
       }
-      
-
-
+     
       try {
       	java.util.Collection userContracts =(( ContractHome)IDOLookup.getHome(Contract.class)).findByUserAndRented(new Integer(userID),Boolean.TRUE);
         //_contract = ContractFinder.findValidContractByUser(_userID);
@@ -166,6 +168,7 @@ public class TenantsProfile extends CampusBlock {
       }
     if(contract !=null){
       try {
+      	user = contract.getUser();
         _applicant = contract.getApplicant();
         // Spouse and childs
         java.util.Iterator iter = _applicant.getChildren();
@@ -247,9 +250,20 @@ public class TenantsProfile extends CampusBlock {
     table.add(formatText(localize("profile","Profile"),"#FFFFFF",true),1,1);
     int row = 2;
 
-    addToTable(table,row++,localize("name","Name"),_applicant.getFullName(),new TextInput(NAME),35);
-    addToTable(table,row++,localize("ssn","SSN"),_applicant.getSSN(),new TextInput(SSN),10);
-    addToTable(table,row++,localize("email","email"),campusApplication.getEmail(),new TextInput(EMAIL),20);
+    //addToTable(table,row++,localize("name","Name"),_applicant.getFullName(),new TextInput(NAME),35);
+    //addToTable(table,row++,localize("ssn","SSN"),_applicant.getSSN(),new TextInput(SSN),10);
+    //addToTable(table,row++,localize("email","email"),campusApplication.getEmail(),new TextInput(EMAIL),20);
+    addToTable(table,row++,localize("name","Name"),user.getName(),new TextInput(NAME),35);
+    addToTable(table,row++,localize("ssn","SSN"),user.getPersonalID(),new TextInput(SSN),10);
+    Collection emails = user.getEmails();
+    String email = "";
+    if(emails!=null &&!emails.isEmpty()){
+    		email = ((Email) emails.iterator().next()).getEmailAddress();
+    }
+    else{
+    		email = campusApplication.getEmail();
+    }
+    addToTable(table,row++,localize("email","email"),email,new TextInput(EMAIL),20);
     addToTable(table,row++,localize("mobile","Mobile phone"),_applicant.getMobilePhone(),new TextInput(MOBILE),7);
     addToTable(table,row++,localize("faculty","Faculty"),campusApplication.getFaculty(),new TextInput(FACULTY),20);
     addToTable(table,row++,localize("studyTrack","Study track"),campusApplication.getStudyTrack(),new TextInput(STUDYTRACK),20);
@@ -536,16 +550,26 @@ public class TenantsProfile extends CampusBlock {
     String childcount = iwc.getParameter(CHILDCOUNT);
     
     ApplicantHome aHome = getApplicationService(iwc).getApplicantHome();
+    boolean storeUser = false;
 	// TODO move to business layer
     if ( name != null && name.length() > 0 ) {
       _applicant.setFullName(name);
+      if(!user.getName().equals(name)){
+      	user.setFullName(name);
+      	storeUser = true;
+      }
     }
 
     if ( ssn != null ) {
       _applicant.setSSN(ssn);
+      if(!ssn.equals(user.getPersonalID())){
+      	user.setPersonalID(ssn);
+      	storeUser = true;
+      }
     }
     if ( email != null ) {
       campusApplication.setEmail(email);
+      
     }
     if ( mobile != null ) {
       _applicant.setMobilePhone(mobile);
@@ -641,7 +665,11 @@ public class TenantsProfile extends CampusBlock {
     }
 
     try {
+    	  
       _applicant.store();
+      if(storeUser)
+      	user.store();
+      
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
@@ -665,7 +693,7 @@ public class TenantsProfile extends CampusBlock {
             ((TextInput) iObj).setContent(value);
         }
         else if ( className.equalsIgnoreCase("TextArea") ) {
-          ((TextArea) iObj).setWidth(width);
+          ((TextArea) iObj).setColumns(width);
           if ( value != null )
             ((TextArea) iObj).setContent(value);
         }
