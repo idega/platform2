@@ -147,20 +147,18 @@ public Image(int image_id, String name, int width, int height) throws SQLExcepti
   setHeight(height);
 }
 
-
-
 private String getImageURL(ModuleInfo modinfo){
   StringBuffer URIBuffer;
-  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo ,"image_value");
+//  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo ,"image_value");
 
-  if( URIString == null ){
+//  if( URIString == null ){
     useCached = false;
     URIBuffer = new StringBuffer(IWMainApplication.IMAGE_SERVLET_URL);
     URIBuffer.append(imageId);
     URIBuffer.append("image?image_id=");
     URIBuffer.append(imageId);
-    URIString = URIBuffer.toString();
-  }else useCached = true;
+    String URIString = URIBuffer.toString();
+//  }else useCached = true;
 
   return URIString;
 }
