@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/24 07:32:54 $ by $Author: laddi $
- * @version $Revision: 1.56 $
+ * Last modified: $Date: 2003/10/24 15:33:17 $ by $Author: goranb $
+ * @version $Revision: 1.57 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -391,15 +391,63 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
 		.appendEqualSign()
-		.append("'" + cat.getPrimaryKey() + "'");
-			
-		
-		sql.appendOrderBy(REGISTER_DATE + " desc");
+		.append("'" + cat.getPrimaryKey() + "'")
+					
+		.appendOrderBy(REGISTER_DATE + " desc");
 		
 		System.out.println("*** SQL ***: " + sql.toString());
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
+
+	public Integer ejbFindLatestFromElemAndHighSchoolByUser(User user) 
+																					throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
+													+ SchoolClassBMPBean.SCHOOLCLASS + " cl, "
+													+ SchoolTypeBMPBean.SCHOOLTYPE + " tp")
+															
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+		
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+
+		.appendAnd()
+		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.appendEqualSign()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+		
+		.appendAnd()
+		.append("(tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_ELEMENTARY_SCHOOL + "'")
+		.appendOr()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL + "')")
+			
+		.appendOrderBy(REGISTER_DATE + " desc");
+		
+		System.out.println("*** SQL ***: " + sql.toString());
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
+
 	
 	public Integer ejbFindLatestByUserSchCatNoRemovedDate(User user, SchoolCategory cat) 
 																					throws FinderException, RemoteException {
@@ -440,10 +488,61 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendAnd()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
 		.appendEqualSign()
-		.append("'" + cat.getPrimaryKey() + "'");
-			
+		.append("'" + cat.getPrimaryKey() + "'")
+					
+		.appendOrderBy(REGISTER_DATE + " desc");
 		
-		sql.appendOrderBy(REGISTER_DATE + " desc");
+		System.out.println("*** SQL ***: " + sql.toString());
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
+
+	public Integer ejbFindLatestFromElemAndHighSchoolByUserNoRemovedDate(User user) 
+																					throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
+													+ SchoolClassBMPBean.SCHOOLCLASS + " cl, "
+													+ SchoolTypeBMPBean.SCHOOLTYPE + " tp")
+															
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append(" mb." + REMOVED_DATE)
+		.append(" is null")
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+		
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+
+		.appendAnd()
+		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.appendEqualSign()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+		
+		.appendAnd()
+		.append("(tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_ELEMENTARY_SCHOOL + "'")
+		.appendOr()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL + "')")
+				
+		.appendOrderBy(REGISTER_DATE + " desc");
 		
 		System.out.println("*** SQL ***: " + sql.toString());
 		
