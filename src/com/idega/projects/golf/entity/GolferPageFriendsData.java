@@ -29,11 +29,18 @@ public class GolferPageFriendsData extends GenericEntity {
   public final String FRIENDS_DATA_NAME_APPEARANCE = "FRIENDS_NAME_APPEARANCE";
  //public final String FRIENDS_DATA_PAYMENT_TYPE = "FRIENDS_PAYMENT_TYPE";
   public final String FRIENDS_DATA_PAYMENT_DURATION = "FRIENDS_PAYMENT_DURATION";
-  public final String FRIENDS_DATA_BANK_ACCOUNT = "FRIENDS_BANK_ACCOUNT";
-  public final String FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER = "FRIENDS_BANK_ACCOUNT_SS_NUMBER";
-  public final String FRIENDS_DATA_GIRO_PAYMENT = "FRIENDS_GIRO_PAYMENT";
+//  public final String FRIENDS_DATA_BANK_ACCOUNT = "FRIENDS_BANK_ACCOUNT";
+//  public final String FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER = "FRIENDS_BANK_ACCOUNT_SS_NUMBER";
+//  public final String FRIENDS_DATA_GIRO_PAYMENT = "FRIENDS_GIRO_PAYMENT";
   public final String FRIENDS_DATA_SOCIAL_SECURITY_NUMBER = "FRIENDS_SOCIAL_SECURITY_NUMBER";
   public final String FRIENDS_DATA_PAYMENT_AMOUNT = "FRIENDS_PAYMENT_AMOUNT";
+
+  public final String FRIENDS_DATA_BILL_ADRESS = "FRIENDS_BILL_ADRESS";
+  public final String FRIENDS_DATA_BILL_NAME = "FRIENDS_BILL_NAME";
+  public final String FRIENDS_DATA_BILL_SS_NUMBER = "FRIENDS_BILL_SS_NUMBER";
+  public final String FRIENDS_DATA_NAME_TO_VIEW = "FRIENDS_NAME_TO_VIEW";
+  public final String FRIENDS_DATA_GOLFER_NAME = "FRIENDS_GOLFER_NAME";
+
 
   public GolferPageFriendsData() {
   }
@@ -44,6 +51,10 @@ public class GolferPageFriendsData extends GenericEntity {
 
   public void setName(String name){
     setColumn(FRIENDS_DATA_NAME, name);
+  }
+
+  public void setGolferName(String golferName){
+    setColumn(FRIENDS_DATA_GOLFER_NAME, golferName);
   }
 
   public void setSocialSecurityNumber(String socialSecurityNumber){
@@ -87,7 +98,7 @@ public class GolferPageFriendsData extends GenericEntity {
     setColumn(FRIENDS_DATA_PAYMENT_DURATION, duration);
   }
 
-  public void setBankAccount(String bankAccount){
+ /* public void setBankAccount(String bankAccount){
     setColumn(FRIENDS_DATA_BANK_ACCOUNT, bankAccount);
   }
 
@@ -97,14 +108,31 @@ public class GolferPageFriendsData extends GenericEntity {
 
   public void setBankAccountSSNumber(String bankAccountSSNumber){
     setColumn(FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER, bankAccountSSNumber);
-  }
+  }*/
 
   public void setPaymentAmount(String paymentAmount){
     setColumn(FRIENDS_DATA_PAYMENT_AMOUNT, paymentAmount);
   }
 
+  public void setBillAdress(String billAdress){
+    setColumn(FRIENDS_DATA_BILL_ADRESS, billAdress);
+  }
+
+  public void setBillName(String billName){
+    setColumn(FRIENDS_DATA_BILL_NAME, billName);
+  }
+
+  public void setBillSSNumber(String billSSNumber){
+    setColumn(FRIENDS_DATA_BILL_SS_NUMBER, billSSNumber);
+  }
+
+  public void setNameToView(String nameToView){
+    setColumn(FRIENDS_DATA_NAME_TO_VIEW, nameToView);
+  }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
+    addAttribute(FRIENDS_DATA_GOLFER_NAME, "golfer_name", true, true, String.class);
     addAttribute(FRIENDS_DATA_NAME, "name", true, true, String.class, 100);
     addAttribute(FRIENDS_DATA_SOCIAL_SECURITY_NUMBER, "social_security_number", true, false, String.class, 10);
     addAttribute(FRIENDS_DATA_EMAIL, "email", true, true, String.class, 100);
@@ -124,11 +152,33 @@ public class GolferPageFriendsData extends GenericEntity {
     //Number of monthly payments. Or something else???
     addAttribute(FRIENDS_DATA_PAYMENT_DURATION, "duration", true, false, String.class);
 
-    addAttribute(FRIENDS_DATA_BANK_ACCOUNT, "bank_account", true, false, String.class, 20);
-    addAttribute(FRIENDS_DATA_GIRO_PAYMENT, "giro_payment", true, false, Boolean.class);
-    addAttribute(FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER, "bank_account_ss_number", true, false, String.class, 10);
+  //  addAttribute(FRIENDS_DATA_BANK_ACCOUNT, "bank_account", true, false, String.class, 20);
+ //   addAttribute(FRIENDS_DATA_GIRO_PAYMENT, "giro_payment", true, false, Boolean.class);
+ //   addAttribute(FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER, "bank_account_ss_number", true, false, String.class, 10);
 
     addAttribute(FRIENDS_DATA_PAYMENT_AMOUNT, "payment_amount", true, false, String.class);
+
+    addAttribute(FRIENDS_DATA_BILL_ADRESS, "billing_address", true, false, String.class);
+    addAttribute(FRIENDS_DATA_BILL_NAME, "billing_name", true, false, String.class,100);
+    addAttribute(FRIENDS_DATA_BILL_SS_NUMBER, "billing_ss_number", true, false, String.class,10);
+
+    addAttribute(FRIENDS_DATA_NAME_TO_VIEW, "name_to_view", true, false, String.class,100);
+  }
+
+  public String getNameToView(){
+    return ((!isNull(FRIENDS_DATA_NAME_TO_VIEW)) ? getStringColumnValue(FRIENDS_DATA_NAME_TO_VIEW) : "");
+  }
+
+  public String getBillAdress(){
+    return ((!isNull(FRIENDS_DATA_BILL_ADRESS)) ? getStringColumnValue(FRIENDS_DATA_BILL_ADRESS) : "");
+  }
+
+  public String getBillName(){
+    return ((!isNull(FRIENDS_DATA_BILL_NAME)) ? getStringColumnValue(FRIENDS_DATA_BILL_NAME) : "");
+  }
+
+  public String getBillSSNumber(){
+    return ((!isNull(FRIENDS_DATA_BILL_SS_NUMBER)) ? getStringColumnValue(FRIENDS_DATA_BILL_SS_NUMBER) : "");
   }
 
   public String getEntityName() {
@@ -139,7 +189,7 @@ public class GolferPageFriendsData extends GenericEntity {
     return ((!isNull(FRIENDS_DATA_PAYMENT_AMOUNT)) ? getStringColumnValue(FRIENDS_DATA_PAYMENT_AMOUNT) : "");
   }
 
-  public String getBankAccount(){
+/*  public String getBankAccount(){
     return ((!isNull(FRIENDS_DATA_BANK_ACCOUNT)) ? getStringColumnValue(FRIENDS_DATA_BANK_ACCOUNT) : "");
   }
 
@@ -149,10 +199,14 @@ public class GolferPageFriendsData extends GenericEntity {
 
   public String getBankAccountSSNumber(){
     return ((!isNull(FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER)) ? getStringColumnValue(FRIENDS_DATA_BANK_ACCOUNT_SS_NUMBER) : "");
-  }
+  }*/
 
   public String getName(){
     return ((!isNull(FRIENDS_DATA_NAME)) ? getStringColumnValue(FRIENDS_DATA_NAME) : "");
+  }
+
+  public String getGolferName(){
+    return ((!isNull(FRIENDS_DATA_GOLFER_NAME)) ? getStringColumnValue(FRIENDS_DATA_GOLFER_NAME) : "");
   }
 
   public String getSocialSecurityNumber(){
