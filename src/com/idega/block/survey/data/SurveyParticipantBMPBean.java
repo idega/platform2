@@ -107,7 +107,7 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 				boolean success = set.add(pks.get(index));
 				int ring = index;
 				boolean coil = false;
-				while(success){
+				while(!success){
 					if(ring == ++index){
 						coil = true;
 						break;
