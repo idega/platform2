@@ -346,7 +346,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		while(sortedIter.hasNext()){
 			SortableSibling sortableSibling = (SortableSibling)sortedIter.next();
 			siblingOrders.put(sortableSibling.getSibling().getPrimaryKey(),new Integer(orderNr));
-			log("Added child "+sortableSibling.getSibling()+" as sibling "+orderNr+" out of "+sortedSiblings.size());
+//			log("Added child "+sortableSibling.getSibling()+" as sibling "+orderNr+" out of "+sortedSiblings.size());
 			orderNr++;
 		}
 	
