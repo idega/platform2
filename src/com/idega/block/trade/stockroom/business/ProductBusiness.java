@@ -40,8 +40,28 @@ public class ProductBusiness {
   public static int defaultLocaleId = 1;
 
   private static String productsApplication = "productsApplication_";
+  public static HashMap products = new HashMap();
 
   public ProductBusiness() {
+  }
+
+  public static Product getProduct(int productId) throws SQLException{
+    Object obj = products.get(Integer.toString(productId));
+    if (obj == null) {
+      Product prod = new Product(productId);
+      products.put(Integer.toString(productId), prod);
+      //System.err.println("ProductBusiness : creating product : "+productId);
+      return prod;
+    }else {
+      //System.err.println("ProductBusiness : found product : "+productId);
+      return (Product) obj;
+    }
+  }
+
+  public static Product updateProduct(Product product) throws SQLException {
+    products.remove(Integer.toString(product.getID()));
+    product.update();
+    return getProduct(product.getID());
   }
 
   public static String getProductName(Product product) {

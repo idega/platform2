@@ -49,7 +49,6 @@ public class LoginPage extends TravelManager {
       login.setUserTextColor(TravelManager.BLACK);
       login.setPasswordTextColor(TravelManager.BLACK);
       login.setTextStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; color: #000000");
-//      login.setStyle("font-face: Verdana, Helvetica, sans-serif; font-size: 1; color: #000000");
       if (iwrb != null) {
         login.setPasswordText(iwrb.getLocalizedString("travel.password","Password "));
         login.setUserText(iwrb.getLocalizedString("travel.username","Username "));
@@ -172,10 +171,6 @@ public class LoginPage extends TravelManager {
         innerTable.add(rightTextTable,3,2);
         innerTable.setColor(3,2,GRAY);
 
-    Link currCh = new Link("currencyChanger");
-      currCh.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
-
-      bigTable.add(currCh);
     return bigTable;
   }
 

@@ -191,7 +191,7 @@ public class ServiceDesigner extends TravelManager {
             table.setCellspacing(1);
             int row = 1;
 
-          Product product = new Product(this.service.getID());
+          Product product = ProductBusiness.getProduct(this.service.getID());
           com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
           if (product.getText() != null) {
             tc.setValue(product.getText());
@@ -368,7 +368,7 @@ public class ServiceDesigner extends TravelManager {
           int priceCategoryId = 0;
           int productPriceId = -1;
 
-          Product product = new Product(service.getID());
+          Product product = ProductBusiness.getProduct(service.getID());
           if (text_id != null && !text_id.equals("")) {
             TxText pText = product.getText();
             if (pText == null) {

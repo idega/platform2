@@ -32,6 +32,9 @@ public class Product extends GenericEntity {
     super();
   }
 
+  /**
+   * @deprecated
+   */
   public Product(int id) throws SQLException {
     super(id);
   }

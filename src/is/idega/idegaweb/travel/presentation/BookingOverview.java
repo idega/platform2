@@ -707,9 +707,10 @@ public class BookingOverview extends TravelManager {
           // ------------------ BOOKINGS ------------------------
           Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),is.idega.idegaweb.travel.presentation.Booking.class);
           Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
-            deleteLink.addParameter(this.bookingOverviewAction,this.parameterDeleteBooking);
-            deleteLink.addParameter(this.closerLookDateParameter, view_date);
-            deleteLink.addParameter(this.closerLookIdParameter, view_id);
+            deleteLink.setWindowToOpen(BookingDeleterWindow.class);
+//            deleteLink.addParameter(this.bookingOverviewAction,this.parameterDeleteBooking);
+//            deleteLink.addParameter(this.closerLookDateParameter, view_date);
+//            deleteLink.addParameter(this.closerLookIdParameter, view_id);
           Link link;
           Booking[] bookings = {};
           if (this.supplier != null) {
@@ -770,7 +771,7 @@ public class BookingOverview extends TravelManager {
               table.add(Text.NON_BREAKING_SPACE,9,row);
 
               link = (Link) deleteLink.clone();
-                link.addParameter(this.parameterBookingId,bookings[i].getID());
+                link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
               table.add(link, 9, row);
 
           }

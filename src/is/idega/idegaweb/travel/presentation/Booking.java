@@ -118,7 +118,7 @@ public class Booking extends TravelManager {
         }
         if (sProductId != null && !sProductId.equals("-1")) {
           productId = Integer.parseInt(sProductId);
-          product = new Product(productId);
+          product = ProductBusiness.getProduct(productId);
           service = tsb.getService(product);
           tour = TourBusiness.getTour(product);
           timeframe = tsb.getTimeframe(product);
@@ -439,13 +439,22 @@ public class Booking extends TravelManager {
       Link answerYes;
       Link answerNo;
 
+      List groupInq;
+      idegaTimestamp tempStamp;
 
       for (int i = 0; i < inqueries.length; i++) {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
 
+          groupInq = Inquirer.getMultibleInquiries(inqueries[i]);
           dateText = (Text) theSmallBoldText.clone();
-              dateText.setFontColor(BLACK);
-              dateText.setText(theStamp.getLocaleDate(iwc));
+            dateText.setFontColor(BLACK);
+          if (groupInq == null || groupInq.size() <= 1) {
+            dateText.setText(theStamp.getLocaleDate(iwc));
+          }else {
+            theStamp = new idegaTimestamp(((Inquery) groupInq.get(0)).getInqueryDate());
+            tempStamp = new idegaTimestamp(((Inquery) groupInq.get(groupInq.size()-1)).getInqueryDate());
+            dateText.setText(theStamp.getLocaleDate(iwc)+" - "+tempStamp.getLocaleDate(iwc));
+          }
           nameText = (Text) theSmallBoldText.clone();
               nameText.setFontColor(BLACK);
               nameText.setText(inqueries[i].getName());
@@ -477,7 +486,7 @@ public class Booking extends TravelManager {
           table.setAlignment(2,row,"right");
 
           if (supplier != null) {
-              answerYes = new Link("T - Staðfesta bókun");
+              answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm booking"));
                 answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
                 answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
@@ -485,7 +494,7 @@ public class Booking extends TravelManager {
                 answerYes.addParameter("month",this.stamp.getMonth());
                 answerYes.addParameter("day",this.stamp.getDay());
 
-              answerNo = new Link("T - Hafna bókun");
+              answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject booking"));
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);

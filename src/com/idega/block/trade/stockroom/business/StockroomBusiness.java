@@ -130,7 +130,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
             //buffer.append(" and ");
             //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
+            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate()+ " desc");
           List result = EntityFinder.findAll(ppr,buffer.toString());
 
           if(result != null && result.size() > 0){
@@ -172,7 +172,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
             buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
             //buffer.append(" and ");
             //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
+            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate()+ " desc");
           List result = EntityFinder.findAll(ppr,buffer.toString());
           float disc = 0;
           if(result != null && result.size() > 0){
@@ -351,7 +351,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if (productId == -1) {
       product = new Product();
     }else {
-      product = new Product(productId);
+      product = ProductBusiness.getProduct(productId);// Product(productId);
     }
 
     product.setSupplierId(supplierId);
@@ -369,7 +369,8 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if (productId == -1) {
       product.insert();
     }else {
-      product.update();
+      ProductBusiness.updateProduct(product);
+      //product.update();
     }
 
     ProductBusiness.setProductName(product, productName);

@@ -74,7 +74,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       }else {
           //Service service = new Service(tourId);
-          Product product = new Product(tourId);
+          Product product = ProductBusiness.getProduct(tourId);//new Product(tourId);
           Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
           if (tempAddresses.length > 0) {
             arrivalAddress = new Address(tempAddresses[0].getID());
@@ -136,7 +136,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       try {
           //tm.begin();
           Service service = new Service(serviceId);
-          Product product = new Product(serviceId);
+          Product product = ProductBusiness.getProduct(serviceId);// Product(serviceId);
           Tour tour;
 
           if (tourId == -1) {
@@ -183,6 +183,12 @@ public class TourBusiness extends TravelStockroomBusiness {
             tour.update();
           }
 
+
+          /**
+           * @todo laga ?? (getInstance ()),
+           */
+          this.removeDepartureDaysApplication(IWContext.getInstance(), tour);
+
           ServiceDay.deleteService(serviceId);
 
           if (activeDays.length > 0) {
@@ -201,6 +207,7 @@ public class TourBusiness extends TravelStockroomBusiness {
           e.printStackTrace(System.err);
           //tm.rollback();
       }
+
 
       return serviceId;
   }
@@ -281,17 +288,23 @@ public class TourBusiness extends TravelStockroomBusiness {
   }
 
   /**
-   * return a date if the inserted date is part on a tour
+   * return a date if the inserted date is part of a tour
    */
   private static idegaTimestamp getDepartureDateForDate(IWContext iwc, Tour tour, idegaTimestamp stamp) {
     idegaTimestamp returnStamp = null;
-    List days = getDepartureDays(iwc, tour, true);
 
     idegaTimestamp stamp1 = null;
     idegaTimestamp stamp2 = null;
     boolean found = false;
-
     int numberOfDays = tour.getNumberOfDays();
+
+    idegaTimestamp temp1 = new idegaTimestamp(stamp);
+      temp1.addDays(numberOfDays);
+    idegaTimestamp temp2 = new idegaTimestamp(stamp);
+      temp2.addDays(-1 * numberOfDays);
+
+
+    List days = getDepartureDays(iwc, tour, temp1, temp2, true);
 
     if ( numberOfDays > 1) {
       for (int i = 0; i < days.size(); i++) {
@@ -337,7 +350,7 @@ public class TourBusiness extends TravelStockroomBusiness {
     try {
       idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
-        return TravelStockroomBusiness.getIfDay(iwc, contract, new Product(tour.getID()), stamp);
+        return TravelStockroomBusiness.getIfDay(iwc, contract, ProductBusiness.getProduct(tour.getID()), stamp);
       }else {
         return (stamp.equals(temp));
       }
@@ -352,7 +365,7 @@ public class TourBusiness extends TravelStockroomBusiness {
     try {
       idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
-        return TravelStockroomBusiness.getIfDay(iwc, new Product(tour.getID()), stamp, includePast);
+        return TravelStockroomBusiness.getIfDay(iwc, ProductBusiness.getProduct(tour.getID()), stamp, includePast);
       }else {
         return (stamp.equals(temp));
       }
@@ -361,34 +374,6 @@ public class TourBusiness extends TravelStockroomBusiness {
       return false;
     }
   }
-/*
-  private static boolean getIfDayInManyDayTour(Tour tour, idegaTimestamp stamp) throws SQLException {
-    int numberOfDays = tour.getNumberOfDays();
-    if (numberOfDays > 1) {
-
-      Timeframe frame = new Product(tour.getID()).getTimeframe();
-      idegaTimestamp from = new idegaTimestamp(frame.getFrom());
-      if (frame.getIfYearly()) {
-        from.setYear(stamp.getYear());
-      }
-      int daysBetween = from.getDaysBetween(from, stamp);
-      System.err.println("numberOfDays               : "+numberOfDays);
-      System.err.println("daysBetween                : "+daysBetween);
-      System.err.println("daysBetween % numberOfDays : "+daysBetween % numberOfDays);
-
-      if (numberOfDays > 6) {
-
-      }else {
-
-      }
-
-      if (daysBetween % numberOfDays != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-*/
 
   public static List getDepartureDays(IWContext iwc, Tour tour) {
     return getDepartureDays(iwc, tour, true);
@@ -398,120 +383,183 @@ public class TourBusiness extends TravelStockroomBusiness {
     return getDepartureDays(iwc, tour, null, null, showPast);
   }
 
+  public static void removeDepartureDaysApplication(IWContext iwc, Tour tour) {
+    Enumeration enum = iwc.getApplication().getAttributeNames();
+    String name;
+    while (enum.hasMoreElements()) {
+      name = (String) enum.nextElement();
+      if (name.indexOf("tourDepDays"+tour.getID()+"_") != -1) {
+        iwc.removeApplicationAttribute(name);
+      }
+    }
+  }
+
+
   public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp fromStamp, idegaTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
+
     try {
-      Product product = new Product(tour.getID());
+      Product product = ProductBusiness.getProduct(tour.getID());
       Service service = new Service(tour.getID());
       Timeframe[] frames = product.getTimeframes();
 
-      for (int i = 0; i < frames.length; i++) {
+      String applicationString = "tourDepDays"+tour.getID()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
 
-        boolean yearly = frames[i].getIfYearly();
+      List tempList = (List) iwc.getApplicationAttribute(applicationString);
+      if (tempList != null) {
+        returner = tempList;
+      }else {
+        System.err.println("TourBusiness : getDepartDays : "+fromStamp+ " - " +toStamp);
+        for (int i = 0; i < frames.length; i++) {
 
-        idegaTimestamp tFrom = new idegaTimestamp(frames[i].getFrom());
-        idegaTimestamp tTo = new idegaTimestamp(frames[i].getTo());
+          boolean yearly = frames[i].getIfYearly();
+
+          idegaTimestamp tFrom = new idegaTimestamp(frames[i].getFrom());
+          idegaTimestamp tTo = new idegaTimestamp(frames[i].getTo());
 
 
-        idegaTimestamp from = null;
-        if (fromStamp != null) from = new idegaTimestamp(fromStamp);
-        idegaTimestamp to = null;
-        if (toStamp != null) to = new idegaTimestamp(toStamp);
+          idegaTimestamp from = null;
+          if (fromStamp != null) from = new idegaTimestamp(fromStamp);
+          idegaTimestamp to = null;
+          if (toStamp != null) to = new idegaTimestamp(toStamp);
 
-        int numberOfDays = tour.getNumberOfDays();
-          if (numberOfDays < 1) numberOfDays = 1;
+          int numberOfDays = tour.getNumberOfDays();
+            if (numberOfDays < 1) numberOfDays = 1;
 
-        if (from == null) {
-          from = new idegaTimestamp(tFrom);
-        }
-        if (to == null) {
-          to   = new idegaTimestamp(tTo);
-        }
-
-        int toMonth = tTo.getMonth();
-        int toM = to.getMonth();
-        int fromM = from.getMonth();
-        int yearsBetween = 0;
-
-        to.addDays(1);
-
-        if (yearly) {
-          int fromYear = tFrom.getYear();
-          int toYear   = tTo.getYear();
-          int fromY = from.getYear();
-          int toY = to.getYear();
-
-          int daysBetween = idegaTimestamp.getDaysBetween(from, to);
-
-          if (fromYear == toYear) {
-            from.setYear(fromYear);
-          }else {
-              if (fromY >= toYear) {
-                if (fromM > toMonth) {
-                  from.setYear(fromYear);
-                }else {
-                  from.setYear(toYear);
-                }
-              }
+          if (from == null) {
+            from = new idegaTimestamp(tFrom);
+          }
+          if (to == null) {
+            to   = new idegaTimestamp(tTo);
           }
 
-          to = new idegaTimestamp(from);
-            to.addDays(daysBetween);
+          int toMonth = tTo.getMonth();
+          int toM = to.getMonth();
+          int fromM = from.getMonth();
+          int yearsBetween = 0;
 
-          yearsBetween = to.getYear() - toY;
-        }
+          to.addDays(1);
 
-      idegaTimestamp stamp = new idegaTimestamp(from);
-      idegaTimestamp temp;
+          if (yearly) {
+            int fromYear = tFrom.getYear();
+            int toYear   = tTo.getYear();
+            int fromY = from.getYear();
+            int toY = to.getYear();
 
-        idegaTimestamp now = idegaTimestamp.RightNow();
+            int daysBetween = idegaTimestamp.getDaysBetween(from, to);
 
-        while (to.isLaterThan(stamp)) {
-          temp = getNextAvailableDay(iwc, service, stamp);
-          if (temp != null) {
-            if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
-              if (yearly) {
-                temp.addYears(-yearsBetween);
-              }
-              if (!showPast) {
-                if (temp.isLaterThanOrEquals(now)) {
+            if (fromYear == toYear) {
+              from.setYear(fromYear);
+            }else {
+                if (fromY >= toYear) {
+                  if (fromM > toMonth) {
+                    from.setYear(fromYear);
+                  }else {
+                    from.setYear(toYear);
+                  }
+                }
+            }
+
+            to = new idegaTimestamp(from);
+              to.addDays(daysBetween);
+
+            yearsBetween = to.getYear() - toY;
+          }
+
+        idegaTimestamp stamp = new idegaTimestamp(from);
+        idegaTimestamp temp;
+
+          idegaTimestamp now = idegaTimestamp.RightNow();
+
+          while (to.isLaterThan(stamp)) {
+            temp = getNextAvailableDay(iwc, tour, product, stamp);
+            if (temp != null) {
+              if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
+                if (yearly) {
+                  temp.addYears(-yearsBetween);
+                }
+                if (!showPast) {
+                  if (temp.isLaterThanOrEquals(now)) {
+                    returner.add(temp);
+                    stamp = new idegaTimestamp(temp);
+                  }else {
+                    stamp = new idegaTimestamp(temp);
+                  }
+                }else {
                   returner.add(temp);
                   stamp = new idegaTimestamp(temp);
-                }else {
-                  stamp = new idegaTimestamp(temp);
                 }
-              }else {
-                returner.add(temp);
-                stamp = new idegaTimestamp(temp);
+                if (yearly) {
+                  stamp.addYears(yearsBetween);
+                }
               }
-              if (yearly) {
-                stamp.addYears(yearsBetween);
-              }
+              stamp = new idegaTimestamp(temp);
+            }else {
+              stamp.addDays(numberOfDays);
             }
           }
-          stamp.addDays(numberOfDays);
-        }
 
+        }
+        iwc.setApplicationAttribute(applicationString, returner);
       }
-    }catch (SQLException sql) {
+//      Exception ex = new  Exception("Repps");
+//        throw ex;
+    }catch (Exception sql) {
       sql.printStackTrace(System.err);
     }
 
     return returner;
   }
 
+  /**
+   * @deprecated
+   */
   public static idegaTimestamp getNextAvailableDay(IWContext iwc, Service service, idegaTimestamp from) {
-    idegaTimestamp stamp = new idegaTimestamp(from);
-    boolean found = false;
-    for (int i = 1; i <= 7; i++) {
-      if (TravelStockroomBusiness.getIfDay(iwc,service.getID(), stamp.getDayOfWeek())) {
-        found = true;
-        break;
-      }else {
-        stamp.addDays(1);
-      }
+    try {
+      return getNextAvailableDay(iwc, new Tour(service.getID()), ProductBusiness.getProduct(service.getID()),from);
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  /**
+   * @deprecated
+   */
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, idegaTimestamp from) {
+    try {
+      Product prod = ProductBusiness.getProduct(tour.getID());
+      return getNextAvailableDay(iwc, tour, prod, from);
+    }catch (SQLException sql) {
+      return null;
     }
 
+  }
+
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product, idegaTimestamp from) {
+    idegaTimestamp stamp = new idegaTimestamp(from);
+    boolean found = false;
+/**
+ * @todo Speed up....
+ */
+
+    try {
+
+      int nod = tour.getNumberOfDays();
+      if (nod < 1) nod = 1;
+      int teljari = 0;
+
+      while (teljari++ < 8) {
+        stamp.addDays(nod);
+        if (TravelStockroomBusiness.getIfDay(iwc,product, stamp)) {
+          found = true;
+          break;
+        }
+      }
+
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
     if (found) {
       return stamp;
     }else {

@@ -1,9 +1,9 @@
 package is.idega.idegaweb.travel.business;
 
 import java.sql.SQLException;
-import com.idega.data.EntityControl;
+import java.util.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.data.SimpleQuerier;
+import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.Inquery;
 import com.idega.presentation.*;
@@ -188,9 +188,10 @@ public class Inquirer {
         responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
         responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
         responseString.append("\n\n");
+/**
+ * @todo hondlar svara inquiry sem er hluti af grúbbu....
+ */
 
-
-        //responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
 
         if (book == false) {
             responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
@@ -264,6 +265,47 @@ public class Inquirer {
       table.add(Text.NON_BREAKING_SPACE,1,3);
 
     return table;
+  }
+
+  public static List getMultibleInquiries(Inquery inquiry) {
+    List list = new Vector();
+    try {
+
+      StringBuffer buff = new StringBuffer();
+        buff.append("SELECT * FROM "+inquiry.getInqueryTableName());
+        buff.append(" WHERE ");
+        if (inquiry.getAnswerDate() != null) {
+          buff.append(inquiry.getAnswerDateColumnName()+" = '"+inquiry.getAnswerDate()+"'");
+        }else {
+          buff.append(inquiry.getAnswerDateColumnName()+" is null");
+        }
+        buff.append(" AND ");
+        if (inquiry.getAnswered()) {
+          buff.append(inquiry.getAnsweredColumnName()+" = 'Y'");
+        }else {
+          buff.append(inquiry.getAnsweredColumnName()+" = 'N'");
+        }
+        buff.append(" AND ");
+        buff.append(inquiry.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
+        buff.append(" AND ");
+        buff.append(inquiry.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
+        buff.append(" AND ");
+        buff.append(inquiry.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
+        buff.append(" AND ");
+        buff.append(inquiry.getNameColumnName()+" = '"+inquiry.getName()+"'");
+        buff.append(" AND ");
+        buff.append(inquiry.getNumberOfSeatsColumnName()+" = "+inquiry.getNumberOfSeats());
+        buff.append(" AND ");
+        buff.append(inquiry.getServiceIDColumnName()+" = "+inquiry.getServiceID());
+        buff.append(" ORDER BY "+inquiry.getInqueryDateColumnName());
+
+        //System.err.println(buff.toString());
+      list = EntityFinder.findAll(inquiry, buff.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return list;
   }
 
 

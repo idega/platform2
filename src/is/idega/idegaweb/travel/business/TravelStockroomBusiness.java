@@ -156,7 +156,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
         if (timeframe != null) {
           try {
-            Product product = new Product(id);
+            Product product = ProductBusiness.getProduct(id);
             product.addTo(timeframe);
           }catch (SQLException sql) {
             //sql.printStackTrace(System.err);

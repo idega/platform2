@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.business;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
 import java.sql.*;
-import com.idega.data.EntityControl;
+import com.idega.data.*;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.data.*;
@@ -281,7 +281,7 @@ public class Booker {
     //Connection conn = null;
     try {
 //      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(new Product(serviceId));
-      Timeframe timeframe = ProductBusiness.getTimeframe(new Product(serviceId), fromStamp);
+      Timeframe timeframe = ProductBusiness.getTimeframe(ProductBusiness.getProduct(serviceId), fromStamp);
       Product product = (Product) Product.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
       String pTable = Product.getProductEntityName();
@@ -526,5 +526,58 @@ public class Booker {
       return currency;
   }
 
+  public static List getMultibleBookings(Booking booking) {
+    List list = new Vector();
+    try {
+      getMultibleBookings(new GeneralBooking(booking.getID()));
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return list;
+  }
+
+  public static List getMultibleBookings(GeneralBooking booking) {
+    List list = new Vector();
+    try {
+
+      StringBuffer buff = new StringBuffer();
+        buff.append("SELECT * FROM "+booking.getBookingTableName());
+        buff.append(" WHERE ");
+        buff.append(booking.getNameColumnName()+" = '"+booking.getName()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getAddressColumnName()+" = '"+booking.getAddress()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getCityColumnName()+" = '"+booking.getCity()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getCountryColumnName()+" = '"+booking.getCountry()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getEmailColumnName()+" = '"+booking.getEmail()+"'");
+        buff.append(" AND ");
+        if (booking.getIsValid()) {
+          buff.append(booking.getIsValidColumnName()+" = 'Y'");
+        }else {
+          buff.append(booking.getIsValidColumnName()+" = 'N'");
+        }
+        buff.append(" AND ");
+        buff.append(booking.getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
+        buff.append(" AND ");
+        buff.append(booking.getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
+        buff.append(" ORDER BY "+booking.getBookingDateColumnName());
+      list = EntityFinder.findAll(booking, buff.toString());
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return list;
+  }
 
 }

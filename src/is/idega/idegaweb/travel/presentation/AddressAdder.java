@@ -73,7 +73,7 @@ public class AddressAdder extends TravelWindow {
       String sProductId = iwc.getParameter(_parameterProductId);
       if (sProductId != null) {
         _productId = Integer.parseInt(sProductId);
-        _product = new Product(_productId);
+        _product = ProductBusiness.getProduct(_productId);
       }
     }catch (SQLException sql) {
       sql.printStackTrace();

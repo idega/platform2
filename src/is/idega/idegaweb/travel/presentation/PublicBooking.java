@@ -6,7 +6,7 @@ import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import com.idega.block.calendar.business.CalendarBusiness;
@@ -322,34 +322,23 @@ public class PublicBooking extends Block  {
       table.add(space,1,2);
       table.add(supplierTextBold,1,2);
 
-/*      table.add(departureFromText,3,1);
-      table.add(space,3,1);
-      table.add(departureFromTextBold,3,1);
-*/
       table.add(image,1,3);
-//      table.add(arrow,1,3);
       table.setAlignment(1,3,"left");
-
-//      table.add(departureTimeText,2,2);
-//      table.add(space,2,2);
-//      table.add(departureTimeTextBold,2,2);
 
       table.add(daysText,2,2);
       table.add(space,2,2);
       table.add(daysTextBold,2,2);
 
-//      table.add(Text.NON_BREAKING_SPACE,2,3);
 
       String stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
       String stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
-      ProductPrice[] prices;// = ProductPrice.getProductPrices(service.getID(), true);
+      ProductPrice[] prices;
       Text timeframeTextBold;
 
       Table pTable = new Table();
         pTable.setCellspacing(0);
 
-        //pTable.add(pricesText,1,1);
-        int pRow = 1;
+      int pRow = 1;
       for (int l = 0; l < depAddresses.length; l++) {
         departureFromTextBold = getBoldText(depAddresses[l].getName());
           departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -399,7 +388,10 @@ public class PublicBooking extends Block  {
       pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
       table.add(pTable,2,3);
-//      table.setAlignment(2,4,"right");
+
+      Link currCh = new Link(iwrb.getLocalizedImageButton("travel.other_currencies","Other_currencies"));
+        currCh.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
+      table.add(currCh, 2, 3);
 
       table.setAlignment(2,1,"right");
       table.setAlignment(2,2,"right");
@@ -438,7 +430,6 @@ public class PublicBooking extends Block  {
           break;
         }
       }
-
 
       Form form = new Form();
 
@@ -516,6 +507,9 @@ public class PublicBooking extends Block  {
     String room_number = iwc.getParameter("room_number");
     String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
+    String fromDate = iwc.getParameter(TourBookingForm.parameterFromDate);
+    String toDate = iwc.getParameter(TourBookingForm.parameterToDate);
+
     String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
     String ccMonth = iwc.getParameter(TourBookingForm.parameterCCMonth);
     String ccYear = iwc.getParameter(TourBookingForm.parameterCCYear);
@@ -551,8 +545,11 @@ public class PublicBooking extends Block  {
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
+
+      idegaTimestamp fromStamp = new idegaTimestamp(fromDate);
+      idegaTimestamp toStamp = new idegaTimestamp(toDate);
       table.add(getTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
-      table.add(getBoldTextWhite(this.stamp.getLocaleDate(iwc)),2,row);
+      table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -769,9 +766,11 @@ public class PublicBooking extends Block  {
             break;
           case 7:
           case 37:
-          case 69:
           case 75:
             display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
+            break;
+          case 69:
+            display.setText(e.getErrorMessage());
             break;
           case 20:
           case 31:
@@ -788,6 +787,8 @@ public class PublicBooking extends Block  {
         display.addToText(" ( "+e.getErrorNumber()+" )");
       }
       catch (Exception e) {
+        //success = true;
+        //display.addToText("error : success er on");
         e.printStackTrace(System.err);
       }
 

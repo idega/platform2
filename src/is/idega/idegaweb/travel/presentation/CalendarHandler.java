@@ -515,7 +515,7 @@ public class CalendarHandler extends TravelManager {
   public void setTour(Tour tour) {
     this._tour = tour;
     try {
-      setProduct(new Product(tour.getID() ));
+      setProduct(ProductBusiness.getProduct(tour.getID()));// Product(tour.getID() ));
     }catch (SQLException s) {
       s.printStackTrace(System.err);
     }

@@ -1,28 +1,38 @@
 package com.idega.block.trade.stockroom.data;
 
-import com.idega.data.*;
+import com.idega.core.data.ICCategory;
 import java.sql.SQLException;
-
 
 /**
  * Title:        IW Trade
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
- * @author       idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+ * @author       <a href="mailto:gimmi@idega.is">Grimur Jónsson</a>
  * @version 1.0
  */
 
-public class ProductCategory extends TreeableEntity {
+public class ProductCategory extends ICCategory {
 
-  public ProductCategory() {
+  public static final String CATEGORY_TYPE_TOUR = "sr_prod_cat_tour";
+  public static final String CATEGORY_TYPE_HOTEL = "sr_prod_cat_hotel";
+  public static final String CATEGORY_TYPE_FISHING = "sr_prod_cat_fishing";
+
+  public ProductCategory(){
+    super();
+  }
+  public ProductCategory(int id)throws SQLException{
+    super(id);
   }
 
+
+/*
+  public ProductCategory() {
+  }
 
   public ProductCategory(int id) throws SQLException {
     super(id);
   }
-
 
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
@@ -67,6 +77,6 @@ public class ProductCategory extends TreeableEntity {
   public void setIsValid(boolean valid){
     setColumn(getIsValidColumnName(),valid);
   }
-
+*/
 
 } // Class ProductCategory

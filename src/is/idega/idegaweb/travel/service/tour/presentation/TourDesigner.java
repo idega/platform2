@@ -59,7 +59,7 @@ public class TourDesigner extends TravelManager {
 
   private boolean setupData(int tourId) {
     try {
-      product = new Product(tourId);
+      product = ProductBusiness.getProduct(tourId);
       service = new Service(tourId);
       tour = new Tour(tourId);
       timeframe = product.getTimeframe();
