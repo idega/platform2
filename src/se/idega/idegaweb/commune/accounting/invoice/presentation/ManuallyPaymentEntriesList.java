@@ -470,6 +470,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			if (inv != null){	
 				inv.store();		
 			}
+
 			if (_returnPage != null){
 				iwc.forwardToIBPage(getParentPage(), _returnPage);
 			}
@@ -999,12 +1000,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	}
 
 	
-	//Property returnPage
+	//Property respnsePage
 	public void setReturnPage(ICPage returnPage){
 		_returnPage = returnPage;
 	}
 	
-	public ICPage getReturnPage(){
+	public ICPage getResponsePage(){
 		return _returnPage;
 	}	
 		 
