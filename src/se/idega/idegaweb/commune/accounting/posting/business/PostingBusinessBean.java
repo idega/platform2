@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.54 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: PostingBusinessBean.java,v 1.55 2004/01/07 17:00:22 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -834,22 +834,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			validateString(doublePosting,date);
 		}catch(NullPointerException ex){
 			//ex.printStackTrace();
-			throw new PostingException("postingException.missing_parameter_value", "[Not localized NullPointerException]"); 
+			throw new PostingException("postingException.missing_parameter_value", "postingException.missing_parameter_value"); 
 		}catch(RemoteException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.service_unavailable", "[Not localized RemoteException]"); 				
+			throw new PostingException("postingException.service_unavailable", "postingException.service_unavailable"); 				
 		}catch(FinderException ex){			
 			ex.printStackTrace();
-			throw new PostingException("postingException.export_data_mapping", "[Not localized FinderException]"); 				
+			throw new PostingException("postingException.export_data_mapping", "postingException.export_data_mapping"); 				
 		}catch(PostingException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.posting", "[Not localized PostingException]"); 				
+			throw new PostingException("postingException.posting", "postingException.posting"); 				
 		}catch(MissingMandatoryFieldException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.missing_mandatory_field", "[Not localized MissingMandatoryFieldException]"); 				
+			throw new PostingException("postingException.missing_mandatory_field", "postingException.missing_mandatory_field"); 				
 		}catch(PostingParametersException ex){
 			ex.printStackTrace();
-			throw new PostingException("postingException.posting_parameter", "[Not localized PostingParametersException]"); 				
+			throw new PostingException("postingException.posting_parameter", "postingException.posting_parameter"); 				
 		}
 		return new String[] {ownPosting, doublePosting};
 	}	
