@@ -1524,16 +1524,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int schoolClassId = -1;
 		if(iwc.isParameterSet(PARAMETER_SCHOOL_CLASS))
 			schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		/*
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
+		SchoolClassMember classMember = null;
+		/* included in business assignContractToApplication
 		if(archive!=null){
-			SchoolClassMember classMember = archive.getSchoolClassMember();
+			classMember = archive.getSchoolClassMember();
 			if(schoolTypeId != classMember.getSchoolTypeId() || schoolClassId!= classMember.getSchoolClassId()){
 				// end old placement with the chosen date -1 and create new placement
-				getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,iwc.getCurrentUser());
+				classMember = getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,validFrom,iwc.getCurrentUser());
 			}
-		}
-		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
+		}*/
+		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false,true,schoolTypeId,schoolClassId);
 		close();
 	}
 
