@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.27 2002/06/06 14:39:40 laddi Exp $
+ * $Id: CampusApprover.java,v 1.28 2002/06/10 11:46:29 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -389,6 +389,7 @@ public class CampusApprover extends Block {
     Image trashImage = iwb.getImage("trashcan.gif");
     T.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("prior","Pr")),col++,row);
+    T.add(headerText(iwrb.getLocalizedString("refnum","Ref. num")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col++,row);
@@ -443,11 +444,25 @@ public class CampusApprover extends Block {
 	  e.printStackTrace();
 	}
 
+	String cypher = null;
+	if (a != null && a.getID() != -1) {
+	  com.idega.block.application.business.ReferenceNumberHandler h = new com.idega.block.application.business.ReferenceNumberHandler();
+	  String key = h.getCypherKey(iwc);
+	  com.idega.util.CypherText ct = new com.idega.util.CypherText();
+
+	  String id = Integer.toString(a.getID());
+	  while (id.length() < 6)
+	    id = "0" + id;
+
+	  cypher = ct.doCyper(id,key);
+	}
+
 	T.add(Edit.formatText(String.valueOf(i+1)),col++,row);
 	if (CA == null)
 	  T.add(Edit.formatText("A"),col++,row);
 	else
 	  T.add(Edit.formatText(CA.getPriorityLevel()),col++,row);
+	T.add(Edit.formatText(cypher),col++,row);
 	String Name = A.getFirstName()+" "+A.getMiddleName()+" "+A.getLastName();
 	T.add(Edit.formatText(Name),col++,row);
 	T.add(Edit.formatText(A.getSSN()!=null?A.getSSN():""),col++,row);
