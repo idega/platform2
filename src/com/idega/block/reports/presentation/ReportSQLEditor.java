@@ -315,8 +315,8 @@ public class ReportSQLEditor extends Block implements Reports{
         CloseButton cancel = new CloseButton("cancel");
         Edit.setStyle(save);
         Edit.setStyle(cancel);
-        T.add(cancel,3,4);
-        T.add(save,3,4);
+        T.add(cancel,1,4);
+        T.add(save,1,4);
         T.setAlignment(3,4,"right");
         T.add(new HiddenInput(sAction, String.valueOf(ACT6)),1,4);
         T.add(new HiddenInput(PRM_CATEGORYID,String.valueOf(iCategoryId)),1,4);
@@ -469,7 +469,10 @@ public class ReportSQLEditor extends Block implements Reports{
 
       Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,iCategoryId);
       if(saved!=null){
-        return getEditTable(iwc,saved.getID());
+        int id = saved.getID();
+        iReportId = id;
+        return getEditTable(iwc,id);
+
       }
       else{
 

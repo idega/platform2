@@ -130,7 +130,7 @@ public class ReportObjectHandler extends Block{
 
 		DropdownMenu drp = new DropdownMenu(name);
 
-		drp.addDisabledMenuElement("","--");
+		drp.addMenuElement("","--");
 
 		drp.addMenuElement("COUNT","COUNT");
 
@@ -192,7 +192,7 @@ public class ReportObjectHandler extends Block{
 
     if(disabledvalue )
 
-      drp.addDisabledMenuElement("0","--");
+      drp.addMenuElement("0","--");
 
 
 
@@ -280,13 +280,15 @@ public class ReportObjectHandler extends Block{
 
     DropdownMenu drp = new DropdownMenu(Name);
 
-    drp.addDisabledMenuElement("0","--");
+    drp.addMenuElement("0","--");
 
     if(L!=null){
       java.util.Iterator iter = L.iterator();
       while(iter.hasNext()){
         com.idega.data.IDOLegacyEntity leg = (com.idega.data.IDOLegacyEntity) iter.next();
         String sField = leg.getStringColumnValue(field);
+        if(sField.length()>=20)
+          sField = sField.substring(0,20);
         drp.addMenuElement(sField);
 
       }
