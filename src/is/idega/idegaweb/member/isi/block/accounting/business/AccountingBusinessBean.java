@@ -44,6 +44,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 
 /**
  * A service bean for the accounting part of the isi member system.
@@ -767,5 +768,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 
 		return null;
+	}
+	
+	public Collection getFinanceEntriesByDateIntervalDivisionsAndGroups(java.util.Date dateFrom, java.util.Date dateTo, Collection regionalUnionsFilter, Collection clubsFilter){
+		try {
+			return getFinanceEntryHome().findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(dateFrom,dateTo,regionalUnionsFilter,clubsFilter);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
 	}
 }
