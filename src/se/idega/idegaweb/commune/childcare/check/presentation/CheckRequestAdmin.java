@@ -7,6 +7,8 @@ import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import com.idega.core.data.PostalCode;
 import com.idega.core.data.Address;
 import com.idega.user.data.User;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 import java.util.*;
@@ -106,63 +108,85 @@ public class CheckRequestAdmin extends CommuneBlock {
 	}
 
 	private void viewCheckList(IWContext iwc) throws Exception {
-		ColumnList checkList = new ColumnList(5);
-		checkList.setWidth("600");
-		checkList.setHeader(localize("check.check_number", "Check number"), 1);
-		checkList.setHeader(localize("check.date", "Date"), 2);
-		checkList.setHeader(localize("check.social_security_number", "Social security number"), 3);
-		checkList.setHeader(localize("check.manager", "Manager"), 4);
-		checkList.setHeader(localize("check.status", "Status"), 5);
+		Table table = new Table();
+		table.setColumns(5);
+		table.setWidth(getWidth());
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		int row = 1;
+		
+		table.setRowColor(row, getHeaderColor());
+		table.add(getSmallHeader(localize("check.check_number", "Check number")), 1, row);
+		table.add(getSmallHeader(localize("check.date", "Date")), 2, row);
+		table.add(getSmallHeader(localize("check.social_security_number", "Social security number")), 3, row);
+		table.add(getSmallHeader(localize("check.manager", "Manager")), 4, row);
+		table.add(getSmallHeader(localize("check.status", "Status")), 5, row++);
+
+		Check check;
+		User child;
+		User manager;
+		IWCalendar calendar;
 
 		Collection checks = getCheckBusiness(iwc).findUnhandledChecks();
 		Iterator iter = checks.iterator();
 		while (iter.hasNext()) {
-			Check check = (Check) iter.next();
-			User child = getCheckBusiness(iwc).getUserById(check.getChildId());
-			User manager = getCheckBusiness(iwc).getUserById(check.getManagerId());
+			check = (Check) iter.next();
+			child = getCheckBusiness(iwc).getUserById(check.getChildId());
+			manager = getCheckBusiness(iwc).getUserById(check.getManagerId());
+			calendar = new IWCalendar(iwc.getCurrentLocale(),check.getCreated());
 
 			String childSSN = "-";
 			if (child != null) {
 				childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
-
 			}
+
 			String managerName = "-";
 			if (manager != null)
 				managerName = manager.getName();
+				
+			String caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check.getCaseStatus(), iwc.getCurrentLocale());
 
-			Link l = getLink(check.getPrimaryKey().toString());
-			l.addParameter(PARAM_VIEW_CHECK, "true");
-			l.addParameter(PARAM_CHECK_ID, check.getPrimaryKey().toString());
-			checkList.add(l);
-			checkList.add(check.getCreated().toString().substring(0, 10));
-			checkList.add(childSSN);
-			checkList.add(managerName);
-			checkList.add(check.getStatus());
+			if (row % 2 == 0)
+				table.setRowColor(row, getZebraColor1());
+			else
+				table.setRowColor(row, getZebraColor2());
+			
+			Link link = getSmallLink(check.getPrimaryKey().toString());
+			link.addParameter(PARAM_VIEW_CHECK, "true");
+			link.addParameter(PARAM_CHECK_ID, check.getPrimaryKey().toString());
+			table.add(link, 1, row);
+			table.add(getSmallText(calendar.getLocaleDate(IWCalendar.SHORT)), 2, row);
+			table.add(getSmallText(childSSN), 3, row);
+			table.add(getSmallText(managerName), 4, row);
+			table.add(getSmallText(caseStatus), 5, row++);
 		}
-		add(checkList);
+		add(table);
 	}
 
 	protected void viewCheck(IWContext iwc, Check check, boolean isError) throws Exception {
-		add(getCheckInfoTable(iwc, check));
-		add(new Break(2));
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(getWidth());
+		int row = 1;
+		
+		table.add(getCheckInfoTable(iwc, check), 1, row++);
+		table.setHeight(row++, 16);
 
 		if (isError) {
-			add(getErrorText(localize("check.must_check_all_rules", "All rules must be checked.")));
-			add(new Break(2));
+			table.add(getSmallErrorText(localize("check.must_check_all_rules", "All rules must be checked.")), 1, row);
+			table.setHeight(row++, 6);
 		}
 
-		add(getCheckForm(iwc, check, isError));
+		table.add(getCheckForm(iwc, check, isError), 1, row);
+		add(table);
 	}
 
 	private Table getCheckInfoTable(IWContext iwc, Check check) throws Exception {
-		Table frame = new Table();
-		frame.setCellpadding(10);
-		frame.setCellspacing(0);
-		frame.setColor("#ffffcc");
-
 		Table checkInfoTable = new Table();
-		checkInfoTable.setCellpadding(6);
+		checkInfoTable.setCellpadding(getCellpadding());
 		checkInfoTable.setCellspacing(0);
+		checkInfoTable.setWidth(1, "150");
 		int row = 1;
 
 		if (check != null) {
@@ -193,7 +217,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 			String childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
 
-			checkInfoTable.add(getSmallText(childSSN + ", " + child.getName()), 2, row);
+			checkInfoTable.add(getSmallText(childSSN + ", " + child.getName()), 2, row++);
 			Collection addresses = child.getAddresses();
 			Address address = null;
 			PostalCode zip = null;
@@ -204,9 +228,11 @@ public class CheckRequestAdmin extends CommuneBlock {
 				break;
 			}
 			if (address != null) {
-				checkInfoTable.add(getSmallText(", " + address.getStreetAddress()), 2, row);
+				checkInfoTable.add(getLocalizedSmallHeader("check.address", "Address"), 1, row);
+				checkInfoTable.add(getSmallHeader(":"), 1, row);
+				checkInfoTable.add(getSmallText(address.getStreetAddress()), 2, row);
 				if (zip != null) {
-					checkInfoTable.add(getSmallText(" " + zip.getPostalAddress()), 2, row);
+					checkInfoTable.add(getSmallText(", " + zip.getPostalAddress()), 2, row);
 				}
 			}
 
@@ -217,25 +243,22 @@ public class CheckRequestAdmin extends CommuneBlock {
 				checkInfoTable.setVerticalAlignment(1, row + 1, Table.VERTICAL_ALIGN_TOP);
 
 				Iterator iter2 = custodians.iterator();
+				int count = 1;
 				while (iter2.hasNext()) {
 					User parent = (User) iter2.next();
-					checkInfoTable.add(getSmallText(parent.getNameLastFirst(false)), 2, ++row);
+					checkInfoTable.add(getSmallText(parent.getNameLastFirst(true)), 2, ++row);
+					if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
+						if (count == 1 && getWorkSituation(check.getWorkSituation1()) != null)
+							checkInfoTable.add(getSmallText(", " + getWorkSituation(check.getWorkSituation1())), 2, row);
+						if (count == 2 && getWorkSituation(check.getWorkSituation2()) != null)
+							checkInfoTable.add(getSmallText(", " + getWorkSituation(check.getWorkSituation2())), 2, row);
+					}
 				}
 			}
 		}
 
 		row++;
 
-		if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
-			checkInfoTable.add(getLocalizedSmallHeader("check.work_situation_1", "Work situation (parent 1)"), 1, row);
-			checkInfoTable.add(getSmallHeader(":"), 1, row);
-			checkInfoTable.add(getSmallText(getWorkSituation(check.getWorkSituation1())), 2, row++);
-		}
-		if (check != null && getWorkSituation(check.getWorkSituation2()) != null) {
-			checkInfoTable.add(getLocalizedSmallHeader("check.work_situation_2", "Work situation (parent 2)"), 1, row);
-			checkInfoTable.add(getSmallHeader(":"), 1, row);
-			checkInfoTable.add(getSmallText(getWorkSituation(check.getWorkSituation2())), 2, row++);
-		}
 		if (check != null && check.getMotherToungueMotherChild() != null) {
 			checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child", "Language mother-child"), 1, row);
 			checkInfoTable.add(getSmallHeader(":"), 1, row);
@@ -252,9 +275,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 			checkInfoTable.add(getSmallText(check.getMotherToungueParents()), 2, row);
 		}
 
-		frame.add(checkInfoTable);
-
-		return frame;
+		return checkInfoTable;
 	}
 
 	private Form getCheckForm(IWContext iwc, Check check, boolean isError) throws Exception {
@@ -268,39 +289,27 @@ public class CheckRequestAdmin extends CommuneBlock {
 			f.add(new HiddenInput(CitizenChildren.getChildIDParameterName(), user.getPrimaryKey().toString()));
 		}
 
-		Table frame = new Table(2, 2);
-		frame.setCellpadding(14);
+		Table frame = new Table(1, 5);
+		frame.setCellpadding(getCellpadding());
 		frame.setCellspacing(0);
-		frame.mergeCells(1, 2, 2, 2);
-		frame.setColor(getBackgroundColor());
-		frame.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
-		frame.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
-		frame.add(getLocalizedSmallText("check.requirements", "Requirements"), 1, 1);
+		frame.setWidth(Table.HUNDRED_PERCENT);
+		
+		frame.add(getLocalizedSmallHeader("check.requirements", "Requirements"), 1, 1);
 		frame.add(new Break());
 
 		Table ruleTable = new Table(2, 3);
-		ruleTable.setCellpadding(4);
+		ruleTable.setCellpadding(getCellpadding());
 		ruleTable.setCellspacing(0);
 
-		boolean rule1 = false;
-		boolean rule2 = false;
 		boolean rule3 = false;
 		boolean rule4 = false;
 		boolean rule5 = false;
 
 		if (check != null) {
-			rule1 = check.getRule1();
-			rule2 = check.getRule2();
 			rule3 = check.getRule3();
 			rule4 = check.getRule4();
 			rule5 = check.getRule5();
 		}
-
-		/*ruleTable.add(getCheckBox("1", rule1), 1, 1);
-		ruleTable.add(getRuleText(localize("check.nationally_registered", "Nationally registered"), rule1, isError), 2, 1);
-
-		ruleTable.add(getCheckBox("2", rule2), 1, 2);
-		ruleTable.add(getRuleText(localize("check.child_one_year", "Child one year of age"), rule2, isError), 2, 2);*/
 
 		ruleTable.add(getCheckBox("3", rule3), 1, 1);
 		ruleTable.add(getRuleText(localize("check.work_situation_approved", "Work situation approved"), rule3, isError), 2, 1);
@@ -312,27 +321,29 @@ public class CheckRequestAdmin extends CommuneBlock {
 		ruleTable.add(getRuleText(localize("check.need_for_special_support", "Need for special support"), rule5, isError), 2, 3);
 
 		frame.add(ruleTable, 1, 1);
-		frame.add(new Break(2), 1, 1);
-		frame.add(getSubmitButtonTable(), 1, 2);
 
-		frame.add(getLocalizedSmallText("check.notes", "Notes"), 2, 1);
-		frame.add(new Break(), 2, 1);
+		frame.add(getLocalizedSmallHeader("check.notes", "Notes"), 1, 2);
+		frame.add(new Break(), 1, 2);
 		TextArea notes = (TextArea) getStyledInterface(new TextArea(PARAM_NOTES));
-		if (check != null)
+		if (check != null && check.getNotes() != null)
 			notes.setValue(check.getNotes());
-		notes.setHeight(4);
-		notes.setWidth(50);
-		frame.add(notes, 2, 1);
-		frame.add(new Break(2),2,1);
+		notes.setRows(4);
+		notes.setColumns(65);
+		frame.add(notes, 1, 2);
 
-		frame.add(getLocalizedSmallText("check.user_notes", "User notes"), 2, 1);
-		frame.add(new Break(), 2, 1);
+
+		frame.add(getLocalizedSmallHeader("check.user_notes", "User notes"), 1, 3);
+		frame.add(new Break(), 1, 3);
 		TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
-		if (check != null)
+		if (check != null && check.getUserNotes() != null)
 			userNotes.setValue(check.getUserNotes());
-		userNotes.setHeight(4);
-		userNotes.setWidth(50);
-		frame.add(userNotes, 2, 1);
+		userNotes.setRows(4);
+		userNotes.setColumns(65);
+		frame.add(userNotes, 1, 3);
+
+		frame.setHeight(4, 6);
+		frame.add(getSubmitButtonTable(), 1, 5);
+
 		f.add(frame);
 
 		return f;
@@ -346,39 +357,34 @@ public class CheckRequestAdmin extends CommuneBlock {
 	 * @return CheckBox for the given rule
 	 */
 	private CheckBox getCheckBox(String ruleNumber, boolean checked) {
-		CheckBox rule = new CheckBox(PARAM_RULE, ruleNumber);
+		CheckBox rule = getCheckBox(PARAM_RULE, ruleNumber);
 		rule.setChecked(checked);
 		return rule;
 	}
 
 	private Text getRuleText(String ruleText, boolean ruleChecked, boolean isError) {
 		if (ruleChecked || !isError) {
-			return getText(ruleText);
+			return getSmallText(ruleText);
 		}
 		else {
-			return getErrorText(ruleText);
+			return getSmallErrorText(ruleText);
 		}
 	}
 
 	private Table getSubmitButtonTable() {
-		Table submitTable = new Table(4, 1);
+		Table submitTable = new Table(5, 1);
 		submitTable.setWidth(2, "3");
-		submitTable.setWidth(4, Table.HUNDRED_PERCENT);
-		submitTable.setWidth(Table.HUNDRED_PERCENT);
-		submitTable.setAlignment(4, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		submitTable.setWidth(4, "3");
 		submitTable.setCellpaddingAndCellspacing(0);
 
-		Image image = getResourceBundle().getLocalizedImageButton("check.grant_check", "Grant check");
-		SubmitButton grantButton = new SubmitButton(image, PARAM_GRANT_CHECK);
+		SubmitButton grantButton = (SubmitButton) getButton(new SubmitButton(localize("check.grant_check", "Grant check"), PARAM_GRANT_CHECK, "true"));
 		submitTable.add(grantButton, 1, 1);
 
-		image = getResourceBundle().getLocalizedImageButton("check.retrial", "Retrial");
-		SubmitButton retrialButton = new SubmitButton(image, PARAM_RETRIAL_CHECK);
+		SubmitButton retrialButton = (SubmitButton) getButton(new SubmitButton(localize("check.retrial", "Retrial"), PARAM_RETRIAL_CHECK, "true"));
 		submitTable.add(retrialButton, 3, 1);
 
-		image = getResourceBundle().getLocalizedImageButton("check.save", "Save");
-		SubmitButton saveButton = new SubmitButton(image, PARAM_SAVE_CHECK);
-		submitTable.add(saveButton, 4, 1);
+		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(localize("check.save", "Save"), PARAM_SAVE_CHECK, "true"));
+		submitTable.add(saveButton, 5, 1);
 
 		return submitTable;
 	}
@@ -400,6 +406,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 			viewCheck(iwc, check, true);
 			return;
 		}
+		
 		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted");
 		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
 		getCheckBusiness(iwc).approveCheck(check, subject, body, iwc.getCurrentUser());
@@ -461,6 +468,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 				break;
 			case 3 :
 				returnString = localize("check.seeking_work", "Seeking work");
+				break;
+			case 4 :
+				returnString = localize("check.parental_leave", "Parental leave");
 				break;
 			default :
 				returnString = null;

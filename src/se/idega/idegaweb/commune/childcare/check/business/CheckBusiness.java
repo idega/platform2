@@ -2,7 +2,9 @@ package se.idega.idegaweb.commune.childcare.check.business;
 
 import javax.ejb.*;
 
-public interface CheckBusiness extends com.idega.business.IBOService
+import com.idega.block.process.business.CaseBusiness;
+
+public interface CheckBusiness extends com.idega.business.IBOService, CaseBusiness
 {
  public int getCheckFee() throws java.rmi.RemoteException;
  public java.util.Collection findUnhandledChecks()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;

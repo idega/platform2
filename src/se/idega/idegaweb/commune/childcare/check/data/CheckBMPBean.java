@@ -55,7 +55,6 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 
 	public void initializeAttributes() {
-		//this.addAttribute(this.getIDColumnName());
 		addGeneralCaseRelation();
 
 		//    this.addAttribute(COLUMN_CHILD_CARE_TYPE,"Type of child care",Integer.class,MANY_TO_ONE,com.idega.block.school.data.SchoolType.class);
@@ -77,7 +76,6 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		this.addAttribute(COLUMN_RULE_4, "Control rule for dept", Boolean.class);
 		this.addAttribute(COLUMN_RULE_5, "Control rule for special need", Boolean.class);
 		this.addAttribute(COLUMN_USER_NOTES, "Notes to the user about the check request", String.class, 1000);
-		//    this.addManyToManyRelationShip(SampleEntity.class);
 	}
 
 	public String getCaseCodeKey() {
@@ -95,25 +93,6 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	public String[] getCaseStatusDescriptions() {
 		return CASE_STATUS_DESCRIPTIONS;
 	}
-
-	/*public void insertStartData(){
-	
-	  try{
-	    CheckHome home = (CheckHome)com.idega.data.IDOLookup.getHome(Check.class);
-	    Check check = home.create();
-	    check.setChildCareType(1);
-	    check.setWorkSituation1(2);
-	    check.setWorkSituation2(3);
-	    check.setChildId(4);
-	    check.setMethod(5);
-	    check.setAmount(2800);
-	    check.setCheckFee(1200);
-	    check.store();
-	  }
-	  catch(Exception e){
-	    e.printStackTrace(System.out);
-	  }
-	}*/
 
 	public void setChildCareType(int type) throws java.rmi.RemoteException {
 		this.setColumn(COLUMN_CHILD_CARE_TYPE, type);
