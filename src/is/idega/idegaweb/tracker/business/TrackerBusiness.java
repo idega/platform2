@@ -6,9 +6,12 @@ import is.idega.idegaweb.tracker.data.*;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.data.IBPage;
+import com.idega.util.idegaTimestamp;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import java.util.Map;
 import java.util.Hashtable; //synchronized
 import java.util.HashMap;//unsynchronized
+import java.util.ArrayList;//unsynchronized
 
 /**
  * Title:        is.idega.idegaweb.tracker.business.TrackerBusiness
@@ -29,7 +32,7 @@ public class TrackerBusiness {
   private static String TR_DOMAIN_CACHE_KEY = "tr.do";
 
   private static Map pages;
-  private static Map referrers;
+  private static Map referers;
   private static Map agents;
   private static Map domain;
 
@@ -40,8 +43,7 @@ public class TrackerBusiness {
     if( cm == null ) cm = IWCacheManager.getInstance(iwc.getApplication());
     if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
 
-    String sPageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
-    String sessionPageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+
 
 
     handlePageStats(iwc);
@@ -51,7 +53,29 @@ public class TrackerBusiness {
   }
 
   public static void handlePageStats(IWContext iwc){
-  //  iwc.getApplicationAttribute()
+    if( pages == null ){
+      pages = new HashMap();
+    }
+
+    int pageId = getCurrentPageId(iwc);
+    if(pageId!=-1){
+      PageStatistics page = new PageStatistics();
+
+      page.setPageId(pageId);
+      page.setPreviousPageId(pageId);/**@todo this shit here**/
+      page.setLocale(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
+      page.setUserId(iwc.getUserId());
+      page.setModificationDate(idegaTimestamp.getTimestampRightNow());
+      page.setGenerationTime(200);
+
+      ArrayList pageLog = (ArrayList) pages.get(String.valueOf(pageId));
+      if( pageLog == null ){
+        pageLog = new ArrayList();
+      }
+
+      pageLog.add(page);
+      pages.put(String.valueOf(page.getPageId()),pageLog);
+    }
 
 
   }
@@ -63,16 +87,21 @@ public class TrackerBusiness {
   }
 
   public static void handleReferrerStats(IWContext iwc){
-    String userAgent = iwc.getUserAgent();
-    if( agents == null ){ agents = new Hashtable();}
+    String referer = iwc.getReferer();
+    if( referers == null ){ referers = new Hashtable();}
 
-    UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
-    if( stats == null ){
-      stats = new UserAgentStatistics();
-      stats.setSessions(1);
-    }
-    else{
-      stats.setSessions(stats.getSessions()+1);
+    if(referer!=null){
+      ReferrerStatistics stats = (ReferrerStatistics) referers.get(referer);
+      if( stats == null ){
+       stats = new ReferrerStatistics();
+       stats.setReferrerUrl(referer);
+       stats.setSessions(1);
+       stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
+       referers.put(stats.getReferrerUrl(),stats);
+      }
+      else{
+        stats.setSessions(stats.getSessions()+1);
+      }
     }
   }
 
@@ -80,18 +109,54 @@ public class TrackerBusiness {
     String userAgent = iwc.getUserAgent();
     if( agents == null ){ agents = new Hashtable();}
 
-    UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
-    if( stats == null ){
-      stats = new UserAgentStatistics();
-      stats.setSessions(1);
-    }
-    else{
-      stats.setSessions(stats.getSessions()+1);
+    if(userAgent!=null){
+      UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
+      if( stats == null ){
+        stats = new UserAgentStatistics();
+        stats.setUserAgent(userAgent);
+        stats.setSessions(1);
+        stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
+        referers.put(stats.getUserAgent(),stats);
+      }
+      else{
+        stats.setSessions(stats.getSessions()+1);
+      }
     }
   }
 
-  public static void getCurrentPageHits(int pageId){
-   // cm.get
+  public static int getCurrentPageHits(IWContext iwc){
+    int pageId = getCurrentPageId(iwc);
+    int hits = 0;
+    if(pages!=null){
+      ArrayList pageLog = (ArrayList) pages.get(String.valueOf(pageId));
+      if(pageLog!=null) hits = pageLog.size();
+    }
+    return hits;
+  }
+
+  public static int getTotalPageHits(){
+    int hits = 0;
+    if(pages!=null){
+      hits = pages.size();
+    }
+    return hits;
+  }
+
+  public static int getCurrentPageId(IWContext iwc){
+    int returner = -1;
+    String pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+    if(pageId==null) pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+    try {
+     if(pageId!=null){
+      returner = Integer.parseInt(pageId);
+     }
+
+    }
+    catch (Exception ex) {
+    //do nothing
+    }
+
+    return returner;
   }
 
 }
