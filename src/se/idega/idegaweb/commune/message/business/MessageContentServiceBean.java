@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContentServiceBean.java,v 1.1 2004/10/11 13:35:42 aron Exp $
+ * $Id: MessageContentServiceBean.java,v 1.2 2004/10/12 06:57:51 laddi Exp $
  * Created on 7.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/11 13:35:42 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/12 06:57:51 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MessageContentServiceBean extends IBOServiceBean  implements MessageContentService{
     
@@ -69,7 +69,7 @@ public class MessageContentServiceBean extends IBOServiceBean  implements Messag
         return getValue(getHome().findByPrimaryKey(valueID));
     }
     
-    protected MessageContentValue getValue(MessageContent content) throws RemoteException, FinderException{
+    protected MessageContentValue getValue(MessageContent content) {
         MessageContentValue value = new MessageContentValue();
         value.ID = (Integer)content.getPrimaryKey();
         value.name = content.getContentName();
