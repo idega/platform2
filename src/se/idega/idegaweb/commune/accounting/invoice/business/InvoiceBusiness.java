@@ -18,7 +18,7 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord[] getInvoiceRecordsByInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
  public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNoPlacements(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public int getNoProviders(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,javax.ejb.FinderException,com.idega.data.IDOException, java.rmi.RemoteException;
+ public int getNoProviders(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
  public int getNumberOfHandledChildren(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
  public int getNumberOfInvoices(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome getPaymentHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;

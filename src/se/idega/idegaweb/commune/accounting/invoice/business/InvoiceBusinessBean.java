@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/06 12:09:45 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/06 14:38:56 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.98 $
+ * @version $Revision: 1.99 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -352,7 +352,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return batchRun;
 	}
 	
-	public int getNoProviders(BatchRun batchRun) throws RemoteException, FinderException, IDOException {
+	public int getNoProviders(BatchRun batchRun) throws RemoteException, IDOException {
 		Date period = batchRun.getPeriod();
 		String schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentHeaderHome().getProviderCountForSchoolCategoryAndPeriod(schoolCategoryID, period);
