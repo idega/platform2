@@ -1154,7 +1154,8 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       chooserWindow.setWidth(550);
       chooserWindow.setHeight(500);
       chooserWindow.setResizable(true);
-    Link chooser = new Link(new Image("/pics/list.gif",iwrb.getLocalizedString("select_apartment","Select appartment"),13,13),chooserWindow);
+    Link chooser = new Link(new Image("/pics/list.gif",iwrb.getLocalizedString("select_apartment","Select appartment"),13,13));
+		chooser.setWindowToOpen(ApartmentChooserWindow.class);
 
     form.add(HI);
     setStyle(name);

@@ -13,20 +13,16 @@ import com.idega.presentation.IWContext;
  * @version 1.1
  */
 
-public class BuildingEditorWindow extends IWAdminWindow {
+public class ApartmentChooserWindow extends IWAdminWindow {
 
-  public BuildingEditorWindow() {
+  public ApartmentChooserWindow() {
     super();
   }
 
   public void main(IWContext iwc) throws Exception{
-    BuildingEditor BE = new BuildingEditor();
+    ApartmentChooser BE = new ApartmentChooser();
     add(BE);
-    BE.setToIncludeLinks(false);
     setTitle("Building Editor");
     addTitle("Building Editor");
-    addHeaderObject(BE.getLinkTable(iwc));
-		setResizable(true);
-
   }
 }

@@ -204,13 +204,15 @@ public BuildingViewer(int building_id){
         typeImage = iwrb_.getImage("/building/default.jpg");
         typeImage.setHorizontalSpacing(6);
 
-      Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
+      /*Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
         typeWindow.setWidth(400);
         typeWindow.setHeight(550);
         typeWindow.setScrollbar(false);
+			*/
       Image moreImage = iwrb_.getImage("/building/more.gif");
       Image backImage = iwrb_.getImage("/building/back.gif");
-      Link typeLink = new Link(moreImage,typeWindow);
+      Link typeLink = new Link(moreImage);
+				typeLink.setWindowToOpen(ApartmentTypeWindow.class);
         typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING,types[a].getID());
 
       BackButton BB = new BackButton( backImage);
