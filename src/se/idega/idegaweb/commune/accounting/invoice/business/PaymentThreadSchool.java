@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/13 13:40:45 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/13 13:59:29 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.104 $
+ * @version $Revision: 1.105 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -153,7 +153,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						errorRelated.append(e);
 						throw new SchoolMissingVitalDataException("");
 					}
-					errorRelated.logToConsole();
+//					errorRelated.logToConsole();
 					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
 						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
 						Collection pupils = getSchoolClassMembers(school);
@@ -308,7 +308,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
 			errorRelated.append("Student P#"+schoolClassMember.getStudent().getPersonalID());
 		}
-		errorRelated.logToConsole();
+//		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
 		final boolean placementIsInValidGroup = schoolClassMember.getSchoolClass().getValid();
