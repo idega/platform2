@@ -35,7 +35,7 @@ public class StaffEntityBMPBean extends com.idega.data.GenericEntity implements 
       addAttribute(getColumnNameBeganWork(),"Began work",true,true,"java.sql.Date");
       addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
       setNullable(getColumnNameUserID(),false);
-      setNullable(getColumnNameImageID(),false);
+      //setNullable(getColumnNameImageID(),false);
       setAsPrimaryKey(getColumnNameUserID(),true);
       addManyToManyRelationShip(StaffLocalized.class,"ST_STAFF_LOCALIZED_STAFF");
     }

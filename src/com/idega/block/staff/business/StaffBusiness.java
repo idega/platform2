@@ -162,7 +162,13 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
     boolean update = false;
 
-
+		int staffImageID = -1;
+		try {
+			staffImageID = Integer.parseInt(imageID);
+		}
+		catch (NumberFormatException ne) {
+			staffImageID = -1;
+		}
 
     try {
 
@@ -190,7 +196,7 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
     }
 
-    if(imageID != null){
+    if(staffImageID != -1){
 
       staffToAdd.setImageID(Integer.parseInt(imageID));
 

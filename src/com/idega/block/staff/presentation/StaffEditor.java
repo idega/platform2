@@ -115,19 +115,19 @@ public StaffEditor(){
 
     TextInput title = new TextInput(StaffBusiness.PARAMETER_TITLE);
       title.setLength(24);
-      if ( locTexts != null ) {
+      if ( locTexts != null && locTexts.getTitle() != null ) {
         title.setContent(locTexts.getTitle());
       }
     addLeft(_iwrb.getLocalizedString("user_title","Title")+":",title,true);
 
     TextArea education = new TextArea(StaffBusiness.PARAMETER_EDUCATION,55,3);
-      if ( locTexts != null ) {
+      if ( locTexts != null && locTexts.getEducation() != null) {
         education.setContent(locTexts.getEducation());
       }
     addLeft(_iwrb.getLocalizedString("user_education","Education")+":",education,true);
 
     TextArea area = new TextArea(StaffBusiness.PARAMETER_AREA,55,3);
-      if ( locTexts != null ) {
+      if ( locTexts != null && locTexts.getArea() != null ) {
         area.setContent(locTexts.getArea());
       }
     addLeft(_iwrb.getLocalizedString("user_area","Area")+":",area,true);
@@ -135,9 +135,7 @@ public StaffEditor(){
     DateInput beganWork = new DateInput(StaffBusiness.PARAMETER_BEGAN_WORK);
       beganWork.setYearRange(new IWTimestamp().getYear()-60,new IWTimestamp().getYear());
       if ( _stamp != null ) {
-        beganWork.setDay(_stamp.getDay());
-        beganWork.setMonth(_stamp.getMonth());
-        beganWork.setYear(_stamp.getYear());
+        beganWork.setDate(_stamp.getDate());
       }
       beganWork.setStyleAttribute("style",STYLE);
     addLeft(_iwrb.getLocalizedString("user_began_work","Began work")+":",beganWork,true);
@@ -173,7 +171,7 @@ public StaffEditor(){
     ImageInserter image = new ImageInserter(StaffBusiness.PARAMETER_IMAGE_ID);
       image.setWindowClassToOpen(com.idega.block.media.presentation.MediaChooserWindow.class);
       image.setHasUseBox(false);
-      if ( entity != null )
+      if ( entity != null && entity.getImageID() != -1 )
         image.setImageId(entity.getImageID());
     addRight(_iwrb.getLocalizedString("image","Image")+":",image,true,false);
 
