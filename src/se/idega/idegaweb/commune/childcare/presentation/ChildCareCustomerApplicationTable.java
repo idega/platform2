@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.85 2005/02/02 18:54:55 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.86 2005/02/04 12:58:15 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -654,7 +654,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 */
 	private String createPagePhase2(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
-		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, sortApplications(applications, true));
+		SortedSet apps = sortApplications(applications, true);
+		if (apps.size() == 0) {
+			if (getEndPage() != null) {
+				iwc.forwardToIBPage(getParentPage(), getEndPage());
+				return "return true";
+			}
+		}
+		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, apps);
 
 		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
