@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.4 2003/10/15 11:25:18 anders Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.5 2003/10/15 13:10:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2003/10/15 11:25:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/15 13:10:27 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -91,11 +91,21 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 	}
 
 	public boolean getPaymentByInvoice() {
-		return ((Boolean) getColumnValue(COLUMN_PAYMENT_BY_INVOICE)).booleanValue();
+		Boolean b = (Boolean) getColumnValue(COLUMN_PAYMENT_BY_INVOICE);
+		if (b != null) {
+			return b.booleanValue();
+		} else {
+			return false;
+		}
 	}
 
 	public boolean getStateSubsidyGrant() {
-		return ((Boolean) getColumnValue(COLUMN_STATE_SUBSIDY_GRANT)).booleanValue();
+		Boolean b = (Boolean) getColumnValue(COLUMN_STATE_SUBSIDY_GRANT);
+		if (b != null) {
+			return b.booleanValue();
+		} else {
+			return false;
+		}
 	}
 
 	public String getPostgiro() {
