@@ -779,7 +779,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 		IWTimestamp earliestDate = IWTimestamp.RightNow();
-		earliestDate.addDays(-1);
 		dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
 		
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
