@@ -5,6 +5,8 @@
  */
 package se.idega.idegaweb.commune.presentation;
 
+import is.idega.idegaweb.member.presentation.UserSearcher;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,6 +21,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -44,17 +47,24 @@ public class CommuneUserLogin extends CommuneBlock {
 	public static final int METHOD_LOGIN = 2;
 	
 	private String searchString;
-	private String personalID;
+	private String personalID = null;
+	private String userID = null;
 	private int method = METHOD_SEARCH;
+	private String searchIdentifier = "commlogin";
+	private boolean useSearcher = true;
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
+		
 		parseAction(iwc);
 		
 		switch (method) {
 			case METHOD_SEARCH:
-				drawForm(iwc);
+				if(useSearcher)
+					drawForm2();
+				else
+					drawForm(iwc);
 				break;
 			case METHOD_LOGIN:
 				logIn(iwc);
@@ -90,6 +100,23 @@ public class CommuneUserLogin extends CommuneBlock {
 			
 		if (iwc.isParameterSet(PARAMETER_PERSONAL_ID))
 			personalID = iwc.getParameter(PARAMETER_PERSONAL_ID);
+		
+		String searcherUserPRM = UserSearcher.getUniqueUserParameterName(searchIdentifier);
+		if (iwc.isParameterSet(searcherUserPRM))
+			userID = iwc.getParameter(searcherUserPRM);
+	}
+	
+	private void drawForm2(){
+		Table table = new Table(1,3);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setHeight(2, 18);
+		UserSearcher searcher = new UserSearcher();
+		searcher.setUniqueIdentifier(searchIdentifier);
+		searcher.setBundleIdentifer(this.getBundleIdentifier());
+		searcher.maintainParameter(new Parameter(PARAMETER_METHOD,String.valueOf(METHOD_LOGIN)));
+		table.add(searcher,1,1);
+		add(table);
 	}
 	
 	private void drawForm(IWContext iwc) {
@@ -174,10 +201,19 @@ public class CommuneUserLogin extends CommuneBlock {
 	private void logIn(IWContext iwc) {
 		LoginBusinessBean business = new LoginBusinessBean();
 		try {
-			boolean canLogIn = business.logInAsAnotherUser(iwc, personalID);
+			boolean canLogIn = false;
+			User user = null;
+			if(personalID!=null){
+				canLogIn = business.logInAsAnotherUser(iwc, personalID);
+				user = getUserBusiness(iwc).getUser(personalID);
+			}
+			else if(userID!=null){
+				user = getUserBusiness(iwc).getUser(Integer.valueOf(userID));
+				canLogIn =  business.logInAsAnotherUser(iwc,user);
+			}
 			
-			if (canLogIn) {
-				User user = getUserBusiness(iwc).getUser(personalID);
+			if (canLogIn && user!=null) {
+				
 				Group group = user.getPrimaryGroup();
 				if ( user.getHomePageID() != -1 )
 					iwc.forwardToIBPage(getParentPage(), user.getHomePage());
@@ -196,11 +232,20 @@ public class CommuneUserLogin extends CommuneBlock {
 	private Form getBackTable() {
 		Form form = new Form();
 		form.add(new HiddenInput(PARAMETER_METHOD,String.valueOf(METHOD_SEARCH)));
-		form.add(localize("commune.login_error","Error logging in as user")+": "+personalID);
+		if(personalID!=null){
+			form.add(localize("commune.login_error","Error logging in as user")+": "+personalID);
+		}
+		else if (userID!=null){
+			form.add(localize("commune.login_error","Error logging in as user")+": "+userID);
+		}
 		form.add(new Break(2));
 		form.add(new SubmitButton(localize("back","Back")));
 		
 		return form;
+	}
+	
+	public void setToUseSearcher(boolean flag){
+		useSearcher = flag;
 	}
 	
 	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
