@@ -1,21 +1,23 @@
 package se.cubecon.bun24.viewpoint.presentation;
 
-import com.idega.data.IDOLookup;
 import com.idega.block.process.data.CaseCode;
+import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.ui.*;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.*;
 import com.idega.user.Converter;
-import com.idega.user.data.*;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.cubecon.bun24.viewpoint.business.ViewpointBusiness;
 import se.cubecon.bun24.viewpoint.data.*;
+import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
@@ -100,7 +102,13 @@ public class ViewpointForm extends CommuneBlock {
     public final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
     public final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
     public final static String VIEWPOINTS_DEFAULT = "Synpunkter";
+    public final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
+    public final static String GOBACKTOMYPAGE_DEFAULT
+        = "Gå tillbaka till min sida";
+
     public final static String UNKNOWN_PAGE = "Unknown Page";
+
+    private int userHomePageId = -1;    
 
 	public void main (final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -221,14 +229,15 @@ public class ViewpointForm extends CommuneBlock {
                 (getLocalizedString (CONFIRMSETHANDLER_KEY,
                                      CONFIRMSETHANDLER_DEFAULT));
 		text.setWidth (Table.HUNDRED_PERCENT);
-		final Table table = new Table (1, 1);
+		final Table table = new Table (1, 2);
         int row = 1;
 		table.setWidth (600);
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (text, 1, 1);
-		add (table);
+        table.add (text, 1, row++);
+        table.add (getUserHomePageLink (iwc), 1, row++);
+        add (table);
     }
 
     private void answerViewpoint (final IWContext iwc)
@@ -248,13 +257,14 @@ public class ViewpointForm extends CommuneBlock {
                 = new Text (getLocalizedString (CONFIRMANSWERSENT_KEY,
                                                 CONFIRMANSWERSENT_DEFAULT));
 		text.setWidth (Table.HUNDRED_PERCENT);
-		final Table table = new Table (1, 1);
+		final Table table = new Table (1, 2);
         int row = 1;
 		table.setWidth (600);
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (text, 1, 1);
+        table.add (text, 1, row++);
+        table.add (getUserHomePageLink (iwc), 1, row++);
 		add (table);
     }
 
@@ -324,13 +334,14 @@ public class ViewpointForm extends CommuneBlock {
                 = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
                                                 CONFIRMENTERVIEWPOINT_DEFAULT));
 		text1.setWidth (Table.HUNDRED_PERCENT);
-		final Table table = new Table (1, 1);
+		final Table table = new Table (1, 2);
         int row = 1;
 		table.setWidth (600);
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (text1, 1, 1);
+        table.add (text1, 1, row++);
+        table.add (getUserHomePageLink (iwc), 1, row++);
 		add (table);
     }
 
@@ -428,11 +439,21 @@ public class ViewpointForm extends CommuneBlock {
 		add (form);
 	}
 
+    private Link getUserHomePageLink (final IWContext iwc)
+        throws RemoteException {
+        final Text userHomePageText
+                = new Text (getLocalizedString (GOBACKTOMYPAGE_KEY,
+                                                GOBACKTOMYPAGE_DEFAULT));
+        final Link link = new Link (userHomePageText);
+        link.setPage(iwc.getCurrentUser ().getHomePageID ());
+        return (link);
+    }
+
     private String getLocalizedString (final String key, final String value) {
         return getResourceBundle ().getLocalizedString (key, value);
     }
 
-	private ViewpointBusiness getViewpointBusiness (IWContext iwc)
+	private ViewpointBusiness getViewpointBusiness (final IWContext iwc)
         throws RemoteException {
 		return (ViewpointBusiness)
                 IBOLookup.getServiceInstance(iwc, ViewpointBusiness.class);

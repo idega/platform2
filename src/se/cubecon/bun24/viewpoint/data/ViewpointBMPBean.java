@@ -48,7 +48,6 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public void insertStartData () {
         super.insertStartData ();
-        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
     }
 
     public void initializeAttributes () {
