@@ -4,14 +4,14 @@
 package is.idega.idegaweb.member.isi.block.reports.data;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
+import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.user.data.Group;
-import com.idega.user.data.User;
+import com.idega.user.data.GroupType;
 
 /**
- * Description: The list of board members in a club/division for a particular year<br>
+ * Description: The list of leagues and their info in the import files<br>
  * Copyright: Idega Software 2003 <br>
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
@@ -19,14 +19,17 @@ import com.idega.user.data.User;
 public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportGroup{
 	protected final static String ENTITY_NAME = "ISI_WR_GROUP";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
-	protected final static String COLUMN_NAME_USER_ID = "IC_USER_ID";
+	protected final static String COLUMN_NAME_GROUP_NAME = "NAME";
+	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "SHORT_NAME";
+	protected final static String COLUMN_NAME_GROUP_ID = "IC_GROUP_ID";
+	protected final static String COLUMN_NAME_GROUP_TYPE = "GROUP_TYPE";
 	protected final static String COLUMN_NAME_PERSONAL_ID = "PERSONAL_ID";
-	protected final static String COLUMN_NAME_NAME = "NAME";
-	protected final static String COLUMN_NAME_AGE = "AGE_FOR_YEAR";
-	protected final static String COLUMN_NAME_DATE_OF_BIRTH = "DATE_OF_BIRTH";
-	protected final static String COLUMN_NAME_GENDER = "GENDER";
-	protected final static String COLUMN_NAME_STATUS = "STATUS";//precident,vice president etc.
-	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";//precident,vice president etc.
+	protected final static String COLUMN_NAME_STREET_NAME = "STREET_NAME";
+	protected final static String COLUMN_NAME_POSTAL_CODE_ID = "POSTAL_CODE_ID";
+	protected final static String COLUMN_NAME_HOME_PHONE = "HOME_PHONE";
+	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
+	protected final static String COLUMN_NAME_FAX = "FAX";
+	protected final static String COLUMN_NAME_EMAIL = "EMAIL";
 	
 	
 	public WorkReportGroupBMPBean() {
@@ -36,17 +39,126 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
-		addAttribute(COLUMN_NAME_USER_ID, "User id",true,true,Integer.class,"one-to-one",User.class);
+		addAttribute(COLUMN_NAME_GROUP_NAME,"Name of group",true,true,String.class);
+		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME,"Short name of group",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"one-to-one",Group.class);
+		addAttribute(COLUMN_NAME_GROUP_TYPE, "Group type",true,true,String.class,"one-to-one",GroupType.class);
 		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
-		addAttribute(COLUMN_NAME_NAME,"Name from file",true,true,String.class,180);	
-		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
-		addAttribute(COLUMN_NAME_AGE, "The yearly age of the member",true,true,Integer.class);
-		addAttribute(COLUMN_NAME_GENDER,"Gender m/f",true,true,String.class,1);
-		addAttribute(COLUMN_NAME_STATUS,"Precident,vice president etc.",true,true,String.class,30);
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league/division connection, null then use club",true,true,Integer.class,"many-to-one",WorkReport.class);
+		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
+		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
+		addAttribute(COLUMN_NAME_HOME_PHONE,"Home phone number",true,true,String.class);
+		addAttribute(COLUMN_NAME_WORK_PHONE,"Work phone number",true,true,String.class);
+		addAttribute(COLUMN_NAME_FAX,"Fax number",true,true,String.class);
+		addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
 	}
+	
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+	
+	public int getReportId() {
+		return getIntColumnValue(COLUMN_NAME_REPORT_ID);
+	}
+
+	public void setReportId(int reportId) {
+		setColumn(COLUMN_NAME_REPORT_ID,reportId);
+	}
+	
+	public Integer getGroupId(){
+		return getIntegerColumnValue(COLUMN_NAME_GROUP_ID);
+	}
+	
+	public void setGroupId(int groupId){
+		setColumn(COLUMN_NAME_GROUP_ID,groupId);
+	}
+	
+	public String getGroupType() {
+		return getStringColumnValue(COLUMN_NAME_GROUP_TYPE);
+	}
+
+	public void setGroupType(String type) {
+		setColumn(COLUMN_NAME_GROUP_TYPE,type);
+	}
+	
+	public String getName() {
+		return getStringColumnValue(COLUMN_NAME_GROUP_NAME);
+	}
+
+	public void setName(String name) {
+		setColumn(COLUMN_NAME_GROUP_NAME,name);
+	}
+	
+	public String getShortName() {
+		return getStringColumnValue(COLUMN_NAME_GROUP_SHORT_NAME);
+	}
+	
+	public String getPersonalId() {
+		return getStringColumnValue(COLUMN_NAME_PERSONAL_ID);
+	}
+
+	public void setPersonalId(String pin) {
+		setColumn(COLUMN_NAME_PERSONAL_ID,pin);
+	}
+
+	public void setShortName(String name) {
+		setColumn(COLUMN_NAME_GROUP_SHORT_NAME,name);
+	}
+	
+	
+	
+	
+	public String getStreetName() {
+		return (String) getColumnValue(COLUMN_NAME_STREET_NAME);
+	}
+	public void setStreetName(String streetName) {
+		setColumn(COLUMN_NAME_STREET_NAME, streetName);
+	}
+	
+	public PostalCode getPostalCode() throws SQLException {
+		return (PostalCode) getColumnValue(COLUMN_NAME_POSTAL_CODE_ID);
+	}
+
+	public int getPostalCodeID() {
+		return getIntColumnValue(COLUMN_NAME_POSTAL_CODE_ID);
+	}
+
+	public void setPostalCode(PostalCode postalCode) {
+		setColumn(COLUMN_NAME_POSTAL_CODE_ID, postalCode);
+	}
+	public void setPostalCodeID(int postal_code_id) {
+		setColumn(COLUMN_NAME_POSTAL_CODE_ID, postal_code_id);
+	}
+	
+	public void setHomePhone(String number){
+		setColumn(COLUMN_NAME_HOME_PHONE, number);
+	}
+	
+	public String getHomePhone(){
+		return getStringColumnValue(COLUMN_NAME_HOME_PHONE);
+	}
+	
+	public void setWorkPhone(String number){
+		setColumn(COLUMN_NAME_WORK_PHONE, number);
+	}
+	
+	public String getWorkPhone(){
+		return getStringColumnValue(COLUMN_NAME_WORK_PHONE);
+	}
+	
+	public void setFax(String number){
+		setColumn(COLUMN_NAME_FAX, number);
+	}
+	
+	public String getFax(){
+		return getStringColumnValue(COLUMN_NAME_FAX);
+	}
+	
+	public void setEmail(String email){
+		setColumn(COLUMN_NAME_EMAIL, email);
+	}
+	
+	public String getEmail(){
+		return getStringColumnValue(COLUMN_NAME_EMAIL);
 	}
 	
 }

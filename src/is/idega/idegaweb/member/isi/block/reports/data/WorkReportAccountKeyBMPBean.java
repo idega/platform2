@@ -6,6 +6,8 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -94,6 +96,12 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	}
 	
 	
+	public Integer ejbFindAccountKeyByName(String name) throws FinderException{
+		return (Integer) idoFindOnePKByColumnBySQL(COLUMN_NAME_KEY_NAME,name);
+	}
 	
+	public Integer ejbFindAccountKeyByNumber(String number) throws FinderException{
+		return (Integer) idoFindOnePKByColumnBySQL(COLUMN_NAME_KEY_NUMBER,number);
+	}
 
 }

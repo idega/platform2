@@ -5,5 +5,8 @@ public interface WorkReportClubMemberHome extends com.idega.data.IDOHome
 {
  public WorkReportClubMember create() throws javax.ejb.CreateException;
  public WorkReportClubMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+ public java.util.Collection findAllClubMembersByWorkReportIdOrderedByMemberName(int p0)throws javax.ejb.FinderException;
+ public java.lang.String getFemaleGenderString();
+ public java.lang.String getMaleGenderString();
 
 }

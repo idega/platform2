@@ -13,6 +13,20 @@ public class WorkReportAccountKeyHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
+public WorkReportAccountKey findAccountKeyByName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportAccountKeyBMPBean)entity).ejbFindAccountKeyByName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public WorkReportAccountKey findAccountKeyByNumber(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportAccountKeyBMPBean)entity).ejbFindAccountKeyByNumber(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public WorkReportAccountKey findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportAccountKey) super.findByPrimaryKeyIDO(pk);
  }
