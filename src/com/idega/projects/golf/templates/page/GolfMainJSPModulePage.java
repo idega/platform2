@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.10 2001/06/05 22:45:46 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.11 2001/06/08 10:19:59 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -622,7 +622,7 @@ public class GolfMainJSPModulePage extends MainPage {
             table.setWidth(148);
             table.setHeaderText(iwrb.getLocalizedString("associates","Associates"));
 
-                Table innerTable = new Table(1,7);
+                Table innerTable = new Table(1,8);
                   innerTable.setWidth("100%");
                   innerTable.setColumnAlignment(1,"center");
 
@@ -633,6 +633,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			Link five = new Link(iwrb.getImage("/banners/ecco.gif"),"http://www.ecco.com");
 			Link three = new Link(iwrb.getImage("/banners/opinkerfi.gif"),"http://www.opinkerfi.is");
 			Link seven = new Link(iwrb.getImage("/banners/euro.gif"),"http://www.europay.is");
+			Link eight = new Link(iwrb.getImage("/banners/syn.gif"),"http://www.syn.is");
 
 			one.setTarget("_blank");
 			two.setTarget("_blank");
@@ -641,6 +642,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			five.setTarget("_blank");
 			six.setTarget("_blank");
 			seven.setTarget("_blank");
+			eight.setTarget("_blank");
 
 
 			innerTable.add(one,1,1);
@@ -650,6 +652,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			innerTable.add(five,1,5);
 			innerTable.add(six,1,6);
 			innerTable.add(seven,1,7);
+			innerTable.add(eight,1,8);
 
                 table.add(innerTable);
 
