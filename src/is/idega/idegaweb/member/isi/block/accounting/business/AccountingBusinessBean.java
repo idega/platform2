@@ -933,4 +933,13 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			return ListUtil.getEmptyList();
 		}
 	}
+
+	public Collection getFinanceEntriesByPaymentDateDivisionsAndGroups(Group club, String[] types, Timestamp paymentDate, Collection divisionsFilter, Collection groupsFilter){
+		try {
+			return getFinanceEntryHome().findAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,paymentDate,divisionsFilter,groupsFilter);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	}
 }
