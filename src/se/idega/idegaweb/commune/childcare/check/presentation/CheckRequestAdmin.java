@@ -414,7 +414,6 @@ public class CheckRequestAdmin extends CommuneBlock {
 		
 		StringBuffer subject = new StringBuffer(getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted"));
 		User child = getChild(iwc,check.getChildId());
-		System.out.println("User = " + child);
 		if (child != null) {
 			subject.append(" ");
 			subject.append(getResourceBundle(iwc).getLocalizedString("check.for","for"));
