@@ -172,11 +172,15 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   }
 
   public static void clearPrices(int productId, int currencyId) throws SQLException {
-    ProductPrice[] prices = getProductPrices(productId, -1, -1, -1, currencyId, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC);
-    for (int i = 0; i < prices.length; i++) {
-      prices[i].invalidate();
-      prices[i].update();
-    }
+  	clearPrices(productId, currencyId, null);
+  }
+  
+  public static void clearPrices(int productId, int currencyId, String key) throws SQLException{
+		ProductPrice[] prices = getProductPrices(productId, -1, -1, -1, currencyId, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, key);
+		for (int i = 0; i < prices.length; i++) {
+	  	prices[i].invalidate();
+	  	prices[i].update();
+		}
   }
 
   public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
@@ -187,22 +191,28 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return getProductPrices(productId, timeframeId, -1, netBookingOnly);
   }
 
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, String key) {
+		return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1, key);
+  }
+
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
-    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0);
+    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0, -1);
   }
+
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int[] visibility) {
-    return getProductPrices(productId, timeframeId, addressId, 0, -1, visibility);
+	return getProductPrices(productId, timeframeId, addressId, 0, -1, visibility, null);
   }
+
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int[] visibility, String key) {
+    return getProductPrices(productId, timeframeId, addressId, 0, -1, visibility, key);
+  }
+  
   public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
     return getMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
   }
 
   public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int currencyId) {
     return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId);
-  }
-
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus) {
-    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, -1);
   }
 
   /**
@@ -215,13 +225,41 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @return ProductPrice array
    */
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
+		return getProductPrices(productId, timeframeId, addressId,  netBookingOnly, countAsPersonStatus, currencyId, null);
+  }
+
+  /**
+   * @param productId Product id
+   * @param timeframeId Timeframe id
+   * @param addressId TravelAddress id
+   * @param netBookingOnly View netBookings only
+   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+   * @param currencyId Currency id
+   * @return ProductPrice array
+   */
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, String key) {
   	int[] visibility = new int[]{};
   	if (netBookingOnly) {
   		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC};	
   	}else {
   		visibility = new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE};	
   	}
-		return getProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility);	
+		return getProductPrices(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);	
+  }
+
+  /**
+   * @param productId Product id
+   * @param timeframeId Timeframe id
+   * @param addressId TravelAddress id
+   * @param netBookingOnly View netBookings only
+   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+   * @param currencyId Currency id
+   * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
+   * @param key used for special prices, default is null
+   * @return ProductPrice array
+   */
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility, String key) {
+		return getProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, key);
   }
 
   /**
@@ -235,7 +273,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @return ProductPrice array
    */
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int visibility) {
-		return getProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility});
+		return getProductPrices(productId, timeframeId, addressId, countAsPersonStatus, currencyId, new int[]{visibility}, null);
   }
 
   /**
@@ -248,10 +286,11 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @param visibility[] 1 = Private Prices, 2 = Public Prices, 3 Both Types
    * @return ProductPrice array
    */
-  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility) {
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String key) {
       ProductPrice[] prices = {};
       try {
-        String sql = getSQLQuery(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility);
+        String sql = getSQLQuery(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);
+        //System.out.println(sql);
         prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
@@ -286,6 +325,10 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   }
 
   private static String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility) {
+		return getSQLQuery(productId, timeframeId, addressId, countAsPersonStatus, currencyId, visibility, null);
+  }
+  
+  private static String getSQLQuery(int productId, int timeframeId, int addressId, int countAsPersonStatus, int currencyId, int[] visibility, String categoryKey) {
     ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
     PriceCategory category = (PriceCategory) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class);
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
@@ -349,6 +392,12 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 		    	SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameVisibility()+"="+visibility[i]);
       }
     	SQLQuery.append(")");
+    }
+		SQLQuery.append(" AND ").append(cTable).append(".").append(PriceCategoryBMPBean.getColumnNameKey());
+    if (categoryKey == null || categoryKey.equals("")) {
+    	SQLQuery.append(" is null");
+    } else {
+			SQLQuery.append(" = '").append(categoryKey).append("'");
     }
 //    if (visibility > 0 && visibility != 3) { 
 //			/** visibility == 3, applies applies to both 1 and 2 */
