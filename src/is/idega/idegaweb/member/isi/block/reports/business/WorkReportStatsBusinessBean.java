@@ -880,7 +880,13 @@ private String getRegionalUnionIdentifier(WorkReport report) {
 		regUniAbbr = report.getRegionalUnionName();
 	}
 	if(regUniAbbr==null){
-		regUniAbbr = report.getRegionalUnionGroupId().toString();
+		Integer groupId=report.getRegionalUnionGroupId();
+		if(groupId!=null){
+			regUniAbbr = groupId.toString();
+		}
+		else{
+			regUniAbbr="NONAME";
+		}
 	}
 	return regUniAbbr;
 }
