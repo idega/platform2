@@ -1,5 +1,5 @@
 /*
- * $Id: CurrentResidency.java,v 1.1 2001/06/21 16:21:18 palli Exp $
+ * $Id: CurrentResidency.java,v 1.2 2001/06/22 00:18:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,10 @@ public class CurrentResidency extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getName() {
+    return(getDescription());
   }
 
   public String getDescription() {
