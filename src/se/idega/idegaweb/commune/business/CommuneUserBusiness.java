@@ -34,6 +34,7 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
  public boolean hasCitizenAccount(int userID)throws RemoteException;
  public com.idega.core.data.Phone getChildHomePhone(User child) throws RemoteException;
+ public com.idega.core.data.Phone getChildHomePhone(int childId) throws RemoteException;
  public java.util.Collection getParentsForChild(User child) throws RemoteException;
  public java.util.Collection getChildrenForUser(User user) throws RemoteException;
  public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic() throws RemoteException;

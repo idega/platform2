@@ -492,6 +492,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return null;
 	}
 	
+	public Phone getChildHomePhone(int childId) throws RemoteException {
+		return getChildHomePhone(getUser(childId));
+	}
+	
 	public boolean getIfUserAddressesMatch(Address userAddress, Address userAddressToCompare) throws RemoteException {
 		if (((Integer)userAddress.getPrimaryKey()).intValue() == ((Integer)userAddressToCompare.getPrimaryKey()).intValue())
 			return true;
