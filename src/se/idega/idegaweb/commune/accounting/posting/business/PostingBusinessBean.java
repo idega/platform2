@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.50 2003/12/13 17:21:08 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.51 2003/12/13 17:25:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -346,8 +346,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author kelly
      */
 	public void savePostingParameter(String sppID,
-				Date periodeFrom, 
-				Date periodeTo,
+				Date periodFrom, 
+				Date periodTo,
 				String changedSign,
 				String activityID,
 				String regSpecTypeID,
@@ -378,7 +378,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEARS, "Ange skolårsintervall!");			
 			}
 			
-			if (periodeFrom == null || periodeTo == null) {
+			if (periodFrom == null || periodTo == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_NULL, "Datum måste fyllas i!");			
 			}
 
@@ -387,10 +387,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER, "Fel ordning bland skolåren!");			
 				}
 			}
-			if(periodeFrom == null || periodeTo == null) {
+			if(periodFrom == null || periodTo == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_MISSING, "Datum saknas!");			
 			}
-			if (periodeFrom.after(periodeTo)) {
+			if (periodFrom.after(periodTo)) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
 			}
 		
@@ -414,8 +414,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				parm7 = Integer.parseInt(studyPathID);
 
 				if (searchPP(
-						periodeFrom, 
-						periodeTo, 
+						periodFrom, 
+						periodTo, 
 						ownPostingString, 
 						doublePostingString,
 						parm1,
@@ -446,8 +446,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (pp == null) {
 					pp = home.create();
 				}
-				pp.setPeriodFrom(periodeFrom);
-				pp.setPeriodTo(periodeTo);
+				pp.setPeriodFrom(periodFrom);
+				pp.setPeriodTo(periodTo);
 				pp.setChangedSign(changedSign);
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
 				pp.setPostingString(ownPostingString);
@@ -513,14 +513,14 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					}
 				}
 				
-				if (pp.getPeriodeFrom() != null) {
-					if (pp.getPeriodeFrom().compareTo(from) == 0) {
+				if (pp.getPeriodFrom() != null) {
+					if (pp.getPeriodFrom().compareTo(from) == 0) {
 						eq++;
 					}
 				}
 				
-				if (pp.getPeriodeTo() != null) {
-					if (pp.getPeriodeTo().compareTo(to) == 0) {
+				if (pp.getPeriodTo() != null) {
+					if (pp.getPeriodTo().compareTo(to) == 0) {
 						eq++;
 					}
 				}
@@ -610,14 +610,14 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 
 
 	/**
-	 * Gets posting parameters for a certain periode
-	 * @param from periode (4 digits)
-	 * @param to periode (4 digits)
+	 * Gets posting parameters for a certain period
+	 * @param from period (4 digits)
+	 * @param to period (4 digits)
 	 * @return collection of posting parameters
 	 * @author Kjell
 	 * 
 	 */
-	public Collection findPostingParametersByPeriode(Date from, Date to) {
+	public Collection findPostingParametersByPeriod(Date from, Date to) {
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 			return home.findPostingParametersByPeriod(from, to);				
@@ -663,12 +663,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 	}
 	/**
-	 * Gets a posting parameter by a periode
+	 * Gets a posting parameter by a period
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters# 
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
-	public Object findPostingParameterByPeriode(Date from, Date to) throws FinderException {
+	public Object findPostingParameterByPeriod(Date from, Date to) throws FinderException {
 		// Move this
 		try {
 			PostingParametersHome home = getPostingParametersHome();

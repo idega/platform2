@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.29 2003/12/13 17:21:08 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.30 2003/12/13 17:25:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.29 2003/12/13 17:21:08 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.30 2003/12/13 17:25:46 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -205,7 +205,7 @@ public class PostingParameterList extends AccountingBlock {
 		try {
 			pBiz = getPostingBusiness(iwc);
 			int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
-			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
+			Collection items = pBiz.findPostingParametersByPeriod(_currentFromDate, _currentToDate);
 			if (items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
