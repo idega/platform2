@@ -114,6 +114,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_PLAYERS = "WorkReportStatsBusiness.players";
 	private static final String LOCALIZED_YEAR = "WorkReportStatsBusiness.year";
 	private static final String LOCALIZED_NO_REGIONAL_UNION_NAME = "WorkReportStatsBusiness.no_reg_un_name";
+	private static final String LOCALIZED_ORDERING = "WorkReportStatsBusiness.ordering";
 	
 	
 	// names of reportable fields
@@ -183,6 +184,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_MEMBERS = "members";
 	private static final String FIELD_NAME_PLAYERS = "players";
 	private static final String FIELD_NAME_YEAR = "year";
+	private static final String FIELD_NAME_ORDERING = "ordering";
 	
 	private static final int DEFAULT_SPLIT_AGE = 16;
 	
@@ -2269,7 +2271,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then iterate the map and insert into the final report collection.
 		HashSet clubSet = (clubsFilter==null)?(new HashSet()):(new HashSet(clubsFilter));
 		if(umfiClubsFilter!=null) {
-			clubSet.add(umfiClubsFilter);
+			clubSet.addAll(umfiClubsFilter);
 		}
 		if(clubSet.isEmpty()) {
 			clubSet = null;
@@ -2518,7 +2520,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubType.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_TYPE, "Club type"), currentLocale);
 		reportCollection.addField(clubType);
 		
-		ReportableField dummyOrderingField = new ReportableField("dummyField", String.class);
+		ReportableField dummyOrderingField = new ReportableField(FIELD_NAME_ORDERING, String.class);
+		dummyOrderingField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ORDERING, "Ordering"), currentLocale);
 		reportCollection.addField(dummyOrderingField);
 		
 		//selected year stuff
@@ -3258,8 +3261,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
-		ReportableField orderField = new ReportableField("only_used_for_ordering", String.class);
-		orderField.setLocalizedName("only_used_for_ordering", currentLocale);
+		ReportableField orderField = new ReportableField(FIELD_NAME_ORDERING, String.class);
+		orderField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ORDERING, "Ordering"), currentLocale);
 		reportCollection.addField(orderField);
 
 		ReportableField divisionName = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
@@ -4165,8 +4168,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		regionalUnionName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionName);
 		
-		ReportableField orderField = new ReportableField("only_used_for_ordering", String.class);
-		orderField.setLocalizedName("only_used_for_ordering", currentLocale);
+		ReportableField orderField = new ReportableField(FIELD_NAME_ORDERING, String.class);
+		orderField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ORDERING, "Ordering"), currentLocale);
 		reportCollection.addField(orderField);
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
@@ -4322,8 +4325,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
-		ReportableField orderField = new ReportableField("only_used_for_ordering", String.class);
-		orderField.setLocalizedName("only_used_for_ordering", currentLocale);
+		ReportableField orderField = new ReportableField(FIELD_NAME_ORDERING, String.class);
+		orderField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ORDERING, "Ordering"), currentLocale);
 		reportCollection.addField(orderField);
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
