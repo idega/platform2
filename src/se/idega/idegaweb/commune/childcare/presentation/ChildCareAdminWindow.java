@@ -964,7 +964,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		//int classID = archive.getSchoolClassMember().getSchoolClassId();
 
 		
-		if (getChildcareID() != -1) {
+		//if (getChildcareID() != -1) {
 			
 			if (!types.isEmpty()) {
 				Map typeGroupMap =getBusiness().getSchoolTypeClassMap(types,helper.getApplication().getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
@@ -976,7 +976,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					}
 				}
 			}
-		}
+		//}
 		
 		///SchoolClassMember currentClassMember = archive.getSchoolClassMember();
 		///if (currentClassMember !=null)
