@@ -26,6 +26,7 @@ private String textBgColor = "#CCCCCC";
 private boolean limitImageWidth = false;
 private boolean zoomView = false;
 private boolean linkOnImage = true;
+private boolean useCached = false;
 
 private int imageId = -1;
 private int maxImageWidth = 140;
@@ -67,11 +68,13 @@ public Image(String name,String url, String overImageUrl){
 
 
 private String getImageURL(ImageEntity image, ModuleInfo modinfo){
-  String URIString = com.idega.util.caching.BlobCacher.getCachedUrl(image, modinfo ,"image_value");
-  if( URIString == null ){
+  //String URIString = com.idega.util.caching.BlobCacher.getCachedUrl(image, modinfo ,"image_value");
+  //if( URIString == null ){
+
+    String URIString ;
     URIString = IWMainApplication.IMAGE_SERVLET_URL;
     URIString += image.getID()+"image?image_id="+image.getID();
-  }
+  //}else useCached = true;
   return URIString;
 }
 
@@ -247,9 +250,17 @@ private String getHTMLString(){
 
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
-    ImageEntity image = new ImageEntity(imageId);
+    ImageEntity image = null;
+    image = new ImageEntity(imageId);
     String URIString = getImageURL(image,modinfo);
     setURL(URIString);
+/*
+    if( useCached ){
+        print(getHTMLString());
+    }
+    else image = new ImageEntity(imageId);*/
+
+
 
     if( (image!=null) && (image.getID()!=-1) ){//begin debug
       String texti = image.getText();
