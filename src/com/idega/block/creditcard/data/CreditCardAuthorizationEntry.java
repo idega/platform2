@@ -21,7 +21,7 @@ public interface CreditCardAuthorizationEntry extends  IDOEntity {
 	
 	/**
 	 * Get the card expire date
-	 * @return Exiredate for card YYMM
+	 * @return Exiredate for card MMYY
 	 */
 	public String getCardExpires();
 	public String getCardNumber();
@@ -33,7 +33,8 @@ public interface CreditCardAuthorizationEntry extends  IDOEntity {
 	public String getErrorText();
 	
 	public String getExtraField();
-	
+
 	public int getParentID();
 	public CreditCardAuthorizationEntry getParent();
+	
 }
