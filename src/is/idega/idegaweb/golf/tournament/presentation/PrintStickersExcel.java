@@ -6,6 +6,7 @@ package is.idega.idegaweb.golf.tournament.presentation;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.util.IWTimestamp;
@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class PrintStickersExcel extends Block
+public class PrintStickersExcel extends GolfBlock
 {
 
 
@@ -89,15 +89,15 @@ public class PrintStickersExcel extends Block
 			int count = 0;
 			String tournName = tournament.getName();
 			StringBuffer data = new StringBuffer();
-			data.append("Mót"); data.append("\t");
-			data.append("Nafn"); data.append("\t");
-			data.append("Kennitala"); data.append("\t");
-			data.append("Klúbbur"); data.append("\t");
-			data.append("Flokkur"); data.append("\t");
-			data.append("Teigar"); data.append("\t");
-			data.append("Leikforgjöf");data.append("\t");
-			data.append("Rástími m/dagsetningu"); data.append("\t");
-			data.append("Rástími"); data.append("\t");
+			data.append(localize("tournament.tournament","Tournament")); data.append("\t");
+			data.append(localize("tournament.name","Name")); data.append("\t");
+			data.append(localize("tournament.ssn","Social security number")); data.append("\t");
+			data.append(localize("tournament.club","Club")); data.append("\t");
+			data.append(localize("tournament.group","Group")); data.append("\t");
+			data.append(localize("tournament.tee","Tee")); data.append("\t");
+			data.append(localize("tournament.gamehandicap","Gamehandicap"));data.append("\t");
+			data.append(localize("tournament.teetime_with_date","Teetime with date")); data.append("\t");
+			data.append(localize("tournament.teetime","Teetime")); data.append("\t");
 			data.append("\n");
 			out.write(data.toString().toCharArray());
 
@@ -169,10 +169,11 @@ public class PrintStickersExcel extends Block
 
 		  }
 		  catch(IOException io){
-			add("io villa");
+			add(getLocalizedMessage("tournament.io_exception","IO Exception"));
+			io.printStackTrace();
 		  }
 		  catch(SQLException sql){
-			add("sql villa");sql.printStackTrace();
+			add(localize("tournament.sql_exception","SQL Exception"));sql.printStackTrace();
 		  }
 		  finally {
 			com.idega.util.database.ConnectionBroker.freeConnection(Conn);
