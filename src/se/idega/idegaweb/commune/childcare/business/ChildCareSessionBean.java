@@ -123,7 +123,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 		_childcareID = -1;
 		if (user != null) {
 			try {
-				School school = getCommuneUserBusiness().getFirstManagingChildCareForUser(user);
+				School school = getCommuneUserBusiness().getProviderForUser(user);
 				if (school != null) {
 					_provider = school;
 					_childcareID = ((Integer) school.getPrimaryKey()).intValue();
