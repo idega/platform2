@@ -90,6 +90,13 @@ public ChildCareContract findValidContractByChild(int p0,java.sql.Date p1)throws
 	return this.findByPrimaryKey(pk);
 }
 
+public ChildCareContract findValidContractByProvider(int p0,java.sql.Date p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareContractBMPBean)entity).ejbFindValidContractByProvider(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public ChildCareContract findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ChildCareContract) super.findByPrimaryKeyIDO(pk);
  }
