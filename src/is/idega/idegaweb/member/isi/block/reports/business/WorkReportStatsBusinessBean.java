@@ -3467,25 +3467,23 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//Map clubMap = (Map) regionalUnionsClubMap.get(regionalUnionIdentifier);
 			ReportableData ruPlayers = (ReportableData) regionalUnionsStatsMap.get("a - players" + regionalUnionIdentifier);
 			ReportableData ruMembers = (ReportableData) regionalUnionsStatsMap.get("a - members" + regionalUnionIdentifier);
-			if(ruPlayers == null) {
-				if (showPlayers) {
-					ruPlayers = new ReportableData();
-					regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - players", ruPlayers);
-					ruPlayers.addData(regionalUnionName, regionalUnionIdentifier);
-					ruPlayers.addData(clubName, "");
-					ruPlayers.addData(countType, "a - players");
-					ruPlayers.addData(count, new Integer(0));
-					reportCollection.add(ruPlayers);
-				}
-				if(showMembers) {
-					ruMembers = new ReportableData();
-					regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - members", ruMembers);
-					ruMembers.addData(regionalUnionName, regionalUnionIdentifier);
-					ruMembers.addData(clubName, "");
-					ruMembers.addData(countType, "a - members");
-					ruMembers.addData(count, new Integer(0));
-					reportCollection.add(ruMembers);
-				}
+			if(ruPlayers == null && showPlayers) {
+				ruPlayers = new ReportableData();
+				regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - players", ruPlayers);
+				ruPlayers.addData(regionalUnionName, regionalUnionIdentifier);
+				ruPlayers.addData(clubName, "");
+				ruPlayers.addData(countType, "a - players");
+				ruPlayers.addData(count, new Integer(0));
+				reportCollection.add(ruPlayers);
+			}
+			if(ruMembers==null && showMembers) {
+				ruMembers = new ReportableData();
+				regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - members", ruMembers);
+				ruMembers.addData(regionalUnionName, regionalUnionIdentifier);
+				ruMembers.addData(clubName, "");
+				ruMembers.addData(countType, "a - members");
+				ruMembers.addData(count, new Integer(0));
+				reportCollection.add(ruMembers);
 			}
 			
 			if(showMembers) {
