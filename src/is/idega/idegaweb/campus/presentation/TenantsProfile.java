@@ -1,7 +1,6 @@
 package is.idega.idegaweb.campus.presentation;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
-import is.idega.idegaweb.campus.block.allocation.presentation.ContractReSignWindow;
 import is.idega.idegaweb.campus.block.allocation.presentation.ContractResignWindow;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
@@ -359,7 +358,7 @@ public class TenantsProfile extends CampusBlock {
 
     Link resignLink = new Link(getResourceBundle().getImage("resign.gif"));
       resignLink.addParameter("contract_id",contract.getPrimaryKey().toString());
-      resignLink.setWindowToOpen(ContractReSignWindow.class);
+      resignLink.setWindowToOpen(ContractResignWindow.class);
 
       resignLink.addParameter("contract_id",contract.getPrimaryKey().toString());
       resignLink.setWindowToOpen(ContractResignWindow.class);
