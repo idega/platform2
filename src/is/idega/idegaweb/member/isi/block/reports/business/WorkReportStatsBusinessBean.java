@@ -4,6 +4,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 
 import java.rmi.RemoteException;
+import java.text.Collator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -371,29 +372,31 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					String regionalUnionCode2 = (String) data2.getFieldValue(regionalUnionAbbreviation);
 					String clubName2 = (String) data2.getFieldValue(clubName);;
 					
+					Locale locale = new Locale("is","IS");
+					Collator collator = Collator.getInstance(locale);
+					
 					boolean sameLeague = league1==league2 || (league1!=null && league1.equals(league2));
 					if(!sameLeague) {
 						// not same league, sort by league first
-						return league1==null?-1:league1.compareTo(league2);
+						return collator.compare(league1, league2);
 					}
 					
 					int i1 = getInt(regionalUnionCode1);
 					int i2 = getInt(regionalUnionCode2);
 					if(i1!=-1 && i2!=-1) {
 						// sort by regional union second
-						int di = i1-i2;
-						if(di!=0) {
+						if(i1!=i2) {
 							// regional union code differs, sorting by that
-							return di;
+							return i1-i2;
 						}
 					}
 					
-					// regional unions differ or are invalid
-					int stri = regionalUnionCode1.compareTo(regionalUnionCode2);
+					// regional unions differ or are invalid, sort by club
+					int stri = collator.compare(regionalUnionCode1, regionalUnionCode2);
 					if(stri!=0) {
 						return stri;
 					}
-					return clubName1.compareTo(clubName2);
+					return collator.compare(clubName1, clubName2);
 				} catch(Exception e) {
 					//e.printStackTrace();
 					return 42;
