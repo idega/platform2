@@ -156,7 +156,7 @@ public class InitialData extends TravelManager {
     }else if (super.isTravelAdministrator(iwc)) {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
-        menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.tpos_properties","TPos Properties"));
+        menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.credidcard_properties","Creditcard Properties"));
     }
     menu.setToSubmit();
 
@@ -933,13 +933,13 @@ public class InitialData extends TravelManager {
           refNumberText2.setFontColor(super.BLACK);
 
       int inputSize = 40;
-      String inputSizeStr = "40";
+      String inputSizeStr = "260";
 
       TextInput name = new TextInput("reseller_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("reseller_description");
-        description.setWidth(inputSizeStr);
-        description.setHeight("5");
+      description.setWidth(inputSizeStr);
+      description.setHeight("80");
       TextInput address = new TextInput("reseller_address");
         address.setSize(inputSize);
       TextInput phone = new TextInput("reseller_phone");
