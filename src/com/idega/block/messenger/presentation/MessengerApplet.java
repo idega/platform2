@@ -300,23 +300,31 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       if( messages!= null) dispatchMessagesToDialogs(messages);
 
       Vector props = packetFromServlet.getProperties();
+      Vector userlist = null;
+      String listVersion = null;
+
       if( props!=null ){
         int length = props.size();
         for (int i = 0; i < length; i++) {
           if( ((Property)props.elementAt(i)).getKey().equals(USER_LIST) ){
-             Vector userlist = (Vector)((Property)props.elementAt(i)).getValue();
-             if( userlist!=null){
-               int length2 = userlist.size();
-               for (int k = 0; k < length2; k++) {
-                Property user = (Property)userlist.elementAt(k);
-                 addToUserList( user.getKey() , (String)user.getValue() );
-               }
-             }
+             userlist = (Vector)((Property)props.elementAt(i)).getValue();
           }
           else if (((Property)props.elementAt(i)).getKey().equals(USER_LIST_VERSION) ){
-           userListVersion = (String)((Property)props.elementAt(i)).getValue();
+           listVersion = (String)((Property)props.elementAt(i)).getValue();
           }
         }
+
+        if( (userlist!=null) && (userListVersion.equalsIgnoreCase(listVersion)) ){
+         int length2 = userlist.size();
+         for (int k = 0; k < length2; k++) {
+          Property user = (Property)userlist.elementAt(k);
+           addToUserList( user.getKey() , (String)user.getValue() );
+         }
+
+         System.out.println("MessengerApplet: userListVersion : "+userListVersion);
+
+        }
+
       }else System.out.println("MessengerApplet: PROPERTIES IS NULL");
 
     }else{
