@@ -1,5 +1,8 @@
 package com.idega.block.quote.presentation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.IWBlock;
 import com.idega.block.quote.business.QuoteHolder;
@@ -28,243 +31,309 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 
 public class Quote extends Block implements IWBlock {
 
-private int _quoteID = -1;
-private int _objectID = -1;
-private boolean _hasEditPermission = false;
-private int _iLocaleID;
-private int _row = 1;
+	private int _quoteID = -1;
+	private int _objectID = -1;
+	private boolean _hasEditPermission = false;
+	private int _iLocaleID;
+	private int _row = 1;
 
-private Table _myTable;
+	private Table _myTable;
 
-private String width_;
-private String height_;
-private String quoteStyle_;
-private String authorStyle_;
-private String originStyle_;
-private String alignment_ = Table.HORIZONTAL_ALIGN_CENTER;
+	private static final String QUOTE_STYLE_NAME = "quote";
+	private static final String ORIGIN_STYLE_NAME = "origin";
+	private static final String AUTHOR_STYLE_NAME = "author";
+	private static final String QUOTE_STYLE = "font-size:9px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
+	private static final String ORIGIN_STYLE = "font-size:10px;font-family:Arial,Helvetica,sans-serif;";
+	private static final String AUTHOR_STYLE = "font-size:9px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.quote";
-protected IWResourceBundle _iwrb;
-protected IWBundle _iwb;
+	private String width_;
+	private String height_;
+	private String quoteStyle_;
+	private String authorStyle_;
+	private String originStyle_;
+	private String alignment_ = Table.HORIZONTAL_ALIGN_CENTER;
 
-  public Quote(){
-    setDefaultValues();
-  }
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.quote";
+	protected IWResourceBundle _iwrb;
+	protected IWBundle _iwb;
 
-  public Quote(int quoteID){
-    this();
-    _quoteID = quoteID;
-  }
+	public Quote() {
+		setDefaultValues();
+	}
 
-  public void main(IWContext iwc) throws Exception {
-    _iwb = getBundle(iwc);
-    _iwrb = _iwb.getResourceBundle(iwc.getCurrentLocale());
-    _objectID = getICObjectInstanceID();
+	public Quote(int quoteID) {
+		this();
+		_quoteID = quoteID;
+	}
 
-    _hasEditPermission = iwc.hasEditPermission(this);
-    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+	public void main(IWContext iwc) throws Exception {
+		_iwb = getBundle(iwc);
+		_iwrb = _iwb.getResourceBundle(iwc.getCurrentLocale());
+		_objectID = getICObjectInstanceID();
 
-    drawTable();
-    QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc,_iLocaleID,_objectID);
-    if ( quote != null )
-      _quoteID = quote.getQuoteID();
+		_hasEditPermission = iwc.hasEditPermission(this);
+		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-    if ( _hasEditPermission )
-      _myTable.add(getAdminTable(iwc),1,_row++);
+		drawTable();
+		QuoteHolder quote = getQuoteBusiness().getRandomQuote(iwc, _iLocaleID, _objectID);
+		if (quote != null)
+			_quoteID = quote.getQuoteID();
 
-    _myTable.add(getQuoteTable(iwc,quote),1,_row);
-    add(_myTable);
-  }
+		if (_hasEditPermission)
+			_myTable.add(getAdminTable(iwc), 1, _row++);
 
-  private Table getQuoteTable(IWContext iwc,QuoteHolder quote) {
-    Table table = new Table();
-      table.setBorder(0);
-      table.setWidth("100%");
-      table.setHeight("100%");
+		_myTable.add(getQuoteTable(iwc, quote), 1, _row);
+		add(_myTable);
+	}
 
-    if ( quote != null ) {
-      table.setAlignment(1,1,"left");
-      table.setAlignment(1,3,"right");
+	private Table getQuoteTable(IWContext iwc, QuoteHolder quote) {
+		Table table = new Table();
+		table.setBorder(0);
+		table.setWidth("100%");
+		table.setHeight("100%");
 
-      String originString = quote.getOrigin();
-      String textString = quote.getText();
-      if ( textString == null ) {
-	    textString = "";
-      }
-      String authorString = quote.getAuthor();
-      if ( authorString == null || authorString.length() == 0 ) {
-	    authorString = _iwrb.getLocalizedString("unknown","Unknown");
-      }
+		if (quote != null) {
+			table.setAlignment(1, 1, "left");
+			table.setAlignment(1, 3, "right");
 
-      Text quoteOrigin = formatText(originString+":",originStyle_);
-      Text quoteText = formatText("\""+TextFormatter.formatText(textString,1,Table.HUNDRED_PERCENT)+"\"",quoteStyle_);
-	quoteText.setHorizontalAlignment(alignment_);
-      Text quoteAuthor = formatText("-"+Text.getNonBrakingSpace().getText()+authorString,authorStyle_);
+			String originString = quote.getOrigin();
+			String textString = quote.getText();
+			if (textString == null) {
+				textString = "";
+			}
+			String authorString = quote.getAuthor();
+			if (authorString == null || authorString.length() == 0) {
+				authorString = _iwrb.getLocalizedString("unknown", "Unknown");
+			}
 
-      if ( originString != null && originString.length() > 0 ) {
-	table.add(quoteOrigin,1,1);
-	    table.add(quoteText,1,2);
-	    table.add(quoteAuthor,1,3);
-	    table.setHeight(1,2,"100%");
-      }
-      else {
-	    table.mergeCells(1,1,1,2);
-	    table.setHeight(1,1,"100%");
-	    table.setVerticalAlignment(1,1,"middle");
+			Text quoteOrigin = getStyleText(originString + ":",ORIGIN_STYLE_NAME);
+			if ( this.originStyle_ != null )
+				quoteOrigin.setStyleAttribute(originStyle_);
+			
+			Text quoteText = getStyleText("\"" + TextFormatter.formatText(textString, 1, Table.HUNDRED_PERCENT) + "\"", QUOTE_STYLE_NAME);
+			quoteText.setHorizontalAlignment(alignment_);
+			if ( this.quoteStyle_ != null )
+				quoteText.setStyleAttribute(quoteStyle_);
+			
+			Text quoteAuthor = getStyleText("-" + Text.getNonBrakingSpace().getText() + authorString, AUTHOR_STYLE_NAME);
+			if ( this.authorStyle_ != null )
+				quoteAuthor.setStyleAttribute(authorStyle_);
 
-	table.add(quoteText,1,1);
-	    table.add(quoteAuthor,1,3);
-      }
-    }
-    else {
-      table.setAlignment(1,1,"center");
-      table.addText(_iwrb.getLocalizedString("no_quotes","No quotes in database..."));
-    }
+			if (originString != null && originString.length() > 0) {
+				table.add(quoteOrigin, 1, 1);
+				table.add(quoteText, 1, 2);
+				table.add(quoteAuthor, 1, 3);
+				table.setHeight(1, 2, "100%");
+			}
+			else {
+				table.mergeCells(1, 1, 1, 2);
+				table.setHeight(1, 1, "100%");
+				table.setVerticalAlignment(1, 1, "middle");
 
-    return table;
-  }
+				table.add(quoteText, 1, 1);
+				table.add(quoteAuthor, 1, 3);
+			}
+		}
+		else {
+			table.setAlignment(1, 1, "center");
+			table.addText(_iwrb.getLocalizedString("no_quotes", "No quotes in database..."));
+		}
 
-  private Table getAdminTable(IWContext iwc) {
-    Table table = new Table(3,1);
-      table.setCellpadding(0);
-      table.setCellspacing(0);
+		return table;
+	}
 
-    table.add(getCreateLink(iwc),1,1);
-    if ( _quoteID != -1 ) {
-      table.add(getEditLink(iwc),2,1);
-      table.add(getDeleteLink(iwc),3,1);
-    }
+	private Table getAdminTable(IWContext iwc) {
+		Table table = new Table(3, 1);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
 
-    return table;
-  }
+		table.add(getCreateLink(iwc), 1, 1);
+		if (_quoteID != -1) {
+			table.add(getEditLink(iwc), 2, 1);
+			table.add(getDeleteLink(iwc), 3, 1);
+		}
 
-  private void drawTable() {
-    _myTable = new Table();
-    _myTable.setCellpadding(0);
-    _myTable.setCellspacing(0);
-    _myTable.setWidth(width_);
-    if ( height_ != null )
-      _myTable.setHeight(height_);
-  }
+		return table;
+	}
 
-  private Text formatText(String string, String style) {
-    Text text = new Text(string);
-      text.setFontStyle(style);
-    return text;
-  }
+	private void drawTable() {
+		_myTable = new Table();
+		_myTable.setCellpadding(0);
+		_myTable.setCellspacing(0);
+		_myTable.setWidth(width_);
+		if (height_ != null)
+			_myTable.setHeight(height_);
+	}
 
-  private Link getCreateLink(IWContext iwc) {
-    Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif",_iwrb.getLocalizedString("new_quote","New Quote")));
-      link.setWindowToOpen(QuoteEditor.class);
-      link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_NEW);
-      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
-    return link;
-  }
+	private Link getCreateLink(IWContext iwc) {
+		Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif", _iwrb.getLocalizedString("new_quote", "New Quote")));
+		link.setWindowToOpen(QuoteEditor.class);
+		link.addParameter(QuoteBusiness.PARAMETER_MODE, QuoteBusiness.PARAMETER_NEW);
+		link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+		return link;
+	}
 
-  private Link getEditLink(IWContext iwc) {
-    Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/edit.gif",_iwrb.getLocalizedString("edit_quote","Edit Quote")));
-      link.setWindowToOpen(QuoteEditor.class);
-      link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_EDIT);
-      link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
-      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
-    return link;
-  }
+	private Link getEditLink(IWContext iwc) {
+		Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/edit.gif", _iwrb.getLocalizedString("edit_quote", "Edit Quote")));
+		link.setWindowToOpen(QuoteEditor.class);
+		link.addParameter(QuoteBusiness.PARAMETER_MODE, QuoteBusiness.PARAMETER_EDIT);
+		link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID, _quoteID);
+		link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+		return link;
+	}
 
-  private Link getDeleteLink(IWContext iwc) {
-    Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/delete.gif",_iwrb.getLocalizedString("delete_quote","Delete Quote")));
-      link.setWindowToOpen(QuoteEditor.class);
-      link.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_DELETE);
-      link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
-      link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
-    return link;
-  }
+	private Link getDeleteLink(IWContext iwc) {
+		Link link = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/delete.gif", _iwrb.getLocalizedString("delete_quote", "Delete Quote")));
+		link.setWindowToOpen(QuoteEditor.class);
+		link.addParameter(QuoteBusiness.PARAMETER_MODE, QuoteBusiness.PARAMETER_DELETE);
+		link.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID, _quoteID);
+		link.addParameter(QuoteBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+		return link;
+	}
 
-  private void setDefaultValues() {
-    width_ = "150";
-    originStyle_ = "font-size:7pt;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
-    quoteStyle_ = "font-size:8pt;font-family:Arial,Helvetica,sans-serif;";
-    authorStyle_ = "font-size:7pt;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
-  }
+	private void setDefaultValues() {
+		width_ = "150";
+	}
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 
-  public void setWidth(String width) {
-    width_ = width;
-  }
+	public void setWidth(String width) {
+		width_ = width;
+	}
 
-  public String getWidth() {
-    return width_;
-  }
+	public String getWidth() {
+		return width_;
+	}
 
-  public void setHeight(String height) {
-    height_ = height;
-  }
+	public void setHeight(String height) {
+		height_ = height;
+	}
 
-  public String getHeight() {
-    return height_;
-  }
+	public String getHeight() {
+		return height_;
+	}
 
-  public void setOriginStyle(String style) {
-    originStyle_ = style;
-  }
+	public void setOriginStyle(String style) {
+		originStyle_ = style;
+	}
 
-  public void setTextStyle(String style) {
-    quoteStyle_ = style;
-  }
+	public void setTextStyle(String style) {
+		quoteStyle_ = style;
+	}
 
-  public void setAuthorStyle(String style) {
-    authorStyle_ = style;
-  }
+	public void setAuthorStyle(String style) {
+		authorStyle_ = style;
+	}
 
-  public void setHorizontalAlignment(String alignment) {
-    alignment_ = alignment;
-  }
+	public void setHorizontalAlignment(String alignment) {
+		alignment_ = alignment;
+	}
 
-  public String getHorizontalAlignment() {
-    return alignment_;
-  }
+	public String getHorizontalAlignment() {
+		return alignment_;
+	}
 
-  public boolean deleteBlock(int ICObjectInstanceID) {
-    return false;
-  }
+	public boolean deleteBlock(int ICObjectInstanceID) {
+		return false;
+	}
 
-  public Object clone() {
-    Quote obj = null;
-    try {
-      obj = (Quote) super.clone();
-      if ( this._myTable != null ) {
-	  obj._myTable = (Table) this._myTable.clone();
-      }
-    }
-    catch (Exception ex) {
-      ex.printStackTrace(System.err);
-    }
-    return obj;
-  }
+	public Object clone() {
+		Quote obj = null;
+		try {
+			obj = (Quote) super.clone();
+			if (this._myTable != null) {
+				obj._myTable = (Table) this._myTable.clone();
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		return obj;
+	}
 
-  private QuoteBusiness getQuoteBusiness(){
-    return QuoteBusiness.getQuoteBusinessInstace();
-  }
+	private QuoteBusiness getQuoteBusiness() {
+		return QuoteBusiness.getQuoteBusinessInstace();
+	}
 
-  /** @deprecated */ public void setQuoteWidth(String width) { setWidth(width); }
-  /** @deprecated */ public void setQuoteWidth(int width) { setWidth(Integer.toString(width)); }
-  /** @deprecated */ public void setQuoteHeight(String height) { setHeight(height); }
-  /** @deprecated */ public void setQuoteHeight(int height) { setHeight(Integer.toString(height)); }
-  /** @deprecated */ public void setQuoteOriginStyle(String style) { setOriginStyle(style); }
-  /** @deprecated */ public void setQuoteTextStyle(String style) { setTextStyle(style); }
-  /** @deprecated */ public void setQuoteAuthorStyle(String style) { setAuthorStyle(style); }
-  /** @deprecated */ public void setQuoteOriginSize(String size) {}
-  /** @deprecated */ public void setQuoteOriginSize(int size) {}
-  /** @deprecated */ public void setQuoteOriginColor(String color) {}
-  /** @deprecated */ public void setQuoteOriginFace(String face) {}
-  /** @deprecated */ public void setQuoteTextSize(String size) {}
-  /** @deprecated */ public void setQuoteTextSize(int size) {}
-  /** @deprecated */ public void setQuoteTextColor(String color) {}
-  /** @deprecated */ public void setQuoteTextFace(String face) {}
-  /** @deprecated */ public void setQuoteAuthorSize(String size) {}
-  /** @deprecated */ public void setQuoteAuthorSize(int size) {}
-  /** @deprecated */ public void setQuoteAuthorColor(String color) {}
-  /** @deprecated */ public void setQuoteAuthorFace(String face) {}
+	/**
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public Map getStyleNames() {
+		HashMap map = new HashMap();
+		String[] styleNames = { QUOTE_STYLE_NAME, ORIGIN_STYLE_NAME, AUTHOR_STYLE_NAME };
+		String[] styleValues = { QUOTE_STYLE, ORIGIN_STYLE, AUTHOR_STYLE };
+
+		for (int a = 0; a < styleNames.length; a++) {
+			map.put(styleNames[a], styleValues[a]);
+		}
+
+		return map;
+	}
+
+	/** @deprecated */
+	public void setQuoteWidth(String width) {
+		setWidth(width);
+	}
+	/** @deprecated */
+	public void setQuoteWidth(int width) {
+		setWidth(Integer.toString(width));
+	}
+	/** @deprecated */
+	public void setQuoteHeight(String height) {
+		setHeight(height);
+	}
+	/** @deprecated */
+	public void setQuoteHeight(int height) {
+		setHeight(Integer.toString(height));
+	}
+	/** @deprecated */
+	public void setQuoteOriginStyle(String style) {
+		setOriginStyle(style);
+	}
+	/** @deprecated */
+	public void setQuoteTextStyle(String style) {
+		setTextStyle(style);
+	}
+	/** @deprecated */
+	public void setQuoteAuthorStyle(String style) {
+		setAuthorStyle(style);
+	}
+	/** @deprecated */
+	public void setQuoteOriginSize(String size) {
+	}
+	/** @deprecated */
+	public void setQuoteOriginSize(int size) {
+	}
+	/** @deprecated */
+	public void setQuoteOriginColor(String color) {
+	}
+	/** @deprecated */
+	public void setQuoteOriginFace(String face) {
+	}
+	/** @deprecated */
+	public void setQuoteTextSize(String size) {
+	}
+	/** @deprecated */
+	public void setQuoteTextSize(int size) {
+	}
+	/** @deprecated */
+	public void setQuoteTextColor(String color) {
+	}
+	/** @deprecated */
+	public void setQuoteTextFace(String face) {
+	}
+	/** @deprecated */
+	public void setQuoteAuthorSize(String size) {
+	}
+	/** @deprecated */
+	public void setQuoteAuthorSize(int size) {
+	}
+	/** @deprecated */
+	public void setQuoteAuthorColor(String color) {
+	}
+	/** @deprecated */
+	public void setQuoteAuthorFace(String face) {
+	}
 }
