@@ -183,7 +183,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 		data.addData(personalIDField, personalID );
 		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
 		 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
-		 		data.addData(amountEqualizedField, new Double(financeEntry.getAmountEqualized()) );
+		 		data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
 		 		data.addData(infoField, financeEntry.getInfo() );
 		 		data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
 			 		
