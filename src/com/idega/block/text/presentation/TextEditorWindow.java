@@ -79,7 +79,9 @@ public class TextEditorWindow extends IWAdminWindow{
       sTextId = modinfo.getParameter(prmTxTextId);
     }
     else if(modinfo.getParameter(prmAttribute)!=null){
+
       sAttribute = modinfo.getParameter(actSave);
+      System.err.println("TextEditor attribute "+sAttribute);
     }
     else if(modinfo.getParameter(prmDelete)!=null){
       sTextId = modinfo.getParameter(prmDelete);

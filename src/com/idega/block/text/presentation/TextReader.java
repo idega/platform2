@@ -23,32 +23,32 @@ public class TextReader extends JModuleObject{
 private boolean isAdmin=false;
 private TextModule text;
 
-private TxText txText;
-private LocalizedText locText;
+
 private String sLocaleId;
 private String sAttribute = null;
-private Table myTable = new Table(2,2);
 private String adminURL = "/text/textadmin.jsp";
 
-private String textBgColor = "#FFFFFF";
-private String textColor = "#000000";
-private String headlineBgColor = "#FFFFFF";
-private String headlineColor = "#000000";
+private int iTextId = -1;
 private int textSize = 2;
 private int tableTextSize = 1;
 private int headlineSize = 3;
 private String tableWidth = "";
-private boolean displayHeadline=true;
-private boolean enableDelete=true;
+private String textBgColor = "#FFFFFF";
+private String textColor = "#000000";
+private String headlineBgColor = "#FFFFFF";
+private String headlineColor = "#000000";
+private String tableAlignment = "top";
 private String textWidth = "100%";
 private String textStyle = "";
 private String headlineStyle = "";
+private boolean displayHeadline=true;
+private boolean enableDelete=true;
 private boolean reverse = false;
 private boolean crazy = false;
 private boolean viewall = false;
 private boolean newobjinst = false;
 private boolean newWithAttribute = false;
-private int iTextId = -1;
+
 public static String prmTextId = "txtr.textid";
 
 private IWBundle iwb;
@@ -56,15 +56,20 @@ private IWResourceBundle iwrb;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public TextReader(){
-    this.iTextId = -1;
+    textBgColor = "#FFFFFF";
+    textColor = "#000000";
+    headlineBgColor = "#FFFFFF";
+    headlineColor = "#000000";
   }
 
   public TextReader(String sAttribute){
+    this();
     this.iTextId = -1;
     this.sAttribute = sAttribute;
   }
 
   public TextReader(int iTextId){
+    this();
     this.iTextId = iTextId;
   }
 
@@ -73,6 +78,11 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     Locale locale = modinfo.getCurrentLocale();
+
+    TxText txText = null;
+    LocalizedText locText = null;
+    Table T = new Table(1,2);
+
     if(iTextId < 0){
       String sTextId = modinfo.getParameter(prmTextId );
       if(sTextId != null)
@@ -87,6 +97,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
     if ( sAttribute != null ){
+      System.err.println("TextReader attribute "+sAttribute);
       txText = TextFinder.getText(sAttribute);
       newWithAttribute = true;
     }
@@ -97,14 +108,87 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
     }
     if(locText != null){
-        textTable();
+        T.add(getTextTable(txText,locText),1,1);
     }
     if(isAdmin){
-      addAdminPart();
+      T.add(getAdminPart(iTextId,enableDelete,newobjinst,newWithAttribute),1,2);
     }
-    add(myTable);
+    else
+      T.mergeCells(1,1,1,2);
+
+    add(T);
   }
 
+  public ModuleObject getTextTable(TxText txText,LocalizedText locText) throws IOException,SQLException {
+    Table T = new Table(2,2);
+
+    T.setCellpadding(3);
+    T.setCellspacing(3);
+    T.mergeCells(1,1,2,1);
+    T.mergeCells(1,2,2,2);
+    T.setRowColor(1,headlineBgColor);
+    T.setRowColor(2,textBgColor);
+    T.setWidth(textWidth);
+
+    Text headline = new Text(locText.getHeadline());
+    headline.setFontSize(headlineSize);
+    headline.setFontColor(headlineColor);
+    headline.setBold();
+    headline.setAttribute("class","headlinetext");
+    headline.setFontStyle(headlineStyle);
+
+    String textBody = locText.getBody();
+
+    if ( reverse ) {
+      textBody = textReverse(textBody);
+    }
+    if ( crazy ) {
+      textBody = textCrazy(textBody);
+    }
+
+    textBody = formatText(textBody);
+
+    Text body = new Text(textBody);
+    body.setFontSize(textSize);
+    body.setFontColor(textColor);
+    body.setAttribute("class","bodytext");
+    body.setFontStyle(textStyle);
+
+    Image bodyImage;
+
+    //if ( text.getIncludeImage().equals("Y") ) {
+      //bodyImage = new Image(text.getImageId());
+    if ( txText.getIncludeImage() ) {
+      bodyImage = new Image(txText.getImageId());
+      bodyImage.setAttribute("align","right");
+      bodyImage.setAttribute("vspace","6");
+      bodyImage.setAttribute("hspace","6");
+
+      if ( displayHeadline ) {
+        T.add(bodyImage,1,2);
+      }
+      else {
+        T.add(bodyImage,1,1);
+      }
+    }
+
+    if ( displayHeadline ) {
+      if ( headline.getText() != null ) {
+      Anchor headlineAnchor = new Anchor(headline,headline.getText());
+      headlineAnchor.setFontColor(headlineColor);
+      T.add(headlineAnchor ,1,1);
+      T.add(body,1,2);
+      }
+    }
+    else {
+      T.mergeCells(1,1,1,2);
+      T.add(body,1,1);
+    }
+
+    return T;
+  }
+
+/*
   public void textTable() throws IOException,SQLException {
     myTable.setCellpadding(3);
     myTable.setCellspacing(3);
@@ -172,7 +256,8 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     }
 
   }
-
+*/
+/*
   public void addAdminPart(){
      Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.jmodule.object.Page.class);
       adminWindow.setWidth(570);
@@ -199,12 +284,49 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       else if(newWithAttribute){
         Link newAttributeLink = new Link(iwrb.getImage("new.gif"));
         newAttributeLink.setWindowToOpen(TextEditorWindow.class);
+        System.err.println(sAttribute);
         newAttributeLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
         myTable.add(newAttributeLink,1,3);
       }
 
   }
+*/
+  public ModuleObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute){
+    Table T = new Table();
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.jmodule.object.Page.class);
+    adminWindow.setWidth(570);
+    adminWindow.setHeight(430);
+    if(iTextId > 0){
+    Link breyta = new Link(iwrb.getImage("change.gif"));
+      breyta.setWindowToOpen(TextEditorWindow.class);
+      breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
+    T.add(breyta,1,3);
+    Link delete = new Link(iwrb.getImage("delete.gif"));
+      delete.setWindowToOpen(TextEditorWindow.class);
+      delete.addParameter(TextEditorWindow.prmDelete,iTextId);
+       if ( enableDelete ) {
+        T.add(delete,2,3);
+      }
+    }
+    if(newObjInst){
+      Link newObjectInstanceLink = new Link(iwrb.getImage("new.gif"));
+      newObjectInstanceLink.setWindowToOpen(TextEditorWindow.class);
+      newObjectInstanceLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
+      T.add(newObjectInstanceLink,1,3);
+    }
+    else if(newWithAttribute){
+      Link newAttributeLink = new Link(iwrb.getImage("new.gif"));
+      newAttributeLink.setWindowToOpen(TextEditorWindow.class);
+      newAttributeLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
+      T.add(newAttributeLink,1,3);
+    }
 
+    return T;
+
+  }
+/*
   public void noTextID() throws IOException,SQLException {
 
     //TextModule[] texts = (TextModule[]) (new TextModule()).findAll();
@@ -237,7 +359,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     myTable.add(text_heading,1,1);
 
   }
-
+*/
   public String formatText(String textBody) {
     //Búa til töflu
     if (textBody==null || textBody.equals("")) textBody = "";
@@ -447,7 +569,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
    * Sets alignment for the table around the text - added by gimmi@idega.is
    */
   public void setAlignment(String alignment) {
-    this.myTable.setAlignment(alignment);
+    this.tableAlignment = (alignment);
   }
 
   public void setWidth(String textWidth) {

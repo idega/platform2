@@ -267,8 +267,6 @@ public class TextBusiness{
           txText.addTo(objIns);
         }
       }
-
-
       t.commit();
     }
     catch(Exception e) {
