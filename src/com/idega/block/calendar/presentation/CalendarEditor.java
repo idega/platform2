@@ -192,7 +192,6 @@ public CalendarEditor(){
       entryDate.setYearRange(new idegaTimestamp().getYear()-5,new idegaTimestamp().getYear()+10);
       if(_stamp==null){
         _stamp = idegaTimestamp.RightNow();
-        System.err.println("_stamp is null");
       }
       entryDate.setDate(_stamp.getSQLDate());
       /*
