@@ -40,6 +40,8 @@ public ImageInserter(){
 
 public ImageInserter(int imageId) {
   this.imageId=imageId;
+  this.imSessionImageName="image_id";
+  this.sHiddenInputName = "image_id";
 }
 
 public ImageInserter(String imSessionImageName) {
