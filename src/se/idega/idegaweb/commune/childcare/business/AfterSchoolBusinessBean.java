@@ -61,29 +61,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		catch (FinderException e) {
 			return new ArrayList();
 		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
 	}
 	
 	public AfterSchoolChoice findChoicesByChildAndChoiceNumberAndSeason(Integer childID, int choiceNumber, Integer seasonID) throws FinderException {
-		try {
-			String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
-			return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID, caseStatus);
-		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
+		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
+		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID, caseStatus);
 	}
 	
 	public AfterSchoolChoice findChoicesByChildAndProviderAndSeason(int childID, int providerID, int seasonID) throws FinderException {
-		try {
-			String[] caseStatus = { getCaseStatusPreliminary().getStatus() };
-			return getAfterSchoolChoiceHome().findByChildAndProviderAndSeason(childID, providerID, seasonID, caseStatus);
-		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
+		String[] caseStatus = { getCaseStatusPreliminary().getStatus() };
+		return getAfterSchoolChoiceHome().findByChildAndProviderAndSeason(childID, providerID, seasonID, caseStatus);
 	}
 	
 	public boolean acceptAfterSchoolChoice(Object afterSchoolChoiceID, User performer) {
@@ -95,13 +82,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			return false;
 		}
 		
-		try {
-			changeCaseStatus(choice, getCaseStatusGranted().getStatus(), performer);
-		}
-		catch (RemoteException re) {
-			return false;
-		}
-		
+		changeCaseStatus(choice, getCaseStatusGranted().getStatus(), performer);
 		return true;
 	}
 	

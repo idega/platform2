@@ -1,11 +1,7 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.63 2004/03/03 09:48:51 anders Exp $
- *
- * Copyright (C) 2002 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * $Id: CitizenAccountBusinessBean.java,v 1.64 2004/03/05 16:16:54 laddi Exp $
+ * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
+ * proprietary information of Idega hf. Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.account.citizen.business;
 
@@ -44,6 +40,7 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.util.PIDChecker;
 
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.contact.data.Email;
@@ -72,13 +69,14 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/03/03 09:48:51 $ by $Author: anders $
- *
- * @author <a href="mail:palli@idega.is">Pall Helgason</a>
- * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.63 $
+ * Last modified: $Date: 2004/03/05 16:16:54 $ by $Author: laddi $
+ * 
+ * @author <a href="mail:palli@idega.is">Pall Helgason </a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
+ * @version $Revision: 1.64 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
+
 	private boolean acceptApplicationOnCreation = true;
 
 	protected CitizenAccountHome getCitizenAccountHome() throws RemoteException {
@@ -86,14 +84,22 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
 	/**
-	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
-	 * @param user The user that makes the application
-	 * @param ssn 	The PersonalId of the User to apply for.
-	 * @param email Email of the user
-	 * @param phoneHome the Home phone of the user
-	 * @param phoneWork the Work phone of the user
+	 * Creates an application for CitizenAccount for a user with a personalId
+	 * that is in the system.
+	 * 
+	 * @param user
+	 *          The user that makes the application
+	 * @param ssn
+	 *          The PersonalId of the User to apply for.
+	 * @param email
+	 *          Email of the user
+	 * @param phoneHome
+	 *          the Home phone of the user
+	 * @param phoneWork
+	 *          the Work phone of the user
 	 * @return Integer appliaction id or null if insertion was unsuccessful
-	 * @throws UserHasLoginException If A User already has a login in the system.
+	 * @throws UserHasLoginException
+	 *           If A User already has a login in the system.
 	 */
 	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork) throws UserHasLoginException {
 		CitizenAccount application = null;
@@ -262,7 +268,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			putChildren.setApplicationId(applicationId.intValue());
 			try {
 				putChildren.setCurrentCommuneID(Integer.parseInt(currentCommuneID));
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 			//putChildren.setCurrentKommun(currentKommun);
@@ -337,7 +344,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * Method getListOfUnapprovedApplications.
 	 * 
-	 * @return A {@link java.util.List List} of {@link se.idega.idegaweb.commune.citizen.data.AdminListOfApplications AdminListOfApplications} containing information about the unhandled applications in the system.
+	 * @return A {@link java.util.List List}of
+	 *         {@link se.idega.idegaweb.commune.citizen.data.AdminListOfApplications AdminListOfApplications}
+	 *         containing information about the unhandled applications in the
+	 *         system.
 	 */
 	public List getListOfUnapprovedApplications() {
 		Vector li = new Vector();
@@ -387,14 +397,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return li;
 	}
 
-	protected AccountApplication getApplication(int applicationID) throws RemoteException, FinderException {
+	protected AccountApplication getApplication(int applicationID) throws FinderException {
 		return getAccount(applicationID);
 	}
 
-	public CitizenAccount getAccount(int id) throws RemoteException, FinderException {
-		CitizenAccountHome home = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
-
-		return (CitizenAccount) home.findByPrimaryKeyIDO(new Integer(id));
+	public CitizenAccount getAccount(int id) throws FinderException {
+		try {
+			CitizenAccountHome home = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
+			return (CitizenAccount) home.findByPrimaryKeyIDO(new Integer(id));
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	protected Class getCaseEntityClass() {
@@ -419,21 +433,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
 			final CommuneUserBusiness userBusiness = getUserBusiness();
 			final String applicationReason = applicant.getApplicationReason();
-			final boolean notNackaResident = applicationReason != null && (
-					applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) ||
-					applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY) ||
-					applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY));
+			final boolean notNackaResident = applicationReason != null && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY) || applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY));
 			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
 			Integer communeId = null;
 			boolean isSweden = true;
 			try {
-				final CitizenApplicantPutChildrenHome putChildrenHome
-						= (CitizenApplicantPutChildrenHome) IDOLookup.getHome
-						(CitizenApplicantPutChildren.class);
-				final CitizenApplicantPutChildren putChildren
-						= putChildrenHome.findByApplicationId (applicationID);
-				communeId = new Integer (putChildren.getCurrentCommuneId ());
-			} catch (Exception e) {
+				final CitizenApplicantPutChildrenHome putChildrenHome = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
+				final CitizenApplicantPutChildren putChildren = putChildrenHome.findByApplicationId(applicationID);
+				communeId = new Integer(putChildren.getCurrentCommuneId());
+			}
+			catch (Exception e) {
 				// no problem, there's no home commune set
 				isSweden = false;
 			}
@@ -456,7 +465,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				address.setProvince(postalName);
 				address.setCity(postalName);
 				address.setStreetName(streetName);
-				if (null != communeId) address.setCommuneID (communeId.intValue ());
+				if (null != communeId)
+					address.setCommuneID(communeId.intValue());
 				address.store();
 				user.addAddress(address);
 			}
@@ -484,7 +494,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
 			if (applicant.hasCohabitant()) {
-				try{
+				try {
 					final CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
 					final CitizenApplicantCohabitant cohabitant = home.findByApplicationId(applicationID);
 					final String cohabitantSsn = cohabitant.getSsn();
@@ -494,7 +504,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
 						final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
 						familyLogic.setAsSpouseFor(user, cohabitantUser);
-						if (null != address) cohabitantUser.addAddress (address);
+						if (null != address)
+							cohabitantUser.addAddress(address);
 						final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 						phone.setNumber(cohabitant.getPhoneWork());
 						phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
@@ -505,7 +516,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						}
 					}
 				}
-				catch(FinderException fe){
+				catch (FinderException fe) {
 					//This is if no cohabitant record is found
 					fe.printStackTrace();
 				}
@@ -522,7 +533,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
 						familyLogic.setAsParentFor(user, childrenUser);
 						familyLogic.setAsCustodianFor(user, childrenUser);
-						if (null != address) childrenUser.addAddress (address);
+						if (null != address)
+							childrenUser.addAddress(address);
 						if (homePhone != null) {
 							childrenUser.addPhone(homePhone);
 						}
@@ -562,6 +574,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {
 		super.rejectApplication(applicationID, performer, reasonDescription);
 	}
+
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllAcceptedApplications()
 	 */
@@ -591,6 +604,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		 */
 		return null;
 	}
+
 	/**
 	 * Overrided from superclass
 	 */
@@ -634,13 +648,21 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
 	/**
-	 * Changes a password for CitizenAccount for a user and sends a letter and/or email.
-	 * @param loginTable LoginTable of the user
-	 * @param user User
-	 * @param newPassword Password in plain text (not already encrypted)
-	 * @param sendLetter True if a letter should be sent else false
-	 * @param sendEmail True if an email should be sent else false
-	 * @throws CreateException If changing of the password failed.
+	 * Changes a password for CitizenAccount for a user and sends a letter and/or
+	 * email.
+	 * 
+	 * @param loginTable
+	 *          LoginTable of the user
+	 * @param user
+	 *          User
+	 * @param newPassword
+	 *          Password in plain text (not already encrypted)
+	 * @param sendLetter
+	 *          True if a letter should be sent else false
+	 * @param sendEmail
+	 *          True if an email should be sent else false
+	 * @throws CreateException
+	 *           If changing of the password failed.
 	 */
 	public void changePasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword, boolean sendLetter, boolean sendEmail) throws CreateException {
 
@@ -686,7 +708,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		if (sendEmail)
 			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);
 		if ((messageLetter == null && sendLetter) || (messageEmail == null && sendEmail)) {
-			//do something: email or letter was not sent!     
+			//do something: email or letter was not sent!
 			throw new CreateException("Email or letter could not be created");
 		}
 	}
