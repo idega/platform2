@@ -29,7 +29,7 @@ public class Booker {
   }
 
   public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    return Book(serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
+    return Book(-1, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
   }
 
   public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {

@@ -149,9 +149,6 @@ public class InitialData extends TravelManager {
       Link chooseLink = new Link("T - use");
         chooseLink.addParameter(this.sAction, this.parameterChoose);
 
-      Link loginEdit = new Link("t - Change login");
-        loginEdit.setWindowToOpen(LoginChanger.class);
-
 
       Text suppText = (Text) theBoldText.clone();
         suppText.setText(iwrb.getLocalizedString("travel.suppliers","Suppliers"));
@@ -195,10 +192,10 @@ public class InitialData extends TravelManager {
         table.add(suppNameText,1,row);
 
 
-        pGroup = SupplierManager.getPermissionGroup(supps[i]);
+        //pGroup = SupplierManager.getPermissionGroup(supps[i]);
         try { // skoða eftir mat.......
-
-          users = UserGroupBusiness.getUsersContained(pGroup);
+          //users = UserGroupBusiness.getUsersContained(pGroup);
+          users = UserGroupBusiness.getUsersContained(new GenericGroup(supps[i].getGroupId()));
           if (users != null) {
             for (int j = 0; j < users.size(); j++) {
               if (j > 0) ++row;
@@ -227,7 +224,6 @@ public class InitialData extends TravelManager {
       ++row;
       SubmitButton newSupplier = new SubmitButton("new","admin_action","new");
       table.add(newSupplier,1,row);
-      table.add(loginEdit,1,row);
 
       return table;
   }

@@ -80,7 +80,7 @@ public class TravelWindow extends Window {
     table.add(header1,2,1);
     table.add(header2,2,1);
 
-    text.setFontColor(TravelManager.textColor);
+    text.setFontColor(TravelManager.backgroundColor);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
     iwrb = super.getResourceBundle(iwc);

@@ -22,6 +22,7 @@ public class Booking extends GenericEntity{
   public static int BOOKING_TYPE_ID_SUPPLIER_BOOKING = 3;
   public static int BOOKING_TYPE_ID_THIRD_PARTY_BOOKING = 4;
   public static int BOOKING_TYPE_ID_ADDITIONAL_BOOKING = 5;
+  public static int BOOKING_TYPE_ID_CORRECTION = 6;
 
   public Booking(){
           super();

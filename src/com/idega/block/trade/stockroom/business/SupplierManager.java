@@ -132,11 +132,25 @@ public class SupplierManager {
    * @deprecated
    */
   public static PermissionGroup getPermissionGroup(Supplier supplier) {
+    /**
+     * @todo Þarf að laga !!!
+     */
     PermissionGroup pGroup = null;
     try {
-      List list = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class),PermissionGroup.getNameColumnName(),supplier.getName()+" - admins",PermissionGroup.getGroupDescriptionColumnName(),SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, PermissionGroup.getGroupTypeColumnName(),"permission");
-      if (list != null) {
-        pGroup = (PermissionGroup) list.get(0);
+      PermissionGroup pg = PermissionGroup.getStaticPermissionGroupInstance();
+      GenericGroup group = new GenericGroup(supplier.getGroupId());
+      if (group.getGroupType().equals(pg.getGroupTypeValue()) ) {
+        pGroup = new PermissionGroup(group.getID());
+      }
+
+      if (pGroup == null && group != null) {
+        GenericGroup[] gGroups = group.getAllGroupsContainingThis();
+        for (int i = 0; i < gGroups.length; i++) {
+          if (gGroups[i].getGroupType().equals(pg.getGroupTypeValue()) ) {
+            pGroup = new PermissionGroup(group.getID());
+            break;
+          }
+        }
       }
 
     }catch (Exception e) {
@@ -144,6 +158,7 @@ public class SupplierManager {
     }
     return pGroup;
   }
+
 
   public static void invalidateSupplier(Supplier supplier) throws SQLException {
     supplier.setIsValid(false);

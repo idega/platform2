@@ -27,12 +27,16 @@ public class AdditionalBooking extends TravelWindow {
   public static String parameterSave = "addBookSave";
   public static String sAction = "addBookAction";
 
+  public static String correction = "correction";
+
+  private boolean isCorrection = false;
+
   TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
   Service service;
   idegaTimestamp stamp;
 
   public AdditionalBooking() {
-    super.setHeight(200);
+    super.setHeight(300);
     super.setWidth(400);
     super.setTitle("idegaWeb Travel");
   }
@@ -56,6 +60,11 @@ public class AdditionalBooking extends TravelWindow {
 
   private void initialize(IWContext iwc) {
     try {
+      String sCorrection = iwc.getParameter(this.correction);
+      if (sCorrection != null) {
+        if (sCorrection.equals("true"))
+        this.isCorrection = true;
+      }
         service = new Service(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
         stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
     }catch (SQLException sql) {
@@ -72,6 +81,17 @@ public class AdditionalBooking extends TravelWindow {
       ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
       PriceCategory category;
 
+      Text header = (Text) text.clone();
+        header.setFontSize(Text.FONT_SIZE_12_HTML_3);
+        header.setBold();
+      if (isCorrection) {
+        header.setText(iwrb.getLocalizedString("travel.correction","Correction"));
+        form.addParameter(this.correction, "true");
+      }else {
+        header.setText(iwrb.getLocalizedString("travel.extra_passenger","Extra passengers"));
+      }
+
+
       Text nameText = (Text) text.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name","name"));
       TextInput name = new TextInput("name");
@@ -87,6 +107,10 @@ public class AdditionalBooking extends TravelWindow {
         TotalPassTextInput.setSize(5);
       ResultOutput TotalTextInput = new ResultOutput("total","0");
         TotalTextInput.setSize(8);
+
+    ++row;
+    table.mergeCells(1,row,2,row);
+    table.add(header,1,row);
 
     ++row;
     table.add(nameText,1,row);
@@ -152,15 +176,23 @@ public class AdditionalBooking extends TravelWindow {
         for (int i = 0; i < manys.length; i++) {
             many = iwc.getParameter("priceCategory"+i);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+              if (isCorrection) {
+                manys[i] = -1 * Integer.parseInt(many);
+                iMany += -1 * Integer.parseInt(many);
+              }else {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
+              }
             }else {
                 manys[i] = 0;
             }
         }
 
-        //bookingId = Booker.Book(service.getID(), -1, "", name, "", "", "", "", stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING,"");
-        bookingId = Booker.Book(service.getID(),-1,"","",name,"","","","",stamp,iMany,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING,"");
+        int bookingTypeId = is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING;
+        if (isCorrection) {
+          bookingTypeId = is.idega.travel.data.Booking.BOOKING_TYPE_ID_CORRECTION;
+        }
+        bookingId = Booker.Book(service.getID(),-1,"","",name,"","","","",stamp,iMany,bookingTypeId,"");
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {

@@ -29,7 +29,8 @@ public class TravelManager extends Block {
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
 
-    public static String backgroundColor = "#003399";
+    public static String backgroundColor = "#1A4B8E";
+   // public static String backgroundColor = "#003399";
     public static String textColor = "#FFFFFF";
 //    public static String textColor = "#666699";
 

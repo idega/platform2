@@ -122,13 +122,8 @@ public class DailyReport extends TravelManager {
       Form form = new Form();
       Table topTable = getTopTable(iwc);
         form.add(topTable);
-      /*
-      ShadowBox sb = new ShadowBox();
-            sb.setWidth("90%");
-        form.add(sb);
-      */
+
         if (product != null) {
-//            form.setAlignment("center");
             form.add(getContentHeader(iwc));
           Table table = getContentTable(iwc);
             form.add(table);
@@ -181,12 +176,7 @@ public class DailyReport extends TravelManager {
 
 
       DropdownMenu trip = null;
-//      try {
         trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
-//      }catch (SQLException sql) {
-//        sql.printStackTrace(System.err);
-//       trip = new DropdownMenu(Product.getProductEntityName());
-//      }
 
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
@@ -301,6 +291,9 @@ public class DailyReport extends TravelManager {
 
       Text additionHText = (Text) theSmallBoldText.clone();
           additionHText.setText(iwrb.getLocalizedString("travel.addition","Addition"));
+
+      Text correctionHText = (Text) theSmallBoldText.clone();
+          correctionHText.setText(iwrb.getLocalizedString("travel.correction","Correction"));
 
       Text totalHText = (Text) theBoldText.clone();
           totalHText.setText(iwrb.getLocalizedString("travel.total","Total"));
@@ -511,6 +504,88 @@ public class DailyReport extends TravelManager {
       addTable.setColumnAlignment(5,"center");
 
 
+      //---------------------CORRECTION----------------------
+      Table correctionTable = new Table();
+        int corrRow = 0;
+          correctionTable.setWidth("100%");
+          correctionTable.setBorder(1);
+          correctionTable.setCellspacing(0);
+          correctionTable.setBorderColor(super.textColor);
+          correctionTable.setWidth(2,twoWidth);
+          correctionTable.setWidth(3,threeWidth);
+          correctionTable.setWidth(4,fourWidth);
+          correctionTable.setWidth(5,fiveWidth);
+
+      bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_CORRECTION);
+      for (int i = 0; i < bookings.length; i++) {
+          ++corrRow;
+          correctionTable.setRowColor(corrRow,super.backgroundColor);
+          correctionTable.setAlignment(2,corrRow,"center");
+          ibookings = bookings[i].getTotalCount();
+          attendance = bookings[i].getAttendance();
+          amount = Booker.getBookingPrice(bookings[i]);
+
+          totalBookings += ibookings;
+          totalAttendance += attendance;
+          totalAmount += amount;
+
+          nameText = (Text) smallText.clone();
+            nameText.setText(bookings[i].getName());
+
+          bookedText = (Text) smallText.clone();
+            bookedText.setText(Integer.toString(ibookings));
+
+          attTextBox = (TextInput) textBoxToClone.clone();
+            attTextBox.setSize(3);
+          if (attendance != 0) {
+            attTextBox.setContent(Integer.toString(attendance));
+          }
+          amountText = (Text) smallText.clone();
+            amountText.setText(Integer.toString((int) amount));
+
+          correctionTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,corrRow);
+          correctionTable.add(nameText,1,corrRow);
+
+          correctionTable.add(bookedText,3,corrRow);
+          correctionTable.add(attTextBox,4,corrRow);
+          correctionTable.add(amountText,5,corrRow);
+
+          if (closerLook)
+          try {
+            entries = bookings[i].getBookingEntries();
+            for (int j = 0; j < entries.length; j++) {
+              ++corrRow;
+              price = entries[j].getProductPrice();
+              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+
+              nameText = (Text) smallText.clone();
+                nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+              bookedText = (Text) smallText.clone();
+                bookedText.setText(Integer.toString(entries[j].getCount()));
+              amountText = (Text) smallText.clone();
+                amountText.setText(Integer.toString(iEntryCount));
+
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+              map.put(price.getPriceCategoryIDInteger(),entryCount);
+
+              correctionTable.add(nameText,2,corrRow);
+              correctionTable.add(bookedText,3,corrRow);
+              correctionTable.add(amountText,4,corrRow);
+              correctionTable.setAlignment(2,corrRow, "LEFT");
+            }
+
+
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
+
+      }
+      correctionTable.setColumnAlignment(1,"left");
+      correctionTable.setColumnAlignment(3,"center");
+      correctionTable.setColumnAlignment(4,"center");
+      correctionTable.setColumnAlignment(5,"center");
+
 
       Table totalTable = new Table();
           totalTable.setWidth("100%");
@@ -579,12 +654,18 @@ public class DailyReport extends TravelManager {
         link.addParameter(AdditionalBooking.parameterDate, stamp.toSQLDateString());
         link.setWindowToOpen(AdditionalBooking.class);
 
+      Link correctionLink = (Link) link.clone();
+        correctionLink.addParameter(AdditionalBooking.correction,"true");
+
       theTable.add(table);
       theTable.add(additionHText,1,2);
       theTable.add(link,1,2);
       theTable.setAlignment(1,2,"left");
       theTable.add(addTable,1,3);
-      theTable.add(totalTable,1,5);
+      theTable.add(correctionHText,1,4);
+      theTable.add(correctionLink,1,4);
+      theTable.add(correctionTable,1,5);
+      theTable.add(totalTable,1,7);
 
       SubmitButton submit = new SubmitButton("T update",this.sAction, this.parameterUpdate);
 
@@ -595,14 +676,15 @@ public class DailyReport extends TravelManager {
         open = new SubmitButton("T extra info",this.sAction, this.parameterYes);
       }
 
-      theTable.setAlignment(1,6,"right");
-      theTable.add(open,1,6);
-      theTable.add(submit,1,6);
+      theTable.setAlignment(1,8,"right");
+      theTable.add(open,1,8);
+      theTable.add(submit,1,8);
 
 
       return theTable;
 
   }
+
 
   private void update(IWContext iwc) {
     String[] booking_ids = (String[]) iwc.getParameterValues("booking_id");
