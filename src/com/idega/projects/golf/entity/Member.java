@@ -375,30 +375,20 @@ public class Member extends com.idega.data.genericentity.Member {
 	}
 
         public void setMainUnion(Union union) throws SQLException {
-// crap!
-            Connection conn = getConnection();
-            Statement stmtInitialize = conn.createStatement();
-            Statement stmtSetAsMain = conn.createStatement();
 
+          UnionMemberInfo[] unies = (UnionMemberInfo[]) (new UnionMemberInfo()).findAllByColumn("member_id",this.getID());
 
-            stmtInitialize.executeUpdate("update union_member_info set membership_type = 'sub' where member_id = "+getID());
+          for (int i = 0; i < unies.length; i++) {
+            if( unies[i].getID()!= union.getID() ) unies[i].setMembershipType("sub");
+            else {
+              unies[i].setMembershipType("main");
+              unies[i].setMemberStatus("A");
 
-            if(isMemberIn(union))
-                stmtSetAsMain.executeUpdate("update union_member set membership_type = 'main' where member_id = "+getID()+" and union_id = "+union.getID());
-            else
-                addTo(union, "membership_type", "main");
-
-            stmtInitialize.close();
-            stmtSetAsMain.close();
-
-            if (conn != null){
-              freeConnection(conn);
             }
-            //debug temporary fix
-            UnionMemberInfo uni = this.getUnionMemberInfo(union.getID());
-            if ( uni!=null ) uni.setMemberStatus("A");
-
+          }
 	}
+
+
 
 
 	public Union getMainUnion()throws SQLException{
@@ -451,15 +441,19 @@ public class Member extends com.idega.data.genericentity.Member {
 
 	public Union[] getUnions()throws SQLException{
 		Union union = new Union();
-		return (Union[]) findRelated(union);
+		return (Union[]) this.findRelated(union);
 		//return (Union[])union.findAll("select * from "+union.getEntityName()+" where "+this.getIDColumnName()+"='"+this.getID()+"' ");
 	}
 
 	public boolean isMemberIn(Union union)throws SQLException{
+          return isMemberInUnion(union);
+	}
+
+        public boolean isMemberInUnion(Union union)throws SQLException{
             int numRecords = getNumberOfRecords("select count (member_id) from union_member where union_id = "+union.getID()+" and member_id = "+this.getID());
 
             return (numRecords > 0);
-	}
+        }
 
         public boolean isMemberInUnion()throws SQLException{
             int numRecords = getNumberOfRecords("select count (member_id) from union_member where member_id = "+this.getID());

@@ -96,6 +96,10 @@ public class UnionMemberInfo extends GolfEntity {
             setColumn("member_status",member_status);
     }
 
+    public void setMemberStatus(char member_status){
+            setColumn("member_status",new Character(member_status));
+    }
+
     /**
      * A: active , I:inactive, H:On hold
      */
