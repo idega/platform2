@@ -24,6 +24,7 @@ public final static String SOURCE_ENTITY = "source_entity";
 public final static String RELATED_ENTITIES = "related_entities";
 public final static String ENTITY	= "entity";
 public final static String NAME = "name";
+public final static String ALIAS_NAME = "aliasName";
 public final static String VALUE = "value";
 public final static String BEANCLASS = "beanclass";
 public final static String FIELDS = "fields";
