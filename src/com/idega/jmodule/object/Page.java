@@ -96,6 +96,13 @@ public void setTopMargin(int topmargin){
 	setAttribute("topmargin",Integer.toString(topmargin));
 }
 
+public void setAllMargins(int allMargins){
+  setMarginWidth(allMargins);
+  setMarginHeight(allMargins);
+  setLeftMargin(allMargins);
+  setTopMargin(allMargins);
+}
+
 
 public String getTitle(){
 	return getName();
