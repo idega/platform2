@@ -46,6 +46,7 @@ public class RunChipNumberImportBean extends IBOServiceBean  implements RunChipN
 			String item;
 			int count = 1;
 			String chipBunchNumber = file.getFile().getName();
+			chipBunchNumber = chipBunchNumber.substring(chipBunchNumber.indexOf("_") + 1);
 			
 			RunHome runHome = (RunHome) IDOLookup.getHome(Run.class);
 			Collection runners = runHome.findAllWithoutChipNumber();
@@ -54,7 +55,7 @@ public class RunChipNumberImportBean extends IBOServiceBean  implements RunChipN
 				Iterator iterator = runners.iterator();
 				while ( !(item=(String)file.getNextRecord()).equals("") && iterator.hasNext() ) {
 					Run runner = (Run) iterator.next();
-					String chipNumber = file.getValueAtIndexFromRecordString(0, item);
+					String chipNumber = file.getValueAtIndexFromRecordString(1, item);
 					
 					runner.setChipNumber(chipNumber);
 					runner.setChipBunchNumber(chipBunchNumber);
