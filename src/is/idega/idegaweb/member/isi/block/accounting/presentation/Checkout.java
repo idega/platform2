@@ -77,6 +77,8 @@ public class Checkout extends CashierSubWindowTemplate {
 
     private final static int STATUS_REMOVE_ENTRIES = 10;
 
+    private final static int STATUS_UPDATE_DISCOUNT = 20;
+
     private final static int STATUS_DONE = 99;
 
     /**
@@ -100,6 +102,46 @@ public class Checkout extends CashierSubWindowTemplate {
                 }
             }
         } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDiscount(IWContext iwc) {
+        try {
+            Map entries = null;
+            entries = getBasketBusiness(iwc).getBasket();
+            if (entries != null && !entries.isEmpty()) {
+                Iterator it = entries.keySet().iterator();
+                int i = 0;
+
+                while (it.hasNext()) {
+                    FinanceEntry entry = (FinanceEntry) ((BasketEntry) entries
+                            .get(it.next())).getItem();
+                    
+                    StringBuffer label = new StringBuffer(LABEL_DISCOUNT);
+                    label.append("_");
+                    label.append(entry.getPrimaryKey().toString());
+                    
+                    String disc = iwc.getParameter(label.toString());
+                    if (disc != null) {
+                        int perc = Integer.parseInt(disc);
+                        double discAmount = Math.round(entry.getAmount() * (double) perc / 100.0);
+                        
+                        StringBuffer info = new StringBuffer(LABEL_DISCOUNT_INFO);
+                        info.append("_");
+                        info.append(entry.getPrimaryKey().toString());
+ 
+                        String discInfo = iwc.getParameter(info.toString());
+                        
+                        entry.setDiscountPerc(perc);
+                        entry.setDiscountAmount(discAmount);
+                        entry.setDiscountInfo(discInfo);
+                        entry.store();
+                    }
+                }
+            }
+        }
+        catch (RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -134,7 +176,11 @@ public class Checkout extends CashierSubWindowTemplate {
             return STATUS_REMOVE_ENTRIES;
         } else if (iwc.isParameterSet(ACTION_PAY)) {
             return STATUS_INSERT_PAYMENT_INFO;
-        } else if (iwc.isParameterSet(SelectPayments.ACTION_CHECKOUT)) { return STATUS_ADD_TO_BASKET; }
+        } else if (iwc.isParameterSet(SelectPayments.ACTION_CHECKOUT)) { 
+            return STATUS_ADD_TO_BASKET; 
+        } else if (iwc.isParameterSet(ACTION_UPDATE_DISCOUNT)) {
+            return STATUS_UPDATE_DISCOUNT;
+        }
 
         return STATUS_VIEW_BASKET;
     }
@@ -176,6 +222,10 @@ public class Checkout extends CashierSubWindowTemplate {
             addToBasket(iwc);
             viewBasket(iwc);
             break;
+        case STATUS_UPDATE_DISCOUNT:
+            updateDiscount(iwc);
+            viewBasket(iwc);
+            break;            
         default:
             viewBasket(iwc);
             break;
@@ -216,20 +266,15 @@ public class Checkout extends CashierSubWindowTemplate {
         Text labelPaymentType = new Text(iwrb.getLocalizedString(
                 LABEL_PAYMENT_TYPE, "Payment type"));
         labelPaymentType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelDiscountAmount = new Text(iwrb.getLocalizedString(LABEL_DISCOUNT_AMOUNT,
-                "Discount amount"));
+        Text labelDiscountAmount = new Text(iwrb.getLocalizedString(
+                LABEL_DISCOUNT_AMOUNT, "Discount amount"));
         labelDiscountAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelToPay = new Text(iwrb.getLocalizedString(LABEL_TO_PAY,
-        	"To pay"));
+                "To pay"));
         labelDiscountAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-        
-        
         SubmitButton pay = new SubmitButton(iwrb.getLocalizedString(ACTION_PAY,
                 "Pay"), ACTION_PAY, "pay");
-
-        //        int row = 1;
-        //        inputTable.add(pay, 1, row);
 
         Map entries = null;
         try {
@@ -240,8 +285,8 @@ public class Checkout extends CashierSubWindowTemplate {
 
         if (entries == null || entries.isEmpty()) {
             pay.setDisabled(true);
-        } 
-        
+        }
+
         int row = 1;
         CheckBox checkAll = new CheckBox("checkall");
         checkAll.setToCheckOnClick(LABEL_REMOVE_FROM_BASKET, "this.checked");
@@ -251,7 +296,9 @@ public class Checkout extends CashierSubWindowTemplate {
         paymentTable.add(labelGroup, 4, row);
         paymentTable.add(labelInfo, 5, row);
         paymentTable.add(labelAmount, 6, row);
+		paymentTable.setAlignment(6, row, "RIGHT");                    
         paymentTable.add(labelRemaining, 7, row);
+		paymentTable.setAlignment(7, row, "RIGHT");                    
         paymentTable.add(labelDiscount, 8, row);
         paymentTable.add(labelDiscountInfo, 9, row++);
 
@@ -263,9 +310,8 @@ public class Checkout extends CashierSubWindowTemplate {
         if (entries != null && !entries.isEmpty()) {
             Iterator it = entries.keySet().iterator();
             int i = 0;
-            
+
             while (it.hasNext()) {
-                i++;
                 FinanceEntry entry = (FinanceEntry) ((BasketEntry) entries
                         .get(it.next())).getItem();
                 CheckBox removeFromBasket = new CheckBox(
@@ -283,26 +329,43 @@ public class Checkout extends CashierSubWindowTemplate {
                 }
                 paymentTable.add(entry.getInfo(), 5, row);
                 paymentTable.add(nf.format(entry.getAmount()), 6, row);
-                paymentTable.add(nf.format(entry.getItemPrice().doubleValue()), 7, row);
+                paymentTable.add(nf.format(entry.getItemPrice().doubleValue()),
+                        7, row);
+                paymentTable.setAlignment(6, row, "RIGHT");            
+                paymentTable.setAlignment(7, row, "RIGHT");            
 
                 sumTotalRemaining += entry.getItemPrice().doubleValue();
                 sumTotalDiscount += entry.getDiscountAmount();
-                
-                if (entry.getDiscountPerc() == 0.0) {
-                    TextInput discInput = new TextInput(LABEL_DISCOUNT + "_" + i);
+
+                if (entry.getDiscountPerc() == 0.0 || entry.getAmountEqualized() == 0.0) {
+                    StringBuffer label = new StringBuffer(LABEL_DISCOUNT);
+                    label.append("_");
+                    label.append(entry.getPrimaryKey().toString());
+                    TextInput discInput = new TextInput(label.toString());
+                    discInput.setAsIntegers();
+                    if (entry.getDiscountPerc() != 0.0) {
+                        discInput.setValue((int)(Math.round(entry.getDiscountPerc())));
+                    }
                     paymentTable.add(discInput, 8, row);
                 } else {
                     paymentTable.add(entry.getDiscountInfo(), 8, row);
                 }
-                
-                if (entry.getDiscountInfo() == null) {
-                    TextInput discInfoInput = new TextInput(LABEL_DISCOUNT_INFO + "_" + i);
-                    paymentTable.add(discInfoInput, 9, row);                    
+
+                if (entry.getDiscountInfo() == null || entry.getAmountEqualized() == 0.0) {
+                    StringBuffer label = new StringBuffer(LABEL_DISCOUNT_INFO);
+                    label.append("_");
+                    label.append(entry.getPrimaryKey().toString());
+                    TextInput discInfoInput = new TextInput(label.toString());
+                    if (entry.getDiscountInfo() != null) {
+                        discInfoInput.setValue(entry.getDiscountInfo());
+                    }
+                    paymentTable.add(discInfoInput, 9, row);
                 } else {
                     paymentTable.add(entry.getDiscountInfo(), 9, row);
                 }
-                
+
                 row++;
+                i++;
             }
 
             SubmitButton removeFromBasket = new SubmitButton(iwrb
@@ -313,19 +376,20 @@ public class Checkout extends CashierSubWindowTemplate {
             paymentTable.setAlignment(8, row, "RIGHT");
 
             SubmitButton updateDiscount = new SubmitButton(iwrb
-                    .getLocalizedString(ACTION_UPDATE_DISCOUNT, "Update discount"),
-                    ACTION_UPDATE_DISCOUNT, "discount");
-//            removeFromBasket.setToEnableWhenChecked(LABEL_REMOVE_FROM_BASKET);
+                    .getLocalizedString(ACTION_UPDATE_DISCOUNT,
+                            "Update discount"), ACTION_UPDATE_DISCOUNT,
+                    "discount");
+            //            removeFromBasket.setToEnableWhenChecked(LABEL_REMOVE_FROM_BASKET);
             paymentTable.add(updateDiscount, 9, row);
             paymentTable.setAlignment(9, row, "RIGHT");
         }
-        
+
         row = 1;
         inputTable.add(labelRemaining, 1, row);
         inputTable.add(labelDiscountAmount, 2, row);
         inputTable.add(labelToPay, 3, row);
         inputTable.add(labelPaymentType, 4, row++);
-        
+
         inputTable.add(nf.format(sumTotalRemaining), 1, row);
         inputTable.add(nf.format(sumTotalDiscount), 2, row);
         TextInput toPayInput = new TextInput(LABEL_TO_PAY);
@@ -343,11 +407,11 @@ public class Checkout extends CashierSubWindowTemplate {
         SelectorUtility util = new SelectorUtility();
         if (types != null && !types.isEmpty()) {
             typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(
-                    typeInput, types, "getLocalizationKey");
+                    typeInput, types, "getLocalizationKey", iwrb);
         }
         inputTable.add(typeInput, 4, row);
         inputTable.add(pay, 5, row);
-        
+
         f.add(inputTable);
         f.add(paymentTable);
         f.maintainParameter(CashierWindow.ACTION);
@@ -357,65 +421,6 @@ public class Checkout extends CashierSubWindowTemplate {
 
         add(f);
     }
-
-/*    private void selectPaymentType(IWContext iwc) {
-        Form f = new Form();
-        IWResourceBundle iwrb = getResourceBundle(iwc);
-
-        Table inputTable = new Table();
-        inputTable.setCellpadding(5);
-
-        Text labelPaymentType = new Text(iwrb.getLocalizedString(
-                LABEL_PAYMENT_TYPE, "Payment type"));
-        labelPaymentType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
-                "Amount"));
-        labelAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-
-        SubmitButton pay = new SubmitButton(iwrb.getLocalizedString(
-                ACTION_ENTER_PAYMENT, "Pay"), ACTION_ENTER_PAYMENT, "pay");
-
-        Map entries = null;
-        try {
-            entries = getBasketBusiness(iwc).getBasket();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        Collection types = null;
-        try {
-            types = getAccountingBusiness(iwc).findAllPaymentTypes();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        DropdownMenu typeInput = new DropdownMenu(LABEL_PAYMENT_TYPE);
-        SelectorUtility util = new SelectorUtility();
-        if (types != null && !types.isEmpty()) {
-            typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(
-                    typeInput, types, "getLocalizationKey");
-        }
-
-        //        NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
-        //        nf.setMaximumFractionDigits(0);
-        int row = 1;
-        inputTable.add(labelPaymentType, 1, row);
-        inputTable.add(typeInput, 2, row++);
-        inputTable.add(labelAmount, 1, row);
-        TextInput amountInput = new TextInput(LABEL_AMOUNT);
-        amountInput.setAsIntegers();
-        inputTable.add(amountInput, 2, row++);
-        inputTable.add(pay, 2, row);
-        inputTable.setAlignment(2, row, "RIGHT");
-
-        f.add(inputTable);
-        f.maintainParameter(CashierWindow.ACTION);
-        f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-        f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
-        f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
-
-        add(f);
-    }*/
 
     // service method
     private UserBusiness getUserBusiness(IWContext iwc) {

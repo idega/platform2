@@ -103,10 +103,10 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		}
 		catch (IllegalArgumentException e) {
 			toTimestamp = new IWTimestamp(Long.parseLong(to));
-			toTimestamp.setHour(0);
-			toTimestamp.setMinute(0);
-			toTimestamp.setSecond(0);
-			toTimestamp.setMilliSecond(0);
+			toTimestamp.setHour(23);
+			toTimestamp.setMinute(59);
+			toTimestamp.setSecond(59);
+			toTimestamp.setMilliSecond(99);
 		}
 		
         if (group == null || "".equals(group)) {
@@ -278,6 +278,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		t.add(labelType, 4, row);
 		t.add(labelText, 5, row);
 		t.add(labelAmount, 6, row);
+		t.setAlignment(6, row, "RIGHT");
 		t.add(labelFrom, 7, row);
 		t.add(labelTo, 8, row++);
 

@@ -282,6 +282,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 					dataTable.add(labelInfo, 3, r);
 					dataTable.add(labelDate, 4, r);
 					dataTable.add(labelAmount, 5, r);
+					dataTable.setAlignment(5, r, "RIGHT");
 					dataTable.add(labelType, 6, r++);
 					
 					NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
@@ -305,6 +306,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 							dataTable.add(date.getDateString("dd.MM.yyyy"), 4, r);
 						}
 						dataTable.add(nf.format(entry.getAmount()), 5, r);
+						dataTable.setAlignment(5, r, "RIGHT");
 						if (entry.getTypeLocalizationKey() != null) {
 							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), entry.getTypeLocalizationKey()), 6, r);
 						}
@@ -320,7 +322,6 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		add(f);

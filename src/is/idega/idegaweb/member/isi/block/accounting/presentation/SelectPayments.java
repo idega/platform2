@@ -159,7 +159,9 @@ public class SelectPayments extends CashierSubWindowTemplate {
             paymentTable.add(labelGrp, 4, row);
             paymentTable.add(labelInfo, 5, row);
             paymentTable.add(labelAmount, 6, row);
-            paymentTable.add(labelRemaining, 7, row++);
+			paymentTable.setAlignment(6, row, "RIGHT");            
+            paymentTable.add(labelRemaining, 7, row);
+			paymentTable.setAlignment(7, row++, "RIGHT");            
 
             NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
             nf.setMaximumFractionDigits(0);
@@ -195,14 +197,14 @@ public class SelectPayments extends CashierSubWindowTemplate {
                     if (entry.getGroup() != null) {
                         paymentTable.add(entry.getGroup().getName(), 4, row);
                     }
-                    paymentTable.add(entry.getInfo(), 5, row);
+                    if (entry.getInfo() != null) {
+                        paymentTable.add(entry.getInfo(), 5, row);
+                    }
                     paymentTable.add(nf.format(entry.getAmount()), 6, row);
-                    paymentTable.add(nf.format(entry.getAmount()
-                            - entry.getAmountEqualized()), 7, row);
+                    paymentTable.add(nf.format(entry.getItemPrice().doubleValue()), 7, row);
 
                     sumAmount += entry.getAmount();
-                    sumRemaining += entry.getAmount()
-                            - entry.getAmountEqualized();
+                    sumRemaining += entry.getItemPrice().doubleValue();
 
                     paymentTable.setAlignment(6, row, "RIGHT");
                     paymentTable.setAlignment(7, row++, "RIGHT");
@@ -227,8 +229,9 @@ public class SelectPayments extends CashierSubWindowTemplate {
                         "checkout");
                 checkout.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
                 	checkout.setValueOnClick(CashierWindow.ACTION, CashierWindow.ACTION_CHECKOUT);
-                paymentTable.add(moveToBasket, 7, row);
+                paymentTable.add(moveToBasket, 6, row);
                 paymentTable.add(checkout, 7, row);
+                paymentTable.setAlignment(6, row, "RIGHT");
                 paymentTable.setAlignment(7, row, "RIGHT");
             }
         }

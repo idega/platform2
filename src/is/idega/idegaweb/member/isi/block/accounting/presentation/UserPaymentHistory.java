@@ -127,6 +127,7 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
             paymentTable.add(labelInfo, 4, row);
             paymentTable.add(labelType, 5, row);
             paymentTable.add(labelAmount, 6, row);
+			paymentTable.setAlignment(6, row, "RIGHT");            
             paymentTable.add(labelCashier, 7, row++);
 
             NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
@@ -158,6 +159,7 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
                     }
 
                     paymentTable.add(nf.format(entry.getAmount()), 6, row);
+                    paymentTable.setAlignment(6, row, "RIGHT");            
                     if (entry.getInsertedByUser() != null) {
                         paymentTable.add(entry.getInsertedByUser().getName(),
                                 7, row);

@@ -327,8 +327,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
-			t.add(delete, 8, row);
-			t.setAlignment(8, row, "RIGHT");
+			t.add(delete, 10, row);
+			t.setAlignment(10, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);

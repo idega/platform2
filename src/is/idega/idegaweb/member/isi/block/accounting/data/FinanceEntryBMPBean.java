@@ -587,7 +587,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
      * @see com.idega.block.basket.data.BasketItem#getPrice()
      */
     public Double getItemPrice() {
-        double remaining = getAmount() - getAmountEqualized();
+        double remaining = getAmount() - getAmountEqualized() - getDiscountAmount();
         
         return new Double(remaining);
     }

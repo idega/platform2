@@ -197,6 +197,10 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 
 	public Collection ejbFindAllValidByGroup(Group group) throws FinderException {
 		IWTimestamp date = IWTimestamp.RightNow();
+		date.setHour(0);
+		date.setMinute(0);
+		date.setSecond(0);
+		date.setMilliSecond(0);
 		
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
