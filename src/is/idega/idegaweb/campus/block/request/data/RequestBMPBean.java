@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBMPBean.java,v 1.2 2003/08/11 20:56:04 aron Exp $
+ * $Id: RequestBMPBean.java,v 1.3 2003/08/11 21:44:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -164,14 +164,14 @@ public class RequestBMPBean extends com.idega.data.GenericEntity implements is.i
   }
   
   public Collection ejbFindByType(String type) throws FinderException{
-  	return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnRequestType(),type));
+  	return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnRequestType(),type).appendOrderByDescending(getColumnDateSent()));
   }
   
   public Collection ejbFindByStatus(String status) throws FinderException{
-	  return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnStatus(),status));
+	  return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnStatus(),status).appendOrderByDescending(getColumnDateSent()));
 	}
 	
   public Collection ejbFindByUser(Integer user) throws FinderException{
-     return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnUserId(),user.intValue()));
+     return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnUserId(),user.intValue()).appendOrderByDescending(getColumnDateSent()));
   }
 }
