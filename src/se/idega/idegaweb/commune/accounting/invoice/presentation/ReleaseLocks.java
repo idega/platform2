@@ -21,9 +21,9 @@ public class ReleaseLocks extends AccountingBlock {
 	private static String CHILDCARE_KEY = "childcareKey";
 	private static String ELEMENTARY_KEY = "elementaryKey";
 	private static String HIGHSHOOL_KEY = "highschoolKey";
-	private String response;
 	public void init(IWContext iwc) {
-		response = null;
+		int row = 2;
+		boolean buttonDisplayed = false;
 		handleAction(iwc);
 		Form form = new Form();
 
@@ -31,34 +31,43 @@ public class ReleaseLocks extends AccountingBlock {
 
 		table.add(getLocalizedSmallHeader("release.Release", "Release"), 1, 1);
 
-		SubmitButton submitButton =
-			new SubmitButton(
-					getLocalizedString("release.childcare", "childcare", iwc),
-					PARAMETER,
-					CHILDCARE_KEY);
-		submitButton.setAsImageButton(true);
-		table.add(submitButton, 1, 2);
-		SubmitButton submitButton2 =
-			new SubmitButton(
-					getLocalizedString("release.elementary", "elementary", iwc),
-					PARAMETER,
-					ELEMENTARY_KEY);
-		submitButton2.setAsImageButton(true);
-		table.add(submitButton2, 1, 3);
-		SubmitButton submitButton3 =
-			new SubmitButton(
-					getLocalizedString("release.highschool", "highschool", iwc),
-					PARAMETER,
-					HIGHSHOOL_KEY);
-		submitButton3.setAsImageButton(true);
-		table.add(submitButton3, 1, 4);
-		
+		if(BatchRunSemaphore.isChildcareRunFlag()){
+			SubmitButton submitButton =
+				new SubmitButton(
+						getLocalizedString("release.childcare", "childcare", iwc),
+						PARAMETER,
+						CHILDCARE_KEY);
+			submitButton.setAsImageButton(true);
+			table.add(submitButton, 1, row++);
+			buttonDisplayed = true;
+		}
+		if(BatchRunSemaphore.isElementaryRunFlag()){
+			SubmitButton submitButton2 =
+				new SubmitButton(
+						getLocalizedString("release.elementary", "elementary", iwc),
+						PARAMETER,
+						ELEMENTARY_KEY);
+			submitButton2.setAsImageButton(true);
+			table.add(submitButton2, 1, row++);
+			buttonDisplayed = true;
+		}
+		if(BatchRunSemaphore.isHighRunFlag()){
+			SubmitButton submitButton3 =
+				new SubmitButton(
+						getLocalizedString("release.highschool", "highschool", iwc),
+						PARAMETER,
+						HIGHSHOOL_KEY);
+			submitButton3.setAsImageButton(true);
+			table.add(submitButton3, 1, row++);
+			buttonDisplayed = true;
+		}		
 		form.add(table);
-
-		if (response != null) {
-			form.add(getLocalizedText(response, response.replace('_', ' ')));
+		
+		if(!buttonDisplayed){
+			form.add(getLocalizedText("release.nothing is locked", "Nothing is locked"));
 			form.add(new Break());
 		}
+
 		add(form);
 	}
 

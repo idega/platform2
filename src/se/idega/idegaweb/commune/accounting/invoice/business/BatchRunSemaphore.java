@@ -51,4 +51,26 @@ public class BatchRunSemaphore {
 		highRunFlag = false;
 	}
 	
+	
+	/**
+	 * @return Returns the childcareRunFlag.
+	 */
+	public static boolean isChildcareRunFlag() {
+		return childcareRunFlag;
+	}
+
+	/**
+	 * @return Returns the elementaryRunFlag.
+	 */
+	public static boolean isElementaryRunFlag() {
+		return elementaryRunFlag;
+	}
+
+	/**
+	 * @return Returns the highRunFlag.
+	 */
+	public static boolean isHighRunFlag() {
+		return highRunFlag;
+	}
+
 }
