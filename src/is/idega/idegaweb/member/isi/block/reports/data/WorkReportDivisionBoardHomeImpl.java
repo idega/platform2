@@ -20,6 +20,13 @@ public java.util.Collection findAllWorkReportDivisionBoardByWorkReportId(int p0)
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public WorkReportDivisionBoard findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportDivisionBoardBMPBean)entity).ejbFindWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public WorkReportDivisionBoard findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportDivisionBoard) super.findByPrimaryKeyIDO(pk);
  }

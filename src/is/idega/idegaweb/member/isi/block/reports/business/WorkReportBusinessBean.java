@@ -753,7 +753,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		report.store();
 
 		//Store work-report division thingie........ HOW!!!???!!!		
-		//		getWork
+		Iterator it = leaguesMap.keySet().iterator();
+		while (it.hasNext()) {
+			Integer id = (Integer)it.next();
+			Integer val = (Integer)divPlayerCount.get(id);
+			
+			WorkReportDivisionBoard board = null;
+			try {
+				board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,id.intValue());
+			}
+			catch (FinderException e) {
+				try {
+					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().create();
+				}
+				catch (CreateException e1) {
+					e1.printStackTrace();
+					throw new WorkReportImportException("workreportimportexception.error_creating_division");
+				}
+			}	
+			
+			board.setNumberOfPlayers(val.intValue());		
+			board.store();
+		}
 
 		return true;
 	}
@@ -931,7 +952,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 				WorkReportDivisionBoard board = null;
 				try {
-					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,((Integer)group.getPrimaryKey()).intValue());
 				}
 				catch (FinderException e) {
 					try {
@@ -946,7 +967,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				board.setHomePage(homePage);
 				board.setPersonalId(ssn);
 				board.setStreetName(address);
-				//				board.setp
+				try {
+					PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(pnr, ((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+					board.setPostalCode(postal);
+				}
+				catch (FinderException e3) {
+					//e3.printStackTrace();
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
 				board.setFirstPhone(tel1);
 				board.setSecondPhone(tel2);
 				board.setFax(fax);

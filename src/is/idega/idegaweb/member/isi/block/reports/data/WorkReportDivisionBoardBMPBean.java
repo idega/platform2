@@ -2,15 +2,13 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
-import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 
 /**
@@ -191,4 +189,13 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 	public Collection ejbFindAllWorkReportDivisionBoardByWorkReportId(int reportId) throws FinderException {
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID, reportId);
 	}
+	
+	public Integer ejbFindWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int reportId, int groupId) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getEntityName());
+		sql.appendWhereEquals(COLUMN_NAME_GROUP_ID,groupId);
+		sql.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
+		
+		return (Integer) this.idoFindOnePKByQuery(sql);
+	}	
 }

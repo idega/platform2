@@ -6,5 +6,6 @@ public interface WorkReportDivisionBoardHome extends com.idega.data.IDOHome
  public WorkReportDivisionBoard create() throws javax.ejb.CreateException;
  public WorkReportDivisionBoard findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllWorkReportDivisionBoardByWorkReportId(int p0)throws javax.ejb.FinderException;
+ public WorkReportDivisionBoard findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int p0,int p1)throws javax.ejb.FinderException;
 
 }
