@@ -31,7 +31,9 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 	}
 
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
+		//addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
+		this.addManyToOneRelationship(getIDColumnName(), "Service_id", Service.class);
+		this.getAttribute(getIDColumnName()).setAsPrimaryKey(true);
 		addManyToManyRelationShip(PickupPlace.class);
 	}
 
