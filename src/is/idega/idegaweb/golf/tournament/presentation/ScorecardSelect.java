@@ -178,7 +178,7 @@ public class ScorecardSelect extends TournamentBlock {
 		orderTable.add(orderButton, 1, 1);
 
 		Form myForm = new Form();
-		myForm.setClassToInstanciateAndSendTo(GroupScorecardWindow.class);
+		myForm.setWindowToOpen(GroupScorecardWindow.class);
 		myForm.add(new HiddenInput("tournament_id", tournament_id));
 		myForm.add(new HiddenInput("tournament_round_id", tournament_round_id));
 
