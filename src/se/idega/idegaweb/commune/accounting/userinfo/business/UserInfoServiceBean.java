@@ -8,6 +8,7 @@ import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.idegaweb.member.business.NoSpouseFound;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -170,6 +171,10 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 				adults.add(familyLogic.getCohabitantFor(parent));
 			} catch (NoCohabitantFound e) {
 			}
+			try {
+				adults.add(familyLogic.getSpouseFor(parent));
+			} catch (NoSpouseFound e) {
+			}
 		}
 
 		//Loop through all adults
@@ -178,7 +183,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			User adult = (User)adultIter.next();
 			Iterator siblingsIter;
 			try {
-				siblingsIter = familyLogic.getChildrenFor(adult).iterator();
+				siblingsIter = familyLogic.getChildrenInCustodyOf (adult).iterator();
 				//Itterate through their kids
 				while(siblingsIter.hasNext())
 				{
@@ -192,9 +197,8 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 						if (null == siblingAddress) {
 							throw new SiblingOrderException ("Sibling " + sibling.getPersonalID() + " " + sibling.getName() + " has no Address");
 						}
-						if(childAddress.getPostalAddress().equals(siblingAddress.getPostalAddress()) &&
-							childAddress.getCity().equals(siblingAddress.getCity()) &&
-							childAddress.getStreetAddress().equals(siblingAddress.getStreetAddress())){
+						if(childAddress.getPostalCode().getPostalCode ().equals(siblingAddress.getPostalCode().getPostalCode ()) &&
+							childAddress.getStreetAddress().equalsIgnoreCase(siblingAddress.getStreetAddress())){
 
 							SortableSibling sortableSibling = new SortableSibling(sibling);
 							if(!sortedSiblings.contains(sortableSibling)){
