@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.108 2004/01/07 00:27:32 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.109 2004/01/07 09:30:53 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1738,6 +1738,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								ret.setOrderID(reg.getConditionOrder().intValue());
 								//			ret.setVat(32.0f);
 								//			ret.setVatRegulationID(1);
+							}
+							else {
+								throw new BruttoIncomeException("reg_exp.no_brutto_income", "Brutto income not registered");
 							}
 						}
 						else {
