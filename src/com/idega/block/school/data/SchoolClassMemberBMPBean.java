@@ -54,6 +54,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public int getClassMemberId(){
     return this.getIntColumnValue(MEMBER);
   }
+	public User getStudent() {
+		return (User) getColumnValue(MEMBER);	
+	}	
   public void setSchoolClassId(int id){
     this.setColumn(SCHOOLCLASS,id);
   }
@@ -150,6 +153,17 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
   
+	public Integer ejbFindByUserAndSchool(int userID, int schoolID) throws FinderException, RemoteException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
+		.appendWhere().append(" mb."+MEMBER).appendEqualSign().append(userID)
+		.appendAnd().append("cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+		//System.err.println(sql.toString());
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
+  
 	public Collection ejbFindAllByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
 		return ejbFindAllByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(),((Integer)season.getPrimaryKey()).intValue());
 	}
@@ -196,6 +210,19 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     //System.err.println(sql.toString());
     return super.idoFindPKsBySQL(sql.toString());
   }
+  
+	public Collection ejbFindBySchool(int schoolID, int schoolClassID) throws FinderException, RemoteException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl, ic_user u")
+		.appendWhere().append(" cl."+SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID)
+		.appendAndEquals("u.ic_user_id", "mb."+this.MEMBER)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+		if (schoolClassID != -1)
+			sql.appendAndEquals("mb."+SCHOOLCLASS, schoolClassID);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
   
   public Collection ejbFindAllBySeasonAndMaximumAge(int seasonID,int maxAge)throws FinderException,RemoteException{
         final StringBuffer sql = new StringBuffer ();

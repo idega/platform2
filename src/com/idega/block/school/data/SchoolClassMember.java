@@ -12,6 +12,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public int getRegistratorId();
  public int getSchoolClassId();
  public boolean getSpeciallyPlaced();
+ public com.idega.user.data.User getStudent();
  public void initializeAttributes();
  public void setClassMemberId(int p0);
  public void setLanguage(java.lang.String p0);

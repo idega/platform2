@@ -981,6 +981,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public Collection findStudentsInSchool(int schoolID, int schoolClassID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID);
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
 
 	public Collection findStudentsBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws RemoteException {
 		try {
@@ -1192,8 +1201,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 			schoolClass.setSchoolClassName(className);
 			schoolClass.setSchoolId(schoolID);
-			schoolClass.setSchoolSeasonId(schoolSeasonID);
-			schoolClass.setSchoolYearId(schoolYearID);
+			if (schoolSeasonID != -1)
+				schoolClass.setSchoolSeasonId(schoolSeasonID);
+			if (schoolYearID != -1)
+				schoolClass.setSchoolYearId(schoolYearID);
 			if (teacherID != -1)
 				schoolClass.setTeacherId(teacherID);
 			schoolClass.setValid(true);
