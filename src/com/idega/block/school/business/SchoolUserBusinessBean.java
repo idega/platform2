@@ -348,6 +348,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		boolean SCHOOL = false;
 		boolean CHILDCARE = false;
 		boolean HIGH_SCHOOL = false; 
+		boolean MUSIC_SCHOOL = false; 
 		
 		if (sTypes != null && !sTypes.isEmpty() ) {
 			Iterator iter = sTypes.iterator();
@@ -358,6 +359,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				String strElementary = getSchoolBusiness().getElementarySchoolSchoolCategory();
 				String strChildcare = getSchoolBusiness().getChildCareSchoolCategory();
 				String strHighschool = getSchoolBusiness().getHighSchoolSchoolCategory();
+				String strMusicschool = getSchoolBusiness().getCategoryMusicSchool().getCategory();
 
 				if (sCat != null && sCat.equals(strElementary)){
 					SCHOOL = true;
@@ -365,6 +367,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 					CHILDCARE = true;
 				}else if (sCat != null && sCat.equals(strHighschool)) {
 					HIGH_SCHOOL = true;
+				}else if (sCat != null && sCat.equals(strMusicschool)) {
+					MUSIC_SCHOOL = true;
 				}
 			}
 		}
@@ -378,6 +382,9 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		if (HIGH_SCHOOL){
 			coll.add(getSchoolBusiness().getHighSchoolSchoolCategory());
+		}
+		if (MUSIC_SCHOOL){
+			coll.add(getSchoolBusiness().getCategoryMusicSchool().getCategory());
 		}
 		
 		return coll;
@@ -413,7 +420,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
 				userTypes.add(new String[] {"school.study_work_councel", "Study and work councel", Integer.toString(USER_TYPE_STUDY_AND_WORK_COUNCEL) });
-			}else if (category.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
+			}
+			else if (category.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
 				userTypes.add(new String[] {"school.manager", "Manager", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
@@ -427,6 +435,12 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
 				userTypes.add(new String[] {"school.study_work_councel", "Study and work councel", Integer.toString(USER_TYPE_STUDY_AND_WORK_COUNCEL) });
+			}
+			else if (category.equals(getSchoolBusiness().getCategoryMusicSchool().getCategory())) {
+				userTypes.add(new String[] {"school.manager", "Manager", Integer.toString(USER_TYPE_HEADMASTER) });
+				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
+				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
+				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 			}
 			
 		}

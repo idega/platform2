@@ -92,6 +92,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.user.data.Group getNewSchoolGroup(java.lang.String p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfStudentsInClass(int p0) throws java.rmi.RemoteException;
  public java.lang.String getProperty(com.idega.block.school.data.School p0,java.lang.String p1) throws java.rmi.RemoteException;
+ public com.idega.user.data.Group getRootMusicSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootProviderAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootSchoolGroup()throws java.rmi.RemoteException, java.rmi.RemoteException;

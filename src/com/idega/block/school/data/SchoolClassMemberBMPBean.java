@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/12 16:13:41 $ by $Author: birna $
- * @version $Revision: 1.112 $
+ *         Last modified: $Date: 2004/05/14 12:12:10 $ by $Author: laddi $
+ * @version $Revision: 1.113 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -111,8 +111,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (User) getColumnValue(MEMBER);
 	}
 
+	public void setStudent(User student) {
+		setColumn(MEMBER, student);
+	}
+
 	public void setSchoolClassId(int id) {
 		this.setColumn(SCHOOLCLASS, id);
+	}
+
+	public void setSchoolClass(SchoolClass group) {
+		this.setColumn(SCHOOLCLASS, group);
 	}
 
 	public int getSchoolClassId() {
@@ -127,6 +135,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		setColumn(SCHOOL_TYPE, id);
 	}
 
+	public void setSchoolType(SchoolType type) {
+		setColumn(SCHOOL_TYPE, type);
+	}
+
 	public int getSchoolTypeId() {
 		return getIntColumnValue(SCHOOL_TYPE);
 	}
@@ -137,6 +149,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public void setSchoolYear(int id) {
 		setColumn(SCHOOL_YEAR, id);
+	}
+
+	public void setSchoolYear(SchoolYear year) {
+		setColumn(SCHOOL_YEAR, year);
 	}
 
 	public int getSchoolYearId() {
@@ -247,6 +263,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.setColumn(STUDY_PATH, id);
 	}
 
+	public void setStudyPath(SchoolStudyPath studyPath) {
+		this.setColumn(STUDY_PATH, studyPath);
+	}
+
 	public void setStudyPathToNull() {
 		removeFromColumn(STUDY_PATH);
 	}
@@ -304,6 +324,19 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		if (schoolYearID != -1)
 			sql.appendAndEquals(SCHOOL_YEAR, schoolYearID);
 		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE + " is null").appendOr().append(REMOVED_DATE).appendGreaterThanSign().append("'" + today + "'").appendRightParenthesis();
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindBySchoolClassAndYearAndStudyPath(SchoolClass group, SchoolYear schoolYear, SchoolStudyPath studyPath) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(SCHOOLCLASS, group);
+		if (schoolYear != null) {
+			sql.appendAndEquals(SCHOOL_YEAR, schoolYear);
+		}
+		if (studyPath != null) {
+			sql.appendAndEquals(STUDY_PATH, studyPath);
+		}
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}

@@ -195,6 +195,13 @@ public java.util.Collection findBySchoolClassAndYear(int p0,int p1)throws javax.
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySchoolClassAndYearAndStudyPath(SchoolClass p0,SchoolYear p1,SchoolStudyPath p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchoolClassAndYearAndStudyPath(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolClasses(java.util.Collection p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindBySchoolClasses(p0);

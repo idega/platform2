@@ -46,6 +46,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public int getStudyPathId();
  public void initializeAttributes();
  public void setClassMemberId(int p0);
+ public void setStudent(com.idega.user.data.User p0);
  public void setHasCompensationByAgreement(boolean p0);
  public void setInvoiceInterval(java.lang.String p0);
  public void setLanguage(java.lang.String p0);
@@ -58,10 +59,14 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setRegistratorId(int p0);
  public void setRemovedDate(java.sql.Timestamp p0);
  public void setSchoolClassId(int p0);
+ public void setSchoolClass(SchoolClass p0);
  public void setSchoolTypeId(int p0);
+ public void setSchoolType(SchoolType p0);
  public void setSchoolYear(int p0);
+ public void setSchoolYear(SchoolYear p0);
  public void setSpeciallyPlaced(boolean p0);
  public void setStudyPathId(int p0);
+ public void setStudyPath(SchoolStudyPath p0);
  public void setStudyPathToNull();
 
 	public java.util.Collection getSubGroups() throws IDORelationshipException;

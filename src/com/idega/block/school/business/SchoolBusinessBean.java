@@ -902,6 +902,33 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	/**
+	 * Returns or creates (if not available) the default usergroup all school
+	 * administors have as their primary group.
+	 * 
+	 * @throws CreateException
+	 *           if it failed to create the group.
+	 * @throws FinderException
+	 *           if it failed to locate the group.
+	 */
+	public Group getRootMusicSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
+		Group rootGroup = null;
+		//create the default group
+		String ROOT_MUSIC_SCHOOL_ADMINISTRATORS_GROUP = "music_school_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_MUSIC_SCHOOL_ADMINISTRATORS_GROUP);
+		if (groupId != null) {
+			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Commune Root school administrators group");
+
+			rootGroup = getUserBusiness().getGroupBusiness().createGroup("Music School Administrators", "The Commune Root Music School Administrators Group.");
+			bundle.setProperty(ROOT_MUSIC_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
+		}
+		return rootGroup;
+	}
+
+	/**
 	 * Returns or creates (if not available) the default usergroup all
 	 * provider(childcare) administors have as their primary group.
 	 * 
