@@ -45,6 +45,8 @@ public class ProjectBusiness {
   public final static String _PRM_DELETE = "ip_delete";
   public final static String _APPADDRESS_PROJECTPAGES = "IP_PAGE_MAP";
 
+  public static int tmpHardcodedPageTriggerInfoId = 1;
+
   public ProjectBusiness() {
   }
 
@@ -136,11 +138,11 @@ public class ProjectBusiness {
 
     String SQLString=buffer.toString();
 
-
+/*
     System.err.print("getProjectDPTPageLinks( ");
     System.err.print(SQLString);
     System.err.println(" )");
-
+*/
     return EntityFinder.findAll(staticPLink,SQLString);
   }
 
@@ -436,7 +438,7 @@ public class ProjectBusiness {
   }
 
 
-  public static GenericGroup getProjectParticipantGroup(int groupId, int projectId) throws SQLException {
+  public static GenericGroup getProjectParticipantGroup(int dptPermissionGroupId, int projectId) throws SQLException {
     GenericGroup staticGenericGroup = (GenericGroup)GenericGroup.getStaticInstance(GenericGroup.class);
     IPProject staticIPProject = (IPProject)IPProject.getStaticInstance(IPProject.class);
 
@@ -469,7 +471,7 @@ public class ProjectBusiness {
     buffer.append(" and gt.child_");
     buffer.append(staticGenericGroup.getIDColumnName());
     buffer.append(" = ");
-    buffer.append(groupId);
+    buffer.append(dptPermissionGroupId);
     buffer.append(" and pg.");
     buffer.append(staticIPProject.getIDColumnName());
     buffer.append(" = ");
