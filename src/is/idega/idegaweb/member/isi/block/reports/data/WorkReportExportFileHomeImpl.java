@@ -13,11 +13,11 @@ public class WorkReportExportFileHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
-public WorkReportExportFile findWorkReportExportFileByGroupIdAndYear(int p0,int p1)throws javax.ejb.FinderException{
+public java.util.Collection findWorkReportExportFileByUnionIdAndYear(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((WorkReportExportFileBMPBean)entity).ejbFindWorkReportExportFileByGroupIdAndYear(p0,p1);
+	java.util.Collection ids = ((WorkReportExportFileBMPBean)entity).ejbFindWorkReportExportFileByUnionIdAndYear(p0,p1);
 	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
+	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
  public WorkReportExportFile findByPrimaryKey(Object pk) throws javax.ejb.FinderException{

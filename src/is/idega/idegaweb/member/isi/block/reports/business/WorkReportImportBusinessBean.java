@@ -32,6 +32,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +64,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.caching.Cache;
 import com.idega.util.text.TextSoap;
@@ -122,7 +124,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			trans = getSessionContext().getUserTransaction();
 			trans.begin();
 
-			System.out.println("Starting account importing from excel file...");
+			//			System.out.println("Starting account importing from excel file...");
 
 			//Check to see if the work report is read only
 			if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
@@ -149,11 +151,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			int leaguesStartColumn = 7;
 			int lastRow = accEntries.getLastRowNum();
 
-			System.out.println("Current row is at: " + currRow);
-			System.out.println("Last row is at: " + lastRow);
+			//			System.out.println("Current row is at: " + currRow);
+			//			System.out.println("Last row is at: " + lastRow);
 
 			if (lastRow != 42) {
-				System.err.println("Wrong number of lines in account sheet " + lastRow);
+				//				System.err.println("Wrong number of lines in account sheet " + lastRow);
 				throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
 			}
 
@@ -188,7 +190,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (FinderException e) {
 					e.printStackTrace();
-					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 				}
 
 				for (int i = 0; i < numberOfLeagues; i++) {
@@ -196,15 +198,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					double val = 0.0;
 					if (c != null) {
 						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							throw new WorkReportImportException("workreportimportexception.formula_in_sheet", row.getRowNum(), c.getCellNum(), null);
 						}
 
 						val = c.getNumericCellValue();
-						System.out.println("celltype == " + c.getCellType());
 					}
-
-					System.out.println("val = " + val);
 
 					WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
 
@@ -252,7 +250,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 					}
 
 					for (int i = 0; i < numberOfLeagues; i++) {
@@ -260,14 +258,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						double val = 0.0;
 						if (c != null) {
 							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-								//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-								throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+								throw new WorkReportImportException("workreportimportexception.formula_in_sheet", row.getRowNum(), c.getCellNum(), null);
 							}
 
 							val = c.getNumericCellValue();
 						}
 
-						System.out.println("val = " + val);
 						if (currRow >= 16 && currRow <= 18)
 							sum += val;
 						WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
@@ -293,7 +289,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 									}
 									catch (FinderException e) {
 										e.printStackTrace();
-										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 									}
 
 									WorkReportClubAccountRecord rec2 = clubRecordHome.create();
@@ -343,7 +339,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (FinderException e) {
 					e.printStackTrace();
-					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 				}
 
 				for (int i = 0; i < numberOfLeagues; i++) {
@@ -351,14 +347,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					double val = 0.0;
 					if (c != null) {
 						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							throw new WorkReportImportException("workreportimportexception.formula_in_sheet", row.getRowNum(), c.getCellNum(), null);
 						}
 
 						val = c.getNumericCellValue();
 					}
 
-					System.out.println("val = " + val);
 					totalAsset += val;
 					WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
@@ -406,7 +400,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 					}
 
 					for (int i = 0; i < numberOfLeagues; i++) {
@@ -414,14 +408,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						double val = 0.0;
 						if (c != null) {
 							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-								//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-								throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+								throw new WorkReportImportException("workreportimportexception.formula_in_sheet", row.getRowNum(), c.getCellNum(), null);
 							}
 
 							val = c.getNumericCellValue();
 						}
 
-						System.out.println("val = " + val);
 						if (currRow >= 40 && currRow <= 41)
 							sum += val;
 						totalDept += val;
@@ -448,7 +440,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 									}
 									catch (FinderException e) {
 										e.printStackTrace();
-										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet", null, null, accKey);
 									}
 
 									WorkReportClubAccountRecord rec2 = clubRecordHome.create();
@@ -521,7 +513,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					se.printStackTrace();
 				}
 			}
-			
+
 			throw new WorkReportImportException(e.getMessage());
 		}
 
@@ -535,99 +527,115 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	 * @param year The year we are creating excel files for
 	 * @param templateId The id for the template for the excel files in the IW file system
 	 *  
-	 * @return The primary key of the ICFile entry created for the zip file, or -1 if nothing was created.
+	 * @return A Collection of WorkReportExportFile data beans, one for each club in the union.
 	 */
-	public int exportToExcel(int regionalUnionId, int year, int templateId) throws WorkReportImportException {
+	public Collection exportToExcel(int regionalUnionId, int year, int templateId) throws WorkReportImportException {
+		System.out.println("reg = " + regionalUnionId);
+		System.out.println("year = " + year);
+		System.out.println("temp = " + templateId);
+		Collection col = null;
 		WorkReportExportFile export = null;
-
 		try {
-			export = getWorkReportExportFileHome().findWorkReportExportFileByGroupIdAndYear(regionalUnionId, year);
+			col = getWorkReportExportFileHome().findWorkReportExportFileByUnionIdAndYear(regionalUnionId, year);
 
-			if (export.getFileId() > 0) {
-				return export.getFileId();
+			if (col != null && !col.isEmpty()) {
+				System.out.println("Col not null from before");
+				return col;
 			}
 		}
 		catch (FinderException e) {
-			System.out.println("[WorkReportBusinessBean] No report for groupId : " + regionalUnionId + " ann year : " + year + " creating a new one.");
-
-			try {
-				export = getWorkReportExportFileHome().create();
-			}
-			catch (CreateException e1) {
-				e1.printStackTrace();
-				throw new WorkReportImportException("workreportimportexception.unable_to_create_excel_file");
-			}
 		}
 
-		if (export != null) {
-			HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
-			String fileName = Integer.toString(regionalUnionId) + "_" + Integer.toString(year) + ".xls";
-			try {
-				FileOutputStream out = new FileOutputStream(fileName);
-				workbook.write(out);
-				out.close();
+		System.out.println("Creating new files");
+		try {
+			Collection clubs = this.getClubGroupsForRegionUnionGroup(this.getGroupBusiness().getGroupByGroupID(regionalUnionId));
+			System.out.println("Got clubs");
 
-				ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
-				icfile.setFileValue(new FileInputStream(fileName));
-				icfile.setName(fileName);
-				icfile.store();
+			Iterator it = clubs.iterator();
+			while (it.hasNext()) {
+				System.out.println("Going through groups");
+				Group club = (Group) it.next();
 
-				export.setGroupId(regionalUnionId);
-				export.setYear(year);
-				export.setFile(icfile);
-				export.store();
-			}
-			catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
-			catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			catch (CreateException e1) {
-				e1.printStackTrace();
-			}
+				try {
+					export = getWorkReportExportFileHome().create();
+				}
+				catch (CreateException e1) {
+					e1.printStackTrace();
+					throw new WorkReportImportException("workreportimportexception.unable_to_create_excel_file");
+				}
 
-			//			try {
-			//					// Create the ZIP file
-			//					String outFilename = "outfile.zip";
-			//					ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
-			//
-			//					// Compress the files
-			//					for (int i=0; i<filenames.length; i++) {
-			//							FileInputStream in = new FileInputStream(filenames[i]);
-			//
-			//							// Add ZIP entry to output stream.
-			//							out.putNextEntry(new ZipEntry(filenames[i]));
-			//
-			//							// Transfer bytes from the file to the ZIP file
-			//							int len;
-			//							while ((len = in.read(buf)) > 0) {
-			//									out.write(buf, 0, len);
-			//							}
-			//
-			//							// Complete the entry
-			//							out.closeEntry();
-			//							in.close();
-			//					}
-			//
-			//					// Complete the ZIP file
-			//					out.close();
-			//			} 
-			//			catch (IOException e) {
-			//			}
+				System.out.println("Creating export file");
 
-			return export.getFileId();
+				if (export != null) {
+					HSSFWorkbook workbook = getExcelWorkBookFromFileId(templateId);
+					String number = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+					StringBuffer fileName = new StringBuffer();
+					if (number != null && !"".equals(number)) {
+						fileName.append(number);
+						fileName.append("_");
+					}
+					fileName.append(club.getName());
+					fileName.append("_");
+					fileName.append(Integer.toString(year));
+					fileName.append(".xls");
+
+					System.out.println("filename = " + fileName.toString());
+
+					try {
+						FileOutputStream out = new FileOutputStream(fileName.toString());
+						workbook.write(out);
+						out.close();
+
+						ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
+						icfile.setFileValue(new FileInputStream(fileName.toString()));
+						icfile.setName(fileName.toString());
+						icfile.store();
+
+						export.setUnionId(regionalUnionId);
+						export.setClub(club);
+						export.setYear(year);
+						export.setFile(icfile);
+						export.store();
+					}
+					catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+					catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					catch (CreateException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 		}
-		else {
-			return -1;
+		catch (RemoteException e2) {
+			e2.printStackTrace();
+			throw new WorkReportImportException("workreportimportexception.unable_to_get_clubs_for_union");
 		}
+		catch (FinderException e3) {
+			e3.printStackTrace();
+			throw new WorkReportImportException("workreportimportexception.unable_to_get_union");
+		}
+
+		System.out.println("Getting towards the end");
+
+		try {
+			col = getWorkReportExportFileHome().findWorkReportExportFileByUnionIdAndYear(regionalUnionId, year);
+			return col;
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+
 	}
 
 	public boolean importBoardPart(int workReportFileId, int workReportId) throws WorkReportImportException, RemoteException {
 
-		UserTransaction transaction;
+		//		UserTransaction transaction;
 
-		System.out.println("Starting board and division importing from excel file...");
+		//		System.out.println("Starting board and division importing from excel file...");
 
 		//Check to see if the work report is read only
 		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
@@ -652,8 +660,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		int firstRow = 6;
 		int lastRow = members.getLastRowNum();
 
-		System.out.println("First row is at: " + firstRow);
-		System.out.println("Last row is at: " + lastRow);
+		//		System.out.println("First row is at: " + firstRow);
+		//		System.out.println("Last row is at: " + lastRow);
 
 		//iterate through the rows that contain the actual data and create the records in the database
 		int i = firstRow;
@@ -684,13 +692,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
+						//						System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
 
 						try {
 							group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(league, year);
 						}
 						catch (FinderException e1) {
-							throw new WorkReportImportException("workreportimportexception.league_not_found");
+							throw new WorkReportImportException("workreportimportexception.league_not_found", null, null, league);
 						}
 					}
 				}
@@ -765,9 +773,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						/**
 						 * @TODO Palli is this ok?
 						 */
-						if (status != null && !"".equals(status.trim())) {
-							member.setStatus(status);
-						}
+						//						if (status != null && !"".equals(status.trim())) {
+						//							member.setStatus(status);
+						//						}
 
 						member.store();
 					}
@@ -777,10 +785,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (CreateException e2) {
 					e2.printStackTrace();
-					System.err.println("Failed to create user for ssn : " + ssn);
+					//					System.err.println("Failed to create user for ssn : " + ssn);
 				}
 				catch (FinderException e) {
-					System.err.println("User not found for ssn : " + ssn);
+					//					System.err.println("User not found for ssn : " + ssn);
 				}
 			}
 
@@ -802,13 +810,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
+						//						System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
 
 						try {
 							group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(league, year);
 						}
 						catch (FinderException e1) {
-							throw new WorkReportImportException("workreportimportexception.league_not_found");
+							throw new WorkReportImportException("workreportimportexception.league_not_found", row.getRowNum(), 1, league);
 						}
 					}
 				}
@@ -888,7 +896,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		int playerCount = 0;
 		Map divPlayerCount = new HashMap();
 		Collection notRead = new Vector();
-		System.out.println("Starting member importing from excel file for workreportid: " + workReportId);
+		//		System.out.println("Starting member importing from excel file for workreportid: " + workReportId);
 
 		//Check to see if the work report is read only
 		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
@@ -997,14 +1005,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						catch (FinderException e1) {
 							throw new WorkReportImportException("workreportimportexception.main_board_not_found");
 						}
-						
+
 						try {
 							report.addLeague(mainBoard);
 						}
 						catch (Exception e) {
 							//e.printStackTrace();
 						}
-						
+
 						//find which leagues the member belongs to
 						//and create the many to many connections
 						for (int j = 5; j < lastCell; j++) {
@@ -1058,11 +1066,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				catch (CreateException e2) {
 					//failed to create move on.
 					e2.printStackTrace();
-					System.err.println("Failed to create user for ssn : " + ssn);
+					//				System.err.println("Failed to create user for ssn : " + ssn);
 					throw new WorkReportImportException("workreportimportexception.database_error_failed_to_create_user");
 				}
 				catch (FinderException e) {
-					System.err.println("User not found for ssn : " + ssn + " skipping...");
+					//					System.err.println("User not found for ssn : " + ssn + " skipping...");
 					notRead.add(ssn);
 				}
 			}
@@ -1271,13 +1279,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (FinderException e) {
 						e.printStackTrace();
-						System.err.println("WorkReportGroup not found by short name : " + shortName + " trying group name");
+						//					System.err.println("WorkReportGroup not found by short name : " + shortName + " trying group name");
 
 						try {
 							group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(name, year);
 						}
 						catch (FinderException e1) {
-							throw new WorkReportImportException("workreportimportexception.league_not_found");
+							throw new WorkReportImportException("workreportimportexception.league_not_found", null, null, name);
 						}
 						catch (RemoteException e1) {
 							e.printStackTrace();

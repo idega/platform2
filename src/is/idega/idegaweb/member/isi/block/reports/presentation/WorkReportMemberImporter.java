@@ -22,9 +22,12 @@ import com.idega.presentation.ui.SubmitButton;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 public class WorkReportMemberImporter extends WorkReportImporter {
-
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmemberimporter.step_name";
 	private WorkReportImportReport _report = null;
+
+	protected final static String ROW_LABEL = "wr_imp_row";
+	protected final static String COL_LABEL = "wr_imp_col";
+	protected final static String DESC_LABEL = "wr_imp_desc";
 
 	protected WorkReportMemberImporter() {
 		super();
@@ -54,8 +57,13 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 				e.printStackTrace();
 			}
 			catch (WorkReportImportException e) {
-				//				e.printStackTrace();
 				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
+				if (e.getRowForError() != null) 
+					add(iwrb.getLocalizedString(ROW_LABEL,"Row") + " : " + e.getRowForError());
+				if (e.getColumnForError() != null) 
+					add(iwrb.getLocalizedString(COL_LABEL,"Col") + " : " + e.getColumnForError());
+				if (e.getDetail() != null) 
+					add(iwrb.getLocalizedString(DESC_LABEL,"Desc") + " : " + e.getDetail());
 			}
 		}
 	}

@@ -6,6 +6,11 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFile;
+
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 
@@ -46,15 +51,20 @@ public class WorkReportExporter extends RegionalUnionAndYearSelector {
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 
-			int fileId = getWorkReportImportBusiness(iwc).exportToExcel(getRegionalUnionId(),getYear(),Integer.parseInt(templateId));
-			if (fileId > 0) {
-				String name = getWorkReportBusiness(iwc).getFileName(fileId); 				
-				add(new Link(fileId,name));
+			Collection col = getWorkReportImportBusiness(iwc).exportToExcel(getRegionalUnionId(),getYear(),Integer.parseInt(templateId));
+			if (col != null && !col.isEmpty()) {
+				Iterator it = col.iterator();
+				while (it.hasNext()) {
+					WorkReportExportFile file = (WorkReportExportFile)it.next();
+					if (file.getFileId() > 0) {
+						String name = getWorkReportBusiness(iwc).getFileName(file.getFileId()); 				
+						add(new Link(file.getFileId(),name));
+					}
+				}
 			}
 			else {
 				add(iwrb.getLocalizedString(ERROR_LOCALIZATION_KEY, "Unable to export file"));
 			}
-			
 		}		
 	}
 }

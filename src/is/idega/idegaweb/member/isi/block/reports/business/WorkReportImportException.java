@@ -13,6 +13,7 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 public class WorkReportImportException extends Exception {
 	private String _col = null;
 	private String _row = null;
+	private String _detail = null;
 	
 	public WorkReportImportException() {
 		super();
@@ -23,6 +24,17 @@ public class WorkReportImportException extends Exception {
 	 */
 	public WorkReportImportException(String message) {
 		super(message);
+	}
+
+	public WorkReportImportException(String message, String row, String col, String detail) {
+		super(message);
+		_col = col;
+		_row = row;
+		_detail = detail;
+	}
+
+	public WorkReportImportException(String message, int row, int col, String detail) {
+		this(message,Integer.toString(row),Integer.toString(col),detail);	
 	}
 	
 	public String getColumnForError() {
@@ -39,5 +51,13 @@ public class WorkReportImportException extends Exception {
 	
 	public void setRowForError(String row) {
 		_row = row;
+	}
+	
+	public String getDetail() {
+		return _detail;
+	}
+	
+	public void setDetail(String detail) {
+		_detail = detail;
 	}
 }

@@ -22,6 +22,7 @@ public class WorkReportImporter extends WorkReportSelector {
 
 	protected static final String PARAM_FILE_ID = "wr_im_f_id";
 	protected static final String PARAM_UPLOADING = "wr_im_f_upl";
+	protected static final String PARAM_FILE_NAME = "wr_im_f_name";
 
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportimporter.step_name";
 	protected int workReportFileId = -1;
@@ -43,6 +44,7 @@ public class WorkReportImporter extends WorkReportSelector {
 	protected WorkReportImporter() {
 		super();
 		this.addToParametersToMaintainList(PARAM_FILE_ID);
+		this.addToParametersToMaintainList(PARAM_FILE_NAME);
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 
@@ -53,19 +55,20 @@ public class WorkReportImporter extends WorkReportSelector {
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 
+			if (iwc.isParameterSet(PARAM_FILE_NAME)) {
+				String fileName = iwc.getParameter(PARAM_FILE_NAME);
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(fileName));				
+			}
+
 			if (iwc.isParameterSet(PARAM_FILE_ID)) {
+				System.out.println("PARAM_FILE_ID set.");
 				workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
-				String filename = iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
-				try {
-					filename = "";this.getWorkReportBusiness(iwc).getWorkReportById(getWorkReportId());
-				}
-				catch(Exception e) {
-				}
-				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(filename));
 			}
 			else {
+				System.out.println("PARAM_FILE_ID not set.");
 				addUploadForm(iwc);
 			}
+			
 		}
 	}
 
@@ -81,13 +84,20 @@ public class WorkReportImporter extends WorkReportSelector {
 			uploadForm.addParameter(PARAM_UPLOADING, "TRUE");
 		}
 		else {
+			String filename = iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
+			try {
+				filename = iwc.getUploadedFile().getFileName();
+			}
+			catch(Exception e) {
+			}
+			addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(filename));
+			uploadForm.addParameter(PARAM_FILE_NAME,filename);
+
 			Table t = new Table(1, 3);
 			t.setCellpadding(0);
 			t.setCellspacing(0);
 
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
-//			submit.setAsImageButton(true);
-			System.out.println("Adding the stupid busy bar");
 			BusyBar busy = new BusyBar("readingfiles");
 			if (!iwc.isIE()) {
 				busy.addDisabledObject(submit);
