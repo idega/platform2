@@ -902,7 +902,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			alterValidFromDate(application, application.getFromDate(), locale, user);
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				getSchoolBusiness().storeSchoolClassMember(application.getChildId(), groupID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
+				int schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
 				sendMessageToParents(application, subject, body);
 			}
 		}
@@ -2800,7 +2801,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					else
 						return false;
 				}
-				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
+				int schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
 			}
 			t.commit();
 			return true;
@@ -2832,4 +2834,42 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 		return null;
 	}
+	
+	public void updateMissingPlacements() {
+		try {
+			Collection applications = getChildCareApplicationHome().findApplicationsWithoutPlacing();
+			Iterator iter = applications.iterator();
+			while (iter.hasNext()) {
+				ChildCareApplication application = (ChildCareApplication) iter.next();
+				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+				Timestamp endDate = null;
+				if (application.getRejectionDate() != null)
+					endDate = new IWTimestamp(application.getRejectionDate()).getTimestamp();
+				
+				try {
+					Collection contracts = getChildCareContractArchiveHome().findByApplication(((Integer)application.getPrimaryKey()).intValue());
+					SchoolClass group = getSchoolBusiness().getSchoolClassHome().findOneBySchool(application.getProviderId());
+					int groupID = ((Integer)group.getPrimaryKey()).intValue();
+					int schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+					SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate, -1, null);					
+					Iterator iterator = contracts.iterator();
+					while (iterator.hasNext()) {
+						ChildCareContract contract = (ChildCareContract) iterator.next();
+						contract.setSchoolClassMember(member);
+						contract.store();
+					}
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			System.out.println("[ChildCareApplication]: No applications found with missing placements.");
+		}
+	}
+	
 }
