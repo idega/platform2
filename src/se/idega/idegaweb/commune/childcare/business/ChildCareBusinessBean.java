@@ -1265,9 +1265,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
-				application.store();
+				//application.store();
 			}
 			verifyApplication(childcareContract,application, null, performer,schoolType,schoolClass);
+			application.store();
 
 			trans.commit();
 		}
