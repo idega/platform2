@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.21 2003/07/04 09:20:04 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.22 2003/07/10 16:55:44 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -289,7 +289,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 					
 					String name = ((XMLElement)obj).getName();
 					String value = (String) fieldValues.get(name);
-					System.out.println("    (name: " + name + ", value: " + value + ")");
+//					System.out.println("    (name: " + name + ", value: " + value + ")");
 					merged.append(value != null ? value : "<" + name + "/>");
 				} else if (obj instanceof String) {
 					merged.append((String) obj);
