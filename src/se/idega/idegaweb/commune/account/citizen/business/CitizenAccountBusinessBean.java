@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.8 2002/08/14 13:42:32 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.9 2002/09/16 23:06:33 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,9 +37,9 @@ import javax.ejb.FinderException;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness,AccountBusiness {
-	private boolean acceptApplicationOnCreation=true;
-	
+public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
+	private boolean acceptApplicationOnCreation = true;
+
 	public boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
@@ -54,10 +54,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setCaseStatus(getCaseStatusOpen());
 
 			application.store();
-			
-			int applicationID=((Integer)application.getPrimaryKey()).intValue();
-			if(acceptApplicationOnCreation){
-				acceptApplication(applicationID,user);
+
+			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
+			if (acceptApplicationOnCreation) {
+				acceptApplication(applicationID, user);
 			}
 		}
 		catch (Exception e) {
@@ -78,8 +78,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				userPid.deleteCharAt(i);
 				pid = userPid.toString();
 			}
-			if (userPid.length() == 10)	{
-				userPid.insert(0,"19");
+			if (userPid.length() == 10) {
+				userPid.insert(0, "19");
 			}
 			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());
 		}
@@ -91,11 +91,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				StringBuffer userPid = new StringBuffer("20");
 				userPid.append(pid);
 				try {
-					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());			
+					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());
 				}
-				catch(Exception ex) {
-					return null;	
-				}				
+				catch (Exception ex) {
+					return null;
+				}
 			}
 		}
 
@@ -146,33 +146,32 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 		return li;
 	}
-	
+
 	protected AccountApplication getApplication(int applicationID) throws RemoteException, FinderException {
 		return getAccount(applicationID);
 	}
-	
+
 	public CitizenAccount getAccount(int id) throws RemoteException, FinderException {
 		CitizenAccountHome home = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
-		
-		return (CitizenAccount)home.findByPrimaryKeyIDO(new Integer(id));				
-	}	
-	
+
+		return (CitizenAccount) home.findByPrimaryKeyIDO(new Integer(id));
+	}
+
 	protected Class getCaseEntityClass() {
-		return CitizenAccount.class;			
+		return CitizenAccount.class;
 	}
-	
+
 	public void acceptApplication(int applicationID, User performer) throws RemoteException, CreateException, FinderException {
-		super.acceptApplication(applicationID,performer);
+		super.acceptApplication(applicationID, performer);
 	}
-	
-	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException { 
-		super.rejectApplication(applicationID,performer,reasonDescription);		
+
+	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {
+		super.rejectApplication(applicationID, performer, reasonDescription);
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllAcceptedApplications()
 	 */
-	public Collection getAllAcceptedApplications() throws FinderException, RemoteException
-	{
+	public Collection getAllAcceptedApplications() throws FinderException, RemoteException {
 		/**
 		 * @todo Implement
 		 */
@@ -182,8 +181,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllPendingApplications()
 	 */
-	public Collection getAllPendingApplications() throws FinderException, RemoteException
-	{
+	public Collection getAllPendingApplications() throws FinderException, RemoteException {
 		/**
 		 * @todo Implement
 		 */
@@ -193,8 +191,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllRejectedApplications()
 	 */
-	public Collection getAllRejectedApplications() throws FinderException, RemoteException
-	{
+	public Collection getAllRejectedApplications() throws FinderException, RemoteException {
 		/**
 		 * @todo Implement
 		 */
@@ -203,25 +200,19 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * Overrided from superclass
 	 */
-	protected User createUserForApplication(AccountApplication theCase) throws CreateException, RemoteException
-	{
+	protected User createUserForApplication(AccountApplication theCase) throws CreateException, RemoteException {
 		return createCitizenForApplication(theCase);
-	}	
-	
+	}
+
 	/**
 	 * Creates a citizen in the Commune system
 	 */
-	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException
-	{
+	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException {
 		String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
-		String lastName =
-			theCase.getApplicantName().substring(
-				theCase.getApplicantName().lastIndexOf(" ") + 1,
-				theCase.getApplicantName().length());
+		String lastName = theCase.getApplicantName().substring(theCase.getApplicantName().lastIndexOf(" ") + 1, theCase.getApplicantName().length());
 		User user = null;
 		user = getUserBusiness().createCitizen(firstName, null, lastName, null);
 		theCase.setOwner(user);
 		return user;
 	}
-
 }
