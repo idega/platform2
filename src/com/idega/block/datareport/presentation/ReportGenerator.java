@@ -74,7 +74,6 @@ import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
-import dori.jasper.engine.JRParameter;
 /**
  * Title: ReportGenerator Description: Copyright: Copyright (c) 2003 Company:
  * idega Software
