@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.2 2001/08/30 05:43:03 aron Exp $
+ * $Id: CampusFinanceMenu.java,v 1.3 2001/08/30 07:35:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -58,6 +58,9 @@ public class CampusFinanceMenu extends FrameList{
       //addToList(Link7);
       addToList(CampusTariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs"),CampusFinance.FRAME_NAME);
       addToList(CampusTariffer.class,iwrb.getLocalizedString("assessment","Assessment"),CampusFinance.FRAME_NAME);
+
+      System.err.println("CampusFinanceMenu");
+
      // addToList(Link6);
     /*
     addToList(CampusApprover.class,iwrb.getLocalizedString("applications","Applications"),CampusAllocation.FRAME_NAME);
