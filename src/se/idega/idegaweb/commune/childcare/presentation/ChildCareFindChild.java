@@ -32,7 +32,7 @@ public class ChildCareFindChild extends CommuneUserFinder {
 			return false;
 		}
 		catch (NullPointerException e) {
-			return false;
+			return true;
 		}
 	}
 
