@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.8 2004/02/16 12:50:56 staffan Exp $
+/* $Id: ControlListWriter.java,v 1.9 2004/05/05 10:00:05 sigtryggur Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.8 2004/02/16 12:50:56 staffan Exp $
+ * $Id: ControlListWriter.java,v 1.9 2004/05/05 10:00:05 sigtryggur Exp $
  *
  * @author Kelly
  */
@@ -127,9 +127,10 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			HSSFWorkbook wb = new HSSFWorkbook();
 			HSSFSheet sheet = wb.createSheet("Excel");
 			sheet.setColumnWidth((short)0, (short) (30 * 256));
-			sheet.setColumnWidth((short)1, (short) (14 * 256));
-			sheet.setColumnWidth((short)2, (short) (30 * 256));
-			sheet.setColumnWidth((short)3, (short) (14 * 256));
+			sheet.setColumnWidth((short)1, (short) (20 * 256));
+			sheet.setColumnWidth((short)2, (short) (20 * 256));
+			sheet.setColumnWidth((short)3, (short) (20 * 256));
+			sheet.setColumnWidth((short)4, (short) (20 * 256));
 			HSSFFont font = wb.createFont();
 			font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 			HSSFCellStyle style = wb.createCellStyle();
@@ -141,16 +142,16 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_PROVIDER, "Provider"));
 			cell.setCellStyle(style);
 			cell = row.createCell((short)1);
-			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_PREL, "No of individuals Prel."));
+			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_PREL, "No of individuals, prel."));
 			cell.setCellStyle(style);
 			cell = row.createCell((short)2);
-			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_LAST_MONTH, "Previous"));
+			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_COMPARE_MONTH, "No of individuals, compare"));
 			cell.setCellStyle(style);
 			cell = row.createCell((short)3);
-			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_PREL, "Total amount prel."));
+			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_PREL, "Total amount, prel."));
 			cell.setCellStyle(style);
 			cell = row.createCell((short)4);
-			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_LAST_MONTH, "Previous"));
+			cell.setCellValue(iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_COMPARE_MONTH, "Total amount, compare"));
 			cell.setCellStyle(style);
 
 			
@@ -230,10 +231,10 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			
 			String[] headers = {
 				iwrb.getLocalizedString(ControlList.KEY_PROVIDER, "Provider"), 
-				iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_PREL, "No of individuals prel."),
-				iwrb.getLocalizedString(ControlList.KEY_LAST_MONTH, "Previous"),
-				iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_PREL, "Total amount prel."),
-				iwrb.getLocalizedString(ControlList.KEY_LAST_MONTH, "Previous")};
+				iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_PREL, "No of individuals, prel."),
+				iwrb.getLocalizedString(ControlList.KEY_NUM_INDIVIDUALS_COMPARE_MONTH, "No of individuals, compare"),
+				iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_PREL, "Total amount, prel."),
+				iwrb.getLocalizedString(ControlList.KEY_TOTAL_AMOUNT_COMPARE_MONTH, "Total amount, compare")};
 				
 			int[] sizes = { 20, 20, 20, 20, 20 };
 			Cell cell;
