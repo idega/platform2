@@ -156,6 +156,11 @@ public class ProductComparator implements Comparator {
 			} else {
 				try {
 					pr1 = getStockroomBusiness().getPrice(-1, p1.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
+				}
+				catch (Exception e) {
+					System.out.println("ProductComparator : cannot get priceCategory specific price");
+				}
+				try {
 					pr2 = getStockroomBusiness().getPrice(-1, p2.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
 				}
 				catch (Exception e) {
