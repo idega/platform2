@@ -792,8 +792,8 @@ public class IFSFileCreationThread extends Thread {
 			NumberFormat format = NumberFormat.getInstance(currentLocale);
 			format.setMaximumFractionDigits(0);
 			format.setMinimumFractionDigits(0);
-			format.setMinimumIntegerDigits(14);
-			format.setMaximumIntegerDigits(14);
+			format.setMinimumIntegerDigits(15);
+			format.setMaximumIntegerDigits(15);
 			format.setGroupingUsed(false);
 			NumberFormat format2 = NumberFormat.getInstance(currentLocale);
 			format2.setMaximumFractionDigits(0);
@@ -985,7 +985,7 @@ public class IFSFileCreationThread extends Thread {
 						//Antal
 						bWriter.write("000000000000000");
 						//Apris
-						bWriter.write("000000000000000");
+						bWriter.write("000000000000");
 						//moms, filler
 						bWriter.write(empty.substring(0, 2));
 						//Avser period f.o.m
