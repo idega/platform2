@@ -3,6 +3,7 @@ package com.idega.jmodule.object.plaf;
 import com.idega.jmodule.object.Table;
 import java.util.Vector;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.textObject.Link;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -88,7 +89,8 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
   public abstract class GenericTabPresentation extends Table implements TabPresentation {
 
-    protected Vector AllTabsAdded;
+    private IWColor tabPageColor;
+    protected Vector tabs;
     protected ChangeEvent changeEvent = null;
     protected EventListenerList listenerList = new EventListenerList();
 
@@ -96,17 +98,19 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
     public GenericTabPresentation(){
       super();
-      AllTabsAdded = new Vector();
+      tabs = new Vector();
     }
 
 
     public void add(ModuleObject obj, int index){
-      this.AllTabsAdded.insertElementAt(obj, index);
+      this.tabs.insertElementAt(obj, index);
     }
 
     public void empty(int index){
-      this.AllTabsAdded.remove(index);
+      this.tabs.remove(index);
     }
+
+    public abstract Link getTabLink(ModuleObject obj);
 
 //  public void empty(ModuleObject obj){}
 
@@ -114,11 +118,20 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
     public abstract void SetHeight(String height);
 
     public Vector getAddedTabs(){
-      return AllTabsAdded;
+      return tabs;
     }
 
     public void setAddedTabs(Vector tabs){
-      AllTabsAdded = tabs;
+      tabs = tabs;
+    }
+
+    public IWColor getColor(){
+      return this.tabPageColor;
+    }
+
+    public void setColor(IWColor color){
+//      super.setColor(color);
+      this.tabPageColor = color;
     }
 
 
@@ -182,14 +195,28 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
   public abstract class GenericTabPagePresentation  extends Table implements TabPagePresentation {
 
+    private IWColor tabPageColor;
+
     public GenericTabPagePresentation(){
       super();
     }
 
 //  public void add(ModuleObject obj){}
-//  public void empty(){}
-    public abstract void setWidth(String width);
-    public abstract void setHeight(String height);
+    public void setColor(IWColor color){
+//      super.setColor(color);
+      this.tabPageColor = color;
+    }
+
+    public IWColor getColor(){
+      return this.tabPageColor;
+    }
+
+    public void setWidth(String width){
+      super.setWidth(width);
+    }
+    public void setHeight(String height){
+      super.setHeight(height);
+    }
     public void fireContentChange(){}
 
   } // InnerClass GenericTabPagePresentation

@@ -44,6 +44,10 @@ private boolean cellsAreMerged;
 public Table(){
 
 	this(1,1);
+// /**
+// * @todo erase
+// */
+//        this.setBorder(1);
 	isResizable=true;
 }
 
@@ -964,6 +968,15 @@ public boolean isEmpty(){
 		return true;
 	}
 }
+
+
+///**
+// * @todo erase
+// */
+//public void main(ModuleInfo modinfo) throws Exception {
+//  this.setBorder(1);
+//}
+
 
 
 }

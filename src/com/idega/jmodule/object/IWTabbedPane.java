@@ -7,7 +7,11 @@ import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.jmodule.object.plaf.IWTabbedPaneUI;
 import com.idega.jmodule.object.plaf.basic.BasicTabbedPaneUI;
 import com.idega.jmodule.object.plaf.TabbedPaneFrame;
+import com.idega.jmodule.object.textObject.Link;
 import com.idega.util.IWColor;
+import com.idega.event.IWLinkEvent;
+import com.idega.event.IWLinkListener;
+import com.idega.jmodule.object.plaf.GenericTabbedPaneUI;
 
 import javax.swing.SwingConstants;
 import javax.swing.SingleSelectionModel;
@@ -28,22 +32,18 @@ import java.util.Locale;
  * @version 1.0
  */
 
-public class IWTabbedPane extends ModuleObjectContainer implements SwingConstants {
+public class IWTabbedPane extends Table implements SwingConstants {
 
     private static final String uiClassID = "IWTabbedPaneUI";
     protected int tabPlacement = TOP;
     protected SingleSelectionModel model;
     protected ChangeListener changeListener = null;
     public Vector pages;
+    private GenericTabbedPaneUI.GenericTabPagePresentation currentPage;
     protected ChangeEvent changeEvent = null;
     private static String TabbedPaneAttributeString = "-IWTabbedPane";
-
-    private Form mainForm;
-    private TabbedPaneFrame objectFrame;
-
-    private boolean OKButtonDisabled;
-    private boolean CancelButtonDisabled;
-    private boolean ApplyButtonDisabled;
+    private String attributeString;
+    private boolean justConstructed;
 
     private IWTabbedPaneUI ui;
 
@@ -52,45 +52,56 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
     }
 
     public IWTabbedPane(int tabPlacement) {
+        super(1,2);
+        this.setCellpadding(0);
+        this.setCellspacing(0);
         setTabPlacement(tabPlacement);
         pages = new Vector(1);
         setModel(new DefaultSingleSelectionModel());
-        this.mainForm = new Form();
-        super.add(mainForm);
         updateUI();
+        this.currentPage = (GenericTabbedPaneUI.GenericTabPagePresentation)this.getUI().getTabPagePresentation();
+        this.addTabePage(this.currentPage);
+        justConstructed = true;
 //        this.objectFrame = getUI().getFrame();
-        this.mainForm.add(objectFrame);
+//        this.mainForm.add(objectFrame);
     }
 
     public static IWTabbedPane getInstance(String key, ModuleInfo modinfo, int tabPlacement ){
       Object  obj = modinfo.getSessionAttribute(key+TabbedPaneAttributeString);
       if(obj != null && obj instanceof IWTabbedPane){
-        return (IWTabbedPane)obj;
+        System.err.println("if");
+        IWTabbedPane TabbedPaneObj = (IWTabbedPane)obj;
+        TabbedPaneObj.justConstructed(false);
+        return TabbedPaneObj;
       }else{
+        System.err.println("else");
         IWTabbedPane tempTab = new IWTabbedPane(tabPlacement);
         modinfo.setSessionAttribute(key+TabbedPaneAttributeString, tempTab);
+        tempTab.setAttributeString(key+TabbedPaneAttributeString);
         return tempTab;
       }
     }
 
-    public static IWTabbedPane getInstance(String key, ModuleInfo modinfo){
-      return getInstance(key, modinfo, TOP);
+    public boolean justConstructed(){
+      return justConstructed;
+    }
+
+    public void justConstructed(boolean justConstructed){
+      this.justConstructed = justConstructed;
+    }
+
+    public void setAttributeString(String attributeString){
+      this.attributeString = attributeString;
+    }
+
+    public void finalize(ModuleInfo modinfo){
+      modinfo.getSession().removeAttribute(attributeString);
     }
 
 
-//    public void addOKButton(){
-//      ui.getFrame().addOKButton();
-//    }
-//
-//    public void addCancelButton(){
-//      ui.getFrame().addCancelButton();
-//    }
-//
-//    public void addApplyButton(){
-//      ui.getFrame().addApplyButton();
-//    }
-//
-//
+    public static IWTabbedPane getInstance(String key, ModuleInfo modinfo){
+      return getInstance(key, modinfo, TOP);
+    }
 
 
     public IWTabbedPaneUI getUI() {
@@ -117,6 +128,20 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
             fireStateChanged();
         }
     }
+
+    protected class LinkListener implements IWLinkListener {
+        public void actionPerformed(IWLinkEvent e) {
+            setSelectedIndex(getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()));
+        }
+    }
+
+
+    protected IWLinkListener createLinkListener() {
+        return new LinkListener();
+    }
+
+
+
 
     protected ChangeListener createChangeListener() {
         return new ModelListener();
@@ -218,6 +243,10 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
             Page newPage = (Page) pages.elementAt(index);
 
         }
+
+        currentPage.empty();
+        currentPage.add(this.getComponentAt(this.getSelectedIndex()));
+        this.getUI().getTabPresentation().setSelectedIndex(this.getSelectedIndex());
     }
 
     public ModuleObject getSelectedComponent() {
@@ -237,65 +266,23 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
         }
     }
 
-    public void insertTab(String title, Icon icon, ModuleObject moduleobject, String tip, int index) {
+    public void insertTab(String title, ModuleObject moduleobject, int index, ModuleInfo modinfo) {
 
-        // If moduleobject already exists, remove corresponding
-        // tab so that new tab gets added correctly
-        // Note: we are allowing moduleobject=null because of compatibility,
-        // but we really should throw an exception because much of the
-        // rest of the JTabbedPane implementation isn't designed to deal
-        // with null components for tabs.
         int i;
         if (moduleobject != null && (i = indexOfComponent(moduleobject)) != -1) {
             removeTabAt(i);
         }
 
-        pages.insertElementAt(new Page(this, title != null? title : " --- ", moduleobject, tip), index);
+        pages.insertElementAt(new Page(this, title != null? title : " --- ", moduleobject, modinfo), index);
         if (moduleobject != null) {
         }
 
         if (pages.size() == 1) {
             setSelectedIndex(0);
         }
+
+        this.getUI().getTabPresentation().add(((Page)pages.elementAt(index)).getTabLink(),index);
     }
-
-     public void insertTab(String title, ModuleObject moduleobject, int index) {
-        insertTab(title, null, moduleobject, null, pages.size());
-     }
-
-    public void addTab(String title, Icon icon, ModuleObject moduleobject, String tip) {
-        insertTab(title, icon, moduleobject, tip, pages.size());
-    }
-
-    public void addTab(String title, Icon icon, ModuleObject moduleobject) {
-        insertTab(title, icon, moduleobject, null, pages.size());
-    }
-
-    public void addTab(String title, ModuleObject moduleobject) {
-        insertTab(title, null, moduleobject, null, pages.size());
-    }
-
-    public void addTab(ModuleObject moduleobject) {
-        insertTab(moduleobject.getName(), null, moduleobject, null, pages.size());
-    }
-
-
-    public void add(ModuleObject moduleobject) {
-        addTab(moduleobject.getName(), moduleobject);
-    }
-
-    public void add(String title, ModuleObject moduleobject) {
-        addTab(title, moduleobject);
-    }
-
-    public ModuleObject add(ModuleObject moduleobject, int index) {
-        // Container.add() interprets -1 as "append", so convert
-        // the index appropriately to be handled by the vector
-        insertTab(moduleobject.getName(), null, moduleobject, null,
-                  index == -1? getTabCount() : index);
-        return moduleobject;
-    }
-
 
     public void removeTabAt(int index) {
         // If we are removing the currently selected tab AND
@@ -360,7 +347,7 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
     }
 */
     public ModuleObject getComponentAt(int index) {
-        return ((Page)pages.elementAt(index)).moduleobject;
+        return ((Page)pages.elementAt(index)).content;
     }
 
 
@@ -375,12 +362,7 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
         }
     }
 
-/*
-    public void setToolTipTextAt(int index, String toolTipText) {
-        String oldToolTipText =((Page)pages.elementAt(index)).tip;
-        ((Page)pages.elementAt(index)).tip = toolTipText;
-    }
-*/
+
     public int indexOfTab(String title) {
         for(int i = 0; i < getTabCount(); i++) {
             if (getTitleAt(i).equals(title == null? "" : title)) {
@@ -403,31 +385,66 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
 
 
 
-    private class Page{
+    private class Page {
       String title;
       IWTabbedPane parent;
-      ModuleObject moduleobject;
+      ModuleObject content;
+      Link tabLink;
       boolean needsUIUpdate;
 
-
-      Page(IWTabbedPane parent, String title,ModuleObject moduleobject, String tip) {
+      public Page(IWTabbedPane parent, String title, ModuleObject content, ModuleInfo modinfo) {
         this.title = title;
-        this.moduleobject = moduleobject;
-
+        this.content = content;
+        this.UpdateUI(getUI(),modinfo);
       }
 
+      public void UpdateUI(IWTabbedPaneUI ui, ModuleInfo modinfo){
+        tabLink = ui.getTabPresentation().getTabLink(this.content);
+        tabLink.addIWLinkListener(createLinkListener(), modinfo);
+        this.needsUIUpdate(false);
+      }
 
+      public void needsUIUpdate(boolean update){
+        this.needsUIUpdate = update;
+      }
 
+      public Link getTabLink(){
+        return tabLink;
+      }
 
-
+      public ModuleObject getContent(){
+        return this.content;
+      }
 
 
   } // InnerClass Page
 
 
+  private void addTabs(ModuleObject obj){
+    /**
+     * placement Top
+     */
+    this.add(obj,1,1);
+  }
+
+  private void addTabePage(ModuleObject obj){
+    /**
+     * placement Top
+     */
+    this.add(obj,1,2);
+  }
+
 
   public void main(ModuleInfo modinfo) throws Exception {
-
+    fireStateChanged();
+/*    if(this.getUI().getTabPagePresentation() instanceof ModuleObject){
+      addTabePage((ModuleObject)this.getUI().getTabPagePresentation());
+      this.getUI().getTabPagePresentation().add(this.getSelectedComponent());
+    }
+*/
+    if(this.getUI().getTabPresentation() instanceof ModuleObject){
+      addTabs((ModuleObject)this.getUI().getTabPresentation());
+    }
 
 
   }
@@ -438,6 +455,38 @@ public class IWTabbedPane extends ModuleObjectContainer implements SwingConstant
 }   // Class IWTabbedPane
 
 
+
+
+
+//    public void addOKButton(){
+//      ui.getFrame().addOKButton();
+//    }
+//
+//    public void addCancelButton(){
+//      ui.getFrame().addCancelButton();
+//    }
+//
+//    public void addApplyButton(){
+//      ui.getFrame().addApplyButton();
+//    }
+//
+//
+
+
+/*
+    public void setToolTipTextAt(int index, String toolTipText) {
+        String oldToolTipText =((Page)pages.elementAt(index)).tip;
+        ((Page)pages.elementAt(index)).tip = toolTipText;
+    }
+*/
+
+
+//    private Form mainForm;
+//    private TabbedPaneFrame objectFrame;
+
+//    private boolean OKButtonDisabled;
+//    private boolean CancelButtonDisabled;
+//    private boolean ApplyButtonDisabled;
 
 
 

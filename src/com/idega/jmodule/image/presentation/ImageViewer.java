@@ -130,11 +130,11 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
-    ImageBusiness.storeEditForm(modinfo);
+  /*  ImageBusiness.storeEditForm(modinfo);
 
   outerTable.add(getEditForm(),1,2);
 
-
+*/
   if( refresh ){
     modinfo.getSession().removeAttribute("image_previous_catagory_id");
     modinfo.getSession().removeAttribute("image_entities");
@@ -733,10 +733,11 @@ private Form getEditForm(){
   buttonTable.setHeight(40);
   buttonTable.setCellpadding(0);
   buttonTable.setCellspacing(0);
-  SubmitButton save = new SubmitButton("Vista","save");
+  SubmitButton save = new SubmitButton("Vista","catagory_edit_form","save");
+  save.
   buttonTable.add(save,3,1);
   buttonTable.setWidth(3,1,"60");
-  SubmitButton cancel = new SubmitButton("Hætta við", "cancel");
+  SubmitButton cancel = new SubmitButton("Hætta við","catagory_edit_form", "cancel");
   buttonTable.add(cancel,2,1);
   buttonTable.setWidth(2,1,"60");
   frameTable.add(buttonTable,1,2);

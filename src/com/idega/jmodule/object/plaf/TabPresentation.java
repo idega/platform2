@@ -3,6 +3,7 @@ package com.idega.jmodule.object.plaf;
 import javax.swing.SingleSelectionModel;
 import java.util.Vector;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.textObject.Link;
 import com.idega.util.IWColor;
 /**
  * Title:        idegaWeb
@@ -23,6 +24,8 @@ public interface TabPresentation extends SingleSelectionModel {
         public Vector getAddedTabs();
         public void setAddedTabs(Vector tabs);
         public void setColor(IWColor color);
+        public Link getTabLink(ModuleObject obj);
+        public IWColor getColor();
 
 
 }   //  Interface TabPresentation
