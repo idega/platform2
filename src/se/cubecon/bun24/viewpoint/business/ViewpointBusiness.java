@@ -14,10 +14,10 @@ import se.cubecon.bun24.viewpoint.data.*;
  * in order to help the system to chose what handler group should be responsible
  * for answering the entered viewpoint.
  * <p>
- * Last modified: $Date: 2002/10/24 12:44:25 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/28 08:31:41 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see com.idega.block.process.business
  * @see com.idega.business
  * @see com.idega.user.data
@@ -25,6 +25,11 @@ import se.cubecon.bun24.viewpoint.data.*;
  * @see se.cubecon.bun24.viewpoint.data
  */
 public interface ViewpointBusiness extends IBOService, CaseBusiness {
+	String CONFIRMENTERVIEWPOINT_KEY = "viewpoint.confirmEnterViewpoint";
+	String CONFIRMENTERVIEWPOINT_DEFAULT
+        = "Tack för din synpunkt. Den är nu registrerad som ett ärende på "
+        + "Nacka24. En handläggare kommer att hantera och besvara ärendet.";
+
     /**
      * Creates a new viewpoint and stores it in the database.
      *

@@ -13,10 +13,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/28 08:31:41 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -29,19 +29,41 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         = "viewpoint.originalViewpoint";
     public final static String ORIGINALVIEWPOINT_DEFAULT
         = "Ursprunglig synpunkt";
+	private final static String CONFIRMSUBJECT_KEY
+        = "viewpoint.confirmEnterViewpointSubject";
+	private final static String CONFIRMSUBJECT_DEFAULT
+        = "Tack för din synpunkt";
 
     public void createViewpoint (final User user, final String subject,
-                          final String message, final String category,
-                          final int handlerGroupId)
+                                 final String body, final String category,
+                                 final int handlerGroupId)
         throws CreateException, RemoteException {
 		final Viewpoint viewpoint = getViewpointHome ().create ();
-
+        
 		viewpoint.setUser (user);
 		viewpoint.setSubject (subject);
-		viewpoint.setMessage (message);
+		viewpoint.setMessage (body);
 		viewpoint.setCategory (category);
   		viewpoint.setHandlerGroupId (handlerGroupId);
 		viewpoint.store();
+
+        final String messageBody
+                = getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
+                                      CONFIRMENTERVIEWPOINT_DEFAULT)
+                + "\n\n-------------------------------------------------------"
+                + "-----\n\n" + category + "\n\n" + subject + "\n\n" + body
+                + "\n";
+        final String messageSubject
+                = getLocalizedString (CONFIRMSUBJECT_KEY,
+                                      CONFIRMSUBJECT_DEFAULT);
+        final int userId = viewpoint.getUserId ();
+		final MessageBusiness messageBusiness
+                = (MessageBusiness) IBOLookup.getServiceInstance
+                (getIWApplicationContext(), MessageBusiness.class);
+		final Message message = messageBusiness.createUserMessage
+                (viewpoint.getUserId (), messageSubject, messageBody);
+		message.setParentCase(viewpoint);
+		message.store();
     }
 
     public Viewpoint [] findUnhandledViewpointsInGroups

@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/18 10:54:26 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/28 08:31:41 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -58,40 +58,66 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String ANSWER_DEFAULT = "Svar till medborgare";
 	private final static String APPLIES_KEY = "viewpoint.applies";
 	private final static String APPLIES_DEFAULT = "Avser";
-	private final static String CONFIRMANSWERSENT_KEY = "viewpoint.confirmAnswerSent";
-	private final static String CONFIRMANSWERSENT_DEFAULT = "Ditt svar har nu skickats till medborgaren.";
-	private final static String CONFIRMENTERVIEWPOINT_KEY = "viewpoint.confirmEnterViewpoint";
-	private final static String CONFIRMENTERVIEWPOINT_DEFAULT = "Tack för din synpunkt. Den är nu registrerad som ett ärende på " + "BUN24. En handläggare kommer att hantera och besvara ärendet.";
-	private final static String CONFIRMSETHANDLER_KEY = "viewpoint.confirmSetHandler";
-	private final static String CONFIRMSETHANDLER_DEFAULT = "Du är nu registrerad som handläggare för det här ärendet.";
+	private final static String CONFIRMANSWERSENT_KEY
+        = "viewpoint.confirmAnswerSent";
+	private final static String CONFIRMANSWERSENT_DEFAULT
+        = "Ditt svar har nu skickats till medborgaren.";
+	private final static String CONFIRMENTERVIEWPOINT_KEY
+        = ViewpointBusiness.CONFIRMENTERVIEWPOINT_KEY;
+	private final static String CONFIRMENTERVIEWPOINT_DEFAULT
+        = ViewpointBusiness.CONFIRMENTERVIEWPOINT_DEFAULT;
+	private final static String CONFIRMSETHANDLER_KEY
+        = "viewpoint.confirmSetHandler";
+	private final static String CONFIRMSETHANDLER_DEFAULT
+        = "Du är nu registrerad som handläggare för det här ärendet.";
 	private final static String CONTINUE_KEY = "viewpoint.continue";
 	private final static String CONTINUE_DEFAULT = "Fortsätt";
 	private final static String DESCRIPTION1_KEY = "viewpoint.description1";
-	private final static String DESCRIPTION1_DEFAULT = "När du använder 'Synpunkter' i BUN24 så ska du ange vilken typ av " + "synpunkter du vill lämna. Det möjliggör för oss att länka dem till " + "rätt tjänsteman för snabb handläggning och respons. De olika " + "kategorierna ger också möjlighet till en systematisk uppföljning av " + "hur medborgarna uppfattar verksamhet och service i kommunen.";
+	private final static String DESCRIPTION1_DEFAULT
+        = "När du använder 'Synpunkter' i Nacka24 så ska du ange vilken typ av "
+        + "synpunkter du vill lämna. Det möjliggör för oss att länka dem till "
+        + "rätt tjänsteman för snabb handläggning och respons. De olika "
+        + "kategorierna ger också möjlighet till en systematisk uppföljning av "
+        + "hur medborgarna uppfattar verksamhet och service i kommunen.";
 	private final static String DESCRIPTION2_KEY = "viewpoint.description2";
-	private final static String DESCRIPTION2_DEFAULT = "Problem ska i första hand lösas där de uppstår. Om du har " + "synpunkter på hur en enskild skola eller förskola fungerar så ska " + "du därför i första hand vända dig till personal, rektor eller " + "förskolechef.";
-	private final static String ENTERSUBCATEGORY_KEY = "viewpoint.enterSubCategory";
-	private final static String ENTERSUBCATEGORY_DEFAULT = "Vilket underområde vill du ge synpunkter om?";
-	private final static String ENTERTOPCATEGORY_KEY = "viewpoint.enterTopCategory";
-	private final static String ENTERTOPCATEGORY_DEFAULT = "Vilket område vill du ge synpunkter om?";
+	private final static String DESCRIPTION2_DEFAULT
+        = "Problem ska i första hand lösas där de uppstår. Om du har "
+        + "synpunkter på hur en enskild skola eller förskola fungerar så ska "
+        + "du därför i första hand vända dig till personal, rektor eller "
+        + "förskolechef.";
+	private final static String ENTERSUBCATEGORY_KEY
+        = "viewpoint.enterSubCategory";
+	private final static String ENTERSUBCATEGORY_DEFAULT
+        = "Vilket underområde vill du ge synpunkter om?";
+	private final static String ENTERTOPCATEGORY_KEY
+        = "viewpoint.enterTopCategory";
+	private final static String ENTERTOPCATEGORY_DEFAULT
+        = "Vilket område vill du ge synpunkter om?";
 	private final static String FROMCITIZEN_KEY = "viewpoint.fromCitizen";
 	private final static String FROMCITIZEN_DEFAULT = "Från medborgare";
-	private final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY = "viewpoint.iAcceptToHandleThisViewpoint";
-	private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT = "Jag accepterar att handlägga den här synpunkten";
+	private final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
+        = "viewpoint.iAcceptToHandleThisViewpoint";
+	private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
+        = "Jag accepterar att handlägga den här synpunkten";
 	private final static String MESSAGE_KEY = "viewpoint.message";
 	private final static String MESSAGE_DEFAULT = "Meddelande";
 	private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
-	private final static String NOTLOGGEDON_DEFAULT = "Du måste vara inloggad för att använda den här funktionen.";
-	private final static String SENDANSWERTOCITIZEN_KEY = "viewpoint.sendAnswerToCitizen";
-	private final static String SENDANSWERTOCITIZEN_DEFAULT = "Skicka svar till medborgare";
+	private final static String NOTLOGGEDON_DEFAULT
+        = "Du måste vara inloggad för att använda den här funktionen.";
+	private final static String SENDANSWERTOCITIZEN_KEY
+        = "viewpoint.sendAnswerToCitizen";
+	private final static String SENDANSWERTOCITIZEN_DEFAULT
+        = "Skicka svar till medborgare";
 	private final static String SUBJECT_KEY = "viewpoint.subject";
 	private final static String SUBJECT_DEFAULT = "Rubrik";
-	private final static String SUBMITVIEWPOINT_KEY = "viewpoint.submitViewpoint";
+	private final static String SUBMITVIEWPOINT_KEY
+        = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
 	private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
 	private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
 	private final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
-	private final static String GOBACKTOMYPAGE_DEFAULT = "Tillbaka till Min sida";
+	private final static String GOBACKTOMYPAGE_DEFAULT
+        = "Tillbaka till Min sida";
 
 	private final static String UNKNOWN_PAGE = "Unknown Page";
 
