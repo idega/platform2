@@ -25,10 +25,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/12/03 15:41:40 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/04 12:21:12 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -489,7 +489,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         return calendar.getTime ();
     }
 
-    private SchoolClassMember getCurrentSchoolClassMembership
+    /*private SchoolClassMember getCurrentSchoolClassMembership
         (final SchoolCommuneBusiness communeBusiness, final User user,
          final int schoolId) throws RemoteException {
         return null == user ? null
@@ -497,7 +497,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
                    ? communeBusiness.getCurrentSchoolClassMembership (user,
                                                                       schoolId)
                    : communeBusiness.getCurrentSchoolClassMembership (user));
-    }
+    }*/
 
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
