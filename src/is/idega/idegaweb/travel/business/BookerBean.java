@@ -194,7 +194,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
   private  int getBookingsTotalCount(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws RemoteException{
     if (resellerId != -1) {
       try {
-        Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
+				Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
         Iterator iter = reseller.getChildren();
         Product product = getProductBusiness().getProduct(serviceId);
         List items = new Vector();
