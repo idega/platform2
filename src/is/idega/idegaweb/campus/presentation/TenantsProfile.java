@@ -109,7 +109,7 @@ public class TenantsProfile extends Block {
    *
    */
   public void main(IWContext iwc) {
-    debugParameters(iwc);
+    //debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
     try {
