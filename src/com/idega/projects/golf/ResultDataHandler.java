@@ -83,6 +83,7 @@ public class ResultDataHandler {
         int tournamentGroupId = RS.getInt("tournament_group_id");
         String abbrevation = RS.getString("abbrevation");
         int tournamentPosition = RS.getInt("tournament_position");
+        int dismissal = RS.getInt("dismissal_id");
 
         ResultsCollector r = (ResultsCollector)hash.get(Integer.toString(member_id));
         if (r == null) {
@@ -94,6 +95,7 @@ public class ResultDataHandler {
           r.setTournamentGroupId(tournamentGroupId);
           r.setAbbrevation(abbrevation);
           r.setTournamentPosition(tournamentPosition);
+          r.setDismissal(dismissal);
           hash.put(Integer.toString(member_id),r);
         }
 
@@ -145,7 +147,7 @@ public class ResultDataHandler {
 
   private String getSQLString() {
     StringBuffer sql = new StringBuffer();
-      sql.append("select m.member_id,m.first_name,m.middle_name,m.last_name,u.abbrevation,tm.tournament_group_id,tm.tournament_position");
+      sql.append("select m.member_id,m.first_name,m.middle_name,m.last_name,u.abbrevation,tm.tournament_group_id,tm.tournament_position, tm.dismissal_id");
       sql.append(" from tournament t, member m, tournament_member tm, union_ u");
       sql.append(" where m.member_id = tm.member_id");
       sql.append(" and tm.tournament_id = t.tournament_id");

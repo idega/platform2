@@ -171,6 +171,11 @@ public class TournamentResults extends JModuleObject {
       if ( result != null )
         size = result.size();
 
+      Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard","Scorecard"),650,650,"/tournament/handicap_skor.jsp");
+      Image linkImage = iwb.getImage("shared/view.gif",iwrb.getLocalizedString("tournament.view_scorecard","View scorecards"),9,18);
+        linkImage.setHorizontalSpacing(4);
+        linkImage.setAttribute("align","absmiddle");
+
       for ( int a = 0; a < size; a++ ) {
         ResultsCollector collector = (ResultsCollector) result.elementAt(a);
         int handicap = collector.getHandicap();
@@ -181,10 +186,6 @@ public class TournamentResults extends JModuleObject {
 
         Text memberText = new Text(collector.getName());
           memberText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard","Scorecard"),650,650,"/tournament/handicap_skor.jsp");
-        Image linkImage = iwb.getImage("shared/view.gif",iwrb.getLocalizedString("tournament.view_scorecard","View scorecards"),9,18);
-          linkImage.setHorizontalSpacing(4);
-          linkImage.setAttribute("align","absmiddle");
         Link seeScores = new Link(linkImage,scoreWindow);
                 seeScores.addParameter("member_id",collector.getMemberId());
                 seeScores.addParameter("tournament_id",tournamentId_);
@@ -350,6 +351,19 @@ public class TournamentResults extends JModuleObject {
         myTable.add(lastNineText,7,a+3);
         myTable.setHeight(a+3,"20");
 
+        if ( collector.getDismissal() > 0 ) {
+          Dismissal dismissal = new Dismissal(collector.getDismissal());
+
+          Image dismissImage = iwb.getImage("shared/red.gif");
+            dismissImage.setHorizontalSpacing(4);
+            dismissImage.setAttribute("align","absmiddle");
+          if ( dismissal.getName() != null ) {
+            dismissImage.setName(dismissal.getName());
+          }
+
+          myTable.add(dismissImage,2,a+3);
+        }
+
       }
       for ( int c = 1; c <= numberOfColumns; c++ ) {
         if ( c != 2 ) {
@@ -395,12 +409,12 @@ public class TournamentResults extends JModuleObject {
       addHeaders(backNine,column+1,2);
 
       String roundShort = iwrb.getLocalizedString("tournament.round_short","R");
-      if ( tournament.getNumberOfRounds() > 4 ) {
+      if ( tournament.getNumberOfRounds() >= 4 ) {
         roundShort = iwrb.getLocalizedString("tournament.day_short","D");
       }
 
       String rounds = iwrb.getLocalizedString("tournament.rounds","Rounds");
-      if ( tournament.getNumberOfRounds() > 4 ) {
+      if ( tournament.getNumberOfRounds() >= 4 ) {
         rounds = iwrb.getLocalizedString("tournament.days","Days");
       }
 

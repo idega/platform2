@@ -570,6 +570,37 @@ public class Tournament extends GolfEntity{
 
 	}
 
+	public int getDismissal(Member member) throws SQLException {
+		return getDismissal(member.getID());
+	}
+
+	public int getDismissal(int member_id)throws SQLException{
+		Connection conn= null;
+		Statement Stmt= null;
+                int returner = 0;
+		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
+                    ResultSet RS = Stmt.executeQuery("Select DISMISSAL_ID from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+                    if (RS.next()) {
+                        returner = RS.getInt("DISMISSAL_ID");
+                    }
+
+		}
+		finally{
+			if (Stmt != null){
+				Stmt.close();
+			}
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+
+                return returner;
+
+	}
+
 
 
 	public void setPosition(Member member, int position) throws SQLException{
@@ -596,6 +627,29 @@ public class Tournament extends GolfEntity{
 		}
 	}
 
+	public void setDismissal(Member member, int dismissalID) throws SQLException{
+		setDismissal(member.getID(),dismissalID);
+	}
+
+	public void setDismissal(int member_id, int dismissalID) throws SQLException{
+		Connection conn= null;
+		Statement Stmt= null;
+		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
+                    Stmt.executeUpdate("UPDATE TOURNAMENT_MEMBER set dismissal_id = "+dismissalID+" where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+
+		}
+		finally{
+			if (Stmt != null){
+				Stmt.close();
+			}
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+	}
 
 	public int getTournamentMemberUnionId(Member member)throws SQLException{
             return getTournamentMemberUnionId(member.getID());

@@ -52,13 +52,14 @@ private Table resultTable;
   public ResultsViewer(int tournamentId_) {
     tournamentID=tournamentId_;
     myForm = new Form();
+      myForm.setName("resultform");
   }
 
   public void main(ModuleInfo modinfo) {
     try {
       iwrb = getResourceBundle(modinfo);
       tournament = new Tournament(tournamentID);
-      if ( tournament.getNumberOfRounds() > 4 ) {
+      if ( tournament.getNumberOfRounds() >= 4 ) {
         championship = true;
       }
 
