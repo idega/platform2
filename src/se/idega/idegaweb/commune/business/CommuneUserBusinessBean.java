@@ -11,6 +11,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -559,9 +560,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	public boolean hasBankLogin(int userID) {
-		if (userID != -1)
+		if (userID != -1){
 			return false;
-		return false;
+		} else {
+			try {
+				return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(userID);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}				
+		}
 	}
 	
 	public boolean hasBankLogin(User user) {
