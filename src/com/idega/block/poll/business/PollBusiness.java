@@ -384,6 +384,8 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     }
 
     locText.setHeadline(pollQuestionString);
+		locText.setBody("");
+		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
 
     if ( newLocText ) {
       locText.setLocaleId(iLocaleID);
