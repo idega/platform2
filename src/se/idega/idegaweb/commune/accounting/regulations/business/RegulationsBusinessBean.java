@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.63 2003/11/13 12:36:26 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.64 2003/11/14 13:32:41 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1043,13 +1043,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
-
-		arr.add(new Object[] { new Integer(1), "1-15" });
-		arr.add(new Object[] { new Integer(2), "16-25" });
-		arr.add(new Object[] { new Integer(3), "26-35" });
-		arr.add(new Object[] { new Integer(4), ">=36" });
-		arr.add(new Object[] { new Integer(5), "<=13" });
-		arr.add(new Object[] { new Integer(6), ">=14" });
+        int index = 1;
+		arr.add(new Object[] { new Integer(index++), "1-25" });
+		arr.add(new Object[] { new Integer(index++), "26-35" });
+		arr.add(new Object[] { new Integer(index++), ">=36" });
+		arr.add(new Object[] { new Integer(index++), "<=24" });
+		arr.add(new Object[] { new Integer(index++), ">=25" });
+		arr.add(new Object[] { new Integer(index++), "<=13" });
+		arr.add(new Object[] { new Integer(index++), ">=14" });
+		arr.add(new Object[] { new Integer(index++), "1-15" });
+		arr.add(new Object[] { new Integer(index++), "16-25" });
 
 		return arr;
 	}
