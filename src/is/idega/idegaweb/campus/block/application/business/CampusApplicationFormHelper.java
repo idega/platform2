@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.6 2002/04/04 15:13:23 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.7 2002/04/04 19:05:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 public class CampusApplicationFormHelper extends ApplicationFormHelper {
+
   /**
    *
    */
@@ -193,22 +194,26 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     int studyBeginYr = 0;
     int studyEndMo = 0;
     int studyEndYr = 0;
-    String faculty = iwc.getParameter("faculty");
-    String studyTrack = iwc.getParameter("studyTrack");
+    int spouseStudyBeginMo = 0;
+    int spouseStudyBeginYr = 0;
+    int spouseStudyEndMo = 0;
+    int spouseStudyEndYr = 0;
     int currentResidence = 0;
     int spouseOccupation = 0;
+
+    String faculty = iwc.getParameter("faculty");
+    String studyTrack = iwc.getParameter("studyTrack");
     String resInfo = iwc.getParameter("resInfo");
     String spouseName = iwc.getParameter("spouseName");
     String spouseSSN = iwc.getParameter("spouseSSN");
     String spouseSchool = iwc.getParameter("spouseSchool");
     String spouseStudyTrack = iwc.getParameter("spouseStudyTrack");
-    int spouseStudyBeginMo = 0;
-    int spouseStudyBeginYr = 0;
-    int spouseStudyEndMo = 0;
-    int spouseStudyEndYr = 0;
+    String studyBegin = iwc.getParameter("studyBegin");
+    String studyEnd = iwc.getParameter("studyEnd");
+    String spouseStudyBegin = iwc.getParameter("spouseStudyBegin");
+    String spouseStudyEnd = iwc.getParameter("spouseStudyEnd");
+
     String children = iwc.getParameter("children");
-    //int income = 0;
-    //int spouseIncome = 0;
     String wantHousingFrom = iwc.getParameter("wantHousingFrom");
     String waitingList = iwc.getParameter("waitingList");
     String furniture = iwc.getParameter("furniture");
@@ -230,57 +235,50 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     }
     catch(java.lang.NumberFormatException e) {}
 
-    try {
-      studyBeginMon = Integer.parseInt(iwc.getParameter("studyBeginMo"));
-    }
-    catch(java.lang.NumberFormatException e) {}
+    if(studyBegin!=null){
+      try{
+      idegaTimestamp stamp = new idegaTimestamp(studyBegin);
+      studyBeginMon = stamp.getMonth();
+      studyBeginYr = stamp.getYear();
+      }
+      catch(Exception ex){
 
-    try {
-      studyBeginYr = Integer.parseInt(iwc.getParameter("studyBeginYr"));
+      }
     }
-    catch(java.lang.NumberFormatException e) {}
 
-    try {
-      studyEndMo = Integer.parseInt(iwc.getParameter("studyEndMo"));
-    }
-    catch(java.lang.NumberFormatException e) {}
+    if(studyEnd!=null){
+      try{
+      idegaTimestamp stamp = new idegaTimestamp(studyEnd);
+      studyEndMo = stamp.getMonth();
+      studyEndYr = stamp.getYear();
+      }
+      catch(Exception ex){
 
-    try {
-      studyEndYr = Integer.parseInt(iwc.getParameter("studyEndYr"));
+      }
     }
-    catch(java.lang.NumberFormatException e) {}
 
-    /*
-    try {
-      spouseIncome = Integer.parseInt(iwc.getParameter("spouseIncome"));
-    }
-    catch(java.lang.NumberFormatException e) {}
-    */
-    try {
-      spouseStudyBeginMo = Integer.parseInt(iwc.getParameter("spouseStudyBeginMo"));
-    }
-    catch(java.lang.NumberFormatException e) {}
+    if(spouseStudyBegin!=null){
+      try{
+      idegaTimestamp stamp = new idegaTimestamp(spouseStudyBegin);
+      spouseStudyBeginMo = stamp.getMonth();
+      spouseStudyBeginYr = stamp.getYear();
+      }
+      catch(Exception ex){
 
-    try {
-      spouseStudyBeginYr = Integer.parseInt(iwc.getParameter("spouseStudyBeginYr"));
+      }
     }
-    catch(java.lang.NumberFormatException e) {}
 
-    try {
-      spouseStudyEndMo = Integer.parseInt(iwc.getParameter("spouseStudyEndMo"));
-    }
-    catch(java.lang.NumberFormatException e) {}
+    if(spouseStudyEnd!=null){
+      try{
+      idegaTimestamp stamp = new idegaTimestamp(spouseStudyEnd);
+      spouseStudyEndMo = stamp.getMonth();
+      spouseStudyEndYr = stamp.getYear();
+      }
+      catch(Exception ex){
 
-    try {
-      spouseStudyEndYr = Integer.parseInt(iwc.getParameter("spouseStudyEndYr"));
+      }
     }
-    catch(java.lang.NumberFormatException e) {}
-/*
-    try {
-      income = Integer.parseInt(iwc.getParameter("income"));
-    }
-    catch(java.lang.NumberFormatException e) {}
-*/
+
     application.setCurrentResidenceId(currentResidence);
     application.setSpouseOccupationId(spouseOccupation);
     application.setStudyBeginMonth(studyBeginMon);

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.15 2002/03/18 15:51:22 palli Exp $
+ * $Id: ApplicationFinder.java,v 1.16 2002/04/04 19:08:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.block.application.business;
 
+import com.idega.data.IDOFinderException;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationSubject;
@@ -248,5 +249,15 @@ public class ApplicationFinder {
       e.printStackTrace();
       return(null);
     }
+  }
+
+  public List lookupSSN(String ssn){
+    try {
+      return EntityFinder.getInstance().findAllByColumn(Applicant.class,Applicant.getSSNColumnName(),ssn);
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 }

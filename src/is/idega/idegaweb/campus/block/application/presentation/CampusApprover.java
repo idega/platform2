@@ -46,7 +46,7 @@ public class CampusApprover extends Block{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private int iSubjectId = -1;
-  private String sGlobalStatus = "S",sGlobalOrder = Applicant.getFullnameOrderValue();
+  private String sGlobalStatus = "S",sGlobalOrder = null;
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private final String sView = "app_view",sEdit = "app_edit";
@@ -90,6 +90,7 @@ public class CampusApprover extends Block{
     }
     if(iwc.getParameter("global_order")!=null){
       this.sGlobalOrder= (iwc.getParameter("global_order"));
+      if(sGlobalOrder !=null)
       iwc.setSessionAttribute("gl_order",sGlobalOrder);
     }
     else if(iwc.getSessionAttribute("gl_order")!=null){
@@ -295,8 +296,8 @@ public class CampusApprover extends Block{
     T.add(headerText(iwrb.getLocalizedString("po","PO")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("phone","Residence phone")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
-    T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
-    T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
+    //T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
+    //T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
     /*
     Table T = new Table();
       T.setCellpadding(2);
@@ -1436,11 +1437,15 @@ public class CampusApprover extends Block{
   }
 
   public Text headerText(String text){
+    return Edit.formatText(text);
+    /*
     Text T = new Text(text);
     T.setBold();
     //T.setFontColor(Edit.colorWhite);
-    T.setFontSize(1);
+    T.setFontSize(2);
+
     return T;
+    */
   }
 
   public Link getTrashLink(PresentationObject MO,int cam_app_id){
