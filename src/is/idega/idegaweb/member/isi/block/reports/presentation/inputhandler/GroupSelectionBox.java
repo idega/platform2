@@ -74,7 +74,6 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		super(name);
 		this.groupType = groupType;
 		this.metaDataMap = metaDataMap;
-		System.out.println("Metadata map set to: " + metaDataMap);
 	}
 
 	public GroupSelectionBox() {
