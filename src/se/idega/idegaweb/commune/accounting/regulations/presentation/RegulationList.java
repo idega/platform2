@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.8 2003/10/03 15:18:02 kjell Exp $
+ * $Id: RegulationList.java,v 1.9 2003/10/03 15:50:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.8 2003/10/03 15:18:02 kjell Exp $
+ * $Id: RegulationList.java,v 1.9 2003/10/03 15:50:26 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -74,6 +74,10 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_REMOVE_CONFIRM = PP + "remove_confirm";
 	private final static String KEY_REMOVE = PP + "remove";
 	private final static String KEY_SEARCH = PP + "search";
+
+	private final static String KEY_LIST_EDIT = PP + "list_edit";
+	private final static String KEY_LIST_COPY = PP + "list_copy";
+	private final static String KEY_LIST_DELETE = PP + "list_delete";
 
 	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
@@ -201,8 +205,6 @@ public class RegulationList extends AccountingBlock {
 	private ListTable getRegulationTable(IWContext iwc) {
 
 		RegulationsBusiness rBiz;
-		
-		
 		ListTable list = new ListTable(this, 9);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
@@ -211,9 +213,9 @@ public class RegulationList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_CONDITION_TYPE, "Villkorstyp", 4);
 		list.setLocalizedHeader(KEY_CONDITION_ORDER, "Villkorsordning", 5);
 		list.setLocalizedHeader(KEY_REG_SPEC_TYPE, "Regel-spec. typ", 6);
-		list.setHeader("", 7);
-		list.setHeader("", 8);
-		list.setHeader("", 9);
+		list.setLocalizedHeader(KEY_LIST_EDIT, "Redigera", 7);
+		list.setLocalizedHeader(KEY_LIST_COPY, "Kopiera", 8);
+		list.setLocalizedHeader(KEY_LIST_DELETE, "Ta bort", 9);
 		
 		try {
 			rBiz = getRegulationBusiness(iwc);
