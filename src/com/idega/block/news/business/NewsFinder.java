@@ -86,8 +86,8 @@ public class NewsFinder {
     query.addCriteria(new MatchCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), MatchCriteria.EQUALS, newsCategoryId));
     if (!ignorePublishingDates ) {
     	IWTimestamp today = IWTimestamp.RightNow();
-      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.GREATEREQUAL, today.getDate());
-      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.LESSEQUAL, today.getDate());
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getDate());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getDate());
       	query.addCriteria(new OR(from, to));
     }
     query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
@@ -165,8 +165,8 @@ public class NewsFinder {
       query.addCriteria(new MatchCriteria(text, LocalizedTextBMPBean.getColumnNameLocaleId(), MatchCriteria.EQUALS, iLocaleId));
       if (!ignorePublishingDates ) {
       	IWTimestamp today = IWTimestamp.RightNow();
-      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.GREATEREQUAL, today.getDate());
-      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.LESSEQUAL, today.getDate());
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getDate());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getDate());
       	query.addCriteria(new OR(from, to));
       }
       query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
