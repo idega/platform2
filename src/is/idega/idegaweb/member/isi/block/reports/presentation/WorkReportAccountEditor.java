@@ -26,7 +26,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
-import is.idega.idegaweb.member.util.IWMemberConstants;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
@@ -89,13 +89,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     specialFieldList = new ArrayList();
     
     specialFieldList.add(LEAGUE_NAME);
-    specialFieldList.add(IWMemberConstants.INCOME_SUM_KEY);
-    specialFieldList.add(IWMemberConstants.EXPONSES_SUM_KEY);
-    specialFieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
-    specialFieldList.add(IWMemberConstants.ASSET_SUM_KEY);
-    specialFieldList.add(IWMemberConstants.DEBT_SUM_KEY); 
-    for (int i = 0; i < IWMemberConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
-      specialFieldList.add(IWMemberConstants.NOT_EDITABLE_FIN_NAMES[i]);
+    specialFieldList.add(WorkReportConstants.INCOME_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.EXPONSES_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.INCOME_EXPONSES_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.ASSET_SUM_KEY);
+    specialFieldList.add(WorkReportConstants.DEBT_SUM_KEY); 
+    for (int i = 0; i < WorkReportConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
+      specialFieldList.add(WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i]);
     }
   }   
 
@@ -269,7 +269,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // (the column value is null but the getIntValue-method returns -1 
       Integer groupId = new Integer(record.getWorkReportGroupId());
       if (groupId.intValue() == -1) {
-        groupId = IWMemberConstants.MAIN_BOARD_ID;
+        groupId = WorkReportConstants.MAIN_BOARD_ID;
       }
       Integer accountKey = new Integer(record.getAccountKeyId());
       leagueKeyMatrix.put(groupId, accountKey, record);
@@ -354,14 +354,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // add sorted keys to the fields
     fieldList.add(LEAGUE_NAME);
     addKeys(incomeKeys,INCOME);
-    fieldList.add(IWMemberConstants.INCOME_SUM_KEY);
+    fieldList.add(WorkReportConstants.INCOME_SUM_KEY);
     addKeys(exponsesKeys,EXPONSES);
-    fieldList.add(IWMemberConstants.EXPONSES_SUM_KEY);
-    fieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
+    fieldList.add(WorkReportConstants.EXPONSES_SUM_KEY);
+    fieldList.add(WorkReportConstants.INCOME_EXPONSES_SUM_KEY);
     addKeys(assetKeys,ASSET);
-    fieldList.add(IWMemberConstants.ASSET_SUM_KEY);
+    fieldList.add(WorkReportConstants.ASSET_SUM_KEY);
     addKeys(debtKeys,DEBT);
-    fieldList.add(IWMemberConstants.DEBT_SUM_KEY);
+    fieldList.add(WorkReportConstants.DEBT_SUM_KEY);
 
   }    
   
@@ -416,14 +416,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       // handle the special case that the group id is null
-      String groupName = (group == null) ? IWMemberConstants.MAIN_BOARD : group.getName();
-      Integer groupId = (group == null) ? IWMemberConstants.MAIN_BOARD_ID : group.getGroupId();
+      String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD : group.getName();
+      Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : group.getGroupId();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
     // add new entry
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), IWMemberConstants.MAIN_BOARD));
+      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD));
     }
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
@@ -575,7 +575,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
           }
         }
         // add default value: no league (because main board members are not assigned to a league)
-        optionMap.put(IWMemberConstants.MAIN_BOARD, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
+        optionMap.put(WorkReportConstants.MAIN_BOARD, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
         return optionMap;
       }
     };     
@@ -918,26 +918,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       if (accountKeyName.equals(LEAGUE_NAME)) {
         return groupName;
       }
-      else if (accountKeyName.equals(IWMemberConstants.INCOME_SUM_KEY)) {
+      else if (accountKeyName.equals(WorkReportConstants.INCOME_SUM_KEY)) {
         float result = calculateAccountArea(INCOME);
         return new Float(result);
       }
-      else if (accountKeyName.equals(IWMemberConstants.EXPONSES_SUM_KEY)) {
+      else if (accountKeyName.equals(WorkReportConstants.EXPONSES_SUM_KEY)) {
         float result = calculateAccountArea(EXPONSES);
         return new Float(result);
 
       }
-      else if (accountKeyName.equals(IWMemberConstants.INCOME_EXPONSES_SUM_KEY))  {
+      else if (accountKeyName.equals(WorkReportConstants.INCOME_EXPONSES_SUM_KEY))  {
         float income = calculateAccountArea(INCOME);
         float exponses = calculateAccountArea(EXPONSES);
         float result = income - exponses;
         return new Float(result);
       }
-      else if (accountKeyName.equals(IWMemberConstants.ASSET_SUM_KEY))  {
+      else if (accountKeyName.equals(WorkReportConstants.ASSET_SUM_KEY))  {
         float result = calculateAccountArea(ASSET);
         return new Float(result);
       }
-      else if (accountKeyName.equals(IWMemberConstants.DEBT_SUM_KEY)) {
+      else if (accountKeyName.equals(WorkReportConstants.DEBT_SUM_KEY)) {
         float result = calculateAccountArea(DEBT);
         return new Float(result);
       }
