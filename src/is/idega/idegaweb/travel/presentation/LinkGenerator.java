@@ -24,6 +24,9 @@ public class LinkGenerator extends TravelWindow {
 	public static final String PROPERTY_SERVER_NAME = "server_name";
 	public static final String PROPERTY_REFUNDER_PAGE_ID = "refunder_form_page_id";
 	public static final String PROPERTY_CVC_EXPLANATION_PAGE = "cvc_explanation_page";
+	public static final String PROPERTY_PRIVACY_STATEMENT = "privacy_statement_page_id";
+	public static final String PROPERTY_TERMS_AND_CONDITION = "terms_and_conditions_page_id";
+	
   public static String parameterProductId = "linkGeneratorProductId";
   //private static String http = "http";
   private static Class defaultClass = PublicBooking.class;
@@ -171,5 +174,39 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
 
   		return link;
 	}
+  
+  public static Link getLinkToPrivacyStatement(IWContext iwc, Text text) {
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	
+		String pageID = iwb.getProperty(PROPERTY_PRIVACY_STATEMENT);
+		StringBuffer url = getUrlToPage(iwc,null);
+  		Window window = new Window(text.getText(), 400, 500, url.toString());
+  		
+		Link link = new Link(text, window);
+  		//Link link = new Link(text, window);
+		if (pageID != null) {
+			link.setPage(Integer.parseInt(pageID));
+		}
+  		link.setTarget(Link.TARGET_BLANK_WINDOW);
+
+  		return link;  }
+  
+  public static Link getLinkToTermsAndContition(IWContext iwc, Text text) {
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	
+		String pageID = iwb.getProperty(PROPERTY_TERMS_AND_CONDITION);
+		StringBuffer url = getUrlToPage(iwc,null);
+  		Window window = new Window(text.getText(), 400, 500, url.toString());
+  		
+		Link link = new Link(text, window);
+  		//Link link = new Link(text, window);
+		if (pageID != null) {
+			link.setPage(Integer.parseInt(pageID));
+		}
+  		link.setTarget(Link.TARGET_BLANK_WINDOW);
+
+  		return link;  }
   
 }

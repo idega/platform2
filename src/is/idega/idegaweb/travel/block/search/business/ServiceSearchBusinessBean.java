@@ -10,9 +10,9 @@ import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
@@ -23,19 +23,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
-
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.PriceCategory;
-import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -46,8 +42,6 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.data.GenericGroupHome;
-import com.idega.core.location.data.PostalCode;
-import com.idega.core.location.data.PostalCodeHome;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
@@ -55,10 +49,9 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -69,20 +62,6 @@ import com.idega.util.IWTimestamp;
  */
 public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
 
-	private String PARAMETER_POSTAL_CODE_ICELAND = "post_ice";
-	private String PARAMETER_POSTAL_CODE_REYKJAVIK = "post_rey";
-	private String PARAMETER_POSTAL_CODE_REYKJAVIK_AREA = "post_reya";
-	private String PARAMETER_POSTAL_CODE_WEST_ICELAND = "post_wice";
-	private String PARAMETER_POSTAL_CODE_WEST_FJORDS = "post_fjo";
-	//private String PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND = "post_nwice";
-	//private String PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND = "post_neice";
-	private String PARAMETER_POSTAL_CODE_NORTH_ICELAND = "post_nice";
-	private String PARAMETER_POSTAL_CODE_EAST_ICELAND = "post_eice";
-	private String PARAMETER_POSTAL_CODE_SOUTH_ICELAND = "post_sice";
-	private String PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS = "post_wmi";
-	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
-	
-	private static DropdownMenu staticPostalCode = null;
 	private HashMap resultMap = new HashMap();
 	
 	
@@ -97,116 +76,6 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		getProductBusiness().addActionListener(this);
 	}
 
-	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb) throws RemoteException, FinderException {
-		if (staticPostalCode != null) {
-			return (DropdownMenu) staticPostalCode.clone();
-		}
-		
-		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-		Collection coll = pch.findAllOrdererByCode();
-
-		DropdownMenu menu = new DropdownMenu(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
-		if (coll != null && !coll.isEmpty()) {
-			PostalCode pc;
-			Iterator iter = coll.iterator();
-				
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_ICELAND, iwrb.getLocalizedString("travel.search.iceland", "Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK, iwrb.getLocalizedString("travel.search.reykjavik", "Reykjavik"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA, iwrb.getLocalizedString("travel.search.reykjavik_area", "Reykjav’k area"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_ICELAND, iwrb.getLocalizedString("travel.search.west_iceland", "West Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_WEST_FJORDS, iwrb.getLocalizedString("travel.search.westfjords", "Westfjords"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_ICELAND, iwrb.getLocalizedString("travel.search.north_iceland", "North Iceland"));
-//			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND, iwrb.getLocalizedString("travel.search.north_west_iceland", "North-west Iceland"));
-//			menu.addMenuElement(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND, iwrb.getLocalizedString("travel.search.north_east_iceland", "North-east Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_EAST_ICELAND, iwrb.getLocalizedString("travel.search.east_iceland", "East Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_SOUTH_ICELAND, iwrb.getLocalizedString("travel.search.south_iceland", "South Iceland"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS, iwrb.getLocalizedString("travel.search.westman_islands", "Westman islands"));
-			menu.addMenuElement("999", iwrb.getLocalizedString("travel.search.the_interiour", "The Interiour"));
-			menu.addMenuElement(PARAMETER_POSTAL_CODE_SPACER, "------------------------------");
-				
-			while (iter.hasNext()) {
-				pc = (PostalCode) iter.next();
-				if (!"999".equals(pc.getPostalCode())) {
-					menu.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode() + "  "+pc.getName());
-				}
-			}
-			menu.setSelectedElement(PARAMETER_POSTAL_CODE_ICELAND);
-		}
-		staticPostalCode = menu;
-		return menu;
-	}
-	
-	public Object[] getPostalCodeIds(IWContext iwc) throws IDOLookupException, FinderException {
-		String sPostalCode = iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
-		Object[] postalCodeIds = null;
-
-		if (sPostalCode != null) {
-			Vector ids = new Vector();
-			
-			
-			String from;
-			String to;
-			if ( sPostalCode.equals(PARAMETER_POSTAL_CODE_ICELAND) || sPostalCode.equals(PARAMETER_POSTAL_CODE_SPACER) ) {
-				from = "100";
-				to = "998";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK)) {
-				from = "100";
-				to = "199";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_REYKJAVIK_AREA)) {
-				from = "100";
-				to = "299";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_ICELAND)) {
-				from = "300";
-				to = "399";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WEST_FJORDS)) {
-				from = "400";
-				to = "499";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_ICELAND)) {
-				from = "500";
-				to = "699";
-//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND)) {
-//				from = "500";
-//				to = "599";
-//			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND)) {
-//				from = "600";
-//				to = "699";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_EAST_ICELAND)) {
-				from = "700";
-				to = "799";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_SOUTH_ICELAND)) {
-				from = "800";
-				to = "899";
-			} else if (sPostalCode.equals(PARAMETER_POSTAL_CODE_WESTMAN_ISLANDS)) {
-				from = "900";
-				to = "998";
-			} else if (sPostalCode.equals("999")) {
-				from = "999";
-				to = "999";
-			} else {
-				from = sPostalCode;
-				to = null;
-			}
-
-			PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-			PostalCode tpc;
-			Collection pks = null;
-			if ( to == null ) {
-				ids.add(new Integer(from));
-			 	//pks = pcHome.findByPostalCode(from);
-			} else {
-				pks = pcHome.findByPostalCodeFromTo(from, to);
-			}
-			if (pks != null && !pks.isEmpty()) {
-				Iterator iter = pks.iterator();
-				while (iter.hasNext()) {
-					ids.add(iter.next());
-				}
-			}
-						
-			postalCodeIds = ids.toArray();
-		}
-		return postalCodeIds;
-	}
 
 	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) {
 		List list = new Vector();
@@ -278,10 +147,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return list;
 	}
 
-	public Collection sortProducts(Collection productsToSort, PriceCategory priceCat, IWTimestamp bookingDate, int sortMethod) {
+	public Collection sortProducts(IWContext iwc, Collection productsToSort, PriceCategory priceCat, IWTimestamp bookingDate, int sortMethod) {
 		try {
 			//if (productComparator == null) {
-			ProductComparator	productComparator = new ProductComparator(sortMethod);
+			ProductComparator	productComparator = new ProductComparator(sortMethod, iwc.getCurrentLocale());
 				productComparator.setPriceCategoryValues(priceCat, -1, bookingDate);
 			//}
 			/** Gera betra */
@@ -300,7 +169,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
 	public Collection checkResults(IWContext iwc, Collection results) throws RemoteException {
 		if (results != null && !results.isEmpty()) {
+			System.out.println("ServiceSearchBusiness : checking reults : " +results.size());
 			results = getProductInstanceCollection(results);
+			System.out.println("ServiceSearchBusiness : results converted to products");
 			HashMap map = new HashMap();
 			Collection coll = new Vector();
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
@@ -340,10 +211,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product = (Product) iter.next();
-					productIsValid = getIsProductValid(iwc, product, from, to);
+					System.out.println("ServiceSearchBusiness : checking product : " +product.getProductName(iwc.getCurrentLocaleId()));
+					productIsValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
 					if (productIsValid) {
+						System.out.println("ServiceSearchBusiness : valid");
 						map.put(product, new Boolean(productIsValid));
 					}	else {
+						System.out.println("ServiceSearchBusiness : invalid");
 						toRemove.add(product);
 					}
 				} catch (Exception e1) {
@@ -352,74 +226,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			}
 			results.removeAll(toRemove);
 			return results;
+		} else {
+			System.out.println("ServiceSearchBusiness : No results");
 		}
 		return new Vector();
 	}
 
-	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws Exception {
-		IWTimestamp tmp;
-		Collection addresses;
-		int addressId;
-		int timeframeId;
-		Timeframe timeframe;
-		BookingForm bf;
-		ProductPrice[] prices;
-		boolean productIsValid	 = true;
-		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
-		bf = getServiceHandler().getBookingForm(iwc, product);
-		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
-		addressId = -1;
-		timeframeId = -1;
-		timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
-		if (timeframe != null) {
-			timeframeId = timeframe.getID();
-		}
-		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 
-		if (prices != null && prices.length > 0) { 
-			/** Not inserting product without proper price categories */
-			tmp = new IWTimestamp(from);
-			productIsValid = true;
-			while ( tmp.isEarlierThan(to) && productIsValid) {
-				/** Checking if day is available */
-				productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
-				
-				if (productIsValid) {
-					productIsValid = !bf.isFullyBooked(iwc, product, tmp);
-				}
-				if (productIsValid) {
-					productIsValid = !bf.isUnderBooked(iwc, product, tmp);
-				}
-				//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
-				//productIsValid = bus.getIfDay(iwc, product, tmp);
-				tmp.addDays(1);
-			}
-			return productIsValid;
-		}
-		return false;
-	}
-
-	public boolean isProductValid(Product product, IWTimestamp from, IWTimestamp to) throws Exception{
-		IWTimestamp tmp = new IWTimestamp(from);
-		boolean productIsValid = true;
-		BookingForm bf = getServiceHandler().getBookingForm((IWContext) getIWApplicationContext(), product);
-		while ( tmp.isEarlierThan(to) && productIsValid) {
-			/** Checking if day is available */
-			productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay((IWContext) getIWApplicationContext(), product, product.getTimeframes(), tmp, false, true);
-			
-			if (productIsValid) {
-				productIsValid = !bf.isFullyBooked((IWContext) getIWApplicationContext(), product, tmp);
-			}
-			if (productIsValid) {
-				productIsValid = !bf.isUnderBooked((IWContext) getIWApplicationContext(), product, tmp);
-			}
-			//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
-			//productIsValid = bus.getIfDay(iwc, product, tmp);
-			tmp.addDays(1);
-		}
-		return productIsValid;
-		//return getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
-	}
 
 	
 	private Collection getProductInstanceCollection(Collection pks) {
@@ -729,4 +542,12 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
 	}
 
+  protected BookingBusiness getBookingBusiness(IWApplicationContext iwac) {
+		try {
+			return (BookingBusiness) IBOLookup.getServiceInstance(iwac, BookingBusiness.class);
+		} catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+}
+	
 }

@@ -1,36 +1,20 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.block.search.presentation.ProductDetailFrame;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.ejb.FinderException;
-import javax.mail.MessagingException;
-import javax.transaction.TransactionManager;
-
 import com.idega.block.creditcard.business.CreditCardBusiness;
-import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
-import com.idega.block.creditcard.presentation.Receipt;
-import com.idega.block.creditcard.presentation.ReceiptWindow;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductHome;
-import com.idega.block.trade.stockroom.data.Settings;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
 import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.core.location.data.Address;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
@@ -40,10 +24,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.transaction.IdegaTransactionManager;
-import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
-import com.idega.util.SendMail;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -55,8 +36,6 @@ import com.idega.util.SendMail;
 
 public class PublicBooking extends TravelBlock  {
 
-  public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
-  
   IWResourceBundle iwrb;
   IWBundle bundle;
   Product product;
@@ -64,6 +43,8 @@ public class PublicBooking extends TravelBlock  {
 //  Timeframe[] timeframes;
   Supplier supplier;
   int productId = -1;
+  
+  private static final String STYLENAME_WHITE_LINK = "WhiteLink";
 
 	public static String PARAMETER_REFERRAL_URL = "pb_spm_ru";
   private IWTimestamp stamp;
@@ -77,6 +58,10 @@ public class PublicBooking extends TravelBlock  {
   private String parameterSubmitBooking = "publicBookingSubmitBooking";
   public static String parameterBookingVerified = "publicBookingBookingVerified";
 
+  private HashMap frames = new HashMap();
+  BookingForm bf;
+  boolean legalDay;
+  boolean fullyBooked;
 
   public PublicBooking() {
   }
@@ -86,7 +71,6 @@ public class PublicBooking extends TravelBlock  {
   			LocaleSwitcher ls = new LocaleSwitcher();
   			ls.actionPerformed(iwc);
     }
-    System.out.println("Locale in use = "+iwc.getCurrentLocale().toString());
   		super.main(iwc);
     init(iwc);
 
@@ -96,24 +80,15 @@ public class PublicBooking extends TravelBlock  {
     }
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
-	public static String getRefererUrl(IWContext iwc) {
-		String tmpUrl = iwc.getParameter(PARAMETER_REFERRAL_URL);
-		if (tmpUrl == null){
-			tmpUrl = (String) iwc.getSessionAttribute(PARAMETER_REFERRAL_URL);
-			if (tmpUrl == null) {
-				tmpUrl = iwc.getReferer();
-				if (tmpUrl != null && (tmpUrl.indexOf(iwc.getRequest().getServerName()) > -1)) {
-					return null;
-				} 
-			}
+	public Map getStyleNames() {
+		Map map = super.getStyleNames();
+		if (map == null) {
+			map = new HashMap();
 		}
-		iwc.setSessionAttribute(PARAMETER_REFERRAL_URL, tmpUrl);
-		return tmpUrl;
-	}
+		map.put(STYLENAME_WHITE_LINK, "");
+		return map;
+	}  
+	
 
 
   private void init(IWContext iwc) throws RemoteException{
@@ -158,6 +133,12 @@ public class PublicBooking extends TravelBlock  {
     text.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";");
       text.setFontColor("#000000");
   }
+  
+  private Text getWhiteText(String content) {
+  		Text text = new Text(content);
+  		text.setStyleClass(getStyleName(STYLENAME_WHITE_LINK));
+  		return text;
+  }
 
   private Text getText(String content) {
     Text temp = (Text) text.clone();
@@ -169,12 +150,6 @@ public class PublicBooking extends TravelBlock  {
       temp.setText(content);
     return temp;
   }
-  private Text getTextWhite(String content) {
-    Text temp = (Text) text.clone();
-      temp.setText(content);
-      temp.setFontColor("#FFFFFF");
-    return temp;
-  }
   private Text getBoldTextWhite(String content) {
     Text temp = (Text) boldText.clone();
       temp.setText(content);
@@ -184,57 +159,122 @@ public class PublicBooking extends TravelBlock  {
 
 
   private void displayForm(IWContext iwc) throws RemoteException, FinderException{
-      Table table = new Table(2,4);
-        table.setWidth("90%");
-        table.setAlignment("center");
-        table.setCellspacing(1);
-        table.setColor(TravelManager.WHITE);
-        table.setBorder(0);
+      Table table = new Table(3,6);
+	    table.setWidth("800");
+	    table.setAlignment("center");
+	    table.setCellspacing(0);
+	    table.setCellpadding(0);
+	    table.setBorder(0);
+	    table.setWidth(1, "175");
+	    table.setWidth(2, "5");
 
-      Image background = bundle.getImage("images/sb_background.gif");
-      Image seeAndBuy = iwrb.getImage("images/see_and_buy.gif");
+	    	if (product.getIsValid() && supplier.getIsValid()) {
+					try {
+						bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+						legalDay = bf.getIsDayVisible(iwc);
+			      fullyBooked = bf.isFullyBooked( iwc, product, stamp);
+			      table.add(rightBottom(iwc),3,3);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+	    	} else {
+	    		table.add(bf.getDisabledProduct(iwc), 3, 3);
+	    	} 
 
-      table.setBackgroundImage(1, 3, background);
-      table.setColor(1, 4, backgroundColor);
-      table.setColor(2, 2, "#CCCCCC");
-      table.setColor(2, 3, "#CCCCCC");
-      table.setColor(2, 4, "#CCCCCC");
-      table.setAlignment(1,1,"left");
-      table.setVerticalAlignment(1,2,"top");
       table.setVerticalAlignment(1,3,"top");
-      table.setVerticalAlignment(2,2,"top");
-      table.setVerticalAlignment(2,3,"top");
-      table.setAlignment(2,2,"center");
-      table.setAlignment(2,3,"center");
-      table.setHeight(2, "20");
-      table.setHeight(4, "20");
-      table.setWidth(2, "20");
+      table.setVerticalAlignment(3,3,"top");
+      //table.setAlignment(2,3,"center");
+     // table.setWidth(1, "20");
 
+      table.mergeCells(1, 1, 3, 1);
+      table.mergeCells(1, 2, 3, 2);
 
-      //table.add(seeAndBuy,1,1);
-      table.add(leftTop(iwc),1,2);
+      table.add(topHeader(iwc), 1, 1);
+      table.setCellpaddingBottom(1, 1, 2);
+      table.add(header(iwc), 1, 2);
+      table.setCellpaddingBottom(1, 2, 4);
       table.add(leftBottom(iwc),1,3);
-      table.add(rightTop(iwc),2,2);
-      table.add(rightBottom(iwc),2,3);
-      table.add(getTermsAndConditions(), 1, 4);
-      Image image = bundle.getImage("verisignseals/verisign_logo.gif");
-        image.setWidth(100);
-        image.setHeight(42);
-			String verisignUrl = bundle.getProperty("verisign_url");
-			if (verisignUrl == null) { 
-				verisignUrl = "https://digitalid.verisign.com/as2/a83d13ff1653ab8baf084d646faab5c9";
-			}
-			
-			Link verisign = new Link(image, verisignUrl);
-        verisign.setTarget(Link.TARGET_NEW_WINDOW);
-        verisign.setOutgoing(true);
-      table.add(verisign, 2,4);
-      table.setAlignment(2,4, "center");
-      table.setVerticalAlignment(2, 4, "bottom");
 
+      table.setRowHeight(4, "1");
+      table.setStyleClass(1, 4, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+      table.setStyleClass(3, 4, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+      
+      table.setRowHeight(5, "1");
+      Image idegaweb = bundle.getImage("/images/idegaweb.png");
+      //table.setCellpaddingLeft(1, 6, 10);
+      table.add(idegaweb, 1, 6);
+      table.setRowHeight(6, "25");
+      table.setCellpaddingLeft(1, 6, 10);
+      table.setStyleClass(1, 6, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+      table.setStyleClass(3, 6, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+      table.add(getTermsAndConditions(iwc), 3, 6);
+      table.setCellpaddingRight(3, 6, 10);
+
+      //ProductDetailFrame frame = getProductDetailFrame(product, iwc, 2);
+      //frame.add(leftBottom(iwc));
+      //add(frame);
       add(table);
   }
 
+  private Table topHeader(IWContext iwc) {
+  		Table table = new Table();
+  		table.setWidth("100%");
+  		table.setBorder(0);
+  		table.setCellpaddingAndCellspacing(0);
+  		table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+  		table.setStyleClass(2, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+  		
+  		Image etravel = this.bundle.getImage("images/etravel.gif");
+  		Image idega = this.bundle.getImage("images/idega.gif");
+  		table.add(etravel, 1, 1);
+  		table.add(idega, 2, 1);
+  		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+  		table.setCellpaddingLeft(1, 1, 5);
+  		table.setCellpaddingRight(2, 1, 5);
+  		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
+  		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_BOTTOM);
+  		table.setCellpaddingBottom(1, 1, 8);
+  		table.setCellpaddingBottom(2, 1, 8);
+  		table.setHeight(1, 1, 50);
+  		
+  		table.mergeCells(1, 3, 2, 3);
+  		table.setStyleClass(1, 3, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+  		
+  		return table;
+  }
+  
+  private Table header(IWContext iwc) {
+		Table table = new Table();
+		table.setWidth("100%");
+		table.setBorder(0);
+		table.setCellpaddingAndCellspacing(0);
+		table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setStyleClass(2, 1, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingLeft(1, 1, 10);
+		table.setCellpaddingRight(2, 1, 10);
+		Text suppName = new Text(supplier.getName());
+		suppName.setStyleClass(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));		
+		Text availText = null;
+		if (legalDay && !fullyBooked) {
+			availText = new Text(iwrb.getLocalizedString("travel.there_is_availability","There is availability "));
+			availText.addToText(stamp.getLocaleDate(iwc)+". "+iwrb.getLocalizedString("travel.please_book","Please book"));
+		} else {
+			availText = new Text(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability "));
+			availText.addToText(stamp.getLocaleDate(iwc)+". "+iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
+		}
+		availText.setStyleClass(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));
+		
+		table.add(availText, 1, 1);
+		table.add(suppName, 2, 1);
+		table.setHeight(1, 1, 50);
+		table.setHeight(1, 2, 2);
+		table.setHeight(1, 3, 3);
+		table.mergeCells(1, 3, 2, 3);
+		table.setStyleClass(1, 3, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+		return table;
+  }
 
   private Table rightTop(IWContext iwc) {
     Table table = new Table(1,3);
@@ -256,28 +296,80 @@ public class PublicBooking extends TravelBlock  {
     return table;
   }
 
-  private Table rightBottom(IWContext iwc)  {
-    Table table = new Table(1,2);
-      table.setAlignment(1,1,"center");
-      table.setVerticalAlignment(1,1,"top");
+  private Table leftBottom(IWContext iwc)  {
+    Table table = new Table(1,9);
+//	  table.setBorder(1);
+//	  table.setBorderColor("BLUE");
+	  table.setCellpaddingAndCellspacing(0);
+	  table.setWidth(180);
+	  
+	  int row = 1;
+	  
+	  table.setHeight(1, row, 30);
+	  Text dayRequest = new Text(iwrb.getLocalizedString("travel.day_requested", "Day requested"));
+	  dayRequest.setStyleClass(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));
+	  table.add(dayRequest, 1, row);
+	  table.setCellpaddingLeft(1, row, 10);
+	  table.setStyleClass(1, row, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+	  ++row;
+	  table.setHeight(1, row, 1);
+	  ++row;
+	  table.setStyleClass(1, row, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+	  table.setHeight(1, row, 1);
+	  ++row;
+	  table.setHeight(1, row, 4);
+	  ++row;
+	  
+	  table.setCellpaddingLeft(1, row, 10);
+	  table.setCellpaddingRight(1, row, 10);
+    table.setStyleClass(1, row, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 
     try {
       CalendarHandler ch = new CalendarHandler(iwc);
-        ch.setProduct(product);
-        ch.setBackgroundColor("#CCCCCC");
-        ch.setInActiveCellColor("#666666");
-        ch.setFontColor("#000000");
-        ch.setTodayColor("#99CCFF");
-        ch.setFullyBookedColor("#CC3333");
-        ch.setAvailableDayColor("#FFFFFF");
-        ch.addParameterToLink(this.parameterProductId, productId);
-        ch.setClassToLinkTo(PublicBooking.class);
-        ch.setTimestamp(stamp);
-        ch.showInquiries(false);
-        ch.sm.T.setBorder(0);
-        ch.sm.T.setCellspacing(2);
-        ch.addParameterToLink(PARAMETER_REFERRAL_URL, getRefererUrl(iwc));
-      table.add(ch.getCalendarTable(iwc),1,1);
+      ch.setProduct(product);
+      
+      ch.setTextStyle(getStyleName(BookingForm.STYLENAME_TEXT));
+      ch.setHeaderStyle(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));
+      ch.setLinkStyle(getStyleName(BookingForm.STYLENAME_LINK));
+      ch.setBackgroundStyle(getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+      ch.setAvailableDayFontStyle(getStyleName(BookingForm.STYLENAME_TEXT));
+      ch.setAvailableDayStyle(getStyleName(BookingForm.STYLENAME_AVAILABLE_DAY));
+      ch.setFullyBookedStyle(getStyleName(BookingForm.STYLENAME_FULLY_BOOKED));
+      ch.setTodayStyle(getStyleName(BookingForm.STYLENAME_TODAY));
+      ch.setInquiryStyle(getStyleName(BookingForm.STYLENAME_INQUIRY));
+      ch.setInActiveCellStyle(getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+      ch.setSmallStyle(getStyleName(BookingForm.STYLENAME_SMALL_TEXT));
+
+      ch.showInquiries(false);
+	    ch.setTimestamp(stamp);
+	    ch.addParameterToLink(this.parameterProductId, productId);
+	    ch.setClassToLinkTo(PublicBooking.class);
+	    ch.addParameterToLink(PARAMETER_REFERRAL_URL, BookingForm.getRefererUrl(iwc));
+
+	    table.add(ch.getCalendarTable(iwc),1,row);
+	    ++row;
+      table.setStyleClass(1, row, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+      table.setHeight(1, row, 1);
+      ++row;
+      table.setHeight(1, row, 2);
+      ++row;
+      table.setHeight(1, row, 3);
+      table.setStyleClass(1, row, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+      Image image = bundle.getImage("verisignseals/verisign_logo.gif");
+      //image.setWidth(100);
+      //image.setHeight(42);
+      String verisignUrl = bundle.getProperty("verisign_url");
+      if (verisignUrl == null) { 
+      		verisignUrl = "https://digitalid.verisign.com/as2/a83d13ff1653ab8baf084d646faab5c9";
+      }
+		
+      ++row;
+      Link verisign = new Link(image, verisignUrl);
+      verisign.setTarget(Link.TARGET_NEW_WINDOW);
+      verisign.setOutgoing(true);
+      table.setCellpaddingTop(1, row, 5);
+      table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+      table.add(verisign, 1,row);
 
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -293,50 +385,42 @@ public class PublicBooking extends TravelBlock  {
   }
 
 
-  private Form leftBottom(IWContext iwc) {
+  private Form rightBottom(IWContext iwc) {
     try {
     	Form form = new Form();
     	form.maintainParameter(PARAMETER_REFERRAL_URL);
-    	if (product.getIsValid() && supplier.getIsValid()) {
-	      BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-	//      TourBookingForm tbf = new TourBookingForm(iwc, product);
-	      CalendarHandler ch  = new CalendarHandler(iwc);
-	        ch.setProduct(product);
 	
-	      boolean legalDay = bf.getIsDayVisible(iwc);
-	      boolean fullyBooked = bf.isFullyBooked( iwc, product, stamp);
-	//      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
-	
-	
-	      if (legalDay && !fullyBooked) {
-	        String action = iwc.getParameter(BookingForm.sAction);
-	//        String tbfAction = iwc.getParameter(BookingForm.sAction);
-	//        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
-	//	        System.out.println("action a = '"+action+"'");
-	//          action = "";
-	//        }
-	        if (action == null || action.equals("")) {
-	            form = bf.getPublicBookingForm(iwc, product);
-	            form.maintainParameter(this.parameterProductId);
-	            form.maintainParameter(BookingForm.PARAMETER_REFERENCE_NUMBER);
-	//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
-	//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
-	        }else if (action.equals(BookingForm.parameterSaveBooking)) {
-	            form = bf.getFormMaintainingAllParameters(iwc, true, false);
-	            form.maintainParameter(this.parameterProductId);
-	//            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
-	            form.add(bf.getVerifyBookingTable(iwc, product));
-	        }else if (action.equals(this.parameterBookingVerified)) {
-	            form = bf.getFormMaintainingAllParameters(iwc, true, false);
-	            form.maintainParameter(this.parameterProductId);
-	            form.add(doBooking(iwc));
-	        }
-	      }else {
-	          form.add(getNoSeatsAvailable(iwc));
-	      }
-    	} else {
-    		form.add(getDisabledProduct(iwc));
-    	}
+		  if (legalDay && !fullyBooked) {
+		    String action = iwc.getParameter(BookingForm.sAction);
+		//        String tbfAction = iwc.getParameter(BookingForm.sAction);
+		//        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
+		//	        System.out.println("action a = '"+action+"'");
+		//          action = "";
+		//        }
+		    if (action == null || action.equals("")) {
+		        form = bf.getPublicBookingForm(iwc, product);
+		        form.maintainParameter(this.parameterProductId);
+		        form.maintainParameter(BookingForm.PARAMETER_REFERENCE_NUMBER);
+		//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
+		//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
+		    }else if (action.equals(BookingForm.parameterSaveBooking) || action.equals(BookingForm.parameterSendInquery)) {
+		        form = bf.getFormMaintainingAllParameters(iwc, true, false);
+		        form.maintainParameter(this.parameterProductId);
+		//            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
+		        form.add(bf.getVerifyBookingTable(iwc, product));
+		    }else if (action.equals(this.parameterBookingVerified)) {
+		        form = bf.getFormMaintainingAllParameters(iwc, true, false);
+		        form.maintainParameter(this.parameterProductId);
+		        form.add(bf.handlePublicTransaction());
+		    }
+//		    else if (action.equals(BookingForm.parameterSendInquery)) {
+//	        form = bf.getFormMaintainingAllParameters(iwc, true, false);
+//	        form.maintainParameter(this.parameterProductId);
+//	        form.add(bf.handlePublicTransaction());
+//		    }
+		  }else {
+		      form.add(bf.getNoSeatsAvailable(iwc, stamp));
+		  }
 
       return form;
     }catch (Exception e) {
@@ -345,350 +429,158 @@ public class PublicBooking extends TravelBlock  {
     }
   }
 
-
-  public Table getDisabledProduct(IWContext iwc) {
-  	Table table = new Table();
-  	table.setCellpadding(0);
-  	table.setCellspacing(6);
-
-  	Text notAvailSeats = new Text();
-  	notAvailSeats.setFontStyle(TravelManager.theTextStyle);
-  	notAvailSeats.setFontColor(TravelManager.WHITE);
-  	notAvailSeats.setText(iwrb.getLocalizedString("travel.product_is_disabled ","This product has been disabled."));
-
-  	table.add(notAvailSeats);
-
-  	return table;
-  }
-  
-  public Table getNoSeatsAvailable(IWContext iwc) {
-    Table table = new Table();
-      table.setCellpadding(0);
-      table.setCellspacing(6);
-
-          Text notAvailSeats = new Text();
-            notAvailSeats.setFontStyle(TravelManager.theTextStyle);
-            notAvailSeats.setFontColor(TravelManager.WHITE);
-            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats ","There are no available seats "));
-
-          Text dateText = new Text();
-            dateText.setFontStyle(TravelManager.theBoldTextStyle);
-            dateText.setFontColor(TravelManager.WHITE);
-            dateText.setText(getLocaleDate(stamp));
-            dateText.addToText("."+Text.NON_BREAKING_SPACE);
-
-          Text pleaseFindAnotherDay = new Text();
-            pleaseFindAnotherDay.setFontStyle(TravelManager.theTextStyle);
-            pleaseFindAnotherDay.setFontColor(TravelManager.WHITE);
-            pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
-
-      table.add(notAvailSeats);
-      table.add(dateText);
-      table.add(pleaseFindAnotherDay);
-
-    return table;
-  }
-
-  private Table doBooking(IWContext iwc) throws RemoteException{
-    Table table = new Table();
-      String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
-      String ccMonth  = iwc.getParameter(BookingForm.parameterCCMonth);
-      String ccYear   = iwc.getParameter(BookingForm.parameterCCYear);
-
-      Text display = getBoldTextWhite("");
-      boolean success = false;
-      boolean inquirySent = false;
-
-//      com.idega.block.tpos.business.TPosClient t = null;
-      GeneralBooking  gBooking = null;
-			BookingForm bf = null; 
-			try {
-				bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-			}catch (Exception e) {
-				e.printStackTrace(System.out);	
-			}
-
-      TransactionManager tm = IdegaTransactionManager.getInstance();
-      try {
-        tm.begin();
-
-//				float price = bf.getOrderPrice(iwc, product, stamp);
-
-//        TourBookingForm tbf = new TourBookingForm(iwc,product);
-//        int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
-        int bookingId = bf.handleInsert(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
-
-        if (bookingId == BookingForm.inquirySent) {
-          inquirySent = true;
-          tm.commit();
-        } else if (bookingId == BookingForm.errorFieldsEmpty) {
-        		List list = bf.errorFields;
-        		display.addToText(iwrb.getLocalizedString("travel.fields_must_be_filled", "The following fields must be filled")+Text.BREAK);
-        		Iterator iter = list.iterator();
-        		while (iter.hasNext()) {
-        			display.addToText(" "+iter.next().toString()+Text.BREAK);
-        		}
-        		success = false;
-        }else {
-          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-          gBooking.setRefererUrl(getRefererUrl(iwc));
-          gBooking.store();
-          tm.commit();
-          success = true;
-        }
-
-      }catch(com.idega.block.creditcard.business.TPosException e) {
-      	if (!e.getMessage().equals("")) {
-	        display.addToText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")+" ( "+e.getMessage()+" )");
-      	}
-        //e.printStackTrace(System.err);
-//        gBooking.setIsValid(false);
-//        gBooking.store();
-        try {
-          tm.commit();
-        }catch(Exception ex) {
-          debug("commit failed");
-          ex.printStackTrace(System.err);
-          try {
-            tm.rollback();
-          }catch (javax.transaction.SystemException se) {
-            se.printStackTrace(System.err);
-          }
-        }
-
-        gBooking = null;
-        success = false;
-      }catch (Exception e) {
-        display.addToText(" ( "+e.getMessage()+" )");
-        e.printStackTrace(System.err);
-        gBooking = null;
-        try {
-          tm.rollback();
-        }catch (javax.transaction.SystemException se) {
-          se.printStackTrace(System.err);
-        }
-      }
-
-      if (gBooking != null) {
-        boolean sendEmail = sendEmails(iwc, gBooking, iwrb);
-
-        table.add(getBoldTextWhite(gBooking.getName()));
-        table.add(getBoldTextWhite(", "));
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
-        table.add(Text.BREAK);
-        table.add(Text.BREAK);
-        if (sendEmail) {
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
-          table.add(Text.BREAK);
-          table.add(Text.BREAK);
-        }
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
-        table.add(getBoldTextWhite(" : "));
-        table.add(getBoldTextWhite(gBooking.getCreditcardAuthorizationNumber()));
-        table.add(Text.BREAK);
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
-        table.add(getBoldTextWhite(" : "));
-        table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
-        table.add(Text.BREAK);
-        //table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
-        //table.add(Text.BREAK);
-        table.add(Text.BREAK);
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+//  private Table doBooking(IWContext iwc) throws RemoteException{
+//    Table table = new Table();
+//      String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
+//      String ccMonth  = iwc.getParameter(BookingForm.parameterCCMonth);
+//      String ccYear   = iwc.getParameter(BookingForm.parameterCCYear);
+//
+//      Text display = getBoldTextWhite("");
+//      boolean success = false;
+//      boolean inquirySent = false;
+//
+////      com.idega.block.tpos.business.TPosClient t = null;
+//      GeneralBooking  gBooking = null;
+//			BookingForm bf = null; 
+//			try {
+//				bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+//			}catch (Exception e) {
+//				e.printStackTrace(System.out);	
+//			}
+//
+//      TransactionManager tm = IdegaTransactionManager.getInstance();
+//      try {
+//        tm.begin();
+//
+////				float price = bf.getOrderPrice(iwc, product, stamp);
+//
+////        TourBookingForm tbf = new TourBookingForm(iwc,product);
+////        int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
+//        int bookingId = bf.handleInsert(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
+//
+//        if (bookingId == BookingForm.inquirySent) {
+//          inquirySent = true;
+//          tm.commit();
+//        } else if (bookingId == BookingForm.errorFieldsEmpty) {
+//        		List list = bf.errorFields;
+//        		display.addToText(iwrb.getLocalizedString("travel.fields_must_be_filled", "The following fields must be filled")+Text.BREAK);
+//        		Iterator iter = list.iterator();
+//        		while (iter.hasNext()) {
+//        			display.addToText(" "+iter.next().toString()+Text.BREAK);
+//        		}
+//        		success = false;
+//        }else {
+//          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+//          gBooking.setRefererUrl(getRefererUrl(iwc));
+//          gBooking.store();
+//          tm.commit();
+//          success = true;
+//        }
+//
+//      }catch(CreditCardAuthorizationException e) {
+//      	if (!e.getMessage().equals("")) {
+//	        display.addToText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")+" ( "+e.getMessage()+" )");
+//      	}
+//        //e.printStackTrace(System.err);
+////        gBooking.setIsValid(false);
+////        gBooking.store();
+//        try {
+//          tm.commit();
+//        }catch(Exception ex) {
+//          debug("commit failed");
+//          ex.printStackTrace(System.err);
+//          try {
+//            tm.rollback();
+//          }catch (javax.transaction.SystemException se) {
+//            se.printStackTrace(System.err);
+//          }
+//        }
+//
+//        gBooking = null;
+//        success = false;
+//      }catch (Exception e) {
+//        display.addToText(" ( "+e.getMessage()+" )");
+//        e.printStackTrace(System.err);
+//        gBooking = null;
+//        try {
+//          tm.rollback();
+//        }catch (javax.transaction.SystemException se) {
+//          se.printStackTrace(System.err);
+//        }
+//      }
+//
+//      if (gBooking != null) {
+//        boolean sendEmail = sendEmails(iwc, gBooking, iwrb);
+//
+//        table.add(getBoldTextWhite(gBooking.getName()));
+//        table.add(getBoldTextWhite(", "));
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
+//        table.add(Text.BREAK);
+//        table.add(Text.BREAK);
+//        if (sendEmail) {
+//          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
+//          table.add(Text.BREAK);
+//          table.add(Text.BREAK);
+//        }
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+//        table.add(getBoldTextWhite(" : "));
+//        table.add(getBoldTextWhite(gBooking.getCreditcardAuthorizationNumber()));
+//        table.add(Text.BREAK);
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
+//        table.add(getBoldTextWhite(" : "));
+//        table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+//        table.add(Text.BREAK);
+//        //table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+//        //table.add(Text.BREAK);
+//        table.add(Text.BREAK);
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+//
+//
+//
+//        Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
+//          printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
+//          printVoucher.setWindowToOpen(VoucherWindow.class);
+//
+//        try {
+//        CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, gBooking.getCreditcardAuthorizationNumber(),  new IWTimestamp(gBooking.getDateOfBooking()));
+//	        if (entry != null) {
+//	          Receipt r = new Receipt(entry, supplier);
+//	          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
+//	
+//	          Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
+//	            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+//	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+//	          table.add(printCCReceipt, 1, 2);
+//	        }
+//        } catch (Exception e) {
+//        		e.printStackTrace(System.err);
+//        }
+//
+//        table.add(printVoucher,1,3);
+//        table.setAlignment(1,1,"left");
+//        table.setAlignment(1,2,"right");
+//        table.setAlignment(1,3,"right");
+//      }else if (inquirySent) {
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
+//        table.add(Text.BREAK);
+//        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
+//      }else {
+//        table.add(display);
+//        if (gBooking == null) {
+//          debug("gBooking == null");
+//        }
+//      }
+//
+//    return table;
+//  }
 
 
-
-        Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
-          printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
-          printVoucher.setWindowToOpen(VoucherWindow.class);
-
-        try {
-        CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, gBooking.getCreditcardAuthorizationNumber(),  new IWTimestamp(gBooking.getDateOfBooking()));
-	        if (entry != null) {
-	          Receipt r = new Receipt(entry, supplier);
-	          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
-	
-	          Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
-	            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
-	          table.add(printCCReceipt, 1, 2);
-	        }
-        } catch (Exception e) {
-        		e.printStackTrace(System.err);
-        }
-
-        table.add(printVoucher,1,3);
-        table.setAlignment(1,1,"left");
-        table.setAlignment(1,2,"right");
-        table.setAlignment(1,3,"right");
-      }else if (inquirySent) {
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
-        table.add(Text.BREAK);
-        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
-      }else {
-        table.add(display);
-        if (gBooking == null) {
-          debug("gBooking == null");
-        }
-      }
-
-    return table;
-  }
-
-
-  public static boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb) {
-  		return sendEmails(iwc, gBooking, iwrb, false);
-  }
-
-  public static boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb, boolean isRefund) {
-	boolean sendEmail = false;
-	try {
-	  DecimalFormat df = new DecimalFormat("0.00");
-
-	  ProductHome pHome = (ProductHome)com.idega.data.IDOLookup.getHome(Product.class);
-	  Product prod = pHome.findByPrimaryKey(new Integer(gBooking.getServiceID()));
-    ProductBusiness pBus =  (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
-    CreditCardBusiness ccBus = (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
-
-	  Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
-	  List addresses = suppl.getAddresses();
-	  List phones = suppl.getPhones();
-	  Settings settings = suppl.getSettings();
-	  Email sEmail = suppl.getEmail();
-	  String suppEmail = "";
-	  if (sEmail != null) {
-	    suppEmail = sEmail.getEmailAddress();
-	  }
-	  String bookEmail = gBooking.getEmail();
-	  boolean doubleSendSuccessful = false;
-	  IWBundle bundle = iwrb.getIWBundleParent();
-	
-	  if (settings.getIfDoubleConfirmation()) {
-	    try {
-	      sendEmail = true;
-	      StringBuffer mailText = new StringBuffer();
-	      if (isRefund) {
-	      		mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation_refund","This email is to confirm that a refund has been made to your creditcard."));
-	      } 
-	      else {
-		      mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
-	      }
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.supplier",   "Supplier    ")).append(" : ").append(suppl.getName());
-	      if (addresses != null) {
-	      		Address addr;
-	      		Iterator iter = addresses.iterator();
-	      		while (iter.hasNext()) {
-	      			addr = (Address) iter.next();
-	    	      mailText.append("\n").append(iwrb.getLocalizedString("travel.address","Address    ")).append(" : ").append(addr.getStreetName());
-	    	      if (addr.getStreetNumber() != null) {
-	    	      		mailText.append(" "+addr.getStreetNumber());
-	    	      }
-	      		}
-	      }
-	      if (suppEmail != null) {
-	      		mailText.append("\n").append(iwrb.getLocalizedString("travel.email",   "Email    ")).append(" : ").append(suppEmail);
-	      }
-	      if (phones != null) {
-	      		Phone phone;
-	      		Iterator iter = phones.iterator();
-	      		while (iter.hasNext()) {
-	      			phone = (Phone) iter.next();
-	      			if (phone != null && phone.getNumber() != null && !"".equals(phone.getNumber())) {
-	      				mailText.append("\n").append(iwrb.getLocalizedString("travel.phone","Phone    ")).append(" : ").append(phone.getNumber());
-	      			}
-	      		}
-	      }
-	      	      
-	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
-
-	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.order_number",  "Order number   ")).append(" : ").append(Voucher.getVoucherNumber(gBooking.getID()));
-	      String ccAuthNumber =  gBooking.getCreditcardAuthorizationNumber();
-				String cardType = null;
-				if (ccAuthNumber != null) {
-					CreditCardAuthorizationEntry entry = ccBus.getAuthorizationEntry(suppl, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
-					if ( isRefund ) {
-						try {
-							CreditCardAuthorizationEntry child = entry.getChild();
-							cardType = child.getBrandName();
-							double fAmount = child.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
-							mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_refunded","Amount refunded   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
-						} 
-						catch (FinderException f) {
-							
-						}
-					}
-					else {
-						cardType = entry.getBrandName();
-						double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
-						mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_paid","Amount paid   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
-					}
-				}
-	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.comment",  "Comment   ")).append(" : ").append(gBooking.getComment());
-	      
-	      if (!isRefund && prod.getRefundable()) {
-	      		mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
-	      		mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
-	      }
-	      
-	      SendMail sm = new SendMail();
-	        sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
-	      doubleSendSuccessful = true;
-	    }catch (MessagingException me) {
-	      doubleSendSuccessful = false;
-	      me.printStackTrace(System.err);
-	    }
-	  }
-	
-	  if (settings.getIfEmailAfterOnlineBooking()) {
-	    try {
-	      String subject = "Booking";
-	
-	      StringBuffer mailText = new StringBuffer();
-	      if ( isRefund ) {
-	      		mailText.append(iwrb.getLocalizedString("travel.email_after_online_refund","You have just received a cancellation through travel.idega.is."));
-	      }
-	      else {
-		      mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through travel.idega.is."));
-	      }
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
-	      if (doubleSendSuccessful) {
-	        mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
-	      }else {
-	        mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_not_been_sent","Double confirmation has NOT been sent."));
-	        mailText.append("\n").append("   - ").append(iwrb.getLocalizedString("travel.email_was_probably_incorrect","E-mail was probably incorrect."));
-	        subject = "Booking - double confirmation failed!";
-	      }
-	
-	
-	      SendMail sm = new SendMail();
-	        sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
-	    }catch (MessagingException me) {
-	      me.printStackTrace(System.err);
-	    }
-	  }
-	
-	}catch (Exception e) {
-	  e.printStackTrace(System.err);
-	}
-	return sendEmail;
-}
   
   
-  protected Table getTermsAndConditions() throws RemoteException {
-  	Link terms = new Link(getTextWhite(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
-  	terms.setWindowToOpen(TravelWindow.class, "700", "400", true, true);
-  	terms.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.terms_and_conditions");
-  	terms.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.terms_and_conditions_text");
-
-  	Link privacyStatement = new Link(getTextWhite(iwrb.getLocalizedString("travel.search.privacy_statement", "Privacy statement")));
-  	privacyStatement.setWindowToOpen(TravelWindow.class, "700", "400", true, true);
-  	privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.privacy_statement");
-  	privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.privacy_statement_text");
+  protected Table getTermsAndConditions(IWContext iwc) throws RemoteException {
+  	
+  	Link terms = LinkGenerator.getLinkToTermsAndContition(iwc, getWhiteText(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
+  	Link privacyStatement = LinkGenerator.getLinkToPrivacyStatement(iwc, getWhiteText(iwrb.getLocalizedString("travel.search.privacy_statement", "Privacy statement")));
 
   	Table table = new Table(1, 1);
   	table.setCellpaddingAndCellspacing(0);
@@ -697,7 +589,7 @@ public class PublicBooking extends TravelBlock  {
   	table.add(terms, 1, 1);
 
   	table.add(Text.NON_BREAKING_SPACE, 1, 1);
-  	table.add(getTextWhite("-"), 1, 1);
+  	table.add(getWhiteText("-"), 1, 1);
   	table.add(Text.NON_BREAKING_SPACE, 1, 1);
   	
   	table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -705,10 +597,6 @@ public class PublicBooking extends TravelBlock  {
 
   	return table;
   }  
-
-protected static String getLocaleDate(IWTimestamp stamp) {
-    return  (new IWCalendar(stamp)).getLocaleDate();
-  }
 
 /*
   protected static TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
@@ -730,4 +618,17 @@ protected static String getLocaleDate(IWTimestamp stamp) {
 	  	}
 	}
 
+	protected ProductDetailFrame getProductDetailFrame(Product product, IWContext iwc, int columns) throws RemoteException {
+		ProductDetailFrame frame = (ProductDetailFrame) frames.get(new Integer(columns));
+		if (frame == null) { 
+			frame = new ProductDetailFrame(iwc, columns);
+			//frame.setPriceCategoryKey(getPriceCategoryKey());
+			//frame.setCount(this.getCount());
+			//frame.setProductInfoDetailed(getProductInfoDetailed(getProduct()));
+			frames.put(new Integer(columns), frame);
+		}
+		return frame;
+	}
+ 
+  
 }

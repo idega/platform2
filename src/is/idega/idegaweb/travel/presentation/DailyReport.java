@@ -870,7 +870,7 @@ public class DailyReport extends TravelManager implements Report{
       Text pCountTxt;
       Text pPriceTxt;
 
-      Collections.sort(products, new ProductComparator(iOrderBy));
+      Collections.sort(products, new ProductComparator(iOrderBy, iwc.getCurrentLocale()));
       for (int i = 0; i < products.size(); i++) {
 	try {
 	++row;

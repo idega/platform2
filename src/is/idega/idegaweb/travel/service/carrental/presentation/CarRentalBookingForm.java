@@ -689,7 +689,7 @@ public class CarRentalBookingForm extends BookingForm {
 		return form;
   }
  
-  public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
+  public Form getPublicBookingFormOld(IWContext iwc, Product product) throws RemoteException, FinderException {
 			try {
 				/** Not tested 100% here, but seems to work at other places... */
 				if (isFullyBooked(iwc, product, _stamp) || isUnderBooked(iwc, product, _stamp)) {
@@ -1339,7 +1339,7 @@ public class CarRentalBookingForm extends BookingForm {
 		return form;
   }
 
-  public Table getVerifyBookingTable(IWContext iwc, Product product) throws RemoteException, SQLException{
+  public Table getVerifyBookingTableOld(IWContext iwc, Product product) throws RemoteException, SQLException{
 		String surname = iwc.getParameter("surname");
 		String lastname = iwc.getParameter("lastname");
 		String address = iwc.getParameter("address");
@@ -1699,6 +1699,7 @@ public class CarRentalBookingForm extends BookingForm {
   	
 		try {
 		  iPickupId = Integer.parseInt(pickupPlaceId);
+		  System.out.println(stamp.toSQLDateString()+" "+pickupTime);
 		  pickupStamp = new IWTimestamp(stamp.toSQLDateString()+" "+pickupTime);	
 		}catch (Exception e) {
 			e.printStackTrace(System.err);	
@@ -1745,5 +1746,182 @@ public class CarRentalBookingForm extends BookingForm {
 
 	public String getPriceCategorySearchKey() {
 		return CarRentalSetup.CAR_RENTAL_SEARCH_PRICE_CATEGORY_KEY;
+	}
+
+	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {
+			CarRental carRental = null;
+			carRental = this._carRental;
+/*			if (definedProduct != null) {
+				try {
+					carRental = this._carRental;
+				//CarRentalHome crHome =  (CarRentalHome) IDOLookup.getHome(CarRental.class);
+				//carRental = crHome.findByPrimaryKey(super.definedProduct.getPrimaryKey());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+*/
+			if (carRental != null) {
+				try {
+					Collection picks = carRental.getPickupPlaces();
+					Collection drops = carRental.getDropoffPlaces();
+					DropdownMenu pickupPlaces = new DropdownMenu(parameterPickupId);
+					DropdownMenu dropoffPlaces = new DropdownMenu(PARAMETER_DROPOFF_PLACE);
+					TimeInput pickupTime = new TimeInput(PARAMETER_PICKUP_TIME);
+					pickupTime.setName(PARAMETER_PICKUP_TIME);
+					pickupTime.setHour(8);
+					pickupTime.setMinute(0);
+					pickupTime.keepStatusOnAction();
+					TimeInput dropoffTime = new TimeInput(PARAMETER_DROPOFF_TIME);
+					dropoffTime.setName(PARAMETER_DROPOFF_TIME);
+					dropoffTime.setHour(8);
+					dropoffTime.setMinute(0);
+					dropoffTime.keepStatusOnAction();
+					boolean bPick = false;
+					boolean bDrop = false;
+					if (picks != null && !picks.isEmpty()) {
+						pickupPlaces.addMenuElements(picks);
+						bPick = true;
+					}
+					if (drops != null && !drops.isEmpty()) {
+						dropoffPlaces.addMenuElements(drops);
+						bDrop = true;
+					}
+					/*
+					if (bPick && bDrop) {
+						addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup"), iwrb.getLocalizedString("travel.search.dropoff","Dropoff")}, new PresentationObject[]{pickupPlaces, dropoffPlaces});
+					} else */
+//					if (bPick) {
+					String pp = iwc.getParameter(parameterPickupId);
+					String dp = iwc.getParameter(PARAMETER_DROPOFF_PLACE);
+					if (pp != null) { pickupPlaces.setSelectedElement(pp); }
+					if (dp != null) { dropoffPlaces.setSelectedElement(dp); }
+					
+						if ( errorFields != null) {
+							if (errorFields.contains(parameterPickupId)) {
+								table.add(getErrorText("* "), 1, row);
+							}
+							if (errorFields.contains(PARAMETER_PICKUP_TIME)) {
+								table.add(getErrorText("* "), 2, row);
+							}
+							if (errorFields.contains(PARAMETER_DROPOFF_PLACE)) {
+								table.add(getErrorText("* "), 1, row+2);
+							}
+							if (errorFields.contains(PARAMETER_DROPOFF_TIME)) {
+								table.add(getErrorText("* "), 2, row+2);
+							}
+						}
+						table.add(getText(iwrb.getLocalizedString("travel.search.pickup","Pickup")), 1, row);
+						table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
+						++row;
+						table.add(pickupPlaces, 1, row);
+						table.add(pickupTime, 2, row);
+						table.mergeCells(2, row, 3, row);
+						++row;
+//					} 
+//					if (bDrop) {
+						table.add(getText(iwrb.getLocalizedString("travel.search.dropoff","Dropoff")), 1, row);
+						table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
+						++row;
+						table.add(dropoffPlaces, 1, row);
+						table.add(dropoffTime, 2, row);
+						table.mergeCells(2, row, 3, row);
+						++row;
+//					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+	}
+
+	public String getParameterTypeCountName() {
+		return parameterCountToCheck;
+	}
+	
+	protected int addPublicFromDateInput(IWContext iwc, Table table, int fRow) {
+		table.add(getSmallText(iwrb.getLocalizedString("travel.date_of_pickup", "Date of pickup")), 1, fRow);
+		table.add(new HiddenInput(parameterFromDate, _stamp.toSQLDateString()), 2, fRow);
+		table.add(getOrangeText(_stamp.getLocaleDate(iwc)), 2, fRow++);
+		return fRow;
+	}
+	
+	protected int addPublicToDateInput(IWContext iwc, Table table, int fRow) {
+		table.add(getSmallText(iwrb.getLocalizedString("travel.date_of_departure", "Date of departure")), 1, fRow);
+		DateInput inp = new DateInput(parameterToDate);
+		IWTimestamp toS = new IWTimestamp(_stamp);
+		toS.addDays(1);
+		inp.setDate(toS.getDate());
+		table.add(getStyleObject(inp, getStyleName(BookingForm.STYLENAME_INTERFACE)), 2, fRow++);
+		return fRow;
+	}	
+	
+	public String getUnitName() {
+		return iwrb.getLocalizedString("travel.car", "Car");
+	}
+	
+	public String getUnitNamePlural() {
+		return iwrb.getLocalizedString("travel.cars", "Cars");
+	}
+	public boolean useNumberOfDays() {
+		return true;
+	}
+
+	protected int addPublicExtraBookingInput(IWContext iwc, Table table, int fRow) {
+		try {
+			Collection pickup = _carRental.getPickupPlaces();
+			Collection dropoff = _carRental.getDropoffPlaces();
+			if (pickup != null && !pickup.isEmpty()) {
+				table.mergeCells(2, fRow, 4, fRow);
+				table.setCellpaddingTop(1, fRow, 3);
+				table.setCellpaddingBottom(1, fRow, 3);
+				table.setCellpaddingLeft(1, fRow, 10);
+				table.add(getSmallText(iwrb.getLocalizedString("travel.pickup", "Pickup")), 1, fRow);
+				
+				DropdownMenu pickDropdown = (DropdownMenu) getStyleObject(new DropdownMenu(this.parameterPickupId), BookingForm.STYLENAME_INTERFACE);
+				pickDropdown.addMenuElements(pickup);
+
+				TimeInput pickupTime = (TimeInput) getStyleObject(new TimeInput(PARAMETER_PICKUP_TIME), BookingForm.STYLENAME_INTERFACE);
+				pickupTime.setName(PARAMETER_PICKUP_TIME);
+				pickupTime.setHour(8);
+				pickupTime.setMinute(0);
+				pickupTime.keepStatusOnAction();
+
+				table.add(pickDropdown, 2, fRow);
+				table.add(Text.NON_BREAKING_SPACE, 2, fRow);
+				table.add(pickupTime, 2, fRow++);
+
+			}
+			
+			if (dropoff != null && !dropoff.isEmpty()) {
+				table.mergeCells(2, fRow, 4, fRow);
+				table.setCellpaddingTop(1, fRow, 3);
+				table.setCellpaddingBottom(1, fRow, 3);
+				table.setCellpaddingLeft(1, fRow, 10);
+				table.add(getSmallText(iwrb.getLocalizedString("travel.dropoff", "Dropoff")), 1, fRow);
+				
+				DropdownMenu dropDropdown = (DropdownMenu) getStyleObject(new DropdownMenu(this.PARAMETER_DROPOFF_PLACE), BookingForm.STYLENAME_INTERFACE);
+				dropDropdown.addMenuElements(dropoff);
+				
+				TimeInput dropoffTime = (TimeInput) getStyleObject(new TimeInput(PARAMETER_DROPOFF_TIME), BookingForm.STYLENAME_INTERFACE);
+				dropoffTime.setName(PARAMETER_DROPOFF_TIME);
+				dropoffTime.setHour(8);
+				dropoffTime.setMinute(0);
+				dropoffTime.keepStatusOnAction();
+
+				table.add(dropDropdown, 2, fRow);
+				table.add(Text.NON_BREAKING_SPACE, 2, fRow);
+				table.add(dropoffTime, 2, fRow++);
+			}
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (IDORelationshipException e) {
+			e.printStackTrace();
+		}
+		return fRow;
 	}
 }

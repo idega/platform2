@@ -7,15 +7,13 @@ import is.idega.idegaweb.travel.service.hotel.data.HotelType;
 import is.idega.idegaweb.travel.service.hotel.data.HotelTypeHome;
 import is.idega.idegaweb.travel.service.hotel.data.RoomType;
 import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
-
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -58,10 +56,6 @@ public class HotelSearch extends AbstractSearchForm {
 	
 	protected Image getHeaderImage(IWResourceBundle iwrb) {
 		return iwrb.getImage("/search/accomodation.png");
-	}
-	
-	protected String getUnitName() {
-		return "room";
 	}
 	
 	protected String getPriceCategoryKey() {
@@ -108,7 +102,7 @@ public class HotelSearch extends AbstractSearchForm {
 				max = Float.parseFloat(sMaxRating);
 			} catch (Exception e) {}
 		
-			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
+			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
 			
 			Object[] suppIds = getSupplierIDs();
 
@@ -148,6 +142,8 @@ public class HotelSearch extends AbstractSearchForm {
 	
 	
 	protected void setupSearchForm() throws RemoteException {
+		BookingForm bf = getBookingForm();
+		
 		int state = getSession(iwc).getState();
 		Product prod = super.definedProduct;
 		
@@ -164,7 +160,7 @@ public class HotelSearch extends AbstractSearchForm {
 		}
 
 		if (!defined) {
-			addAreaCodeInput();
+			bf.addAreaCodeInput(null);
 		}
 		IWTimestamp now = IWTimestamp.RightNow();
 		
@@ -179,8 +175,8 @@ public class HotelSearch extends AbstractSearchForm {
 		//manyDays.setContent("1");
 		//manyDays.setSize(3);
 		//manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in")}, new PresentationObject[]{fromDate}, false, true);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_out","Check out")}, new PresentationObject[]{toDate});
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in")}, new PresentationObject[]{fromDate}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_out","Check out")}, new PresentationObject[]{toDate});
 		
 		Collection hotelTypes = new Vector();
 		try {
@@ -263,13 +259,13 @@ public class HotelSearch extends AbstractSearchForm {
 		*/
 
 		
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{getDropdownWithNumbers(PARAMETER_TYPE_COUNT, 1, 7)}, false, true);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.minimum_rating","Minimum rating"), iwrb.getLocalizedString("travel.search.maximum_rating","Maximum rating")},  new PresentationObject[] { min, max});
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{getDropdownWithNumbers(PARAMETER_TYPE_COUNT, 1, 7)}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.minimum_rating","Minimum rating"), iwrb.getLocalizedString("travel.search.maximum_rating","Maximum rating")},  new PresentationObject[] { min, max});
 		if ( !defined ) {
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms")}, new PresentationObject[]{roomTypeDrop});
-			currentSearchPart.mergeCells(1, currentSearchPartRow-1, 2, currentSearchPartRow-1);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes});
-			currentSearchPart.mergeCells(1, currentSearchPartRow-1, 2, currentSearchPartRow-1);
+			bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms")}, new PresentationObject[]{roomTypeDrop});
+			bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
+			bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes});
+			bf.getCurrentBookingPart().mergeCells(1, bf.getCurrentBookingPartRow()-1, 2, bf.getCurrentBookingPartRow()-1);
 		}
 	}
 
@@ -331,7 +327,7 @@ public class HotelSearch extends AbstractSearchForm {
 		}
 	}
 
-	protected void addProductInfoDetailed(Product product, Table contentTable, int row) {
+	protected Table getProductInfoDetailed(Product product) {
 		try {
 			Table table = new Table(2, 1);
 			table.setCellpaddingAndCellspacing(0);
@@ -345,11 +341,12 @@ public class HotelSearch extends AbstractSearchForm {
 				for (int i = 1; i <= rating; i++) {
 					table.add(getStar(), 2, 1);
 				}
-				contentTable.add(table, 1, row);
+				return table;
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
+		return null;
 	}
 
 }

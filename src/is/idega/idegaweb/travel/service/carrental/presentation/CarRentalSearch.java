@@ -4,14 +4,12 @@ import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.service.carrental.data.CarRental;
 import is.idega.idegaweb.travel.service.carrental.data.CarRentalHome;
-
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -57,11 +55,11 @@ public class CarRentalSearch extends AbstractSearchForm {
 	
 	
 	protected void setupSearchForm() throws RemoteException {
-
+		BookingForm bf = getBookingForm();
 		boolean defined = hasDefinedProduct();
 		
 		if (!defined) {
-			addAreaCodeInput();
+			bf.addAreaCodeInput(null);
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -80,13 +78,13 @@ public class CarRentalSearch extends AbstractSearchForm {
 		manyDays.setSize(3);
 		manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_days", "Invalid number of days"));
 //		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup"), iwrb.getLocalizedString("travel.search.no_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate}, false, true);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate}, false, false);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate}, false, false);
 	}
 
 	protected Collection getResults() throws RemoteException, InvalidSearchException {
 		try {
-			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
+			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
 			CarRentalHome crHome = (CarRentalHome) IDOLookup.getHome(CarRental.class);
 
@@ -109,10 +107,6 @@ public class CarRentalSearch extends AbstractSearchForm {
 
 	protected String getPriceCategoryKey() {
 		return CarRentalSetup.CAR_RENTAL_SEARCH_PRICE_CATEGORY_KEY;
-	}
-
-	protected String getUnitName() {
-		return "car";
 	}
 
 	protected String getParameterTypeCountName() {

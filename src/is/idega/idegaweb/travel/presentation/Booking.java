@@ -494,7 +494,23 @@ public class Booking extends TravelManager {
 			if (reseller != null) ch.setReseller(reseller);
 			//      if (tour != null) ch.setTour(tour);
 			ch.setTimestamp(stamp);
+			ch.setCellpadding(2);
+//			ch.showInquiries(true);
 
+			
+//      ch.setTextStyle(getStyleName(BookingForm.STYLENAME_TEXT));
+//      ch.setHeaderStyle(getStyleName(BookingForm.STYLENAME_HEADER_TEXT));
+//      ch.setLinkStyle(getStyleName(BookingForm.STYLENAME_LINK));
+//      ch.setBackgroundStyle(getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+//      ch.setAvailableDayFontStyle(getStyleName(BookingForm.STYLENAME_TEXT));
+//      ch.setAvailableDayStyle(getStyleName(BookingForm.STYLENAME_AVAILABLE_DAY));
+//      ch.setFullyBookedStyle(getStyleName(BookingForm.STYLENAME_FULLY_BOOKED));
+//      ch.setTodayStyle(getStyleName(BookingForm.STYLENAME_TODAY));
+//      ch.setInquiryStyle(getStyleName(BookingForm.STYLENAME_INQUIRY));
+//      ch.setInActiveCellStyle(getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
+//
+//	    ch.addParameterToLink(this.parameterProductId, productId);			
+			
 			return ch.getCalendarTable(iwc);
 		}
 		catch (Exception e) {

@@ -7,8 +7,6 @@ import is.idega.idegaweb.travel.data.ContractHome;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.Inquery;
 import is.idega.idegaweb.travel.data.Service;
-import is.idega.idegaweb.travel.data.ServiceDay;
-import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.BookingDeleterWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
@@ -121,8 +119,8 @@ public class FishingBookingOverview extends AbstractBookingOverview {
       IWTimestamp toStamp = super.getTimestampTo(iwc);
 
       IWTimestamp tempStamp = new IWTimestamp(fromStamp);
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay;// = sDayHome.create();
+//      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//      ServiceDay sDay;// = sDayHome.create();
 
       toStamp.addDays(1);
       while (toStamp.isLaterThan(tempStamp)) {
@@ -159,10 +157,12 @@ public class FishingBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
-                sDay = sDayHome.findByServiceAndDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
-                if (sDay != null) {
-                  iCount = sDay.getMax();
-                }
+	            	iCount = getTravelStockroomBusiness(iwc).getMaxBookings(prod, tempStamp);
+
+//                sDay = sDayHome.findByServiceAndDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
+//                if (sDay != null) {
+//                  iCount = sDay.getMax();
+//                }
 
 //                iCount = _tour.getTotalSeats();
                 iBooked = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp, -1);
@@ -344,12 +344,13 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 		int available = 0;
 
 		if (_supplier != null) {
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-			ServiceDay sDay;
-			sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
-			if (sDay != null) {
-				seats = sDay.getMax();
-			}
+//      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//			ServiceDay sDay;
+    	seats = getTravelStockroomBusiness(iwc).getMaxBookings(product, stamp);
+//			sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
+//			if (sDay != null) {
+//				seats = sDay.getMax();
+//			}
 
 			/*
 			try {

@@ -8,14 +8,11 @@ import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
 import is.idega.idegaweb.travel.service.tour.data.TourType;
 import is.idega.idegaweb.travel.service.tour.data.TourTypeHome;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
@@ -49,10 +46,6 @@ public abstract class TourSearch extends AbstractSearchForm {
 		super();
 	}
 	
-	public String getUnitName() {
-		return "seat";
-	}
-	
 	public void main(IWContext iwc) throws Exception {
 		this.iwc = iwc;
 		super.main(iwc);
@@ -63,11 +56,11 @@ public abstract class TourSearch extends AbstractSearchForm {
 	}
 
 	protected void setupSearchForm() throws RemoteException {
-		
+		BookingForm bf = getBookingForm();
 		boolean defined = hasDefinedProduct();
 		
 		if (!defined) {
-			addAreaCodeInput();
+			bf.addAreaCodeInput(null);
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -79,8 +72,8 @@ public abstract class TourSearch extends AbstractSearchForm {
 		manySeats.setContent("1");
 		manySeats.setSize(3);
 		manySeats.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date")}, new PresentationObject[]{fromDate}, false, true);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{manySeats}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date")}, new PresentationObject[]{fromDate}, false, true);
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{manySeats}, false, true);
 		
 		SelectPanel tourTypes = new SelectPanel(PARAMETER_TOUR_TYPE_ID );
 		try {
@@ -105,7 +98,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 			e.printStackTrace(System.err);
 		}
 		tourTypes.setAsNotEmpty(iwrb.getLocalizedString("travel.search.tour_type_must_be_selected", "Tour type must be selected."));
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of","Type of ")+getTourCategory().toLowerCase()}, new PresentationObject[]{tourTypes});
+		bf.addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of","Type of ")+getTourCategory().toLowerCase()}, new PresentationObject[]{tourTypes});
 	}
 
 	private TourTypeHome getTourTypeHome() throws IDOLookupException {
@@ -151,7 +144,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 				ie.addErrorField(PARAMETER_TOUR_TYPE_ID);
 			}
 
-			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
+			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
 
 			TourHome tHome = (TourHome) IDOLookup.getHome(Tour.class);

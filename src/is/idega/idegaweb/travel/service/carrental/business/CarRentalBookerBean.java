@@ -34,11 +34,9 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
   public int book(int bookingId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime) throws IDOException, RemoteException {
 		try {
 
-		  boolean update = false;
 		  CarRentalBooking booking = null;
 		  try {
 				booking = ((CarRentalBookingHome)com.idega.data.IDOLookup.getHome(CarRentalBooking.class)).findByPrimaryKey(new Integer(bookingId));
-				update = true;
 		  }catch (Exception sql) {
 				booking = ((CarRentalBookingHome)com.idega.data.IDOLookup.getHome(CarRentalBooking.class)).create();
 				booking.setPrimaryKey(new Integer(bookingId));
@@ -53,14 +51,9 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
 				booking.setDropoffTime(dropoffTime.getTimestamp());
 			}
 	
-		  if (update) {
-				booking.store();
-		  } else {
-				booking.store();
-		  }
+			booking.store();
 	
-	
-		  return bookingId;
+		  return Integer.parseInt(booking.getPrimaryKey().toString());
 		}catch (CreateException s) {
 		  s.printStackTrace(System.err);
 		  return bookingId;

@@ -417,14 +417,12 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 //          System.err.println("tFrom : "+tFrom.toSQLDateString());
 //          System.err.println("tTo   : "+tTo.toSQLDateString());
 
-/*
-          System.err.println("------------------------------------------------");
-          System.err.println("from : "+from.toSQLDateString());
-          System.err.println("to   : "+to.toSQLDateString());
-          System.err.println("------------------------------------------------");
-          System.err.println("tFrom... : "+tFrom.toSQLDateString());
-          System.err.println("tTo..... : "+tTo.toSQLDateString());
-*/
+//          System.err.println("------------------------------------------------");
+//          System.err.println("from : "+from.toSQLDateString());
+//          System.err.println("to   : "+to.toSQLDateString());
+//          System.err.println("------------------------------------------------");
+//          System.err.println("tFrom... : "+tFrom.toSQLDateString());
+//          System.err.println("tTo..... : "+tTo.toSQLDateString());
 
         IWTimestamp stamp = new IWTimestamp(from);
         IWTimestamp temp;
@@ -444,7 +442,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
                 if (yearly) {
                   temp.addYears(-yearsBetween);
                 }
-                //System.err.println("TEMP : "+temp.toSQLDateString());
+//                System.err.println("TEMP : "+temp.toSQLDateString());
                 if (!showPast) {
                   if (temp.isLaterThanOrEquals(now)) {
                     returner.add(temp);

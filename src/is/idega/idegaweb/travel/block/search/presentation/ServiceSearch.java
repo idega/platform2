@@ -3,16 +3,13 @@ package is.idega.idegaweb.travel.block.search.presentation;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
-
+import is.idega.idegaweb.travel.presentation.TravelBlock;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
@@ -22,7 +19,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.util.text.TextSoap;
@@ -30,25 +26,11 @@ import com.idega.util.text.TextSoap;
 /**
  * @author gimmi
  */
-public class ServiceSearch extends Block {
+public class ServiceSearch extends TravelBlock {
 
 	public static final String IC_OBJECT_TYPE = "iw.travel.search";
 	
 	public static final String PARAMETER_SERVICE_SEARCH_FORM = "p_ssf";
-	
-	public final static String STYLENAME_INTERFACE = "Interface";
-	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
-	public final static String STYLENAME_CHECKBOX = "CheckBox";
-	public final static String STYLENAME_TEXT = "Text";
-	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
-	public final static String STYLENAME_LINK = "Link";
-	public final static String STYLENAME_CLICKED_LINK = "ClickedLink";
-	public final static String STYLENAME_BLUE_BACKGROUND_COLOR = "BackgroundColorBlue";
-	public final static String STYLENAME_HEADER_BACKGROUND_COLOR = "BackgroundHeaderColor";
-	public final static String STYLENAME_BACKGROUND_COLOR = "BackgroundColor";
-	public final static String STYLENAME_HEADER_TEXT = "HeaderText";
-	public final static String STYLENAME_SMALL_TEXT = "SmallText";
-	
 	
 	protected String textFontStyle;
 	protected String headerFontStyle;
@@ -85,26 +67,6 @@ public class ServiceSearch extends Block {
 		super();
 	}
 	
-	public Map getStyleNames() {
-		Map map = super.getStyleNames();
-		if (map == null) {
-			map = new HashMap();
-		}
-		map.put(STYLENAME_TEXT, "");
-		map.put(STYLENAME_LINK, "");
-		map.put(STYLENAME_CLICKED_LINK, "");
-		map.put(STYLENAME_CHECKBOX, "");
-		map.put(STYLENAME_INTERFACE, "");
-		map.put(STYLENAME_INTERFACE_BUTTON, "");
-		map.put(STYLENAME_HEADER_BACKGROUND_COLOR, "");
-		map.put(STYLENAME_BACKGROUND_COLOR, "");
-		map.put(STYLENAME_HEADER_TEXT, "");
-		map.put(STYLENAME_SMALL_TEXT, "");
-		map.put(STYLENAME_BLUE_BACKGROUND_COLOR, "");
-		map.put(STYLENAME_ERROR_TEXT, "");
-		return map;
-	}
-
 	public void main(IWContext iwc) throws Exception {
 		if (engineID > 0) {
 			init(iwc);

@@ -34,6 +34,11 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplies;
+import com.idega.block.trade.stockroom.data.SupplyPool;
+import com.idega.block.trade.stockroom.data.SupplyPoolDay;
+import com.idega.block.trade.stockroom.data.SupplyPoolDayHome;
+import com.idega.block.trade.stockroom.data.SupplyPoolDayPK;
+import com.idega.block.trade.stockroom.data.SupplyPoolHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TimeframeHome;
 import com.idega.block.trade.stockroom.data.TravelAddress;
@@ -404,6 +409,26 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       HashtableDoubleKeyed hash = getServiceDayHashtable(iwc);
       Object obj = hash.get(productId+"_"+dayOfWeek,"");
       if (obj == null) {
+      	SupplyPoolHome spHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
+      	try {
+					SupplyPool pool = spHome.findByProduct(new Integer(productId));
+					SupplyPoolDayHome spdHome = (SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class);
+					try {
+						spdHome.findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(dayOfWeek)));
+						hash.put(productId+"_"+dayOfWeek, "", new Boolean(true));
+						return true;
+					} catch (FinderException f) {
+						hash.put(productId+"_"+dayOfWeek, "", new Boolean(false));
+						return false;
+					}
+				}
+				catch (IDORelationshipException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+//					e.printStackTrace();
+				}
+      	
         returner = getServiceDayHome().getIfDay(productId, dayOfWeek);
         hash.put(productId+"_"+dayOfWeek,"",new Boolean(returner));
       }else {
@@ -427,7 +452,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       String key2 = stamp.toSQLDateString();
 
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
-      Object obj = null;
+      Object obj = serviceDayHash.get(key1, key2);
       if (obj == null) {
 
           int dayOfWeek = stamp.getDayOfWeek();
@@ -808,13 +833,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           }
         }
 
-        int[] weekDays = new int[]{};
-        try {
-          ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          weekDays = sdayHome.getDaysOfWeek(product.getID());
-        }catch (Exception e) {
-          e.printStackTrace(System.err);
-        }
+        int[] weekDays = getWeekDays(product);
 
 
         //weekDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
@@ -837,6 +856,43 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
 
     return returner;
+  }
+  
+  public int[] getWeekDays(Product product) {
+  	int[] weekDays = new int[]{};
+  	try {
+	  	SupplyPoolHome poolHome = (SupplyPoolHome) IDOLookup.getHome(SupplyPool.class);
+	  	SupplyPoolDayHome poolDayHome = (SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class);
+	  	SupplyPool pool = poolHome.findByProduct(product.getPrimaryKey());
+	  	Collection poolDays = poolDayHome.findBySupplyPool(pool);
+	  	if (poolDays != null && !poolDays.isEmpty()) {
+	  		weekDays = new int[poolDays.size()];
+	  		int counter = 0;
+	  		Iterator iter = poolDays.iterator();
+	  		SupplyPoolDayPK pk;
+	  		while (iter.hasNext()) {
+	  			pk = (SupplyPoolDayPK) ((SupplyPoolDay) iter.next()).getPrimaryKey();
+	  			weekDays[counter++] = ((Integer) pk.getDayOfWeek()).intValue();
+	  		}
+	  	}
+	  	return weekDays;
+	  	
+  	} catch (FinderException f) {
+  		f.printStackTrace();
+  	}
+		catch (IDORelationshipException e) {
+			e.printStackTrace();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+    try {
+      ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+      weekDays = sdayHome.getDaysOfWeek(product.getID());
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+    return weekDays;
   }
 
   public boolean isWithinTimeframe(Timeframe timeframe, IWTimestamp stamp) throws RemoteException {
@@ -1176,10 +1232,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
     Enumeration enum = iwac.getIWMainApplication().getAttributeNames();
     List names = new Vector();
+    String index2check = "prodDepDays";
+    if (product != null) {
+    	index2check = "prodDepDays"+product.getPrimaryKey().toString()+"_";
+    }
     String name;
     while (enum.hasMoreElements()) {
       name = (String) enum.nextElement();
-      if (name.indexOf("prodDepDays"+product.getPrimaryKey().toString()+"_") != -1) {
+      if (name.indexOf(index2check) != -1) {
       	names.add(name);
       }
     }
@@ -1193,6 +1253,16 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
 			if (stamp != null) {
+				try {
+					SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+					SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+					return pDay.getMax();
+				} catch (FinderException fe) {
+					//fe.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 			  ServiceDay sDay;
 			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
@@ -1211,7 +1281,17 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
 			if (stamp != null) {
-			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+				try {
+					SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+					SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+					return pDay.getMin();
+				} catch (FinderException fe) {
+					//fe.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 			  ServiceDay sDay;
 			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 			  if (sDay != null) {

@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.presentation.TravelBlock;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -71,7 +72,7 @@ public class SearchFormSelector extends TravelBlock {
 		}
 		
 		DropdownMenu forms = new DropdownMenu(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM);
-		getStyleObject(forms, ServiceSearch.STYLENAME_INTERFACE);
+		getStyleObject(forms, BookingForm.STYLENAME_INTERFACE);
 
 		forms.setToSubmit();
 		form.add(forms);

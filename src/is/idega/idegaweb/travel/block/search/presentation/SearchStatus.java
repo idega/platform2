@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.presentation.TravelBlock;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -85,9 +86,9 @@ public class SearchStatus extends TravelBlock {
 		iconTable.setHeight(1, 1, 27);
 		iconTable.setHeight(1, 4, sinkPixels);
 		iconTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		iconTable.setRowStyleClass(2, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-		iconTable.setStyleClass(1, 4, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-		iconTable.setStyleClass(3, 4, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		iconTable.setRowStyleClass(2, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+		iconTable.setStyleClass(1, 4, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+		iconTable.setStyleClass(3, 4, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 
 		table.add(iconTable, activeColumn, row);
 		table.mergeCells(activeColumn, row, activeColumn, row+3);
@@ -95,17 +96,17 @@ public class SearchStatus extends TravelBlock {
 		table.setVerticalAlignment(activeColumn, row, Table.VERTICAL_ALIGN_BOTTOM);
 		
 		++row;
-			table.setRowStyleClass(row, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+			table.setRowStyleClass(row, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
 
 		++row;
 		++row;
 //		table.setRowStyleClass(row, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
 		for ( int i = 1; i <= 7; i++) {
 			if (i < activeColumn) {
-				table.setStyleClass(i, row, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+				table.setStyleClass(i, row, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
 			}
 			else if ( i > activeColumn ) {
-				table.setStyleClass(i, row, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+				table.setStyleClass(i, row, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 			}
 		}
 		table.setHeight(row, sinkPixels);
@@ -118,7 +119,7 @@ public class SearchStatus extends TravelBlock {
 		++row;
 		
 		++row;
-		table.setRowStyleClass(row, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		table.setRowStyleClass(row, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 		String searchText = getResourceBundle().getLocalizedString(localizationKeyPrefix+AbstractSearchForm.STATE_SHOW_SEARCH_FORM); 
 		String infoText = getResourceBundle().getLocalizedString(localizationKeyPrefix+AbstractSearchForm.STATE_SHOW_DETAILED_PRODUCT); 
 		String paymentText = getResourceBundle().getLocalizedString(localizationKeyPrefix+AbstractSearchForm.STATE_SHOW_BOOKING_FORM); 
@@ -129,7 +130,7 @@ public class SearchStatus extends TravelBlock {
 		table.add(getText(confirmText), 7, row);
 		table.setHeight(row, rowHeight);
 		++row;
-		table.setRowStyleClass(row, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setRowStyleClass(row, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
 		
 //		table.add(super.getResourceBundle().getLocalizedString(localizedKey, localizedKey), activeColumn, row);
 		
@@ -147,22 +148,22 @@ public class SearchStatus extends TravelBlock {
 		table.setWidth("100%");
 		table.setHeight(1, rowHeight - sinkPixels);
 		if (column < activeColumn) {
-			table.setStyleClass(1, 1, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-			table.setStyleClass(3, 1, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+			table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+			table.setStyleClass(3, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
 			if ( column % 2 == 0) {
-				table.setStyleClass(2, 1, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+				table.setStyleClass(2, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
 			}
 		}
 		else if (column > activeColumn) {
-			table.setStyleClass(1, 1, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
-			table.setStyleClass(3, 1, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+			table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
+			table.setStyleClass(3, 1, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 			if ( column % 2 == 0) {
-				table.setStyleClass(2, 1, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+				table.setStyleClass(2, 1, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 			}
 		}
 		else if (column == activeColumn) {
-			table.setStyleClass(1, 1, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-			table.setStyleClass(3, 1, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+			table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+			table.setStyleClass(3, 1, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 		}
 		
 		return table;
@@ -170,8 +171,8 @@ public class SearchStatus extends TravelBlock {
 	
 	protected Text getText(String content) {
 		Text text = new Text(content);
-		if (getStyleName(ServiceSearch.STYLENAME_TEXT) != null) {
-			text = getStyleText(text, ServiceSearch.STYLENAME_TEXT);
+		if (getStyleName(BookingForm.STYLENAME_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_TEXT);
 		}
 		return text;
 	}

@@ -186,16 +186,19 @@ public class TourBookingOverview extends AbstractBookingOverview {
               _tour = getTourBusiness(iwc).getTour(prod);
 
               if (_supplier != null) {
-                sDay = sDayHome.findByServiceAndDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
-                if (sDay != null) {
-                  iCount = sDay.getMax();
-                  if (iCount < 1) {
-                    iCount = _tour.getTotalSeats();
-                  }
-                }else {
-                  iCount = _tour.getTotalSeats();
-                }
-
+	            	iCount = getTourBusiness(iwc).getMaxBookings(prod, tempStamp);
+//                if (sDay != null) {
+//                  iCount = sDay.getMax();
+//                  if (iCount < 1) {
+//                    iCount = _tour.getTotalSeats();
+//                  }
+//                }else {
+//                  iCount = _tour.getTotalSeats();
+//                }
+	            	if (iCount < 1) {
+	            		iCount = _tour.getTotalSeats();
+	            	}
+	            	
 //                iCount = _tour.getTotalSeats();
 
                 iBooked = getTourBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp, -1);
@@ -373,17 +376,21 @@ public class TourBookingOverview extends AbstractBookingOverview {
     int available = 0;
 
     if (_supplier != null) {
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay;// = sDayHome.create();
-      sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
-      if (sDay != null) {
-        seats = sDay.getMax();
-        if (seats < 1) {
-          seats = _tour.getTotalSeats();
-        }
-      }else {
-        seats = _tour.getTotalSeats();
-      }
+    	seats = getTourBusiness(iwc).getMaxBookings(product, stamp);
+    	if (seats < 1) {
+    		seats = _tour.getTotalSeats();
+    	}
+//      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//      ServiceDay sDay;// = sDayHome.create();
+//      sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
+//      if (sDay != null) {
+//        seats = sDay.getMax();
+//        if (seats < 1) {
+//          seats = _tour.getTotalSeats();
+//        }
+//      }else {
+//        seats = _tour.getTotalSeats();
+//      }
 
 //      seats = _tour.getTotalSeats();
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);

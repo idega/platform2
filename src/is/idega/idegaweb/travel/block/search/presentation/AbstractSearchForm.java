@@ -14,25 +14,20 @@ import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
 import is.idega.idegaweb.travel.presentation.TravelWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
-
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
-import com.idega.block.text.business.ContentFinder;
-import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
-import com.idega.block.text.presentation.TextEditorWindow;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductComparator;
@@ -47,16 +42,12 @@ import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
-import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneType;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
@@ -72,13 +63,9 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.SelectPanel;
-import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -91,7 +78,7 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock{
 
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
@@ -135,7 +122,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	public static String PARAMETER_COMMENT = BookingForm.PARAMETER_COMMENT;//"hs_comm";
 	public static String PARAMETER_REFERER_URL = PublicBooking.PARAMETER_REFERRAL_URL;
 	public static String PARAMETER_PHONE_NUMBER = BookingForm.PARAMETER_PHONE;
-	public static String PARAMETER_NAME_ON_CARD = "hs_noc";
+	public static String PARAMETER_NAME_ON_CARD = BookingForm.PARAMETER_NAME_ON_CARD; //"hs_noc";
 	public static String PARAMETER_SORT_BY = "asf_p_sb"; 
 
 	public static String PARAMETER_NEW_SEARCH = "asf_p_ns";
@@ -168,9 +155,6 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	
 	protected Image headerImage;
 	protected Image headerImageTiler;
-	protected Table formTable = new Table();
-	protected Table currentSearchPart = null;
-	protected int currentSearchPartRow = 1;
 	protected int row = 1;
 	protected boolean useSecureServer = true;
 	int tmpPriceID;
@@ -183,6 +167,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	private List searchForms = null;
 	protected DecimalFormat currencyFormat;
 	protected int localeID = -1;
+	private BookingForm bf;
+	
+	protected HashMap frames = new HashMap();
 	
 	public AbstractSearchForm() {
 		setCacheable(getCacheKey(),0);
@@ -195,12 +182,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected abstract Collection 	getResults() throws RemoteException, InvalidSearchException;
 	protected abstract Image 				getHeaderImage(IWResourceBundle iwrb);
 	protected abstract String 			getPriceCategoryKey();
-	protected abstract String 			getUnitName();
 	protected abstract List 				getErrorFormFields();
 	protected abstract Collection 	getParametersInUse();
-	protected abstract String 			getParameterTypeCountName();
 	
-	protected void addProductInfoDetailed(Product product, Table table, int row) {}
+	protected Table getProductInfoDetailed(Product product) {return null;}
 	protected void addProductInfo(Product product, Table table, int column, int row) {}
 
 	private void init(IWContext iwc) throws RemoteException {
@@ -211,21 +196,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		bundle = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWBundle();
 		localeID = iwc.getCurrentLocaleId();
 		currencyFormat = new DecimalFormat("0.00");
-		formTable.setWidth("100%");
-		formTable.setCellpadding(0);
-		formTable.setCellspacing(0);
-		if (backgroundColor != null) {
-			formTable.setColor(backgroundColor);
-		}
 		
 		definedProduct = getProduct();
-		if (definedProduct != null) {
-			cvcIsUsed = getCreditCardBusiness(iwc).getUseCVC(definedProduct.getSupplier(), IWTimestamp.RightNow());
-		}
-		
 		try {
 			currentPageNumber = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_NR));
 		} catch (NumberFormatException ignore) {}
+		bf = getBookingForm();
 	}
 	
 	public void _main(IWContext iwc) throws Exception {
@@ -249,11 +225,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		
 		Form form = new Form();
-		form.setMethod("GET");
+//		form.setMethod("GET");
 		form = (Form) addParameters(form, -1, true);
 
 		setupPresentation(form);
-		form.add(formTable);
+		form.add(getBookingForm().formTable);
 		form.add(getButtons(form));
 		outTable.add(form);
 /*		outTable.add(Text.BREAK);
@@ -306,18 +282,18 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, IWMainApplication.getEncryptedClassName(this.getClassName()));
 		return link;
 	}
-	
+	/*
 	public void add(Object object) {
-		formTable.add(object);
+		getBookingForm().add(object);
 	}
 
 	public void add(String string) {
-		formTable.add(string);
+		getBookingForm().add(string);
 	}
 	
 	public void add(PresentationObject po) {
-		formTable.add(po);
-	}
+		getBookingForm().add(po);
+	}*/
 
 	protected Table getButtons(Form form) throws RemoteException {
 
@@ -496,7 +472,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			case STATE_DEFINED_PRODUCT :
 				if (isAlwaysSearchForm) {
 					setupSearchForm();
-					addHiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString());
+					getBookingForm().addHiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString());
 				} else {
 					definedProductInformation();
 				}
@@ -521,14 +497,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					if (isAlwaysSearchForm) {
 						errorFields = i.getErrorFields();
 						getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-						addErrorWarning(formTable, row);
+						getBookingForm().addErrorWarning(getBookingForm().formTable, row);
 						setupSearchForm();
 					} else {
 						unsearched();
 					}
 				} catch (FinderException f) {
 					getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
-					addErrorWarning(formTable, row);
+					getBookingForm().addErrorWarning(getBookingForm().formTable, row);
 					setupSearchForm();
 				}
 				break;
@@ -556,7 +532,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	protected void definedProductInformation() throws RemoteException {
-		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 				
 		Table table = new Table(1, 2);
 		table.add(getText(iwrb.getLocalizedString("travel.search.defined_product_explained_header", "Check availability.")), 1, 1);
@@ -629,7 +605,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 		
 		if (!sorted){
-			coll = filterResults(coll);
+			coll = filterResults(iwc, coll);
 			getSearchBusiness(iwc).addSearchResults(keyWithSort, coll);
 			System.out.println("Sorting results...");
 		} else {
@@ -648,20 +624,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return  cacheStatePrefix+key.toString();
  }
 		
-	private int addErrorWarning(Table table, int row) {
-		if (errorFields != null && !errorFields.isEmpty()) {
-			Table sTable = setSearchPart(table, -1, true, true);
-			sTable.setCellpaddingLeft(1, 1, 10);
-			sTable.setCellpaddingTop(1, 1, 5);
-			sTable.setCellpaddingBottom(1, 1, 5);
-			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
-			sTable.add(error, 1, row);
-			//table.mergeCells(1, row, 3, row);
-			//table.setBorder(1);
-			++row;
-		}
-		return row;
-	}
+
 	
 	private Table addTermsAndConditionsAndVerisign() throws RemoteException {
 		Link terms = new Link(getText(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
@@ -692,8 +655,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return table;
 	}
 	
+	
 	protected TravelBlock getBookingForm(Form form) throws RemoteException {
-		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 
 		
 		Table table = new Table();
@@ -703,7 +667,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		int row = 1;
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-		int betw = getNumberOfDays(from);
+		int betw = getBookingForm().getNumberOfDays(from);
 		IWTimestamp to = new IWTimestamp(from);
 		to.addDays(betw);
 
@@ -718,32 +682,32 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		boolean isProductValid = false;
 		try {
-			isProductValid = getSearchBusiness(iwc).getIsProductValid(iwc, product, from, to);
+			isProductValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
 		}
 		catch (Exception e2) {
 			e2.printStackTrace();
 		}
 
-		setSearchPart(table, row, false, false);
+		getBookingForm().setSearchPart(table, row, false, false);
 		if (errorFields != null && !errorFields.isEmpty()) {
-			addErrorWarning(currentSearchPart, currentSearchPartRow);
-			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 8);
+			getBookingForm().addErrorWarning(getBookingForm().getCurrentBookingPart(), getBookingForm().getCurrentBookingPartRow());
+			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(1, getBookingForm().getCurrentBookingPartRow(), 8);
 			++row;
-			++currentSearchPartRow;
+			getBookingForm().setCurrentBookingPartRow(getBookingForm().getCurrentBookingPartRow()+1);
 		}
 
 		if (isProductValid) {
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, table, row);
 			//table.mergeCells(2, (row-1), 3, (row-1));
 	
 			TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
 			postalC.setSize(6);
 			TextInput city = new TextInput(PARAMETER_CITY);
 			//city.setSize(18);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC}, false, false, table, row);
 	
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, table, row);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE_NUMBER)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE_NUMBER)}, false, false, table, row);
 //			table.mergeCells(2, (row-1), 3, (row-1));
 	
 			setupSpecialFieldsForBookingForm(table, row, errorFields);
@@ -768,11 +732,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			TextArea comment = new TextArea(PARAMETER_COMMENT);
 			comment.setWidth("300");
 			comment.setHeight("50");
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, table, row);
-			currentSearchPart.mergeCells(1, currentSearchPartRow-1, 2, currentSearchPartRow-1);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, table, row);
+			getBookingForm().getCurrentBookingPart().mergeCells(1, getBookingForm().getCurrentBookingPartRow()-1, 2, getBookingForm().getCurrentBookingPartRow()-1);
 
 
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, table, row);
+			getBookingForm().addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, table, row);
 
 			++row;
 			Table ccTable = new Table();
@@ -794,13 +758,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			ccTable.setCellpaddingLeft(2, 1, 5);
 			ccTable.setCellpaddingLeft(2, 2, 5);
 			//table.add(ccTable, 1, row);
-			currentSearchPart.add(ccTable, 1, currentSearchPartRow);
+			getBookingForm().getCurrentBookingPart().add(ccTable, 1, getBookingForm().getCurrentBookingPartRow());
 			//currentSearchPart.setCellpaddingTop(1, currentSearchPartRow, 6);
-			currentSearchPart.setCellpaddingLeft(1, currentSearchPartRow, 10);
-			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 9);
+			getBookingForm().getCurrentBookingPart().setCellpaddingLeft(1, getBookingForm().getCurrentBookingPartRow(), 10);
+			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(1, getBookingForm().getCurrentBookingPartRow(), 9);
 			//currentSearchPart.setCellpaddingTop(2, currentSearchPartRow, 6);
-			currentSearchPart.setCellpaddingLeft(2, currentSearchPartRow, 10);
-			currentSearchPart.setCellpaddingBottom(2, currentSearchPartRow, 9);
+			getBookingForm().getCurrentBookingPart().setCellpaddingLeft(2, getBookingForm().getCurrentBookingPartRow(), 10);
+			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(2, getBookingForm().getCurrentBookingPartRow(), 9);
 			
 			
 			if (cvcIsUsed) {
@@ -818,7 +782,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				//table.mergeCells(2, row, 3, row);
 				
 				//ccTable.add(ccTable2, 4, 1);
-				currentSearchPart.add(ccTable2, 2, currentSearchPartRow);
+				getBookingForm().getCurrentBookingPart().add(ccTable2, 2, getBookingForm().getCurrentBookingPartRow());
 			}
 			++row;
 			
@@ -852,10 +816,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			table.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 			table.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
 			table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
-			table.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
+			table.add(new HiddenInput(getBookingForm().getParameterTypeCountName(), iwc.getParameter(getBookingForm().getParameterTypeCountName())));
 			
 	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-			table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
+			table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getBookingForm().getParameterTypeCountName())));
 			
 			/*
 			try {
@@ -946,29 +910,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return frame;
 	}
 	
-	/**
-	 * @return
-	 */
-	protected int getNumberOfDays(IWTimestamp fromDate) {
-		int	betw = 0;
-		try {
-			betw = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
-		} catch (NumberFormatException n) {
-			String toParameter = iwc.getParameter(PARAMETER_TO_DATE);
-			if (toParameter != null) {
-				try {
-					IWTimestamp toStamp = new IWTimestamp(toParameter);
-					return IWTimestamp.getDaysBetween(fromDate, toStamp);
-				} catch (Exception e) {
-				}
-			}
-			logDebug("SearchForm : days set to 0");
-		}
-		return betw;
-	}
-
 	protected void checkBooking() throws RemoteException {
-		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 2);
 	  Table table = new Table();
 	  table.setCellpaddingAndCellspacing(0);
 	  table.setCellpaddingLeft(1, 1, 5);
@@ -978,9 +921,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
 		try {
-			Product product = productHome.findByPrimaryKey( new Integer(iwc.getParameter(PARAMETER_PRODUCT_ID)) );
-			BookingForm bf = getSearchBusiness(iwc).getServiceHandler().getBookingForm(iwc, product);
-			int bookingId = bf.checkBooking(iwc, true);
+			Product product = getProduct();
+			int bookingId = getBookingForm().checkBooking(iwc, true);
 			GeneralBookingHome gBookingHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
 			GeneralBooking gBooking = null;
 			boolean inquirySent = (bookingId == BookingForm.inquirySent); 
@@ -992,7 +934,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			
 
 			if (gBooking != null) {
-			  boolean sendEmail = PublicBooking.sendEmails(iwc, gBooking, iwrb);
+			  boolean sendEmail = bf.sendEmails(iwc, gBooking, iwrb);
 			  
 			  table.add(getText(gBooking.getName()));
 			  table.add(getText(", "));
@@ -1062,7 +1004,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 			// TODO move to a better location
 			IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-			int days = getNumberOfDays(stamp);
+			int days = getBookingForm().getNumberOfDays(stamp);
 			TravelStockroomBusiness bus;
 			Product product;
 			int productId;
@@ -1121,7 +1063,6 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						//table.setBorder(0);
 						table.mergeCells(1, resultsRow, 3, resultsRow);
 						innerTable.setWidth("100%");
-						innerTable.setBorder(0);
 						innerTable.setWidth(1, 1, 50);
 						innerTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 						innerTable.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
@@ -1144,7 +1085,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 							if (timeframe != null) {
 								timeframeId = timeframe.getID();
 							}
-							addPrices(innerTable, 2, 1, bus, product, timeframeId, addressId, days, Text.NON_BREAKING_SPACE);
+							tmpPriceID= getProductDetailFrame(product, 2).addPrices(innerTable, 2, 1, bus, product, timeframeId, addressId, days, Text.NON_BREAKING_SPACE);
 						}
 						else {
 							TravelAddress address;
@@ -1157,7 +1098,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 								if (timeframe != null) {
 									timeframeId = timeframe.getID();
 								}
-								addPrices(innerTable, 2, 1, bus, product, timeframeId, address.getID(), days, Text.NON_BREAKING_SPACE);
+								tmpPriceID = getProductDetailFrame(product, 2).addPrices(innerTable, 2, 1, bus, product, timeframeId, address.getID(), days, Text.NON_BREAKING_SPACE);
 							}
 						}
 						
@@ -1173,7 +1114,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				    }
 				    
 						++resultsRow;
-						table.setRowStyleClass(resultsRow++, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+						table.setRowStyleClass(resultsRow, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+						table.setHeight(1, resultsRow++,2);
 						
 					
 					//}
@@ -1187,33 +1129,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 	
-	private int addProductHeader(Product product, Supplier supplier, Table table, int resultsRow) throws RemoteException {
-		table.add(getHeaderText(supplier.getName()), 1, resultsRow);
-		table.add(getSmallText(product.getProductName(localeID)), 3, resultsRow);
-		table.setAlignment(3, resultsRow, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.setCellpaddingLeft(1, resultsRow, 10);
-		//table.setCellpadding(2, resultsRow, 5);
-		table.setCellpaddingRight(3, resultsRow, 10);
-		table.setHeight(resultsRow, 28);
-		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
-		++resultsRow;
-		table.setHeight(1, resultsRow, 1);
-		++resultsRow;
-		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-		table.setHeight(1, resultsRow, 1);
-
-		++resultsRow;
-		table.setHeight(1, resultsRow, 3);
-
-//		table.setRowStyleClass(++resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-//		table.setHeight(1, resultsRow, 3);
-		
-		return ++resultsRow;
-	}
-	
 	private int addResultProductHeader(Product product, Supplier supplier, Table table, int resultsRow) throws RemoteException {
 		table.setHeight(1, resultsRow, 1);
-		table.setRowStyleClass(resultsRow, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		table.setRowStyleClass(resultsRow, getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 		++resultsRow;
 		table.setHeight(1, resultsRow, 1);
 		++resultsRow;
@@ -1224,15 +1142,15 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		//table.setCellpadding(2, resultsRow, 5);
 		table.setCellpaddingRight(3, resultsRow, 10);
 		table.setHeight(resultsRow, 28);
-		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		table.setRowStyleClass(resultsRow, super.getStyleName(BookingForm.STYLENAME_BACKGROUND_COLOR));
 		++resultsRow;
-		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setRowStyleClass(resultsRow, super.getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
 		table.setHeight(1, resultsRow, 1);
 		++resultsRow;
-		table.setHeight(1, resultsRow, 2);
+		table.setHeight(1, resultsRow, 1);
 		++resultsRow;
-		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
-		table.setHeight(1, resultsRow, 3);
+		table.setRowStyleClass(resultsRow, super.getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
+		table.setHeight(1, resultsRow, 1);
 
 //		++resultsRow;
 //		table.setHeight(1, resultsRow, 3);
@@ -1362,7 +1280,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			((Link)po).maintainParameter(PARAMETER_FROM_DATE, iwc);
 			((Link)po).maintainParameter(PARAMETER_MANY_DAYS, iwc);
 			((Link)po).maintainParameter(PARAMETER_TO_DATE, iwc);
-			((Link)po).addParameter(getParameterTypeCountName(), getCount());
+			((Link)po).addParameter(getBookingForm().getParameterTypeCountName(), getCount());
 			if (productId > 0) {
 				((Link)po).addParameter(PARAMETER_PRODUCT_ID, productId);
 			}
@@ -1390,7 +1308,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				((Form)po).maintainParameter(PARAMETER_FROM_DATE);
 				((Form)po).maintainParameter(PARAMETER_MANY_DAYS);
 				((Form)po).maintainParameter(PARAMETER_TO_DATE);
-				((Form)po).addParameter(getParameterTypeCountName(), getCount());
+				((Form)po).addParameter(getBookingForm().getParameterTypeCountName(), getCount());
 				if (iwc.isParameterSet(PARAMETER_ADDRESS_ID)) {
 					po.maintainParameter(PARAMETER_ADDRESS_ID);
 				}
@@ -1451,7 +1369,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
 		link.maintainParameter(PARAMETER_TO_DATE, iwc);
-		link.addParameter(getParameterTypeCountName(), getCount());
+		link.addParameter(getBookingForm().getParameterTypeCountName(), getCount());
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
 		//link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
 		link.maintainParameter(PARAMETER_ADDRESS_ID, iwc);
@@ -1484,15 +1402,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	private ProductPrice[] getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException {
 		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 	}
-	
-	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException {
+	/* TODO trespps 
+	void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException {
 		ProductPrice[] prices = getProductPrices(product, addressId, timeframeId);
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
 			addPrices(table, column, row, bus, product.getID(), timeframeId, addressId, prices[i], days, seperator);
 		}
 	}
-
+*/
+	/*
 	
 	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, int productId, int timeframeId, int travelAddressId, ProductPrice pPrice, int days, String seperator) throws SQLException, RemoteException {
 		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
@@ -1543,7 +1462,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		table.addBreak(column, row);
 	
 	}
-	
+	*/
 	private String oldGetPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
 		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 /*
@@ -1578,8 +1497,12 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return returner;
 	}
 
+	private String getUnitName() {
+		return bf.getUnitName();
+	}
+	
 	protected int getCount() {
-		String sCount = iwc.getParameter(getParameterTypeCountName());
+		String sCount = iwc.getParameter(getBookingForm().getParameterTypeCountName());
 		int count = 0;
 		try {
 			count = Integer.parseInt(sCount);
@@ -1587,127 +1510,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return count;
 	}
 
-	public Table setSearchPart(Table table, int tableRow, boolean createNew, boolean useColors) {
-		if (createNew || currentSearchPart == null) {
-			//table.setBorder(1);
-
-			currentSearchPart = new Table();
-			if (useColors) {
-				if (searchPartTopBorderColor != null && searchPartTopBorderWidth != null) {
-					currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartTopBorderWidth), searchPartTopBorderColor, "solid");
-				}
-				if (searchPartBottomBorderColor != null && searchPartBottomBorderWidth != null) {
-					currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartBottomBorderWidth), searchPartBottomBorderColor, "solid");
-				}
-				String darkBackground = this.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR);
-				String lightBackground = this.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR);
-				
-				if (lightBackground != null) {
-					currentSearchPart.setStyleClass(lightBackground);
-				}
-			}
-			currentSearchPart.setBorder(0);
-			//currentSearchPart.setBorderColor("#F0C0FF");
-			currentSearchPart.setCellspacing(0);
-			currentSearchPart.setCellpadding(0);
-			currentSearchPart.setWidth("100%");
-			currentSearchPartRow = 1;
-			
-			if (tableRow > 0) {
-				table.add(currentSearchPart, 1, tableRow);
-			} else {
-				table.add(currentSearchPart, 1, row++);
-				table.setHeight(row++, 2);
-			}
-		}
-		
-		return currentSearchPart;
-	}
-	
-	protected void addInputLine(String[] text, PresentationObject[] object) {
-		addInputLine(text, object, false, false, formTable, -1);
-	}	
-	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart) {
-		addInputLine(text, object, useHeaderText, newSearchPart, formTable, -1);
-	}	
-	protected void addHiddenInput(String name, String value) {
-		formTable.add(new HiddenInput(name, value));
-	}
-	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, Table table, int row) {
-		setSearchPart(table, row, newSearchPart, true);
-		for (int i = 0; i < text.length; i++) {
-			if ( errorFields != null && errorFields.contains(object[i].getName())) {
-				currentSearchPart.add(getErrorText("* "), i+1, currentSearchPartRow);
-			}
-			if (useHeaderText) {
-				currentSearchPart.add(getHeaderText(text[i]), i+1, currentSearchPartRow);
-			} else {
-				currentSearchPart.add(getText(text[i]), i+1, currentSearchPartRow);
-			}
-			currentSearchPart.setNoWrap(i+1, currentSearchPartRow);
-			if (currentSearchPartRow == 1) {
-				currentSearchPart.setCellpaddingTop(i+1, currentSearchPartRow, 9);
-			}
-			currentSearchPart.setCellpaddingLeft(i+1, currentSearchPartRow, 10);
-			//currentSearchPart.setCellpaddingBottom(i+1, currentSearchPartRow, 8);
-		}
-		++currentSearchPartRow;
-		String value;
-		int objectLength = object.length;
-		for (int i = 0; i < objectLength; i++) {
-			if ( object[i] != null) {
-				if (object[i]  instanceof Table ) {
-					value = null;
-				} else {
-					value = iwc.getParameter(object[i].getName());
-				}
-				if (value != null) {
-					if (object[i] instanceof DropdownMenu) {
-						((DropdownMenu)object[i]).setSelectedElement(value);
-					} else if (object[i] instanceof SelectionBox) {
-						String values[] = iwc.getParameterValues(object[i].getName());
-						((SelectionBox)object[i]).setSelectedElements(values);
-					} else if (object[i] instanceof DateInput) {
-						try {
-							String year = value.substring(0, 4);
-							String month = value.substring(5, 7);
-							String day = value.substring(8, 10);
-							((DateInput)object[i]).setYear(year);
-							((DateInput)object[i]).setMonth(month);
-							((DateInput)object[i]).setDay(day);
-						}catch (Exception e) {
-							System.out.println("Error changing setting dateinputs");
-						}
-					} else if (object[i] instanceof SelectPanel) {
-						String values[] = iwc.getParameterValues(object[i].getName());
-						((SelectPanel)object[i]).setSelectedElements(values);
-					} else {
-						try {
-							((InterfaceObject)object[i]).setContent(value);
-						}catch (Exception e) {
-							System.out.println("Error changing presentationObject to interfaceObject");
-						}
-					} 
-				}
-	
-				if (formInputStyle != null) {
-					object[i].setStyleAttribute(formInputStyle);
-				}
-				getStyleObject((PresentationObject) object[i], ServiceSearch.STYLENAME_INTERFACE);
-				currentSearchPart.add(object[i], i+1, currentSearchPartRow);
-				currentSearchPart.setCellpaddingTop(i+1, currentSearchPartRow, 6);
-				currentSearchPart.setCellpaddingLeft(i+1, currentSearchPartRow, 10);
-				currentSearchPart.setCellpaddingBottom(i+1, currentSearchPartRow, 9);
-			}
-		}
-		++currentSearchPartRow;
-}
-	
-	
 	protected Text getText(String content) {
 		Text text = new Text(content);
-		if (getStyleName(ServiceSearch.STYLENAME_TEXT) != null) {
-			text = getStyleText(text, ServiceSearch.STYLENAME_TEXT);
+		if (getStyleName(BookingForm.STYLENAME_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_TEXT);
 		}
 		else if (textFontStyle != null) {
 			text.setFontStyle(textFontStyle);
@@ -1717,8 +1523,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected Text getHeaderText(String content) {
 		Text text = new Text(content);
-		if (getStyleName(ServiceSearch.STYLENAME_HEADER_TEXT) != null) {
-			text = getStyleText(text, ServiceSearch.STYLENAME_HEADER_TEXT);
+		if (getStyleName(BookingForm.STYLENAME_HEADER_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_HEADER_TEXT);
 		}
 		else if (headerFontStyle != null) {
 			text.setFontStyle(headerFontStyle);
@@ -1729,8 +1535,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	
 	protected Text getSmallText(String content) {
 		Text text = new Text(content);
-		if (getStyleName(ServiceSearch.STYLENAME_SMALL_TEXT) != null) {
-			text = getStyleText(text, ServiceSearch.STYLENAME_SMALL_TEXT);
+		if (getStyleName(BookingForm.STYLENAME_SMALL_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_SMALL_TEXT);
+		}
+		return text;
+	}
+	
+	protected Text getOrangeText(String content) {
+		Text text = new Text(content);
+		if (getStyleName(BookingForm.STYLENAME_ORANGE_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_ORANGE_TEXT);
 		}
 		return text;
 	}
@@ -1738,16 +1552,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected Text getLinkText(String content, boolean clicked) {
 		Text text = new Text(content);
 		if (clicked) {
-			if (getStyleName(ServiceSearch.STYLENAME_CLICKED_LINK) != null) {
-				text = getStyleText(text, ServiceSearch.STYLENAME_CLICKED_LINK);
+			if (getStyleName(BookingForm.STYLENAME_CLICKED_LINK) != null) {
+				text = getStyleText(text, BookingForm.STYLENAME_CLICKED_LINK);
 			}
 			else if (clickedLinkFontStyle != null) {
 				text.setFontStyle(clickedLinkFontStyle);
 			}
 		}
 		else {
-			if (getStyleName(ServiceSearch.STYLENAME_LINK) != null) {
-				text = getStyleText(text, ServiceSearch.STYLENAME_LINK);
+			if (getStyleName(BookingForm.STYLENAME_LINK) != null) {
+				text = getStyleText(text, BookingForm.STYLENAME_LINK);
 			}
 			else if (linkFontStyle != null) {
 				text.setFontStyle(linkFontStyle);
@@ -1759,8 +1573,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected Text getErrorText(String content) {
 		Text text = new Text(content);
-		if (getStyleName(ServiceSearch.STYLENAME_ERROR_TEXT) != null) {
-			text = getStyleText(text, ServiceSearch.STYLENAME_ERROR_TEXT);
+		if (getStyleName(BookingForm.STYLENAME_ERROR_TEXT) != null) {
+			text = getStyleText(text, BookingForm.STYLENAME_ERROR_TEXT);
 		}
 		else if (errorFontStyle != null) {
 			text.setFontStyle(errorFontStyle);
@@ -1864,22 +1678,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected boolean hasDefinedProduct() throws RemoteException {
 		return (getSession(iwc).getState() == this.STATE_DEFINED_PRODUCT && definedProduct != null);
 	}
-	
-	public void addAreaCodeInput() {
-		try {
-			DropdownMenu menu = getSearchBusiness(iwc).getPostalCodeDropdown(iwrb);
-			try {
-				if (hasDefinedProduct()) {
-					menu.setSelectedElement(definedProduct.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
-				}
-			} catch (Exception e) {}
-			
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu}, false, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-	}
-	
+
 	protected DropdownMenu getDropdownWithNumbers(String name, int startNumber, int endNumber) {
 		DropdownMenu menu = new DropdownMenu(name);
 		for (int i = startNumber; i <= endNumber; i++) {
@@ -1970,11 +1769,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		table.setCellpaddingLeft(1, 1, 10);
 		table.setCellpaddingRight(3, 1, 10);
 		table.setHeight(33);
-		table.setRowStyleClass(1, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setRowStyleClass(1, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
 		table.setHeight(2, 1);
 		table.setHeight(3, 1);
 		table.setHeight(4, 3);
-		table.setRowStyleClass(3, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+		table.setRowStyleClass(3, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
 		int totalPages = (int )Math.ceil((double) collSize / (double) resultsPerPage); 
 		
 		if (currentPageNumber > 1) {
@@ -2017,7 +1816,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		if (formInputStyle != null) {
 			menu.setStyleAttribute(formInputStyle);
 		} else {
-			menu.setStyleClass(getStyleName(ServiceSearch.STYLENAME_INTERFACE));
+			menu.setStyleClass(getStyleName(BookingForm.STYLENAME_INTERFACE));
 		}
 		return menu;
 	}
@@ -2028,11 +1827,11 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	private Collection filterResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
+	private Collection filterResults(IWContext iwc, Collection coll) throws IDOLookupException, FinderException, RemoteException {
 		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 		PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
 		PriceCategory priceCat = pcHome.findByKey(getPriceCategoryKey());
-		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate), getSortMethod());
+		coll = getSearchBusiness(iwc).sortProducts(iwc, coll, priceCat, new IWTimestamp(sFromDate), getSortMethod());
 		return coll;
 	}
 	
@@ -2087,7 +1886,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	
 	
 	protected TravelBlock getProductDetails(IWContext iwc) throws RemoteException {
-		ProductDetailFrame frame = new ProductDetailFrame(iwc);
+		ProductDetailFrame frame = getProductDetailFrame(getProduct(), 3);
 
 		Vector vector = new Vector();
 		vector.add(definedProduct);
@@ -2167,7 +1966,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			if (departureAddresses != null && !departureAddresses.isEmpty()) {
 				DropdownMenu addresses = new DropdownMenu(PARAMETER_ADDRESS_ID);
 				addresses.addMenuElements(departureAddresses);
-				addresses.setStyleClass(getStyleName(ServiceSearch.STYLENAME_INTERFACE));
+				addresses.setStyleClass(getStyleName(BookingForm.STYLENAME_INTERFACE));
 				//linkTable.add( getSmallText(iwrb.getLocalizedString("travel.search.departure_from", "Departure from")+" : "), 3 ,1);
 				linkTable.add( addresses, 2, 1);
 				linkTable.add( Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
@@ -2202,272 +2001,32 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		//linkTable.add(bookingLink, 3, 1);
 		linkTable.add(button, 3, 1);
 		return form;
-	
 	}	
-	public class ProductDetailFrame extends TravelBlock {
-
-		Product product = null;
-		Supplier supplier = null;
-		TxText descriptionText = null;
-		ContentHelper ch = null;
-		Table contTable;
-		String leftWidth = "200";
-		IWTimestamp fromDate = null;
-		List depAddresses = null;
-		int columns = 3;
-		public ProductDetailFrame(IWContext iwc) throws RemoteException {
-			this(iwc, 3);
+	
+	protected ProductDetailFrame getProductDetailFrame(Product product, int columns) throws RemoteException {
+		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product);
+		if (frame == null) { 
+			frame = new ProductDetailFrame(iwc);
+			frame.setPriceCategoryKey(getPriceCategoryKey());
+			frame.setCount(this.getCount());
+			frame.setProductInfoDetailed(getProductInfoDetailed(product));
+			frames.put(columns+""+product, frame);
 		}
-		
-		public ProductDetailFrame(IWContext iwc, int columns) throws RemoteException {
-			String sProductId = iwc.getParameter(PARAMETER_PRODUCT_ID);
-			this.columns = columns;
-			if (sProductId != null) {
-				try {
-					ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
-					SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-					product = pHome.findByPrimaryKey(new Integer(sProductId));
-					supplier = sHome.findByPrimaryKey(product.getSupplierId());
-
-					descriptionText = product.getText();
-					if (descriptionText != null) {
-						ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
-					}
-				} catch (Exception e ) {
-					e.printStackTrace();
-				}
-			}
-
-			contTable = new Table(columns, 10);
-			contTable.setBorder(0);
-			//contTable.setBorderColor("GREEN");
-
-			contTable.setCellpaddingAndCellspacing(0);
-			contTable.setWidth("100%");
-			contTable.setWidth(1, 1, leftWidth);
-			if (columns == 3) {
-				contTable.setWidth(columns, 1, "22");
-			} else {
-				contTable.setWidth(2, 1, "100%");
-			}
-			
-			super.add(getProductDetailFrame(iwc));
-		}
-		
-		public void add(PresentationObject po) {
-			contTable.add(po, 2, 1);
-		}
-		
-		public void addBottom(PresentationObject po) {
-			contTable.add(po, 2, 7);
-		}
-		
-		public void addLeft(PresentationObject po) {
-			contTable.add(po, 1, 6);
-		}
-		
-		protected Table getProductDetailFrame(IWContext iwc) throws RemoteException {
-
-			Table table = new Table();
-			table.setCellspacing(0);
-			table.setCellpadding(0);
-			table.setWidth("100%");
-			table.setBorder(0);
-			int row = 1;
-			ContentHelper ch;
-			LocalizedText locText = null;
-			List files;
-			Image image = null;
-			Timeframe timeframe;
-			if (product != null) {
-				TravelStockroomBusiness bus = null;
-				try {
-					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
-				}
-				catch (FinderException e1) {
-					e1.printStackTrace();
-				}
-				//IWTimestamp fromDate = null;
-				try {
-					fromDate = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-				} catch (NullPointerException n) {}
-				try {
-					depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true);
-				} catch (Exception e) {}
-
-				String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-				String sAddressId = iwc.getParameter(PARAMETER_ADDRESS_ID);
-				int addressId = -1;
-				if (sAddressId != null) {
-					try {
-						addressId = Integer.parseInt(sAddressId);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, fromDate, addressId);
-				int timeframeId = -1;
-				if (timeframe != null) {
-					timeframeId = timeframe.getID();
-				}
-							
-				row = addProductHeader(product, supplier, table, row);
-				
-				table.mergeCells(1, row, 3, row);
-				table.add(contTable, 1, row++);
-				try {
-					TxText descriptionText = product.getText();
-					if (descriptionText != null) {
-						ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
-						if (ch != null) {
-							locText = ch.getLocalizedText();
-							files = ch.getFiles();
-							if (files != null && !files.isEmpty()) {
-								ICFile imagefile = (ICFile) files.get(0);
-								String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
-		
-								image = new Image(((Integer)imagefile.getPrimaryKey()).intValue());
-								image.setMaxImageWidth(200);
-								if (att != null) {
-									image.addMarkupAttributes(getAttributeMap(att));
-								}
-							}
-						}
-					}
-					else {
-						ch = null;
-						locText = null;
-						files = null;
-						image = null;
-					}
-					
-					if (image != null) {
-						contTable.add(image, 1, 1);
-					}
-					/*
-					if (locText != null) {
-						if (locText.getHeadline() != null) {
-							contTable.add(getText(locText.getHeadline()), 2, 1);
-							contTable.addBreak(2, 1);
-						}
-						if (locText.getBody() != null) {
-							contTable.add(getSmallText(locText.getBody()), 2, 1);
-						}
-						contTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
-						contTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
-						//contTable.setCellpaddingTop(1, 1, 5);
-						contTable.setCellpadding(2, 1, 5);
-					}
-					*/
-					contTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
-					contTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
-					contTable.setHeight(1, 2, 2);
-					contTable.setStyleClass(1, 3, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
-					contTable.setCellpadding(1, 3, 5);
-					
-					contTable.add(getSupplierInfo(product), 1, 3);
-					
-					contTable.setStyleClass(1, 4, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
-					contTable.setHeight(1, 5, 2);
-
-					contTable.setStyleClass(1, 6, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
-					contTable.setCellpadding(1, 6, 5);
-					contTable.setVerticalAlignment(1, 6, Table.VERTICAL_ALIGN_TOP);
-					addProductInfoDetailed(product, contTable, 6);
-					if (depAddresses != null && !depAddresses.isEmpty() && addressId < 1) {
-						Iterator iter = depAddresses.iterator();
-						while (iter.hasNext()) {
-							addPrices(contTable, 1, 6, bus, product, timeframeId, ((TravelAddress) iter.next()).getID(), getNumberOfDays(fromDate), Text.BREAK);
-						}
-					} else {
-						addPrices(contTable, 1, 6, bus, product, timeframeId, addressId, getNumberOfDays(fromDate), Text.BREAK);
-					}
-
-					contTable.setStyleClass(1, 7, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
-					contTable.setHeight(1, 8, 2);
-					contTable.setStyleClass(1, 9, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
-					contTable.setHeight(1, 9, 2);
-					
-					contTable.mergeCells(2, 1, 2, 6);
-					if (columns == 3) {
-						contTable.mergeCells(3, 1, 3, 6);
-						contTable.mergeCells(2, 7, 3, 10);
-					}	else {
-						contTable.mergeCells(2, 7, 2, 10);
-					}
-					contTable.setVerticalAlignment(2, 7, Table.VERTICAL_ALIGN_BOTTOM);
-					contTable.setCellpaddingLeft(2, 7, 10);
-					
-					//contTable.add(getDetailLinks(product), 2, 7);
-					
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			else {
-				add("product == null");
-			}
-			
-			return table;
-		}
-		
-		
-
-
-		protected Table getSupplierInfo(Product product) {
-			Table table = new Table();
-			table.setCellspacing(0);
-			table.setCellpadding(1);
-			int row = 1;
-			Supplier supplier;
+		return frame;
+	}
+	
+	protected BookingForm getBookingForm() {
+		if (bf == null) {
 			try {
-				supplier = product.getSupplier();
-				table.add(getText(iwrb.getLocalizedString("travel.search.address", "Address")), 1, row++);
-				table.add(getSmallText(supplier.getAddress().getStreetAddress()), 1, row++);
-				List phones = supplier.getPhones();
-				if (phones != null) {
-					Iterator iter = phones.iterator();
-					Phone phone;
-					while (iter.hasNext()) {
-						phone = (Phone) iter.next();
-						if (!"".equals(phone.getNumber())) {
-							switch (phone.getPhoneTypeId()) {
-								case PhoneType.FAX_NUMBER_ID :
-									table.add(getText(iwrb.getLocalizedString("travel.search.fax", "Fax")), 1, row++);
-									break;
-								case PhoneType.HOME_PHONE_ID :
-									table.add(getText(iwrb.getLocalizedString("travel.search.telephone", "Telephone number")), 1, row++);
-									break;
-								case PhoneType.MOBILE_PHONE_ID :
-									table.add(getText(iwrb.getLocalizedString("travel.search.mobile", "Mobile")), 1, row++);
-									break;
-								
-							} 
-							table.add(getSmallText(phone.getNumber()), 1, row++);
-						}
-					}
+				bf = getSearchBusiness(iwc).getServiceHandler().getBookingForm(iwc, getProduct());
+				if (backgroundColor != null) {
+					bf.formTable.setColor(backgroundColor);
 				}
-				
-				List emails = supplier.getEmails();
-				if (emails != null) {
-					Iterator iter = emails.iterator();
-					Email email;
-					while (iter.hasNext()) {
-						email = (Email) iter.next();
-						if (!"".equals(email.getEmailAddress())) {
-							table.add(getText(iwrb.getLocalizedString("travel.search.email", "Email")), 1, row++);
-							table.add(getSmallText(email.getEmailAddress()), 1, row++);
-						}
-					}
-				}
-				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return table;
 		}
+		return bf;
 	}
 	
 }

@@ -8,14 +8,13 @@ import is.idega.idegaweb.travel.business.ContractBusiness;
 import is.idega.idegaweb.travel.business.Inquirer;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.service.business.BookingBusiness;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
@@ -242,6 +241,14 @@ public class TravelBlock extends Block {
 		} catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
+  }
+  
+  protected BookingBusiness getBookingBusiness(IWApplicationContext iwac) {
+  		try {
+  			return (BookingBusiness) IBOLookup.getServiceInstance(iwac, BookingBusiness.class);
+  		} catch (IBOLookupException e) {
+  			throw new IBORuntimeException(e);
+  		}
   }
 
 }

@@ -7,8 +7,6 @@ import is.idega.idegaweb.travel.data.Contract;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.PickupPlaceHome;
-import is.idega.idegaweb.travel.data.ServiceDay;
-import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -17,16 +15,13 @@ import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourBooking;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.business.SupplierManager;
@@ -597,7 +592,7 @@ public class TourBookingForm extends BookingForm{
 	}
 
 
-  public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
+  public Form getPublicBookingFormOLD(IWContext iwc, Product product) throws RemoteException, FinderException {
     List addresses;
     try {
       addresses = product.getDepartureAddresses(false);
@@ -613,22 +608,30 @@ public class TourBookingForm extends BookingForm{
     int min = 0;
 
     try {
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay;// = sDayHome.create();
-        sDay = sDayHome.findByServiceAndDay(this._productId, _stamp.getDayOfWeek());
-      if (sDay != null) {
-        max = sDay.getMax();
-        min = sDay.getMin();
-        if (max < 1) {
-          max = _tour.getTotalSeats();
-        }
-        if (min < 1) {
-          min = _tour.getMinimumSeats();
-        }
-      }else {
-        max = _tour.getTotalSeats();
-        min = _tour.getMinimumSeats();
-      }
+    	max = getTourBusiness(iwc).getMaxBookings(_product, _stamp);
+    	min = getTourBusiness(iwc).getMaxBookings(_product, _stamp);
+	    if (max < 1) {
+		    max = _tour.getTotalSeats();
+		  }
+		  if (min < 1) {
+		    min = _tour.getMinimumSeats();
+		  }
+//      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//      ServiceDay sDay;// = sDayHome.create();
+//        sDay = sDayHome.findByServiceAndDay(this._productId, _stamp.getDayOfWeek());
+//      if (sDay != null) {
+//        max = sDay.getMax();
+//        min = sDay.getMin();
+//        if (max < 1) {
+//          max = _tour.getTotalSeats();
+//        }
+//        if (min < 1) {
+//          min = _tour.getMinimumSeats();
+//        }
+//      }else {
+//        max = _tour.getTotalSeats();
+//        min = _tour.getMinimumSeats();
+//      }
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -1363,18 +1366,19 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     }
 
 		if (supplier != null) {
-	    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-	    ServiceDay sDay;// = sDayHome.create();
-	
-	    sDay = sDayHome.findByServiceAndDay(serviceId, fromStamp.getDayOfWeek());
-	    if (sDay != null) {
-	      totalSeats = sDay.getMax();
-	      if (totalSeats < 1) {
-	        totalSeats = _tour.getTotalSeats();
-	      }
-	    }else {
-	      totalSeats = _tour.getTotalSeats();
-	    }
+			totalSeats = getTravelStockroomBusiness(iwc).getMaxBookings(_product, fromStamp);
+//			ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//	    ServiceDay sDay;// = sDayHome.create();
+//	
+//	    sDay = sDayHome.findByServiceAndDay(serviceId, fromStamp.getDayOfWeek());
+//	    if (sDay != null) {
+//	      totalSeats = sDay.getMax();
+//	      if (totalSeats < 1) {
+//	        totalSeats = _tour.getTotalSeats();
+//	      }
+//	    }else {
+//	      totalSeats = _tour.getTotalSeats();
+//	    }
 		}else if (_reseller != null) {
 			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
 			if (cont != null) {
@@ -1953,13 +1957,14 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		} else {//if (supplier != null) {
 			max = tour.getTotalSeats();
 			if ( max < 1) {
-				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-				ServiceDay sDay;// = sDayHome.create();
-				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-		  
-				if (sDay != null) {
-					max = sDay.getMax();
-				}
+				max = getTourBusiness(iwc).getMaxBookings(product, stamp);
+//				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//				ServiceDay sDay;// = sDayHome.create();
+//				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+//		  
+//				if (sDay != null) {
+//					max = sDay.getMax();
+//				}
 				
 			}
 		}
@@ -2024,7 +2029,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
     return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 
-  public Table getVerifyBookingTable(IWContext iwc, Product product) throws RemoteException, SQLException{
+  public Table getVerifyBookingTableOLD(IWContext iwc, Product product) throws RemoteException, SQLException{
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -2313,6 +2318,40 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 
 	public String getPriceCategorySearchKey() {
 		return TourSetup.TOUR_SEARCH_PRICE_CATEGORY_KEY;
+	}
+
+	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {
+	}
+
+	public String getParameterTypeCountName() {
+		return parameterCountToCheck;
+	}
+
+	protected int addPublicFromDateInput(IWContext iwc, Table table, int fRow) {
+		table.add(getSmallText(iwrb.getLocalizedString("travel.date", "Date")), 1, fRow);
+		table.add(new HiddenInput(parameterFromDate, _stamp.toSQLDateString()), 2, fRow);
+		table.add(getOrangeText(_stamp.getLocaleDate(iwc)), 2, fRow++);
+		return fRow;
+	}
+	
+	protected int addPublicToDateInput(IWContext iwc, Table table, int fRow) {
+		return fRow;
+	}
+	
+	public String getUnitName() {
+		return iwrb.getLocalizedString("travel.person", "Person");
+	}
+	
+	public String getUnitNamePlural() {
+		return iwrb.getLocalizedString("travel.persons", "Persons");
+	}
+	
+	public boolean useNumberOfDays() {
+		return false;
+	}
+
+	protected int addPublicExtraBookingInput(IWContext iwc, Table table, int fRow) {
+		return fRow;
 	}
 
 }

@@ -515,7 +515,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 		        	String[] temp = new String[coll.size()];
 		        	Iterator iter = coll.iterator();
 		        	for (int i = 0; i < temp.length ; i++ ) {
-		        		temp[i] = (iter.next()).toString();	
+		        		temp[i] = ((PickupPlace)iter.next()).getPrimaryKey().toString();	
 		        	}
 							pickupPlaces.setSelectedElements(temp);
 		        }
@@ -524,7 +524,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 							String[] temp = new String[coll.size()];
 							Iterator iter = coll.iterator();
 							for (int i = 0; i < temp.length ; i++ ) {
-								temp[i] = (iter.next()).toString();	
+		        		temp[i] = ((PickupPlace)iter.next()).getPrimaryKey().toString();	
 							}
 							dropoffPlaces.setSelectedElements(temp);
 						}

@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
 
+
 public interface TravelStockroomBusiness extends com.idega.block.trade.stockroom.business.StockroomBusiness
 {
  public void addSupplies(int p0,float p1) throws java.rmi.RemoteException;
@@ -48,4 +49,5 @@ public interface TravelStockroomBusiness extends com.idega.block.trade.stockroom
  public void setTimeframe(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,boolean p3)throws java.sql.SQLException, java.rmi.RemoteException;
  public void setTimeframe(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1,boolean p2)throws java.sql.SQLException, java.rmi.RemoteException;
  public int updateService(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,java.sql.Timestamp p8,java.sql.Timestamp p9,int p10)throws java.lang.Exception, java.rmi.RemoteException;
+
 }

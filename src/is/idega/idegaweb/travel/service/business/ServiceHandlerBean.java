@@ -47,6 +47,9 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
 
   public BookingForm getBookingForm(IWContext iwc, Product product) throws Exception{
+	  	if (product == null) {
+	  		return new DefaultBookingForm(iwc, product);
+	  	}
     Collection coll = getProductCategoryFactory().getProductCategory(product);
     Iterator iter = coll.iterator();
     /**
@@ -74,7 +77,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     }else {
 //      System.out.println("[ServiceHandlerBean] iter.hasNext() = false");
     }
-    return new TourBookingForm(iwc, product);
+    return new DefaultBookingForm(iwc, product);
   }
 
   public DesignerForm getDesignerForm(IWContext iwc, ProductCategory productCategory) throws Exception{

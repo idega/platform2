@@ -3,19 +3,14 @@ package is.idega.idegaweb.travel.service.hotel.business;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.business.TravelStockroomBusinessBean;
-import is.idega.idegaweb.travel.data.ServiceDay;
-import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.block.trade.stockroom.data.ProductCategoryHome;
@@ -115,9 +110,10 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 
 
 	public boolean getIfDay(IWContext iwc, int serviceId, int dayOfWeek)throws RemoteException, RemoteException {
-		ServiceDayHome sdHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-		return sdHome.getIfDay(serviceId, dayOfWeek);
-		//return true;
+//		ServiceDayHome sdHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+//		return sdHome.getIfDay(serviceId, dayOfWeek);
+//		return true;
+		return super.getIfDay(iwc, serviceId, dayOfWeek);
 	}
 /*
 	public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
@@ -132,7 +128,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       String key2 = stamp.toSQLDateString();
 
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
-      Object obj = null;
+      Object obj = serviceDayHash.get(key1, key2);
       if (obj == null) {
       	boolean validDate = false;
 	      if (!includePast) {
@@ -146,28 +142,10 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 	      }
 	      
 	      if (validDate) {
-	      	isDay = true;
+	      	isDay = getIfDay(iwc, product.getID(), stamp.getDayOfWeek());
+//	      	isDay = true;
 	      }
-	      /*
-	      if (validDate) {
-	      	Hotel hotel;
-					try {
-						hotel =	((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey());
-		      	int totalRooms = hotel.getNumberOfUnits();
-		      	if (totalRooms > 0) {
-		      		HotelBooker hBook = (HotelBooker) IBOLookup.getServiceInstance( iwc, HotelBooker.class);
-		      		int manyBookings = hBook.getNumberOfReservedRooms( product.getID(), stamp, null);
-		      		if (totalRooms > manyBookings) {
-		      			isDay = true;
-		      		}
-		        }else {
-		        	isDay = true;	
-		      	}
-			
-					} catch (FinderException e) {
-						e.printStackTrace(System.err);
-					}
-				} */
+	      serviceDayHash.put(key1, key2, new Boolean(isDay));
       }
       else {
         isDay = ((Boolean) obj).booleanValue();
