@@ -13,14 +13,14 @@ public class CitizenAccountHomeImpl extends com.idega.data.IDOFactory implements
  }
 
 
-public java.util.Collection findAllCasesByStatus(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CitizenAccountBMPBean)entity).ejbFindAllCasesByStatus(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCasesByStatus(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CitizenAccountBMPBean)entity).ejbFindAllCasesByStatus(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -31,6 +31,13 @@ public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.Ca
   return (CitizenAccount) super.findByPrimaryKeyIDO(pk);
  }
 
+
+public int getTotalCount()throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((CitizenAccountBMPBean)entity).ejbHomeGetTotalCount();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.17 2003/01/11 08:19:05 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.18 2003/01/14 13:59:06 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,9 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.block.process.data.*;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.*;
@@ -211,5 +214,16 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	public Collection ejbFindAllCasesByStatus(String caseStatus)
         throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
+	}
+	
+	/**
+	 * Returns the total count of all CitizenAccountApplications
+	 * @return int Number of records
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetTotalCount() throws IDOException{
+		IDOQuery query = new IDOQuery();
+			query.appendSelectCountFrom(this);
+		return this.idoGetNumberOfRecords(query);	
 	}
 }
