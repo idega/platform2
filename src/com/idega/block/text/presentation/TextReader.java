@@ -124,7 +124,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       hasId = true;
     }
 
-    if(ch!= null){
+    if(ch!= null && locText != null){
        T.add(getTextTable(txText,locText,ch),1,1);
 
     }
@@ -148,15 +148,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setRowColor(1,headlineBgColor);
     T.setRowColor(2,textBgColor);
     T.setWidth("100%");
-
-    Text headline = new Text(locText.getHeadline());
+    String sHeadline = locText.getHeadline()!= null ? locText.getHeadline():"";
+    Text headline = new Text(sHeadline);
     headline.setFontSize(headlineSize);
     headline.setFontColor(headlineColor);
     headline.setBold();
     headline.setAttribute("class","headlinetext");
     headline.setFontStyle(headlineStyle);
 
-    String textBody = locText.getBody();
+    String textBody = locText.getBody()!= null ? locText.getBody():"";
 
     if ( reverse ) {
       textBody = TextFormatter.textReverse(textBody);
