@@ -107,6 +107,8 @@ public class ReportGenerator extends Block {
 	private JasperDesign _design = null;
 	private Map _parameterMap = new HashMap();
 	private BusyBar _busy = null;
+	
+	private List maintainParameterList = new Vector();
 
 	private String _prmLablePrefix = "label_";
 
@@ -156,7 +158,15 @@ public class ReportGenerator extends Block {
 
 		//_dynamicFields
 	}
-
+	
+	public void setParameterToMaintain(String param){
+		maintainParameterList.add(param);
+	}
+	
+	public void setParametersToMaintain(List paramList){
+		maintainParameterList.addAll(paramList);
+	}
+	
 	private int calculateTextFieldWidthForString(String str) {
 		int fontSize = 9;
 		return (int) (5 + (str.length() * fontSize * 0.58));
@@ -459,9 +469,9 @@ public class ReportGenerator extends Block {
 				_reportFilePathsMap = new HashMap();
 			}
 
-			_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, _reportName));
+			_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
 			//_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, _reportName));
-			_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, _reportName));
+			_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
 
 		}
 	}
@@ -497,6 +507,10 @@ public class ReportGenerator extends Block {
 		if (file != null)
 			_layoutICFilePK = (Integer) file.getPrimaryKey();
 	}
+	
+	public void setLayoutICFileID(Integer layoutICFilePK) {
+		_layoutICFilePK = layoutICFilePK;
+	}
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -507,6 +521,7 @@ public class ReportGenerator extends Block {
 					parseQuery();
 					lineUpElements(iwrb, iwc);
 					Form submForm = new Form();
+					submForm.maintainParameters(maintainParameterList);
 					submForm.add(_fieldTable);
 					this.add(submForm);
 				}
@@ -525,6 +540,7 @@ public class ReportGenerator extends Block {
 						parseMethodInvocationXML(iwrb);
 						lineUpElements(iwrb, iwc);
 						Form submForm = new Form();
+						submForm.maintainParameters(maintainParameterList);
 						submForm.add(_fieldTable);
 						this.add(submForm);
 					}
@@ -667,9 +683,11 @@ public class ReportGenerator extends Block {
 		Table reports = new Table(2, 4);
 		reports.mergeCells(1, 1, 2, 1);
 		Link excel = new Link(_reportName, (String) _reportFilePathsMap.get(EXCEL_FORMAT));
+		excel.setTarget(Link.TARGET_NEW_WINDOW);
 //		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
 		Link html = new Link(_reportName, (String) _reportFilePathsMap.get(HTML_FORMAT));
-
+		html.setTarget(Link.TARGET_NEW_WINDOW);
+		
 		reports.add(
 			getResourceBundle(iwc).getLocalizedString("ReportGenerator.click_on_format", "Select a link for the desired output format."),
 			1,
