@@ -33,6 +33,7 @@ public class PrintStickersWindow extends Window {
 		add(new PrintStickers());
         this.setMenubar(true);
         this.setResizable(true);
+        this.setScrollbar(true);
 	}
 
 }

@@ -32,6 +32,7 @@ public class PrintStartingtimesWindow extends Window {
 		super(name, width, height);
 		this.add(new PrintStartingtimes());
 		this.setResizable(true);
+		this.setScrollbar(true);
 	}
 
 }
