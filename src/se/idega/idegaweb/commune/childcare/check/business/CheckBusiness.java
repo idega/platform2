@@ -8,7 +8,7 @@ public interface CheckBusiness extends com.idega.business.IBOService, CaseBusine
 {
  public int getCheckFee() throws java.rmi.RemoteException;
  public java.util.Collection findUnhandledChecks()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void createCheck(int p0,int p1,int p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,int p6,int p7,int p8,int p9,com.idega.user.data.User p10,java.lang.String p11,boolean p12,boolean p13,boolean p14,boolean p15,boolean p16)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public int createCheck(int p0,int p1,int p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,int p6,int p7,int p8,int p9,com.idega.user.data.User p10,java.lang.String p11,boolean p12,boolean p13,boolean p14,boolean p15,boolean p16)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.core.data.PostalCode getUserPostalCode(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.util.Collection findChecks()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllApprovedChecksByUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
@@ -32,4 +32,5 @@ public interface CheckBusiness extends com.idega.business.IBOService, CaseBusine
  public com.idega.user.data.User getUserByPersonalId(java.lang.String p0)throws java.lang.Exception, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String[] p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4)throws java.lang.Exception, java.rmi.RemoteException;
  public void sendMessageToCitizen(se.idega.idegaweb.commune.childcare.check.data.Check p0,int p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public int hasChildApprovedCheck(com.idega.user.data.User user, int childID) throws java.rmi.RemoteException;
 }

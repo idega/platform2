@@ -80,7 +80,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return ( rule3 && rule4 ) || rule5;
 	}
 
-	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws CreateException,RemoteException {
+	public int createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws CreateException,RemoteException {
 		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
 		Check check = home.create();
 		check.setChildCareType(childCareType);
@@ -104,6 +104,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.setCaseStatus(this.getCaseStatusOpen());
 
 		check.store();
+		return ((Integer)check.getPrimaryKey()).intValue();
 	}
 
 	public Check createCheck(int childId, int method, int amount, int checkFee, User user) throws CreateException,RemoteException {
@@ -327,6 +328,19 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 		
 		return null;
+	}
+	
+	public int hasChildApprovedCheck(User user, int childID) throws RemoteException {
+		Collection checks = findAllApprovedChecksByUser(user);
+		if (checks != null && !checks.isEmpty()) {
+			Iterator iter = checks.iterator();
+			while (iter.hasNext()) {
+				Check element = (Check) iter.next();
+				if (element.getChildId() == childID)
+					return ((Integer)element.getPrimaryKey()).intValue();
+			}	
+		}
+		return -1;
 	}
 	
 }
