@@ -239,97 +239,102 @@ public class TournamentResults extends JModuleObject {
           bruttoText.setText(Integer.toString(totalBrutto));
         }
 
-        switch (tournamentType_) {
-          case ResultComparator.TOTALSTROKES :
-            int roundScoreColumn = 10;
-            for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int roundScore2 = 0;
-              int roundIncNumber = collector.getRound(b);
-              int position = roundScoreColumn + roundIncNumber - 1;
+        try {
+          switch (tournamentType_) {
+            case ResultComparator.TOTALSTROKES :
+              int roundScoreColumn = 10;
+              for ( int b = 1; b <= numberOfRounds; b++ ) {
+                int roundScore2 = 0;
+                int roundIncNumber = collector.getRound(b);
+                int position = roundScoreColumn + roundIncNumber - 1;
 
-              if ( roundIncNumber != -1 ) {
-                roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
+                if ( roundIncNumber != -1 ) {
+                  roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
+                }
+
+                Text roundScoreText = new Text(Integer.toString(roundScore2));
+                  roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+
+                if ( roundScore2 > 0 ) {
+                  myTable.add(roundScoreText,position,a+3);
+                }
+              }
+              Text finalScoreText = new Text(Integer.toString(finalScore));
+                finalScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                finalScoreText.setBold();
+                finalScoreText.setFontFace("Verdana,Arial,sans-serif");
+              Text finalDifferenceText = new Text(Integer.toString(difference));
+                finalDifferenceText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                finalDifferenceText.setBold();
+                finalDifferenceText.setFontFace("Verdana,Arial,sans-serif");
+              if ( finalScore > 0 ) {
+                myTable.add(finalScoreText,numberOfColumns-1,a+3);
+                myTable.add(finalDifferenceText,numberOfColumns,a+3);
+              }
+              myTable.add(totalRoundScore,8,a+3);
+              myTable.add(diffText,9,a+3);
+            break;
+
+            case ResultComparator.TOTALSTROKESWITHHANDICAP :
+              int roundScoreColumn2 = 10;
+              int roundSize = 0;
+              Vector roundSizeVector = collector.getRoundScore();
+              if ( roundSizeVector != null ) {
+                roundSize = roundSizeVector.size();
               }
 
-              Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-
-              if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreText,position,a+3);
+              for ( int b = 1; b <= numberOfRounds; b++ ) {
+                int position2 = roundScoreColumn2 + collector.getRound(b) - 1;
+                int roundScore2 = collector.getRoundScore(b);
+                int roundScoreBrutto = roundScore2 + handicap;
+                Text roundScoreText = new Text(Integer.toString(roundScore2));
+                  roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
+                  roundScoreBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                if ( roundScore2 > 0 ) {
+                  myTable.add(roundScoreBruttoText,position2,a+3);
+                  myTable.add(roundScoreText,position2+1,a+3);
+                }
               }
-            }
-            Text finalScoreText = new Text(Integer.toString(finalScore));
-              finalScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              finalScoreText.setBold();
-              finalScoreText.setFontFace("Verdana,Arial,sans-serif");
-            Text finalDifferenceText = new Text(Integer.toString(difference));
-              finalDifferenceText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              finalDifferenceText.setBold();
-              finalDifferenceText.setFontFace("Verdana,Arial,sans-serif");
-            if ( finalScore > 0 ) {
-              myTable.add(finalScoreText,numberOfColumns-1,a+3);
-              myTable.add(finalDifferenceText,numberOfColumns,a+3);
-            }
-            myTable.add(totalRoundScore,8,a+3);
-            myTable.add(diffText,9,a+3);
-          break;
-
-          case ResultComparator.TOTALSTROKESWITHHANDICAP :
-            int roundScoreColumn2 = 10;
-            int roundSize = 0;
-            Vector roundSizeVector = collector.getRoundScore();
-            if ( roundSizeVector != null ) {
-              roundSize = roundSizeVector.size();
-            }
-
-            for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int position2 = roundScoreColumn2 + collector.getRound(b) - 1;
-              int roundScore2 = collector.getRoundScore(b);
-              int roundScoreBrutto = roundScore2 + handicap;
-              Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
-                roundScoreBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreBruttoText,position2,a+3);
-                myTable.add(roundScoreText,position2+1,a+3);
+              Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
+                finalBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                finalBruttoText.setBold();
+                finalBruttoText.setFontFace("Verdana,Arial,sans-serif");
+              Text finalScoreText2 = new Text(Integer.toString(finalScore));
+                finalScoreText2.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                finalScoreText2.setBold();
+                finalScoreText2.setFontFace("Verdana,Arial,sans-serif");
+              if ( finalScore > 0 ) {
+                myTable.add(finalBruttoText,numberOfColumns-1,a+3);
+                myTable.add(finalScoreText2,numberOfColumns,a+3);
               }
-            }
-            Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
-              finalBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              finalBruttoText.setBold();
-              finalBruttoText.setFontFace("Verdana,Arial,sans-serif");
-            Text finalScoreText2 = new Text(Integer.toString(finalScore));
-              finalScoreText2.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              finalScoreText2.setBold();
-              finalScoreText2.setFontFace("Verdana,Arial,sans-serif");
-            if ( finalScore > 0 ) {
-              myTable.add(finalBruttoText,numberOfColumns-1,a+3);
-              myTable.add(finalScoreText2,numberOfColumns,a+3);
-            }
-            myTable.add(bruttoText,8,a+3);
-            myTable.add(totalRoundScore,9,a+3);
-          break;
+              myTable.add(bruttoText,8,a+3);
+              myTable.add(totalRoundScore,9,a+3);
+            break;
 
-          case ResultComparator.TOTALPOINTS :
-            int roundScoreColumn3 = 9;
-            for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int position3 = roundScoreColumn3 + collector.getRound(b) - 1;
-              int roundScore2 = collector.getRoundScore(b);
-              Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              if ( roundScore2 > 0 ) {
-                myTable.add(roundScoreText,position3,a+3);
+            case ResultComparator.TOTALPOINTS :
+              int roundScoreColumn3 = 9;
+              for ( int b = 1; b <= numberOfRounds; b++ ) {
+                int position3 = roundScoreColumn3 + collector.getRound(b) - 1;
+                int roundScore2 = collector.getRoundScore(b);
+                Text roundScoreText = new Text(Integer.toString(roundScore2));
+                  roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                if ( roundScore2 > 0 ) {
+                  myTable.add(roundScoreText,position3,a+3);
+                }
               }
-            }
-            Text finalScoreText3 = new Text(Integer.toString(finalScore));
-              finalScoreText3.setFontSize(Text.FONT_SIZE_7_HTML_1);
-              finalScoreText3.setBold();
-              finalScoreText3.setFontFace("Verdana,Arial,sans-serif");
-            if ( finalScore > 0 )
-              myTable.add(finalScoreText3,numberOfColumns,a+3);
-            myTable.add(totalRoundScore,8,a+3);
-          break;
+              Text finalScoreText3 = new Text(Integer.toString(finalScore));
+                finalScoreText3.setFontSize(Text.FONT_SIZE_7_HTML_1);
+                finalScoreText3.setBold();
+                finalScoreText3.setFontFace("Verdana,Arial,sans-serif");
+              if ( finalScore > 0 )
+                myTable.add(finalScoreText3,numberOfColumns,a+3);
+              myTable.add(totalRoundScore,8,a+3);
+            break;
+          }
+        }
+        catch (Exception e) {
+          e.printStackTrace(System.err);
         }
 
         myTable.add(positionText,1,a+3);
