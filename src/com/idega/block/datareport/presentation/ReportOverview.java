@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
@@ -102,6 +104,11 @@ public class ReportOverview extends Block {
 		this.showOnlyOneQueryWithId = showOnlyOneQueryWithId;
 	}
 	
+	public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+	
   public void main(IWContext iwc) throws Exception {
   	IWBundle bundle = getBundle(iwc);
     IWResourceBundle resourceBundle = getResourceBundle(iwc);
@@ -114,18 +121,22 @@ public class ReportOverview extends Block {
     }
   }
 
-	private String parseAction(IWContext iwc)	{
+	private String parseAction(IWContext iwc)	throws FinderException{
 		String action = "";
 		// get the file id of the query folder
 		if (iwc.isParameterSet(SET_ID_OF_QUERY_FOLDER_KEY))	{
 			String queryFolderKey = iwc.getParameter(SET_ID_OF_QUERY_FOLDER_KEY);
 			parameterMap.put(SET_ID_OF_QUERY_FOLDER_KEY, queryFolderKey);
-			queryFolder = getFileForId(queryFolderKey);
+				queryFolder = getFileForId(queryFolderKey);
 		}
 		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
 			String designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
 			parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
 			designFolder = getFileForId(designFolderKey);
+		}
+		if (iwc.isParameterSet(DELETE_ITEMS_KEY))	{
+			List idsToDelete = CheckBoxConverter.getResultByParsing(iwc, DELETE_KEY);
+			deleteQueries(idsToDelete);
 		}
 		// check html, pdf and excel buttons
 		EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
@@ -245,9 +256,7 @@ public class ReportOverview extends Block {
 		newLink.setAsImageButton(true);
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
-  	Link delete = new Link(deleteText);
-  	delete.addParameter(DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
-  	addParametersToLink(delete);
+  	SubmitButton delete = new SubmitButton(deleteText, DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
   	delete.setAsImageButton(true);
   	// close button
   	String closeText = resourceBundle.getLocalizedString("ro_cancel", "Cancel");
@@ -278,6 +287,8 @@ public class ReportOverview extends Block {
 		browser.setLeadingEntityIsUndefined();
 		// browser.setShowAllEntities("", queryRepresentations);
 		browser.setEntities("", queryRepresentations, 10);
+		// some design features
+		browser.setCellpadding(2);
 		// define some converters
 		// drop down menu converter
 		DropDownMenuConverter dropDownLayoutConverter = new DropDownMenuConverter(form);
@@ -328,39 +339,7 @@ public class ReportOverview extends Block {
 		
   	
     
-  private ICFile getFileForId( String idString)  {
-    if (idString.length() == 0) {
-      return null;
-    }
-    Integer id = null;
-    try {
-      id = new Integer(idString);
-    }  
-    catch (NumberFormatException ex)  {
-      System.err.println("[ReportLayoutChooser] Can't parse integer. Message is: "+ ex.getMessage());
-      ex.printStackTrace(System.err);
-      return null;
-    }
-    return getFile(id);
-  }
-
-  private ICFile getFile(Integer fileId)  {
-    try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByPrimaryKey(fileId);
-      return file;
-    }
-    // FinderException, RemoteException
-    catch(Exception ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
-    }
-  }     
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
   
-
 	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
 		QueryService queryService = getQueryService();
 		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
@@ -549,6 +528,64 @@ public class ReportOverview extends Block {
 			browser.addMandatoryParameter(key, value);
 		}
 	}
+	
+	// some file methods
+	
+  private ICFile getFileForId( String idString) throws FinderException {
+    if (idString.length() == 0) {
+      return null;
+    }
+    Integer id = null;
+    try {
+      id = new Integer(idString);
+    }  
+    catch (NumberFormatException ex)  {
+      System.err.println("[ReportLayoutChooser] Can't parse integer. Message is: "+ ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    }
+    return getFile(id);
+  }
+
+  private ICFile getFile(Integer fileId) throws FinderException {
+    try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByPrimaryKey(fileId);
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+  }     
+
+	private void deleteQueries(List idsToDelete)	{
+		Iterator iterator = idsToDelete.iterator();
+		while (iterator.hasNext())	{
+			Integer id = (Integer) iterator.next();
+			try {
+				ICFile file = getFile(id);
+				file.delete();
+			}
+			catch (FinderException ex) {
+				String message =
+					"[ReportOverview]: Can't find file with id " + id ;
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+			catch (SQLException sqlEx)	{
+				String message =
+					"[ReportOverview]: Can't delete file with id " + id ;
+				System.err.println(message + " Message is: " + sqlEx.getMessage());
+				sqlEx.printStackTrace(System.err);
+			}
+		}
+	}
+
+				
+			 
+	
+
+
 
 	// some get service methods
 
@@ -635,7 +672,7 @@ public class ReportOverview extends Block {
 			link.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
 			link.addParameter(QueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
 			link.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-			link.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			link.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 			link.setAsImageButton(true);
 			return link;
 		}

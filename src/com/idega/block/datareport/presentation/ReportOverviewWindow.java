@@ -21,8 +21,8 @@ public class ReportOverviewWindow extends IWAdminWindow {
   
   public ReportOverviewWindow() {
     setResizable(true);
-    setWidth(800);
-    setHeight(600);
+    setWidth(900);
+    setHeight(500);
     setScrollbar(true);
   }
 
@@ -40,6 +40,7 @@ public class ReportOverviewWindow extends IWAdminWindow {
     else if (iwc.isParameterSet(QueryBuilder.PARAM_SAVE)) {
     	QueryBuilder queryBuilder = new QueryBuilder();
     	queryBuilder.main(iwc);
+    	// get the jid of the just created new file
     	int queryId = queryBuilder.getQueryId();
     	QueryBuilder.cleanSession(iwc);
     	ReportOverview overview = new ReportOverview();
