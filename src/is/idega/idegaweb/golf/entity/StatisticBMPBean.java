@@ -9,12 +9,13 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
-import com.idega.data.SimpleQuerier;
 import com.idega.data.query.AverageColumn;
 import com.idega.data.query.Column;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
+import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
 
@@ -98,10 +99,9 @@ public class StatisticBMPBean extends GenericEntity implements Statistic{
 		Column colTeeID = new Column(table, COLUMN_TEE_ID);
 		Column colFairway = new Column(table, COLUMN_FAIRWAY);
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn());
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
 		query.addCriteria(new InCriteria(colTeeID, teeIDs));
 		query.addCriteria(new MatchCriteria(colFairway, MatchCriteria.GREATER, 0));
-		query.setAsCountQuery(true);
 		
 		return this.idoGetNumberOfRecords(query.toString());
 	}
@@ -114,9 +114,8 @@ public class StatisticBMPBean extends GenericEntity implements Statistic{
 		Table table = new Table(this);
 		Column colTeeID = new Column(table, COLUMN_TEE_ID);
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn());
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
 		query.addCriteria(new InCriteria(colTeeID, teeIDs));
-		query.setAsCountQuery(true);
 		return this.idoGetNumberOfRecords(query.toString());
 	}
 	
@@ -129,13 +128,13 @@ public class StatisticBMPBean extends GenericEntity implements Statistic{
 		Column colTeeID = new Column(table, COLUMN_TEE_ID);
 		Column colGreen = new Column(table, COLUMN_GREENS);
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new WildCardColumn());
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
 		query.addCriteria(new InCriteria(colTeeID, teeIDs));
 		query.addCriteria(new MatchCriteria(colGreen, MatchCriteria.GREATER, 0));
-		query.setAsCountQuery(true);
 		
 		return this.idoGetNumberOfRecords(query.toString());
 	}
+	
 	public double ejbHomeGetPuttAverageByTeeID(Collection teeIDs) throws IDOException {
 		if (teeIDs == null || teeIDs.isEmpty()) {
 			return 0;
@@ -148,18 +147,84 @@ public class StatisticBMPBean extends GenericEntity implements Statistic{
 		query.addColumn(colPutts);
 		query.addCriteria(new InCriteria(colTeeID, teeIDs));
 		
-		try {
-			String[] returner = SimpleQuerier.executeStringQuery(query.toString());
-			if (returner != null && returner.length > 0 && returner[0] != null) {
-				return Double.parseDouble(returner[0]);
-			}
-			else {
-				return 0;
-			}
-		} catch(Exception e) {
-			throw new IDOException(e);
-		}
+		return this.idoGetAverage(query.toString());
+	}
+	
+	public double ejbHomeGetPuttAverageByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
 		
+		AverageColumn colPutts = new AverageColumn(table, COLUMN_PUTTS_FLOAT);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(colPutts);
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		
+		return this.idoGetAverage(query.toString());
 	}
 
+	public int ejbHomeGetPuttSumByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
+		
+		Column colPutts = new SumColumn(table, COLUMN_PUTTS_FLOAT);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(colPutts);
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+
+	public int ejbHomeGetCountFairwaysByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_FAIRWAY, MatchCriteria.GREATEREQUAL, 0));
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+	
+	public int ejbHomeGetCountOnGreenByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_GREENS, MatchCriteria.GREATEREQUAL, 0));
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+	
+	public int ejbHomeGetNumberOnGreenByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
+
+		Column colGreen = new Column(table, COLUMN_GREENS);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(colGreen, MatchCriteria.GREATER, 0));
+		
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+
+	public int ejbHomeGetNumberOnFairwayByMember(int member) throws IDOException {
+		Table table = new Table(this);
+		Table scorecard = new Table(Scorecard.class);
+
+		Column colFairway = new Column(table, COLUMN_FAIRWAY);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, this.getIDColumnName()));
+		query.addJoin(table, scorecard);
+		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(colFairway, MatchCriteria.GREATER, 0));
+		
+		return this.idoGetNumberOfRecords(query.toString());
+	}
 }

@@ -1,6 +1,7 @@
 package is.idega.idegaweb.golf.entity;
 
 
+
 public class StatisticHomeImpl extends com.idega.data.IDOFactory implements StatisticHome
 {
  protected Class getEntityInterfaceClass(){
@@ -59,9 +60,37 @@ public int getCountByTeeId(java.util.Collection p0)throws com.idega.data.IDOExce
 	return theReturn;
 }
 
+public int getCountFairwaysByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetCountFairwaysByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getCountOnGreenByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetCountOnGreenByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOnFairwayByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetNumberOnFairwayByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getNumberOnFairwayByTeeID(java.util.Collection p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetNumberOnFairwayByTeeID(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOnGreenByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetNumberOnGreenByMember(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -73,6 +102,13 @@ public int getNumberOnGreenByTeeID(java.util.Collection p0)throws com.idega.data
 	return theReturn;
 }
 
+public double getPuttAverageByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	double theReturn = ((StatisticBMPBean)entity).ejbHomeGetPuttAverageByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public double getPuttAverageByTeeID(java.util.Collection p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	double theReturn = ((StatisticBMPBean)entity).ejbHomeGetPuttAverageByTeeID(p0);
@@ -80,5 +116,10 @@ public double getPuttAverageByTeeID(java.util.Collection p0)throws com.idega.dat
 	return theReturn;
 }
 
-
+public int getPuttSumByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((StatisticBMPBean)entity).ejbHomeGetPuttSumByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 }
