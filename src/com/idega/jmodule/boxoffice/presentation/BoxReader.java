@@ -956,9 +956,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			}
 
-			if ( news.length > numberOfDisplayed ) {
-				innerTable.add(more,2,numberOfDisplayed+1);
-			}
+			innerTable.add(more,2,numberOfDisplayed+1);
 
 		}
 // spurning meğ virkni meğ multiLanguage hér
@@ -1007,9 +1005,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			}
 
-			if ( project.length > numberOfDisplayed ) {
-				innerTable.add(more,2,numberOfDisplayed+1);
-			}
+			innerTable.add(more,2,numberOfDisplayed+1);
 
 		}
 
@@ -1028,9 +1024,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		}
 
-		if ( (subject!=null) && (subject.length > 0 ) ) {
-			innerTable.add(more,2,numberOfDisplayed+1);
-		}
+		innerTable.add(more,2,numberOfDisplayed+1);
 
 		outlineTable.add(innerTable);
 
