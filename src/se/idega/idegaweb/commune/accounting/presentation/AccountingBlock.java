@@ -16,8 +16,8 @@ import java.util.Locale;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingBusiness;
 import se.idega.idegaweb.commune.accounting.business.AccountingException;
-import se.idega.idegaweb.commune.accounting.business.AccountingSession;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.AccountingSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.business.IBOLookup;

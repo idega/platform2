@@ -1,7 +1,7 @@
 /*
  * Created on 9.9.2003
  */
-package se.idega.idegaweb.commune.accounting.business;
+package se.idega.idegaweb.commune.care.business;
 
 import com.idega.business.IBOSessionBean;
 

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.business;
+package se.idega.idegaweb.commune.care.business;
 
 
 public interface AccountingSession extends com.idega.business.IBOSession

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.business;
+package se.idega.idegaweb.commune.care.business;
 
 
 public class AccountingSessionHomeImpl extends com.idega.business.IBOHomeImpl implements AccountingSessionHome

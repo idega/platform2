@@ -8,7 +8,7 @@ package se.idega.idegaweb.commune.accounting.event;
 
 import java.rmi.RemoteException;
 
-import se.idega.idegaweb.commune.accounting.business.AccountingSession;
+import se.idega.idegaweb.commune.care.business.AccountingSession;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
