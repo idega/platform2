@@ -12,6 +12,13 @@ public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory impleme
   return (SchoolClassMember) super.createIDO();
  }
 
+    public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws javax.ejb.FinderException,java.rmi.RemoteException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySchoolStudyPath(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
 
 public java.util.Collection findAllBySeasonAndInvoiceInterval(int p0,java.lang.String p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();

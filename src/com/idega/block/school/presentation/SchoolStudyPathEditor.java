@@ -4,9 +4,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import javax.ejb.FinderException;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.business.IBOLookup;
@@ -241,23 +244,38 @@ public class SchoolStudyPathEditor extends Block {
 		return false;
 	}
 	
-	private boolean deleteCourse(IWContext iwc) {
-		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
-		
-		if (schoolCourseId != null) {
-			try {
-				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
-				SchoolStudyPath course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
-				course.removeAllSchoolClassMembers();
-				course.remove();
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
+	private boolean deleteCourse (IWContext iwc) {
+		final String studyPathId
+                = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
+		if (null != studyPathId) {
+            try {
+                final SchoolStudyPathHome studyPathHome = (SchoolStudyPathHome)
+                        IDOLookup.getHome(SchoolStudyPath.class);
+                final SchoolStudyPath studyPath
+                        = studyPathHome.findByPrimaryKey
+                        (new Integer(studyPathId));
+                final SchoolClassMemberHome studentHome
+                        = (SchoolClassMemberHome) IDOLookup.getHome
+                        (SchoolClassMember.class);
+                try {
+                    final Collection students
+                            = studentHome.findAllBySchoolStudyPath (studyPath);
+                    if (null != students) {
+                        for (Iterator i = students.iterator (); i.hasNext ();) {
+                            final SchoolClassMember student
+                                    = (SchoolClassMember) i.next ();
+                            student.setStudyPathToNull ();
+                        }
+                    }
+                } catch (final FinderException fe) {
+                    // no problem, no kids with this study path - do nothing
+                }
+                studyPath.remove ();
+                return true;			
+            } catch (Exception e) {
+                e.printStackTrace ();
+            }
+        }
 		return false;
 	}
-
 }

@@ -51,4 +51,5 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setSchoolClassId(int p0);
  public void setSpeciallyPlaced(boolean p0);
  public void setStudyPathId(int p0);
+ public void setStudyPathToNull();
 }

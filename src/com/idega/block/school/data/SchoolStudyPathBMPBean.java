@@ -36,8 +36,6 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
-
-		this.addManyToManyRelationShip(SchoolClassMember.class);
 		this.addManyToManyRelationShip(School.class);
 	}
 
@@ -77,23 +75,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		setColumn(COLUMN_IS_VALID, false);
 		this.store();
 	}
-
-	public void addSchoolClassMember(SchoolClassMember schoolClassMember) throws IDOAddRelationshipException {
-		this.idoAddTo(schoolClassMember);
-	}
 	
-	public void removeSchoolClassMember(SchoolClassMember schoolClassMember) throws IDORemoveRelationshipException {
-		this.idoRemoveFrom(schoolClassMember);
-	}
-	
-	public Collection getSchoolClassMembers() throws IDORelationshipException {
-		return this.idoGetRelatedEntities(SchoolClassMember.class);
-	}
-	
-	public void removeAllSchoolClassMembers() throws IDORemoveRelationshipException {
-		this.idoRemoveFrom(SchoolClassMember.class);
-	}	
-
 	public void addSchool(School school) throws IDOAddRelationshipException {
 		this.idoAddTo(school);
 	}
@@ -175,6 +157,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 			return new Vector();
 		}
 	}
+    /*
 
 	public Collection ejbFindAllStudyPathsByMemberId(int id) throws FinderException {
 		String select = "select s.* from " + TABLE_NAME + 
@@ -186,7 +169,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
                 " order by s." + COLUMN_CODE;
 		return super.idoFindPKsBySQL(select);
 	}
-
+    */
 	public Collection ejbFindBySchoolType(int schoolTypeId) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);

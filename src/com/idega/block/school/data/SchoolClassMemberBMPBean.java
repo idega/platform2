@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/14 14:07:03 $ by $Author: goranb $
- * @version $Revision: 1.43 $
+ * Last modified: $Date: 2003/10/14 17:28:09 $ by $Author: staffan $
+ * @version $Revision: 1.44 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -174,6 +174,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.setColumn(STUDY_PATH, id);
 	}
 	
+	public void setStudyPathToNull () {
+		removeFromColumn (STUDY_PATH);
+	}
+	
 	public int getStudyPathId() {
 		return this.getIntColumnValue(STUDY_PATH);
 	}
@@ -294,6 +298,17 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return ejbFindAllByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(), ((Integer)season.getPrimaryKey()).intValue());
 	}
 
+	public Collection ejbFindAllBySchoolStudyPath
+        (final SchoolStudyPath studyPath) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom (getTableName());
+        sql.appendWhere ();
+        sql.append (STUDY_PATH);
+        sql.appendEqualSign ();
+        sql.append (studyPath.getPrimaryKey ().toString ());
+		return idoFindPKsBySQL(sql.toString());
+	}
+	
 	public Collection ejbFindAllByUserAndSeason(int userID, int seasonID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");

@@ -20,12 +20,14 @@ public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+    /*
 public java.util.Collection findAllStudyPathsByMemberId(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindAllStudyPathsByMemberId(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
+    */
 
 public SchoolStudyPath findByCode(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
