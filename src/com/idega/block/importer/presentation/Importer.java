@@ -4,7 +4,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
@@ -16,7 +18,6 @@ import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileBMPBean;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
@@ -35,7 +36,6 @@ import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.presentation.GroupPropertyWindow;
-import com.idega.user.presentation.StyledBasicUserOverViewToolbar;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
 /**
@@ -141,7 +141,8 @@ public class Importer extends StyledIWAdminWindow {
 	
 	public void main(IWContext iwc) throws Exception {
 		iwrb = this.getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("Importer.title", "Importer"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		setTitle(iwrb.getLocalizedString("Importer.title", "Importer"));
+		addTitle(iwrb.getLocalizedString("Importer.title", "Importer"), TITLE_STYLECLASS);
 		parseAction(iwc);
 		if (selectFiles) {
 			if (usingLocalFileSystem) {
