@@ -34,13 +34,17 @@ public class Messenger extends Block {
   }
 
   public void main(IWContext iwc){
-    //isAdmin = AccessControl.hasEditPermission(this,iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
 //test delete this
-    add(iwc.getApplication().getImageFactory().createButton("RAPPSON",iwb));
+    add(iwb.getImageButton("Snilld!!"));
 
-    add(new com.idega.presentation.ui.SubmitButton(iwc.getApplication().getImageFactory().createButton("RAPPSON",iwb)));
+    add(iwrb.getLocalizedImageButton("repps","Eiki er snilli"));
+
+    add(new com.idega.presentation.text.Link(iwrb.getLocalizedImageButton("repps","Eiki er snilli"),"http://www.slashdot.org"));
+
+
+
 
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
