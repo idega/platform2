@@ -13,6 +13,7 @@ public class IceConsultPage extends Page{
 
 public com.idega.presentation.Image maini = new com.idega.presentation.Image("/pics/iceconsult/Main.gif");
 public com.idega.presentation.Image productsi = new com.idega.presentation.Image("/pics/iceconsult/Products.gif");
+public com.idega.presentation.Image supporti = new com.idega.presentation.Image("/pics/iceconsult/Support.gif");
 public com.idega.presentation.Image partnersi = new com.idega.presentation.Image("/pics/iceconsult/Partners.gif");
 public com.idega.presentation.Image companyi = new com.idega.presentation.Image("/pics/iceconsult/Company.gif");
 public com.idega.presentation.Image newsi = new com.idega.presentation.Image("/pics/iceconsult/News.gif");
@@ -105,6 +106,7 @@ public int width = 798;
 
             Link main = new Link(maini,"/index.jsp");
             Link products = new Link(productsi,"/products.jsp?text_id=29");
+            Link support = new Link(supporti,"http://support.lht.is");
             Link partners = new Link(partnersi,"/partners.jsp?text_id=30");
             Link company = new Link(companyi,"/company.jsp?text_id=31");
             Link news = new Link(newsi,"/news.jsp");
@@ -130,19 +132,22 @@ public int width = 798;
 
             table.setVerticalAlignment(2,2,"top");
 
-            maini.setAttribute("align","top") ;
-            productsi.setAttribute("align","top") ;
-            partnersi.setAttribute("align","top") ;
-            companyi.setAttribute("align","top") ;
-            newsi.setAttribute("align","top") ;
-            maini.setAttribute("align","top") ;
-            contacti.setAttribute("align","top") ;
-            customeri.setAttribute("align","top") ;
+            maini.setAlignment("top") ;
+            productsi.setAlignment("top") ;
+            supporti.setAlignment("top");
+            partnersi.setAlignment("top") ;
+            companyi.setAlignment("top") ;
+            newsi.setAlignment("top") ;
+            maini.setAlignment("top") ;
+            contacti.setAlignment("top") ;
+            customeri.setAlignment("top") ;
 
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
             table.add(main,2,2);
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
             table.add(products,2,2);
+            table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
+            table.add(support,2,2);
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
             table.add(partners,2,2);
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
@@ -343,8 +348,12 @@ public int width = 798;
                         right.setWidth(width_rightside-space-32);
 			productsi.setSrc("/pics/iceconsult/Products-over.gif");
 		}
+		else if (loc.equals("Support")) {
+                        //left.setWidth(width_leftside);
+			supporti.setSrc("/pics/iceconsult/Support-over.gif");
+		}
 		else if (loc.equals("Partners")) {
-                        left.setWidth(width_leftside);
+                        //left.setWidth(width_leftside);
 			partnersi.setSrc("/pics/iceconsult/Partners-over.gif");
 		}
 		else if (loc.equals("Company")) {
