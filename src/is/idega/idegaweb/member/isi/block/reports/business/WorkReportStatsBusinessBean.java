@@ -88,25 +88,30 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
 		womenUnderAgeLimit.setLocalizedName(
-			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit", "women under ageLimit"),
+			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit", "-15"),
 			currentLocale);
 		reportData.addField(womenUnderAgeLimit);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
 		womenOverOrEqualAgeLimit.setLocalizedName(
-			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit", "womenOverOrEqualAgeLimit"),
+			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit", "16+"),
 			currentLocale);
 		reportData.addField(womenOverOrEqualAgeLimit);
 
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit", "menUnderAgeLimit"), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit", "-15"), currentLocale);
 		reportData.addField(menUnderAgeLimit);
 
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
 		menOverOrEqualAgeLimit.setLocalizedName(
-			_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit", "menOverOrEqualAgeLimit"),
+			_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit", "16+"),
 			currentLocale);
 		reportData.addField(menOverOrEqualAgeLimit);
+		
+		ReportableField comparingYearStat = new ReportableField("comparing_year", Integer.class);
+		comparingYearStat.setCustomMadeFieldName("1999");
+		
+		reportData.addField(comparingYearStat);
 
 		//DATA
 		//Creating report data and adding to collection
@@ -119,21 +124,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			data.addData(clubName, report.getGroupName());
 			data.addData(
 				regionalUnionAbbreviation,
-				(report.getRegionalUnionAbbreviation() != null) ? report.getRegionalUnionAbbreviation() : "missing");
+				(report.getRegionalUnionAbbreviation() != null) ? report.getRegionalUnionAbbreviation() : report.getRegionalUnionGroupId().toString());
 			data.addData(leagueString, "league stuff");
 			data.addData(womenUnderAgeLimit,new Integer(10));
 			data.addData(womenOverOrEqualAgeLimit,new Integer(5));
 			data.addData(menUnderAgeLimit,new Integer(3));
 			data.addData(menOverOrEqualAgeLimit,new Integer(2));
 			
+			
 			reportData.add(data);
 
 		}
 
 		reportData.addExtraHeaderParameter(
-			"currentdate",
+			"workreportreport",
 			_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
-			"datelabel",
+			"label",
 			IWTimestamp.getTimestampRightNow().toGMTString());
 		
 		/*reportData.addExtraHeaderParameter(
