@@ -4239,7 +4239,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 * Report B12.6.3 of the ISI Specs
 	 */
 	public ReportableCollection getDivisionTypeStatsByYearAndRegionalUnionsFilter (
-	String[]  years,
+	Collection  years,
 	Collection regionalUnionsFilter) throws RemoteException {
 
 		//initialize stuff
@@ -4282,10 +4282,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		multiDivisionPlayers.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_MULTI_DIVISION, "Multi Division Players"), currentLocale);
 		reportCollection.addField(multiDivisionPlayers);
 		
-		for(int j=0; j<years.length; j++) {
-			String year = years[j];
+		Iterator yearIter = (years==null?Collections.EMPTY_LIST:years).iterator();
+		while(yearIter.hasNext()) {
+			String year = (String) yearIter.next();
 			Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(Integer.parseInt(year), regionalUnionsFilter);
 			Map regionalUnionsStatsMap = new TreeMap();
+			
 			//Iterating through workreports and creating report data 
 			Iterator iter = clubs.iterator();
 			while (iter.hasNext()) {
@@ -4335,7 +4337,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 * Report B12.6.4 of the ISI Specs
 	 */
 	public ReportableCollection getDivisionTypeStatsByYearAndLeaguesFilter (
-	String[] years,	
+	Collection years,	
 	Collection leaguesFilter) throws RemoteException {
 
 		//initialize stuff
@@ -4378,8 +4380,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		multiDivisionPlayers.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_MULTI_DIVISION, "Multi Division Players"), currentLocale);
 		reportCollection.addField(multiDivisionPlayers);
 		
-		for(int j=0; j<years.length; j++) {
-			String year = years[j];
+		Iterator yearIter = (years==null?Collections.EMPTY_LIST:years).iterator();
+		while(yearIter.hasNext()) {
+			String year = (String) yearIter.next();
 			
 			Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(Integer.parseInt(year), null);
 			Map leagueStatsMap = new TreeMap();
