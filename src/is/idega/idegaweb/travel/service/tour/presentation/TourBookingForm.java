@@ -747,7 +747,7 @@ public class TourBookingForm extends BookingForm{
           Text depPlaceText = (Text) theText.clone();
               depPlaceText.setText(iwrb.getLocalizedString("travel.departure_place","Departure place"));
           Text fromText = (Text) theText.clone();
-              fromText.setText(iwrb.getLocalizedString("travel.from","From"));
+              fromText.setText(iwrb.getLocalizedString("travel.date","Date"));
 //          Text manyDaysText = (Text) theText.clone();
 //              manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_nights","Number of nights"));
           Text commentText = (Text) theText.clone();
@@ -776,13 +776,13 @@ public class TourBookingForm extends BookingForm{
               city.setSize(textInputSizeLg);
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
-
+/*
           DateInput fromDate = new DateInput(parameterFromDate);
             fromDate.setDay(_stamp.getDay());
             fromDate.setMonth(_stamp.getMonth());
             fromDate.setYear(_stamp.getYear());
             fromDate.setDisabled(true);
-
+*/
 //          TextInput manyDays = new TextInput(parameterManyDays);
 //            manyDays.setContent("1");
 //            manyDays.setSize(5);
@@ -815,7 +815,11 @@ public class TourBookingForm extends BookingForm{
           }
           ++row;
           table.add(fromText, 1, row);
-          table.add(fromDate, 2, row);
+          table.add(new HiddenInput(parameterFromDate, _stamp.toSQLString()));
+          Text currDate = (Text) theText.clone();
+          currDate.setText(_stamp.getLocaleDate(iwc.getCurrentLocale()));
+          table.add(currDate,  2, row);//fromDate, 2, row);
+//          table.add(fromDate, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
           table.mergeCells(2,row,6,row);
