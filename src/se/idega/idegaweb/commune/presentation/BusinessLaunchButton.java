@@ -1,5 +1,5 @@
 /*
- * $Id: BusinessLaunchButton.java,v 1.2 2003/05/23 08:06:28 laddi Exp $
+ * $Id: BusinessLaunchButton.java,v 1.3 2003/06/02 22:59:22 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ package se.idega.idegaweb.commune.presentation;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -24,6 +25,7 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class BusinessLaunchButton extends ChildCareBlock {
 	protected static final String SUBMIT = "detonate";
+	protected static final String SUBMIT2 = "checks";
 	
 	protected void control(IWContext iwc) {
 		if (iwc.isParameterSet(SUBMIT)) {
@@ -36,7 +38,10 @@ public class BusinessLaunchButton extends ChildCareBlock {
 	protected void displayForm() {
 		Form form = new Form();
 		SubmitButton button = new SubmitButton(SUBMIT,"Kill application");
+		SubmitButton button2 = new SubmitButton(SUBMIT2,"Add missing checks");
 		form.add(button);
+		form.add(Text.BREAK);		
+		form.add(button2);
 		add(form);	
 	}
 

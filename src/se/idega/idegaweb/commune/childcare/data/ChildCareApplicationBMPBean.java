@@ -310,6 +310,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			removeFromColumn(ENTITY_NAME);
 	}
   
+  public Collection ejbFindAll() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+
+		return (Collection)super.idoFindPKsBySQL(sql.toString());
+  }
+  
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
 		try {
 			return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());

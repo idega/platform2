@@ -35,6 +35,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
@@ -1901,6 +1902,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
 	}
+
+	public CheckBusiness getCheckBusiness() throws RemoteException {
+		return (CheckBusiness) this.getServiceInstance(CheckBusiness.class);
+	}
+
 	/**
 	 * @return char
 	 */
@@ -2159,6 +2165,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			catch (SystemException ex) {
 				ex.printStackTrace();
 			}
+		}
+	}
+	
+	public void addMissingGrantedChecks() {
+		try {
+			Collection childcareapps = this.getChildCareApplicationHome().findAll();
+			Iterator it = childcareapps.iterator();
+			int size = childcareapps.size();
+			int a = 0;
+			while (it.hasNext()) {
+				System.out.println("Handling entry " + ++a + " of " + size);
+				ChildCareApplication app = (ChildCareApplication)it.next();
+				User child = app.getChild();
+				if (!getCheckBusiness().hasGrantedCheck(child))
+					getCheckBusiness().createGrantedCheck(child);
+			}	
+		}
+		catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
