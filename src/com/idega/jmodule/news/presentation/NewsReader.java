@@ -115,9 +115,12 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   IWResourceBundle iwrb = getResourceBundle(modinfo);
 
-  newsReaderURL = iwb.getProperty("news_reader_url","");//link with "" constructs a link to the calling page
-  newsCollectionURL = iwb.getProperty("news_collection_url","");
-
+  if( newsReaderURL == null ){
+    newsReaderURL = iwb.getProperty("news_reader_url",modinfo.getRequestURI());//link with "" constructs a link to the calling page
+  }
+  if( newsCollectionURL == null ){
+    newsCollectionURL = iwb.getProperty("news_collection_url",modinfo.getRequestURI());
+  }
 
   back = iwrb.getImage("back.gif");
   more  = iwrb.getImage("more.gif");
@@ -397,19 +400,22 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
     }
   }
 
-  headline.setFontFace("helvetica,arial");
-  headline.setFontSize(3);
+
+  getHeadlineProxy().setBold();
   headline = setHeadlineAttributes(headline);
-  headline.setBold();
+  if( headline.getAttribute("size") == null ) headline.setFontSize(2);
+  else if( headline.getAttribute("size").equals("") )  headline.setFontSize(2);
 
 
   Text newstext = new Text(NewsText);
-  //newstext.setFontFace("helvetica,arial");
   newstext = setTextAttributes( newstext );
+  if( newstext.getAttribute("size") == null ) newstext.setFontSize(2);
+  else if( newstext.getAttribute("size").equals("") )  newstext.setFontSize(2);
 
-  information.setFontColor("#666666");
-  information.setFontFace("helvetica,arial");
-  information.setFontSize(1);
+  getInformationProxy().setFontColor("#666666");
+  information = setInformationAttributes(information);
+  if( information.getAttribute("size") == null ) information.setFontSize(1);
+  else if( information.getAttribute("size").equals("") )  information.setFontSize(1);
 
   Table newsTable = new Table(1, 3);
 
@@ -461,12 +467,13 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
           newsTable.add(new BackButton(back), 1, 3);
   }
   else {
-    if(showMore && !headlineAsLink) {
-      if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
+    //if(showMore && !headlineAsLink) {//always show the more button
+      if(!headlineAsLink) {
+        if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
 
-      Link moreLink = new Link(more,newsReaderURL);
-      moreLink.addParameter("news_id",newsId);
-      newsTable.add(moreLink, 1, 3);
+        Link moreLink = new Link(more,newsReaderURL);
+        moreLink.addParameter("news_id",newsId);
+        newsTable.add(moreLink, 1, 3);
       }
   }
 

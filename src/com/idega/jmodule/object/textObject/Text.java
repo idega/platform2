@@ -25,6 +25,34 @@ protected boolean teletype;
 protected boolean bold;
 protected boolean italic;
 protected boolean underline;
+public static String FONT_FACE_ARIAL = "Arial, Helvetica, Sans-serif";
+public static String FONT_FACE_TIMES = "Times New Roman, Times, serif";
+public static String FONT_FACE_COURIER = "Courier New, Courier, mono";
+public static String FONT_FACE_GEORGIA = "Georgia, Times New Roman, Times, serif";
+public static String FONT_FACE_VERDANA = "Verdana, Arial, Helvetica, sans-serif";
+public static String FONT_FACE_GENEVA = "Geneva, Arial, Helvetica, san-serif";
+
+public static String FONT_FACE_STYLE_NORMAL = "normal";
+public static String FONT_FACE_STYLE_BOLD = "bold";
+public static String FONT_FACE_STYLE_ITALIC = "italic";
+public static String FONT_SIZE_7_HTML_1 = "1";
+public static String FONT_SIZE_7_STYLE_TAG = "7pt";
+public static String FONT_SIZE_10_HTML_2 = "2";
+public static String FONT_SIZE_10_STYLE_TAG= "10pt";
+public static String FONT_SIZE_12_HTML_3 = "3";
+public static String FONT_SIZE_12_STYLE_TAG = "12pt";
+public static String FONT_SIZE_14_HTML_4 = "4";
+public static String FONT_SIZE_14_STYLE_TAG = "14pt";
+public static String FONT_SIZE_16_STYLE_TAG = "16pt";
+public static String FONT_SIZE_18_HTML_5 = "5";
+public static String FONT_SIZE_18_STYLE_TAG = "18pt";
+public static String FONT_SIZE_24_HTML_6 = "6";
+public static String FONT_SIZE_24_STYLE_TAG = "24pt";
+public static String FONT_SIZE_34_HTML_7 = "7";
+public static String FONT_SIZE_34_STYLE_TAG = "34pt";
+
+
+
 
 /**
 **Constructor that creates the object with an empty string

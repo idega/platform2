@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.7 2001/05/23 11:03:45 gummi Exp $
+ * $Id: Page.java,v 1.8 2001/05/24 19:42:05 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.jmodule.object;
 
 import com.idega.jmodule.*;
+import com.idega.jmodule.object.textObject.Text;
 import java.io.*;
 
 /**
@@ -27,6 +28,9 @@ public class Page extends ModuleObjectContainer {
   private String visitedColor = "#000000";
   private String hoverColor = "#000000";
   private String textDecoration = "underline";
+  private String pageStyleFont = Text.FONT_FACE_ARIAL;
+  private String pageStyleFontSize = Text.FONT_SIZE_7_STYLE_TAG;
+  private String pageStyleFontStyle = Text.FONT_FACE_STYLE_NORMAL;
   private String styleSheetURL = "/style/style.css";
   private boolean addStyleSheet = false;
 
@@ -73,6 +77,30 @@ public class Page extends ModuleObjectContainer {
   public void setLinkColor(String color) {
     setAttribute("link",color);
     this.linkColor = color;
+  }
+
+  public void setPageFontFace(String TextFontFace) {
+    this.pageStyleFont = TextFontFace;
+  }
+
+  public void setPageFontSize(String TextFontSize) {
+    this.pageStyleFont = TextFontSize;
+  }
+
+  public void setPageFontStyle (String TextFontStyle) {
+    this.pageStyleFontStyle = TextFontStyle;
+  }
+
+  public String getPageFontFace() {
+    return this.pageStyleFont;
+  }
+
+  public String getPageFontSize() {
+    return this.pageStyleFont;
+  }
+
+  public String getPageFontStyle () {
+    return this.pageStyleFontStyle;
   }
 
   public void setTitle(String title) {
@@ -272,8 +300,8 @@ public class Page extends ModuleObjectContainer {
         println("<link rel=\"stylesheet\" href=\""+styleSheetURL+"\" type=\"text/css\">\n");
       }
       else {
-        println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:"+linkColor+"; text-decoration:"+textDecoration+";}\n	A:visited {color:"+visitedColor+"; text-decoration:"+textDecoration+";}\n	A:hover {color:"+hoverColor+"; text-decoration:"+textDecoration+";}\n-->\n</STYLE>");
-      }
+        println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:"+linkColor+"; text-decoration:"+textDecoration+";}\n	A:visited {color:"+visitedColor+"; text-decoration:"+textDecoration+";}\n	A:hover {color:"+hoverColor+"; text-decoration:"+textDecoration+";}\n	body {  font-family: "+ pageStyleFont +"; font-size: "+pageStyleFontSize+"; font-style: "+pageStyleFontStyle+ ";}\n   -->\n</STYLE>");
+     }
       println("</head>\n<body  "+getAttributeString()+" >\n");
 
       //Catch all exceptions that are thrown in print functions of objects stored inside
