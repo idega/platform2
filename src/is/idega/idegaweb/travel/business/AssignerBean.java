@@ -2,12 +2,20 @@ package is.idega.idegaweb.travel.business;
 
 import java.rmi.RemoteException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.ContractHome;
+
 import com.idega.block.trade.stockroom.data.Product;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
 import com.idega.util.database.ConnectionBroker;
 /**
  * Title:        idegaWeb TravelBooking
@@ -100,11 +108,21 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
   }
 
 
+  // TODO change this to return Collection
   public Contract[] getContracts(Product product) throws RemoteException{
     Contract[] contracts = {};
     try {
-      contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
-    }catch (SQLException sql) {
+    	ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
+    	Collection coll = cHome.findByProductId(product.getID());
+      //contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
+      if (coll != null && !coll.isEmpty()) {
+      	contracts = new Contract[coll.size()];
+      	Iterator iter = coll.iterator();
+      	for ( int i = 0; i < contracts.length; i++) {
+      		contracts[i] = cHome.findByPrimaryKey(iter.next());
+      	}
+      }
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }
     return contracts;
