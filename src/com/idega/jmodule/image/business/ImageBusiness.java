@@ -31,6 +31,9 @@ import com.idega.jmodule.image.business.ImageProperties;
 
 public class ImageBusiness  {
 
+  public static int IM_BROWSER_WIDTH = 800;
+  public static int IM_BROWSER_HEIGHT = 600;
+
 public static Properties getBundleProperties(ModuleInfo modinfo) throws FileNotFoundException,IOException{
   //IWMainApplication application = getApplication();
   String fileSeperator = System.getProperty("file.separator");
@@ -120,18 +123,26 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws E
           System.out.println("ImageBusiness: Saving new image");
           handler.writeModifiedImageToDatabase(false);
         }
-        else if( action.equalsIgnoreCase("Undo") ){
+        else if( action.equalsIgnoreCase("Undo") || action.equalsIgnoreCase("Revert") ){
           handler.setModifiedImageAsOriginal();
         }
         else if( action.equalsIgnoreCase("delete") ){
           try{
             ImageEntity image = new ImageEntity( imageId );
             ImageEntity[] childs = (ImageEntity[]) image.findAllByColumn("parent_id",imageId);
+            ImageCatagory[] catagories = (ImageCatagory[]) image.findReverseRelated(GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageCatagory"));
+
             //brake childs from parent
             if( (childs!=null) && (childs.length>0)) {
               for (int i = 0; i < childs.length; i++) {
-                childs[i].setParentId(image.getParentId());
+                int parent = image.getParentId();
+                childs[i].setParentId(parent);
                 childs[i].update();
+                if( (catagories!=null) && (catagories.length>0) ){
+                  for (int k = 0; k < catagories.length; k++) {
+                    catagories[k].addTo(childs[i]);
+                  }
+                }
               }
             }
 
