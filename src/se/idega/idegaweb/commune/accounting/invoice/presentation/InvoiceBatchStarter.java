@@ -17,7 +17,6 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -156,6 +155,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 //			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
 			add(getLocalizedText("invbr.batchrun_started","Batchrun started"));
 			add(new Break());
+/*
 			if(link!=null)
 			{
 				Link uiLink = new Link();
@@ -165,7 +165,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 			} else {
 				System.out.println("WARNING need to set the Link property for invoice batch start block!");
 			}
-		} catch (SchoolCategoryNotFoundException e) {
+*/
+			} catch (SchoolCategoryNotFoundException e) {
 			add(getErrorText(getLocalizedString("invbr.please_select_valid_school_category","Please select valid school category.",iwc)));
 			e.printStackTrace();
 //		} catch (BatchAlreadyRunningException e) {

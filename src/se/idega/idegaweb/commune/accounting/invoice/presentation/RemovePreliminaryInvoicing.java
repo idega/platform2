@@ -95,39 +95,6 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 	private void handleSave(String schoolCategory, CalendarMonth month, IWContext iwc) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-/*			
-			SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
-			if (sch.findChildcareCategory().getCategory().equals(schoolCategory)) {
-				if(BatchRunSemaphore.getChildcareRunSemaphore()){
-					invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
-					add(this.localize(PREFIX+"records_removed","Records have been removed."));
-					BatchRunSemaphore.releaseChildcareRunSemaphore();
-				}else{
-					add(this.localize(PREFIX+"data_of_this_type_is_being_updated_by_the_system_Please_wait_until_it_is_done_and_try_again",
-							"Data of this type is being updated by the system. Please wait until it is done and try again."));
-				}
-			} else if (sch.findElementarySchoolCategory().getCategory().equals(schoolCategory)) {
-				if(BatchRunSemaphore.getElementaryRunSemaphore()){
-					invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
-					add(this.localize(PREFIX+"records_removed","Records have been removed."));
-					BatchRunSemaphore.releaseElementaryRunSemaphore();
-				}else{
-					add(this.localize(PREFIX+"data_of_this_type_is_being_updated_by_the_system_Please_wait_until_it_is_done_and_try_again",
-					"Data of this type is being updated by the system. Please wait until it is done and try again."));
-				}
-			} else if (sch.findHighSchoolCategory().getCategory().equals(schoolCategory)) {
-				if(BatchRunSemaphore.getHighRunSemaphore()){
-					invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
-					add(this.localize(PREFIX+"records_removed","Records have been removed."));
-					BatchRunSemaphore.releaseHighRunSemaphore();
-				}else{
-					throw new BatchAlreadyRunningException("HighSchool");
-				}
-			} else {
-				throw new SchoolCategoryNotFoundException("Couldn't find any Schoolcategory for billing named " + schoolCategory);
-			}
-*/			
-			
 			invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
 			invoiceBusiness.removePreliminaryPayment(month, schoolCategory);
 			add(this.localize(PREFIX+"records_removed","Records have been removed."));

@@ -95,6 +95,13 @@ public int getCountForMonthCategoryAndStatusLH(com.idega.util.CalendarMonth p0,j
 	return theReturn;
 }
 
+public int getCountForMonthCategoryAndStatusLHorT(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthCategoryAndStatusLHorT(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getPlacementCountForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetPlacementCountForSchoolCategoryAndMonth(p0,p1);

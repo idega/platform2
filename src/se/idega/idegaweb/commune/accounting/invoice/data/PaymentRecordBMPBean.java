@@ -399,11 +399,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 */
 	public int ejbHomeGetCountForMonthCategoryAndStatusLH(CalendarMonth month, String category) throws IDOException {
-		/*IWTimestamp start = new IWTimestamp(month);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);*/
 		Date start = month.getFirstDateOfMonth();
 		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
@@ -412,6 +407,29 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendWhere("r."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
 		sql.appendAnd().append("r."+COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
+		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
+		sql.appendAndEqualsQuoted("h.school_category_id", category);
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+
+		return idoGetNumberOfRecords(sql);
+	}
+
+	/**
+	 * 
+	 * @param month
+	 * @return
+	 * @throws FinderException
+	 */
+	public int ejbHomeGetCountForMonthCategoryAndStatusLHorT(CalendarMonth month, String category) throws IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		sql.append("select count(r.cacc_payment_record_id) from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhere("r."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
+		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.TEST);
 		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 		sql.appendAndEqualsQuoted("h.school_category_id", category);
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");

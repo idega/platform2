@@ -82,11 +82,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/22 08:26:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/30 17:14:08 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.125 $
+ * @version $Revision: 1.126 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -159,6 +159,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * the payment records for the given month where the status was set to preliminary
 	 * 
 	 * @param month
+	 * @param category
 	 */
 	public void removePreliminaryPayment(CalendarMonth month, String category) throws RemoveException {
 		PaymentRecord paymentRecord;

@@ -509,6 +509,12 @@ public abstract class BillingThread extends Thread{
 	protected boolean hasPlacements() throws IDOException, RemoteException, EJBException {
 		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth((String) category.getPrimaryKey(), month) > 0;
 	}
+	
+	protected void removeTestInformation(CalendarMonth month, String schoolCategory) throws IDOLookupException, RemoteException, FinderException, RemoveException, BatchAlreadyRunningException, SchoolCategoryNotFoundException{
+		InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+//		invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
+		invoiceBusiness.removePreliminaryPayment(month, schoolCategory);
+	}
 
 	protected void batchRunLoggerDone(){
 		if(batchRunLogger!=null){
