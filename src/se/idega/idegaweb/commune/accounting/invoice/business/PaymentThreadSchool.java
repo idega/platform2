@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/03/30 12:33:11 $ by $Author: roar $
+ * Last modified: $Date: 2004/03/31 16:26:25 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.131 $
+ * @version $Revision: 1.132 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -629,7 +629,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
 //					errorRelated.append("created payment info for fritidsklubb:" + schoolClassMember.getStudent().getName());
-					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolType,schoolClassMember.getSchoolYear());
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
 					e1.printStackTrace();
@@ -673,7 +673,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				String[] postings =  getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue(), schoolClassMember.getStudyPathId());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolType,schoolClassMember.getSchoolYear());
 //				errorRelated.append("created payment info for Oppen verksamhet:" + schoolClassMember.getStudent().getName());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
