@@ -16,9 +16,11 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.util.StringHandler;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -26,14 +28,15 @@ import com.idega.user.data.GroupHome;
 public class ManagerGroupListView extends CommuneBlock {
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 	private final static int ACTION_VIEW_MANAGER_LIST = 2;
-	private final static int ACTION_VIEW_MANAGER = 3;
+	private final static int ACTION_VIEW_MANAGER_GROUP = 3;
 
 	//final static String PARAM_MANAGER_ID = ManagerView.PARAM_MANAGER_ID;
 	final static String PARAM_MANAGER_GROUP_ID="comm_manvw_gr_id";
 	
 	private Table mainTable = null;
 	private int managerListPageID = -1;
-	private int topGroupID;
+	private int topGroupID=-1;
+	private boolean addHeader=false;
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -47,16 +50,24 @@ public class ManagerGroupListView extends CommuneBlock {
 				case ACTION_VIEW_MANAGER_LIST :
 					viewManagerList(iwc);
 					break;
-				case ACTION_VIEW_MANAGER :
-					viewManager(iwc);
+				case ACTION_VIEW_MANAGER_GROUP :
+					viewManagerGroup(iwc);
 					break;
 				default :
+					viewNoGroups(iwc);
 					break;
 			}
 			super.add(mainTable);
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
+	}
+	/**
+	 * Method viewNoGroups.
+	 * @param iwc
+	 */
+	private void viewNoGroups(IWContext iwc) {
+		add(getSmallText(localize("managergrouplistview.no_management_group_set", "No management group set")));
 	}
 	/**
 	 * Method initGroupID.
@@ -92,26 +103,36 @@ public class ManagerGroupListView extends CommuneBlock {
 		mainTable.add(po);
 	}
 	private int parseAction(IWContext iwc) {
-		int action = ACTION_VIEW_MANAGER_LIST;
+		int action = -1;
+		if(topGroupID!=-1){
+			//if topGroupID==-1 then it cant vew a manager list
+			action=ACTION_VIEW_MANAGER_LIST;
+		}	
 		if(iwc.isParameterSet(PARAM_MANAGER_GROUP_ID)){
-		  action = ACTION_VIEW_MANAGER;
+		  action = ACTION_VIEW_MANAGER_GROUP;
 		}
 		return action;
 	}
 	private void viewManagerList(IWContext iwc) throws Exception {
 		//System.out.println("viewManagerList()");
-		add(getLocalizedHeader("managerlistview.managers", "Managers:"));
-		add(new Break(2));
+		
+		if(addHeader){
+			add(getLocalizedHeader("managergrouplistview.managergroups", "Managergroups:"));
+			add(new Break(2));
+		}
+
 		//if (iwc.isLoggedOn()) {
 			//Collection users = getCommuneUserBusiness(iwc).getAllCommuneAdministrators();
 			Group topGroup = getTopGroup();
-			Collection groups = topGroup.getChildGroups();
+			Collection groups=null;
+			groups = getGroupBusiness(iwc).getChildGroups(topGroup);
+			//groups = topGroup.getChildGroups();
 			if (groups != null & !groups.isEmpty()) {
 				Form f = new Form();
 				ColumnList messageList = new ColumnList(2);
 				f.add(messageList);
 				messageList.setBackroundColor("#e0e0e0");
-				messageList.setHeader(localize("managerlistview.name", "Name"), 1);
+				messageList.setHeader(localize("managergrouplistview.name", "Name"), 1);
 
 				PresentationObject userName = null;
 
@@ -122,7 +143,7 @@ public class ManagerGroupListView extends CommuneBlock {
 					while (iter.hasNext()) {
 						try {
 							Group group = (Group) iter.next();
-							Text tUserName = getSmallText(group.getName());
+							Text tUserName = getSmallText(getStringOrDash(group.getName()));
 							Link lUserName = new Link(tUserName);
 							userName = lUserName;
 							if(managerListPageID!=-1){
@@ -130,7 +151,7 @@ public class ManagerGroupListView extends CommuneBlock {
 							}
 							lUserName.addParameter(PARAM_MANAGER_GROUP_ID,group.getPrimaryKey().toString());
 							messageList.add(userName);
-							Text tDesc = getSmallText(group.getDescription());
+							Text tDesc = getSmallText(getStringOrDash(group.getDescription()));
 							messageList.add(tDesc);
 
 						} catch (Exception e) {
@@ -143,7 +164,7 @@ public class ManagerGroupListView extends CommuneBlock {
 				messageList.skip(2);
 				add(f);
 			} else {
-				add(getSmallText(localize("managerlistview.no_managers", "No managers")));
+				add(getSmallText(localize("managergrouplistview.no_managers", "No managers")));
 			}
 		//}
 	}
@@ -161,102 +182,12 @@ public class ManagerGroupListView extends CommuneBlock {
 		}
 	}
 	
-	
-	private void viewManager(IWContext iwc) throws Exception {
+	private void viewManagerGroup(IWContext iwc) throws Exception {
 		//System.out.println("viewManager()");
-		add(new ManagerView());
+		add(new ManagerListView());
 	}
 	
 	
-	/*
-	  private void viewCase(IWContext iwc)throws Exception{
-	    Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
-	    getMessageBusiness(iwc).markMessageAsRead(msg);
-	
-	    add(getLocalizedHeader("message.message","Message"));
-	    add(new Break(2));
-	    add(getLocalizedText("message.from","From"));
-	    add(getText(": "));
-	    //add(getLink(msg.getSenderName()));
-	    add(new Break(2));
-	    add(getLocalizedText("message.date","Date"));
-	    add(getText(": "+(new IWTimestamp(msg.getCreated())).getLocaleDate(iwc)));
-	    add(new Break(2));
-	    add(getLocalizedText("message.subject","Subject"));
-	    add(getText(": "+msg.getSubject()));
-	    add(new Break(2));
-	    add(getText(msg.getBody()));
-	
-	    add(new Break(2));
-	    Table t = new Table();
-	    t.setWidth("100%");
-	    t.setAlignment(1,1,"right");
-	    Link l = getLocalizedLink("message.back", "Back");
-	    l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-	    l.setAsImageButton(true);
-	    t.add(l,1,1);
-	    add(t);
-	  }
-	
-	  private void showDeleteInfo(IWContext iwc)throws Exception{
-	    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-	    int msgId = 0;
-	    int nrOfMessagesToDelete = 0;
-	    if(ids!=null){
-	      nrOfMessagesToDelete = ids.length;
-	      msgId = Integer.parseInt(ids[0]);
-	    }
-	
-	    if(nrOfMessagesToDelete==1){
-	      add(getLocalizedHeader("message.delete_message","Delete message"));
-	    }else{
-	      add(getLocalizedHeader("message.delete_messages","Delete messages"));
-	    }
-	    add(new Break(2));
-	
-	    String s = null;
-	    if(nrOfMessagesToDelete==0){
-	      s = localize("message.no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
-	    }else if(nrOfMessagesToDelete==1){
-	      Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
-	      s = localize("message.one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
-	    }else{
-	      s = localize("message.messages_to_delete","Do you really want to delete the selected messages?");
-	    }
-	
-	    Table t = new Table(1,5);
-	    t.setWidth("100%");
-	    t.add(getText(s),1,1);
-	    t.setAlignment(1,1,"center");
-	    if(nrOfMessagesToDelete==0){
-	      Link l = getLocalizedLink("message.back","back");
-	      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-	      l.setAsImageButton(true);
-	      t.add(l,1,4);
-	    }else{
-	      Link l = getLocalizedLink("message.ok","OK");
-	      l.addParameter(PARAM_DELETE_MESSAGE,"true");
-	      for(int i=0; i<ids.length; i++){
-	        l.addParameter(PARAM_MESSAGE_ID,ids[i]);
-	      }
-	      l.setAsImageButton(true);
-	      t.add(l,1,4);
-	      t.add(getText(" "),1,4);
-	      l = getLocalizedLink("message.cancel","Cancel");
-	      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-	      l.setAsImageButton(true);
-	      t.add(l,1,4);
-	    }
-	    t.setAlignment(1,4,"center");
-	    add(t);
-	  }
-	
-	  private void deleteMessage(IWContext iwc)throws Exception{
-	    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-	    for(int i=0; i<ids.length; i++){
-	      getMessageBusiness(iwc).deleteUserMessage(Integer.parseInt(ids[i]));
-	    }
-	  }*/
 	private CaseBusiness getCaseBusiness(IWContext iwc) throws Exception {
 		return (CaseBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CaseBusiness.class);
 	}
@@ -265,6 +196,9 @@ public class ManagerGroupListView extends CommuneBlock {
 	}
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+	}
+	private GroupBusiness getGroupBusiness(IWContext iwc) throws Exception {
+		return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
 	}
 	
 	private CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws Exception {
@@ -301,6 +235,31 @@ public class ManagerGroupListView extends CommuneBlock {
 	 */
 	public void setTopGroupID(int groupID) {
 		this.topGroupID = groupID;
+	}
+
+	/**
+	 * Returns the addHeader.
+	 * @return boolean
+	 */
+	public boolean isAddHeader() {
+		return addHeader;
+	}
+
+	/**
+	 * Sets the addHeader.
+	 * @param addHeader The addHeader to set
+	 */
+	public void setAddHeader(boolean addHeader) {
+		this.addHeader = addHeader;
+	}
+	
+	/**
+	 * Returns a string or dash if there is no string
+	 * @param str String to check
+	 * @return String which is either a dash or a string if 
+	 */
+	private String getStringOrDash(String str){
+		return StringHandler.getStringOrDash(str);
 	}
 
 }
