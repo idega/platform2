@@ -1089,16 +1089,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.store();
 			try {
 				User child = application.getChild();
-				Collection siblings = getUserBusiness().getMemberFamilyLogic().getSiblingsFor(application.getChild());
-				String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept()), String.valueOf(getStatusContract()), String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
-				Iterator iter = siblings.iterator();
-				while (iter.hasNext()) {
-					User sibling = (User) iter.next();
-					if (((Integer) child.getPrimaryKey()).intValue() != ((Integer) sibling.getPrimaryKey()).intValue()) {
-						ChildCareApplication siblingApp = this.getApplicationForChildAndProviderinStatus(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId(), statuses);
-						if (siblingApp != null) {
-							siblingApp.setHasQueuePriority(true);
-							siblingApp.store();
+				Collection parents = getUserBusiness().getParentsForChild(child);
+				if (parents != null) {
+					Iterator iter = parents.iterator();
+					String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept()), String.valueOf(getStatusContract()), String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
+					while (iter.hasNext()) {
+						User parent = (User) iter.next();
+						Collection children = getUserBusiness().getChildrenForUser(parent);
+						if (children != null) {
+							Iterator iterator = children.iterator();
+							while (iterator.hasNext()) {
+								User sibling = (User) iterator.next();
+								if (((Integer) child.getPrimaryKey()).intValue() != ((Integer) sibling.getPrimaryKey()).intValue()) {
+									ChildCareApplication siblingApp = this.getApplicationForChildAndProviderinStatus(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId(), statuses);
+									if (siblingApp != null) {
+										siblingApp.setHasQueuePriority(true);
+										siblingApp.store();
+									}
+								}
+							}
 						}
 					}
 				}
