@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.14 2002/11/06 10:00:32 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.15 2002/11/07 14:47:57 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -53,9 +53,7 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String LAST_NAME_DEFAULT = "Efternamn";
     private final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
     private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
-    private final static String PID_KEY = "caa_pid";
-    private final static String SSN_DEFAULT
-        = "Personnummer (år/månad/dag - fyra sist siffror)";
+    private final static String SSN_DEFAULT = "Personnummer";
     private final static String SSN_KEY = "caa_ssn";
     private final static String STREET_DEFAULT = "Gatuadress";
     private final static String STREET_KEY = "caa_street";
@@ -69,15 +67,24 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String UNKNOWN_CITIZEN_FORM_SUBMIT_DEAFULT
         = "Skicka ansökan";
 
-	private final static String ERROR_PID = "caa_pid_error";
-	private final static String ERROR_PHONE_HOME = "caa_error_phone_home";
-	private final static String ERROR_NO_INSERT = "caa_no_insert";
-	private final static String ERROR_NOT_EMAIL = "caa_err_email";
-
-	private final static String TEXT_APPLICATION_SUBMITTED
+	private final static String ERROR_NOT_EMAIL_DEFAULT
+        = "Felaktigt inmatad e-postadress";
+	private final static String ERROR_NOT_EMAIL_KEY = "caa_err_email";
+	private final static String ERROR_PHONE_HOME_DEFAULT
+        = "Felaktigt inmatat hemtelefonnummer";
+	private final static String ERROR_PHONE_HOME_KEY = "caa_error_phone_home";
+	private final static String ERROR_SSN_DEFAULT
+        = "Felaktigt inmatat personnummer (ååååmmddxxxx)";
+	private final static String ERROR_SSN_KEY = "caa_ssn_error";
+    private final static String ERROR_NO_INSERT_DEFAULT
+        = "Kunde inte lagra ansökan."; 
+    private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
+	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT
+        = "Ansökan är mottagen.";
+	private final static String TEXT_APPLICATION_SUBMITTED_KEY
         = "caa_app_submitted";
 
-	private boolean _isPIDError = false;
+	private boolean _isSsnError = false;
 	private boolean _isPhoneHomeError = false;
 	private boolean _isEmailError = false;
 	private boolean _isError = false;
@@ -175,29 +182,29 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitSimpleForm (final IWContext iwc) {
-		String pidString = iwc.getParameter (PID_KEY);
-		String phoneHomeString = iwc.getParameter (PHONE_HOME_KEY);
-		String emailString = iwc.getParameter (EMAIL_KEY);
-		String phoneWorkString = iwc.getParameter (PHONE_WORK_KEY);
+		String ssn = getSsn (iwc);
+		String phoneHome = iwc.getParameter (PHONE_HOME_KEY);
+		String email = iwc.getParameter (EMAIL_KEY);
+		String phoneWork = iwc.getParameter (PHONE_WORK_KEY);
 
 		_errorMsg = null;
 
-		if (pidString == null || pidString.equals("")) {
-			_isPIDError = true;
+		if (ssn == null || ssn.equals("")) {
+			_isSsnError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_PID, "PID invalid"));
+			addErrorString(localize(ERROR_SSN_KEY, ERROR_SSN_DEFAULT));
 		}
 
-		if (emailString == null || emailString.equals("")) {
+		if (email == null || email.equals("")) {
 			_isEmailError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
+			addErrorString(localize(ERROR_NOT_EMAIL_KEY, ERROR_NOT_EMAIL_DEFAULT));
 		}
 
-		if (phoneHomeString == null || phoneHomeString.equals("")) {
+		if (phoneHome == null || phoneHome.equals("")) {
 			_isPhoneHomeError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_PHONE_HOME, "Home phone invalid"));
+			addErrorString(localize(ERROR_PHONE_HOME_KEY, ERROR_PHONE_HOME_DEFAULT));
 		}
 
 		if (_isError) {
@@ -207,7 +214,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		boolean isInserted = false;
 		try {
-            final String ssn = getSsn (iwc);
 			final CitizenAccountBusiness business
                     = (CitizenAccountBusiness) IBOLookup.getServiceInstance
                     (iwc, CitizenAccountBusiness.class);
@@ -217,7 +223,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                 return;
             }
 			isInserted = business.insertApplication
-                    (user, ssn, emailString, phoneHomeString, phoneWorkString);
+                    (user, ssn, email, phoneHome, phoneWork);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -226,8 +232,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		if (!isInserted) {
 			_isError = true;
-			addErrorString(localize(ERROR_NO_INSERT,
-                                    "Unable to insert application"));
+			addErrorString(localize(ERROR_NO_INSERT_KEY,
+                                    ERROR_NO_INSERT_DEFAULT));
 			viewSimpleApplicationForm(iwc);
 			return;
 		}
@@ -235,7 +241,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (getResponsePage() != null)
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());
 		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED,
+			add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
                                   "Application submitted")));
 	}
 
@@ -244,7 +250,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                 + iwc.getParameter (LAST_NAME_KEY);
         final int genderId
                 = new Integer (iwc.getParameter (GENDER_KEY)).intValue ();
-		final String pid = iwc.getParameter (PID_KEY);
+		final String ssn = getSsn (iwc);
 		final String phoneHome = iwc.getParameter (PHONE_HOME_KEY);
 		final String email = iwc.getParameter (EMAIL_KEY);
 		final String phoneWork = iwc.getParameter (PHONE_WORK_KEY);
@@ -262,22 +268,24 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		_errorMsg = null;
 
-		if (pid == null || pid.equals("")) {
-			_isPIDError = true;
+		if (ssn == null || ssn.equals("")) {
+			_isSsnError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_PID, "PID invalid"));
+			addErrorString (localize (ERROR_SSN_KEY, ERROR_SSN_DEFAULT));
 		}
 
 		if (email == null || email.equals("")) {
 			_isEmailError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
+			addErrorString (localize (ERROR_NOT_EMAIL_KEY,
+                                      ERROR_NOT_EMAIL_DEFAULT));
 		}
 
 		if (phoneHome == null || phoneHome.equals("")) {
 			_isPhoneHomeError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_PHONE_HOME, "Home phone invalid"));
+			addErrorString (localize (ERROR_PHONE_HOME_KEY,
+                                      ERROR_PHONE_HOME_DEFAULT));
 		}
 
 		if (_isError) {
@@ -290,22 +298,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 			final CitizenAccountBusiness business
                     = (CitizenAccountBusiness) IBOLookup.getServiceInstance
                     (iwc, CitizenAccountBusiness.class);
-            final User user = business.getUser (pid);
+            final User user = business.getUser (ssn);
             if (user != null) {
                 viewSimpleApplicationForm (iwc);
                 return;
             }
-            final String ssn = getSsn (iwc);
-            final int year = new Integer (iwc.getParameter
-                                          (BIRTH_YEAR_KEY)).intValue ();
-            final int month = new Integer (iwc.getParameter
-                                          (BIRTH_MONTH_KEY)).intValue ();
-            final int day = new Integer (iwc.getParameter
-                                          (BIRTH_DAY_KEY)).intValue ();
-            final Calendar birthDate = Calendar.getInstance ();
-            birthDate.set (year, month - 1, day);
+            final Calendar birth = Calendar.getInstance ();
+            birth.set (new Integer (ssn.substring (0, 4)).intValue (),
+                       new Integer (ssn.substring (4, 6)).intValue (),
+                       new Integer (ssn.substring (6, 8)).intValue ());
 			isInserted = business.insertApplication
-                    (name, genderId, ssn, birthDate.getTime (), email,
+                    (name, genderId, ssn, birth.getTime (), email,
                      phoneHome, phoneWork,
                      custodian1Ssn, custodian1CivilStatus, custodian2Ssn,
                      custodian2CivilStatus, street, zipCode, city);
@@ -317,8 +320,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		if (!isInserted) {
 			_isError = true;
-			addErrorString(localize(ERROR_NO_INSERT,
-                                    "Unable to insert application"));
+			addErrorString(localize(ERROR_NO_INSERT_KEY,
+                                    ERROR_NO_INSERT_DEFAULT));
 			viewUnknownCitizenApplicationForm (iwc);
 			return;
 		}
@@ -326,8 +329,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (getResponsePage() != null)
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());
 		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED,
-                                  "Application submitted")));
+			add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
+                                  TEXT_APPLICATION_SUBMITTED_DEFAULT)));
     }
 
     private void addCustodianInput (final Table table, final int row,
@@ -337,7 +340,10 @@ public class CitizenAccountApplication extends CommuneBlock {
         final Text custodianHeader = getLocalizedHeader
                 (custodianKey, CUSTODIAN_DEFAULT + " " + custodianId);
         table.add (custodianHeader, 1, row);
-        addSsnInput (table, row + 1, iwc, "_" + custodianKey);
+
+        addHeader (table, row + 1, false, SSN_KEY, SSN_DEFAULT);
+        final String ssnKey = getCustodianKey (SSN_KEY, custodianId);
+        addSingleInput (table, row + 2, iwc, ssnKey, 12);
         addHeader (table, row + 3, false, CIVIL_STATUS_KEY,
                    CIVIL_STATUS_DEFAULT);
         final String civilStatusKey
@@ -346,7 +352,8 @@ public class CitizenAccountApplication extends CommuneBlock {
     }
 
     private void addSimpleInputs (final Table table, final IWContext iwc) {
-        addSsnInput (table, 1, iwc);
+        addHeader (table, 1, _isSsnError, SSN_KEY, SSN_DEFAULT);
+        addSingleInput (table, 2, iwc, SSN_KEY, 12);
         addHeader (table, 3, _isEmailError, EMAIL_KEY, EMAIL_DEFAULT);
         addSingleInput (table, 4, iwc, EMAIL_KEY, 40);
         addHeader (table, 5, _isPhoneHomeError, PHONE_HOME_KEY,
@@ -429,7 +436,6 @@ public class CitizenAccountApplication extends CommuneBlock {
         table.add (text, 1, row);
     }
 
-
     private void addSubmitButton (final Table table, final int row,
                                   final IWContext iwc, final String submitId,
                                   final String defaultText) {
@@ -441,42 +447,41 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add (submitButton, 1, row);
     }
 
-    private void addSsnInput (final Table table, final int row,
-                              final IWContext iwc) {
-        addSsnInput (table, row, iwc, "");
-    }
-
-    private void addSsnInput (final Table table, final int row,
-                              final IWContext iwc, final String paramPostfix) {
-        final String subject = localize (SSN_KEY, SSN_DEFAULT);
-        table.add (getSmallText (subject), 1, row);
-        final Calendar rightNow = Calendar.getInstance();
-        final int currentYear = rightNow.get (Calendar.YEAR);
-        addDropdownInput (table, row + 1, iwc, BIRTH_YEAR_KEY + paramPostfix,
-                          currentYear - 110, currentYear - 18);
-        table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, BIRTH_MONTH_KEY + paramPostfix,
-                          12, 1);
-        table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, BIRTH_DAY_KEY + paramPostfix,
-                          31, 1);
-        table.add (new Text (" - "), 1, row + 1);
-        addSingleInput (table, row + 1, iwc, PID_KEY + paramPostfix, 4);
-    }
-
     private static String getSsn (final IWContext iwc) {
         return getSsn (iwc, "");
     }
 
     private static String getSsn (final IWContext iwc,
                                   final String paramPostfix) {
-        final String year = iwc.getParameter (BIRTH_YEAR_KEY + paramPostfix);
-        final String month = iwc.getParameter (BIRTH_MONTH_KEY + paramPostfix);
-        final String day = iwc.getParameter (BIRTH_DAY_KEY + paramPostfix);
-        final String pid = iwc.getParameter (PID_KEY + paramPostfix);
-        final String ssn = year + (month.length () > 1 ? month : "0" + month)
-                + (day.length () > 1 ? day : "0" + day) + pid;
-        return ssn;
+        final String rawInput = iwc.getParameter (SSN_KEY + paramPostfix);
+        final StringBuffer digitOnlyInput = new StringBuffer ();
+        for (int i = 0; i < rawInput.length (); i++) {
+            if (Character.isDigit (rawInput.charAt (i))) {
+                digitOnlyInput.append (rawInput.charAt (i));
+            }
+        }
+        if (digitOnlyInput.length () == 10) {
+            final Calendar rightNow = Calendar.getInstance();
+            final int currentYear = rightNow.get (Calendar.YEAR);
+            final int inputYear = new Integer
+                    (digitOnlyInput.substring (0, 2)).intValue ();
+            final int century = inputYear + 2000 > currentYear ? 19 : 20;
+            digitOnlyInput.insert (0, century);
+        }
+        if (digitOnlyInput.length () != 12) {
+            return null;
+        }
+        final int year = new Integer
+                (digitOnlyInput.substring (0, 4)).intValue ();
+        final int month = new Integer
+                (digitOnlyInput.substring (4, 6)).intValue ();
+        final int day = new Integer
+                (digitOnlyInput.substring (6, 8)).intValue ();
+        if (year < 1880 || year > currentYear || month < 1 || month > 12
+            || day < 1 || day > 31) {
+            return null;
+        }
+        return digitOnlyInput.toString ();
     }
 
     private String getCustodianKey (final String key, final int custodianId) {
