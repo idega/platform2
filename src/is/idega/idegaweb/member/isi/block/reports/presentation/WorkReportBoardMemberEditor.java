@@ -36,6 +36,7 @@ import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
+import com.idega.core.data.PostalCode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -78,15 +79,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private static final List STATUS_OPTIONS;
 
-  private static final String STATUS = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.STATUS";
-  private static final String NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.NAME";
-  private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.PERSONAL_ID";
-  private static final String STREET_NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.STREET_NAME";
-  private static final String POSTAL_CODE_ID = "com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE";
-  private static final String HOME_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.HOME_PHONE";
-  private static final String WORK_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.WORK_PHONE";
-  private static final String FAX = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.FAX";
-  private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.EMAIL";
+  private static final String STATUS = WorkReportBoardMember.class.getName()+".STATUS";
+  private static final String NAME = WorkReportBoardMember.class.getName()+".NAME";
+  private static final String PERSONAL_ID = WorkReportBoardMember.class.getName()+".PERSONAL_ID";
+  private static final String STREET_NAME = WorkReportBoardMember.class.getName()+".STREET_NAME";
+  private static final String POSTAL_CODE_ID = PostalCode.class.getName()+".POSTAL_CODE_ID|POSTAL_CODE";
+  private static final String HOME_PHONE = WorkReportBoardMember.class.getName()+".HOME_PHONE";
+  private static final String WORK_PHONE = WorkReportBoardMember.class.getName()+".WORK_PHONE";
+  private static final String FAX = WorkReportBoardMember.class.getName()+".FAX";
+  private static final String EMAIL = WorkReportBoardMember.class.getName()+".EMAIL";
   
   // add these columns to this list that should be parsed
   private static List FIELD_LIST;

@@ -31,6 +31,7 @@ import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverte
 import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
+import com.idega.core.data.PostalCode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -68,14 +69,14 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
 
   private static final String LEAGUE = "league";
 
-  private static final String HOME_PAGE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.HOME_PAGE";
-  private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.PERSONAL_ID";
-  private static final String STREET_NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.STREET_NAME";
-  private static final String POSTAL_CODE_ID = "com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE";
-  private static final String FIRST_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.FIRST_PHONE";
-  private static final String SECOND_PHONE = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.SECOND_PHONE";
-  private static final String FAX = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.FAX";
-  private static final String EMAIL = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.EMAIL";
+  private static final String HOME_PAGE = WorkReportDivisionBoard.class.getName()+".HOME_PAGE";
+  private static final String PERSONAL_ID = WorkReportDivisionBoard.class.getName()+".PERSONAL_ID";
+  private static final String STREET_NAME = WorkReportDivisionBoard.class.getName()+".STREET_NAME";
+  private static final String POSTAL_CODE_ID = PostalCode.class.getName()+".POSTAL_CODE_ID|POSTAL_CODE";
+  private static final String FIRST_PHONE = WorkReportDivisionBoard.class.getName()+".FIRST_PHONE";
+  private static final String SECOND_PHONE = WorkReportDivisionBoard.class.getName()+".SECOND_PHONE";
+  private static final String FAX = WorkReportDivisionBoard.class.getName()+".FAX";
+  private static final String EMAIL = WorkReportDivisionBoard.class.getName()+".EMAIL";
   
   private static List FIELD_LIST;
   

@@ -36,6 +36,7 @@ import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverte
 import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
+import com.idega.core.data.PostalCode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -73,10 +74,10 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private static final String CHECK_BOX = "checkBox";
 
-  private static final String NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.NAME";
-  private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.PERSONAL_ID";
-  private static final String STREET_NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.STREET_NAME";
-  private static final String POSTAL_CODE_ID = "com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE";
+  private static final String NAME = WorkReportMember.class.getName()+".NAME";
+  private static final String PERSONAL_ID = WorkReportMember.class.getName()+".PERSONAL_ID";
+  private static final String STREET_NAME = WorkReportMember.class.getName()+".STREET_NAME";
+  private static final String POSTAL_CODE_ID = PostalCode.class.getName()+".POSTAL_CODE_ID|POSTAL_CODE";
   
   private static final String SSN = "ssn";
   
