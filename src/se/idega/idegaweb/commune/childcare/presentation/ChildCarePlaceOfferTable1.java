@@ -169,6 +169,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		int providerId = app.getProviderId();
 		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
+		boolean isAfterSchoolApplication = _page.childCarebusiness.isAfterSchoolApplication(app);
 
 		School provider = app.getProvider();
 		String name = app.getChoiceNumber() + ": " + provider.getName() + _page.getDebugInfo(app);
@@ -247,7 +248,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		}
 
 		//if (!disableReqBtn && !isCancelled) {
-		if (!isCancelled) {
+		if (!isCancelled && !isAfterSchoolApplication) {
 			Link reqBtn = new Link(_page.getQuestionIcon(_page.localize(REQUEST_INFO)));
 			reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
 			reqBtn.addParameter(CCConstants.APPID, app.getNodeID());
@@ -256,7 +257,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(reqBtn, column++, row);
 		}
 
-		if (!isCancelled) {
+		if (!isCancelled && !isAfterSchoolApplication) {
 			Link popup = new Link(_page.getEditIcon(_page.localize(EDIT_TOOLTIP)));
 			popup.setWindowToOpen(ChildCareWindow.class);
 			popup.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_VIEW_PROVIDER_QUEUE));
@@ -264,9 +265,10 @@ class ChildCarePlaceOfferTable1 extends Table {
 			popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
 			popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
 			popup.addParameter(CCConstants.USER_ID, "" + ownerId);
-
 			add(popup, column++, row);
-
+		}
+		
+		if (!isCancelled) {
 			Link delete = new Link(_page.getDeleteIcon(_page.localize(DELETE_TOOLTIP)));
 			delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
 			delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);

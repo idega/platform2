@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.53 2003/10/03 01:53:10 tryggvil Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.54 2003/12/01 16:26:05 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -84,16 +84,31 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.setWidth(getWidth());
 
 		Collection applications = findApplications(iwc);
-
+		ChildCareApplication application = null;
+		
 		switch (parseAction(iwc)) {
 			case CCConstants.ACTION_SUBMIT_1 :
-				handleAcceptStatus(iwc, getAcceptedStatus(iwc));
+				application = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
-				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
-					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+				boolean forwardToEndPage = false;
+				if (application != null) {
+					forwardToEndPage = getChildCareBusiness(iwc).isAfterSchoolApplication(application);
+				}
+				
+				if (forwardToEndPage) {
+					if (getEndPage() != null) {
+						iwc.forwardToIBPage(getParentPage(), getEndPage());
+					}
+					else
+						iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
 				}
 				else {
-					form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
+					if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
+						form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+					}
+					else {
+						form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
+					}
 				}
 				break;
 
@@ -113,7 +128,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				break;
 
 			case CCConstants.ACTION_REQUEST_INFO :
-				ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
+				application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
 				getChildCareBusiness(iwc).sendMessageToProvider(
 					application,
 					localize(REQUEST_SUBJECT),
@@ -219,9 +234,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @param l List of AcceptedStatus objects.
 	 * @throws RemoteException
 	 */
-	private void handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
+	private ChildCareApplication handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
 		Iterator i = l.iterator();
 		int acceptedChoiceNumber = 10;
+		int acceptedApplicationID = -1;
 
 		while (i.hasNext()) {
 			AcceptedStatus status = (AcceptedStatus) i.next();
@@ -235,7 +251,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						"Svar på erbjudande om plats");				
 
 				if (status.equals(CCConstants.YES)) {
-					getChildCareBusiness(iwc).parentsAgree(Integer.valueOf(status._appid).intValue(), application.getOwner(),
+					acceptedApplicationID = Integer.valueOf(status._appid).intValue();
+					getChildCareBusiness(iwc).parentsAgree(acceptedApplicationID, application.getOwner(),
 					subject,
 					localize("ccot_accept_msg1", "Vårdnadshavare för")
 						+ child.getName()
@@ -293,9 +310,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Iterator allaps = applications.iterator();
 		//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
 		int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
+		ChildCareApplication application = null;
 
 		while (allaps.hasNext()) {
 			ChildCareApplication app = (ChildCareApplication) allaps.next();
+			if (((Integer)app.getPrimaryKey()).intValue() == acceptedApplicationID)
+				application = app;
 
 			if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
 			|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
@@ -305,6 +325,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				addDeletedAppToSession(iwc, app);
 			}
 		}
+		
+		return application;
 	}
 
 	/**
@@ -880,4 +902,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return (getDebug()) ? " (Id:" + app.getNodeID() + " - " + app.getStatus() + " - " + app.getApplicationStatus() + ")" : "";
 	}
 
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.presentation.CommuneBlock#setResponsePage(com.idega.core.builder.data.ICPage)
+	 */
+	public void setResponsePage(ICPage page) {
+		setEndPage(page);
+	}
 }
