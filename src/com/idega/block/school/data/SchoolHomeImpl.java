@@ -34,6 +34,13 @@ public java.util.Collection findAllByAreaAndTypes(int p0,java.util.Collection p1
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllByAreaTypeCommune(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllByAreaTypeCommune(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllByAreaTypeManagement(int p0,int p1,java.lang.String p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolBMPBean)entity).ejbFindAllByAreaTypeManagement(p0,p1,p2);
