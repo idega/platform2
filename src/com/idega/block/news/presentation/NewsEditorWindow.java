@@ -91,7 +91,7 @@ private IWResourceBundle iwrb;
 
   public NewsEditorWindow(){
     setWidth(570);
-    setHeight(550);
+    setHeight(570);
     setResizable(true);
     setScrollbar(true);
     setUnMerged();
@@ -151,7 +151,10 @@ private IWResourceBundle iwrb;
       // Text initialization
       String sAttribute = null;
       String sLocTextId = iwc.getParameter(prmLocalizedTextId);
+      String sObjInstId = iwc.getParameter(prmObjInstId);
       sAttribute = iwc.getParameter(prmAttribute);
+      if(sObjInstId!=null)
+        iObjInsId = Integer.parseInt(sObjInstId);
 
       // News Id Request :
       if(iwc.getParameter(prmNwNewsId) != null){
@@ -164,9 +167,8 @@ private IWResourceBundle iwrb;
         doView = false;
       }
       // Object Instance Request :
-      else if(iwc.isParameterSet(prmObjInstId)){
-        iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
-        doView = false;
+      else if(sObjInstId!=null){
+        //doView = false;
         if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
           iCategoryId = CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjInsId );
       }
@@ -180,9 +182,11 @@ private IWResourceBundle iwrb;
       else if(saveInfo == SAVECATEGORY)
         processCategoryForm(iwc,sCategoryId,iObjInsId);
 
+      /* old stuff
       if(iwc.isParameterSet(prmObjInstId)){
         addCategoryFields(CategoryFinder.getInstance().getCategory(iCategoryId),iObjInsId  );
       }
+      */
       //doView = false;
 
       if(doView)
@@ -499,6 +503,11 @@ private IWResourceBundle iwrb;
     TextArea taBody = new TextArea(prmBody,65,18);
     TextArea taTeaser = new TextArea(prmTeaser,65,2);
 
+    List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(iObjInsId);
+    DropdownMenu catDrop = new DropdownMenu(cats,prmCategory);
+    //catDrop.addMenuElementFirst("-1",sCategory);
+
+
     TextInput tiAuthor = new TextInput(prmAuthor);
     tiAuthor.setLength(22);
     tiAuthor.setMaxlength(255);
@@ -554,8 +563,9 @@ private IWResourceBundle iwrb;
           publishTo.setTimestamp(content.getPublishTo());
         }
       }
+      catDrop.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
       addHiddenInput(new HiddenInput(prmNwNewsId,Integer.toString(nwNews.getID())));
-      addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(nwNews.getNewsCategoryId())));
+      //addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(nwNews.getNewsCategoryId())));
     }
     else{
       if( eUser !=null){
@@ -567,7 +577,7 @@ private IWResourceBundle iwrb;
       publishTo.setTimestamp(today.getTimestamp());
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(iCategoryId)));
     }
-
+      addHiddenInput(new HiddenInput(prmObjInstId ,String.valueOf(iObjInsId)));
 
       SubmitButton addButton = new SubmitButton(core.getImage("/shared/create.gif","Add to news"),prmSaveFile);
       //SubmitButton leftButton = new SubmitButton(core.getImage("/shared/frew.gif","Insert image"),prmSaveFile);
@@ -631,6 +641,7 @@ private IWResourceBundle iwrb;
     addLeft(sPublisFrom, publishFrom,true);
     addLeft(sPublisTo,publishTo,true);
 
+    addRight(sCategory,catDrop,true);
     addRight(sAuthor,tiAuthor,true);
     addRight(sSource,tiSource,true);
     //addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
