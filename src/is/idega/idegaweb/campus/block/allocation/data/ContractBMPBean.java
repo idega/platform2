@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.18 2004/07/30 14:04:16 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.19 2004/09/01 14:38:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -478,10 +478,11 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 	}
 
 	public Collection ejbFindByStatusAndValidBeforeDate(String status, Date date)throws FinderException{
-		return idoFindPKsByQuery( super.idoQueryGetSelect().appendWhereEquals(getStatusDateColumnName(),status).appendAnd().append(getValidToColumnName()).appendLessThanOrEqualsSign().append(date));
+	    IDOQuery query =  super.idoQueryGetSelect().appendWhereEqualsWithSingleQuotes(getStatusColumnName(),status).appendAnd().append(getValidToColumnName()).appendLessThanOrEqualsSign().append(date);
+		return idoFindPKsByQuery(query);
 	}
 	public Collection ejbFindByStatusAndChangeDate(String status, Date date)throws FinderException{
-		return idoFindPKsByQuery( super.idoQueryGetSelect().appendWhereEquals(getStatusDateColumnName(),status).appendAnd().append(getStatusDateColumnName()).appendLessThanOrEqualsSign().append(date));
+		return idoFindPKsByQuery( super.idoQueryGetSelect().appendWhereEqualsWithSingleQuotes(getStatusColumnName(),status).appendAnd().append(getStatusDateColumnName()).appendLessThanOrEqualsSign().append(date));
 	}
 	private IDOQuery getQueryByStatusAndOverlapPeriod(String[] status,Date from,Date to){
 		IDOQuery query = super.idoQueryGetSelect().appendWhere();
