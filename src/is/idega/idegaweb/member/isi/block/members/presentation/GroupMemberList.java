@@ -78,6 +78,8 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
+		table.setColumnWidth(1, "80");
+		table.setColumnWidth(2, "80");
 		if(showGroup) {
 			table.setColumnWidth(3, "100");
 			table.setColumnWidth(4, "50");
