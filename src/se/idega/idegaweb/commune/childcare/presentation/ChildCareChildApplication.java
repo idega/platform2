@@ -319,15 +319,18 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				
 				if (fromDate.isEarlierThan(stamp)) {
+					if (!isAdmin)
 					date.setEarliestPossibleDate(application.getFromDate(), localize("child_care.no_date_back_prev", "You cannot set a date before the previous start date"));	
 				}
 				else {
+					if (!isAdmin)
 					date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));	
 				}
 				date.setDate(application.getFromDate());
 				
 			}
 			else {
+				if (!isAdmin)
 				date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));
 			}
 		//	else Nacka doesn't want the dates to be set by default
