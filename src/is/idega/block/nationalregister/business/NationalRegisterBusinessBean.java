@@ -20,9 +20,9 @@ import com.idega.data.IDOLookup;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.sun.rsasign.u;
 
 public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness {
 	
@@ -84,7 +84,8 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		String addressName,
 		String dateOfDeletion,
 		String newSsnOrName,
-		String dateOfBirth	) {
+		String dateOfBirth	, 
+		Group citizenGroup) {
 
 		
 		
@@ -173,6 +174,13 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			
 			
 			updateUserAddress(user, userBiz, address, po);
+			
+			if (citizenGroup != null) {
+				citizenGroup.addGroup(user);
+				user.setPrimaryGroup(citizenGroup);
+				user.store();
+			}
+
 //			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 //			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 		}

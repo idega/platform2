@@ -85,7 +85,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String PROPERTY_NAME_GROUP_ID_FIX = "NAT_REG_GROUP_ID_FIX";
 	private boolean relationOnly = false;
 	private boolean postalCodeFix = false;
-	private Group groupFix = null;
+	private Group citizenGroup = null;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -112,8 +112,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
 			if (sGroupID != null) {
 				try {
-					groupFix = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
-				} catch (Exception e) {}
+					citizenGroup = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
+				} catch (Exception e) {
+					System.out.println("NationalRegisterHandler citizenGroup is NULL ("+e.getMessage()+")");
+				}
+			} else {
+				System.out.println("NationalRegisterHandler citizenGroup is NULL");
 			}
 			
 			int count = 0;
@@ -366,17 +370,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 
-		if (postalCodeFix || groupFix != null || relationOnly) {
+		if (postalCodeFix || relationOnly) {
 			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			try {
 				User user = uBiz.getUser(ssn);
 				if (postalCodeFix) {
 					natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
-				}
-				if (groupFix != null) {
-					groupFix.addGroup(user);
-					user.setPrimaryGroup(groupFix);
-					user.store();
 				}
 				if (relationOnly && familyId != null && !"".equals(familyId.trim())) {
 					_familyRelations.put(familyId, ssn);
@@ -391,7 +390,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		    floor,sex,maritialStatus,empty,prohibitMarking,
 		    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
 				addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
 		
 		if (success) {
 			_familyRelations.put(familyId, ssn);
