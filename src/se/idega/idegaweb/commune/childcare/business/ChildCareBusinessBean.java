@@ -241,11 +241,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						stamp.addSeconds((1 - ((i + 1) * 1)));
 						appl.setCreated(stamp.getTimestamp());
 						appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
+						appl.setApplicationStatus(getStatusSentIn());
 						
-						if (hasPriority != null && hasPriority[i])
-							appl.setApplicationStatus(getStatusPriority());
-						else
-							appl.setApplicationStatus(getStatusSentIn());
+						if (hasPriority != null)
+							appl.setHasPriority(hasPriority[i]);
 						
 						if (checkId != -1)
 							appl.setCheckId(checkId);

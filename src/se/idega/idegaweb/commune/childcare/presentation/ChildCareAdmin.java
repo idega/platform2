@@ -11,6 +11,7 @@ import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -97,6 +98,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		int queueOrder = -1;
 		int netOrder = -1;
 		boolean showComment = false;
+		boolean showPriority = false;
 			
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
@@ -122,7 +124,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
 				queueOrder = getBusiness().getNumberInQueue(application);
-				if (application.getApplicationStatus() == getBusiness().getStatusSentIn() || application.getApplicationStatus() == getBusiness().getStatusPriority())
+				if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
 					netOrder = getBusiness().getNumberInQueueByStatus(application);
 				else
 					netOrder = -1;
@@ -159,8 +161,16 @@ public class ChildCareAdmin extends ChildCareBlock {
 	
 				if (hasOtherPlacing) {
 					showComment = true;
-					applicationTable.add(getSmallErrorText("* "), column, row);
+					applicationTable.add(getSmallErrorText("*"), column, row);
 				}
+				if (application.getHasPriority()) {
+					showPriority = true;
+					Text text = getSmallText("*");
+					text.setFontColor("#00FF00");
+					applicationTable.add(text, column, row);
+				}
+				if (showComment || showPriority)
+					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
 					
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
@@ -186,7 +196,15 @@ public class ChildCareAdmin extends ChildCareBlock {
 			applicationTable.setHeight(2, row++);
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
 			applicationTable.add(getSmallErrorText("* "), 1, row);
-			applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row);
+			applicationTable.add(getSmallText(localize("child_care.placed_at_other_provider","Placed at other provider")), 1, row++);
+		}
+		if (showComment) {
+			applicationTable.setHeight(2, row++);
+			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+			Text text = getSmallText("*");
+			text.setFontColor("#00FF00");
+			applicationTable.add(text, 1, row);
+			applicationTable.add(getSmallText(localize("child_care.has_priority","Child has priority")), 1, row);
 		}
 		
 		return applicationTable;
