@@ -43,7 +43,14 @@ public class CheckBusinessBean extends IBOServiceBean implements CheckBusiness{
       int childId,
       int method,
       int amount,
-      int checkFee
+      int checkFee,
+      int managerId,
+      String notes,
+      boolean checkRule1,
+      boolean checkRule2,
+      boolean checkRule3,
+      boolean checkRule4,
+      boolean checkRule5
       )throws Exception{
     CheckHome home = (CheckHome)com.idega.data.IDOLookup.getHome(Check.class);
     Check check = home.create();
@@ -57,7 +64,14 @@ public class CheckBusinessBean extends IBOServiceBean implements CheckBusiness{
     check.setMethod(method);
     check.setAmount(amount);
     check.setCheckFee(checkFee);
-//    check.setStatus();
+    check.setManagerId(managerId);
+    check.setNotes(notes);
+    check.setRule1(checkRule1);
+    check.setRule2(checkRule2);
+    check.setRule3(checkRule3);
+    check.setRule4(checkRule4);
+    check.setRule5(checkRule5);
+    check.setStatus("NYTT");
     check.store();
   }
 }

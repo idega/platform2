@@ -25,6 +25,9 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
   private static final String CASE_CODE_KEY="MBANCHK";
   private static final String CASE_CODE_DESCRIPTION="Request for child care check";
 
+  private static final String[] CASE_STATUS_KEYS = {"NYTT","UBEH","OMPR","BVJD"};
+  private static final String[] CASE_STATUS_DESCRIPTIONS = {"New case","Case open","Retrial","Approved"};
+
   private static final String COLUMN_CHILD_CARE_TYPE="CHILD_CARE_TYPE";
   private static final String COLUMN_WORK_SITUATION_1="WORK_SITUATION_1";
   private static final String COLUMN_WORK_SITUATION_2="WORK_SITUATION_2";
@@ -36,6 +39,12 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
   private static final String COLUMN_AMOUNT="AMOUNT";
   private static final String COLUMN_CHECK_FEE="CHECK_FEE";
   private static final String COLUMN_MANAGER_ID="MANAGER_ID";
+  private static final String COLUMN_NOTES="NOTES";
+  private static final String COLUMN_RULE_1="RULE_1";
+  private static final String COLUMN_RULE_2="RULE_2";
+  private static final String COLUMN_RULE_3="RULE_3";
+  private static final String COLUMN_RULE_4="RULE_4";
+  private static final String COLUMN_RULE_5="RULE_5";
 
   public CheckBMPBean() {
   }
@@ -61,6 +70,12 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
     this.addAttribute(COLUMN_AMOUNT,"Total check amount",Integer.class);
     this.addAttribute(COLUMN_CHECK_FEE,"The fee citizen pays",Integer.class);
     this.addAttribute(COLUMN_MANAGER_ID,"The manager for the check request",Integer.class);
+    this.addAttribute(COLUMN_NOTES,"Notes from the manager for the check request",String.class,1000);
+    this.addAttribute(COLUMN_RULE_1,"Control rule for nationally registered",Boolean.class);
+    this.addAttribute(COLUMN_RULE_2,"Control rule for child over one year",Boolean.class);
+    this.addAttribute(COLUMN_RULE_3,"Control rule for work situation approved",Boolean.class);
+    this.addAttribute(COLUMN_RULE_4,"Control rule for dept",Boolean.class);
+    this.addAttribute(COLUMN_RULE_5,"Control rule for special need",Boolean.class);
 //    this.addManyToManyRelationShip(SampleEntity.class);
   }
 
@@ -70,6 +85,14 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
 
   public String getCaseCodeDescription(){
     return CASE_CODE_DESCRIPTION;
+  }
+
+  public String[] getCaseStatusKeys(){
+    return CASE_STATUS_KEYS;
+  }
+
+  public String[] getCaseStatusDescriptions(){
+    return CASE_STATUS_DESCRIPTIONS;
   }
 
   /*
@@ -179,6 +202,54 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
 
   public int getManagerId()throws java.rmi.RemoteException{
     return this.getIntColumnValue(COLUMN_MANAGER_ID);
+  }
+
+  public void setNotes(String notes)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_NOTES,notes);
+  }
+
+  public String getNotes()throws java.rmi.RemoteException{
+    return this.getStringColumnValue(COLUMN_NOTES);
+  }
+
+  public void setRule1(boolean flag)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_RULE_1,new Boolean(flag));
+  }
+
+  public boolean getRule1()throws java.rmi.RemoteException{
+    return this.getBooleanColumnValue(COLUMN_RULE_1);
+  }
+
+  public void setRule2(boolean flag)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_RULE_2,new Boolean(flag));
+  }
+
+  public boolean getRule2()throws java.rmi.RemoteException{
+    return this.getBooleanColumnValue(COLUMN_RULE_2);
+  }
+
+  public void setRule3(boolean flag)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_RULE_3,new Boolean(flag));
+  }
+
+  public boolean getRule3()throws java.rmi.RemoteException{
+    return this.getBooleanColumnValue(COLUMN_RULE_3);
+  }
+
+  public void setRule4(boolean flag)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_RULE_4,new Boolean(flag));
+  }
+
+  public boolean getRule4()throws java.rmi.RemoteException{
+    return this.getBooleanColumnValue(COLUMN_RULE_4);
+  }
+
+  public void setRule5(boolean flag)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_RULE_5,new Boolean(flag));
+  }
+
+  public boolean getRule5()throws java.rmi.RemoteException{
+    return this.getBooleanColumnValue(COLUMN_RULE_5);
   }
 
   public Collection ejbFindChecks()throws FinderException{

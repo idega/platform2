@@ -27,11 +27,13 @@ public class CheckRequestAdmin extends CommuneBlock {
   private final static int ACTION_VIEW_CHECK = 2;
   private final static int ACTION_GRANT_CHECK = 3;
   private final static int ACTION_RETRIAL_CHECK = 4;
+  private final static int ACTION_SAVE_CHECK = 5;
 
   private final static String PARAM_VIEW_CHECK_LIST = "chk_v_c_l";
   private final static String PARAM_VIEW_CHECK = "chk_view_check";
   private final static String PARAM_GRANT_CHECK = "chk_grant_check";
   private final static String PARAM_RETRIAL_CHECK = "chk_retrial_check";
+  private final static String PARAM_SAVE_CHECK = "chk_save_check";
   private final static String PARAM_CHECK_ID = "chk_check_id";
   private final static String PARAM_RULE = "chk_rule";
   private final static String PARAM_NOTES = "chk_notes";
@@ -67,6 +69,9 @@ public class CheckRequestAdmin extends CommuneBlock {
         case ACTION_RETRIAL_CHECK:
           retrialCheck(iwc);
           break;
+        case ACTION_SAVE_CHECK:
+          saveCheck(iwc);
+          break;
         default:
           break;
       }
@@ -84,6 +89,14 @@ public class CheckRequestAdmin extends CommuneBlock {
 
     if(iwc.isParameterSet(PARAM_GRANT_CHECK)){
       action = ACTION_GRANT_CHECK;
+    }
+
+    if(iwc.isParameterSet(PARAM_RETRIAL_CHECK)){
+      action = ACTION_RETRIAL_CHECK;
+    }
+
+    if(iwc.isParameterSet(PARAM_SAVE_CHECK)){
+      action = ACTION_SAVE_CHECK;
     }
 
     return action;
@@ -168,10 +181,26 @@ public class CheckRequestAdmin extends CommuneBlock {
     Table ruleTable = new Table(2,5);
     ruleTable.setCellpadding(4);
     ruleTable.setCellspacing(0);
-    CheckBox rule1 = new CheckBox(PARAM_RULE,"1");
+    boolean checkRule1 = false;
+    boolean checkRule2 = false;
+    boolean checkRule3 = false;
+    boolean checkRule4 = false;
+    boolean checkRule5 = false;
     if(isError){
-      rule1.setChecked(!paramErrorRule1);
+      checkRule1 = !paramErrorRule1;
+      checkRule2 = !paramErrorRule2;
+      checkRule3 = !paramErrorRule3;
+      checkRule4 = !paramErrorRule4;
+      checkRule5 = !paramErrorRule5;
+    }else{
+      checkRule1 = check.getRule1();
+      checkRule2 = check.getRule2();
+      checkRule3 = check.getRule3();
+      checkRule4 = check.getRule4();
+      checkRule5 = check.getRule5();
     }
+    CheckBox rule1 = new CheckBox(PARAM_RULE,"1");
+    rule1.setChecked(checkRule1);
     ruleTable.add(rule1,1,1);
     String ruleText1 = localize("check.nationally_registered","Nationally registered");
     if(paramErrorRule1){
@@ -180,9 +209,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       ruleTable.add(getText(ruleText1),2,1);
     }
     CheckBox rule2 = new CheckBox(PARAM_RULE,"2");
-    if(isError){
-      rule2.setChecked(!paramErrorRule2);
-    }
+    rule2.setChecked(checkRule2);
     ruleTable.add(rule2,1,2);
     String ruleText2 = localize("check.child_one_year","Child one year of age");
     if(paramErrorRule2){
@@ -191,9 +218,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       ruleTable.add(getText(ruleText2),2,2);
     }
     CheckBox rule3 = new CheckBox(PARAM_RULE,"3");
-    if(isError){
-      rule3.setChecked(!paramErrorRule3);
-    }
+    rule3.setChecked(checkRule3);
     ruleTable.add(rule3,1,3);
     String ruleText3 = localize("check.work_situation_approved","Work situation approved");
     if(paramErrorRule3){
@@ -202,9 +227,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       ruleTable.add(getText(ruleText3),2,3);
     }
     CheckBox rule4 = new CheckBox(PARAM_RULE,"4");
-    if(isError){
-      rule4.setChecked(!paramErrorRule4);
-    }
+    rule4.setChecked(checkRule4);
     ruleTable.add(rule4,1,4);
     String ruleText4 = localize("check.dept_control","Skuldkontroll");
     if(paramErrorRule4){
@@ -213,9 +236,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       ruleTable.add(getText(ruleText4),2,4);
     }
     CheckBox rule5 = new CheckBox(PARAM_RULE,"5");
-    if(isError){
-      rule5.setChecked(!paramErrorRule5);
-    }
+    rule5.setChecked(checkRule5);
     ruleTable.add(rule5,1,5);
     String ruleText5 = localize("check.need_for_special_support","Need for special support");
     if(paramErrorRule5){
@@ -225,16 +246,21 @@ public class CheckRequestAdmin extends CommuneBlock {
     }
     frame.add(ruleTable,1,1);
     frame.add(new Break(2),1,1);
-    Image image = getResourceBundle().getLocalizedImageButton("check._grant_check","Grant check");
+    Image image = getResourceBundle().getLocalizedImageButton("check.grant_check","Grant check");
     SubmitButton grantButton = new SubmitButton(image,PARAM_GRANT_CHECK);
     frame.add(grantButton,1,1);
     frame.add(new Text("&nbsp;&nbsp;&nbsp;"));
     image = getResourceBundle().getLocalizedImageButton("check.retrial","Retrial");
     SubmitButton retrialButton = new SubmitButton(image,PARAM_RETRIAL_CHECK);
     frame.add(retrialButton,1,1);
+    frame.add(new Text("&nbsp;&nbsp;&nbsp;"));
+    image = getResourceBundle().getLocalizedImageButton("check.save","Save");
+    SubmitButton saveButton = new SubmitButton(image,PARAM_SAVE_CHECK);
+    frame.add(saveButton,1,1);
     frame.add(getLocalizedSmallText("check.notes","Notes"),2,1);
     frame.add(new Break(2),2,1);
     TextArea notes = new TextArea(PARAM_NOTES);
+    notes.setValue(check.getNotes());
     notes.setHeight(8);
     notes.setWidth(50);
     frame.add(notes,2,1);
@@ -242,7 +268,9 @@ public class CheckRequestAdmin extends CommuneBlock {
     add(f);
   }
 
-  private void grantCheck(IWContext iwc)throws Exception{
+  private Check prepareCheck(IWContext iwc)throws Exception{
+    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
+    Check check = getCheckBusiness(iwc).getCheck(checkId);
     String[] rules = iwc.getParameterValues(PARAM_RULE);
     paramErrorRule1 = true;
     paramErrorRule2 = true;
@@ -252,7 +280,7 @@ public class CheckRequestAdmin extends CommuneBlock {
     if(rules==null){
       isError = true;
     }else{
-      isError = !(rules.length==5);
+      boolean specialNeed = false;
       for(int i=0; i<rules.length; i++){
         int rule = Integer.parseInt(rules[i]);
         switch (rule) {
@@ -270,34 +298,56 @@ public class CheckRequestAdmin extends CommuneBlock {
             break;
           case 5:
             paramErrorRule5 = false;
+            specialNeed = true;
             break;
         }
       }
+      isError = !((rules.length==4)&&(!specialNeed)||specialNeed);
     }
+    check.setNotes(iwc.getParameter(PARAM_NOTES));
+    check.setRule1(!paramErrorRule1);
+    check.setRule2(!paramErrorRule2);
+    check.setRule3(!paramErrorRule3);
+    check.setRule4(!paramErrorRule4);
+    check.setRule5(!paramErrorRule5);
+
+//    check.setManager(handlŠggare)
+    return check;
+  }
+
+  private void grantCheck(IWContext iwc)throws Exception{
+    Check check = prepareCheck(iwc);
     if(isError){
+      check.store();
       errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
       viewCheck(iwc);
       return;
     }
-    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-    Check check = getCheckBusiness(iwc).getCheck(checkId);
-//    check.setStatus(granted);
-//    check.setManager(handlŠggare)
-//    check.store();
+    check.setStatus("BJVD");
+    check.store();
 //Create message for archive
 //Create post message to citizen
 //Create message to citizen
 
-    add(getText("Check granted:"+rules.length+","+rules[0]));
+    add(getText("Check granted:"));
+    viewCheckList(iwc);
   }
 
   private void retrialCheck(IWContext iwc)throws Exception{
 //Create message to user
     int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
     Check check = getCheckBusiness(iwc).getCheck(checkId);
-//    check.setStatus(Ompršvning);
+    check.setStatus("OMPR");
+    check.store();
 //    check.setManager(handlŠggare)
 //    check.store();
+    viewCheckList(iwc);
+  }
+
+  private void saveCheck(IWContext iwc)throws Exception{
+    Check check = prepareCheck(iwc);
+    check.setStatus("UBEH");
+    check.store();
     viewCheckList(iwc);
   }
 
