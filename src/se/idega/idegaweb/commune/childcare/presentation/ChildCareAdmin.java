@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
@@ -89,7 +87,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			try {
 				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
 			}
-			catch (FinderException fe) {
+			catch (Exception fe) {
 				//Nothing found and everyone is happy about that :D
 			}
 		}
