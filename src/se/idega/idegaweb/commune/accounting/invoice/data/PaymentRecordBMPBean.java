@@ -246,6 +246,28 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 
 	/**
+	 * 
+	 * @param month
+	 * @return
+	 * @throws FinderException
+	 */
+	public int ejbHomeGetCountForMonthAndStatusLH(Date month) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.append("select count(*) from "+getEntityName());
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("(").appendEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.LOCKED);
+		sql.appendOrEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
+
+		return idoGetNumberOfRecords(sql);
+	}
+
+	/**
 	 * Gets the # of placements handled for the given category and period
 	 * @param schoolCategoryID
 	 * @param period

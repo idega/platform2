@@ -27,13 +27,6 @@ public java.util.Collection findByPaymentHeader(se.idega.idegaweb.commune.accoun
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByPaymentHeaders(java.util.Collection p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaders(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public PaymentRecord findByPaymentHeaderAndRuleSpecType(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndRuleSpecType(p0,p1);
@@ -41,10 +34,24 @@ public PaymentRecord findByPaymentHeaderAndRuleSpecType(se.idega.idegaweb.commun
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findByPaymentHeaders(java.util.Collection p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaders(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
  }
 
+
+public int getCountForMonthAndStatusLH(java.sql.Date p0)throws javax.ejb.FinderException,com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthAndStatusLH(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
