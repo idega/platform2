@@ -407,7 +407,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			while(regularInvoiceIter.hasNext()){
 				try{
 					regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-					custodian = (User)regularInvoiceEntry.getUser();
+					custodian = regularInvoiceEntry.getUser();
 					try{
 						invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
 					} catch (FinderException e) {
