@@ -155,7 +155,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 			}
 			query.append(")")
 			.append(" AND r.sch_school_id = ").append(school.getPrimaryKey())
-			.append(" AND r.study_path_id = s.study_path_id")
+			.append(" AND r." + getIDColumnName() + " = s." + getIDColumnName())
 			.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null")
 			.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
 			
@@ -168,9 +168,12 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 
 	public Collection ejbFindAllStudyPathsByMemberId(int id) throws FinderException {
 		String select = "select s.* from " + TABLE_NAME + 
-				" s,sch_study_path_sch_class_membe m where m.sch_class_member_id = " + id + 
-				" and m.sch_study_path_id = s.sch_study_path_id " +
-				" and (s." + COLUMN_IS_VALID + " is null " +				" or s." + COLUMN_IS_VALID + " = 'Y') order by s." + COLUMN_CODE;
+				" s,sch_study_path_sch_class_membe m" +
+                " where m.sch_class_member_id = " + id + 
+				" and m." + getIDColumnName() + " = s." + getIDColumnName() +
+                " and (s." + COLUMN_IS_VALID + " is null " +
+                " or s." + COLUMN_IS_VALID + " = 'Y')" +
+                " order by s." + COLUMN_CODE;
 		return super.idoFindPKsBySQL(select);
 	}
 
