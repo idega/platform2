@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.62 2001/12/18 17:35:29 aron Exp $
+ * $Id: NewsReader.java,v 1.63 2002/01/04 14:06:57 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -662,6 +662,15 @@ public class NewsReader extends Block implements IWBlock {
         if(dateAlign.toLowerCase().equals("right")){
           headlineCol = 1;
           dateCol = 3;
+        }
+
+        if ( alignWithHeadline ){
+        if(headlineImage !=null) {
+          headlineImage.setHorizontalSpacing(3);
+          T.add(headlineImage, dateCol,1);
+        }
+        if(headlineImageURL!=null)
+          T.add(iwb.getImage(headlineImageURL), dateCol,1);
         }
 
         T.add(newsInfo,dateCol,1);
