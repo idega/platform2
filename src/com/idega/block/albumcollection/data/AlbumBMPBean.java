@@ -34,7 +34,7 @@ public class AlbumBMPBean extends com.idega.data.GenericEntity implements com.id
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_NAME,"Nafn",true,true,String.class,255);
-    this.addAttribute(_COLUMNNAME_DESCRIPTION,"Um plötuna",true,true,String.class,1000);
+    this.addAttribute(_COLUMNNAME_DESCRIPTION,"Um plötuna",true,true,String.class,7000);
     this.addAttribute(_COLUMNNAME_NUMBER,"Númer",true,true,Integer.class);
     this.addAttribute(_COLUMNNAME_PUBLISHINGDAY,"Útgáfudagur",true,true,java.sql.Date.class);
     this.addAttribute(_COLUMNNAME_ALBUM_TYPE_ID,"Gerð",true,true,Integer.class,"one_to_many",AlbumType.class);

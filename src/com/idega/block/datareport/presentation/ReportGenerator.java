@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
+import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
@@ -27,6 +28,7 @@ import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -65,11 +67,13 @@ public class ReportGenerator extends Block {
 	
 	private Integer _queryPK=null;
 	private Vector _dynamicFields=new Vector();
+	private Collection _allFields = null;
 	private String _reportFilePath="";
 	private QueryHelper _queryParser = null;
 	private QueryResult _dataSource = null;
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
+	HashMap _parameterMap = new HashMap();
 	
 	private String _reportName = "Report";
 	
@@ -90,35 +94,54 @@ public class ReportGenerator extends Block {
 			Query query = (Query)((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
 			_queryParser = new QueryHelper(query);
 		}
+		
+		_allFields = _queryParser.getListOfFields();
+		if(_allFields != null){
+			System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields().size() = "+_allFields.size());
+		} else {
+			System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields() == null");
+		}
+		
 		Collection conditionsCollection = _queryParser.getListOfConditions();
 		if(conditionsCollection != null){
 			Iterator iter = conditionsCollection.iterator();
 			while (iter.hasNext()) {
 				QueryConditionPart element = (QueryConditionPart)iter.next();
 				if(element.isDynamic()){
-					
-					//element.getEntity();
-					//_dynamicFields.add(element.get)
+					_dynamicFields.add(element.getIDOEntityField());
 				}
 			}
 		}
+		
+		
+		
 		
 		//_dynamicFields
 	}
 	
 	private void generateLayout(IWContext iwc) throws IOException, JRException{
+		
 		DynamicReportDesign designTemplate = new DynamicReportDesign(_reportName);
 		
-		int fieldCount = _dynamicFields.size();
-		if(fieldCount > 0){
-			int columnWidth = 555/fieldCount;
+		if(_allFields != null && _allFields.size() > 0){
+			//System.out.println("ReportGenerator.");
+			int columnWidth = 555/_allFields.size();
 			
-			Iterator iter = _dynamicFields.iterator();
+			Iterator iter = _allFields.iterator();
 			while (iter.hasNext()) {
-				IDOEntityField element = (IDOEntityField)iter.next();
-				designTemplate.addField(element.getUniqueFieldName(),element.getDataTypeClass(),columnWidth);
+				try {
+					QueryFieldPart element = (QueryFieldPart)iter.next();
+					IDOEntityField field = element.getIDOEntityField();
+					String name = field.getUniqueFieldName();
+					_parameterMap.put(name,name);  //TMP
+					//TODO - Temporary datatype is set to String not field.getDataTypeClass()
+					designTemplate.addField(name,String.class,columnWidth);
+				} catch (IDOLookupException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
-			
 			
 		}
 		
@@ -139,7 +162,10 @@ public class ReportGenerator extends Block {
 	private void generateReport(IWContext iwc) throws RemoteException, JRException{
 		if(_dataSource != null && _design != null){
 			JasperReportBusiness business = (JasperReportBusiness)IBOLookup.getServiceInstance(iwc,JasperReportBusiness.class);
-			HashMap _parameterMap = new HashMap();
+			
+			
+			
+			
 			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,"Test Report");
 			JasperPrint print = business.getReport(_dataSource,_parameterMap,_design);
 			_reportFilePath = business.getExcelReport(print,_reportName);
@@ -166,7 +192,7 @@ public class ReportGenerator extends Block {
 				submForm.add(_fieldTable);
 				this.add(submForm);
 			} else {
-				
+				parseQuery();
 				generateDataSource(iwc);
 				generateLayout(iwc);
 				generateReport(iwc);
@@ -232,27 +258,27 @@ public class ReportGenerator extends Block {
 	
 	private PresentationObject getFieldInputObject(String key, String value, Class dataType) {
 			
-			if(dataType == Integer.class){
-				IntegerInput fieldInput = new IntegerInput(PRIFIX_PRM + key);
-				setStyle(fieldInput);
-				return fieldInput;
-			}else if(dataType == Time.class){
-				TimeInput fieldInput = new TimeInput(PRIFIX_PRM + key);
-				setStyle(fieldInput);
-				return fieldInput;
-			}else if(dataType == Date.class){
-				DateInput fieldInput = new DateInput(PRIFIX_PRM + key);
-				setStyle(fieldInput);
-				return fieldInput;
-			}else if(dataType == Timestamp.class){
-				TimestampInput fieldInput = new TimestampInput(PRIFIX_PRM + key);
-				setStyle(fieldInput);
-				return fieldInput;
-			}else{
-				TextInput fieldInput = new TextInput(PRIFIX_PRM + key);
-				setStyle(fieldInput);
-				return fieldInput;
-			}
+		if(dataType == Integer.class){
+			IntegerInput fieldInput = new IntegerInput(PRIFIX_PRM + key);
+			setStyle(fieldInput);
+			return fieldInput;
+		}else if(dataType == Time.class){
+			TimeInput fieldInput = new TimeInput(PRIFIX_PRM + key);
+			setStyle(fieldInput);
+			return fieldInput;
+		}else if(dataType == Date.class){
+			DateInput fieldInput = new DateInput(PRIFIX_PRM + key);
+			setStyle(fieldInput);
+			return fieldInput;
+		}else if(dataType == Timestamp.class){
+			TimestampInput fieldInput = new TimestampInput(PRIFIX_PRM + key);
+			setStyle(fieldInput);
+			return fieldInput;
+		}else{
+			TextInput fieldInput = new TextInput(PRIFIX_PRM + key);
+			setStyle(fieldInput);
+			return fieldInput;
+		}
 	}
 	
 	
@@ -268,6 +294,20 @@ public class ReportGenerator extends Block {
 		obj.setAttribute("style",STYLE_2);
 	}
 	
+	
+	public synchronized Object clone(){
+		ReportGenerator clone = (ReportGenerator)super.clone();
+		
+		clone._allFields =null;
+		clone._dynamicFields = new Vector();
+		clone._dataSource = null;
+		clone._design = null;
+		clone._reportFilePath = null;
+		clone._queryParser = null;
+		clone._fieldTable = null;
+		
+		return clone;
+	}
 	
 	
 	//Old

@@ -103,6 +103,7 @@ public class AddTrack extends IWAdminWindow {
 
     _fieldTrackName = new TextInput(_fieldNameTrackName);
 	_fieldTrackName.setWidth("275");
+	_fieldTrackName.setInFocusOnPageLoad(true);
     if(track != null){
       _fieldTrackName.setContent(track.getName());
     }
@@ -135,9 +136,11 @@ public class AddTrack extends IWAdminWindow {
 
 
 	_fieldAudioID = new FileChooser(_fieldNameAudioID);
+	if(track != null){
 	ICFile audioTrack = track.getTrack();
-	if(audioTrack != null){
-		_fieldAudioID.setSelectedFile(audioTrack);
+		if(audioTrack != null){
+			_fieldAudioID.setSelectedFile(audioTrack);
+		}
 	}
 	
 	

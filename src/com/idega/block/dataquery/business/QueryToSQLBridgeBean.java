@@ -60,7 +60,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
       while (resultSet.next())  {
         String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
-          String columnValue = resultSet.getString(i);
+          Object columnValue = resultSet.getObject(i);
           // store into QueryResultCell
           String fieldId = Integer.toString(i);  
           QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);

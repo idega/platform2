@@ -215,7 +215,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 		Iterator iter = getEntityAttributes(entityPart).iterator();
 		while (iter.hasNext()) {
 			EntityAttribute element = (EntityAttribute) iter.next();
-			list.add( createQueryFieldPart(iwrb,entityPart.getName(),element));
+			list.add( createQueryFieldPart(iwrb,entityPart.getBeanClassName(),element));
 		}
 		return list;
 	}
@@ -231,6 +231,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 			QueryToSQLBridge bridge = getQueryToSQLBridge();
 			QuerySQL query = bridge.createQuerySQL(queryHelper);
 			String sqlStatement = query.getSQLStatement();
+			System.out.println("QueryServece#generateQueryResult - SQL: ");
+			System.out.println(sqlStatement);
 			List displayNames = query.getDisplayNames();
 			QueryResult queryResult = bridge.executeStatement(sqlStatement, displayNames);
 			return queryResult;

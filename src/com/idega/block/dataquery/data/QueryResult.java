@@ -136,15 +136,23 @@ public class QueryResult implements JRDataSource {
    * 
    */
   public boolean next() throws JRException  {
+	System.out.println("QueryResult#next()");
+  	
     // the very first time we have to initialize the iterator  
     if (cellIterator == null) {
+	  System.out.println("QueryResult#next()- cellIterator == null");
       cellIterator = cells.firstKeySet().iterator();
+    } else {
+			System.out.println("QueryResult#next()- cellIterator != null");
     }
     // now ask the iterator
     if (cellIterator.hasNext()) {
+	  System.out.println("QueryResult#next()- cellIterator.hasNext(): true");
       // compare with the behaviour of a result set...
       currentCellId = (String) cellIterator.next();
       return true;
+    } else {
+			System.out.println("QueryResult#next()- cellIterator.hasNext(): false");
     }
     return false;
   }
@@ -159,7 +167,10 @@ public class QueryResult implements JRDataSource {
    * 
    */
   public Object getFieldValue(JRField jrField) throws JRException {
+	System.out.println("QueryResult#getFieldValue()");
     String fieldId = jrField.getName();
+	System.out.println("QueryResult#getFieldValue() - fieldId="+fieldId);
+	
     // if mapping is required use the map
     if (designIdFieldIdMapping != null) {
       // if there is an entry use this one
@@ -169,8 +180,18 @@ public class QueryResult implements JRDataSource {
       }
     }
     // fetch the cell
+	System.out.println("QueryResult#getFieldValue() - currentCellId="+currentCellId);
     QueryResultCell cell = (QueryResultCell) cells.get(currentCellId, fieldId);
     // return the value of the cell
-    return (cell == null) ? DEFAULT_VALUE : cell.getValue();
+    
+    if(cell == null){
+			System.out.println("QueryResult#getFieldValue() cell="+cell);
+    } else {
+			System.out.println("QueryResult#getFieldValue() cell.getValue()="+cell.getValue());
+    }
+	
+    return (cell == null) ? null : cell.getValue();
   }
+  
+  
 }

@@ -107,8 +107,10 @@ public class AlbumDetails extends Block {
 				if (imageId > 0) {
 					Image fCover = new Image(imageId, album.getName());
 					fCover.setAlignment("left");
-					fCover.setHeight(120);
-					fCover.setWidth(120);
+					fCover.setHeight(110);
+					fCover.setWidth(110);
+					fCover.setBorder(5);
+					fCover.setBorderColor("#FFFFFF");
 					infoTable.add(fCover, 1, 1);
 				}
 

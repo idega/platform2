@@ -26,7 +26,7 @@ public class QueryResultCell {
   private String fieldId;
   private String id;
   
-  private String value = null;
+  private Object value = null;
   
   public static List getInstancesForELement(XMLElement element) {
     List cells = new ArrayList();
@@ -60,12 +60,12 @@ public class QueryResultCell {
   }
   
   
-  public QueryResultCell(String id, String fieldId, String value) {
+  public QueryResultCell(String id, String fieldId, Object value) {
     this(id, fieldId);
     setValue(value);
   }
   
-  public void setValue(String value) {
+  public void setValue(Object value) {
     this.value = value;
   }
 
@@ -85,14 +85,14 @@ public class QueryResultCell {
     return id;
   }
 
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
 
-  private void addElement(XMLElement parent, String name, String value)  {
+  private void addElement(XMLElement parent, String name, Object value)  {
     XMLElement child = new XMLElement(name);
     value = (value == null) ? "" : value;
-    child.addContent(value);
+    child.addContent(value.toString());
     parent.addContent(child);
   }
   
@@ -103,4 +103,9 @@ public class QueryResultCell {
     }
     return child.getText().trim();
   }  
+  
+  public String toString(){
+  	return this.getValue().toString();
+  }
+
 }

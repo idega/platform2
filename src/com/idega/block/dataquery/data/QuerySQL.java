@@ -78,7 +78,7 @@ public class QuerySQL {
     if (queryEntity == null)  {
       return;
     }
-    String name = queryEntity.getName();
+    String name = queryEntity.getBeanClassName();
     entityQueryEntity.put(name, queryEntity);
   }
     
@@ -139,8 +139,9 @@ public class QuerySQL {
         throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
       }
       // note that this entity is used
-      usedEntities.add(entity);
-      StringBuffer entityWithDot = new StringBuffer(entity).append(DOT);
+	  usedEntities.add(entity);
+      String entityVaribleName = entity.substring(entity.lastIndexOf('.')+1);
+      StringBuffer entityWithDot = new StringBuffer(entityVaribleName).append(DOT);
       // add alias name to each column
       int i;
       for (i=0; i < columns.length ; i++) {
@@ -163,7 +164,7 @@ public class QuerySQL {
     while (entityIterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
       String table = getTableName(queryEntity.getBeanClassName());
-      String entity = queryEntity.getName();
+      String entity = queryEntity.getBeanClassName();
       // add only entities that are actually used
       if (usedEntities.contains(entity))  {
         query.addFromClause(table, queryEntity.getName());

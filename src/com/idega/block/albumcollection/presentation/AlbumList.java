@@ -250,8 +250,10 @@ public class AlbumList extends Block {
     }
 
     public void setAlbumImage(Image image){
-      image.setWidth(90);
-      image.setHeight(90);
+      image.setWidth(82);
+      image.setHeight(82);
+      image.setBorder(4);
+      image.setBorderColor("#FFFFFF");
       tb2.add(image,1,1);
     }
 
