@@ -111,7 +111,7 @@ public class DeleteIFSFiles extends AccountingBlock {
 	
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
-		buttonPanel.addLocalizedButton(PARAM_DELETE_FILE, KEY_DELETE, "Save");
+		buttonPanel.addLocalizedButton(PARAM_DELETE_FILE, "true ", KEY_DELETE, "Save");
 		return buttonPanel;
 	}
 		

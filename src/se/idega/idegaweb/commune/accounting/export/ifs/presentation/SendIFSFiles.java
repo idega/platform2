@@ -111,7 +111,7 @@ public class SendIFSFiles extends AccountingBlock {
 	
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
-		buttonPanel.addLocalizedButton(PARAM_SEND_FILE, KEY_SEND, "Save");
+		buttonPanel.addLocalizedButton(PARAM_SEND_FILE, "true", KEY_SEND, "Save");
 		return buttonPanel;
 	}
 		

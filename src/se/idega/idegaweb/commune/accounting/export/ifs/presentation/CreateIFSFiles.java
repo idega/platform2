@@ -148,7 +148,7 @@ public class CreateIFSFiles extends AccountingBlock {
 	
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
-		buttonPanel.addLocalizedButton(PARAM_CREATE_FILE, KEY_CREATE, "Save");
+		buttonPanel.addLocalizedButton(PARAM_CREATE_FILE, "true", KEY_CREATE, "Save");
 		return buttonPanel;
 	}
 		
