@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.79 2004/12/02 12:39:07 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.80 2005/01/18 13:44:24 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -580,6 +580,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		if (activeApplication != null) {
 			ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
 			School school = activeApplication.getProvider();
+			boolean hasBankID = new NBSLoginBusinessBean().hasBankLogin(activeApplication.getOwner());
 
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallHeader(localize(PLACED_AT) + ":"), 1, row);
@@ -587,30 +588,35 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolAddress()), 3, row++);
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
-			GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
-			careTimePopup.setWindowToOpen(ChildCareWindow.class);
-			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
-			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
-			
-			careTimePopup.addParameterToWindow(CCConstants.APPID, activeApplication.getNodeID());
-
-			GenericButton cancelPopup = getButton(new GenericButton("end_contract", localize(END_CARETIME)));
-			cancelPopup.setWindowToOpen(ChildCareWindow.class);
-			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_END_CONTRACT));
-			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
-
-			layoutTbl.setHeight(row++, 12);
-			layoutTbl.add(careTimePopup, 3, row);
-			layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
-			layoutTbl.add(cancelPopup, 3, row);
-			
-			if (archive != null) {
-				GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
-				contractPopup.setFileToOpen(archive.getContractFileID());
+			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady()) {
+				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
+				careTimePopup.setWindowToOpen(ChildCareWindow.class);
+				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
+				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
+				
+				careTimePopup.addParameterToWindow(CCConstants.APPID, activeApplication.getNodeID());
+	
+				GenericButton cancelPopup = getButton(new GenericButton("end_contract", localize(END_CARETIME)));
+				cancelPopup.setWindowToOpen(ChildCareWindow.class);
+				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_END_CONTRACT));
+				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
+	
+				layoutTbl.setHeight(row++, 12);
+				layoutTbl.add(careTimePopup, 3, row);
 				layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
-				layoutTbl.add(contractPopup, 3, row);
+				layoutTbl.add(cancelPopup, 3, row);
+
+				if (archive != null) {
+					GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
+					contractPopup.setFileToOpen(archive.getContractFileID());
+					layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
+					layoutTbl.add(contractPopup, 3, row);
+				}
+			}
+			else if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusWaiting() && hasBankID) {
+				//TODO implement BankID stuff...
 			}
 		}
 		/*else {

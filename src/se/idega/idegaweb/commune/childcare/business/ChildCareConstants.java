@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareConstants.java,v 1.6 2004/11/25 10:44:06 aron Exp $
+ * $Id: ChildCareConstants.java,v 1.7 2005/01/18 13:44:24 laddi Exp $
  * Created on 9.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,14 +12,16 @@ package se.idega.idegaweb.commune.childcare.business;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 10:44:06 $ by $Author: aron $
+ *  Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ChildCareConstants {
     public final static char STATUS_ACCEPTED = 'C';
 	public final static char STATUS_CANCELLED = 'V';
+	public final static char STATUS_PARENT_TERMINATED = 'R';
+	public final static char STATUS_WAITING = 'P';
 	public final static char STATUS_CONTRACT = 'E';
 	public final static char STATUS_DELETED = 'T';
 	public final static char STATUS_DENIED = 'U';

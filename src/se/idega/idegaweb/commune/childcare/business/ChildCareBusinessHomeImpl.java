@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusinessHomeImpl.java 1.1 10.1.2005 laddi Exp $
- * Created on 10.1.2005
+ * $Id: ChildCareBusinessHomeImpl.java 1.1 14.1.2005 laddi Exp $
+ * Created on 14.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *

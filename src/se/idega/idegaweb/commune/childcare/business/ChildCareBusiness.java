@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 10.1.2005 laddi Exp $
- * Created on 10.1.2005
+ * $Id: ChildCareBusiness.java 1.1 14.1.2005 laddi Exp $
+ * Created on 14.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -409,6 +409,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public boolean changeApplicationStatus(ChildCareApplication application, char newStatus, User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#createCancelForm
+	 */
+	public void createCancelForm(ChildCareApplication application, Date cancelDate, Locale locale) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#cancelContract
 	 */
 	public boolean cancelContract(ChildCareApplication application, boolean parentalLeave, IWTimestamp date, String message, String subject, String body, User user) throws java.rmi.RemoteException;
@@ -644,6 +649,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public String getXMLContractPdfURL(IWBundle iwb, Locale locale) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getXMLCancelFormPdfURL
+	 */
+	public String getXMLCancelFormPdfURL(IWBundle iwb, Locale locale) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#setAsPriorityApplication
 	 */
 	public void setAsPriorityApplication(int applicationID, String message, String body) throws RemoteException;
@@ -752,6 +762,16 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStatusTimedOut
 	 */
 	public char getStatusTimedOut() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStatusWaiting
+	 */
+	public char getStatusWaiting() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStatusParentTerminated
+	 */
+	public char getStatusParentTerminated() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStatusCancelled

@@ -7,6 +7,8 @@ package se.idega.idegaweb.commune.childcare.business;
 import is.idega.block.family.business.NoCustodianFound;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -68,6 +70,8 @@ import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.pdf.ITextXMLHandler;
+import com.idega.block.pdf.business.PrintingContext;
+import com.idega.block.pdf.business.PrintingService;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
@@ -88,6 +92,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -100,6 +105,8 @@ import com.idega.data.IDOStoreException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
@@ -1618,6 +1625,70 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		return false;
 	}
+	
+	public void createCancelForm(ChildCareApplication application, Date cancelDate, Locale locale) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+      
+			application.setRequestedCancelDate(cancelDate);
+			application.setApplicationStatus(getStatusWaiting());
+
+			MemoryFileBuffer buffer = new MemoryFileBuffer();
+      OutputStream mos = new MemoryOutputStream(buffer);
+      InputStream mis = new MemoryInputStream(buffer);
+     
+      PrintingContext pcx = new CancelFormContext(getIWApplicationContext(), application, locale);
+      pcx.setDocumentStream(mos);
+      getPrintingService().printDocument(pcx);
+      ICFile file = createFile(null, "cancel_form", mis, buffer.length());
+
+			application.setCancelFormFile(file);
+			application.store();
+			
+			t.commit();
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+
+  private ICFile createFile(ICFile file,String fileName,InputStream is,int length) throws CreateException{
+    if(file==null) {
+    		file = getICFileHome().create();
+    }
+    
+    if(!fileName.endsWith(".pdf") &&  !fileName.endsWith(".PDF")) {
+    		fileName +=".pdf";
+    }
+    
+    file.setFileValue(is);
+		file.setMimeType("application/x-pdf");
+		
+		file.setName(fileName );
+		file.setFileSize(length);
+		file.store();
+		return file;
+  }
+
+  private ICFileHome getICFileHome() {
+		try {
+			return (ICFileHome) getIDOHome(ICFile.class);
+		}
+		catch (Exception e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+    
+  private PrintingService getPrintingService()throws IBOLookupException {
+    return (PrintingService)getServiceInstance(PrintingService.class);
+  }
 
 	public boolean cancelContract(ChildCareApplication application, boolean parentalLeave, IWTimestamp date, String message, String subject, String body, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
@@ -2338,7 +2409,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) {
 		try {
-			String[] statuses = { String.valueOf(getStatusReady()) };
+			String[] statuses = { String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
 			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 		}
 		catch (FinderException fe) {
@@ -2348,7 +2419,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID) {
 		try {
-			String[] statuses = { String.valueOf(getStatusReady()), String.valueOf(getStatusCancelled()) };
+			String[] statuses = { String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()), String.valueOf(getStatusCancelled()) };
 			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 		}
 		catch (FinderException fe) {
@@ -2641,12 +2712,81 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return map;
 	}
 
+	protected HashMap getCancelFormTagMap(ChildCareApplication application, Locale locale) throws RemoteException {
+		HashMap map = new HashMap();
+		User child = application.getChild();
+		User parent = application.getOwner();
+		Address address = getUserBusiness().getUsersMainAddress(parent);
+		IWTimestamp endDate = new IWTimestamp(application.getRequestedCancelDate());
+		
+		School provider = application.getProvider();
+
+		String parentName = parent.getName();
+
+		String addressString = "-";
+		String postalString = "-";
+		if (address != null) {
+			addressString = address.getStreetAddress();
+			PostalCode code = address.getPostalCode();
+			if (code != null) {
+				postalString = code.getPostalAddress();
+			}
+		}
+
+		IWTimestamp stamp = new IWTimestamp();
+		XmlPeer peer = new XmlPeer(ElementTags.CHUNK, "created");
+		peer.setContent(stamp.getLocaleDate(locale, IWTimestamp.SHORT));
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "endDate");
+		peer.setContent(endDate.getLocaleDate(locale, IWTimestamp.SHORT));
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "childName");
+		peer.setContent(child.getName());
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "personalID");
+		peer.setContent(PersonalIDFormatter.format(child.getPersonalID(), locale));
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "provider");
+		peer.setContent(provider.getSchoolName());
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "providerAddress");
+		peer.setContent(provider.getSchoolVisitAddress());
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "providerPostal");
+		peer.setContent(provider.getSchoolZipCode() + " " + provider.getSchoolZipArea());
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "parent");
+		peer.setContent(parentName);
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "address");
+		peer.setContent(addressString);
+		map.put(peer.getAlias(), peer);
+
+		peer = new XmlPeer(ElementTags.CHUNK, "postal");
+		peer.setContent(postalString);
+		map.put(peer.getAlias(), peer);
+
+		return map;
+	}
+
 	public String getXMLContractTxtURL(IWBundle iwb, Locale locale) {
 		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract_txt.xml";
 	}
 
 	public String getXMLContractPdfURL(IWBundle iwb, Locale locale) {
 		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract.xml";
+	}
+
+	public String getXMLCancelFormPdfURL(IWBundle iwb, Locale locale) {
+		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_cancel_form.xml";
 	}
 
 	/*
@@ -2751,7 +2891,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
 						getSchoolBusiness().addToSchoolClassMemberLog(oldStudent, oldSchoolClass, endDate.getDate(), user);
 					}
-					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId && oldStudent.getSchoolClassId() != schoolClassId) {
+					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId) {
 						// end old placement with the chosen date -1 and create new
 						// placement
 						student = createNewPlacement(application, schoolTypeId, schoolClassId, oldStudent, new IWTimestamp(validFrom), user);
@@ -2763,6 +2903,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						student = getLatestPlacement(application.getChildId(), application.getProviderId());
 					}
 					if (((Integer) student.getStudent().getPrimaryKey()).intValue() == application.getChildId()) {
+						student.setSchoolClassId(schoolClassId);
+						student.store();
+						
 						archive.setSchoolClassMember(student);
 						try {
 							SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
@@ -3039,6 +3182,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 */
 	public char getStatusTimedOut() {
 		return ChildCareConstants.STATUS_TIMED_OUT;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusWaiting() {
+		return ChildCareConstants.STATUS_WAITING;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusParentTerminated() {
+		return ChildCareConstants.STATUS_PARENT_TERMINATED;
 	}
 
 	/**
@@ -3391,11 +3548,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			else
 				archive.setTerminatedDate(null);
 			archive.store();
+			int memberID = archive.getSchoolClassMemberId();
 
 			Collection contracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID, date);
 			Iterator iter = contracts.iterator();
 			while (iter.hasNext()) {
 				archive = (ChildCareContract) iter.next();
+				SchoolClassMember member = archive.getSchoolClassMember();
 				try {
 					Contract contract = archive.getContract();
 					contract.setStatus("T");
@@ -3404,6 +3563,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				catch (Exception e) {
 				}
 				archive.remove();
+				if (memberID != ((Integer) member.getPrimaryKey()).intValue()) {
+					member.remove();
+				}
+				else {
+					if (application.getRejectionDate() != null)
+						member.setRemovedDate(new IWTimestamp(application.getRejectionDate()).getTimestamp());
+					else
+						member.setRemovedDate(null);
+				}
 			}
 			t.commit();
 		}

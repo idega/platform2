@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.10 2005/01/03 10:05:41 malin Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.11 2005/01/18 13:44:24 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
 	public final static String PRESCHOOL = "preschool";
 	public final static String LAST_REPLY_DATE = "last_reply_date";
-	
+	public final static String REQUESTED_CANCEL_DATE = "requested_cancel_date";
+	public final static String CANCEL_MESSAGE = "cancel_message";
+	public final static String CANCEL_PARENTAL_LEAVE = "cancel_parental_leave";
+	public final static String CANCEL_FORM_FILE_ID = "cancel_form_file_id";
+	public final static String CANCEL_CONFIRMATION_RECEIVED = "cancel_confirmation_received";
 
 	protected final static String EXTRA_CONTRACT = "extra_contract";
 	protected final static String EXTRA_CONTRACT_MESSAGE = "extra_contract_message";
@@ -136,6 +140,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addManyToOneRelationship(CHECK_ID,GrantedCheck.class);
 		addManyToOneRelationship(CONTRACT_ID,Contract.class);
 		addManyToOneRelationship(CONTRACT_FILE_ID,ICFile.class);
+		
+		addAttribute(REQUESTED_CANCEL_DATE, "Requested cancel date", Date.class);
+		addAttribute(CANCEL_MESSAGE, "Cancel message", String.class, 255);
+		addAttribute(CANCEL_PARENTAL_LEAVE, "Cancel reason", Boolean.class);
+		addAttribute(CANCEL_CONFIRMATION_RECEIVED, "Cancel confirmation received", Date.class);
+		addManyToOneRelationship(CANCEL_FORM_FILE_ID,ICFile.class);
 	}
 	
 	public int getProviderId() {
@@ -275,6 +285,30 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getStringColumnValue(EXTRA_CONTRACT_OTHER_MESSAGE);
 	}
 	
+	public Date getRequestedCancelDate() {
+		return getDateColumnValue(REQUESTED_CANCEL_DATE);
+	}
+	
+	public String getCancelMessage() {
+		return getStringColumnValue(CANCEL_MESSAGE);
+	}
+	
+	public boolean getParentalLeave() {
+		return getBooleanColumnValue(CANCEL_PARENTAL_LEAVE, false);
+	}
+	
+	public ICFile getCancelFormFile() {
+		return (ICFile) getColumnValue(CANCEL_FORM_FILE_ID);
+	}
+	
+	public int getCancelFormFileID() {
+		return getIntColumnValue(CANCEL_FORM_FILE_ID);
+	}
+	
+	public Date getCancelConfirmationReceived() {
+		return getDateColumnValue(CANCEL_CONFIRMATION_RECEIVED);
+	}
+	
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
@@ -407,6 +441,30 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public void setExtraContractMessageOther(String message) {
 		setColumn(EXTRA_CONTRACT_OTHER_MESSAGE, message);
+	}
+	
+	public void setRequestedCancelDate(Date date) {
+		setColumn(REQUESTED_CANCEL_DATE, date);
+	}
+	
+	public void setCancelMessage(String message) {
+		setColumn(CANCEL_MESSAGE, message);
+	}
+	
+	public void setParentalLeave(boolean parentalLeave) {
+		setColumn(CANCEL_PARENTAL_LEAVE, parentalLeave);
+	}
+	
+	public void setCancelFormFile(ICFile file) {
+		setColumn(CANCEL_FORM_FILE_ID, file);
+	}
+	
+	public void setCancelFormFileID(int fileID) {
+		setColumn(CANCEL_FORM_FILE_ID, fileID);
+	}
+	
+	public void setCancelConfirmationReceived(Date date) {
+		setColumn(CANCEL_CONFIRMATION_RECEIVED, date);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {

@@ -151,7 +151,8 @@ public class ChildCareContracts extends ChildCareBlock {
 				boolean isCancelled;
 				boolean isNotYetActive;
 				boolean hasComment = false;
-				
+				boolean parentCancelled = false;
+				boolean waiting = false;
 				
 				Iterator iter = students.iterator();
 				while (iter.hasNext()) {
@@ -194,6 +195,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						//student = contract.getSchoolClassMember();
 						//application = contract.getApplication();
 						//hasComments = true;
+						parentCancelled = application.getApplicationStatus() == getBusiness().getStatusParentTerminated();
+						waiting = application.getApplicationStatus() == getBusiness().getStatusWaiting();
 						
 						created = new IWTimestamp(contract.getCreatedDate());
 						if (contract.getValidFromDate() != null)
@@ -335,7 +338,12 @@ public class ChildCareContracts extends ChildCareBlock {
 							if (student.getRemovedDate() == null)
 								table.add(delete, column++, row);
 							
-							
+							if (parentCancelled) {
+								table.setRowColor(row, CONTRACT_COLOR);
+							}
+							else if (waiting) {
+								table.setRowColor(row, ACCEPTED_COLOR);
+							}
 							row++;
 						}
 						
