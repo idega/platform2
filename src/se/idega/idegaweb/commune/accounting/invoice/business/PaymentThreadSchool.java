@@ -11,16 +11,31 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
-import se.idega.idegaweb.commune.accounting.posting.business.*;
-import se.idega.idegaweb.commune.accounting.regulations.business.*;
-import se.idega.idegaweb.commune.accounting.regulations.data.*;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.childcare.data.*;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
-import com.idega.block.school.data.*;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 /**
  * Abstract class that holds all the logic that is common for the shool billing
@@ -33,10 +48,11 @@ import com.idega.presentation.IWContext;
  */
 public abstract class PaymentThreadSchool extends BillingThread{
 	PaymentHeader paymentHeader;
-	Date currentDate = new Date( System.currentTimeMillis());
+	Date currentDate;
 	
 	public PaymentThreadSchool(Date month, IWContext iwc){
 		super(month,iwc);
+		currentDate = month;
 	}
 	
 	
@@ -82,10 +98,13 @@ public abstract class PaymentThreadSchool extends BillingThread{
 						Iterator regulationIter = regulationArray.iterator();
 						while(regulationIter.hasNext())
 						{
-							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(
-									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
-							while(applicationIter.hasNext()){
-								ChildCareApplication application = (ChildCareApplication) applicationIter.next();
+							//NOTE this should be changed to use ...ByDateRange when changed to date range rathre than day by day calculation
+							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
+//							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(((Integer)school.getPrimaryKey()).intValue(), 
+//									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
+							while(contractIter.hasNext()){
+//								ChildCareApplication application = (ChildCareApplication) applicationIter.next();
+								ChildCareContract contract = (ChildCareContract) contractIter.next();
 								if(first){
 									paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
 									paymentHeader.setSchoolID(school);
@@ -97,7 +116,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 									}
 									first = false;
 								}
-								ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
+//								ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
 								calculateTime(contract.getValidFromDate(),contract.getTerminatedDate());
 								//Get the posting details for the contract
 								postingDetail = regBus.getPostingDetailForContract(0.0f,contract);
@@ -171,6 +190,30 @@ public abstract class PaymentThreadSchool extends BillingThread{
 				createNewErrorMessage("payment.severeError","payment.DBSetupProblem");
 			}
 		}
+	}
+	
+	/*
+	 * Overridden function until billing is done by period instead of date (non-Javadoc)
+	 * Now we always bill for the whole month...
+	 * Just remove this function when changing to date range
+	 * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread#calculateTime(java.sql.Date, java.sql.Date)
+	 */
+	/**
+	 * calculatest the number of days and months between the start and end date 
+	 * and sets the local variables monts and days
+	 * 
+	 * @param start
+	 * @param end
+	 */
+	protected void calculateTime(Date start, Date end){
+		startTime = new IWTimestamp(startPeriod);
+		startTime.setAsDate();
+		//Then get end date
+		endTime = new IWTimestamp(endPeriod);
+		endTime.setAsDate();
+		//calc the how many months are in the given time.
+		months -= 1.0;
+		days = IWTimestamp.getDaysBetween(startTime, endTime);
 	}
 
 	private SchoolHome getSchoolHome() throws RemoteException {
