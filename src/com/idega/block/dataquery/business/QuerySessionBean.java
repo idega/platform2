@@ -6,10 +6,13 @@ package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import javax.ejb.FinderException;
+
 //import com.idega.block.dataquery.data.Query;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
 import com.idega.util.xml.XMLData;
 /**
  * <p>Title: idegaWeb</p>
@@ -52,17 +55,29 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	public void setXmlFileID(int i){
 		xmlFileID = i;
 	}
-	public ICFile storeQuery(int folderID)  throws IOException{
+	public ICFile storeQuery(String name,int folderID)  throws IOException{
 		XMLData data = XMLData.getInstanceWithoutExistingFile();
 		if(xmlFileID>0){
 			data.setXmlFileId(xmlFileID);
 		}
 		data.setDocument(helper.createDocument());
-		
+		data.setName(name);
 		ICFile query =  data.store();
 		if(folderID>0 && query !=null)
 			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(),folderID);
+			
+		// add id to current id and render the document from it
+		createQuery(((Integer)query.getPrimaryKey()).intValue());
 		return query;
 	
+	}
+	
+	public ICFile getXMLFile(int id)throws RemoteException{
+		try {
+			return ((ICFileHome) this.getIDOHome(ICFile.class)).findByPrimaryKey(id);
+		}
+		catch (FinderException e) {
+			throw new RemoteException(e.getMessage());
+		}
 	}
 }

@@ -4,6 +4,7 @@
  * QueryBuilder is a wizard that constructs a ReportQuery from the user input.
  */
 package com.idega.block.dataquery.presentation;
+import java.awt.Color;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.media.presentation.FileChooser;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
@@ -36,10 +38,12 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -68,12 +72,19 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_FOLDER_ID = "qb_fid";
 	public static final String PARAM_QUERY_ID = "qb_qid";
+	public static final String PARAM_QUERY_NAME = "q_name";
+	private int heightOfStepTable = 300;
 	private int step = 1;
 	private int queryFolderID = -1;
 	private int queryID = -1;
 	private int relationDepth = 4;
 	private int investigationLevel = 3;
+	private int tableBorder = 0;
+	private String zebraColor1 = "#CCCC99";
+	private String zebraColor2 = "#FFFFFF";
+	private String stepTableColor = "#CDD6E6";
 	private boolean allowEmptyConditions = true;
+	private boolean showSourceEntityInSelectBox = true;
 	private QuerySession sessionBean;
 	public void control(IWContext iwc) {
 		if (hasPermission) {
@@ -96,23 +107,38 @@ public class QueryBuilder extends Block {
 				else
 					step =	iwc.isParameterSet(PARAM_STEP)? Integer.parseInt(iwc.getParameter(PARAM_STEP)): helper.getStep();
 				step = step==0?1:step;
-				System.err.println("djokid");
+				//System.err.println("djokid");
 				//System.err.println("helper step is " + helper.getStep());
 				//System.err.println("this step is before process" + step);+
 				processForm(iwc);		
 				//System.err.println("this step is after process" + step);
-				Table table = new Table();
-				table.setWidth(getWidth());
-				table.setBorder(2);
-				table.setBorderColor("#FF0000");
-				table.add(getStep(iwc), 1, 1);
+				Table table = new Table(1,3);
+				String width = getWidth();
+				table.setWidth(width!=null?width:"300");
+				table.setBorder(tableBorder);
+				table.setColor(stepTableColor);
+				table.setColor(1,1,IWColor.getHexColorString(Color.WHITE));
 				
+				Table headerTable = new Table(2,2);
+				headerTable.setWidth(Table.HUNDRED_PERCENT);
+				headerTable.add(getStepText(iwrb.getLocalizedString("step","Step")+" "+step),1,1);
+				headerTable.add(getMsgText(getStepMessage()),1,2);
+				headerTable.mergeCells(2,1,2,2);
+				headerTable.add(iwb.getImage("wizard.png"),2,1);
+				headerTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+				
+				table.add(headerTable,1,1);
+				
+				table.add(getStep(iwc), 1, 2);
+				table.setColor(1,2,stepTableColor);
+				table.setVerticalAlignment(1,2,Table.VERTICAL_ALIGN_TOP);
+				table.setAlignment(1,3,Table.HORIZONTAL_ALIGN_RIGHT);
 				Form form = new Form();
-				if(queryFolderID>0)
+				if(queryFolderID>0 && step<5)
 					form.addParameter(PARAM_FOLDER_ID,queryFolderID);
 				if(queryID>0)
 					form.addParameter(PARAM_QUERY_ID,queryID);
-				table.add(getButtons(step), 1, 2);
+				table.add(getButtons(step), 1, 3);
 				form.addParameter(PARAM_STEP, step);
 				form.add(table);
 				add(form);
@@ -136,10 +162,10 @@ public class QueryBuilder extends Block {
 			boolean proceed = processNextStep(iwc);
 			if (proceed) {
 				step++;
-				System.out.println(" proceed to next step");
+				//System.out.println(" proceed to next step");
 			}
-			else
-				System.out.println(" do not proceed to next step");
+			//else
+			//	System.out.println(" do not proceed to next step");
 		}
 		else if (iwc.isParameterSet(PARAM_LAST)){
 			processPreviousStep(iwc);
@@ -154,18 +180,21 @@ public class QueryBuilder extends Block {
 		}
 		else if(iwc.isParameterSet(PARAM_SAVE)){
 			helper.setTemplate(true);
-			ICFile q  = sessionBean.storeQuery(queryFolderID);
+			String name = iwc.getParameter(PARAM_QUERY_NAME);
+			if(name==null)
+				name = iwrb.getLocalizedString("step_5_default_queryname","My query");
+			ICFile q  = sessionBean.storeQuery(name,queryFolderID);
 			if(q!=null){
 				queryID = ((Integer)q.getPrimaryKey()).intValue();
-				add("Query was saved with ID: "+queryID  );
+				//add("Query was saved with ID: "+queryID  );
 			}
-			else
-				add("Query was not saved");
+			//else
+				//add("Query was not saved");
 		}
 	}
 	private boolean processNextStep(IWContext iwc) throws ClassNotFoundException {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
-		System.out.println("current processing step " + currentStep);
+		//System.out.println("current processing step " + currentStep);
 		switch (currentStep) {
 			case 1 :
 				if (iwc.isParameterSet(PARAM_SOURCE)) {
@@ -273,33 +302,81 @@ public class QueryBuilder extends Block {
 				return getStep1(iwc);
 		}
 	}
+	
+	public String getStepMessage(){
+		switch (step) {
+			case 1 :
+				return iwrb.getLocalizedString("step_1_msg", "Choose a source entity");
+			case 2 :
+				return iwrb.getLocalizedString("step_2_msg", "Choose related entities");
+			case 3 :
+				return iwrb.getLocalizedString("step_3_msg", "Choose entity fields and order ");
+			case 4 :
+				return iwrb.getLocalizedString("step_4_msg", "Define field conditions");
+			case 5 :
+				return iwrb.getLocalizedString("step_5_msg", "Take proper action");
+		}
+		return "";
+	}
+	
+	public Table getStepTable(){
+		Table T = new Table();
+		T.setBorder(tableBorder);
+		T.setHeight(heightOfStepTable);
+		T.setWidth(T.HUNDRED_PERCENT);
+		T.setVerticalAlignment(Table.VERTICAL_ALIGN_TOP);
+		return T;
+	}
+	
 	public PresentationObject getStep1(IWContext iwc) throws RemoteException {
-		Table table = new Table(1, 5);
-		table.setWidth(table.HUNDRED_PERCENT);
-		table.add(iwrb.getLocalizedString("step_1_msg", "Choose a source entity"), 1, 1);
-		DropdownMenu drp = new DropdownMenu(PARAM_SOURCE);
-		//TODO get available source entities !!!
+		
+		Table table = getStepTable();
+		int row = 1;
+		
+		//TODO get available source entities with permissions !!!
 		Collection sourceEntities = getQueryService(iwc).getSourceQueryEntityParts();
-		drp.addDisabledMenuElement("empty", "Entity");
-		Iterator iter = sourceEntities.iterator();
-		while (iter.hasNext()) {
-			QueryEntityPart element = (QueryEntityPart) iter.next();
-			drp.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+		
+		if(showSourceEntityInSelectBox){
+			SelectionBox select = new SelectionBox(PARAM_SOURCE);
+			select.setMaximumChecked(1,iwrb.getLocalizedString("maximum_select_msg","Select only one"));
+			select.setHeight("20");
+			select.setWidth("150");
+			Iterator iter = sourceEntities.iterator();
+			while (iter.hasNext()) {
+				QueryEntityPart element = (QueryEntityPart) iter.next();
+				select.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+			}
+			if (helper.hasSourceEntity()) {
+				QueryEntityPart source = helper.getSourceEntity();
+				select.setSelectedElement(source.encode());
+			}
+			table.add(select, 1, row);
 		}
-		if (helper.hasSourceEntity()) {
-			QueryEntityPart source = helper.getSourceEntity();
-			drp.setSelectedElement(source.encode());
+		else{
+			DropdownMenu drp = new DropdownMenu(PARAM_SOURCE);
+			drp.addMenuElement("empty", "Entity");
+			Iterator iter = sourceEntities.iterator();
+			while (iter.hasNext()) {
+				QueryEntityPart element = (QueryEntityPart) iter.next();
+				drp.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+			}
+			if (helper.hasSourceEntity()) {
+				QueryEntityPart source = helper.getSourceEntity();
+				drp.setSelectedElement(source.encode());
+			}
+			table.add(drp, 1, row);
+			
 		}
-		table.add(drp, 1, 3);
+			
 		return table;
 	}
 	public PresentationObject getStep2(IWContext iwc) throws ClassNotFoundException, RemoteException {
-		Table table = new Table(1, 5);
-		table.setWidth(table.HUNDRED_PERCENT);
-		table.add(iwrb.getLocalizedString("step_2_msg", "Choose related entities"), 1, 1);
+		Table table =  getStepTable();
 		//table.add(getRelatedChoice(iwc),1,2);
 		IWTreeNode root = getQueryService(iwc).getEntityTree(helper, investigationLevel);
 		EntityChooserTree tree = new EntityChooserTree(root, iwc);
+		
+		
 		tree.setUI(tree._UI_WIN);
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP,step);
@@ -307,17 +384,15 @@ public class QueryBuilder extends Block {
 		tree.addOpenCloseParameter(PARAM_STEP,"2");
 		//tree.setToMaintainParameter(PARAM_STEP,iwc);
 		//viewer.setNestLevelAtOpen(4);
-		table.add(tree, 1, investigationLevel);
+		table.add(tree, 1, 1);
 		return table;
 	}
 	public PresentationObject getStep3(IWContext iwc) throws RemoteException {
 		QueryService service = getQueryService(iwc);
-		Table table = new Table();
-		table.setWidth(table.HUNDRED_PERCENT);
-		table.mergeCells(1, 1, 2, 1);
-		table.add(iwrb.getLocalizedString("step_3_msg", "Choose entity fields and order "), 1, 1);
+		Table table =  getStepTable();
+		
 		int row = 2;
-		table.add(iwrb.getLocalizedString("entity_field", "Entity field"), 2, row++);
+		
 		QueryEntityPart entityPart = helper.getSourceEntity();
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
@@ -328,8 +403,8 @@ public class QueryBuilder extends Block {
 			listOfFields = new Vector();
 		Map fieldMap = getQueryPartMap(listOfFields);
 		SelectionDoubleBox box =new SelectionDoubleBox(PARAM_FIELDS+"_left",PARAM_FIELDS);
-		box.setLeftLabel(iwrb.getLocalizedString("available_fields", "Available fields"));
-		box.setRightLabel(iwrb.getLocalizedString("chosen_fields", "Chosen fields"));
+		box.getLeftBox().setTextHeading(getMsgText(iwrb.getLocalizedString("available_fields", "Available fields")));
+		box.getRightBox().setTextHeading(getMsgText(iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
 		box.getRightBox().addUpAndDownMovers();
 		box.getRightBox().setWidth("300");
 		box.getLeftBox().setWidth("300");
@@ -364,19 +439,16 @@ public class QueryBuilder extends Block {
 	}
 	
 	public PresentationObject getStep4(IWContext iwc) {
-		Table table = new Table();
-		table.setWidth(table.HUNDRED_PERCENT);
-		
-		table.add(iwrb.getLocalizedString("step_4_msg", "Define field conditions"), 1, 1);
-		table.mergeCells(1, 1, 5, 1);
-		int row = 2;
-		table.add(iwrb.getLocalizedString("field_display", "Display"), 2, row);
-		table.add(iwrb.getLocalizedString("field_entity", "Entity"), 3, row);
-		table.add(iwrb.getLocalizedString("field_equator", "Equator"), 4, row);
-		table.add(iwrb.getLocalizedString("field_pattern", "Pattern"), 5, row);
+		Table table =  getStepTable();
+		int row = 1;
+		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 2, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 4, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
 		row++;
 		DropdownMenu drp = getConditionTypeDropdown();
 		Iterator iter = helper.getListOfFields().iterator();
+		Map mapOfFieldConditions = getConditionsMapByFieldName();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			table.add(part.getDisplay(), 2, row);
@@ -384,22 +456,48 @@ public class QueryBuilder extends Block {
 			//table.add(iwrb.getLocalizedString(part.getTypeClass(), part.getTypeClass()), 4, row);
 			table.add(drp, 4, row);
 			TextInput conditionInput = new TextInput(PARAM_CONDITION);
+			if(mapOfFieldConditions.containsKey(part.getName())){
+				conditionInput.setContent(((QueryConditionPart)mapOfFieldConditions.get(part.getName())).getPattern());
+			}
 			table.add(conditionInput, 5, row);
 			row++;
 		}
 		return table;
 	}
 	
-	public PresentationObject getStep5(IWContext iwc) {
-			Table table = new Table();
-			int row = 1;
-			table.setWidth(table.HUNDRED_PERCENT);
-			table.add(iwrb.getLocalizedString("step_5_msg", "Take proper action"), 1, row++);
-			CheckBox templateCheck = new CheckBox("astemplate","true");
-			table.add(templateCheck,1,row);
-			table.add(iwrb.getLocalizedString("step_5_check_template","Save as template query ?"),2,row);
-			
-			return table;
+	public PresentationObject getStep5(IWContext iwc) throws RemoteException{
+		Table table =  getStepTable();
+		int row = 1;
+		FileChooser folderChooser = new FileChooser(PARAM_FOLDER_ID);
+		
+		TextInput queryNameInput = new TextInput(PARAM_QUERY_NAME);
+		queryNameInput.setLength(10);
+		if(this.queryID>0){
+			ICFile currentFile = sessionBean.getXMLFile(queryID);
+			queryNameInput.setContent(currentFile.getName().toString());
+			table.add(iwrb.getLocalizedString("step_5_change_queryname","Change query name"),1,row);
+		}
+		else{
+			queryNameInput.setContent(iwrb.getLocalizedString("step_5_default_queryname","My query"));
+			table.add(iwrb.getLocalizedString("step_5_set_queryname","Set query name"),1,row);
+		}
+		table.add(queryNameInput,2,row);
+		row++;
+		if(this.queryFolderID>0){
+			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
+			folderChooser.setSelectedFile(currentFolder);
+			table.add(iwrb.getLocalizedString("step_5_change_folder","New folder"),1,row);
+		}
+		else{
+			table.add(iwrb.getLocalizedString("step_5_choose_folder","Choose folder to save in"),1,row);
+		}
+		table.add(folderChooser,2,row);
+		row++;		
+		CheckBox templateCheck = new CheckBox("astemplate","true");
+		table.add(iwrb.getLocalizedString("step_5_check_template","Save as template query ?"),1,row);
+		table.add(templateCheck,2,row);
+		
+		return table;
 	}
 	
 	private Table getButtons(int currentStep) {
@@ -502,6 +600,75 @@ public class QueryBuilder extends Block {
 		}
 		return map;
 	}
+	
+	public Map getConditionsMapByFieldName() {
+			int size = 0;
+			if (helper.hasConditions())
+				size = helper.getListOfConditions().size();
+			Map map = new HashMap(size);
+			List fields = helper.getListOfFields();
+			if (helper.hasConditions()) {
+				Iterator iter = helper.getListOfConditions().iterator();
+				while(iter.hasNext()){
+					QueryConditionPart part = (QueryConditionPart)iter.next();
+					for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+						QueryFieldPart element = (QueryFieldPart) iterator.next();
+						if(part.getField().equals(element.getName())){
+							map.put(part.getField(),part);
+							break;
+						}
+					}
+				}
+			}
+			return map;
+	}
+	/**
+		 * @param i
+		 */
+		public void setInvestigationLevel(int i) {
+			investigationLevel = i;
+		}
+
+		/**
+		 * @return
+		 */
+		public int getQueryFolderID() {
+			return queryFolderID;
+		}
+
+		/**
+		 * @param i
+		 */
+		public void setQueryFolderID(int i) {
+			queryFolderID = i;
+		}
+	
+		private DropdownMenu getConditionTypeDropdown(){
+			DropdownMenu drp = new DropdownMenu(PARAM_COND_TYPE);
+			String[] types =QueryConditionPart.getConditionTypes();
+			for (int i = 0; i < types.length; i++) {
+				drp.addMenuElement(types[i],iwrb.getLocalizedString("conditions."+types[i],types[i]));
+			}
+			return drp;
+		}
+	
+		private Text getStepText(String string){
+			Text  text= new Text(string);
+			text.setStyle(Text.FONT_FACE_ARIAL);
+			text.setFontSize(Text.FONT_SIZE_14_HTML_4);
+			text.setBold();
+			return text;
+		}
+	
+		private Text getMsgText(String string){
+			Text  text= new Text(string);
+			text.setStyle(Text.FONT_FACE_ARIAL);
+			text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+			text.setBold();
+			return text;
+		}
+
+	
 	public class EntityChooserTree extends TreeViewer {
 		/**
 		 * 
@@ -510,6 +677,8 @@ public class QueryBuilder extends Block {
 		public EntityChooserTree() {
 			super();
 			setParallelExtraColumns(2);
+			setWidth(Table.HUNDRED_PERCENT);
+			setExtraColumnHorizontalAlignment(2,Table.HORIZONTAL_ALIGN_RIGHT);
 			entityMap = getEntityMap(helper.getListOfRelatedEntities());
 		}
 		public EntityChooserTree(ICTreeNode node, IWContext iwc) {
@@ -531,7 +700,7 @@ public class QueryBuilder extends Block {
 				if (entityNode.getParentNode() != null) {
 					switch (colIndex) {
 						case 1 :
-							return new Text(entityNode.getBeanClassName());
+							return null;//return new Text(entityNode.getBeanClassName());
 						case 2 :
 							CheckBox checkBox = new CheckBox(PARAM_RELATED, entityNode.encode());
 							if (entityNode.getPath() != null) {
@@ -557,34 +726,5 @@ public class QueryBuilder extends Block {
 			return new Text(nodeName);
 		}
 	}
-	/**
-	 * @param i
-	 */
-	public void setInvestigationLevel(int i) {
-		investigationLevel = i;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getQueryFolderID() {
-		return queryFolderID;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setQueryFolderID(int i) {
-		queryFolderID = i;
-	}
 	
-	private DropdownMenu getConditionTypeDropdown(){
-		DropdownMenu drp = new DropdownMenu(PARAM_COND_TYPE);
-		String[] types =QueryConditionPart.getConditionTypes();
-		for (int i = 0; i < types.length; i++) {
-			drp.addMenuElement(types[i],iwrb.getLocalizedString("conditions."+types[i],types[i]));
-		}
-		return drp;
-	}
-
 }

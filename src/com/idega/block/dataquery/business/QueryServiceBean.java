@@ -43,7 +43,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	}
 	
 		
-	
+	//TODO do properly
 	public Collection getSourceQueryEntityParts(){
 		Collection coll = new ArrayList(2);
 		GenericEntity ent1 = getEntity(com.idega.user.data.User.class);
@@ -133,9 +133,24 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	
 	private void generateEntityTree(QueryEntityPart node,int level){
 		if(node !=null){
+			// one-to-may entities
+			Collection manyToManyEntities = getManyToManyEntities(node); 
+			Iterator iter ;
+			if(manyToManyEntities!=null && !manyToManyEntities.isEmpty()){
+				iter = manyToManyEntities.iterator();
+				while (iter.hasNext()) {
+					Class entityClass = (Class) iter.next();
+					GenericEntity relatedEntity = getEntity(entityClass);
+					QueryEntityPart child2 = new QueryEntityPart (relatedEntity.getEntityName(),relatedEntity.getClass().getName());
+					node.addChild(child2);
+					if(level >0)
+						generateEntityTree(child2,level-1);
+					//System.out.println(child2.getNodePath());
+				}
+			}
 			//QueryEntityPart part = (QueryEntityPart) node;
 			Collection attributes = getEntityAttributes(node);
-			Iterator iter = attributes.iterator();
+			iter = attributes.iterator();
 			//IWTreeNode child;
 			while (iter.hasNext()) {
 				EntityAttribute attribute = (EntityAttribute) iter.next();
@@ -149,19 +164,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 					}	
 				}				
 			}
-			Collection manyToManyEntities = getManyToManyEntities(node); 
-			if(manyToManyEntities!=null && !manyToManyEntities.isEmpty()){
-				iter = manyToManyEntities.iterator();
-				while (iter.hasNext()) {
-					Class entityClass = (Class) iter.next();
-					GenericEntity relatedEntity = getEntity(entityClass);
-					QueryEntityPart child2 = new QueryEntityPart (relatedEntity.getEntityName(),relatedEntity.getClass().getName());
-					node.addChild(child2);
-					if(level >0)
-						generateEntityTree(child2,level-1);
-					//System.out.println(child2.getNodePath());
-				}
-			}
+			// many to many entities
+			
 		}
 		else
 			System.out.println("no object");

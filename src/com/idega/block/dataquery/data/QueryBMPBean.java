@@ -6,12 +6,13 @@
  */
 package com.idega.block.dataquery.data;
 
+import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileBMPBean;
 
 /**
  * @author aron
  */
-public class QueryBMPBean extends ICFileBMPBean implements Query{
+public class QueryBMPBean extends ICFileBMPBean implements Query,ICFile{
 	
 	public int getXMLSchemaId() {
 	   return Integer.parseInt((String) getMetaData("xml_schema_id"));
@@ -19,6 +20,14 @@ public class QueryBMPBean extends ICFileBMPBean implements Query{
   
 	 public void setXMLSchemaId(int xmlSchemaId) {
 	   setMetaData("xml_schema_id", Integer.toString(xmlSchemaId));
+	 }
+	 
+	 public boolean isTemplate(){
+	 	return Boolean.getBoolean(getMetaData("templateflag"));
+	 }
+	 
+	 public void setAsTemplate(boolean template){
+	 	setMetaData("templateflag",Boolean.toString(template));	 
 	 }
 	  
 }
