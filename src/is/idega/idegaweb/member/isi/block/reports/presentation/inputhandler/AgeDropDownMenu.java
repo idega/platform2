@@ -26,7 +26,7 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addMenuElement(" "," ");
+		addMenuElement(" ",iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages"));
 		for (int i = youngest; i <= oldest; i++) {
 			addMenuElement(i, Integer.toString(i));
 		}
