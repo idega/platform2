@@ -597,4 +597,9 @@ private int _layout = RADIO_BUTTON_VIEW;
     }
     return obj;
   }
+
+  private String getCacheState(IWContext iwc){
+    return String.valueOf(PollBusiness.canVote(iwc,_pollID));
+  }
+
 }
