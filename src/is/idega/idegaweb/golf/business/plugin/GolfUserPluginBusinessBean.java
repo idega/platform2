@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.3 2004/11/19 10:39:39 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.4 2004/11/19 18:06:44 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,16 +11,20 @@ package is.idega.idegaweb.golf.business.plugin;
 
 import is.idega.idegaweb.golf.presentation.GolferTab;
 import is.idega.idegaweb.golf.util.GolfConstants;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -28,15 +32,16 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2004/11/19 10:39:39 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/19 18:06:44 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
 	private Collection clubs;
 	private GroupBusiness groupBiz;
+	private UserBusiness userBiz;
 
 	/**
 	 * 
@@ -116,9 +121,42 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException {
-		List tabs = new ArrayList();
-		tabs.add(new GolferTab());
-		return tabs;
+		
+		//only add the tab if superuser or a club admin (golfclub in top nodes) or a golf union admin
+		IWContext iwc = IWContext.getInstance();
+		
+		if(iwc!=null){
+			List tabs = new ArrayList();
+			
+			if(!iwc.isSuperAdmin()){
+				//this might mean not all e.g. division admin might see this tab, if so then add a role like "Golf Admin"
+				boolean showTab = false;
+				UserBusiness userBiz = getUserBusiness();
+				Collection groups = userBiz.getUsersTopGroupNodesByViewAndOwnerPermissions(iwc.getCurrentUser(), iwc);
+				if(groups!=null && !groups.isEmpty()){
+					Iterator iter = groups.iterator();
+					
+					while (iter.hasNext() && !showTab) {
+						Group group = (Group) iter.next();
+						String type = group.getGroupType();
+						String name = group.getName();
+						if( name.startsWith("Golf") && (type.equals(IWMemberConstants.GROUP_TYPE_CLUB) || type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE))){
+							showTab = true;
+						}
+					}
+					
+					if(showTab){
+						tabs.add(new GolferTab());
+					}
+				}
+			}
+			else{
+				tabs.add(new GolferTab());
+			}
+			
+			return (tabs.isEmpty())?null:tabs;
+		}
+		return null;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
@@ -180,6 +218,18 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			}
 		}
 		return groupBiz;
+	}
+	
+	public UserBusiness getUserBusiness(){
+		if(userBiz==null){
+			try {
+				userBiz = (UserBusiness)this.getServiceInstance(UserBusiness.class);
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+		}
+		return userBiz;
 	}
 	
 }
