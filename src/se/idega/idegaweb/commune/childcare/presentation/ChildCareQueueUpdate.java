@@ -94,7 +94,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.setHeight(2, 12);
 			
 			table.add(getSmallErrorText(localize("child_care.already_updated","No choices found or already updated.")), 1, 1);
-			table.add(back, 1, 3);
+			table.add(new UserHomeLink(), 1, 3);
 			add(table);
 		}
 	}
@@ -509,16 +509,11 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 							hasPriority[a] = false;
 					}
 				}
-				try {
-					getBusiness().setChildCareQueueExported(queue);
-				}
-				catch (RemoteException e2) {
-					e2.printStackTrace();
-				}
 			}
 			
+			boolean success = false;
 			try {
-				getBusiness().insertApplications(iwc.getCurrentUser(), provider, dates, iwc.getParameter(PARAMETER_MESSAGE), _childID, queueDates, hasPriority);
+				success = getBusiness().insertApplications(iwc.getCurrentUser(), provider, dates, iwc.getParameter(PARAMETER_MESSAGE), _childID, queueDates, hasPriority);
 			}
 			catch (RemoteException e1) {
 				e1.printStackTrace();
@@ -528,9 +523,27 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.setCellpaddingAndCellspacing(0);
 			table.setHeight(2, 12);
 			
-			table.add(getSmallHeader(localize("child_care.queue_update_completed","Queue update completed.")), 1, 1);
-			table.add(new UserHomeLink(), 1, 3);
-			add(table);
+			if (success) {
+				Iterator iterator = choices.iterator();
+				while (iter.hasNext()) {
+					ChildCareQueue queue = (ChildCareQueue) iterator.next();
+					try {
+						getBusiness().setChildCareQueueExported(queue);
+					}
+					catch (RemoteException e2) {
+						e2.printStackTrace();
+					}
+				}
+
+				table.add(getSmallHeader(localize("child_care.queue_update_completed","Queue update completed.")), 1, 1);
+				table.add(new UserHomeLink(), 1, 3);
+				add(table);
+			}
+			else {
+				table.add(getSmallErrorText(localize("child_care.queue_update_failed","Queue update failed.")), 1, 1);
+				table.add(new UserHomeLink(), 1, 3);
+				add(table);
+			}
 		//}
 	}
 	
