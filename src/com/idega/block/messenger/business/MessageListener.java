@@ -43,7 +43,7 @@ public class MessageListener implements Runnable{
     if( t == null ){
       t = new Thread();
       t.start();
-      run();
+      //run();
     }
   }
 
@@ -55,7 +55,8 @@ public class MessageListener implements Runnable{
 
    /**Destroy the thread*/
   public void destroy() {
-   t = null;
+    stop();
+    t = null;
   }
 
   public void setInterval(long interval){

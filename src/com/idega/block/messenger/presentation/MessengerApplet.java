@@ -60,7 +60,6 @@ public class MessengerApplet extends Applet implements ActionListener{
   private String keyPressed=null;
   //private Image offscreenImage;
   //private Graphics offscr;
-  private Graphics g;
 
   private long checkTimer = 5000;
   private long threadSleep = 50;
@@ -76,10 +75,7 @@ public class MessengerApplet extends Applet implements ActionListener{
   /**Initialize the applet*/
   public void init() {
 
-
-    g = getGraphics();
-
-        setBackground(Color.red);
+    setBackground(Color.red);
     setForeground(Color.blue);
 
     try {
@@ -333,7 +329,7 @@ public class MessengerApplet extends Applet implements ActionListener{
 
     System.out.println("DONE! processing the packet");
 
-  paint(g);
+    repaint();
 
   }
 
@@ -366,10 +362,8 @@ public class MessengerApplet extends Applet implements ActionListener{
       item.setSize(16,100);
 
       add(item);
-      //item.repaint();
-      item.paint(g);
-      //repaint();
-      paint(g);
+      item.repaint();
+      repaint();
 
       getToolkit().sync();
 
@@ -414,8 +408,8 @@ public class MessengerApplet extends Applet implements ActionListener{
     }*/
 
 
-    //repaint();
-    paint(g);
+    repaint();
+
   }
 
   /**
@@ -453,7 +447,6 @@ public class MessengerApplet extends Applet implements ActionListener{
 
   public synchronized void paint(Graphics g) {
   //use the update method
-     super.paint(g);
     g.drawString("test",150,150);
     System.out.println("IN Paint");
     if(isfirstRun){
