@@ -24,6 +24,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.user.data.User;
 
 /**
@@ -237,5 +238,9 @@ public class EHealthBlock extends Block {
 	
 	protected CommuneUserBusiness getUserBusiness(IWApplicationContext  iwc) throws IBOLookupException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	
+	protected RadioButton getRadioButton(String name, String value) {
+		return (RadioButton) setStyle(new RadioButton(name,value),STYLENAME_CHECKBOX);
 	}
 }
