@@ -74,7 +74,7 @@ public class ContractReSignWindow extends Window{
 
     if(isAdmin || isLoggedOn){
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
+        SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
 
       if(iwc.getParameter("end")!=null || iwc.getParameter("end")!=null){
@@ -100,11 +100,12 @@ public class ContractReSignWindow extends Window{
 
   private PresentationObject getSignatureTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter("contract_id"));
-    Table T = new Table(2,7);
+    Table T = new Table(2,8);
     try{
       if(iContractId > 0){
         Contract eContract = new Contract(iContractId);
         User user = new User(eContract.getUserId().intValue());
+        boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
           T.mergeCells(1,1,2,1);
           T.mergeCells(1,2,2,2);
@@ -119,7 +120,10 @@ public class ContractReSignWindow extends Window{
           idegaTimestamp movdate = eContract.getMovingDate()!=null?new idegaTimestamp(eContract.getMovingDate()):null;
           DateInput movDate = new DateInput("mov_date");
           idegaTimestamp moving = idegaTimestamp.RightNow();
-          moving.addDays((int)SysProps.getTermOfNoticeDays());
+          int termofnotice = 1;
+          if(SysProps !=null)
+            termofnotice = (int)SysProps.getTermOfNoticeDays();
+          moving.addDays(termofnotice);
 
           if(moving.isLaterThan(new idegaTimestamp(eContract.getValidTo())))
             movDate.setDate(eContract.getValidTo());
@@ -128,21 +132,22 @@ public class ContractReSignWindow extends Window{
 
           if(movdate !=null )
             movDate.setDate(movdate.getSQLDate());
-          if(isAdmin)
+          if(isAdmin || isContractUser)
             T.add(movDate,2,5);
-          else
+          else if(movdate !=null)
             T.add(Edit.formatText(movdate.getLocaleDate(iwc)),2,5);
 
 
-          TextArea TA = new TextArea("resign_info",60,6);
+          TextArea TA = new TextArea("resign_info",50,3);
           Edit.setStyle(TA);
-          T.mergeCells(1,6,2,6);
-          T.add(TA,1,6);
-          if(user == eUser){
-            T.add(new SubmitButton("resign","Resign"),2,7);
+          T.add(Edit.formatText(iwrb.getLocalizedString("resign_info","Resign info")),1,6);
+          T.mergeCells(1,7,2,7);
+          T.add(TA,1,7);
+          if(isContractUser){
+            T.add(new SubmitButton("resign","Resign"),2,8);
           }
           else if (isAdmin){
-            T.add(new SubmitButton("end","End"),2,7);
+            T.add(new SubmitButton("end","End"),2,8);
           }
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())));
         }
