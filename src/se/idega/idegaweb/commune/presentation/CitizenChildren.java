@@ -48,7 +48,7 @@ public class CitizenChildren extends CommuneBlock {
 	private boolean showSSNSearchForm = false;
 	private boolean showOutOfRangeChildren =true;
 	private int fromAge = -1, toAge = 100;
-
+	private boolean addLoggedInUser = false;
 
 	public CitizenChildren() {
 		buttonLabel = getText("");
@@ -105,6 +105,14 @@ public class CitizenChildren extends CommuneBlock {
 	public void setLocalizedButtonLabel(String localeString, String text) {
 		buttonLabel.setLocalizedText(localeString, text);
 	}
+	
+	protected boolean addLoggedInUser() {
+		return addLoggedInUser;
+	}
+	
+	public void setToAddLoggedInUser(boolean addUser) {
+		addLoggedInUser = addUser;
+	}
 
 	private PresentationObject getChildrenForm(IWContext iwc) {
 		Form f = new Form();
@@ -114,6 +122,9 @@ public class CitizenChildren extends CommuneBlock {
 		
 		int row = 1;
 		Collection childs = getChilds(iwc, this.user);
+		if (addLoggedInUser()) {
+			childs.add(user);
+		}
 		if (!childs.isEmpty()) {
 			Iterator iter = childs.iterator();
 			User child;
