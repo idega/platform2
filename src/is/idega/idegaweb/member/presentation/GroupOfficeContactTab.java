@@ -64,7 +64,7 @@ public class GroupOfficeContactTab extends UserGroupTab {
 
 	public GroupOfficeContactTab(Group group) {
 		this();
-		// do not store the group because this tab instance will be also used by other groups
+		// do not store the group because this tab instance will also be used by other groups
 		// (see setGroupId() !)
 		setGroupId(((Integer) group.getPrimaryKey()).intValue());
 	}
@@ -154,18 +154,18 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		mobilePhoneMenu = new DropdownMenu(phoneTypes, mobilePhoneMenuName);
 		faxPhoneMenu = new DropdownMenu(phoneTypes, faxPhoneMenuName);
 
-		for (int a = 0; a < phoneTypes.length; a++) {
-			if (a == 0) {
-				homePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[a].getID()));
+		for (int i = 0; i < phoneTypes.length; i++) {
+			if (i == 0) {
+				homePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
 			}
-			else if (a == 1) {
-				workPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[a].getID()));
+			else if (i == 1) {
+				workPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
 			}
-			else if (a == 2) {
-				mobilePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[a].getID()));
+			else if (i == 2) {
+				mobilePhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
 			}
-			else if (a == 3) {
-				faxPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[a].getID()));
+			else if (i == 3) {
+				faxPhoneMenu.setSelectedElement(Integer.toString(phoneTypes[i].getID()));
 			}
 		}
 
@@ -305,18 +305,18 @@ public class GroupOfficeContactTab extends UserGroupTab {
 						(String) fieldValues.get(mobilePhoneMenuName),
 						(String) fieldValues.get(faxPhoneMenuName)};
 
-				for (int a = 0; a < phoneString.length; a++) {
-					if (phoneString[a] != null && phoneString[a].length() > 0) {
-						//business.updateUserPhone(getUserId(),Integer.parseInt(phoneTypeString[a]),phoneString[a]);
-						getGroupBusiness(iwc).updateGroupPhone(group, Integer.parseInt(phoneTypeString[a]), phoneString[a]);
+				for (int i = 0; i < phoneString.length; i++) {
+					if (phoneString[i] != null && phoneString[i].length() > 0) {
+						getGroupBusiness(iwc).updateGroupPhone(group, Integer.parseInt(phoneTypeString[i]), phoneString[i]);
 					}
 				}
-				if ((String) fieldValues.get(emailFieldName) != null && ((String) fieldValues.get(emailFieldName)).length() > 0)
-					//business.updateUserMail(getUserId(),(String)fieldValues.get(emailFieldName));
+				if ((String) fieldValues.get(emailFieldName) != null && ((String) fieldValues.get(emailFieldName)).length() > 0) {
 					getGroupBusiness(iwc).updateGroupMail(group, (String) fieldValues.get(emailFieldName));
+        }
 			}
-			if ((String) fieldValues.get(homepageFieldName) != null && ((String) fieldValues.get(homepageFieldName)).length() > 0)
+			if ((String) fieldValues.get(homepageFieldName) != null && ((String) fieldValues.get(homepageFieldName)).length() > 0) {
 				group.setHomePageURL((String) fieldValues.get(homepageFieldName));
+      }
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
