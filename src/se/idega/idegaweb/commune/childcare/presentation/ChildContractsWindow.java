@@ -4,7 +4,6 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import com.idega.presentation.PresentationObject;
 
 
 /**
