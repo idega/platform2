@@ -19,6 +19,7 @@ import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:		WorkReportStatsBusinessBean
@@ -71,6 +72,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		ReportableCollection reportData = new ReportableCollection();
 		
+		
+		
 		//initializing fields
 		IDOEntityDefinition reportDef = IDOLookup.getEntityDefinitionForClass(WorkReport.class);
 		
@@ -107,6 +110,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			WorkReportMember member = (WorkReportMember)iter.next();
 			ReportableData data = new ReportableData();
 			
+			
 			//member data
 			data.addData(personalId,member.getPersonalId());
 			data.addData(name,name.getName());
@@ -117,10 +121,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 			
 	
-	//	reportData.addExtraHeaderParameter("workreport-report",_iwrb.getLocalizedString("WorkReportStatsBusiness.label","Current date"),"label",));
+		reportData.addExtraHeaderParameter("workreportreport",_iwrb.getLocalizedString("WorkReportStatsBusiness.label","Current date"),"label",IWTimestamp.getTimestampRightNow().toGMTString());
 		
 		return reportData;
 	}
+	
+	
 	
 	
 

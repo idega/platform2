@@ -120,6 +120,7 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		return _extraHeaderParameters;
 	}
 	
+	//TODO Gummi generate keys!
 	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
 		_extraHeaderParameters.put(labelKey,LabelValue);
 		_extraHeaderParameters.put(valueKey,valueValue);

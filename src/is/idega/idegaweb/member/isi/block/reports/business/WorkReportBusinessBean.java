@@ -53,6 +53,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
@@ -1512,7 +1513,30 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     return users;
   }
        
-    
+   
+   
+  public DropdownMenu getYearDropdownMenu(int selectedYear) {
+		DropdownMenu dateSelector = new DropdownMenu(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+		IWTimestamp stamp = IWTimestamp.RightNow();
+
+		int currentYear = stamp.getYear();
+		int beginningYear = 2001;//Because we have no older data, could also be an application setting
+
+		for (int i = beginningYear; i <= currentYear; i++) {
+			dateSelector.addMenuElement(i,Integer.toString(i));
+		}
+		
+		if(selectedYear>=beginningYear) {
+			dateSelector.setSelectedElement(selectedYear);
+		}
+		else {
+			dateSelector.setSelectedElement(currentYear);
+		}
+		
+		
+		return dateSelector;
+  	
+  }
   private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
     if (users == null)  {
       return false;

@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import java.rmi.RemoteException;
+
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import com.idega.presentation.IWContext;
@@ -112,7 +114,7 @@ public class WorkReportSelector extends ClubSelector {
 			}
 			else{
 				
-				addWorkReportSelectionForm();
+				addWorkReportSelectionForm(iwc);
 			}
 		}
 		
@@ -121,23 +123,13 @@ public class WorkReportSelector extends ClubSelector {
 
 
 
-	protected void addWorkReportSelectionForm() {
+	protected void addWorkReportSelectionForm(IWContext iwc) throws RemoteException{
 
 		Form reportSelectorForm = new Form();
 		
 		reportSelectorForm.maintainParameters(getParametersToMaintain());
 		
-		DropdownMenu dateSelector = new DropdownMenu(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
-		IWTimestamp stamp = IWTimestamp.RightNow();
-		
-		int currentYear = stamp.getYear();
-		int beginningYear = 2001;//Because we have no older data, could also be an application setting
-		
-		for (int i = beginningYear; i <= currentYear; i++) {
-			dateSelector.addMenuElement(i,Integer.toString(i));
-		}
-		
-		dateSelector.setSelectedElement(currentYear);
+		DropdownMenu dateSelector = getWorkReportBusiness(iwc).getYearDropdownMenu(-1);
 		
 		Table table = new Table(2,3);
 		table.mergeCells(1,1,2,1);

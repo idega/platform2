@@ -3,7 +3,6 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
@@ -105,6 +105,7 @@ public class WorkReportMultiEditor extends Block {
     //HACK!
     form.maintainParameter(WorkReportWindow.ACTION);
     add(form);
+    add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
   }
   
   private String parseAction(IWContext iwc) throws RemoteException{

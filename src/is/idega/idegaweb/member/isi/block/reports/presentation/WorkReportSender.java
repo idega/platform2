@@ -8,6 +8,7 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import java.rmi.RemoteException;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PrintButton;
@@ -80,7 +81,8 @@ public class WorkReportSender extends WorkReportSelector {
 			if( comments == null){
 				comments = iwrb.getLocalizedString("workreportsender.no_comments","No comments.");
 			}
-			add( comments);
+			Text commentsText = new Text(comments,true,false,false);
+			add( commentsText);
 		
 		
 			if(iwc.isSuperAdmin() || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(getUserType())){
@@ -142,6 +144,8 @@ public class WorkReportSender extends WorkReportSelector {
 		
 		/////////
 		String text = report.toString();
+		Text commentsText = new Text(text,true,false,false);
+		
 		Form form = new Form();
 		form.add(iwrb.getLocalizedString("workreportsender.review_comments","The check has ended. Please review the comments and either fix what needs to be fixed or send the report by clicking the button."));
 		form.addBreak();
@@ -151,7 +155,7 @@ public class WorkReportSender extends WorkReportSelector {
 			form.add(iwrb.getLocalizedString("workreportsender.no_comments","No comments."));
 		}
 		else{
-			form.add(text);
+			form.add(commentsText);
 		}
 		
 		form.addBreak();

@@ -12,6 +12,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDOReportableEntity;
 import com.idega.user.data.Group;
 
 /**
@@ -20,7 +21,7 @@ import com.idega.user.data.Group;
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class WorkReportBMPBean extends GenericEntity implements WorkReport {
+public class WorkReportBMPBean extends GenericEntity implements WorkReport,IDOReportableEntity {
 	protected final static String ENTITY_NAME = "ISI_WORK_REPORT";
 	protected final static String COLUMN_NAME_GROUP_ID = "GROUP_ID";//Could be a club,league or a regional union
 	protected final static String COLUMN_NAME_REGIONAL_UNION_GROUP_ID = "REG_UNI_GR_ID";//a connection for a club

@@ -14,14 +14,11 @@ import javax.ejb.FinderException;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
-import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxAsLinkConverter;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
-import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
-import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -32,6 +29,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -123,9 +121,9 @@ public class WorkReportOverViewCloseView extends Block {
     Form form = new Form();
     PresentationObject pres = getContent(iwc, iwrb, form);
     form.add(pres);
-    //HACK!
-    form.maintainParameter(WorkReportWindow.ACTION);
+
     add(form);
+		add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
   }
 
 	private String parseAction(IWContext iwc) throws RemoteException{
@@ -190,6 +188,7 @@ public class WorkReportOverViewCloseView extends Block {
     List params = new ArrayList();
     params.add(WorkReportWindow.ACTION);
     params.add(CLOSE_VIEW_WORK_REPORT_ID);
+    form.maintainParameters(params);
     
     // define path short keys and map corresponding converters
     //year of report
