@@ -256,16 +256,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   }
   
   private void initializeLeagueData(WorkReportBusiness workReportBusiness, IWContext iwc) {
-    try {
-      // create data from the database
-      workReportBusiness.createWorkReportData(getWorkReportId());
-    } catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
-    } 
     // collect all work report account records
     WorkReportClubAccountRecordHome workReportClubAccountRecordHome = null;
     Collection workReportClubAccountRecords = null;

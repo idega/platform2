@@ -247,7 +247,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     try {
       // create data from the database
       int workReportId = getWorkReportId();
-      workReportBusiness.createWorkReportData(workReportId);
       editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
     } catch (RemoteException ex) {
       System.err.println(

@@ -241,16 +241,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException(message);
     }
-    try {
-      // create data from the database
-      workReportBusiness.createWorkReportData(getWorkReportId());
-    } catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-    } 
     Collection coll;
     Collection leagues;
     Set referencedLeagues = new HashSet();
