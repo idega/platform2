@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.70 2004/05/24 21:43:44 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.71 2004/07/28 12:31:05 aron Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/05/24 21:43:44 $ by $Author: laddi $
+ * Last modified: $Date: 2004/07/28 12:31:05 $ by $Author: aron $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -512,8 +512,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 									 applicant.getPhoneWork());
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+			User cohabitant = null;
 			if (applicant.hasCohabitant()) {
-				createCohabitant
+				cohabitant = createCohabitant
 						(applicationID, ssn, genderHome, pidChecker, userBusiness,
 						 notNackaResident, user, address, homePhone, familyLogic);
 			}
@@ -525,7 +526,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				for (int i = 0; i < children.length; i++) {
 					final CitizenApplicantChildren child = children [i];
 					createChild (ssn, genderHome, pidChecker, userBusiness,
-											 notNackaResident, user, address,	homePhone, familyLogic,
+											 notNackaResident, user,cohabitant, address,	homePhone, familyLogic,
 											 child);
 				}
 			}
@@ -565,7 +566,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	private void createChild
 		(final String ssn, final GenderHome genderHome, final PIDChecker pidChecker,
 		 final CommuneUserBusiness userBusiness, final boolean notNackaResident,
-		 final User user, Address address, Phone homePhone,
+		 final User user,User cohabitant, Address address, Phone homePhone,
 		 final MemberFamilyLogic familyLogic, final CitizenApplicantChildren child)
 		throws RemoteException, FinderException, CreateException,
 					 IDOAddRelationshipException {
@@ -585,12 +586,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					 childTimestamp);
 			familyLogic.setAsParentFor(user, childUser);
 			familyLogic.setAsCustodianFor(user, childUser);
+			if(cohabitant!=null){
+				familyLogic.setAsParentFor(cohabitant,childUser);
+				familyLogic.setAsCustodianFor(cohabitant,childUser);
+			}
 			if (null != address) childUser.addAddress(address);
 			if (homePhone != null) childUser.addPhone(homePhone);
 		}
 	}
 
-	private void createCohabitant
+	private User createCohabitant
 		(final int applicationID, final String ssn, final GenderHome genderHome,
 		 final PIDChecker pidChecker, final CommuneUserBusiness userBusiness,
 		 final boolean notNackaResident, final User user, Address address,
@@ -629,12 +634,14 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				if (homePhone != null) {
 					cohabitantUser.addPhone(homePhone);
 				}
+				return cohabitantUser;
 			}
 		}
 		catch (FinderException fe) {
 			//This is if no cohabitant record is found
 			fe.printStackTrace();
 		}
+		return null;
 	}
 
 	private Phone createPhone(final User user, int phoneNumberId, String phoneString) throws CreateException, IDOLookupException, IDOAddRelationshipException {
