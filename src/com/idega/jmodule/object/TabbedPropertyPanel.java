@@ -33,6 +33,9 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
   private boolean justConstructed = true;
   private boolean first = true;
   private boolean stateChanged = false;
+  private boolean okClicked = false;
+  private boolean cancelClicked = false;
+  private boolean applyClicked = false;
 
   private SubmitButton ok;
   private SubmitButton cancel;
@@ -56,7 +59,7 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
     lineUpButtons();
     ok.addIWSubmitListener(this, this,modinfo);
     apply.addIWSubmitListener(this, this,modinfo);
-
+    cancel.addIWSubmitListener(this, this,modinfo);
   }
 
   public void initializeButtons(){
@@ -117,21 +120,46 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
   public void stateChanged(ChangeEvent e){
     if(useCollector && !first){
       stateChanged = true;
-      //collector.setSelectedIndex(tpane.getSelectedIndex(),((IWModuleEvent)e).getModuleInfo());
     }
     first = false;
   }
 
   public void actionPerformed(IWSubmitEvent e){
-    if(e.getSource() == ok || e.getSource() == apply){
+    if(e.getSource() == ok){
+      this.okClicked = true;
+      this.cancelClicked = false;
+      this.applyClicked = false;
       collector.storeAll(e.getModuleInfo());
-    }
-
-    if(e.getSource() == cancel){
-      // do nothing : window containing this might listen to this and close.
+    }else if(e.getSource() == apply){
+      this.okClicked = false;
+      this.cancelClicked = false;
+      this.applyClicked = true;
+      collector.storeAll(e.getModuleInfo());
+    }else if(e.getSource() == cancel){
+      this.okClicked = false;
+      this.cancelClicked = true;
+      this.applyClicked = false;
+    } else {
+      this.okClicked = false;
+      this.cancelClicked = false;
+      this.applyClicked = false;
     }
 
   }
+
+  public boolean clickedOk(){
+    return this.okClicked;
+  }
+
+  public boolean clickedCancel(){
+    return this.cancelClicked;
+  }
+
+  public boolean clickedApply(){
+    return this.applyClicked;
+  }
+
+
 
   public void addTab(ModuleObject collectable, int index, ModuleInfo modinfo){
     tpane.insertTab( collectable.getName(), collectable, index, modinfo);
