@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.35 2002/08/22 14:14:38 aron Exp $
+ * $Id: CampusAllocator.java,v 1.36 2002/08/24 15:26:32 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -934,53 +934,61 @@ public class CampusAllocator extends Block implements Campus {
 				System.err.println("Sorry contracts overlap");
 				return returner;
 			}
-			if (sApplicantId != null && sApartmentId != null) {
-				int iApartmentId = Integer.parseInt(sApartmentId);
-				int iApplicantId = Integer.parseInt(sApplicantId);
+			if (sApplicantId != null ){
+        if( sApartmentId != null) {
+          int iApartmentId = Integer.parseInt(sApartmentId);
+          int iApplicantId = Integer.parseInt(sApplicantId);
 
-				Applicant eApplicant = null;
-				try {
-					eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(iApplicantId);
-				}
-				catch (SQLException ex) {
-					ex.printStackTrace();
-				}
+          Applicant eApplicant = null;
+          try {
+            eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(iApplicantId);
+          }
+          catch (SQLException ex) {
+            ex.printStackTrace();
+          }
 
-				List L = ContractFinder.listOfApplicantContracts(iApplicantId, ContractBMPBean.statusCreated);
+          List L = ContractFinder.listOfApplicantContracts(iApplicantId, ContractBMPBean.statusCreated);
 
-				if (L.isEmpty() && eApplicant != null) {
-					User eUser = makeNewUser(eApplicant);
-					if (eUser != null) {
-						if (makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to))
-							returner = iwrb.getLocalizedString("alloc_was_saved", "Contract was saved");
-						else
-							returner = iwrb.getLocalizedString("alloc_not_saved", "Contract was not saved");
-					}
-					else
-						returner = iwrb.getLocalizedString("no_user", "No user was made");
-				}
-				else
-					returner = iwrb.getLocalizedString("has_contracts_or_no_applicant", "Has contracts or no applicant");
-			}
-			else if (sContractId != null) {
+          if (L.isEmpty() && eApplicant != null) {
+            User eUser = makeNewUser(eApplicant);
+            if (eUser != null) {
+              if (makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to))
+                returner = iwrb.getLocalizedString("alloc_was_saved", "Contract was saved");
+              else
+                returner = iwrb.getLocalizedString("alloc_not_saved", "Contract was not saved");
+            }
+            else
+              returner = iwrb.getLocalizedString("no_user", "No user was made");
+          }
+          else
+            returner = iwrb.getLocalizedString("has_contracts_or_no_applicant", "Has contracts or no applicant");
+        }
+        else if (sContractId != null) {
 
-				int iContractId = Integer.parseInt(sContractId);
-				Contract eContract = null;
-				try {
-					eContract = ((ContractHome) IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-					eContract.setValidFrom(from.getSQLDate());
-					eContract.setValidTo(to.getSQLDate());
-					if (sApartmentId != null) {
-						int iApartmentId = Integer.parseInt(sApartmentId);
-						eContract.setApartmentId(iApartmentId);
-					}
-					eContract.update();
-					returner = iwrb.getLocalizedString("alloc_was_updated", "Contract updated");
-				}
-				catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
+          int iContractId = Integer.parseInt(sContractId);
+          Contract eContract = null;
+          try {
+            eContract = ((ContractHome) IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+            eContract.setValidFrom(from.getSQLDate());
+            eContract.setValidTo(to.getSQLDate());
+            if (sApartmentId != null) {
+              int iApartmentId = Integer.parseInt(sApartmentId);
+              eContract.setApartmentId(iApartmentId);
+            }
+            eContract.update();
+            returner = iwrb.getLocalizedString("alloc_was_updated", "Contract updated");
+          }
+          catch (SQLException ex) {
+            ex.printStackTrace();
+          }
+
+        }
+        else
+            System.err.println("no Apartment id");
+
+      }
+      else
+        System.err.println("no Applicant id");
 		}
 
 		return returner;
