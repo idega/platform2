@@ -389,6 +389,7 @@ public class Member extends com.idega.data.genericentity.Member {
               unies[i].setMemberStatus("A");
 
             }
+            unies[i].update();
           }
 	}
 
