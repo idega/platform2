@@ -19,7 +19,7 @@ public class TextControl3 extends TextControl {
   public void doMenu(){
 
     Table T = new Table();
-     T.setWidth("100%");
+     T.setWidth(600);
             T.setBorder(0);
 
 
@@ -44,15 +44,15 @@ TextReader texti8 = new TextReader(9);
 
 
 // Adding Tabels with Ancors
-T.add(L,1,1);
-    T.add(L2,1,2);
-    T.add(L3,1,3);
-    T.add(L6,2,1);
-    T.add(L5,2,2);
-    T.add(L4,2,3);
-    T.add(L7,1,4);
-    T.add(L8,2,4);
-    T.add(" ",1,5);
+T.add(L,1,3);
+    T.add(L2,1,5);
+    T.add(L3,1,7);
+    T.add(L6,2,3);
+    T.add(L5,2,5);
+    T.add(L4,2,7);
+    T.add(L7,3,3);
+    T.add(L8,3,5);
+    T.add(" ",1,10);
      add(T);
 
 // Adding Text form TextReader

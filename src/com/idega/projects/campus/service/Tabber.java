@@ -23,7 +23,7 @@ public class Tabber extends JModuleObject {
 
   private String LightColor,MiddleColor,DarkColor;
   private String action;
-  private static final String strAction = "manager_action";
+  public static final String strAction = "manager_action";
   private Member eMember;
   private ModuleObject Tabs;
   private CampusObject CampObj;
@@ -100,14 +100,19 @@ public class Tabber extends JModuleObject {
 
       Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/manager.jsp");
       Link1.addParameter(strAction,ACT1);
+      Link1.addParameter(Action.sAdminAction,ACT1);
       Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/manager.jsp");
       Link2.addParameter(strAction,ACT2);
+      Link2.addParameter(Action.sAdminAction,ACT2);
       Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/manager.jsp");
       Link3.addParameter(strAction,ACT3);
+      Link3.addParameter(Action.sAdminAction,ACT3);
       Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/manager.jsp");
       Link4.addParameter(strAction,ACT4);
+      Link4.addParameter(Action.sAdminAction,ACT4);
       Link Link5 = new Link(new Image(iAct == ACT5?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/manager.jsp");
       Link5.addParameter(strAction,ACT5);
+      Link5.addParameter(Action.sAdminAction,ACT5);
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,1);
       LinkTable.add(Link3,1,1);
@@ -129,12 +134,16 @@ public class Tabber extends JModuleObject {
 
       Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/threads.gif":"/pics/tabs/"+lang+"/threads1.gif"),"/index2.jsp");
       Link1.addParameter(strAction,ACT1);
+      Link1.addParameter(Action.sStaffAction,ACT1);
       Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/index2.jsp");
       Link2.addParameter(strAction,ACT2);
+      Link2.addParameter(Action.sStaffAction,ACT2);
       Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"),"/index2.jsp");
       Link3.addParameter(strAction,ACT3);
+      Link3.addParameter(Action.sStaffAction,ACT3);
       Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/index2.jsp");
       Link4.addParameter(strAction,ACT4);
+      Link4.addParameter(Action.sStaffAction,ACT4);
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,1);
       LinkTable.add(Link3,1,1);
@@ -155,12 +164,16 @@ public class Tabber extends JModuleObject {
 
       Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/index2.jsp");
       Link1.addParameter(strAction,ACT1);
+      Link1.addParameter(Action.sTenantAction,ACT1);
       Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/index2.jsp");
       Link2.addParameter(strAction,ACT2);
+      Link2.addParameter(Action.sTenantAction,ACT2);
       Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/index2.jsp");
       Link3.addParameter(strAction,ACT3);
+      Link3.addParameter(Action.sTenantAction,ACT3);
       Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/announce.gif":"/pics/tabs/"+lang+"/announce1.gif"),"/index2.jsp");
       Link4.addParameter(strAction,ACT4);
+      Link4.addParameter(Action.sTenantAction,ACT4);
 
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,1);
@@ -183,8 +196,10 @@ public class Tabber extends JModuleObject {
 
       Link Link1 = new Link(new Image(iAct == ACT1?"/pics/tabs/"+lang+"/waitinglist.gif":"/pics/tabs/"+lang+"/waitinglist1.gif"),"/index2.jsp");
       Link1.addParameter(strAction,ACT1);
+      Link1.addParameter(Action.sApplicantAction,ACT1);
       Link Link2 = new Link(new Image(iAct == ACT2?"/pics/tabs/"+lang+"/apply.gif":"/pics/tabs/"+lang+"/apply1.gif"),"/index2.jsp");
       Link2.addParameter(strAction,ACT2);
+      Link2.addParameter(Action.sApplicantAction,ACT2);
       /*Link Link3 = new Link(new Image(iAct == ACT3?"/pics/tabs/"+lang+"/allocation.gif":"/pics/tabs/"+lang+"/allocation1.gif"));
       Link3.addParameter(strAction,ACT3);
       Link Link4 = new Link(new Image(iAct == ACT4?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"));

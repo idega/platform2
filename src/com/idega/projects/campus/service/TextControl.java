@@ -83,7 +83,7 @@ public class TextControl extends JModuleObject {
   public void doMenu(){
 
     Table T = new Table();
-      T.setWidth("%100");
+      T.setWidth(400);
       T.setWidth(1,"50%");
       T.setWidth(2,"50%");
       T.setBorder(0);
@@ -108,7 +108,7 @@ public class TextControl extends JModuleObject {
     L6.addParameter(strAction,ACT6);
     L6.addParameter(TabAction.sAction,TabAction.ACT5);
 
-    Text LText1 = new Text("Gamligarður");
+    Text LText1 = new Text("v/Hringbraut");
       LText1.setFontSize(1);
     Text LText2 = new Text("Suðurgata 121");
       LText2.setFontSize(1);

@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class Guest extends CampusObject implements Tabs{
 
-  private String iObjectName = "Tenant";
+  private String iObjectName = "Guest";
   private String LightColor,MiddleColor,DarkColor;
   private int iAct;
   private String sAct;

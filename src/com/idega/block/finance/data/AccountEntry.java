@@ -54,6 +54,15 @@ public class AccountEntry extends GenericEntity {
   public void setEntryKeyId(int entry_key_id){
     setColumn("entry_key_id", entry_key_id);
   }
+  public int getAccountKeyId(){
+    return getIntColumnValue("account_key_id");
+  }
+  public void setAccountKeyId(Integer account_key_id){
+    setColumn("account_key_id", account_key_id);
+  }
+  public void setAccountKeyId(int account_key_id){
+    setColumn("account_key_id", account_key_id);
+  }
   public int getTariffKeyId(){
     return getIntColumnValue("tariff_key_id");
   }

@@ -1,4 +1,3 @@
-
 package com.idega.projects.campus.templates;
 
 import java.io.*;
@@ -34,7 +33,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   private Image Face = new Image("/pics/template/face.gif");
   private Image BottomLogo = new Image("/pics/template/bottomlogo.gif");
 
-
   public void initializePage(){
     super.initializePage();
     Page thisPage = getPage();
@@ -56,24 +54,19 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void setBorder(int iBorder){
     BORDER = iBorder;
   }
-
   private void initTilers(){
     HeaderTiler = new Image("/pics/template/headertiler.gif");
     SubHeaderTiler = new Image("/pics/template/subtiler.gif");
     TitleTiler = new Image("/pics/template/titletiler.gif");
   }
-
   private void initLogos(){
-      Face.setWidth(130);
-      Face.setHeight(79);
-      BottomLogo.setWidth(135);
-      BottomLogo.setHeight(88);
+    Face.setWidth(130);
+    Face.setHeight(79);
+    BottomLogo.setWidth(135);
+    BottomLogo.setHeight(88);
   }
-
- public void template() {
-
+  public void template() {
     ModuleInfo modinfo = getModuleInfo();
-
     content = new Table(1,4);
     content.setAlignment(sAlignment);
     content.setCellpadding(0);
@@ -88,20 +81,15 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     //content.setWidth(1,"100%");
     content.setVerticalAlignment(1,3,"top");
     this.initTables();
-
-
     content.add(getHeaderTable(),1,1);
     content.add(getSubHeaderTable(),1,2);
     content.add(getTitleTable(),1,3);
     content.add(getMainTable(),1,4);
   }
-
   public void Content(){
     this.InsertTilers();
     this.InsertTopLogo();
-
   }
-
   public void initTables(){
     initMainTable();
     initHeaderTable();
@@ -109,8 +97,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     initTitleTable();
     initTabTable();
   }
-
-
   public void initMainTable(){
     MainTable = new Table(3,1);
     MainTable.setBorder(BORDER);
@@ -156,11 +142,9 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     SubHeaderTable.setAlignment(2,1,"left");
     //SubHeaderTable.setAlignment(3,1,"right");
   }
-
   public Table getSubHeaderTable(){
     return SubHeaderTable;
   }
-
   public void initTitleTable(){
     TitleTable = new Table(3,1);
     TitleTable.setBorder(BORDER);
@@ -175,11 +159,9 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     TitleTable.setAlignment(1,1,"left");
     TitleTable.setAlignment(1,1,"right");
   }
-
   public Table getTitleTable(){
     return TitleTable;
   }
-
   public Table getLeftTable(){
     LeftTable = new Table(1,2);
     LeftTable.setHeight("100%");
@@ -192,7 +174,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     LeftTable.setBorder(BORDER);
     return LeftTable;
   }
-
   private Table getRightTable(){
     RightTable = new Table(1,3);
     RightTable.setWidth("135");
@@ -206,7 +187,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     RightTable.setBorder(BORDER);
     return RightTable;
   }
-
   private void initTabTable(){
     TabTable = new Table(1,2);
     TabTable.setBorder(BORDER);
@@ -218,18 +198,15 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     TabTable.setCellspacing(0);
     TabTable.setVerticalAlignment(1,2,"bottom");
   }
-
   private Table getTabTable(){
     return TabTable;
   }
-
-  public void InsertTilers(){
+   public void InsertTilers(){
     this.initTilers() ;
     HeaderTable.setBackgroundImage(HeaderTiler);
     SubHeaderTable.setBackgroundImage(SubHeaderTiler);
     TitleTable.setBackgroundImage(TitleTiler);
   }
-
   public void InsertTopLogo(){
     int num = (int) (Math.random() * 14) ;
     Image image = new Image("/pics/template/faces/face"+(num)+".jpg");
@@ -242,31 +219,30 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   }
 
   /** Insert the default logos
+
    *  integer parameters: 1 for FaceLogo; 2 for Both
+
    */
+
   public void InsertDefaultLogos(int count){
     this.addLogo(Face);
     if(count == 2)
       this.addLowerLogo(BottomLogo);
   }
-
   public void InsertBanners() {
     Image Header = new Image("/pics/template/header.gif");
     Header.setHeight(54);
     Header.setWidth(130);
     HeaderTable.add(Header,1,1);
-
     Image RightHeader = new Image("/pics/template/header2.gif");
     RightHeader.setHeight(54);
     RightHeader.setWidth(250);
     HeaderTable.add(RightHeader,3,1);
-
     Image Boxes = new Image("/pics/template/boxes.gif");
     Boxes.setWidth(300);
     Boxes.setHeight(79);
     SubHeaderTable.add(Boxes,2,1);
   }
-
   public void InsertTitles(){
     MenuTitle = new Image("/pics/template/menutitle.gif");
     this.addMenuTitle(MenuTitle) ;
@@ -275,7 +251,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     RightTitle = new Image("/pics/template/logintitle.gif");
     this.addRightTitle(RightTitle);
   }
-
   public boolean isAdmin() {
     if (getSessionAttribute("member_access") != null) {
       if (getSessionAttribute("member_access").equals("admin")) {
@@ -289,14 +264,12 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
       return false;
     }
   }
-
   /** Width: 130 pixel
    *  Height: 79 pixel
    */
   public void setFaceLogo(Image FaceLogo){
     Face = FaceLogo;
   }
-
   /**
    *
    */
@@ -375,8 +348,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
    */
   public void addTabs(ModuleObject objectToAdd){
     TabTable.add(objectToAdd,1,2);
-    SubHeaderTable.add(TabTable,3,1);
+   SubHeaderTable.add(TabTable,3,1);
   }
-
-
 }
+

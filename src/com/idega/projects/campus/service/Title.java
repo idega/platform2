@@ -64,7 +64,7 @@ public class Title extends JModuleObject{
       case ACT4:  TitleUrl = "/pics/titles/"+lang+"/apartment2.gif";        break;
       case ACT5:  TitleUrl = "/pics/titles/"+lang+"/links2.gif";            break;
       case ACT6:  TitleUrl = "/pics/titles/"+lang+"/english2.gif";          break;
-      case ACT7:  TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";             break;
+      case ACT7:  TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";         break;
       //case ACT8:  TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";       break;
       default: TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";            break;
     }

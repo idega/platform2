@@ -2,8 +2,6 @@ package com.idega.block.finance.business;
 
 import com.idega.block.finance.data.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.data.genericentity.Member;
-import java.sql.SQLException;
 /**
  * Title:        AccountManager
  * Description:

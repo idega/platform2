@@ -1,5 +1,6 @@
 package com.idega.block.finance.data;
 
+import com.idega.block.finance.business.Key;
 import java.sql.*;
 import com.idega.data.*;
 
@@ -12,7 +13,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class AccountKey extends GenericEntity {
+public class AccountKey extends GenericEntity implements Key{
 
   public AccountKey() {
     super();
@@ -21,7 +22,6 @@ public class AccountKey extends GenericEntity {
     super(id);
   }
   public void initializeAttributes() {
-    /**@todo: implement this com.idega.data.GenericEntity abstract method*/
     addAttribute(getIDColumnName());
     addAttribute("name","Heiti",true,true,"java.lang.String");
     addAttribute("extra_info","Lýsing",true,true,"java.lang.String");
@@ -35,10 +35,10 @@ public class AccountKey extends GenericEntity {
   public void setName(String name){
     setColumn("name", name);
   }
-  public String getExtraInfo(){
+  public String getInfo(){
     return getStringColumnValue("extra_info");
   }
-  public void setExtraInfo(String extra_info){
+  public void setInfo(String extra_info){
     setColumn("extra_info", extra_info);
   }
 }

@@ -1,5 +1,6 @@
 package com.idega.block.finance.data;
 
+import com.idega.block.finance.business.Key;
 import java.sql.*;
 import com.idega.data.*;
 
@@ -12,7 +13,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class TariffKey extends GenericEntity {
+public class TariffKey extends GenericEntity implements Key{
 
   public TariffKey() {
     super();
@@ -34,10 +35,10 @@ public class TariffKey extends GenericEntity {
   public void setName(String name){
     setColumn("name", name);
   }
-  public String getExtraInfo(){
+  public String getInfo(){
     return getStringColumnValue("extra_info");
   }
-  public void setExtraInfo(String extra_info){
+  public void setInfo(String extra_info){
     setColumn("extra_info", extra_info);
   }
 }

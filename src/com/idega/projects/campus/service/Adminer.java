@@ -20,14 +20,14 @@ import java.io.IOException;
 
 public class Adminer extends CampusObject implements Tabs{
 
-  private String iObjectName = "Tenant";
+  private String iObjectName = "Admin";
   private String LightColor,MiddleColor,DarkColor;
   private int iAct;
   private String sAct;
-  private static final String strAction = "tenant_action";
+  public static final String strAction = "admin_action";
   private Member eMember;
   private boolean isAdmin;
-  private final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
+  public final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
 
   public Adminer(){
     MiddleColor = "#9FA9B3";
@@ -61,6 +61,8 @@ public class Adminer extends CampusObject implements Tabs{
 }
 
     private void doAct1(ModuleInfo modinfo) throws SQLException {
+      Table T = new Table(1,6);
+
 
     }
 
