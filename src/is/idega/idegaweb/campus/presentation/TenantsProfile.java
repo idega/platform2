@@ -367,7 +367,7 @@ public class TenantsProfile extends Block {
     if(accounts!=null && !accounts.isEmpty()){
       java.util.Iterator iter = accounts.iterator();
       while(iter.hasNext()){
-        Account account = (Account) iter.next();
+        AccountInfo account = (AccountInfo) iter.next();
         table.add(formatText(account.getName()),1,row);
         table.add(formatText(new idegaTimestamp(account.getLastUpdated()).getISLDate(".",true)),2,row);
 
