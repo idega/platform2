@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.7 2003/09/29 08:53:17 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.8 2003/09/30 11:47:15 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/29 08:53:17 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/30 11:47:15 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -241,7 +241,19 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			return null;
 		}
 	}
-	
+
+	/**
+	 * Returns all schools including terminated.
+	 */
+	public Collection findAllSchools() {
+		Collection schools = null;
+		try {
+			SchoolHome home = getSchoolHome();
+			schools = home.findAllSchoolsIncludingTerminated();
+		} catch (Exception e) {}
+		return schools;
+	}
+		
 	/**
 	 * Returns school business. 
 	 */	
