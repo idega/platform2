@@ -31,6 +31,7 @@ public class TournamentRound extends GolfEntity{
 		addAttribute("round_date","Dagsetning hrings",true,true,"java.sql.Timestamp");
 		addAttribute("increase_handicap","Spilað til hækkunar",true,true,"java.lang.Boolean");
 		addAttribute("decrease_handicap","Spilað til lækkunar",true,true,"java.lang.Boolean");
+                addAttribute("round_end_date","Hring lýkur",true,true,"java.sql.Timestamp");
 
 	}
 
@@ -73,6 +74,14 @@ public class TournamentRound extends GolfEntity{
 	public Timestamp getRoundDate(){
 		return (Timestamp) getColumnValue("round_date");
 	}
+
+        public void setRoundEndDate(Timestamp endDate) {
+            setColumn("round_end_date",endDate);
+        }
+
+        public Timestamp getRoundEndDate() {
+            return (Timestamp) getColumnValue("round_end_date");
+        }
 
         public boolean getIncreaseHandicap(){
 		return getBooleanColumnValue("increase_handicap");
