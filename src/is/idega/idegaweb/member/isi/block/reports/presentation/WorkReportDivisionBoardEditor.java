@@ -412,12 +412,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       SECOND_PHONE, textEditorConverter,
       FAX, textEditorConverter,
       EMAIL, textEditorConverter};
-    EntityBrowser browser = new EntityBrowser();
+    EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
-    if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
-    // switch off the internal form of the browser
-    browser.setUseExternalForm(true);
+    if( entities!=null && !entities.isEmpty()) { 
+    	browser.setDefaultNumberOfRows(entities.size());
+    }
     for (int i = 0; i < columns.length; i+=2) {
       String column = (String) columns[i];
       EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];

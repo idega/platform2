@@ -612,7 +612,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
     private EntityBrowser getEntityBrowser(Collection entities,
             IWResourceBundle resourceBundle, Form form) {
-        EntityBrowser browser = new EntityBrowser();
+        EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
         browser.setLeadingEntity(WorkReportClubAccountRecord.class);
         browser.setShowMirroredView(true);
         // no settings button
@@ -621,8 +621,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         if (entities != null && !entities.isEmpty()) {
             browser.setDefaultNumberOfRows(entities.size());
         }
-        // switch off the internal form of the browser
-        browser.setUseExternalForm(true);
         // define converter
         WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(
                 form, resourceBundle);

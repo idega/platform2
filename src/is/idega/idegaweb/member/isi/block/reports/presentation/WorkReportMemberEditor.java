@@ -511,10 +511,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       PERSONAL_ID, null,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
-    EntityBrowser browser = new EntityBrowser();
+    EntityBrowser browser = EntityBrowser.getInstanceUsingExternalForm();
     browser.setLeadingEntity(WorkReportMember.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
-    browser.setUseEventSystem(false);
     // maintain parameters
     List parameters = getParametersToMaintain();
     Iterator para = parameters.iterator();
@@ -525,9 +524,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       Parameter parameter = new Parameter(parameterKey, parameterString);
       browser.addMandatoryParameter(parameter);
     }
-    if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
-    // switch off the internal form of the browser
-    browser.setUseExternalForm(true);
+    if( entities!=null && !entities.isEmpty()) {
+    	browser.setDefaultNumberOfRows(entities.size());
+    }
     for (int i = 0; i < columns.length; i+=2) {
       String column = (String) columns[i];
       EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];

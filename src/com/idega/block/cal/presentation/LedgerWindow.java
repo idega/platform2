@@ -680,7 +680,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		}
 
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		entityBrowser = new EntityBrowser();
+		entityBrowser = EntityBrowser.getInstanceUsingEventSystem();
 
 		entityBrowser.setEntities("havanna",users);
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));

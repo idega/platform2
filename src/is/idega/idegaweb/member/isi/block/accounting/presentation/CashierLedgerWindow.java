@@ -154,7 +154,7 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		}
 
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		EntityBrowser entityBrowser = new EntityBrowser();
+		EntityBrowser entityBrowser = EntityBrowser.getInstanceUsingEventSystem();
 
 		entityBrowser.setEntities("havanna",u);
 		entityBrowser.setDefaultNumberOfRows(Math.min(users.size(), 30));

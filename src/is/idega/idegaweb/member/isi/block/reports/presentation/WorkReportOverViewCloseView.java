@@ -245,8 +245,8 @@ public class WorkReportOverViewCloseView extends Block {
 		};
       
       
-    EntityBrowser browser = new EntityBrowser();
-    browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
+    EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
+    browser.setWidth(Table.HUNDRED_PERCENT);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
@@ -258,8 +258,6 @@ public class WorkReportOverViewCloseView extends Block {
     if( entities!=null && !entities.isEmpty()){
 			browser.setDefaultNumberOfRows(entities.size());
     }
-    // switch off the internal form of the browser
-    browser.setUseExternalForm(true);
     
     for (int i = 0; i < columns.length; i+=2) {
       String column = (String) columns[i];

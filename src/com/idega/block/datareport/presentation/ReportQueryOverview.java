@@ -476,10 +476,8 @@ public class ReportQueryOverview extends Block {
 		
   	
 	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, IWResourceBundle resourceBundle, Form form)	{
-		EntityBrowser browser = new EntityBrowser();
+		EntityBrowser browser = EntityBrowser.getInstanceUsingExternalForm();
 		browser.setAcceptUserSettingsShowUserSettingsButton(false, false);
-		browser.setUseExternalForm(true);
-		browser.setUseEventSystem(false);
 		// browser gets confused because of some new children windows, therefore set artificial compoundId
 		browser.setArtificialCompoundId("report_overview", null);
 		browser.setLeadingEntityIsUndefined();

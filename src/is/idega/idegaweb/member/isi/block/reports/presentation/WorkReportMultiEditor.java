@@ -214,7 +214,7 @@ public class WorkReportMultiEditor extends Block {
 		};
       
       
-    EntityBrowser browser = new EntityBrowser();
+    EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
     browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
@@ -223,8 +223,6 @@ public class WorkReportMultiEditor extends Block {
     if( entities!=null && !entities.isEmpty()){
 			browser.setDefaultNumberOfRows(entities.size());
     }
-    // switch off the internal form of the browser
-    browser.setUseExternalForm(true);
     
     for (int i = 0; i < columns.length; i+=2) {
       String column = (String) columns[i];
