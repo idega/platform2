@@ -41,6 +41,7 @@ public class Account extends GenericEntity {
     addAttribute(getCreationDateColumnName(),"Created",true,true,java.sql.Timestamp.class);
     addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
     addAttribute(getValidColumnName(),"Valid",true,true,java.lang.Boolean.class);
+    addAttribute(getTypeColumnName(),"TYPE",true,true,java.lang.String.class);
 
   }
 
@@ -57,7 +58,7 @@ public class Account extends GenericEntity {
   public static String getCreationDateColumnName(){ return "CREATION_DATE";}
   public static String getInfoColumnName(){ return "EXTRA_INFO";}
   public static String getValidColumnName(){ return "VALID";}
-  public static String getTypeColumnName(){return "TYPE";}
+  public static String getTypeColumnName(){return "ACCOUNT_TYPE";}
 
   public static String typeFinancial = "FINANCE";
   public static String typePhone = "PHONE";
