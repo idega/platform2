@@ -350,12 +350,14 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 	 * @see com.idega.block.finance.business.FinanceService#getAccountLastUpdate(java.lang.Integer)
 	 */
 	public Date getAccountLastUpdate(Integer accountID) {
-		try {
-			return getAccountEntryHome().getMaxDateByAccount(accountID);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (IDOException e) {
-			e.printStackTrace();
+		if(accountID!=null){
+			try {
+				return getAccountEntryHome().getMaxDateByAccount(accountID);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (IDOException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
