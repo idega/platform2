@@ -1,55 +1,43 @@
-/*
- * Created on 18.4.2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package com.idega.block.venue.data;
 
-import com.idega.data.IDOEntity;
-
-
-import com.idega.user.data.Group;
-
-
 import com.idega.core.location.data.Address;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 
+public interface Venue extends com.idega.data.IDOEntity
+{
+	public static final String ENTITY_NAME = "ve_venue";
 
-/** * @author laddiTODO To change the template for this generated type comment go toWindow - Preferences - Java - Code Generation - Code and Comments */
-public interface Venue extends IDOEntity {
+	public static final String COLUMN_VENUE_ID = "venue_id";
+	public static final String COLUMN_NAME = "venue_name";
+	public static final String COLUMN_DESCRIPTION = "description";
+	public static final String COLUMN_TYPE = "venue_type";
+	public static final String COLUMN_DELETED = "deleted";
+	public static final String COLUMN_DELETED_BY = "deleted_by";
+	public static final String COLUMN_OWNER = "owner_id";
+	public static final String COLUMN_ADDRESS = "address";
 
-	String getName();
-
-	void setName(String name);
-
-	Group getOwner();
-
-	void setOwner(Group owner);
-
-	String getDescription();
-
-	void setDescription(String description);
-
+	public String getName();
+	public Group getOwner();
+	public String getDescription();
 	/**
-	 *  
 	 * @uml.property name="venueType"
 	 * @uml.associationEnd multiplicity="(0 1)" inverse="venue:com.idega.block.venue.data.VenueType"
 	 */
-	VenueType getVenueType();
+	public VenueType getVenueType();
+	public Address getAddress();
+	public User getDeletedBy();
+	public boolean isDeleted();
 
+	public void setName(String name);
+	public void setOwner(Group owner);
+	public void setDescription(String description);
 	/**
-	 *  
 	 * @uml.property name="venueType"
 	 */
-	void setVenueType(VenueType venueType);
-
-	Address getAddress();
-
-	void setAddress(Address address);
-
-	boolean isDeleted();
-
-	void setDeleted(boolean deleted);
-
+	public void setVenueType(VenueType venueType);
+	public void setAddress(Address address);
+	public void setDeletedBy(User user);
+	public void setDeleted(boolean deleted);
 }

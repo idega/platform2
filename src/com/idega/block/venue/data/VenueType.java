@@ -1,23 +1,27 @@
-/*
- * Created on 18.4.2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 package com.idega.block.venue.data;
 
-import com.idega.data.IDOEntity;
+import com.idega.user.data.User;
 
 
-/** * @author laddiTODO To change the template for this generated type comment go toWindow - Preferences - Java - Code Generation - Code and Comments */
-public interface VenueType extends IDOEntity {
+public interface VenueType extends com.idega.data.IDOEntity {
+	
+	public static final String ENTITY_NAME = "ve_venue_type";
 
-	String getName();
+	public static final String COLUMN_VENUE_TYPE = "venue_type";
+	public static final String COLUMN_DESCRIPTION = "description";
+	public static final String COLUMN_DELETED = "deleted";
+	public static final String COLUMN_DELETED_BY = "deleted_by";
+	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 
-	void setName(String name);
+	public String getName();
+	public String getDescription();
+	public boolean isDeleted();
+	public User getDeletedBy(); 
+	public String getLocalizedKey();
 
-	String getDescription();
-
-	void setDescription(String description);
-
+	public void setName(String name);
+	public void setDescription(String description);
+	public void setDeleted(boolean deleted);
+	public void setDeletedBy(User user);
+	public void setLocalizedKey(String localizedKey);
 }
