@@ -602,7 +602,7 @@ public class Booker {
       }
 
       StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+booking.getBookingTableName());
+        buff.append("SELECT * FROM "+GeneralBooking.getBookingTableName());
         buff.append(" WHERE ");
         buff.append(GeneralBooking.getNameColumnName()+" = '"+booking.getName()+"'");
         buff.append(" AND ");
