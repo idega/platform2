@@ -331,6 +331,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public SchoolStudyPath getSchoolStudyPath(Object primaryKey) {
+		try {
+			return getSchoolStudyPathHome().findByPrimaryKey(primaryKey);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+
 	public void removeProvider(int id) throws RemoveException {
 		School school = getSchool(new Integer(id));
 		school.addSchoolTypesRemoveOther(new int[0]);

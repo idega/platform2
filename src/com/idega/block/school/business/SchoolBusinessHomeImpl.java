@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolBusinessHomeImpl.java,v 1.4 2005/01/10 14:05:36 laddi Exp $
- * Created on 10.1.2005
+ * $Id: SchoolBusinessHomeImpl.java,v 1.5 2005/03/20 15:24:14 laddi Exp $
+ * Created on 20.3.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -9,16 +9,17 @@
  */
 package com.idega.block.school.business;
 
-
-
 import com.idega.business.IBOHomeImpl;
 
 
 /**
- * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type SchoolBusinessHomeImpl
+ * </p>
+ *  Last modified: $Date: 2005/03/20 15:24:14 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SchoolBusinessHomeImpl extends IBOHomeImpl implements SchoolBusinessHome {
 
@@ -29,5 +30,4 @@ public class SchoolBusinessHomeImpl extends IBOHomeImpl implements SchoolBusines
 	public SchoolBusiness create() throws javax.ejb.CreateException {
 		return (SchoolBusiness) super.createIBO();
 	}
-
 }
