@@ -58,7 +58,7 @@ public class TeeTimeSearch extends GolfBlock {
 	private ICPage _teeTimeTablePage = null;
 	private ICPage _teeTimesPage = null;
 	
-	private int width = 100;
+	private int width = 160;
 
 
 	public void main(IWContext modinfo) throws Exception {
@@ -227,7 +227,7 @@ public class TeeTimeSearch extends GolfBlock {
 		mergeTable.setAlignment("left");
 		//mergeTable.setBorder(1);
 		mergeTable.setCellspacing(0);
-		mergeTable.setCellpadding(0);
+		mergeTable.setCellpadding(4);
 		
 		mergeTable.setCellpaddingRight(1,1,3);
 		mergeTable.setCellpaddingRight(1,2,3);
