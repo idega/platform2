@@ -4116,6 +4116,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	
 	private boolean showClubStatus(WorkReport report, String status) {
 		String reportStatus = report.getStatus();
+		System.out.println("report status is \"" + reportStatus + "\", chosen status is \"" + status + "\"");
 		boolean show = true;
 		if(status!=null && status.length()>0) {
 			show = false;
