@@ -12,6 +12,8 @@ import com.idega.block.messenger.data.Packet;
 import com.idega.block.messenger.data.Property;
 import com.idega.block.messenger.business.MessageListener;
 
+import com.idega.presentation.awt.SingleLineItem;
+
 /**
  * Title:        MessengerApplet
  * Description:  Simple client sceleton
@@ -53,6 +55,8 @@ public class MessengerApplet extends Applet implements Runnable{
   private MessageDialog messageDialog;
   private MessageListener listener = new MessageListener(this);//should listen on a per window basis
 
+  SingleLineItem test = new SingleLineItem();
+
   /**Get a parameter value*/
   public String getParameter(String key, String def) {
     return isStandalone ? System.getProperty(key, def) :
@@ -71,6 +75,9 @@ public class MessengerApplet extends Applet implements Runnable{
       userId = this.getParameter(USER_ID, "-1");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
+
+      add(test);
+
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -459,6 +466,7 @@ public class MessengerApplet extends Applet implements Runnable{
   }
 
   public void update(Graphics g){
+    super.paint(g);
   }
 
   public void paint(Graphics g){
