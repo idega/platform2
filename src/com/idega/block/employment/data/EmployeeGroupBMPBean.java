@@ -12,15 +12,16 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class EmployeeGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.employment.data.EmployeeGroup {
+public class EmployeeGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.block.employment.data.EmployeeGroup {
+//public class EmployeeGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.employment.data.EmployeeGroup {
 
-  public EmployeeGroupBMPBean() {
+  /*public EmployeeGroupBMPBean() {
     super();
   }
 
   public EmployeeGroupBMPBean(int id) throws SQLException {
     super(id);
-  }
+  }*/
 
 
   public String getGroupTypeValue() {
