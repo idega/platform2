@@ -1,5 +1,7 @@
 package is.idega.idegaweb.campus.block.application.data;
 
+import java.sql.Timestamp;
+
 import javax.ejb.*;
 
 public interface WaitingList extends com.idega.data.IDOLegacyEntity
@@ -34,4 +36,9 @@ public interface WaitingList extends com.idega.data.IDOLegacyEntity
  public java.lang.Integer getApplicantId();
  public void setApplicantId(int p0);
  public java.lang.Integer getApartmentTypeId();
+ public void setRejectFlag(boolean flag);
+ public boolean getRejectFlag();
+ public void incrementRejections();
+ public void setAcceptedDate(Timestamp stamp);
+ public Timestamp getAcceptedDate();
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.47 2003/07/24 17:08:11 aron Exp $
+ * $Id: CampusApprover.java,v 1.48 2003/07/25 17:59:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.business.ApplicationHolder;
@@ -816,9 +817,21 @@ public class CampusApprover extends Block {
 		T.add(Edit.formatText(eApplicant.getResidencePhone()), col, row++);
 		T.add(Edit.formatText(eApplicant.getMobilePhone()), col, row++);
 		String email = eCampusApplication.getEmail();
-		if (email == null)
-			email = "";
-		T.add(new Link(Edit.formatText(email), "mailto:" + email), col, row++);
+		try{
+			javax.mail.internet.InternetAddress emailAddress = new javax.mail.internet.InternetAddress(email);
+		}
+		catch( Exception e){
+			email = null;
+		}
+		if(email!=null){	
+			T.add(new Link(Edit.formatText(email), "mailto:" + email), col, row++);
+		}
+		else{
+			Text noEmailText = new Text(iwrb.getLocalizedString("no_email","No email address"));
+			noEmailText.setFontColor("#FF0000");
+			noEmailText.setBold();
+			T.add(noEmailText, col, row++);
+		}
 		T.add(Edit.formatText(eCampusApplication.getFaculty()), col, row++);
 		T.add(Edit.formatText(eCampusApplication.getStudyTrack()), col, row++);
 		String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
@@ -870,6 +883,9 @@ public class CampusApprover extends Block {
 		TextInput tiMobPho = new TextInput("ti_mobpho");
 		Edit.setStyle(tiMobPho);
 		TextInput tiEmail = new TextInput("ti_email");
+		String needEmail = iwrb.getLocalizedString("warning_provide_email","No email address is supplied");
+		tiEmail.setAsEmail(needEmail);
+		tiEmail.setAsNotEmpty(needEmail);
 		Edit.setStyle(tiEmail);
 		TextInput tiFac = new TextInput("ti_facult");
 		Edit.setStyle(tiFac);

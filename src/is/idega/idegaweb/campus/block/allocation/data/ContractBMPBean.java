@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.6 2003/05/24 13:14:19 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.7 2003/07/25 18:00:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,8 +13,10 @@ package is.idega.idegaweb.campus.block.allocation.data;
 import com.idega.data.IDOLegacyEntity;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.lang.IllegalStateException;
 import java.sql.SQLException;
+
+import javax.ejb.FinderException;
+
 import com.idega.util.IWTimestamp;
 
 /**
@@ -47,6 +49,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public static final String statusResigned = "U";
   public static final String statusGarbage = "G";
   public static final String statusStorage = "Z";
+  public static final String statusDenied = "D";
 
   public static String getStatusColumnName(){return status_;}
   public static String getApplicantIdColumnName(){return applicantId_;}
@@ -225,6 +228,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
         (status.equalsIgnoreCase(statusResigned))||
         (status.equalsIgnoreCase(statusGarbage))||
 		(status.equalsIgnoreCase(statusStorage))||
+		(status.equalsIgnoreCase(statusDenied))||
         (status.equalsIgnoreCase(statusPrinted))){
       setColumn(status_,status);
       setStatusDate(IWTimestamp.RightNow().getSQLDate());
@@ -259,7 +263,13 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public void setStatusGarbage(){
     setStatus(statusGarbage);
   }
+  public void setStatusDenied(){
+	 setStatus(statusDenied);
+   }
   public void setStatusStorage(){
 	  setStatus(statusStorage);
+ }
+ public java.util.Collection ejbFindByApplicant(Integer ID) throws FinderException{
+ 	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()));
  }
 }

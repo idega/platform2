@@ -1,5 +1,9 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class ContractHomeImpl extends com.idega.data.IDOFactory implements ContractHome
 {
@@ -37,6 +41,13 @@ public class ContractHomeImpl extends com.idega.data.IDOFactory implements Contr
 		throw new java.sql.SQLException(fe.getMessage());
 	}
 
+ }
+ 
+ public Collection findByApplicant(Integer ID)throws FinderException{
+	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	 java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByApplicant(ID);
+	 this.idoCheckInPooledEntity(entity);
+	 return this.getEntityCollectionForPrimaryKeys(ids);
  }
 
 

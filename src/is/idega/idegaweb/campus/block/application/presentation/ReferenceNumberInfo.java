@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.25 2003/07/24 16:54:32 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.26 2003/07/25 17:59:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,9 +12,13 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.presentation.CampusColors;
 import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.application.business.CampusReferenceNumberInfoHelper;
@@ -28,7 +32,11 @@ import com.idega.block.building.data.Floor;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.application.business.ReferenceNumberHandler;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
@@ -39,6 +47,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.util.IWTimestamp;
 
 import java.util.Vector;
 import java.util.Date;
@@ -46,6 +55,8 @@ import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.TreeSet;
 import java.text.DateFormat;
+
+import javax.ejb.FinderException;
 
 /**
  *
@@ -57,7 +68,12 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	public static final String SESSION_REFERENCE_NUMBER = "session_ref_num";
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 	private IWResourceBundle _iwrb = null;
-
+	private CampusApplicationHolder holder = null;
+	private Integer allocatedTypeID = new Integer(-1);
+	private Integer allocatedComplexID = new Integer(-1);
+	private Integer allocatedWaitinglistID = null;
+	private DateFormat dateFormat,dateTimeFormat;
+	private int row = 1;
 	/**
 	 *
 	 */
@@ -68,6 +84,8 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	 *
 	 */
 	protected void control(IWContext iwc) {
+		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+		 dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 		String which = (String) iwc.getSessionAttribute("DUMMY_LOGIN");
 		if (which == null) {
 			addReferenceNumberLookupResults(iwc);
@@ -88,10 +106,11 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			aid = 0;
 		}
 		
-		CampusApplicationHolder holder = CampusApplicationFinder.getApplicationInfo(aid);
+		holder = CampusApplicationFinder.getApplicationInfo(aid);
 		
 		String update = iwc.getParameter("updatePhoneEmail");
 		String confirm = iwc.getParameter("confirmWL");
+		
 		
 		if (update != null) {
 			updateApplicantInfo(iwc, holder);
@@ -100,21 +119,29 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		else if (confirm != null) {
 			holder = confirmWaitingList(iwc, aid, holder);
 		}
+		else if(iwc.isParameterSet("denyAllocation")){
+			denyWaitingListEntry(iwc);
+		}
+		else if(iwc.isParameterSet("acceptAllocation")){
+			acceptAllocation(iwc);
+		}
 		
 		Table refTable = new Table();
+		refTable.setWidth(this.getWidth());
 		refTable.setCellpadding(5);
 		
-		int row = 1;
+		row = 1;
 		if (holder == null) {
 			refTable.add(new Text(_iwrb.getLocalizedString("appNoSuchApplication", "There is no application associated with that reference number")), 1, row);
 			row++;
 		}
 		else {
-			addWaitingListForm(iwc, holder, refTable, row);
+			addWaitingListForm(iwc, holder, refTable);
+			addAllocationDenialTable(refTable);
 		}
 	}
 
-	private void addWaitingListForm(IWContext iwc, CampusApplicationHolder holder, Table refTable, int row) {
+	private void addWaitingListForm(IWContext iwc, CampusApplicationHolder holder, Table refTable) {
 		Form form = new Form();
 		Applicant applicant = holder.getApplicant();
 		Application app = holder.getApplication();
@@ -173,10 +200,10 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		refTable.add(stsText, 1, row);
 		
 		if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) { //F?kk ekki ?thluta?, e?a ekki b?i? a? ?thluta.
+			Table denialTable = null;
 			Contract c = holder.getContract();
-			Integer allocatedTypeID = new Integer(-1);
-			Integer allocatedComplexID = new Integer(-1);
-			if(c!=null){
+			
+			if(c!=null && c.getStatus().equals(ContractBMPBean.statusCreated)){
 				Apartment allocatedApartment = BuildingCacher.getApartment(c.getApartmentId().intValue());
 				Floor allocatedFloor = BuildingCacher.getFloor(allocatedApartment.getFloorId());
 				Building allocatedBuilding = BuildingCacher.getBuilding(allocatedFloor.getBuildingId());
@@ -201,24 +228,27 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			Table container = new Table();
 			Table appliedTable = new Table();
 			appliedTable.setBorder(1);
-			appliedTable.setColumns(4);
+			appliedTable.setColumns(5);
 		
 			Text appliedText1 = new Text(_iwrb.getLocalizedString("appAppliedHeader", "Applied for"));
 			Text appliedText2 = new Text(_iwrb.getLocalizedString("appPositionOnList", "# on list"));
 			Text appliedText3 = new Text(_iwrb.getLocalizedString("appStayOnList", "Stay on list"));
 			Text appliedText4 = new Text(_iwrb.getLocalizedString("lastConfirmation", "Last confirmation"));
+			Text appliedText5 = new Text(_iwrb.getLocalizedString("denials", "Denials"));
 			appliedText1.setBold();
 			appliedText2.setBold();
 			appliedText3.setBold();
 			appliedText4.setBold();
+			appliedText5.setBold();
 			appliedTable.add(appliedText1, 1, 1);
 			appliedTable.add(appliedText2, 2, 1);
 			appliedTable.add(appliedText3, 3, 1);
 			appliedTable.add(appliedText4, 4, 1);
+			appliedTable.add(appliedText5, 5, 1);
 		
 			int pos = 1;
 			Iterator it = choices.iterator();
-			DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+			
 			while (it.hasNext()) {
 				Applied applied = (Applied) it.next();
 				pos++;
@@ -245,10 +275,20 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				if (wait != null && !wait.getRemovedFromList()) {
 						appliedTable.add(new Text(wait.getOrder().toString()), 2, pos);
 						appliedTable.setAlignment(2, pos, "center");
-						// if we have a contract check if this is the one
-						if(allocatedComplexID.intValue() == wait.getComplexId().intValue() && allocatedTypeID.intValue() == wait.getApartmentTypeId().intValue()){
-							Text allocatedText = new Text(_iwrb.getLocalizedString("appAllocated","Allocated"));
-							appliedTable.add(allocatedText,3,pos);
+						
+						if(wait.getNumberOfRejections()>0){
+							appliedTable.addText(wait.getNumberOfRejections(),5,pos);
+							appliedTable.setAlignment(5, pos, "center");
+						}
+						
+//						// if we have a norejected contract, check if this is the one
+						if( !wait.getRejectFlag()	&& allocatedComplexID.intValue() == wait.getComplexId().intValue() && allocatedTypeID.intValue() == wait.getApartmentTypeId().intValue()){
+								Text allocatedText = new Text(_iwrb.getLocalizedString("appAllocated","Allocated"));
+								appliedTable.add(allocatedText,3,pos);
+								// if not already denied
+							
+								allocatedWaitinglistID = (Integer) wait.getPrimaryKey();
+							
 						}
 						else{
 						// we add confirmation checkboxes
@@ -260,13 +300,13 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 						}
 						appliedTable.setAlignment(3, pos, "center");
 						
-						appliedTable.add(dateFormat.format(wait.getLastConfirmationDate()),4,pos);
+						appliedTable.add(dateTimeFormat.format(wait.getLastConfirmationDate()),4,pos);
 				}
 				// no waitinglist entries
 				else{
 					appliedTable.mergeCells(2,pos,4,pos);
 					appliedTable.addText(_iwrb.getLocalizedString("appNoWaitingList","Not on waitinglist"),2,pos);
-					appliedTable.setAlignment(2,4,Table.HORIZONTAL_ALIGN_CENTER);
+					appliedTable.setAlignment(2,pos,Table.HORIZONTAL_ALIGN_CENTER);
 				}
 			}
 		
@@ -295,8 +335,115 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		
 		form.add(refTable);
 		add(form);
+		add(Text.getBreak());
+		
 	}
+	private void acceptAllocation(IWContext iwc){
+	if(iwc.isParameterSet("adWaitL_id")){
+		try {
+				
+			Integer WID = Integer.valueOf(iwc.getParameter("adWaitL_id"));
+			WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(WID);
+			wl.setAcceptedDate(  IWTimestamp.RightNow().getTimestamp());
+			wl.store();
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+				
+		
+	}
+		
+}
+	private void denyWaitingListEntry(IWContext iwc){
+		if(iwc.isParameterSet("adWaitL_id")){
+			try {
+				
+				Integer WID = Integer.valueOf(iwc.getParameter("adWaitL_id"));
+				WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(WID);
+				wl.incrementRejections();
+				wl.store();
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (IDOStoreException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+				
+		
+		}
+		
+	}
+	
+	private void addAllocationDenialTable(Table refTable){
+		if(holder!=null && allocatedWaitinglistID!=null){
+			Contract contract = holder.getContract();
+			if(contract!=null ){
+				Table dTable = new Table();
+				dTable.setCellspacing(5);
+				//dTable.setBorder(1);
+				dTable.setWidth(Table.HUNDRED_PERCENT);
+				refTable.add(dTable,1,row);
+			
+				Text tPeriod = new Text(_iwrb.getLocalizedString("appContractPeriod", "Contract period"));
+				Text tApartment = new Text(_iwrb.getLocalizedString("appAllocatedApartment", "Allocated apartment"));
+				Text tAcceptance = new Text(_iwrb.getLocalizedString("appAcceptance", "Acceptance"));
+				tPeriod.setBold();
+				tApartment.setBold();
+				tAcceptance.setBold();
+				dTable.add(tApartment,1,1);
+				dTable.add(tPeriod,2,1);
+				dTable.add(tAcceptance,3,1);
+				
+				dTable.addText(dateFormat.format(contract.getValidFrom())+" - "+dateFormat.format(contract.getValidTo()),2,2);
+				dTable.addText(getApartmentString(contract),1,2);
+				dTable.setAlignment(3,2,Table.HORIZONTAL_ALIGN_RIGHT);
+				SubmitButton deny = new SubmitButton("denyAllocation", _iwrb.getLocalizedString("denyAllotion", "No thanks"));
+				deny.setSubmitConfirm(_iwrb.getLocalizedString("denyAllocationWarning","Do you really want to deny this apartment ?"));
+				SubmitButton accept = new SubmitButton("acceptAllocation", _iwrb.getLocalizedString("acceptAllotion", "Yes please"));
+				dTable.add(deny, 3, 2);
+				dTable.add(accept, 3, 2);
+				dTable.add(new HiddenInput("adWaitL_id",allocatedWaitinglistID.toString()));
+				
+				
+			}
+		
+		}
+		
+	}
+	
+	private String getApartmentString(Contract eContract) {
+			Apartment A = BuildingCacher.getApartment(eContract.getApartmentId().intValue());
+			Floor F = BuildingCacher.getFloor(A.getFloorId());
+			Building B = BuildingCacher.getBuilding(F.getBuildingId());
+			Complex C = BuildingCacher.getComplex(B.getComplexId());
+			StringBuffer sb = new StringBuffer(A.getName());
+			sb.append(" ");
+			sb.append(F.getName());
+			sb.append(" ");
+			sb.append(B.getName());
+			sb.append(" ");
+			sb.append(C.getName());
+			return sb.toString();
+		}
 
+	
 	private CampusApplicationHolder confirmWaitingList(IWContext iwc, int aid, CampusApplicationHolder holder) {
 		String confirm1 = iwc.getParameter("confirm1");
 		String confirm2 = iwc.getParameter("confirm2");

@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.6 2003/04/07 11:20:46 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.7 2003/07/25 17:59:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,8 +30,10 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
   private static final String CHOICE_NUMBER = "choice_number";
   private static final String LAST_CONFIRMATION = "last_confirmation";
   private static final String NUMBER_OF_REJECTIONS = "number_of_rejections";
+  private static final String REJECT_FLAG = "reject_flag";
   private static final String REMOVED_FROM_LIST = "removed_from_list";
   private static final String PRIORITY_LEVEL = "priority_level";
+  private static final String ACCEPTED_DATE = "accepted_date";
 
   public static final String YES = "Y";
   public static final String NO = "N";
@@ -64,8 +66,11 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     addAttribute(CHOICE_NUMBER,"Choice number",true,true,"java.lang.Integer");
     addAttribute(LAST_CONFIRMATION,"Last confirmation date",true,true,"java.sql.Timestamp");
     addAttribute(NUMBER_OF_REJECTIONS,"Number of rejections",true,true,"java.lang.Integer");
+	addAttribute(REJECT_FLAG,"Reject flag",true,true,Boolean.class);
     addAttribute(REMOVED_FROM_LIST,"Removed from list",true,true,"java.lang.String");
     addAttribute(PRIORITY_LEVEL,"Priority level",true,true,String.class);
+	addAttribute(ACCEPTED_DATE,"Accepted date",true,true,java.sql.Timestamp.class);
+	
     setMaxLength(TYPE,1);
     setMaxLength(REMOVED_FROM_LIST,1);
     setMaxLength(PRIORITY_LEVEL,1);
@@ -182,6 +187,14 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
   public Timestamp getLastConfirmationDate() {
     return (Timestamp)getColumnValue(LAST_CONFIRMATION);
   }
+  
+  public void setAcceptedDate(Timestamp date) {
+	  setColumn(ACCEPTED_DATE,date);
+	}
+
+	public Timestamp getAcceptedDate() {
+	  return (Timestamp)getColumnValue(ACCEPTED_DATE);
+	}
 
   public void setNumberOfRejections(int count) {
     setColumn(NUMBER_OF_REJECTIONS,count);
@@ -190,9 +203,26 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
   public void setNumberOfRejections(Integer count) {
     setColumn(NUMBER_OF_REJECTIONS,count);
   }
+  
+  public void incrementRejections(){
+  	int count = getNumberOfRejections();
+  	if(count <0 )
+  		count = 0;
+  	count++;
+  	setNumberOfRejections(count);
+  	setRejectFlag(true);
+  }
 
   public int getNumberOfRejections() {
     return getIntColumnValue(NUMBER_OF_REJECTIONS);
+  }
+  
+  public boolean getRejectFlag(){
+  	return getBooleanColumnValue(REJECT_FLAG);
+  }
+  
+  public void setRejectFlag(boolean flag){
+  	setColumn(REJECT_FLAG,flag);
   }
 
   public void setChoiceNumber(int choice) {

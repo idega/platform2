@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.15 2003/07/24 14:05:17 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.16 2003/07/25 17:59:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import java.util.Vector;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
+import com.idega.block.contract.data.ContractBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
 
@@ -479,7 +480,7 @@ public abstract class CampusApplicationFinder {
 						applicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(a.getApplicantId());
 				
 						// Contracts
-						resultSet = ContractFinder.listOfApplicantContracts(applicant.getID());
+						resultSet = ContractFinder.listOfApplicantContracts(applicant.getID(),ContractBMPBean.statusCreated);
 						if (resultSet != null && !resultSet.isEmpty()) {
 							contract = (Contract) resultSet.iterator().next();
 						}

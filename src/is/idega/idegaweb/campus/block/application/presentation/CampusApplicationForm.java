@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.21 2003/06/25 23:44:31 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.22 2003/07/25 17:59:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -432,7 +432,9 @@ public class CampusApplicationForm extends ApplicationForm {
 			inputContact.setContent(iwc.getParameter("contact"));
 
 		TextInput inputEmail = (TextInput) textInputTemplate.clone();
-		inputEmail.setAsEmail(_iwrb.getLocalizedString("enter_correct_email","Please enter a valid email"));
+		String needEmail = _iwrb.getLocalizedString("enter_correct_email","Please enter a valid email");
+		inputEmail.setAsEmail(needEmail);
+		inputEmail.setAsNotEmpty(needEmail);
 		inputEmail.setName("email");
 		if (iwc.isParameterSet("email"))
 			inputEmail.setContent(iwc.getParameter("email"));

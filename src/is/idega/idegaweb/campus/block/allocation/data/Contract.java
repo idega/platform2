@@ -42,6 +42,7 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setStatusResigned();
  public void setStatusSigned();
  public void setStatusTerminated();
+ public void setStatusDenied();
  public void setUserId(int p0);
  public void setUserId(java.lang.Integer p0);
  public void setValidFrom(java.sql.Date p0);
