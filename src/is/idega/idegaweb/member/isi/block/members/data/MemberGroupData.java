@@ -99,8 +99,8 @@ public class MemberGroupData {
 		
 		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
 		boolean isClub = IWMemberConstants.GROUP_TYPE_CLUB.equals(type);
-		if(isClub && !_clubList.contains(name)) {
-			_clubList.add(name);
+		if(isClub && !_clubList.contains(group)) {
+			_clubList.add(group);
 		}
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type) ||
@@ -153,8 +153,8 @@ public class MemberGroupData {
 	}
 	
 	/**
-	 * Gets a list of the names of the clubs the user is in
-	 * @return list of club names
+	 * Gets a list of the clubs (Group instances)
+	 * @return list of the clubs the user is inb
 	 */
 	public List getClubList() {
 		return _clubList;

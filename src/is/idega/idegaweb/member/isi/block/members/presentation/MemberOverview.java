@@ -129,9 +129,7 @@ public class MemberOverview extends Block {
 		Text phoneLabel = new Text(_iwrb.getLocalizedString("member_overview_phone", "Phone: "));
 		phoneLabel.setBold();
 		
-		String clubs = getClubList();
-		Text clubsLabel = new Text(_iwrb.getLocalizedString("member_overview_clubs", "Clubs: "));
-		clubsLabel.setBold();
+		Table clubs = getClubsTable();
 		
 		Table emails = getEmailTable(user);
 		Text emailLabel = new Text(_iwrb.getLocalizedString("member_overview_email", "Email: "));
@@ -164,11 +162,11 @@ public class MemberOverview extends Block {
 		table.add(address, 2, row++);
 		table.add(phoneLabel, 1, row);
 		table.add(phone, 2, row++);
-		table.add(clubsLabel, 1, row);
-		table.add(clubs, 2, row++);
 		table.add(emailLabel, 1, row);
 		table.mergeCells(2, row, 2, row+emails.getRows());
 		table.add(emails, 2, row++);
+		table.mergeCells(1, row, 2, row);
+		table.add(clubs, 1, row++);
 		if(image!=null) {
 			table.mergeCells(3, 1, 3, row-1);
 			table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_MIDDLE);
@@ -314,27 +312,43 @@ public class MemberOverview extends Block {
 		return row;
 	}
 	
-	private String getClubList() {
-		String result = null;
-		List clubList = _data.getClubList();
-		int clCount = clubList.size();
-		if(clubList != null && clCount>0) {
-			StringBuffer clubListBuf = new StringBuffer();
-			for(int i = 0; i<clCount; i++) {
-				if(clubListBuf.length()>0) {
-					clubListBuf.append(", ");
-				}
-				String clubName = (String) clubList.get(i);
-				if(clubName == null) {
-					clubName = "";
-				}
-				clubListBuf.append(clubName);
+	private Table getClubsTable() {
+		Table table = new Table();
+		Iterator clubListIter = _data.getClubList().iterator();
+		int row = 1;
+		if(clubListIter.hasNext()) {
+			Text clubsLabel = new Text(_iwrb.getLocalizedString("member_overview_clubs", "Member of: "));
+			clubsLabel.setBold();
+			table.add(clubsLabel, 1, row);
+			Text contactLabel = new Text(_iwrb.getLocalizedString("member_overview_clubs_contact", "Contact: "));
+			contactLabel.setBold();
+			table.add(contactLabel, 2, row++);
+		} else {
+			return null;
+		}
+		String linkText = _iwrb.getLocalizedString("member_overview_clubs_link_text", "Send message regarding registration");
+		while(clubListIter.hasNext()) {
+			Group club = (Group) clubListIter.next();
+			String name = club.getName();
+			String email = null;
+			try {
+				email = ((Email) club.getEmails().iterator().next()).getEmailAddress();
+			} catch(Exception e) {
+				// no email for club
 			}
-			
-			result = clubListBuf.toString();
+			if(name!=null && name.length()>0) {
+				table.add(name, 1, row);
+				if(email!=null) {
+					Link link = new Link(linkText);
+					link.setURL("mailto:" + email);
+					link.setSessionId(false);
+					table.add(link, 2, row);
+				}
+				row++;
+			}
 		}
 		
-		return result;
+		return table;
 	}
 	
 	public String emptyIfNull(String str) {

@@ -82,6 +82,7 @@ public class GroupMemberList extends Block {
 		int group_id = Integer.parseInt(group.getPrimaryKey().toString());
 		while(userIter.hasNext()) {
 			User user = (User) userIter.next();
+			boolean nameAdded = false;
 			try {
 				int user_id = Integer.parseInt(user.getPrimaryKey().toString());
 				int column = 1;
@@ -91,7 +92,7 @@ public class GroupMemberList extends Block {
 				System.out.println("Listing user " + name);
 				table.add(name, column, row);
 				table.setColor(column++, row, color);
-				
+				nameAdded = true;
 				if(showStatus) {
 					String status = "";
 					try {
@@ -114,11 +115,12 @@ public class GroupMemberList extends Block {
 					table.add(groupNames, column, row);
 					table.setColor(column++, row, color);
 				}
-				
-				row++;
 			} catch(Exception e) {
 				System.out.println("Exception lising user " + user.getName());
 				e.printStackTrace(); 
+			}
+			if(nameAdded) {
+				row++;
 			}
 		}
 		
