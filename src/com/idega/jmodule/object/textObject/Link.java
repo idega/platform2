@@ -387,6 +387,35 @@ public ModuleObject getObject(){
 }
 
 
+  public synchronized Object clone() {
+    Link linkObj = null;
+    try {
+      linkObj = (Link)super.clone();
+
+      if(this.obj != null){
+        linkObj.obj = (ModuleObject)this.obj.clone();
+      }
+      if(myWindow != null){
+        linkObj.myWindow = (Window)this.myWindow.clone();
+      }
+
+      if(formToSubmit != null){
+        linkObj.formToSubmit = (Form)this.formToSubmit.clone();
+      }
+
+      linkObj.ObjectType = this.ObjectType;
+      linkObj.parameterString = this.parameterString;
+      linkObj.addSessionId = this.addSessionId;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return linkObj;
+  }
+
+
 
 
 public String getParameterString(ModuleInfo modinfo,String URL){

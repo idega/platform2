@@ -23,5 +23,20 @@ public InterfaceObjectContainer(){
 
 
 
+
+  public synchronized Object clone() {
+    InterfaceObjectContainer obj = null;
+    try {
+      obj = (InterfaceObjectContainer)super.clone();
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
 }
 

@@ -332,6 +332,39 @@ public void print(ModuleInfo modinfo)throws IOException{
 	//}
 }
 
+
+  public synchronized Object clone() {
+    Form obj = null;
+    try {
+      obj = (Form)super.clone();
+
+      if(this.submitToObject != null){
+        obj.submitToObject = (ModuleObject)this.submitToObject.clone();
+      }
+      if(window != null){
+        obj.window = (Window)this.window.clone();
+      }
+
+      if (maintainedParameters != null){
+        obj.maintainedParameters = (Vector)this.maintainedParameters.clone();
+      }
+
+      if(controlParameter != null){
+        obj.controlParameter = (Parameter)this.controlParameter.clone();
+      }
+
+      obj.maintainAllParameters = this.maintainAllParameters;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
 protected void setControlParameter(String parameterName,String parameterValue){
   if (controlParameter==null){
     setControlParameter(new Parameter(parameterName,parameterValue));

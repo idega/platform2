@@ -170,6 +170,25 @@ private void setDefaultAttributes(ModuleInfo modinfo){
 
 }
 
+  public synchronized Object clone() {
+    Text obj = null;
+    try {
+      obj = (Text)super.clone();
+
+      obj.text = this.text;
+      obj.attributeSet = this.attributeSet;
+      obj.teletype = this.teletype;
+      obj.bold = this.bold;
+      obj.italic = this.italic;
+      obj.underline = this.underline;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	setDefaultAttributes(modinfo);

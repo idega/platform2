@@ -309,6 +309,36 @@ public String getTarget(){
   return getID();
 }
 
+
+
+  public synchronized Object clone() {
+    Window obj = null;
+    try {
+      obj = (Window)super.clone();
+      obj.title = this.title;
+      obj.width = this.width;
+      obj.height = this.height;
+      obj.url = this.url;
+
+      obj.toolbar = this.toolbar;
+      obj.location = this.location;
+      obj.scrollbar = this.scrollbar;
+      obj.directories = this.directories;
+      obj.menubar = this.menubar;
+      obj.status = this.status;
+      obj.titlebar = this.titlebar;
+      obj.resizable = this.resizable;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
+
 /*
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);

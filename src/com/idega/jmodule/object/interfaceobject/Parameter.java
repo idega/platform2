@@ -47,5 +47,18 @@ public void print(ModuleInfo modinfo)throws IOException{
 }
 
 
+  public synchronized Object clone() {
+    Parameter obj = null;
+    try {
+      obj = (Parameter)super.clone();
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.6 2001/05/14 14:27:27 palli Exp $
+ * $Id: Page.java,v 1.7 2001/05/23 11:03:45 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -208,6 +208,35 @@ public class Page extends ModuleObjectContainer {
    newPage.visitedColor = this.visitedColor;
    newPage.hoverColor = this.hoverColor;
   }
+
+  public synchronized Object clone() {
+    Page obj = null;
+    try {
+      obj = (Page)super.clone();
+      if (this.theAssociatedScript != null) {
+        obj.theAssociatedScript = (Script)this.theAssociatedScript.clone();
+      }
+      obj.title = this.title;
+      obj.zeroWait = this.zeroWait;
+      obj.redirectInfo = this.redirectInfo;
+      obj.doReload = this.doReload;
+      obj.linkColor = this.linkColor;
+      obj.visitedColor = this.visitedColor;
+      obj.hoverColor = this.hoverColor;
+      obj.textDecoration = this.textDecoration;
+      obj.styleSheetURL = this.styleSheetURL;
+      obj.addStyleSheet = this.addStyleSheet;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
 
   public void main(ModuleInfo modinfo) throws Exception {
     if (doReload) {

@@ -365,6 +365,30 @@ public void limitImageWidth( boolean limitImageWidth ){
   this.limitImageWidth=limitImageWidth;
 }
 
+  public synchronized Object clone() {
+    Image obj = null;
+    try {
+      obj = (Image)super.clone();
+      if(theAssociatedScript != null){
+        obj.theAssociatedScript = (Script)this.theAssociatedScript.clone();
+      }
+
+      obj.overImageUrl = this.overImageUrl;
+      obj.textBgColor = this.textBgColor;
+      obj.limitImageWidth = this.limitImageWidth;
+      obj.zoomView = this.zoomView;
+      obj.linkOnImage = this.linkOnImage;
+      obj.imageId = this.imageId;
+      obj.maxImageWidth = this.maxImageWidth;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if( doPrint(modinfo) ){
