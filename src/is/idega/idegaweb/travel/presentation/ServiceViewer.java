@@ -261,8 +261,8 @@ public class ServiceViewer extends Window {
       numberAndName.setBold(true);
       content.add(numberAndName,1,i);
       //description
-      //content.add(new TextReader(TextFinder.getLocalizedText(product,product.getID(),ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getBody()),1,2);//insert a textreader
-      content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
+      content.add(new TextReader(product.getText().getID()),1,2);//insert a textreader
+      //content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
       content.add("META DATA",1,++i);
 
       Link buy = LinkGenerator.getLink(iwc,service.getID());
