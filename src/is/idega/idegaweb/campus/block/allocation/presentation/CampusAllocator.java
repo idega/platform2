@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.69 2004/06/29 14:58:22 aron Exp $
+ * $Id: CampusAllocator.java,v 1.70 2004/07/12 11:52:23 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1274,6 +1274,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		//java.util.Collection t_application = CampusApplicationFinder.listOfWaitinglistForTypeTransfer(aprtTypeId, cmplxId);
 		//Hashtable HT = ContractFinder.hashOfApplicantsContracts();
 		Map newApplicantContracts = campusService.getContractService().getNewApplicantContracts();
+		Map priorityColorMap = campusService.getApplicationService().getPriorityColorMap();
 		//ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
 		boolean bcontracts = false;
 		Contract contract;
@@ -1335,6 +1336,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey().toString(),numberOnList,typeID.intValue(), complexID.intValue(),listSize), col++, row);
 						numberOnList++;
 						Frame.add(getText(WL.getPriorityLevel()), col++, row);
+						if(priorityColorMap.containsKey(WL.getPriorityLevel()))
+							colorMap.put(new Integer(row),priorityColorMap.get(WL.getPriorityLevel()));
 						String cypher = null;
 						if (application != null && applicationID.intValue() >0) {
 							

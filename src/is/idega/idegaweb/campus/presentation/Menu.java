@@ -1,6 +1,6 @@
 /*
 
- * $Id: Menu.java,v 1.5 2004/05/24 14:21:40 palli Exp $
+ * $Id: Menu.java,v 1.6 2004/07/12 11:52:24 aron Exp $
 
  *
 
@@ -188,7 +188,7 @@ public class Menu extends Block{
 
     Image office = (iAct != ACT2?iwrb.getImage("/menu/office.gif","/menu/office_o.gif","Office",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
 
-    Link lOffice = CF.getLink(CF.MENU_OFFICE,office);
+    Link lOffice = CampusLinkFactory.getLink(CampusLinkFactory.MENU_OFFICE,office);
 
     lOffice.addParameter(TextControl.strAction,"1");
 
@@ -202,7 +202,7 @@ public class Menu extends Block{
 
     Image apartment = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif","/menu/apartment_o.gif","Appartment",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
 
-    Link lApartment = CF.getLink(CF.MENU_APARTMENTS,apartment);
+    Link lApartment = CampusLinkFactory.getLink(CampusLinkFactory.MENU_APARTMENTS,apartment);
 
     lApartment.addParameter(strAction,ACT4);
 
@@ -214,7 +214,7 @@ public class Menu extends Block{
 
     Image apply = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
 
-    Link lApply = CF.getLink(CF.MENU_APPLICATION,apply);
+    Link lApply = CampusLinkFactory.getLink(CampusLinkFactory.MENU_APPLICATION,apply);
 
     lApply.addParameter(strAction,ACT3);
 
@@ -228,7 +228,7 @@ public class Menu extends Block{
 
       Image instructs = iwrb.getImage("/menu/instructions.gif",iWidth,iHeight);
 
-      Link lInstr = CF.getLink(CF.MENU_INSTRUCT,instructs);
+      Link lInstr = CampusLinkFactory.getLink(CampusLinkFactory.MENU_INSTRUCT,instructs);
 
       lInstr.addParameter(TextControl.strAction,"4");
 
@@ -240,7 +240,7 @@ public class Menu extends Block{
 
       Image rules = iwrb.getImage("/menu/rules.gif",iWidth,iHeight);
 
-      Link lRules = CF.getLink(CF.MENU_RULES,rules);
+      Link lRules = CampusLinkFactory.getLink(CampusLinkFactory.MENU_RULES,rules);
 
       lRules.addParameter(TextControl.strAction,"3");
 
@@ -254,7 +254,7 @@ public class Menu extends Block{
 
     Image info = (iAct != ACT1?iwrb.getImage("/menu/info.gif","/menu/info_o.gif","Info",iWidth,iHeight):iwrb.getImage("/menu/info1.gif",iWidth,iHeight));
 
-    Link lInfo = CF.getLink(CF.MENU_INFO,info);
+    Link lInfo = CampusLinkFactory.getLink(CampusLinkFactory.MENU_INFO,info);
 
     lInfo.addParameter(strAction,ACT1);
 
@@ -266,7 +266,7 @@ public class Menu extends Block{
 
     Image links = (iAct != ACT5?iwrb.getImage("/menu/links.gif","/menu/links_o.gif","Links",iWidth,iHeight):iwrb.getImage("/menu/links1.gif",iWidth,iHeight));
 
-    Link lLinks = CF.getLink(CF.MENU_LINKS,links);
+    Link lLinks = CampusLinkFactory.getLink(CampusLinkFactory.MENU_LINKS,links);
 
     lLinks.addParameter(strAction,ACT5);
 
@@ -354,7 +354,7 @@ public class Menu extends Block{
 
 	public void setTemplate(com.idega.core.builder.data.ICPage templatePage){
 
-	  templateId = templatePage.getID();
+	  templateId = ((Integer)templatePage.getPrimaryKey()).intValue();
 
 	}
 

@@ -8,7 +8,7 @@ public class HabitantHomeImpl extends com.idega.data.IDOFactory implements Habit
  }
 
  public Habitant create() throws javax.ejb.CreateException{
-  return (Habitant) super.idoCreate();
+  return (Habitant) super.createIDO();
  }
 
  public Habitant createLegacy(){
@@ -26,7 +26,7 @@ public class HabitantHomeImpl extends com.idega.data.IDOFactory implements Habit
  }
 
  public Habitant findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Habitant) super.idoFindByPrimaryKey(pk);
+  return (Habitant) super.findByPrimaryKeyIDO(pk);
  }
 
  public Habitant findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

@@ -8,7 +8,7 @@ public class SystemPropertiesHomeImpl extends com.idega.data.IDOFactory implemen
  }
 
  public SystemProperties create() throws javax.ejb.CreateException{
-  return (SystemProperties) super.idoCreate();
+  return (SystemProperties) super.createIDO();
  }
 
  public SystemProperties createLegacy(){
@@ -26,7 +26,7 @@ public class SystemPropertiesHomeImpl extends com.idega.data.IDOFactory implemen
  }
 
  public SystemProperties findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SystemProperties) super.idoFindByPrimaryKey(pk);
+  return (SystemProperties) super.findByPrimaryKeyIDO(pk);
  }
 
  public SystemProperties findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

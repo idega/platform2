@@ -8,7 +8,7 @@ public class PhoneFileInfoHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
  public PhoneFileInfo create() throws javax.ejb.CreateException{
-  return (PhoneFileInfo) super.idoCreate();
+  return (PhoneFileInfo) super.createIDO();
  }
 
  public PhoneFileInfo createLegacy(){
@@ -26,7 +26,7 @@ public class PhoneFileInfoHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
  public PhoneFileInfo findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (PhoneFileInfo) super.idoFindByPrimaryKey(pk);
+  return (PhoneFileInfo) super.findByPrimaryKeyIDO(pk);
  }
 
  public PhoneFileInfo findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

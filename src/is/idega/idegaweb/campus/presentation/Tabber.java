@@ -1,6 +1,6 @@
 /*
 
- * $Id: Tabber.java,v 1.6 2004/05/24 14:21:40 palli Exp $
+ * $Id: Tabber.java,v 1.7 2004/07/12 11:52:24 aron Exp $
 
  *
 
@@ -39,6 +39,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.user.data.Group;
 
 
 
@@ -236,7 +237,7 @@ public class Tabber extends Block {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment("right");
 
 
 
@@ -248,7 +249,7 @@ public class Tabber extends Block {
 
       Image finance = iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif");
 
-      Link Link1 = CF.getLink(CF.ADM_FINANCE,finance);
+      Link Link1 = CampusLinkFactory.getLink(CampusFactory.ADM_FINANCE,finance);
 
       Link1.addParameter(strAction,ACT20);
 
@@ -256,7 +257,7 @@ public class Tabber extends Block {
 
       Image habitants = iwrb.getImage(iAct == ACT21?"/tabs/habitants.gif":"/tabs/habitants1.gif");
 
-      Link Link2 = CF.getLink(CF.ADM_HABITANTS,habitants);
+      Link Link2 = CampusLinkFactory.getLink(CampusFactory.ADM_HABITANTS,habitants);
 
       Link2.addParameter(strAction,ACT21);
 
@@ -264,7 +265,7 @@ public class Tabber extends Block {
 
       Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
 
-      Link Link3 = CF.getLink(allocation,CF.ADM_ALLOCATION);
+      Link Link3 = CampusLinkFactory.getLink(allocation,CampusFactory.ADM_ALLOCATION);
 
       Link3.addParameter(strAction,ACT22);
 
@@ -272,7 +273,7 @@ public class Tabber extends Block {
 
       Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");
 
-      Link Link4 = CF.getLink(CF.ADM_APARTMENTS,apartments);
+      Link Link4 = CampusLinkFactory.getLink(CampusFactory.ADM_APARTMENTS,apartments);
 
       Link4.addParameter(strAction,ACT23);
 
@@ -280,7 +281,7 @@ public class Tabber extends Block {
 
       Image announce = iwrb.getImage(iAct == ACT24?"/tabs/announcements.gif":"/tabs/announcements1.gif");
 
-      Link Link5 = CF.getLink(CF.ADM_ANNOUNCE,announce );
+      Link Link5 = CampusLinkFactory.getLink(CampusFactory.ADM_ANNOUNCE,announce );
 
       Link5.addParameter(strAction,ACT24);
 
@@ -314,7 +315,7 @@ public class Tabber extends Block {
 
       LinkTable.setCellspacing(0);
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -362,7 +363,7 @@ public class Tabber extends Block {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -372,7 +373,7 @@ public class Tabber extends Block {
 
       Image profile = iwrb.getImage(iAct == ACT20?"/tabs/my_profile.gif":"/tabs/my_profile1.gif");
 
-      Link Link1 =  CF.getLink(CF.TEN_PROFILE,profile);
+      Link Link1 =  CampusLinkFactory.getLink(CampusFactory.TEN_PROFILE,profile);
 
       Link1.addParameter(strAction,ACT20);
 
@@ -380,7 +381,7 @@ public class Tabber extends Block {
 
       Image finance = iwrb.getImage(iAct == ACT21?"/tabs/finance.gif":"/tabs/finance1.gif");
 
-      Link Link2 = CF.getLink(CF.TEN_FINANCE,finance);
+      Link Link2 = CampusLinkFactory.getLink(CampusFactory.TEN_FINANCE,finance);
 
       Link2.addParameter(strAction,ACT21);
 
@@ -388,7 +389,7 @@ public class Tabber extends Block {
 
       Image habitants = iwrb.getImage(iAct == ACT22?"/tabs/habitants.gif":"/tabs/habitants1.gif");
 
-      Link Link3 = CF.getLink(CF.TEN_HABITANTS,habitants);
+      Link Link3 = CampusLinkFactory.getLink(CampusFactory.TEN_HABITANTS,habitants);
 
       Link3.addParameter(strAction,ACT22);
 
@@ -396,7 +397,7 @@ public class Tabber extends Block {
 
       Image announce = iwrb.getImage(iAct == ACT23?"/tabs/announcements.gif":"/tabs/announcements1.gif");
 
-      Link Link4 = CF.getLink(CF.TEN_ANNOUNCE,announce );
+      Link Link4 = CampusLinkFactory.getLink(CampusFactory.TEN_ANNOUNCE,announce );
 
       Link4.addParameter(strAction,ACT23);
 
@@ -434,7 +435,7 @@ public class Tabber extends Block {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -484,11 +485,11 @@ public class Tabber extends Block {
 
       while (iter.hasNext()) {
 
-        com.idega.core.data.GenericGroup item = (com.idega.core.data.GenericGroup)iter.next();
+        Group item = (Group)iter.next();
 
         //System.err.println(item.getName());
 
-        PermissionHash.put(new Integer(item.getID()),item.getName() );
+        PermissionHash.put((Integer)item.getPrimaryKey(),item.getName() );
 
         return true;
 

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusTabber.java,v 1.6 2004/05/24 14:21:40 palli Exp $
+ * $Id: CampusTabber.java,v 1.7 2004/07/12 11:52:23 aron Exp $
 
  *
 
@@ -36,6 +36,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Parameter;
+import com.idega.user.data.Group;
 
 
 
@@ -235,7 +236,7 @@ public class CampusTabber extends Block implements Campus {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -323,7 +324,7 @@ public class CampusTabber extends Block implements Campus {
 
       LinkTable.setCellspacing(0);
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -365,7 +366,7 @@ public class CampusTabber extends Block implements Campus {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -441,7 +442,7 @@ public class CampusTabber extends Block implements Campus {
 
       //LinkTable.setWidth("100%");
 
-      LinkTable.setAlignment("right");
+      LinkTable.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 
 
 
@@ -491,11 +492,11 @@ public class CampusTabber extends Block implements Campus {
 
       while (iter.hasNext()) {
 
-        com.idega.core.data.GenericGroup item = (com.idega.core.data.GenericGroup)iter.next();
+        Group item = (Group)iter.next();
 
         //System.err.println(item.getName());
 
-        PermissionHash.put(new Integer(item.getID()),item.getName() );
+        PermissionHash.put((Integer)item.getPrimaryKey(),item.getName() );
 
         return true;
 

@@ -8,7 +8,7 @@ public class CampusPhoneHomeImpl extends com.idega.data.IDOFactory implements Ca
  }
 
  public CampusPhone create() throws javax.ejb.CreateException{
-  return (CampusPhone) super.idoCreate();
+  return (CampusPhone) super.createIDO();
  }
 
  public CampusPhone createLegacy(){
@@ -26,7 +26,7 @@ public class CampusPhoneHomeImpl extends com.idega.data.IDOFactory implements Ca
  }
 
  public CampusPhone findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (CampusPhone) super.idoFindByPrimaryKey(pk);
+  return (CampusPhone) super.findByPrimaryKeyIDO(pk);
  }
 
  public CampusPhone findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

@@ -80,15 +80,15 @@ public class ApartmentTypeRentBMPBean
 	
 	public Collection ejbFindByType(int apartmentTypeId)throws FinderException{
 		IDOQuery query = this.idoQueryGetSelect();
-		query.appendWhereEquals(this.getColumnApartmentTypeId(),apartmentTypeId);
+		query.appendWhereEquals(getColumnApartmentTypeId(),apartmentTypeId);
 		query.appendOrderBy(getColumnValidFrom());
 		return super.idoFindPKsByQuery(query);
 	}
 	
 	public Object ejbFindByTypeAndValidity(int aprtTypeId,Date dateToCheck )throws FinderException{
 		IDOQuery query = this.idoQueryGetSelect();
-		query.appendWhereEquals(this.getColumnApartmentTypeId(),aprtTypeId);
-		query.appendAnd().append(dateToCheck).appendGreaterThanOrEqualsSign().append(this.getColumnValidFrom());
+		query.appendWhereEquals(getColumnApartmentTypeId(),aprtTypeId);
+		query.appendAnd().append(dateToCheck).appendGreaterThanOrEqualsSign().append(getColumnValidFrom());
 		query.appendOrderBy(getColumnValidFrom());
 		return idoFindOnePKByQuery(query);
 	}

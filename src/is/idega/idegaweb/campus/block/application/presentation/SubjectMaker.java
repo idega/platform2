@@ -104,7 +104,7 @@ public class SubjectMaker extends CampusBlock{
     Table T = new Table();
     TextInput Description = new TextInput("app_subj_desc");
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
-    ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
+    ExpireDate.setDate(IWTimestamp.RightNow().getDate());
     SubmitButton SaveButton = new SubmitButton("save","Save");
 
   

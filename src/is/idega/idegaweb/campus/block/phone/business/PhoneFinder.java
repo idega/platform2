@@ -82,10 +82,10 @@ public abstract class PhoneFinder {
 			sql.append(" where a.");
 			sql.append(is.idega.idegaweb.campus.data.AccountPhoneBMPBean.getColumnNameValidTo());
 			sql.append(" >= '");
-			sql.append(from.getSQLDate());
+			sql.append(from.getDate());
 			sql.append("'");
 		}
-		System.err.println(sql.toString());
+		//System.err.println(sql.toString());
 		try {
 			return EntityFinder.getInstance().findAll(AccountPhone.class, sql.toString());
 		}
@@ -122,7 +122,7 @@ public abstract class PhoneFinder {
 			sql.append(" and ");
 			sql.append(is.idega.idegaweb.campus.data.AccountPhoneBMPBean.getColumnNameValidTo());
 			sql.append(" >= '");
-			sql.append(from.getSQLDate());
+			sql.append(from.getDate());
 			sql.append("'");
 		}
 		//System.err.println (sql.toString());
@@ -326,7 +326,7 @@ public abstract class PhoneFinder {
 			Hashtable H = new Hashtable(len);
 			for (int i = 0; i < len; i++) {
 				CampusPhone P = (CampusPhone) listOfPhones.get(i);
-				H.put(new Integer(P.getID()), P);
+				H.put((Integer)P.getPrimaryKey(), P);
 			}
 			return H;
 		}

@@ -10,6 +10,9 @@ import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
 import is.idega.idegaweb.campus.data.BatchContractBMPBean;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 import javax.ejb.CreateException;
@@ -20,7 +23,7 @@ import com.idega.block.finance.data.AccountEntryBMPBean;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
 import com.idega.data.IDOLookup;
-import com.idega.data.SimpleQuerier;
+import com.idega.util.database.ConnectionBroker;
 
 /**
  * CampusAssessmentBusinessBean
@@ -71,13 +74,17 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 		System.err.println(sql2.toString());
 		System.err.println(sql3.toString());
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+		Connection conn = null;
+		Statement stmt = null;
 		try {
 			t.begin();
+			conn = ConnectionBroker.getConnection();
+			stmt = conn.createStatement();
 			AssessmentRound AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class))
 					.findByPrimaryKey(assessmentRoundId);
-			SimpleQuerier.execute(sql3.toString());
-			SimpleQuerier.execute(sql2.toString());
-			SimpleQuerier.execute(sql.toString());
+			stmt.execute(sql3.toString());
+			stmt.execute(sql2.toString());
+			stmt.execute(sql.toString());
 			AR.remove();
 			t.commit();
 			return true;
@@ -89,6 +96,18 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 				ex.printStackTrace();
 			}
 			e.printStackTrace();
+		}
+		finally {
+            if (stmt != null) {
+                try {
+					stmt.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+            }
+            if (conn != null) {
+                ConnectionBroker.freeConnection(conn);
+            }
 		}
 		return false;
 	}

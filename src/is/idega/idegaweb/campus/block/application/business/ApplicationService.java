@@ -4,6 +4,8 @@ import is.idega.idegaweb.campus.block.application.data.AppliedHome;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 import is.idega.idegaweb.campus.block.application.data.CurrentResidencyHome;
+import is.idega.idegaweb.campus.block.application.data.Priority;
+import is.idega.idegaweb.campus.block.application.data.PriorityHome;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
@@ -11,6 +13,7 @@ import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -39,6 +42,7 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public ApplicationSubjectInfoHome getSubjectInfoHome() throws RemoteException;
 	public CurrentResidencyHome getResidencyHome() throws RemoteException;
 	public SpouseOccupationHome getSpouseOccupationHome() throws RemoteException;
+	public PriorityHome getPriorityHome() throws RemoteException;
 	public  WaitingList getRightPlaceForTransfer(WaitingList wl)throws RemoteException,FinderException ;
 	public int getMaxTransferInWaitingList(int typeId, int cmplxId) ;
 	public Collection getComplexTypeHelpersByCategory(Integer categoryID)throws RemoteException,FinderException;
@@ -58,5 +62,8 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public String getStatus(String status,IWResourceBundle iwrb) throws RemoteException;
 	public boolean confirmOnWaitingList(Integer waitingListId, boolean stayOnList)throws RemoteException;
 	public void storePhoneAndEmail(Integer campusApplicationID,String phone,String email) throws RemoteException;
+	public Priority storePriority(String code,String description,String hexColor)throws RemoteException;
+	public void removePriority(String id)throws RemoteException;
+	public Map getPriorityColorMap();
 	
 }

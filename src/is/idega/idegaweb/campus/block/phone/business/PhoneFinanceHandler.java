@@ -3,6 +3,9 @@ package is.idega.idegaweb.campus.block.phone.business;
 import is.idega.idegaweb.campus.data.ContractAccounts;
 import is.idega.idegaweb.campus.data.ContractAccountsHome;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,10 +32,10 @@ import com.idega.block.finance.data.TariffKey;
 import com.idega.block.finance.data.TariffKeyHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.data.SimpleQuerier;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
+import com.idega.util.database.ConnectionBroker;
 
 /**
  * Title:
@@ -64,15 +67,17 @@ public class PhoneFinanceHandler implements FinanceHandler {
 		sql.append(" where ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getRoundIdColumnName()).append(" = ").append(assessmentRoundId);
 		System.err.println(sql.toString());
 		TransactionManager t = IdegaTransactionManager.getInstance();
-
+		Connection conn = null;
+		Statement stmt = null;
 		try {
 			t.begin();
-
-			SimpleQuerier.execute(sql.toString());
-			SimpleQuerier.execute(getSQLString(assessmentRoundId));
-			SimpleQuerier.execute("delete from fin_phone_entry where total_price > 0 and fin_assessment_round_id = " + assessmentRoundId);
-			SimpleQuerier.execute("delete from fin_acc_entry where fin_assessment_round_id = " + assessmentRoundId);
-			SimpleQuerier.execute("delete from fin_assessment_round where fin_assessment_round_id = " + assessmentRoundId);
+			conn = ConnectionBroker.getConnection();
+			stmt = conn.createStatement();
+			stmt.executeUpdate(sql.toString());
+			stmt.executeUpdate(getSQLString(assessmentRoundId));
+			stmt.execute("delete from fin_phone_entry where total_price > 0 and fin_assessment_round_id = " + assessmentRoundId);
+			stmt.execute("delete from fin_acc_entry where fin_assessment_round_id = " + assessmentRoundId);
+			stmt.execute("delete from fin_assessment_round where fin_assessment_round_id = " + assessmentRoundId);
 
 			t.commit();
 			return true;
@@ -86,6 +91,18 @@ public class PhoneFinanceHandler implements FinanceHandler {
 			}
 			e.printStackTrace();
 		}
+		finally {
+            if (stmt != null) {
+                try {
+					stmt.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+            }
+            if (conn != null) {
+                ConnectionBroker.freeConnection(conn);
+            }
+        }
 		return false;
 
 		/*
@@ -458,7 +475,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 		//System.out.println("iRoundId = " + iRoundId);
 		AccountEntry AE = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
 		AE.setAccountId(accountId);
-		AE.setAccountKeyId(key.getID());
+		AE.setAccountKeyId(((Integer)key.getPrimaryKey()).intValue());
 		AE.setCashierId(cashierId);
 		AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
 		AE.setNetto(nettoamount);

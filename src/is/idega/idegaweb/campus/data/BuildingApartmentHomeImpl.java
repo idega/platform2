@@ -8,7 +8,7 @@ public class BuildingApartmentHomeImpl extends com.idega.data.IDOFactory impleme
  }
 
  public BuildingApartment create() throws javax.ejb.CreateException{
-  return (BuildingApartment) super.idoCreate();
+  return (BuildingApartment) super.createIDO();
  }
 
  public BuildingApartment createLegacy(){
@@ -26,7 +26,7 @@ public class BuildingApartmentHomeImpl extends com.idega.data.IDOFactory impleme
  }
 
  public BuildingApartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (BuildingApartment) super.idoFindByPrimaryKey(pk);
+  return (BuildingApartment) super.findByPrimaryKeyIDO(pk);
  }
 
  public BuildingApartment findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

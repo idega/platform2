@@ -8,7 +8,7 @@ public class SerieAccountHomeImpl extends com.idega.data.IDOFactory implements S
  }
 
  public SerieAccount create() throws javax.ejb.CreateException{
-  return (SerieAccount) super.idoCreate();
+  return (SerieAccount) super.createIDO();
  }
 
  public SerieAccount createLegacy(){
@@ -26,7 +26,7 @@ public class SerieAccountHomeImpl extends com.idega.data.IDOFactory implements S
  }
 
  public SerieAccount findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (SerieAccount) super.idoFindByPrimaryKey(pk);
+  return (SerieAccount) super.findByPrimaryKeyIDO(pk);
  }
 
  public SerieAccount findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.57 2004/07/12 09:15:31 aron Exp $
+ * $Id: CampusApprover.java,v 1.58 2004/07/12 11:52:22 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.application.business.ApartmentInfo;
 import is.idega.idegaweb.campus.block.application.business.ApplicantInfo;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationWriter;
 import is.idega.idegaweb.campus.block.application.business.ChildInfo;
 import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
@@ -18,6 +19,7 @@ import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
+import is.idega.idegaweb.campus.block.application.data.Priority;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfo;
 import is.idega.idegaweb.campus.data.ApplicationSubjectInfoHome;
 import is.idega.idegaweb.campus.presentation.CampusBlock;
@@ -92,6 +94,7 @@ public class CampusApprover extends CampusBlock {
 	boolean bEdit = false;
 	private Integer applicationID =new Integer(-1);
 	private static final String PRM_INDEX = "app_idx";
+	private ApplicationService applicationService = null;
 	
 
 	/*
@@ -170,9 +173,14 @@ public class CampusApprover extends CampusBlock {
 	}
 	
 	private void init(IWContext iwc){
-		
 		try {
-			listOfSubjects = getApplicationService(iwc).getSubjectHome().findAll();
+			applicationService = getApplicationService(iwc);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			listOfSubjects = applicationService.getSubjectHome().findAll();
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -231,14 +239,14 @@ public class CampusApprover extends CampusBlock {
 
 	private void updateApplicationStatus(IWContext iwc) throws RemoteException {
 		String status = iwc.getParameter(PRM_STATUS);
-		getApplicationService(iwc).storeApplicationStatus( applicationID, status);
+		applicationService.storeApplicationStatus( applicationID, status);
 	}
 
 
 	private void updatePriorityLevel(IWContext iwc)throws RemoteException {
 		//int id = Integer.parseInt(iwc.getParameter("application_id"));
 		String level = iwc.getParameter(PRM_PRIORITY);
-		getApplicationService(iwc).storePriorityLevel(applicationID,level);
+		applicationService.storePriorityLevel(applicationID,level);
 		
 	}
 
@@ -259,11 +267,8 @@ public class CampusApprover extends CampusBlock {
 		String newStatus = iwc.getParameter(PRM_STATUS);
 		
 		try {
-			CampusApplication app = getApplicationService(iwc).storeWholeApplication(applicationID,new Integer(iSubjectId),aInfo,aprtInfo,spouseInfo,childInfo);
+			CampusApplication app = applicationService.storeWholeApplication(applicationID,new Integer(iSubjectId),aInfo,aprtInfo,spouseInfo,childInfo);
 			applicationID =  ((Integer)app.getPrimaryKey());
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
 		}
 		catch (EJBException e) {
 			applicationID = null;
@@ -299,7 +304,7 @@ public class CampusApprover extends CampusBlock {
 			//Collection L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId, sGlobalStatus, sGlobalOrder);
 			if("-1".equals(sGlobalOrder))
 				sGlobalOrder = null;
-			CampusApplicationHome cappHome = getApplicationService(iwc).getCampusApplicationHome();
+			CampusApplicationHome cappHome = applicationService.getCampusApplicationHome();
 			int count = cappHome.getCountBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus);
 			Collection L = cappHome.findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder,this.iGlobalSize,-1);
 
@@ -458,7 +463,7 @@ public class CampusApprover extends CampusBlock {
 			}
 			else {*/
 				if(applicationID !=null && applicationID.intValue()>0){
-					eCampusApplication = getApplicationService(iwc).getCampusApplicationHome().findByPrimaryKey(applicationID);
+					eCampusApplication = applicationService.getCampusApplicationHome().findByPrimaryKey(applicationID);
 					eApplication = eCampusApplication.getApplication();
 					eApplicant = eApplication.getApplicant();
 				}
@@ -486,7 +491,7 @@ public class CampusApprover extends CampusBlock {
 				}
 				
 				if(eCampusApplication!=null){
-					Collection L  = getApplicationService(iwc).getAppliedHome().findByApplicationID((Integer)eCampusApplication.getPrimaryKey());
+					Collection L  = applicationService.getAppliedHome().findByApplicationID((Integer)eCampusApplication.getPrimaryKey());
 				
 	
 				int border = 0;
@@ -545,7 +550,7 @@ public class CampusApprover extends CampusBlock {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setWidth(1,Table.HUNDRED_PERCENT);
 		try {
-			Collection L = getApplicationService(iwc).getCampusApplicationHome().findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder,3,this.applicationIndex-1);
+			Collection L = applicationService.getCampusApplicationHome().findBySubjectAndStatus(new Integer(iSubjectId),sGlobalStatus,sGlobalOrder,3,this.applicationIndex-1);
 			int idx = 1;
 			boolean next = false,prevAdded = false;
 			boolean prev = false,nextAdded = false;;
@@ -640,7 +645,7 @@ public class CampusApprover extends CampusBlock {
 			else {
 				*/
 				if (applicationID.intValue() > 0) {
-					eCampusApplication = getApplicationService(iwc).getCampusApplicationHome().findByPrimaryKey(applicationID);
+					eCampusApplication = applicationService.getCampusApplicationHome().findByPrimaryKey(applicationID);
 					eApplication = eCampusApplication.getApplication();
 					eApplicant = eApplication.getApplicant();
 				}
@@ -667,7 +672,7 @@ public class CampusApprover extends CampusBlock {
 				
 				
 				if(eCampusApplication!=null)
-					L = getApplicationService(iwc).getAppliedHome().findByApplicationID((Integer)eCampusApplication.getPrimaryKey());
+					L = applicationService.getAppliedHome().findByApplicationID((Integer)eCampusApplication.getPrimaryKey());
 				
 			}
 
@@ -1132,7 +1137,7 @@ public class CampusApprover extends CampusBlock {
 		int row = 1;
 		if (lApplied != null) {
 			int i = 0;
-			ApartmentTypeHome ath =getApplicationService(iwc).getBuildingService().getApartmentTypeHome();
+			ApartmentTypeHome ath =applicationService.getBuildingService().getApartmentTypeHome();
 			for (Iterator iter = lApplied.iterator(); iter.hasNext();) {
 				Applied A = (Applied) iter.next();
 				T.add(getText(String.valueOf(i + 1)), 1, row);
@@ -1252,7 +1257,7 @@ public class CampusApprover extends CampusBlock {
 
 		
 		try {
-			Collection typeHelpers =getApplicationService(iwc).getComplexTypeHelpers();
+			Collection typeHelpers =applicationService.getComplexTypeHelpers();
 			DropdownMenu drpOne = drpTypes(typeHelpers, "drp_one", sOne, false);
 			DropdownMenu drpTwo = drpTypes(typeHelpers, "drp_two", sTwo, true);
 			DropdownMenu drpThree = drpTypes(typeHelpers, "drp_three", sThree, true);
@@ -1464,7 +1469,7 @@ public class CampusApprover extends CampusBlock {
 		String sDate = iwc.getParameter("app_subj_xdate");
 		
 		try {
-			getApplicationService(iwc).createApplicationSubject(sDesc, sDate);
+			applicationService.createApplicationSubject(sDesc, sDate);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -1595,14 +1600,22 @@ public class CampusApprover extends CampusBlock {
 	}
 
 	private DropdownMenu priorityDrop(String name, String selected) {
-		
+		boolean hasSelectedValue = false;
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElement("A", "A");
-		drp.addMenuElement("B", "B");
-		drp.addMenuElement("C", "C");
-		drp.addMenuElement("D", "D");
-		drp.addMenuElement("E", "E");
-		drp.addMenuElement("T", "T");
+		try {
+			Collection priorities = this.applicationService.getPriorityHome().findAll();
+			for (Iterator iter = priorities.iterator(); iter.hasNext();) {
+				Priority prior = (Priority) iter.next();
+				drp.addMenuElement(prior.getPriority(), prior.getDescription());
+				hasSelectedValue |= prior.getPriority().equals(selected);
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		if(!hasSelectedValue)
+			drp.addMenuElement(selected,selected);
 		drp.setSelectedElement(selected);
 		return drp;
 	}

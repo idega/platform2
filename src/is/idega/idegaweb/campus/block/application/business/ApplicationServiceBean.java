@@ -12,6 +12,8 @@ import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
 import is.idega.idegaweb.campus.block.application.data.CurrentResidency;
 import is.idega.idegaweb.campus.block.application.data.CurrentResidencyHome;
+import is.idega.idegaweb.campus.block.application.data.Priority;
+import is.idega.idegaweb.campus.block.application.data.PriorityHome;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupation;
 import is.idega.idegaweb.campus.block.application.data.SpouseOccupationHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
@@ -25,6 +27,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -844,6 +847,10 @@ import com.idega.util.IWTimestamp;
 		public SpouseOccupationHome getSpouseOccupationHome() throws RemoteException{
 				return (SpouseOccupationHome)getIDOHome(SpouseOccupation.class);
 			}
+	
+		public PriorityHome getPriorityHome() throws RemoteException{
+			return (PriorityHome)getIDOHome(Priority.class);
+		}
 
 		public int getMaxTransferInWaitingList(int typeId, int cmplxId) {
 			StringBuffer sql = new StringBuffer("select max(app.ordered) ");
@@ -961,6 +968,83 @@ import com.idega.util.IWTimestamp;
 					e.printStackTrace();
 				}
 		}
+		
+		
+		/* (non-Javadoc)
+		 * @see is.idega.idegaweb.campus.block.application.business.ApplicationService#storePriority(java.lang.String, java.lang.String, java.lang.String)
+		 */
+		public Priority storePriority(String code, String description,
+				String hexColor) throws RemoteException {
+			try {
+				Priority prior = null;
+				if(code!=null && !"".equals(code))
+					try {
+						prior = getPriorityHome().findByPrimaryKey(code);
+					} catch (FinderException e1) {
+					}
+				if(prior==null){
+					prior = getPriorityHome().create();
+					prior.setPriority(code);
+				}
+				prior.setDescription(description);
+				if(hexColor!=null && !"".equals(hexColor))
+					prior.setHexColor(hexColor);
+				prior.store();
+				return prior;
+			} catch (IDOStoreException e) {
+			
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				
+				e.printStackTrace();
+			} catch (CreateException e) {
+			
+				e.printStackTrace();
+			}
+			return null;
+		}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.application.business.ApplicationService#removePriority(java.lang.String)
+	 */
+	public void removePriority(String id) throws RemoteException {
+		try {
+			getPriorityHome().findByPrimaryKey(id).remove();
+		} catch (EJBException e) {
+			
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			
+			e.printStackTrace();
+		} catch (RemoveException e) {
+			
+			e.printStackTrace();
+		} catch (FinderException e) {
+			
+			e.printStackTrace();
+		}
 	}
+
+	public Map getPriorityColorMap(){
+		Map map = new HashMap();
+		try {
+			Collection priorities = getPriorityHome().findAll();
+			
+			for (Iterator iter = priorities.iterator(); iter.hasNext();) {
+				Priority prior = (Priority) iter.next();
+				if(prior.getHexColor()!=null)
+					map.put(prior.getPriority(),prior.getHexColor());
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	
+}
+	
+	
 	
 

@@ -1,9 +1,9 @@
 /*
 <<<<<<< ApartmentTypePeriodsBMPBean.java
- * $Id: ApartmentTypePeriodsBMPBean.java,v 1.5 2004/06/05 07:41:10 aron Exp $
+ * $Id: ApartmentTypePeriodsBMPBean.java,v 1.6 2004/07/12 11:52:22 aron Exp $
 =======
 
- * $Id: ApartmentTypePeriodsBMPBean.java,v 1.5 2004/06/05 07:41:10 aron Exp $
+ * $Id: ApartmentTypePeriodsBMPBean.java,v 1.6 2004/07/12 11:52:22 aron Exp $
 
 >>>>>>> 1.4
  *
@@ -97,7 +97,7 @@ public class ApartmentTypePeriodsBMPBean
 			month = 1;
 		}
 		IWTimestamp it = new IWTimestamp(day, month, year);
-		setFirstDate(it.getSQLDate());
+		setFirstDate(it.getDate());
 	}
 	public java.sql.Date getSecondDate() {
 		return (java.sql.Date) getColumnValue(getSecondDateColumnName());
@@ -114,7 +114,7 @@ public class ApartmentTypePeriodsBMPBean
 			month = 1;
 		}
 		IWTimestamp it = new IWTimestamp(day, month, year);
-		setSecondDate(it.getSQLDate());
+		setSecondDate(it.getDate());
 	}
 	public int getFirstDateDay() {
 		IWTimestamp it = new IWTimestamp(getFirstDate());
