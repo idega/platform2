@@ -51,7 +51,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 			log(re);
 		}
 
-    getParentPage().getAssociatedScript().addFunction("navHandler", getScriptSource());
+    getParentPage().getAssociatedScript().addFunction("navQuickLink", getScriptSource());
 		
 		Form form = new Form();
     Table table = new Table();
