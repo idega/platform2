@@ -164,17 +164,7 @@ public class HandicapOverview extends GolfBlock {
 
 	private void fillTable(IWContext modinfo) throws IOException, SQLException, FinderException {
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(this.iMemberID));
-		MemberInfo memberInfo = null;
-		try {
-			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
-		}
-		catch (FinderException fe) {
-			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
-			memberInfo.setID(member.getID());
-			memberInfo.setFirstHandicap(100f);
-			memberInfo.setHandicap(100f);
-			memberInfo.store();
-		}
+		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 
 		String[] dates = getDates(modinfo);
 

@@ -71,6 +71,16 @@ public class HandicapCard extends GolfBlock {
 					User user = userHome.findUserByUniqueId(iwc.getParameter(GolfConstants.MEMBER_UUID));
 					Member member = home.findMemberByIWMemberSystemUser(user);
 					iMemberID = member.getPrimaryKey().toString();
+					try {
+						MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+					}
+					catch (FinderException fex) {
+						MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
+						memberInfo.setID(member.getID());
+						memberInfo.setFirstHandicap(100f);
+						memberInfo.setHandicap(100f);
+						memberInfo.store();
+					}
 				}
 				catch (FinderException e) {
 					//Nothing found...
@@ -305,17 +315,7 @@ public class HandicapCard extends GolfBlock {
 			realHandicap = previousScorecard.getHandicapAfter();
 		}
 		else {
-			MemberInfo memberInfo = null;
-			try {
-				memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
-			}
-			catch (FinderException fe) {
-				memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
-				memberInfo.setID(member.getID());
-				memberInfo.setFirstHandicap(100f);
-				memberInfo.setHandicap(100f);
-				memberInfo.store();
-			}
+			MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
 			realHandicap = memberInfo.getFirstHandicap();
 		}
 

@@ -120,17 +120,7 @@ public class HandicapMemberInfo extends GolfBlock {
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
-		MemberInfo memberInfo = null;
-		try {
-			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
-		}
-		catch (FinderException fe) {
-			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
-			memberInfo.setID(member.getID());
-			memberInfo.setFirstHandicap(100f);
-			memberInfo.setHandicap(100f);
-			memberInfo.store();
-		}
+		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
 
 		Text handicap = getBigHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap"));

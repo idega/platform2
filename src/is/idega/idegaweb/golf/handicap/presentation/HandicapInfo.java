@@ -75,6 +75,16 @@ public class HandicapInfo extends GolfBlock {
 					User user = userHome.findUserByUniqueId(modinfo.getParameter(GolfConstants.MEMBER_UUID));
 					Member member = home.findMemberByIWMemberSystemUser(user);
 					iMemberID = member.getPrimaryKey().toString();
+					try {
+						MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+					}
+					catch (FinderException fex) {
+						MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
+						memberInfo.setID(member.getID());
+						memberInfo.setFirstHandicap(100f);
+						memberInfo.setHandicap(100f);
+						memberInfo.store();
+					}
 				}
 				catch (FinderException e) {
 					//Nothing found...
