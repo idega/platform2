@@ -61,7 +61,10 @@ public class MessageDialog extends Dialog implements ActionListener{
     //panel.setSize(330,270);
     senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
     senderNameLabel.setForeground(Color.darkGray);
-    senderNameLabel.setText("Unknown sender");
+
+    //debugsenderNameLabel.setText("Unknown sender");
+    senderNameLabel.setText(message.getSenderName());
+
     senderNameLabel.setBounds(new Rectangle(6, 59, 365, 20));
     messageArea.setEditable(false);
     messageArea.setBounds(new Rectangle(6, 81, 277, 123));

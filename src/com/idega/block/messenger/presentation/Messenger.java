@@ -22,6 +22,7 @@ public class Messenger extends Block {
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.messenger";
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
+  private static String USER_NAME = "user_name";
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
@@ -50,6 +51,7 @@ public class Messenger extends Block {
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
         messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
         messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
+        messenger.setParam(USER_NAME,com.idega.block.login.business.LoginBusiness.getUser(iwc).getName());
 
         messenger.setWidth(width);
         messenger.setHeight(height);

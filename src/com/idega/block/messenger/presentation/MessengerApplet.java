@@ -31,6 +31,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private static int FRAME_HEIGHT = 310;
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
+  private static String USER_NAME = "user_name";
   private static String USER_LIST = "user_list";
   private static String USER_LIST_VERSION = "user_list_version";
 
@@ -54,6 +55,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   private String sessionId;
   private String userId;
+  private String userName;
   private String servletURL;
   private URL hostURL;
   private String resourceURL;
@@ -77,6 +79,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
       userId = this.getParameter(USER_ID, "-1");
+      userName = this.getParameter(USER_NAME, "Anonymous");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
@@ -90,7 +93,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       }
 
       userPanel = new Panel();
-      userPanel.setLayout(new BorderLayout());
       userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       add(userPanel);
 
@@ -332,6 +334,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       Message msg = new Message();
       msg.setSender(sendToId);
       msg.setSenderName(name);
+      msg.setRecipientName(userName);
 
       MessageDialog dialog;
 
@@ -344,7 +347,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
 
-      SingleLineItem item = new SingleLineItem(this);
+      SingleLineItem item = new SingleLineItem(userPanel);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
 
@@ -353,18 +356,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(new Label(name));
       item.setSize(16,100);
 
-      userPanel.add(new Label("testi testi testi"),BorderLayout.NORTH);
-
-      userPanel.add(item,BorderLayout.SOUTH);
-
-
-      userPanel.setVisible(false);
-      item.setVisible(true);
-      item.repaint();
-      userPanel.setVisible(true);
+      userPanel.add(item);
       userPanel.repaint();
-
+      add(item);
       repaint();
+
+
   }
 
   private void cycle(){
