@@ -13,9 +13,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
@@ -175,7 +175,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       
       public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
         if (optionMap == null)  {
-          optionMap = new LinkedHashMap(4);
+          optionMap = new TreeMap();
           String[] options = { 
             IWMemberConstants.MEMBER_BOARD_MEMBER, 
             IWMemberConstants.MEMBER_BOARD_STATUS_CHAIR_MAN,
@@ -213,7 +213,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       
     public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
       if (optionMap == null)  {
-        optionMap = new LinkedHashMap(4);
+        optionMap = new TreeMap();
         WorkReportBusiness business = getWorkReportBusiness(iwc);
         Collection coll = null;
         try {
