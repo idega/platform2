@@ -16,7 +16,7 @@ public class ImageEntity extends GenericEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","Image type",true,true,"java.lang.String");
-		addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
+		//addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
                 addAttribute("image_name","Image name",true,true,"java.lang.String");
 		addAttribute("date_added","Date added or changed",true,true,"java.sql.Timestamp");
 		addAttribute("from_file","Image from file?",true,true,"java.lang.Boolean");

@@ -18,7 +18,7 @@ public class FileEntity extends GenericEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","týpa",true,true,"java.lang.String");
-		addAttribute("file_value","Skra",false,false,"com.idega.data.BlobWrapper");
+		//addAttribute("file_value","Skra",false,false,"com.idega.data.BlobWrapper");
 		addAttribute("file_name","nafn skjals",true,true,"java.lang.String");
 		addAttribute("date_added","sett inn",true,true,"java.sql.Timestamp");
 		addAttribute("from_file","frá skrá",true,true,"java.lang.Boolean");
