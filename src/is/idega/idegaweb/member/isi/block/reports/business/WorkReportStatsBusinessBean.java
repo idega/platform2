@@ -58,7 +58,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 
-	public ReportableCollection getClubMemberStatisticsForRegionalUnions(Integer year, Collection regionalUnions) throws RemoteException {
+	public ReportableCollection getClubMemberStatisticsForRegionalUnions(final Integer year, Collection regionalUnions) throws RemoteException {
 
 		initializeBundlesIfNeeded();
 		ReportableCollection reportData = new ReportableCollection();
@@ -108,9 +108,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			currentLocale);
 		reportData.addField(menOverOrEqualAgeLimit);
 		
-		ReportableField comparingYearStat = new ReportableField("comparing_year", Integer.class);
-		comparingYearStat.setCustomMadeFieldName("1999");
-		
+		//A way to set the value for the parameter for good.
+		ReportableField comparingYearStat = new ReportableField("comparing_year", Integer.class){
+			
+		   public String getLocalizedName(Locale locale) {
+			   return Integer.toString(year.intValue()-1);
+		   }
+			
+			
+		};
+			
 		reportData.addField(comparingYearStat);
 
 		//DATA
@@ -119,7 +126,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
 			ReportableData data = new ReportableData();
-
+			
 			//WorkReport data
 			data.addData(clubName, report.getGroupName());
 			data.addData(
