@@ -1,3 +1,12 @@
+/*
+ * $Id: NewsReader.java,v 1.53 2001/12/05 17:05:53 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.block.news.presentation;
 
 import com.idega.block.IWBlock;
@@ -26,76 +35,68 @@ import com.idega.core.data.ICFile;
 import java.text.DateFormat;
 import com.idega.util.text.TextStyler;
 
-
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
- * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
-
-public class NewsReader extends Block implements IWBlock{
-
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
-  private boolean isAdmin=false;
+public class NewsReader extends Block implements IWBlock {
+  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
+  private boolean isAdmin = false;
   private int iCategoryId = -1;
   private String attributeName = null;
   private int attributeId = -1;
   private User eUser = null;
 
-  private boolean showNewsCollectionButton=true;
+  private boolean showNewsCollectionButton = true;
   private int categoryId = 0;
 
 
   private Table outerTable = new Table(1,1);
 
   private int numberOfLetters = 273;
-	private int numberOfHeadlineLetters = -1;
+  private int numberOfHeadlineLetters = -1;
   private int numberOfDisplayedNews = 5;
   private int numberOfExpandedNews = 3;
-	private int numberOfCollectionNews = 5;
+  private int numberOfCollectionNews = 5;
   private int iSpaceBetween = 1;
-	private int cellPadding = 0;
+  private int cellPadding = 0;
   private int cellSpacing = 0;
-	private int viewPageId = -1;
-	private int textSize = 2;
+  private int viewPageId = -1;
+  private int textSize = 2;
   private boolean backbutton = false;
   private boolean showAll = false;
   private boolean showImages = true;
   private boolean showOnlyDates = false;
-	private boolean showTime = true;
-	private boolean showTimeFirst = false;
+  private boolean showTime = true;
+  private boolean showTimeFirst = false;
   private boolean headlineAsLink = false;
   private boolean showHeadlineImage = false;
   private boolean showMoreButton = true;
   private boolean alignWithHeadline = false;
   private boolean limitNumberOfNews = false;
   private boolean enableDelete=true;
-	private boolean viewNews = true;
-	private boolean newobjinst = false;
-	private String outerTableWidth = "100%";
-	private String sObjectAlign = "center";
+  private boolean viewNews = true;
+  private boolean newobjinst = false;
+  private String outerTableWidth = "100%";
+  private String sObjectAlign = "center";
   private String headlineImageURL;
-	private String firstTableColor = null;
-	private String secondTableColor = null;
-	private String dateAlign = "left";
-	private Image headlineImage = null;
+  private String firstTableColor = null;
+  private String secondTableColor = null;
+  private String dateAlign = "left";
+  private Image headlineImage = null;
 
   private Hashtable objectsBetween = null;
-	private Text textProxy = new Text();
+  private Text textProxy = new Text();
   private Text headlineProxy  = new Text();
   private Text informationProxy  = new Text();
 
-
-	private static String prmFromPage = "nwr_from_page";
+  private static String prmFromPage = "nwr_from_page";
   private static String prmDelete = "nwr_delete";
   private static String prmEdit = "nwr_edit";
   private static String prmNew = "nwr_new";
   private static String prmMore = "nwr_more";
-	private static String prmCollection = "nwr_collection";
-	private static String prmObjIns = "nwr_instance_id";
+  private static String prmCollection = "nwr_collection";
+  private static String prmObjIns = "nwr_instance_id";
 
   public static String prmListCategory = "nwr_newscategoryid";
   public static String prmNewsCategoryId = "nwr_listcategory";
@@ -106,7 +107,7 @@ public class NewsReader extends Block implements IWBlock{
   public static final int SINGLE_FILE_LAYOUT = NewsLayoutHandler.SINGLE_FILE_LAYOUT;
   public static final int NEWS_SITE_LAYOUT = NewsLayoutHandler.NEWS_SITE_LAYOUT;
   public static final int NEWS_PAPER_LAYOUT = NewsLayoutHandler.NEWS_PAPER_LAYOUT;
-	public static final int SINGLE_LINE_LAYOUT = NewsLayoutHandler.SINGLE_LINE_LAYOUT;
+  public static final int SINGLE_LINE_LAYOUT = NewsLayoutHandler.SINGLE_LINE_LAYOUT;
   public static final int COLLECTION_LAYOUT = NewsLayoutHandler.COLLECTION_LAYOUT;
 
   private int iLayout =SINGLE_FILE_LAYOUT;
@@ -405,7 +406,7 @@ public class NewsReader extends Block implements IWBlock{
 		}
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT ,cellPadding,cellSpacing,firstTableColor,secondTableColor);
 		int count = NewsFinder.countNewsInCategory(newsCategory.getID());
-		System.err.println(" news count "+count);
+//		System.err.println(" news count "+count);
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
     if(L!=null){
       int len = L.size();
