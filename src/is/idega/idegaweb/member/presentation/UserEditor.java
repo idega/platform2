@@ -1162,16 +1162,19 @@ public class UserEditor extends Block {
 												"mbe.warning.personal_id_in_use",
 										"Personal ID is already in use");
 									this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+									pid= user.getPersonalID();
+									legalState |=false;
 								}
 								else{
-									pid= user.getPersonalID();
-									
+									legalState |= true;
 								}
+								
 							}
 							catch (FinderException e) {
 								e.printStackTrace();
+								legalState |= true;
 							}
-							legalState |= true;
+							
 						}
 						else 
 							if(warnIfPersonalIDIsIllegal){
@@ -1181,6 +1184,8 @@ public class UserEditor extends Block {
 									"mbe.warning.personal_id_illegal",
 									"Personal ID is illegally formatted");
 							this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+							pid= user.getPersonalID();
+							legalState |=false;
 						}
 						
 					}
