@@ -170,7 +170,7 @@ public class SurveyResultEditor extends Block {
 			if(prm != null){
 				Table pTable = new Table();
 				int numberOfParticipants = Integer.parseInt(prm);
-				Collection participants = _sBusiness.getSurveyParticipantHome().getRandomParticipants(_survey,numberOfParticipants,true);
+				Collection participants = _sBusiness.getSurveyParticipantHome().findRandomParticipants(_survey,numberOfParticipants,true);
 				
 				int row = 1;
 				for (Iterator iter = participants.iterator();iter.hasNext();row++) {
