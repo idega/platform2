@@ -11,6 +11,8 @@ import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.business.TextFinder;
 
 /**
  * Title:        User
@@ -23,11 +25,21 @@ import com.idega.core.user.business.UserBusiness;
 public class StaffBusiness {
 
 public static final String PARAMETER_MODE = "mode";
-public static final String PARAMETER_DELETE_USER = "user";
-public static final String PARAMETER_DELETE_GROUP = "group";
-public static final String PARAMETER_USER_ID = "user_id";
-public static final String PARAMETER_GROUP_ID = "group_id";
+public static final String PARAMETER_SAVE = "save";
+public static final String PARAMETER_UPDATE = "update";
+public static final String PARAMETER_DELETE = "delete";
+public static final String PARAMETER_CLOSE = "close";
+public static final String PARAMETER_LOCALE_DROP = "locale_drop";
 public static final String PARAMETER_LETTER = "letter";
+
+public static final String PARAMETER_USER_ID = "user_id";
+public static final String PARAMETER_TITLE = "title";
+public static final String PARAMETER_EDUCATION = "education";
+public static final String PARAMETER_AREA = "area";
+public static final String PARAMETER_BEGAN_WORK = "began_work";
+public static final String PARAMETER_IMAGE_ID = "image_id";
+public static final String PARAMETER_META_VALUE = "value";
+public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
   public static void updateStaff(int user_id, String title, String education, String school, String area, idegaTimestamp began_work) throws SQLException{
     StaffInfo staffToAdd = null;
@@ -68,10 +80,82 @@ public static final String PARAMETER_LETTER = "letter";
       staffToAdd.insert();
   }
 
+  public static void saveStaff(int localeID, int userID, String title, String education, String area, idegaTimestamp began_work, String imageID) {
+    StaffEntity staffToAdd = null;
+    boolean update = false;
+
+    try {
+      staffToAdd = new StaffEntity(userID);
+      update = true;
+    }
+    catch (SQLException e) {
+      staffToAdd = new StaffEntity();
+      staffToAdd.setID(userID);
+      update = false;
+    }
+
+    if(began_work != null){
+      staffToAdd.setBeganWork(began_work.getSQLDate());
+    }
+    if(imageID != null){
+      staffToAdd.setImageID(Integer.parseInt(imageID));
+    }
+
+    if ( update )
+      try {
+        staffToAdd.update();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    else
+      try {
+        staffToAdd.insert();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+
+    StaffLocalized locText = StaffFinder.getLocalizedStaff(staffToAdd,localeID);
+    boolean newLocText = false;
+    if ( locText == null ) {
+      locText = new StaffLocalized();
+      newLocText = true;
+    }
+
+    if(title != null){
+      locText.setTitle(title);
+    }
+    if(education != null){
+      locText.setEducation(education);
+    }
+    if(area != null){
+      locText.setArea(area);
+    }
+
+    if ( newLocText ) {
+      locText.setLocaleId(localeID);
+      try {
+        locText.insert();
+        locText.addTo(staffToAdd);
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
+    else {
+      try {
+        locText.update();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
   public static void updateImage(int userId,String imageId) {
     StaffInfo staffToAdd = null;
     boolean update = false;
-    System.out.println("ImageID: "+imageId);
 
     try {
       staffToAdd = new StaffInfo(userId);
@@ -79,6 +163,42 @@ public static final String PARAMETER_LETTER = "letter";
     }
     catch (SQLException e) {
       staffToAdd = new StaffInfo();
+      staffToAdd.setID(userId);
+      update = false;
+    }
+
+    if ( imageId != null ) {
+      try {
+        staffToAdd.setImageID(Integer.parseInt(imageId));
+      }
+      catch (NumberFormatException ex) {
+        staffToAdd.setImageID(-1);
+      }
+    }
+
+    try {
+      if ( update ) {
+        staffToAdd.update();
+      }
+      else {
+        staffToAdd.insert();
+      }
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace(System.err);
+    }
+  }
+
+  public static void saveImage(int userId,String imageId) {
+    StaffEntity staffToAdd = null;
+    boolean update = false;
+
+    try {
+      staffToAdd = new StaffEntity(userId);
+      update = true;
+    }
+    catch (SQLException e) {
+      staffToAdd = new StaffEntity();
       staffToAdd.setID(userId);
       update = false;
     }
@@ -188,6 +308,41 @@ public static final String PARAMETER_LETTER = "letter";
     }
 }
 
+  public static void saveMetaData(int localeID,int userID,String[] attributes,String[] values) {
+    try {
+      StaffMeta.getStaticInstance(StaffMeta.class).deleteMultiple(StaffMeta.getColumnNameUserID(),Integer.toString(userID),StaffMeta.getColumnNameLocaleId(),Integer.toString(localeID));
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+    }
+
+    EntityBulkUpdater bulk = new EntityBulkUpdater();
+    boolean execute = false;
+
+    StaffMeta meta = null;
+    for ( int a = 0; a < values.length; a++ ) {
+      if ( attributes[a] != null && attributes[a].length() > 0 ) {
+        meta = new StaffMeta();
+        meta.setUserID(userID);
+        meta.setLocaleId(localeID);
+        meta.setAttribute(attributes[a]);
+        if ( values[a] != null )
+          meta.setValue(values[a]);
+        bulk.add(meta,EntityBulkUpdater.insert);
+        execute = true;
+      }
+    }
+
+    if ( execute ) {
+      try {
+        bulk.execute();
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
   public static void deleteGroup(int groupID) {
     try {
       UserGroupBusiness.deleteGroup(groupID);
@@ -207,6 +362,15 @@ public static final String PARAMETER_LETTER = "letter";
 
     try {
       UserBusiness.deleteUser(userId);
+    }
+    catch (SQLException e) {
+    }
+  }
+
+  public static void delete(int userId) {
+    try {
+      StaffEntity delStaff = new StaffEntity(userId);
+      delStaff.delete();
     }
     catch (SQLException e) {
     }

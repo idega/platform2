@@ -35,15 +35,17 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.GenericUserComparator;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
 
-public class Staff extends Block implements IWBlock {
+public class StaffBrowser extends Block implements IWBlock {
 
 private boolean _isAdmin=false;
 private int _userID = -1;
+private int _localeID;
 
 public static final int ALL_STAFF = 1;
 public static final int DIVISION_STAFF = 2;
@@ -77,6 +79,7 @@ private boolean _showMobilePhone;
 
 private String _imageWidth;
 private String _imageHeight;
+private String _nameWidth;
 
 private String _width;
 private String _linkStyle;
@@ -90,6 +93,7 @@ private String _alphabetHoverStyle;
 
 private String _textStyle;
 private String _headlineStyle;
+private String _divisionStyle;
 
 private IWBundle _iwb;
 private IWResourceBundle _iwrb;
@@ -97,7 +101,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.staff";
 
 private Table _myTable;
 
-  public Staff(){
+  public StaffBrowser(){
     setDefaultValues();
   }
 
@@ -105,6 +109,7 @@ private Table _myTable;
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     _isAdmin = iwc.hasEditPermission(this);
+    _localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     row = 1;
     _myTable = new Table();
@@ -166,7 +171,7 @@ private Table _myTable;
     Link emailLink = null;
     Text titleText = null;
     Text phoneText = null;
-    StaffInfo staffInfo = null;
+    StaffLocalized staffInfo = null;
     Phone phone = null;
     int column = 1;
 
@@ -178,7 +183,7 @@ private Table _myTable;
         user = (User)users.get(a);
         email = StaffFinder.getUserEmail(user);
         if ( _showListTitle )
-          staffInfo = StaffFinder.getStaffInfo(user.getID());
+          staffInfo = StaffFinder.getLocalizedStaff(StaffFinder.getStaff(user.getID()),_localeID);
         if ( _showListWorkPhone )
           phone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
 
@@ -208,7 +213,8 @@ private Table _myTable;
           table.add(emailLink,column++,staffRow);
 
         if ( _isAdmin ) {
-          table.add(getEditLink(user),column++,staffRow);
+          table.add(getEditLink(user),column,staffRow);
+          table.add(getDeleteLink(user),column,staffRow);
         }
 
         staffRow++;
@@ -217,18 +223,26 @@ private Table _myTable;
 
     if ( _zebraColor1 != null && _zebraColor2 != null )
       table.setHorizontalZebraColored(_zebraColor1,_zebraColor2);
-    for ( int a = 2; a <= table.getColumns(); a++ )
+    int centeredColumn = 2;
+    if ( _showListTitle )
+      centeredColumn = 3;
+    for ( int a = centeredColumn; a <= table.getColumns(); a++ )
       table.setColumnAlignment(a,"center");
+    if ( _nameWidth != null )
+      table.setWidth(1,_nameWidth);
     _myTable.add(table,1,row);
   }
 
   private void getDivisionStaff(IWContext iwc) {
     List groups = StaffFinder.getAllGroups(iwc);
+    Text divisionText = null;
     if ( groups != null ) {
       for ( int a = 0; a < groups.size(); a++ ) {
         List users = StaffFinder.getUsersInPrimaryGroup((GenericGroup)groups.get(a));
         if ( users != null && users.size() > 0 ) {
-          _myTable.add(((GenericGroup)groups.get(a)).getName(),1,row);
+          divisionText = new Text(((GenericGroup)groups.get(a)).getName());
+            divisionText.setFontStyle(_divisionStyle);
+          _myTable.add(divisionText,1,row);
           row++;
           getStaffTable(iwc,users);
           row++;
@@ -241,8 +255,9 @@ private Table _myTable;
 
   private void getUser(IWContext iwc) {
     User user = StaffFinder.getUser(_userID);
-    StaffInfo staffInfo = StaffFinder.getStaffInfo(_userID);
-    StaffMetaData[] staffMeta = StaffFinder.getMetaData(_userID);
+    StaffEntity staff = StaffFinder.getStaff(_userID);
+    StaffLocalized staffInfo = StaffFinder.getLocalizedStaff(staff,_localeID);
+    StaffMeta[] staffMeta = StaffFinder.getMeta(_userID,_localeID);
     Phone workphone = UserBusiness.getUserPhone(_userID,PhoneType.WORK_PHONE_ID);
     Phone mobilephone = UserBusiness.getUserPhone(_userID,PhoneType.MOBILE_PHONE_ID);
 
@@ -259,9 +274,9 @@ private Table _myTable;
     int column = 1;
 
     Image image = null;
-    if ( staffInfo != null && staffInfo.getImageID() != -1 ) {
+    if ( staff != null && staff.getImageID() != -1 ) {
       try {
-        image = new Image(staffInfo.getImageID());
+        image = new Image(staff.getImageID());
         if ( _imageWidth != null ) image.setWidth(_imageWidth);
         if ( _imageHeight != null ) image.setHeight(_imageHeight);
         image.setBorder(1);
@@ -373,8 +388,8 @@ private Table _myTable;
       Text beganWork = new Text(_iwrb.getLocalizedString("user_began_work","Began work")+":");
         beganWork.setFontStyle(_headlineStyle);
       Text beganWorkText = new Text("");
-        if ( staffInfo != null && staffInfo.getBeganWork() != null )
-          beganWorkText.setText(new idegaTimestamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
+        if ( staff != null && staff.getBeganWork() != null )
+          beganWorkText.setText(new idegaTimestamp(staff.getBeganWork()).getLocaleDate(iwc));
         beganWorkText.setFontStyle(_textStyle);
 
       if ( _showBeganWork ) {
@@ -393,19 +408,6 @@ private Table _myTable;
       if ( _showEducation ) {
         textTable.add(education,column,tableRow);
         textTable.add(educationText,column+1,tableRow);
-        tableRow++;
-      }
-
-      Text school = new Text(_iwrb.getLocalizedString("user_school","School")+":");
-        school.setFontStyle(_headlineStyle);
-      Text schoolText = new Text("");
-        if ( staffInfo != null )
-          schoolText.setText(staffInfo.getSchool());
-        schoolText.setFontStyle(_textStyle);
-
-      if ( _showSchool ) {
-        textTable.add(school,column,tableRow);
-        textTable.add(schoolText,column+1,tableRow);
         tableRow++;
       }
 
@@ -527,8 +529,18 @@ private Table _myTable;
   private Link getEditLink(User user) {
     Image adminImage = _iwb.getImage("shared/edit.gif");
     Link adminLink = new Link(adminImage);
-      adminLink.setWindowToOpen(StaffPropertyWindow.class);
-      adminLink.addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID,user.getID());
+      adminLink.setWindowToOpen(StaffEditor.class);
+      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
+
+    return adminLink;
+  }
+
+  private Link getDeleteLink(User user) {
+    Image adminImage = _iwb.getImage("shared/delete.gif");
+    Link adminLink = new Link(adminImage);
+      adminLink.setWindowToOpen(StaffEditor.class);
+      adminLink.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
+      adminLink.addParameter(StaffBusiness.PARAMETER_MODE,StaffBusiness.PARAMETER_DELETE);
 
     return adminLink;
   }
@@ -638,6 +650,7 @@ private Table _myTable;
     _alphabetHoverStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
     _textStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
     _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
+    _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
 
     _showAge = true;
     _showGender = true;
@@ -714,12 +727,20 @@ private Table _myTable;
     _imageHeight = height;
   }
 
+  public void setNameWidth(String width) {
+    _nameWidth = width;
+  }
+
   public void setTextStyle(String style) {
     _textStyle = style;
   }
 
   public void setHeadlineStyle(String style) {
     _headlineStyle = style;
+  }
+
+  public void setDivisionStyle(String style) {
+    _divisionStyle = style;
   }
 
   public void setLinkStyle(String style,String style2,String style3,String style4) {
@@ -762,9 +783,9 @@ private Table _myTable;
   }
 
   public Object clone() {
-    Staff obj = null;
+    StaffBrowser obj = null;
     try {
-      obj = (Staff)super.clone();
+      obj = (StaffBrowser)super.clone();
 
       if (this._myTable != null) {
         obj._myTable=(Table)this._myTable.clone();
