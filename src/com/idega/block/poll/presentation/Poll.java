@@ -599,7 +599,7 @@ private int _layout = RADIO_BUTTON_VIEW;
   }
 
 
-  protected String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
+  protected String getCacheState(IWContext iwc, String cacheStatePrefix){
     String returnString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
 
     if( returnString == null ) returnString = "";
