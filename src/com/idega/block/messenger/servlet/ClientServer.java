@@ -35,7 +35,7 @@ public class ClientServer extends IWCoreServlet{
       }
 
       cManager.processPacket(packet);
-      System.out.println("Client Manager is done");
+      //System.out.println("Client Manager is done");
 
       MessageManager mManager = (MessageManager) getApplication().getAttribute("MessageManager");
       if( mManager == null){
@@ -44,7 +44,7 @@ public class ClientServer extends IWCoreServlet{
       }
 
       mManager.processPacket(packet);
-      System.out.println("Message Manager is done");
+      //System.out.println("Message Manager is done");
 
       sendPacket(response, packet);
     }
@@ -53,7 +53,7 @@ public class ClientServer extends IWCoreServlet{
 	 *  calls doPost
 	 */
     public void doGet(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
-        System.out.println("ClientServer : in doGet ");
+        //System.out.println("ClientServer : in doGet ");
         doPost(request,response);
 
     }
@@ -88,7 +88,7 @@ public class ClientServer extends IWCoreServlet{
       try{
         // get an input stream from the applet
         inputFromApplet = new ObjectInputStream(request.getInputStream());
-        System.out.println("receivePacket : Connected");
+        //System.out.println("receivePacket : Connected");
 
         // read the serialized Packet data from applet
         System.out.println("receivePacket : Reading data...");
@@ -97,7 +97,7 @@ public class ClientServer extends IWCoreServlet{
 
         inputFromApplet.close();
 
-        System.out.println("receivePacket : Complete.");
+        //System.out.println("receivePacket : Complete.");
 
       }
       catch (Exception e){
