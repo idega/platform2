@@ -35,8 +35,8 @@ import com.idega.user.data.Group;
  * @author palli
  */
 public class ClubCreditCardContract extends CashierSubWindowTemplate {
-	protected static final String ACTION_SUBMIT = "etl_submit";
-	protected static final String ACTION_DELETE = "etl_delete";
+	protected static final String ACTION_SUBMIT = "cccc_submit";
+	protected static final String ACTION_DELETE = "cccc_delete";
 
 	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
 	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
@@ -174,33 +174,5 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		f.add(inputTable);
 		f.add(t);
 		add(f);
-	}
-
-	private AccountingBusiness getAccountingBusiness(IWApplicationContext iwc) {
-		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	private void getClubDivisions(Collection divisions, Group group) {
-		if (divisions == null)
-			divisions = new ArrayList();
-		
-		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
-			divisions.add(group);
-		}
-
-		Iterator it = group.getChildren();
-		if (it != null) {
-			while (it.hasNext()) {
-				Group child = (Group) it.next();
-				getClubDivisions(divisions, child);
-			}
-		}
 	}
 }

@@ -7,8 +7,16 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
-import java.util.ArrayList;
+import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.Block;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -71,5 +79,33 @@ public class CashierSubWindowTemplate extends Block {
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	protected AccountingBusiness getAccountingBusiness(IWApplicationContext iwc) {
+		try {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}	
+	
+	protected void getClubDivisions(Collection divisions, Group group) {
+		if (divisions == null)
+			divisions = new ArrayList();
+		
+		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+			divisions.add(group);
+		}
+
+		Iterator it = group.getChildren();
+		if (it != null) {
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				getClubDivisions(divisions, child);
+			}
+		}
 	}
 }

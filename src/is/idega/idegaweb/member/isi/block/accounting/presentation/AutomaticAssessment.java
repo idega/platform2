@@ -277,15 +277,4 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		f.add(t);
 		add(f);
 	}
-
-	private AccountingBusiness getAccountingBusiness(IWApplicationContext iwc) {
-		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
 }

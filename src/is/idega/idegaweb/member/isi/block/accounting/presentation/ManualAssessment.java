@@ -319,17 +319,6 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		add(f);
 	}
 	
-	private AccountingBusiness getAccountingBusiness(IWApplicationContext iwc) {
-		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-	
 	private ClubTariffHome getClubTariffHome() {
 		try {
 			return (ClubTariffHome) IDOLookup.getHome(ClubTariff.class);

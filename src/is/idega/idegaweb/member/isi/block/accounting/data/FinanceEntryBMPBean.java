@@ -285,8 +285,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		sql.append(getIDColumnName());
 		sql.appendDescending();
 		
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);		
 	}
 }
