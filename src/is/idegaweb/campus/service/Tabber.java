@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.7 2001/07/13 11:38:20 aron Exp $
+ * $Id: Tabber.java,v 1.8 2001/07/13 16:49:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -125,7 +125,7 @@ public class Tabber extends JModuleObject {
       Link Link4 = new Link(new Image(iAct == ACT23?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/building/index.jsp");
       Link4.addParameter(strAction,ACT23);
 
-      Link Link5 = new Link(new Image(iAct == ACT24?"/pics/tabs/"+lang+"/announce.gif":"/pics/tabs/"+lang+"/announce1.gif"),"/main/manager.jsp");
+      Link Link5 = new Link(new Image(iAct == ACT24?"/pics/tabs/"+lang+"/announce.gif":"/pics/tabs/"+lang+"/announce1.gif"),"/main/announcements.jsp");
       Link5.addParameter(strAction,ACT24);
 
       LinkTable.add(Link1,1,1);
@@ -178,7 +178,7 @@ public class Tabber extends JModuleObject {
       Link Link3 = new Link(new Image(iAct == ACT22?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/index2.jsp");
       Link3.addParameter(strAction,ACT22);
 
-      Link Link4 = new Link(new Image(iAct == ACT23?"/pics/tabs/"+lang+"/announce.gif":"/pics/tabs/"+lang+"/announce1.gif"),"/index2.jsp");
+      Link Link4 = new Link(new Image(iAct == ACT23?"/pics/tabs/"+lang+"/announce.gif":"/pics/tabs/"+lang+"/announce1.gif"),"/main/announcements.jsp");
       Link4.addParameter(strAction,ACT23);
 
 
