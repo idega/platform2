@@ -4047,8 +4047,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int mLast = ((Integer)rd.getFieldValue(membersLastYear)).intValue();
 			int mMissing = mLast - mNow;
 			rd.addData(membersAnnualChange, new Integer(mMissing));
-			double mChange = ((double)mNow)/((double)mLast)*100.0;
-			rd.addData(membersAnnualChangePercent, Integer.toString((int)mChange));
+			double mChange = getChange((double) mNow, (double) mLast);
+			rd.addData(membersAnnualChangePercent, mChange<0.0?"":Integer.toString((int)mChange));
 			double mwn = ((double)mMissing)/((double)mLastYearTotal)*100.0;
 					
 			String value = (mwn<0.0)?"":format.format(mwn);
@@ -4059,8 +4059,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int pLast = ((Integer)rd.getFieldValue(playersLastYear)).intValue();
 			int pMissing = pLast - pNow;
 			rd.addData(playersAnnualChange, new Integer(pMissing));
-			double pChange = ((double)pNow)/((double)pLast)*100.0;
-			rd.addData(playersAnnualChangePercent, Integer.toString((int)pChange));
+			double pChange = getChange((double) pNow, (double) pLast);
+			rd.addData(playersAnnualChangePercent, pChange<0.0?"":Integer.toString((int)pChange));
 			double pwn = ((double)pMissing)/((double)pLastYearTotal)*100.0;
 			
 			value = (pwn<0.0)?"":format.format(pwn);
@@ -4087,6 +4087,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collections.sort(reportCollection, comparator);
 		
 		return reportCollection;
+	}
+	
+	private double getChange(double now, double last) {
+		return last==0?(now==0?0:-1):(((double)now)/((double)last)*100.0);
 	}
 	
 	/*
