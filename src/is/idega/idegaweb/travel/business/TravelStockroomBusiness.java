@@ -461,28 +461,44 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+    return getIfDay(iwc, product, stamp, true);
+  }
+
+  public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp, boolean includePast) throws ServiceNotFoundException, TimeframeNotFoundException{
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
 
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
-      Object obj = serviceDayHash.get(key1, key2);
+      //Object obj = serviceDayHash.get(key1, key2);
+      Object obj = null;
       if (obj == null) {
 
           int dayOfWeek = stamp.getDayOfWeek();
-          boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
           Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
 
-          if (isValidWeekDay) {
-            if (isDayValid(product, stamp)) {
-              isDay = true;
-              serviceDayHash.put(key1, key2, new Boolean(true) );
+          boolean tooEarly = false;
+          if (!includePast) {
+            idegaTimestamp now = idegaTimestamp.RightNow();
+            idegaTimestamp tNow = new idegaTimestamp(now.getDay(), now.getMonth(), now.getYear());
+            if (tNow.isLaterThan(stamp)) {
+              tooEarly = true;
             }
-            else {
-              serviceDayHash.put(key1, key2, new Boolean(false) );
+          }
+
+          if (!tooEarly) {
+            boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
+            if (isValidWeekDay) {
+              if (isDayValid(product, stamp)) {
+                isDay = true;
+                serviceDayHash.put(key1, key2, new Boolean(true) );
+              }
+              else {
+                serviceDayHash.put(key1, key2, new Boolean(false) );
+              }
+            }else {
+                serviceDayHash.put(key1, key2, new Boolean(false) );
             }
-          }else {
-              serviceDayHash.put(key1, key2, new Boolean(false) );
           }
       }
       else {

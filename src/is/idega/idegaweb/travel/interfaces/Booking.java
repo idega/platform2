@@ -72,6 +72,9 @@ public interface Booking {
   public boolean getIsValid();
   public void setIsValid(boolean isValid);
 
+  public void setReferenceNumber(String number);
+  public String getReferenceNumber();
+
   public void insert() throws SQLException;
   public void update() throws SQLException;
   public void delete() throws SQLException;

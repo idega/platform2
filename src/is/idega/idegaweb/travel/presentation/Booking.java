@@ -23,6 +23,7 @@ import is.idega.idegaweb.travel.service.tour.presentation.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
 
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:

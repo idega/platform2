@@ -98,7 +98,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
       int[] hotelPickupPlaceIds ={};
-      if (pickupPlaceIds != null) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
+      if (pickupPlaceIds != null && pickupPlaceIds.length > 0 && !pickupPlaceIds[0].equals("") ) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
       for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
         hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
       }

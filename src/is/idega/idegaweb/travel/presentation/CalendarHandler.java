@@ -6,6 +6,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
+import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.util.*;
 import java.util.*;
 import java.sql.SQLException;
@@ -57,6 +58,8 @@ public class CalendarHandler extends TravelManager {
 
   private Vector parameterName  = new Vector();
   private Vector parameterValue = new Vector();
+  private idegaTimestamp _stamp = idegaTimestamp.RightNow();
+
 
   public CalendarHandler(IWContext iwc) throws Exception{
     super.main(iwc);
@@ -165,64 +168,64 @@ public class CalendarHandler extends TravelManager {
 
       Link lJan = new Link(jan,_class);
         lJan.setBold();
-        lJan.addParameter("year",_fromStamp.getYear());
-        lJan.addParameter("month",1);
-        lJan.addParameter("day",_fromStamp.getDate());
+        lJan.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lJan.addParameter(CalendarBusiness.PARAMETER_MONTH,1);
+        lJan.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lFeb = new Link(feb,_class);
         lFeb.setBold();
-        lFeb.addParameter("year",_fromStamp.getYear());
-        lFeb.addParameter("month",2);
-        lFeb.addParameter("day",_fromStamp.getDate());
+        lFeb.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lFeb.addParameter(CalendarBusiness.PARAMETER_MONTH,2);
+        lFeb.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lMar = new Link(mar,_class);
         lMar.setBold();
-        lMar.addParameter("year",_fromStamp.getYear());
-        lMar.addParameter("month",3);
-        lMar.addParameter("day",_fromStamp.getDate());
+        lMar.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lMar.addParameter(CalendarBusiness.PARAMETER_MONTH,3);
+        lMar.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lApr = new Link(apr,_class);
         lApr.setBold();
-        lApr.addParameter("year",_fromStamp.getYear());
-        lApr.addParameter("month",4);
-        lApr.addParameter("day",_fromStamp.getDate());
+        lApr.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lApr.addParameter(CalendarBusiness.PARAMETER_MONTH,4);
+        lApr.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lMay = new Link(may,_class);
         lMay.setBold();
-        lMay.addParameter("year",_fromStamp.getYear());
-        lMay.addParameter("month",5);
-        lMay.addParameter("day",_fromStamp.getDate());
+        lMay.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lMay.addParameter(CalendarBusiness.PARAMETER_MONTH,5);
+        lMay.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lJun = new Link(jun,_class);
         lJun.setBold();
-        lJun.addParameter("year",_fromStamp.getYear());
-        lJun.addParameter("month",6);
-        lJun.addParameter("day",_fromStamp.getDate());
+        lJun.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lJun.addParameter(CalendarBusiness.PARAMETER_MONTH,6);
+        lJun.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lJul = new Link(jul,_class);
         lJul.setBold();
-        lJul.addParameter("year",_fromStamp.getYear());
-        lJul.addParameter("month",7);
-        lJul.addParameter("day",_fromStamp.getDate());
+        lJul.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lJul.addParameter(CalendarBusiness.PARAMETER_MONTH,7);
+        lJul.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lAug = new Link(aug,_class);
         lAug.setBold();
-        lAug.addParameter("year",_fromStamp.getYear());
-        lAug.addParameter("month",8);
-        lAug.addParameter("day",_fromStamp.getDate());
+        lAug.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lAug.addParameter(CalendarBusiness.PARAMETER_MONTH,8);
+        lAug.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lSep = new Link(sep,_class);
         lSep.setBold();
-        lSep.addParameter("year",_fromStamp.getYear());
-        lSep.addParameter("month",9);
-        lSep.addParameter("day",_fromStamp.getDate());
+        lSep.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lSep.addParameter(CalendarBusiness.PARAMETER_MONTH,9);
+        lSep.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lOct = new Link(oct,_class);
         lOct.setBold();
-        lOct.addParameter("year",_fromStamp.getYear());
-        lOct.addParameter("month",10);
-        lOct.addParameter("day",_fromStamp.getDate());
+        lOct.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lOct.addParameter(CalendarBusiness.PARAMETER_MONTH,10);
+        lOct.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lNov = new Link(nov,_class);
         lNov.setBold();
-        lNov.addParameter("year",_fromStamp.getYear());
-        lNov.addParameter("month",11);
-        lNov.addParameter("day",_fromStamp.getDate());
+        lNov.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lNov.addParameter(CalendarBusiness.PARAMETER_MONTH,11);
+        lNov.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       Link lDec = new Link(dec,_class);
         lDec.setBold();
-        lDec.addParameter("year",_fromStamp.getYear());
-        lDec.addParameter("month",12);
-        lDec.addParameter("day",_fromStamp.getDate());
+        lDec.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        lDec.addParameter(CalendarBusiness.PARAMETER_MONTH,12);
+        lDec.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
 
       for (int i = 0; i < parameterName.size(); i++) {
         sm.addParameterToLink((String) parameterName.get(i), (String) parameterValue.get(i));
@@ -418,6 +421,7 @@ public class CalendarHandler extends TravelManager {
   }
 
   public void setTimestamp(idegaTimestamp stamp) {
+    _stamp = new idegaTimestamp(stamp);
     _fromStamp =  new idegaTimestamp(1,stamp.getMonth(), stamp.getYear());
     _toStamp   = new idegaTimestamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
   }

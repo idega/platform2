@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.data;
 
 import is.idega.idegaweb.travel.interfaces.Booking;
 import java.sql.*;
+import com.idega.util.CypherText;
 import com.idega.data.*;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -43,6 +44,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
     addAttribute(getAttendanceColumnName(), "Mæting", true, true, Integer.class);
     addAttribute(getPaymentTypeIdColumnName(), "Gerð greiðslu", true, true, Integer.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
+    addAttribute(getReferenceNumberColumnName(), "reference number", true, true, String.class);
 
     this.addManyToManyRelationShip(Reseller.class);
   }
@@ -187,6 +189,21 @@ public class GeneralBooking extends GenericEntity implements Booking{
     return (BookingEntry[]) (BookingEntry.getStaticInstance(BookingEntry.class).findAllByColumn(BookingEntry.getBookingIDColumnName(), this.getID()));
   }
 
+  public void setReferenceNumber(String number) {
+    setColumn(getReferenceNumberColumnName(), number);
+  }
+
+  public String getReferenceNumber() {
+    return getStringColumnValue(getReferenceNumberColumnName());
+  }
+
+  public void insert() throws SQLException {
+    CypherText cyph = new CypherText();
+    String key = cyph.getKey(16);
+    setReferenceNumber(key);
+    super.insert();
+  }
+
   public static String getBookingTableName(){return "TB_BOOKING";}
   public static String getNameColumnName() {return "NAME";}
   public static String getTelephoneNumberColumnName() {return "TELEPHONE_NUMBER";}
@@ -203,6 +220,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
   public static String getAttendanceColumnName() {return "ATTENDANCE";}
   public static String getPaymentTypeIdColumnName() {return "PAYMENT_TYPE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
+  public static String getReferenceNumberColumnName() {return "REFERENCE_NUMBER";}
 
 
 }

@@ -14,6 +14,8 @@ import is.idega.idegaweb.travel.service.tour.business.TourBooker;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.business.Inquirer;
 
+import com.idega.block.calendar.business.CalendarBusiness;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 import java.sql.SQLException;
 
 /**
@@ -51,6 +53,11 @@ public class TourBookingForm extends TravelManager {
   private static String parameterSendInquery = "bookingSendInquery";
   private static String parameterSupplierId = "bookingSupplierId";
 
+  public static String parameterCCNumber = "CCNumber";
+  public static String parameterCCMonth  = "CCMonth";
+  public static String parameterCCYear   = "CCYear";
+
+
 
   public TourBookingForm(IWContext iwc) throws Exception{
     super.main(iwc);
@@ -63,9 +70,9 @@ public class TourBookingForm extends TravelManager {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
-        form.addParameter("year",_stamp.getYear());
-        form.addParameter("month",_stamp.getMonth());
-        form.addParameter("day",_stamp.getDay());
+        form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
+        form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
         if (supplier != null) {
           form.addParameter(this.parameterSupplierId, supplier.getID());
         }
@@ -292,17 +299,17 @@ public class TourBookingForm extends TravelManager {
             table.add(tReferenceNumber,2,row);
             table.add(tiReferenceNumber,3,row);
           }else if ( (_reseller == null) && (supplier == null) ) {
-            TextInput ccNumber = new TextInput("ccNumber");
+            TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(16);
               ccNumber.setLength(20);
               ccNumber.setAsNotEmpty("T - vantar cc númer");
               ccNumber.setAsIntegers("T - cc númer rangt");
-            TextInput ccMonth = new TextInput("ccMonth");
+            TextInput ccMonth = new TextInput(this.parameterCCMonth);
               ccMonth.setMaxlength(2);
               ccMonth.setLength(3);
               ccMonth.setAsNotEmpty("T - vantar cc manuð");
               ccMonth.setAsIntegers("T - cc manuður rangur");
-            TextInput ccYear = new TextInput("ccYear");
+            TextInput ccYear = new TextInput(this.parameterCCYear);
               ccYear.setMaxlength(2);
               ccYear.setLength(3);
               ccYear.setAsNotEmpty("T - vantar cc ár");
@@ -367,47 +374,85 @@ public class TourBookingForm extends TravelManager {
       return form;
   }
 
-  public Form getPublicBookingForm(idegaTimestamp stamp) {
+  public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException {
     Form form = new Form();
     Table table = new Table();
       table.setCellpadding(0);
-      table.setCellspacing(2);
+      table.setCellspacing(6);
+      table.setBorder(0);
+      table.setWidth("100%");
       form.add(table);
 
       if (stamp != null) {
-        form.addParameter("year",stamp.getYear());
-        form.addParameter("month",stamp.getMonth());
-        form.addParameter("day",stamp.getDay());
+        form.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
+        form.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
+        form.addParameter(CalendarBusiness.PARAMETER_DAY,stamp.getDay());
       }
+
+      boolean isDay = true;
+
+      if (isDay)
+        isDay = TravelStockroomBusiness.getIfDay(iwc,product, stamp, false);
+
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
 
       if (pPrices.length > 0) {
           int row = 1;
           int textInputSizeLg = 28;
-          int textInputSizeMd = 18;
-          int textInputSizeSm = 5;
+          int textInputSizeMd = 28;//18;
+          int textInputSizeSm = 28;//5;
 
-          Text surnameText = (Text) theBoldText.clone();
+          HorizontalRule hr = new HorizontalRule("100%");
+            hr.setColor(WHITE);
+
+          Text subHeader;
+
+          Text availSeats = (Text) theText.clone();
+            availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats ","There are available seats "));
+
+          Text notAvailSeats = (Text) theText.clone();
+            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats ","There are no available seats "));
+
+          Text dateText = (Text) theBoldText.clone();
+            dateText.setText(stamp.getLocaleDate(iwc));
+            dateText.addToText("."+Text.NON_BREAKING_SPACE);
+
+          Text pleaseBook = (Text) theText.clone();
+            pleaseBook.setText(iwrb.getLocalizedString("travel.please_book","Please book"));
+
+          Text pleaseFindAnotherDay = (Text) theText.clone();
+            pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
+
+          table.mergeCells(1,row,4,row);
+
+
+          if (isDay) {
+            table.add(availSeats,1,row);
+            table.add(dateText,1,row);
+            table.add(pleaseBook,1,row);
+            ++row;
+
+          Text surnameText = (Text) theText.clone();
               surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
-          Text lastnameText = (Text) theBoldText.clone();
+          Text lastnameText = (Text) theText.clone();
               lastnameText.setText(iwrb.getLocalizedString("travel.last_name","last name"));
-          Text addressText = (Text) theBoldText.clone();
+          Text addressText = (Text) theText.clone();
               addressText.setText(iwrb.getLocalizedString("travel.address","address"));
-          Text areaCodeText = (Text) theBoldText.clone();
+          Text areaCodeText = (Text) theText.clone();
               areaCodeText.setText(iwrb.getLocalizedString("travel.area_code","area code"));
-          Text emailText = (Text) theBoldText.clone();
+          Text emailText = (Text) theText.clone();
               emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
-          Text telNumberText = (Text) theBoldText.clone();
+          Text telNumberText = (Text) theText.clone();
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
-          Text cityText = (Text) theBoldText.clone();
+          Text cityText = (Text) theText.clone();
               cityText.setText(iwrb.getLocalizedString("travel.city_sm","city"));
-          Text countryText = (Text) theBoldText.clone();
+          Text countryText = (Text) theText.clone();
               countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
 
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
-          Text tReferenceNumber = (Text) theBoldText.clone();
+          Text tReferenceNumber = (Text) theText.clone();
             tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
           TextInput tiReferenceNumber = new TextInput("reference_number");
             tiReferenceNumber.setSize(10);
@@ -432,43 +477,83 @@ public class TourBookingForm extends TravelManager {
 
 
           ++row;
+          table.mergeCells(1,row,4,row);
+          table.add(hr,1,row);
+          ++row;
+          table.mergeCells(1,row,4,row);
+          subHeader = (Text) theBoldText.clone();
+            subHeader.setFontColor(WHITE);
+            subHeader.setText(iwrb.getLocalizedString("travel.personal_information","Personal information"));
+          table.add(subHeader,1,row);
+          table.setAlignment(1,row,"left");
+          ++row;
+
+          ++row;
           table.add(surnameText,1,row);
           table.add(surname,2,row);
-
           table.add(lastnameText,3,row);
           table.add(lastname,4,row);
+
+          table.setAlignment(1,row,"right");
+          table.setAlignment(2,row,"left");
+          table.setAlignment(3,row,"right");
+          table.setAlignment(4,row,"left");
 
           ++row;
           table.add(addressText,1,row);
           table.add(address,2,row);
+          table.add(areaCodeText,3,row);
+          table.add(areaCode,4,row);
 
-          table.add(cityText,3,row);
-          table.add(city,4,row);
+          table.setAlignment(1,row,"right");
+          table.setAlignment(2,row,"left");
+          table.setAlignment(3,row,"right");
+          table.setAlignment(4,row,"left");
 
           ++row;
-          table.add(areaCodeText,1,row);
-          table.add(areaCode,2,row);
-
+          table.add(cityText,1,row);
+          table.add(city,2,row);
           table.add(countryText,3,row);
           table.add(country,4,row);
+
+          table.setAlignment(1,row,"right");
+          table.setAlignment(2,row,"left");
+          table.setAlignment(3,row,"right");
+          table.setAlignment(4,row,"left");
 
           ++row;
           table.add(emailText,1,row);
           table.add(email,2,row);
-
           table.add(telNumberText,3,row);
           table.add(telNumber,4,row);
 
+          table.setAlignment(1,row,"right");
+          table.setAlignment(2,row,"left");
+          table.setAlignment(3,row,"right");
+          table.setAlignment(4,row,"left");
+
+
           if (_tour.getIsHotelPickup()) {
               ++row;
+              table.mergeCells(1,row,4,row);
+              table.add(hr,1,row);
+              ++row;
+              table.mergeCells(1,row,4,row);
+              subHeader = (Text) theBoldText.clone();
+                subHeader.setFontColor(WHITE);
+                subHeader.setText(iwrb.getLocalizedString("travel.booking_choose_hotel","If you choose to be picked up at your hotel, select it from the list below"));
+              table.add(subHeader,1,row);
+              table.setAlignment(1,row,"left");
+              ++row;
+              ++row;
 
-              Text hotelText = (Text) theBoldText.clone();
+              Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
               HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
               pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
 
-              Text roomNumberText = (Text) theBoldText.clone();
+              Text roomNumberText = (Text) theText.clone();
                 roomNumberText.setText(iwrb.getLocalizedString("travel.room_number","room number"));
               roomNumber = new TextInput("room_number");
                 roomNumber.setSize(textInputSizeSm);
@@ -479,6 +564,11 @@ public class TourBookingForm extends TravelManager {
               table.add(roomNumberText,3,row);
               table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
               table.add(roomNumber,4,row);
+
+              table.setAlignment(1,row,"right");
+              table.setAlignment(2,row,"left");
+              table.setAlignment(3,row,"right");
+              table.setAlignment(4,row,"left");
           }
 
           Text pPriceCatNameText;
@@ -497,7 +587,18 @@ public class TourBookingForm extends TravelManager {
             TotalTextInput.setSize(8);
 
           ++row;
-          table.add(Text.NON_BREAKING_SPACE,1,row);
+          table.mergeCells(1,row,4,row);
+          table.add(hr,1,row);
+          ++row;
+          table.mergeCells(1,row,4,row);
+          subHeader = (Text) theBoldText.clone();
+            subHeader.setFontColor(WHITE);
+            subHeader.setText(iwrb.getLocalizedString("travel.booking_passenger_info","Passenger infomation"));
+          table.add(subHeader,1,row);
+          table.setAlignment(1,row,"left");
+          ++row;
+//          ++row;
+//          table.add(Text.NON_BREAKING_SPACE,1,row);
 
           BookingEntry[] entries = null;
           ProductPrice pPri = null;
@@ -516,7 +617,7 @@ public class TourBookingForm extends TravelManager {
                   category = pPrices[i].getPriceCategory();
                   int price = (int) tsb.getPrice(_service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow());
     //              pPrices[i].getPrice();
-                  pPriceCatNameText = (Text) theBoldText.clone();
+                  pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
                   pPriceText = new ResultOutput("thePrice"+i,"0");
@@ -561,6 +662,8 @@ public class TourBookingForm extends TravelManager {
                   //table.add(txtPrice,3,row);
                   //table.add(txtPerPerson,4,row);
 
+                  table.setAlignment(1,row,"right");
+                  table.setAlignment(2,row,"left");
 
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
@@ -578,30 +681,42 @@ public class TourBookingForm extends TravelManager {
           table.add(TotalTextInput,2,row);
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
-            TextInput ccNumber = new TextInput("ccNumber");
+            TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(16);
               ccNumber.setLength(20);
               ccNumber.setAsNotEmpty("T - vantar cc númer");
               ccNumber.setAsIntegers("T - cc númer rangt");
-            TextInput ccMonth = new TextInput("ccMonth");
+            TextInput ccMonth = new TextInput(this.parameterCCMonth);
               ccMonth.setMaxlength(2);
               ccMonth.setLength(3);
               ccMonth.setAsNotEmpty("T - vantar cc manuð");
               ccMonth.setAsIntegers("T - cc manuður rangur");
-            TextInput ccYear = new TextInput("ccYear");
+            TextInput ccYear = new TextInput(this.parameterCCYear);
               ccYear.setMaxlength(2);
               ccYear.setLength(3);
               ccYear.setAsNotEmpty("T - vantar cc ár");
               ccYear.setAsIntegers("T - cc ár rangt");
 
-            Text ccText = (Text) theBoldText.clone();
+            Text ccText = (Text) theText.clone();
               ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
 
-            Text ccMY = (Text) theBoldText.clone();
+            Text ccMY = (Text) theText.clone();
               ccMY.setText(iwrb.getLocalizedString("travel.valid","valid"));
 
-            Text ccSlash = (Text) theBoldText.clone();
+            Text ccSlash = (Text) theText.clone();
               ccSlash.setText(" / ");
+
+          ++row;
+          table.mergeCells(1,row,4,row);
+          table.add(hr,1,row);
+          ++row;
+          table.mergeCells(1,row,4,row);
+          subHeader = (Text) theBoldText.clone();
+            subHeader.setFontColor(WHITE);
+            subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
+          table.add(subHeader,1,row);
+          table.setAlignment(1,row,"left");
+          ++row;
 
             ++row;
             table.add(ccText,1,row);
@@ -612,6 +727,15 @@ public class TourBookingForm extends TravelManager {
             table.add(ccSlash,4,row);
             table.add(ccYear,4,row);
 
+            table.setAlignment(1,row,"right");
+            table.setAlignment(2,row,"left");
+            table.setAlignment(3,row,"right");
+            table.setAlignment(4,row,"left");
+
+            ++row;
+            table.mergeCells(1,row,4,row);
+            table.add(hr,1,row);
+
             ++row;
             if (_booking != null) {
               table.add(new SubmitButton(iwrb.getImage("buttons/update.gif")),4,row);
@@ -620,17 +744,22 @@ public class TourBookingForm extends TravelManager {
             }
             table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
 
-            table.setColumnAlignment(1,"right");
-            table.setColumnAlignment(2,"left");
-            table.setColumnAlignment(3,"right");
-            table.setColumnAlignment(4,"left");
+            //table.setColumnAlignment(1,"right");
+            //table.setColumnAlignment(2,"left");
+            //table.setColumnAlignment(3,"right");
+            //table.setColumnAlignment(4,"left");
             table.setAlignment(4,row,"right");
+          }
+          else {
+            table.add(notAvailSeats,1,row);
+            table.add(dateText,1,row);
+            table.add(pleaseFindAnotherDay,1,row);
+          }
+            table.setAlignment(1,1,"left");
         }
     return form;
   }
-
-
-  private int checkBooking(IWContext iwc) throws Exception {
+ public Form getFormMaintainingAllParameters() {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -643,11 +772,19 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
       form.maintainParameter("room_number");
       form.maintainParameter("reference_number");
-      form.maintainParameter("year");
-      form.maintainParameter("month");
-      form.maintainParameter("day");
+      form.maintainParameter(CalendarBusiness.PARAMETER_YEAR);
+      form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
+      form.maintainParameter(CalendarBusiness.PARAMETER_DAY);
       form.maintainParameter(this.parameterBookingId);
       form.maintainParameter(this.parameterSupplierId);
+      form.maintainParameter(this.parameterCCNumber);
+      form.maintainParameter(this.parameterCCMonth);
+      form.maintainParameter(this.parameterCCYear);
+    return form;
+  }
+
+  private int checkBooking(IWContext iwc) throws Exception {
+    Form form = getFormMaintainingAllParameters();
 
     boolean tooMany = false;
     String sAvailable = iwc.getParameter("available");
@@ -728,13 +865,13 @@ public class TourBookingForm extends TravelManager {
       String roomNumber = iwc.getParameter("room_number");
       String referenceNumber = iwc.getParameter("reference_number");
 
-      String ccNumber = iwc.getParameter("ccNumber");
-      String ccMonth = iwc.getParameter("ccMonth");
-      String ccYear = iwc.getParameter("ccYear");
+      String ccNumber = iwc.getParameter(this.parameterCCNumber);
+      String ccMonth = iwc.getParameter(this.parameterCCMonth);
+      String ccYear = iwc.getParameter(this.parameterCCYear);
 
-      String year = iwc.getParameter("year");
-      String month = iwc.getParameter("month");
-      String day = iwc.getParameter("day");
+      String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+      String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+      String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
 
       String supplierId = iwc.getParameter(this.parameterSupplierId);
 

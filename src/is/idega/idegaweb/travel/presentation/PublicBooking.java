@@ -46,7 +46,9 @@ public class PublicBooking extends Block  {
   private Text boldText = new Text("");
   private String backgroundColor = "#1A4B8E";
 
-
+  private String sAction = "publicBookingAction";
+  private String parameterSubmitBooking = "publicBookingSubmitBooking";
+  private String parameterBookingVerified = "publicBookingBookingVerified";
 
   public PublicBooking() {
   }
@@ -126,7 +128,7 @@ public class PublicBooking extends Block  {
 
 
   private void displayForm(IWContext iwc) {
-      Table table = new Table(2,3);
+      Table table = new Table(2,4);
         table.setWidth("90%");
         table.setAlignment("center");
         table.setCellspacing(1);
@@ -134,33 +136,25 @@ public class PublicBooking extends Block  {
         table.setBorder(0);
 
       Image background = bundle.getImage("images/sb_background.gif");
-      table.setBackgroundImage(1, 2, background);
-      table.setRowColor(3, backgroundColor);
-      table.setColor(2, 1, backgroundColor);
-      table.mergeCells(2, 1, 2, 2);
-      table.setVerticalAlignment(1,1,"top");
+      Image seeAndBuy = iwrb.getImage("images/see_and_buy.gif");
+
+      table.setBackgroundImage(1, 3, background);
+      table.setRowColor(4, backgroundColor);
+      table.setColor(2, 2, backgroundColor);
+      table.mergeCells(2, 2, 2, 3);
+      table.setAlignment(1,1,"left");
       table.setVerticalAlignment(1,2,"top");
-      table.setVerticalAlignment(2,1,"top");
+      table.setVerticalAlignment(1,3,"top");
+      table.setVerticalAlignment(2,2,"top");
       table.setHeight(1, "20");
       table.setHeight(3, "20");
       table.setWidth(2, "20");
 
 
-      try {
-        String action = iwc.getParameter(TourBookingForm.BookingAction);
-        if (action != null) {
-          TourBookingForm tbf = new TourBookingForm(iwc);
-            tbf.setProduct(product);
-            System.err.println("Created booking_id = "+tbf.handleInsert(iwc));
-        }
-      }catch (Exception e) {
-        e.printStackTrace(System.err);
-      }
-
-
-      table.add(leftTop(iwc),1,1);
-      table.add(leftBottom(iwc),1,2);
-      table.add(right(iwc),2,1);
+      //table.add(seeAndBuy,1,1);
+      table.add(leftTop(iwc),1,2);
+      table.add(leftBottom(iwc),1,3);
+      table.add(right(iwc),2,2);
 
       add(table);
   }
@@ -192,6 +186,7 @@ public class PublicBooking extends Block  {
         ch.setDayCellColor("#6666CC");
         ch.addParameterToLink(this.parameterProductId, productId);
         ch.setClassToLinkTo(PublicBooking.class);
+        ch.setTimestamp(stamp);
       table.add(ch.getCalendarTable(iwc),1,4);
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -201,9 +196,23 @@ public class PublicBooking extends Block  {
   }
 
   private Form leftTop(IWContext iwc) {
+    Image background = bundle.getImage("images/sb_background.gif");
+
     Form form = new Form();
+    Table aroundTable = new Table(2,2);
+      aroundTable.setWidth("100%");
+      aroundTable.setCellpadding(0);
+      aroundTable.setCellspacing(0);
+      aroundTable.setBackgroundImage(1,1,background);
+      aroundTable.setBackgroundImage(2,1,background);
+      aroundTable.setBackgroundImage(1,2,background);
+      aroundTable.setWidth(1,"1");
+      aroundTable.setHeight(1,"1");
+
+
     Table table = new Table();
-    form.add(table);
+      aroundTable.add(table,2,2);
+    form.add(aroundTable);
 
 
     try {
@@ -212,7 +221,7 @@ public class PublicBooking extends Block  {
 
       table.setWidth("95%");
       table.setAlignment("center");
-      table.setBorder(1);
+      table.setBorder(0);
 
       String stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
       String stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
@@ -233,6 +242,9 @@ public class PublicBooking extends Block  {
       }
       image.setMaxImageWidth(138);
 
+      Image arrow = bundle.getImage("images/black_arrow.gif");
+        arrow.setAlignment("center");
+
       Text space = getText(" : ");
 
 
@@ -244,6 +256,7 @@ public class PublicBooking extends Block  {
       Text pricesTextBold = getBoldText("");
       Text nameOfCategory = getBoldText("");
       Text priceText = getBoldText("");
+      Text currencyText = getBoldText("");
 
       nameTextBold.setText(product.getName());
       timeframeTextBold.setText(stampTxt1+" - "+stampTxt2);
@@ -269,6 +282,8 @@ public class PublicBooking extends Block  {
       table.add(departureFromTextBold,3,2);
 
       table.add(image,1,3);
+      table.add(arrow,1,3);
+      table.setAlignment(1,3,"center");
 
       table.add(departureTimeText,3,3);
       table.add(space,3,3);
@@ -277,7 +292,8 @@ public class PublicBooking extends Block  {
       table.add(Text.NON_BREAKING_SPACE,2,4);
 
       Table pTable = new Table();
-        pTable.setWidth("100%");
+        pTable.setWidth(300);
+        pTable.setCellspacing(0);
 
         pTable.add(pricesText,1,1);
         pTable.add(space,1,1);
@@ -289,23 +305,31 @@ public class PublicBooking extends Block  {
             nameOfCategory.addToText(":");
           try {
             priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
-            priceText.addToText(Text.NON_BREAKING_SPACE);
-            priceText.addToText(currency.getCurrencyAbbreviation());
+            currencyText = getBoldText(currency.getCurrencyAbbreviation());
+            pTable.add(currencyText,4,pRow);
           }catch (ProductPriceException p) {
             priceText.setText("T - rangt upp sett");
           }
 
           pTable.add(nameOfCategory,2,pRow);
           pTable.add(priceText,3,pRow);
+          if (j%2 == 1) {
+            pTable.setColor(2,pRow,"#F1F1F1");
+            pTable.setColor(3,pRow,"#F1F1F1");
+            pTable.setColor(4,pRow,"#F1F1F1");
+          }
 
         }
-        pTable.setWidth(1,"2");
+        pTable.setWidth(1,"50");
         pTable.setWidth(3,"2");
-        pTable.setRowAlignment(1,"left");
-        pTable.setRowAlignment(2,"left");
-        pTable.setRowAlignment(3,"left");
+        pTable.setWidth(4,"2");
+        pTable.setColumnAlignment(1,"left");
+        pTable.setColumnAlignment(2,"left");
+        pTable.setColumnAlignment(3,"right");
+        pTable.setColumnAlignment(4,"left");
 
       table.add(pTable,2,5);
+      table.setAlignment(2,5,"right");
 
       table.setAlignment(3,1,"right");
       table.setAlignment(3,2,"right");
@@ -316,7 +340,7 @@ public class PublicBooking extends Block  {
       table.mergeCells(1,3,1,5);
       table.mergeCells(2,5,3,5);
       table.setWidth(1,"138");
-      table.setWidth(1,"238");
+      table.setWidth(3,"350");
 
 
     }catch (Exception e) {
@@ -332,14 +356,85 @@ public class PublicBooking extends Block  {
       TourBookingForm tbf = new TourBookingForm(iwc);
         tbf.setProduct(product);
 
-        Form form = tbf.getPublicBookingForm(stamp);
+      Form form = new Form();
+      String action = iwc.getParameter(this.sAction);
+      if (action == null || action.equals("")) {
+          form = tbf.getPublicBookingForm(iwc, product, stamp);
           form.maintainParameter(this.parameterProductId);
+          form.addParameter(this.sAction,this.parameterSubmitBooking);
+      }else if (action.equals(this.parameterSubmitBooking)) {
+          form = tbf.getFormMaintainingAllParameters();
+          form.maintainParameter(this.parameterProductId);
+          form.add(getVerifyBookingTable(iwc));
+      }else if (action.equals(this.parameterBookingVerified)) {
+          form = tbf.getFormMaintainingAllParameters();
+          form.maintainParameter(this.parameterProductId);
+          form.add(doBooking(iwc));
+      }
+
+
+      try {
+/*        String action = iwc.getParameter(TourBookingForm.BookingAction);
+        if (action != null) {
+          TourBookingForm tbf = new TourBookingForm(iwc);
+            tbf.setProduct(product);
+            System.err.println("Created booking_id = "+tbf.handleInsert(iwc));
+        }
+*/
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
 
       return form;
     }catch (Exception e) {
       e.printStackTrace(System.err);
       return new Form();
     }
+  }
+
+
+  private Table getVerifyBookingTable(IWContext iwc) {
+    Table table = new Table();
+
+      Text viss = getBoldTextWhite("Ertu viss");
+      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
+      SubmitButton no = new SubmitButton(iwrb.getImage("buttons/no.gif"),this.sAction, "");
+      table.add(viss,1,1);
+      table.add(yes,2,1);
+      table.add(no,3,1);
+
+
+
+    return table;
+  }
+
+  private Table doBooking(IWContext iwc) {
+    Table table = new Table();
+      String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
+      String ccMonth  = iwc.getParameter(TourBookingForm.parameterCCMonth);
+      String ccYear   = iwc.getParameter(TourBookingForm.parameterCCYear);
+
+      Text display = getBoldTextWhite("");
+
+      try {
+        System.out.println("Starting TPOS test");
+        com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        String heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
+        System.out.println("heimild = " + heimild);
+        System.out.println("Ending TPOS test");
+      }
+      catch(com.idega.block.tpos.business.TPosException e) {
+        System.out.println("message = " + e.getErrorMessage());
+        System.out.println("number = " + e.getErrorNumber());
+        System.out.println("display = " + e.getDisplayError());
+        display.setText(e.getDisplayError());
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+      table.add(display);
+
+    return table;
   }
 
 }

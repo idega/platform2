@@ -349,7 +349,7 @@ public class TravelManager extends Block {
     }
 
     public static Image getDefaultImage(IWResourceBundle _iwrb) {
-      return _iwrb.getImage("images/mynd.gif");
+      return _iwrb.getImage("images/picture.gif");
     }
 
 }

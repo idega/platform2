@@ -199,4 +199,12 @@ public class TourBooking extends GenericEntity implements Booking{
     return _booking.getPaymentTypeId();
   }
 
+  public void setReferenceNumber(String number) {
+    _booking.setReferenceNumber(number);
+  }
+
+  public String getReferenceNumber() {
+    return _booking.getReferenceNumber();
+  }
+
 }
