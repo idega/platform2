@@ -26,6 +26,9 @@ public class MessageBMPBean extends AbstractCaseBMPBean implements Message,Case{
   private static final String COLUMN_DATE="TEMP_DATE"; //Temp (test) data
   private static final String COLUMN_SENDER="TEMP_SENDER";//Temp (test) data
 
+  private static final String CASE_CODE_KEY="SYMEDAN";
+  private static final String CASE_CODE_DESCRIPTION="Message";
+
   public MessageBMPBean() {
   }
 
@@ -45,8 +48,17 @@ public class MessageBMPBean extends AbstractCaseBMPBean implements Message,Case{
 //    this.addManyToManyRelationShip(SampleEntity.class);
   }
 
+  public String getCaseCodeKey(){
+    return CASE_CODE_KEY;
+  }
+
+  public String getCaseCodeDescription(){
+    return CASE_CODE_DESCRIPTION;
+  }
+
   public void insertStartData(){
     try{
+      super.insertStartData();
       MessageHome home = (MessageHome)com.idega.data.IDOLookup.getHome(Message.class);
       User administrator = (User)com.idega.data.IDOLookup.findByPrimaryKey(User.class,1);
 
