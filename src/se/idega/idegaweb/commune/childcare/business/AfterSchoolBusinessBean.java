@@ -162,6 +162,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
 		choice.setApplicationStatus(getStatusSentIn());
+		choice.setHasPriority(true);
 		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			sendMessageToParents(choice, subject, body);
