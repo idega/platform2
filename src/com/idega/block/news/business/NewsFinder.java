@@ -19,9 +19,9 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.query.AND;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
-import com.idega.data.query.OR;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
@@ -86,9 +86,9 @@ public class NewsFinder {
     query.addCriteria(new MatchCriteria(news, NwNewsBMPBean.getColumnNameNewsCategoryId(), MatchCriteria.EQUALS, newsCategoryId));
     if (!ignorePublishingDates ) {
     	IWTimestamp today = IWTimestamp.RightNow();
-      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getDate());
-      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getDate());
-      	query.addCriteria(new OR(from, to));
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getTimestamp());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getTimestamp());
+      	query.addCriteria(new AND(from, to));
     }
     query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
 
@@ -165,9 +165,9 @@ public class NewsFinder {
       query.addCriteria(new MatchCriteria(text, LocalizedTextBMPBean.getColumnNameLocaleId(), MatchCriteria.EQUALS, iLocaleId));
       if (!ignorePublishingDates ) {
       	IWTimestamp today = IWTimestamp.RightNow();
-      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getDate());
-      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getDate());
-      	query.addCriteria(new OR(from, to));
+      	MatchCriteria from = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishFrom(), MatchCriteria.LESSEQUAL, today.getTimestamp());
+      	MatchCriteria to = new MatchCriteria(content, ContentBMPBean.getColumnNamePublishTo(), MatchCriteria.GREATEREQUAL, today.getTimestamp());
+      	query.addCriteria(new AND(from, to));
       }
       query.addOrder(content, ContentBMPBean.getColumnNameCreated(), false);
       
