@@ -106,7 +106,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				selector = new WorkReportMemberEditor();
 			}
 			else if( action.equals(ACTION_EDIT_ACCOUNT) ){
-				selector = new WorkReportSelector();
+				selector = new WorkReportAccountEditor();
 			}
 			else if( action.equals(ACTION_EDIT_BOARD) ){
 				selector = new WorkReportBoardMemberEditor();	
