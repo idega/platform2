@@ -14,6 +14,7 @@ import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 	}
 
 	public boolean executeAssessment(int iCategoryId, int iTariffGroupId, String roundName, int iCashierId, int iAccountKeyId, IWTimestamp paydate, IWTimestamp start, IWTimestamp end) {
+		System.out.println("Starting assessment for period "+start.toString()+"-"+end.toString());
 		Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
 		List listOfTariffs = new Vector(tariffs);
 		List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(), start, end);
@@ -234,27 +236,31 @@ public class CampusFinanceHandler implements FinanceHandler {
 		      System.err.print(" end: "+end.toString());
 		*/
 
+		// if contract begins and ends within period
+		if (begin <= valfr && valto <= endin) {
+			//System.out.println("begins and ends  within period");
+			begin = valfr;
+			endin = valto;
+		}
 		// if contract ends within period
-		if (begin <= valto && valto <= endin) {
+		else if (begin <= valto && valto <= endin) {
+			//System.out.println("ends within period");
 			endin = valto;
 		}
 		// if contract begins within period
 		else if (begin <= valfr && valfr <= endin) {
+			//System.out.println("begins within period");
 			begin = valfr;
-		}
-		// if contract begins and ends within period
-		else if (begin <= valfr && valto <= endin) {
-			begin = valfr;
-			endin = valto;
 		}
 		// if contract begins and ends outside period
 		else if (valfr < begin && endin < valto) {
+			//System.out.println("begins and ends  outside period");
 			// donothing
 		}
 
 		double diff = endin - begin;
 		ret = (diff) / del;
-
+		System.out.println("factor for contract "+con.getContractId()+" aprt:"+con.getApartmentId() +" start:"+(new Date(begin)).toGMTString()+" end: "+(new Date(endin)).toGMTString()+" factor: "+ret);
 		return ret;
 	}
 

@@ -99,6 +99,7 @@ public class CampusAccountFinder  {
     sql.append(" or ");
     sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
     sql.append(")");
+    sql.append(" order by ic_user_id ");
 
 
     //System.err.println(sql);
