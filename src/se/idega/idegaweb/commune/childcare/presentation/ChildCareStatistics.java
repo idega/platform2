@@ -352,7 +352,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		return table;
 	}*/
 	
-	private Form getNavigationTable(IWContext iwc) {
+	private Form getNavigationTable(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		
 		Table table = new Table();
@@ -413,7 +413,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 		schoolTypes.addMenuElement(SCHOOL_TYPES_CHILD_CARE, localize("child_care.all_operations", "All operations"));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_PRE_SCHOOL, localize("child_care.pre_schools","Pre-schools"));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_DAYCARE, localize("child_care.family_daycare","Family daycare"));
-		schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_AFTER_SCHOOL, localize("child_care.family_after_school","Family after school"));
+		if (!getBusiness().getFamilyAfterSchoolTypes().isEmpty()) {
+			schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_AFTER_SCHOOL, localize("child_care.family_after_school","Family after school"));
+		}
 		schoolTypes.setSelectedElement(_schoolTypes);
 		table.add(schoolTypes, 1, 2);
 		
