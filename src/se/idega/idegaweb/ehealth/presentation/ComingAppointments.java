@@ -29,7 +29,7 @@ import com.idega.presentation.ui.GenericButton;
  */
 public class ComingAppointments extends EHealthBlock {
 	
-	private String prefix = "registration_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
 	
 	private String prmCareUnit = prefix + "care_unit";

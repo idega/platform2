@@ -33,44 +33,32 @@ import com.idega.util.Age;
  */
 public class MyDoctor extends EHealthBlock {
 	
-	private String prefix = "visit_booking_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
-	private String prmInform = prefix + "info_channel";
-	private String prmReason = prefix + "reason";
-	private String prmClear = prefix + "clear";
-	private String prmDay = prefix + "day";
-	private String prmMonth = prefix + "month";
-	private String prmTime = prefix + "time";
-	private String prmChoose = prefix + "choose";
-	private String prmCooseWay = prefix + "chooseWay";
-	private String prmEmail = prefix + "email";
-	private String prmSMS = prefix + "sms";
-	private String prmHeadingCase = prefix + "heading_case";
-	private String prmVisitReason = prefix + "visit_reason";
-	
 	private String prmMessage = prefix + "message";
 	private String prmVisitBooking = prefix + "visit_booking";
 	
 	
 	private int userID = -1;
 	private User user;
-
+	IWContext _iwc = null;
+	
 	public void main(IWContext iwc) throws Exception {
-		
+		_iwc = iwc;
 		
 		userID = iwc.getUserId();
 		
 		if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
-		add(getDoctorForm(iwc));
+		add(getDoctorForm());
 		
 	}
 	
 	
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
-	public PresentationObject getDoctorForm(IWContext iwc) throws java.rmi.RemoteException {
-		IWResourceBundle iwrb = this.getResourceBundle(iwc);
+	public PresentationObject getDoctorForm() {
+		IWResourceBundle iwrb = this.getResourceBundle(_iwc);
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		
@@ -88,8 +76,7 @@ public class MyDoctor extends EHealthBlock {
 		table.setWidth(1, 1, 73);
 		
 		myForm.add(table);
-		int row = 1;
-		
+			
 		Age age = null;
 		if (user != null && user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
@@ -106,7 +93,7 @@ public class MyDoctor extends EHealthBlock {
 			int userIDDr = 41047; //45   41047
 			int userImageID = -1;
 			try {
-				doctor = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userIDDr);	
+				doctor = ((UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class)).getUser(userIDDr);	
 			}
 			catch (Exception fe){
 				log(fe);

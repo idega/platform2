@@ -10,6 +10,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
@@ -42,6 +43,11 @@ public class EHealthBlock extends Block {
 	public final static String STYLENAME_INTERFACE = "Interface";
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
 	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
+	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
+	public final static String STYLENAME_SMALL_TEXT = "SmallText";
+	
+	private final static String CELLPADDING_PROPERTY = "cellpadding";
+	private ICPage formResponsePage;
 	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -147,10 +153,21 @@ public class EHealthBlock extends Block {
 	 */
 	public PresentationObject getHealthCareMap(IWContext iwc/*, HealthCentre healthcentre*/)
 	{
-		//TODO Display a PDF link if possible
 		Image image = getBundle(iwc).getImage("karta1.gif");
 		return image;
 	}
+	
+	/**
+	 * @param iwc
+	 * @param healthcentre
+	 * @return
+	 */
+	public PresentationObject getVKLogo(IWContext iwc)
+	{
+		Image image = getBundle(iwc).getImage("vardkontoid_40px.gif");
+		return image;
+	}
+	
 	
 	/**
 	 * @param iwc
@@ -159,9 +176,18 @@ public class EHealthBlock extends Block {
 	 */
 	public PresentationObject getPrintIcon(IWContext iwc)
 	{
-		//TODO Display a PDF link if possible
 		Image image = getBundle(iwc).getImage("printIcon.gif");
 		return image;
+	}
+	
+	private String getProperty(String propertyName, String nullValue) {
+		IWPropertyList property = getIWApplicationContext().getSystemProperties().getProperties("layout_settings");	
+		if (property != null) {
+			String propertyValue = property.getProperty(propertyName);
+			if (propertyValue != null)
+				return propertyValue;
+		}
+		return nullValue;
 	}
 	
 		
@@ -179,6 +205,27 @@ public class EHealthBlock extends Block {
 		catch (Exception re) {
 			return false;
 		}
+	}
+	
+	protected int getCellpadding() {
+		return Integer.parseInt(getProperty(CELLPADDING_PROPERTY,"2"));	
+	}
+	
+	
+	public Text getSmallText(String s) {
+		return getStyleText(s, STYLENAME_SMALL_TEXT);
+	}
+	
+	public Text getErrorText(String s) {
+		return getStyleText(s, STYLENAME_ERROR_TEXT);
+	}
+	
+	public ICPage getResponsePage() {
+		return this.formResponsePage;
+	}
+	
+	public void setResponsePage(ICPage page) {
+		this.formResponsePage = page;
 	}
 	
 	protected CommuneUserBusiness getUserBusiness(IWApplicationContext  iwc) throws IBOLookupException {

@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
  */
 public class JournalTexts extends EHealthBlock {
 	
-	private String prefix = "registration_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
 	
 	private String prmCareUnit = prefix + "care_unit";
@@ -237,7 +237,7 @@ public class JournalTexts extends EHealthBlock {
 	
 	private Table getSearchSortTable(){
 		
-		Table table = new Table(3, 4);
+		Table table = new Table(3, 5);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setBorder(0);
@@ -261,6 +261,8 @@ public class JournalTexts extends EHealthBlock {
 		DateInput to = (DateInput) getStyledInterface(new DateInput(prmTo, true));
 		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 		
+		
+		
 		DropdownMenu dropHCentre = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
 		dropHCentre.addMenuElementFirst("1", "Gimo VC");
 		dropHCentre.addMenuElement("2", "Östhammar VC");
@@ -280,11 +282,13 @@ public class JournalTexts extends EHealthBlock {
 			
 		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
 		
-		table.add(from, 1, 1);
-		table.add(to, 3, 1);
-		table.add(dropHCentre, 1, 2);
-		table.add(dropCaregiver, 1, 3);
-		table.add(search, 1, 4);
+		table.add(getSmallHeader(localize(prmFrom, "From")+": "), 1, 1);
+		table.add(from, 1, 2);
+		table.add(getSmallHeader(localize(prmTo, "To")+": "), 3, 1);
+		table.add(to, 3, 2);
+		table.add(dropHCentre, 1, 3);
+		table.add(dropCaregiver, 1, 4);
+		table.add(search, 1, 5);
 		
 		return table;
 	}

@@ -12,6 +12,7 @@ import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
@@ -37,7 +38,7 @@ import com.idega.util.Age;
  */
 public class AppointmentBooking extends EHealthBlock {
 	
-	private String prefix = "visit_booking_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
 	private String prmInform = prefix + "info_channel";
 	private String prmReason = prefix + "reason";
@@ -57,22 +58,24 @@ public class AppointmentBooking extends EHealthBlock {
 	
 	private int userID = -1;
 	private User user;
-
+	IWContext _iwc = null;
+	
 	public void main(IWContext iwc) throws Exception {
 		
+		_iwc = iwc;
 		
 		userID = iwc.getUserId();
 		
 		if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
-		add(getVisitForm(iwc));
+		add(getBookingForm());
 		
 	}
 	
 	
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
-	public PresentationObject getVisitForm(IWContext iwc) throws java.rmi.RemoteException {
+	public PresentationObject getBookingForm() {
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		
@@ -146,6 +149,7 @@ public class AppointmentBooking extends EHealthBlock {
 			table.add(getLocalizedText(prmVisitReason,"Reason for visit"), 1, row++);
 			
 			TextArea textReason = (TextArea) getStyledInterface(new TextArea(prmReason));
+			textReason.setRows(5);
 			textReason.setStyleClass("lul_text");
 			
 			table.add(textReason, 1, row++);	
@@ -245,8 +249,15 @@ public class AppointmentBooking extends EHealthBlock {
 			table.add(selectDate, 1, row);
 			table.setHeight(1, row++, "25");
 			
-			String div = "<div id='divShowTime' name='divShowTime' style='width:400px; height:30px; vertical-align:bottom;'></div>";
-			table.add(div, 1, row);
+			Layer layer = new Layer(Layer.DIV);
+			layer.setID("divShowTime");
+			layer.setWidth(400);
+			layer.setHeight(30);
+			layer.setStyleAttribute("vertical-align", "bottom");
+			
+			
+			//String div = "<div id='divShowTime' name='divShowTime' style='width:400px; height:30px; vertical-align:bottom;'></div>";
+			table.add(layer, 1, row);
 			table.setHeight(1, row++, "30");
 			}
 			SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
@@ -270,10 +281,10 @@ public class AppointmentBooking extends EHealthBlock {
 	private String setTimeScript() {
 		StringBuffer s = new StringBuffer();
 		s.append("function setTime(){").append(" \n\t");
-		s.append("var day = document.form_visit.elements['visit_booking_day'].options[document.form_visit.elements['visit_booking_day'].selectedIndex];").append(" \n\t");
 		
-		s.append("var month = document.form_visit.elements['visit_booking_month'].options[document.form_visit.elements['visit_booking_month'].selectedIndex];").append(" \n\t");
-		s.append("var time = document.form_visit.elements['visit_booking_time'].options[document.form_visit.elements['visit_booking_time'].selectedIndex];").append(" \n\t");
+		s.append("var day = document.patient_form_visit.elements['patient_day'].options[document.patient_form_visit.elements['patient_day'].selectedIndex];").append(" \n\t");
+		s.append("var month = document.patient_form_visit.elements['patient_month'].options[document.patient_form_visit.elements['patient_month'].selectedIndex];").append(" \n\t");
+		s.append("var time = document.patient_form_visit.elements['patient_time'].options[document.patient_form_visit.elements['patient_time'].selectedIndex];").append(" \n\t");
 		s.append("if (day.value != -1 && month.value != -1 && time.value != -1){").append(" \n\t");
 		s.append("document.all.divShowTime.innerHTML = '<br>Du har valt den ' + day.text + ' '  + month.text + ', kl ' + time.text").append("} \n\t");
 		s.append("return false;").append(" \n\t");

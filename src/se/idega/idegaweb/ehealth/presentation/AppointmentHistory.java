@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
  */
 public class AppointmentHistory extends EHealthBlock {
 	
-	private String prefix = "registration_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
 	
 	private String prmCareUnit = prefix + "care_unit";

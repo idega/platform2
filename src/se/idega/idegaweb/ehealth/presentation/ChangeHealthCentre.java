@@ -34,7 +34,7 @@ import com.idega.util.Age;
  */
 public class ChangeHealthCentre extends EHealthBlock {
 	
-	private String prefix = "visit_booking_";
+	private String prefix = "patient_";
 	private String prmForm = prefix + "form_change_h_centre";	
 	private String prmShowSelect = prefix + "show_select";
 	private String prmPhotoText = prefix + "photo_text";
