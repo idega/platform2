@@ -119,6 +119,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       Vector v = handler.getTournamentMembers();
       if (v != null) {
         if (v.size() > 0) {
+            System.err.println("v > 0.....SIZE() = "+v.size());
             ResultsCollector rip = (ResultsCollector) v.get(0);
             if (rip != null) {
                 System.err.println("Rip != null.....DIFF = "+rip.getDifference());
