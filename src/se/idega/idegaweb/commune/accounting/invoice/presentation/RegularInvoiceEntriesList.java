@@ -63,6 +63,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
@@ -118,6 +119,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String KEY_VAT_RULE = "vatrule";
 	private static final String KEY_NAME = "name";	
 	private static final String KEY_PROVIDER = "provider";
+	
+	private static final String KEY_SELECT="select";	
 	
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
@@ -397,7 +400,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		entry.setRegSpecTypeId(Integer.parseInt((String) regSpecType.getPrimaryKey()));
 		entry.setChild(user);
-		entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
+		String vatRule = iwc.getParameter(PAR_VAT_RULE);
+		if (vatRule != null && vatRule.length() != 0){
+			entry.setVatRuleRegulationId(new Integer(vatRule).intValue());
+		}
 		
 
 		try{
@@ -550,7 +556,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		t1.setCellpadding(getCellpadding());
 		t1.setCellspacing(getCellspacing());
 
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN, user), 1, 1); 
+		Table opfieldTbl = new Table();		
+		addOperationalFieldPanel(opfieldTbl, 1, PAR_OPFIELD_MAINSCREEN, user);
+		t1.add(opfieldTbl, 1, 1);
+		
 		
 		Form form = new Form();			
 		Table t2 = new Table();
@@ -567,9 +576,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			t2.add(bp, 1, row++);
 
 			form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-		}
-		
-		if (user != null){
+
 			form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));
 		}
 		
@@ -580,23 +587,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	}
 	
 
-	private Table getOperationalFieldPanel(String actionCommand, User user) {
-		
-		Table inner = new Table();
-
-		inner.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
-		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
-		if (user != null){
-			ofm.setParameter(PAR_USER_SSN, user.getPersonalID());
-		}
-		ofm.maintainParameter(PAR_SEEK_FROM);
-		ofm.maintainParameter(PAR_SEEK_TO);
-	
-		inner.add(ofm, 2, 1);
-		inner.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);
-		inner.add(new HiddenInput(actionCommand, " "), 3, 1); //to make it return to the right page
-		return inner;
-	}	
 	
 	private int addOperationalFieldPanel(Table table, int row, String actionCommand, User user) {
 		
@@ -1089,6 +1079,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private Table addDropDownLocalized(Table table, String parameter, String key, Collection options, int selected, String method, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenuLocalized(parameter, options, method);
 		dropDown.setSelectedElement(selected);
+		String selectString = this.getResourceBundle().getLocalizedString(KEY_SELECT,"Select:");
+		dropDown.addFirstOption(new SelectOption(selectString,""));		
 		return addWidget(table, key, dropDown, col, row);		
 	}	
 
