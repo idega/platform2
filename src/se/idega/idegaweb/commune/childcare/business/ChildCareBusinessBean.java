@@ -4217,6 +4217,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
              return helper;
 	     }
 
-	
+	 	public boolean setUserAsDeceased(Integer userID, java.util.Date deceasedDate) throws RemoteException {
+			// Remove the deceased user as invoice receiver for 
+			try {
+				ChildCareContractHome ccch = (ChildCareContractHome)getIDOHome(ChildCareContract.class);
+				Collection activeOrFutureContracts = ccch.findByInvoiceReceiverActiveOrFuture(userID,new java.sql.Date(deceasedDate.getTime()));
+				for (Iterator iter = activeOrFutureContracts.iterator(); iter
+						.hasNext();) {
+					ChildCareContract contract = (ChildCareContract) iter.next();
+					contract.setInvoiceReceiverID(null);
+					contract.store();
+				}
+			} catch (IDOStoreException e1) {
+				logError("Invoice reciver could not be set as null for deceased user "+userID);
+				return false;
+			} catch (FinderException e1) {
+				return false;	
+			}
+			return true;
+	 	}
 	
 }

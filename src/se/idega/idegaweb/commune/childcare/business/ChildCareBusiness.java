@@ -1346,10 +1346,17 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
     public Collection getProviderStats(Locale sortLocale)
             throws FinderException, java.rmi.RemoteException;
 
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#setUserAsDeceased
+     */
+ 	public boolean setUserAsDeceased(Integer userID, java.util.Date deceasedDate) throws RemoteException;
+
     /**
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getPlacementDateHelper
      */
     public PlacementHelper getPlacementHelper(
             Integer applicationID) throws java.rmi.RemoteException;
+
 
 }
