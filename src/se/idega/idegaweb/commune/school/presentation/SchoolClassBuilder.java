@@ -38,6 +38,10 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 	private final int ACTION_EDIT = 4;
 	
 	private int action = -1;
+	
+	private boolean multibleSchools = false;
+	private boolean showBunRadioButtons = false;
+		
 
 	public SchoolClassBuilder() {
 	}
@@ -92,7 +96,7 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		table.setHeight(2, "6");
 		form.add(table);
 		
-		table.add(getNavigationTable(false),1,1);
+		table.add(getNavigationTable(false, multibleSchools, showBunRadioButtons),1,1);
 		table.add(getClassTable(iwc),1,3);
 		
 		add(form);
@@ -221,4 +225,17 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 	}
 	
+	/** setters */
+	public void setMultipleSchools(boolean multiple) {
+		this.multibleSchools = multiple;
+	}
+
+	/**
+	 * Turns on/off view of radiobuttons for showing BUN administrated shools or not
+	 * @param show
+	 */
+	public void setShowBunRadioButtons(boolean show){
+		this.showBunRadioButtons = show;		
+	}
+		
 }
