@@ -1424,6 +1424,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void makeOffer(IWContext iwc) throws RemoteException {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
+		if (messageBody.indexOf("$datum$") != -1) {
+			messageBody.replaceAll("$datum$", "{6}");
+		}
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
 		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
 
