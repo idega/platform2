@@ -229,7 +229,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis, int threeMonthsPriority, int oneYearPriority) {
+	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis, int threeMonthsPriority, int oneYearPriority, int providerCapacity) {
 		try {
 			ChildCarePrognosis prognosis = getPrognosis(providerID);
 			if (prognosis == null)
@@ -240,6 +240,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			prognosis.setOneYearPrognosis(oneYearPrognosis);
 			prognosis.setThreeMonthsPriority(threeMonthsPriority);
 			prognosis.setOneYearPriority(oneYearPriority);
+			prognosis.setProviderCapacity(providerCapacity);
 			prognosis.setUpdatedDate(new IWTimestamp().getDate());
 			prognosis.store();
 		}
