@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/13 09:09:13 $ by $Author: staffan $
- * @version $Revision: 1.41 $
+ * Last modified: $Date: 2003/10/14 12:21:16 $ by $Author: goranb $
+ * @version $Revision: 1.42 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -42,18 +42,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
 	public final static String SPECIALLY_PLACED = "SPECIALLY_PLACED";
 	public final static String LANGUAGE = "LANGUAGE";
-	//Added for the kompliterings project
-	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String INVOICE_INTERVAL = "invoice_int";
 	public final static String LATEST_INVOICE_DATE = "latest_invoice_date";
-	// Borgman added field for kompletteringprojekt
 	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
-	// Borgman added String constants for INVOICE_INTERVALL column values
+	public final static String COMPENSATION_BY_AGREEMENT = "comp_by_agreement";
 	private final static String PK = "school_class_member.invoice_interval.";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "month";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "term";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_YEAR = PK + "year";
-
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -66,11 +62,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(NEEDS_SPECIAL_ATTENTION, "Needs special attention", true, true, Boolean.class);
 		this.addAttribute(SPECIALLY_PLACED, "Specially placed", true, true, Boolean.class);
 		this.addAttribute(LANGUAGE, "Language", true, true, String.class);
-		this.addAttribute(COMPENSATION_BY_INVOICE, "Compensation by invoice", true, true, Boolean.class);
 		this.addAttribute(INVOICE_INTERVAL, "Invoice interval", true, true, String.class);
 		this.addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
-		/* Borgman 9 sept 2003 */
 		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
+		this.addAttribute(COMPENSATION_BY_AGREEMENT, "Compensation by agreement", true, true, Boolean.class);
 	}
 	public String getEntityName() {
 		return SCHOOLCLASSMEMBER;
@@ -140,14 +135,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return this.getStringColumnValue(LANGUAGE);
 	}
 
-	public boolean getHasCompensationByInvoice() {
-		return getBooleanColumnValue(COMPENSATION_BY_INVOICE,false);
-	}
-	
-	public void setHasCompensationByInvoice(boolean hasCompensation) {
-		setColumn(COMPENSATION_BY_INVOICE,hasCompensation);
-	}
-	
 	public String getInvoiceInterval() {
 		return getStringColumnValue(INVOICE_INTERVAL);
 	}
@@ -172,6 +159,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.setColumn(PLACEMENT_PARAGRAPH, placementParagraph);
 	}
 
+	public boolean getHasCompensationByAgreement() {
+		return getBooleanColumnValue(COMPENSATION_BY_AGREEMENT,false);
+	}
+	
+	public void setHasCompensationByAgreement(boolean hasCompensation) {
+		setColumn(COMPENSATION_BY_AGREEMENT,hasCompensation);
+	}
 
 	public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException, RemoteException {
 		return ejbFindBySchoolClass(((Integer)schoolClass.getPrimaryKey()).intValue());

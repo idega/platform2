@@ -19,12 +19,10 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
 	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
 	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
-	// Borgman added field for kompletteringprojekt
-	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 
 	
  public int getClassMemberId();
- public boolean getHasCompensationByInvoice();
+ public boolean getHasCompensationByAgreement();
  public java.lang.String getInvoiceInterval();
  public java.lang.String getLanguage();
  public java.sql.Timestamp getLatestInvoiceDate();
@@ -40,7 +38,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public com.idega.user.data.User getStudent();
  public void initializeAttributes();
  public void setClassMemberId(int p0);
- public void setHasCompensationByInvoice(boolean p0);
+ public void setHasCompensationByAgreement(boolean p0);
  public void setInvoiceInterval(java.lang.String p0);
  public void setLanguage(java.lang.String p0);
  public void setLatestInvoiceDate(java.sql.Timestamp p0);
