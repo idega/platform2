@@ -10,7 +10,7 @@ import com.idega.jmodule.object.*;
 import javax.servlet.http.*;
 import java.util.*;
 
-public class HeaderTable extends JModuleObject {
+public class HeaderTable extends ModuleObjectContainer {
 
 private boolean leftHeader = true;
 private boolean rightHeader = true;
