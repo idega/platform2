@@ -234,9 +234,13 @@ public class GenericImportFile implements ImportFile{
 		while( tokens.hasMoreTokens() && i<=index ){
 			value = tokens.nextToken();	
 			//System.out.println("GenericImportFile : index = "+index+" value = "+value);
-			i++;
+			if (tokens.hasMoreTokens()) {
+				i++;
+			}
 		}
-		
+		if (i < index) {
+			return getEmptyValueString();
+		}
 		
 		return value;
 	} 
