@@ -324,7 +324,7 @@ private IWResourceBundle iwrb;
 
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
-    imageInsert.setSelected(nwNews.getIncludeImage());
+
     imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
@@ -358,6 +358,7 @@ private IWResourceBundle iwrb;
       tiSource.setContent(nwNews.getSource());
       //drpCategories.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
       drpDaysShown.setSelectedElement(String.valueOf(nwNews.getDaysShown()));
+       imageInsert.setSelected(nwNews.getIncludeImage());
       if(nwNews.getImageId() != -1){
         imageInsert.setImageId(nwNews.getImageId());
       }
