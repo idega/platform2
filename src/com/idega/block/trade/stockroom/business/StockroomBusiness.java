@@ -170,8 +170,8 @@ public class StockroomBusiness /* implements SupplyManager */ {
             buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
             buffer.append(" and ");
             buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
-            buffer.append(" and ");
-            buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
+            //buffer.append(" and ");
+            //buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
             buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
           List result = EntityFinder.findAll(ppr,buffer.toString());
           float disc = 0;
