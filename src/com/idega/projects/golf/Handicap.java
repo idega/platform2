@@ -146,35 +146,37 @@ private double grunn;
     try {
       for (int c = 0 ; c < strokes.size(); c++ ) {
         Stroke stroke2 = (Stroke)strokes.elementAt(c);
-        hole_handicap = (int) stroke2.getHoleHandicap();
-        hole_par = stroke2.getHolePar();
+        if ( stroke2 != null ) {
+          hole_handicap = (int) stroke2.getHoleHandicap();
+          hole_par = stroke2.getHolePar();
 
-        int strokes2 = stroke2.getStrokeCount();
+          int strokes2 = stroke2.getStrokeCount();
 
-        if (hole_handicap > afgangur) {
-          punktar3 = hole_par + punktar - strokes2;
+          if (hole_handicap > afgangur) {
+            punktar3 = hole_par + punktar - strokes2;
+          }
+
+          if (hole_handicap <= afgangur) {
+            punktar3 = hole_par + punktar2 - strokes2;
+          }
+
+          if (punktar2 < 0) {
+            punktar3 = 0;
+          }
+
+          if (punktar3 < 0) {
+            punktar3 = 0;
+          }
+
+          if (strokes2 == 0) {
+            punktar3 = 0;
+          }
+
+          heildarpunktar += punktar3;
+
+          stroke2.setPointCount(punktar3);
+          stroke2.update();
         }
-
-        if (hole_handicap <= afgangur) {
-          punktar3 = hole_par + punktar2 - strokes2;
-        }
-
-        if (punktar2 < 0) {
-          punktar3 = 0;
-        }
-
-        if (punktar3 < 0) {
-          punktar3 = 0;
-        }
-
-        if (strokes2 == 0) {
-          punktar3 = 0;
-        }
-
-        heildarpunktar += punktar3;
-
-        stroke2.setPointCount(punktar3);
-        stroke2.update();
       }
 
       if ( strokes.size() == 9 ) {
