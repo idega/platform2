@@ -68,11 +68,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 12:55:39 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.90 $
+ * @version $Revision: 1.91 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -226,7 +226,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		if (null != paymentText) record.setPaymentText (paymentText);
 		if (null != note) record.setNotes (note);
 		record.setRuleSpecType (regulationSpecType);
-		record.setVATRuleRegulation (vatRule.intValue ());
+		record.setVATRuleRegulationId (vatRule.intValue ());
 		
 		// store updated record
 		record.store ();
@@ -382,13 +382,11 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
 		
 		// get home objects
-		final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
 		final InvoiceRecordHome home = business.getInvoiceRecordHome ();
 		
 		// get data objects
 		final PaymentRecord record = getPaymentRecord (context);
-		final PaymentHeader header = headerHome.findByPrimaryKey
-				(new Integer (record.getPaymentHeader ()));
+		final PaymentHeader header = record.getPaymentHeader ();
 		final SchoolCategory category
 				= getSchoolCategory (context, header.getSchoolCategoryID ());
 		final School school = schoolBusiness.getSchool
@@ -819,9 +817,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	private PaymentHeader getPaymentHeader (final IWContext context)
 		throws RemoteException, FinderException {
 		final InvoiceBusiness business = getInvoiceBusiness (context);
-		final Integer headerId = context.isParameterSet (PAYMENT_HEADER_KEY)
-				? getIntegerParameter (context, PAYMENT_HEADER_KEY)
-				: new Integer (getPaymentRecord (context).getPaymentHeader ());
+		if (!context.isParameterSet (PAYMENT_HEADER_KEY)) {
+			return getPaymentRecord (context).getPaymentHeader ();
+		}
+		final Integer headerId = getIntegerParameter (context, PAYMENT_HEADER_KEY);
 		final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
 		return null != headerId ? headerHome.findByPrimaryKey (headerId) : null;
 	}

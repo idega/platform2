@@ -72,8 +72,11 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		addManyToOneRelationship(COLUMN_PAYMENT_HEADER, PaymentHeader.class);
 		addManyToOneRelationship(COLUMN_VAT_RULE_REGULATION_ID, Regulation.class);
 	}
-	public int getPaymentHeader() {
+	public int getPaymentHeaderId() {
 		return getIntColumnValue(COLUMN_PAYMENT_HEADER);
+	}
+	public PaymentHeader getPaymentHeader() {
+		return (PaymentHeader) getColumnValue(COLUMN_PAYMENT_HEADER);
 	}
 	public char getStatus() {
 		return getCharColumnValue(COLUMN_STATUS);
@@ -137,7 +140,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public int getVATRuleRegulationId() {
 		return getIntColumnValue(COLUMN_VAT_RULE_REGULATION_ID);
 	}
-	public void setVATRuleRegulation(int regulationId) {
+	public void setVATRuleRegulationId(int regulationId) {
 		setColumn(COLUMN_VAT_RULE_REGULATION_ID, regulationId);
 	}
 	public void setVATRuleRegulation(Regulation vatRegulation) {
@@ -147,7 +150,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return getIntColumnValue(COLUMN_ORDER_ID);
 	}
 
-	public void setPaymentHeader(int i) {
+	public void setPaymentHeaderId(int i) {
 		setColumn(COLUMN_PAYMENT_HEADER, i);
 	}
 	public void setPaymentHeader(PaymentHeader p) {

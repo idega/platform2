@@ -418,7 +418,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			}catch(NumberFormatException ex){
 				errorMessages.put(ERROR_NO_VAT, localize(ERROR_NO_VAT, "No Vat type specified"));
 			}
-			pay.setVATRuleRegulation(vatType);
+			pay.setVATRuleRegulationId(vatType);
 	//		inv.setVATType(vatType);
 			
 /*

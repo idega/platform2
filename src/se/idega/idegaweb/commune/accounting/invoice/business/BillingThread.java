@@ -150,7 +150,7 @@ public abstract class BillingThread extends Thread{
 			//It didn't exist, so we create it
 			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 			//Set all the values for the payment record
-			paymentRecord.setPaymentHeader(((Integer)paymentHeader.getPrimaryKey()).intValue());
+			paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
 			if(categoryPosting.getProviderAuthorization()){
 				paymentRecord.setStatus(ConstantStatus.BASE);
 			} else {
@@ -169,7 +169,7 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setDoublePosting(doublePosting);
 			int vatRuleRegulationId=postingDetail.getVatRuleRegulationId();
 			if(vatRuleRegulationId!=-1){
-				paymentRecord.setVATRuleRegulation(vatRuleRegulationId);
+				paymentRecord.setVATRuleRegulationId(vatRuleRegulationId);
 			}
 			paymentRecord.setOrderId (postingDetail.getOrderID());
 			paymentRecord.store();
@@ -241,7 +241,7 @@ public abstract class BillingThread extends Thread{
 					//It didn't exist, so we create it
 					paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 					//Set all the values for the payment record
-					paymentRecord.setPaymentHeader(((Integer)paymentHeader.getPrimaryKey()).intValue());
+					paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
 					if(categoryPosting.getProviderAuthorization()){
 						paymentRecord.setStatus(ConstantStatus.BASE);
 					} else {
