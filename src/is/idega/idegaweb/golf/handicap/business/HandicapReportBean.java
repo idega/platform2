@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.3 2005/02/07 14:20:44 laddi Exp $
+ * $Id: HandicapReportBean.java,v 1.4 2005/02/07 14:56:11 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/02/07 14:20:44 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 14:56:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
@@ -186,8 +186,8 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 
 				data.addData(date, stamp.getLocaleDateAndTime(currentLocale, IWTimestamp.SHORT, IWTimestamp.SHORT));
 				data.addData(handicap, TextSoap.decimalFormat(scorecard.getHandicapAfter(), 1));
-				data.addData(points, String.valueOf(scorecard.getTotalPoints()));
-				data.addData(course, field.getName() != null ? field.getName() : getLocalizedString(PREFIX + "correction", "Handicap correction"));
+				data.addData(points, scorecard.getTotalPoints() > 0 ? String.valueOf(scorecard.getTotalPoints()) : "-");
+				data.addData(course, scorecard.getHandicapCorrection() ? getLocalizedString(PREFIX + "correction", "Handicap correction") : field.getName());
 
 				reportCollection.add(data);
 			}
