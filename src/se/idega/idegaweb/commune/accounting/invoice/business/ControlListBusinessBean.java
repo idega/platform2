@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.6 2003/10/31 22:45:01 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.7 2003/11/01 10:12:00 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * $Id: ControlListBusinessBean.java,v 1.6 2003/10/31 22:45:01 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.7 2003/11/01 10:12:00 kjell Exp $
  *
  * @author Kelly
  */
@@ -158,7 +158,8 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 						startCurrentPeriod.getDate()
 					);
 	
-					if ((contractCountCurrent > 0 || contractCountLast > 0)) { 
+					if ((contractCountCurrent > 0 || contractCountLast > 0) || 
+						(amountCurrent > 0 || amountLast > 0)) { 
 						arr.add(new Object[] {
 							new Integer(cnt++), 
 							school.getName(), 
