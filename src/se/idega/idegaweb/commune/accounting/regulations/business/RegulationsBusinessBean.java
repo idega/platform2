@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.74 2003/11/27 19:10:13 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.75 2003/11/28 14:13:25 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -608,6 +608,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									match = false;
 								break;
 						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_EMPLOYMENT)) {
+				Integer value = (Integer) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_EMPLOYMENT)) {
+						int id = regCond.getIntervalID();
+							if (value.intValue() != id)
+								match = false;
 					}
 				}
 
