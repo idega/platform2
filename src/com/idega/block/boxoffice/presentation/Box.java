@@ -52,7 +52,6 @@ private String _name;
 private String _target;
 
 public Box(){
-  setDefaultValues();
 }
 
 public Box(int boxID){
@@ -131,6 +130,7 @@ public Box(String attribute){
 	}
 
   private Table getBox(BoxEntity box) {
+    setDefaultValues();
     setStyles();
 
     Table boxTable = new Table();
@@ -297,9 +297,6 @@ public Box(String attribute){
         _name = "boxoffice_"+Integer.toString(_boxID);
       else
         _name = "boxoffice_"+_attribute;
-    }
-    if ( _name == null ) {
-      _name = "boxoffice_"+Integer.toString(_boxID);
     }
 
     getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
