@@ -151,6 +151,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		User user = iwc.getCurrentUser();
 		User child = getBusiness().getUserBusiness().getUser(_userID);
 		Email mail = getBusiness().getUserBusiness().getUserMail(user);
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 
 		String email = "";
 		if (mail != null && mail.getEmailAddress() != null)
@@ -165,9 +166,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			workphone = "";
 		}
 
-		Object[] arguments = { child.getFirstName(), user.getName(), email, workphone };
+		Object[] arguments = { child.getFirstName(), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()) };
 
-		String message = MessageFormat.format(localize("child_care.offer_message", "We can offer {0} a placing in our childcare from (date).\n\nRegards,\n{1}\n{2}\n{3}"), arguments);
+		String message = MessageFormat.format(localize("child_care.offer_message", "We can offer {0} a placing in our childcare from {4}.\n\nRegards,\n{1}\n{2}\n{3}"), arguments);
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setHeight(7);
@@ -192,8 +193,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
+		
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		if (application != null)
+			dateInput.setDate(application.getFromDate());
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);

@@ -166,7 +166,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.setWidth(4, "4");
 		table.setWidth(6, "4");
 		
-		BackButton back = (BackButton) getStyledInterface(new BackButton(localize("back","Back")));
+		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
+		back.setPageToOpen(getResponsePage());
 		table.add(back, 1, 1);
 		
 		if (showAllButtons) {

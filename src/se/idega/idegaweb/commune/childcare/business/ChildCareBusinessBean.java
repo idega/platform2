@@ -15,8 +15,11 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -44,6 +47,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.lowagie.text.Font;
 
@@ -91,15 +95,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setChoiceNumber(i + 1);
 				stamp.addSeconds((1 - ((i + 1) * 1)));
 				appl.setCreated(stamp.getTimestamp());
+				appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
 				if (checkId != -1)
 					appl.setCheckId(checkId);
-				if (i != 0)
-					appl.setParentCase(parent);
 				if (freetimeApplication)
 					caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 				else {
 					caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
 					sendMessageToParents(appl, subject, message);
+					updateQueue(appl);
 				}
 
 				parent = appl;
@@ -139,6 +143,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.store();
 		}
 		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void updateQueue(ChildCareApplication application) {
+		try {
+			User child = application.getChild();
+			Age age = new Age(child.getDateOfBirth());
+			User compareChild;
+			Age compareAge;
+			int queueOrder = -1;
+			boolean hasAltered = false;
+			
+			List applications = new Vector(getChildCareApplicationHome().findApplicationsByProviderAndDate(application.getProviderId(), application.getQueueDate()));
+			if (applications.size() > 1) {
+				queueOrder = ((ChildCareApplication)applications.get(0)).getQueueOrder();
+				Collections.sort(applications, new ChildCareApplicationComparator());
+				
+				Iterator iter = applications.iterator();
+				while (iter.hasNext()) {
+					ChildCareApplication element = (ChildCareApplication) iter.next();
+					element.setQueueOrder(queueOrder++);
+					element.store();
+				}
+			}
+		}
+		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
@@ -214,6 +248,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		} catch (RemoteException re) {
 			return 0;
+		}
+	}
+	
+	public int getNumberInQueue(int queueOrder, int providerID) {
+		try {
+			return getChildCareApplicationHome().getPositionInQueue(queueOrder, providerID);
+		}
+		catch (RemoteException e) {
+			return -1;
+		}
+		catch (IDOException e) {
+			return -1;
 		}
 	}
 

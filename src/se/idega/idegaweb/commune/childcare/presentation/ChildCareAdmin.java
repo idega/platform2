@@ -40,9 +40,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 		navigator.setTextStyle(STYLENAME_SMALL_TEXT);
 		navigator.setLinkStyle(STYLENAME_SMALL_LINK);
 		navigator.setNumberOfEntriesPerPage(_numberPerPage);
+		int start = navigator.getStart(iwc);
 		table.add(navigator, 1, 1);
 
-		Collection applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, navigator.getStart(iwc));
+		Collection applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, start);
 		if (applications != null && !applications.isEmpty()) {
 			ChildCareApplication application;
 			User child;
@@ -50,6 +51,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			IWCalendar queueDate;
 			IWCalendar placementDate;
 			Link link;
+			int queue = start++;
 			
 			Table applicationTable = new Table();
 			applicationTable.setWidth(Table.HUNDRED_PERCENT);
@@ -60,6 +62,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			table.add(applicationTable, 1, 3);
 			int row = 1;
 			int column = 1;
+			int queueOrder = -1;
 			
 			applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
@@ -77,6 +80,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
+				queueOrder = getBusiness().getNumberInQueue(application.getQueueOrder(), application.getProviderId());
 				
 				if (row % 2 == 0)
 					applicationTable.setRowColor(row, getZebraColor1());
@@ -97,9 +101,14 @@ public class ChildCareAdmin extends ChildCareBlock {
 				column++;
 				applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
 				applicationTable.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				applicationTable.add(getSmallText("-"), column++, row);
-				applicationTable.add(getSmallText("-"), column, row++);
+				applicationTable.add(getSmallText(String.valueOf(queue++)), column++, row);
+				if (queueOrder != -1)
+					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column, row++);
+				else 
+					applicationTable.add(getSmallText("-"), column, row++);
 			}
+			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 	}
 

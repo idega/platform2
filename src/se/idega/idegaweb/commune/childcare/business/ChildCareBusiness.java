@@ -39,4 +39,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService,com.ide
  public boolean assignApplication(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3);
  public void changePlacingDate(int applicationID, java.sql.Date placingDate) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication(int applicationID) throws java.rmi.RemoteException;
+ public int getNumberInQueue(int queueOrder, int providerID);
 }
