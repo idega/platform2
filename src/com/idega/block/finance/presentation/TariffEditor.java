@@ -956,7 +956,6 @@ public class TariffEditor extends Finance {
 	}
 
 	public void main(IWContext iwc) {
-		debugParameters(iwc);
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
 		control(iwc);
 	}

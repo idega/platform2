@@ -155,7 +155,7 @@ public class AccountKeyEditor extends Finance {
     inputTable.add(Edit.formatText("Nr"),1,1);
     inputTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
     inputTable.add(Edit.formatText(iwrb.getLocalizedString("info","Inro")),3,1);
-    inputTable.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),4,1);
+    inputTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
     inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),5,1);
     AccountKey key;
     for (int i = 1; i <= inputcount ;i++){

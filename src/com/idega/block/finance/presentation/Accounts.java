@@ -67,7 +67,6 @@ public class Accounts extends Finance {
 
 
   protected void control(IWContext iwc)throws java.rmi.RemoteException{
-  	debugParameters(iwc);
     Edit = TextFormat.getInstance();
     if(isAdmin){
       Table T = new Table();
