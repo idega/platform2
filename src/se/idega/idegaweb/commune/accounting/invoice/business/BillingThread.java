@@ -128,6 +128,19 @@ public abstract class BillingThread extends Thread{
 	 * @throws IDOLookupException
 	 */
 	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school) 
+	throws CreateException, IDOLookupException {
+		return createPaymentRecord(postingDetail, ownPosting, doublePosting, months, school, "");
+	}
+	
+	/**
+	 * Finds existing payment reacord or creates a new payment record if needed, 
+	 * and populates the values as needed. It also creates the payment header if needed
+	 *  
+	 * @return the created payment record
+	 * @throws CreateException
+	 * @throws IDOLookupException
+	 */
+	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school, String notes) 
 			throws CreateException, IDOLookupException {
 
 		//Get the payment header
@@ -179,6 +192,7 @@ public abstract class BillingThread extends Thread{
 				paymentRecord.setVATRuleRegulationId(vatRuleRegulationId);
 			}
 			paymentRecord.setOrderId (postingDetail.getOrderID());
+			paymentRecord.setNotes(notes);
 			paymentRecord.store();
 		}
 		return paymentRecord;

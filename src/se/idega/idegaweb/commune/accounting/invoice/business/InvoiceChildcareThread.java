@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/13 14:55:56 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/17 10:07:20 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.126 $
+ * @version $Revision: 1.127 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -671,6 +671,8 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
 						invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 						invoiceRecord.setDays(days);
+
+						invoiceRecord.setNotes(regularInvoiceEntry.getNote());
 						
 						invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
 						invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
@@ -769,7 +771,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
 				try {
-					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school, regularPaymentEntry.getNote());
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				} catch (IDOLookupException e) {
 					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
