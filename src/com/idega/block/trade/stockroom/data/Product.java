@@ -68,10 +68,10 @@ public class Product extends GenericEntity {
     this.addManyToManyRelationShip( ProductCategory.class, "SR_PRODUCT_PRODUCT_CATEGORY" );
     this.setNullable( getColumnNameFileId(), true );
     this.addManyToManyRelationShip( com.idega.block.text.data.LocalizedText.class, "SR_PRODUCT_LOCALIZED_TEXT" );
-    this.addManyToManyRelationShip( Timeframe.class, "SR_PRODUCT_TIMEFRAME" );
-    this.addManyToManyRelationShip( TravelAddress.class, "SR_PRODUCT_SR_ADDRESS" );
     this.addManyToManyRelationShip( Address.class, "SR_PRODUCT_IC_ADDRESS" );
     this.addManyToManyRelationShip( TxText.class );
+
+    this.addManyToManyRelationShip( ICFile.class );
   }
 
   /**

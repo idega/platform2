@@ -29,6 +29,8 @@ public class Timeframe extends GenericEntity{
     addAttribute(getTimeframeToColumnName(), "Til", true, true, java.sql.Timestamp.class);
     addAttribute(getTimeframeFromColumnName(), "Frá", true, true, java.sql.Timestamp.class);
     addAttribute(getYearlyColumnName(), "Árlegt", true, true, Boolean.class);
+
+    this.addManyToManyRelationShip( Product.class, "SR_PRODUCT_TIMEFRAME" );
   }
 
 

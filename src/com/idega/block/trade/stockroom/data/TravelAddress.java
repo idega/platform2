@@ -34,6 +34,8 @@ public class TravelAddress extends GenericEntity {
     this.addAttribute(getColumnNameAddressId(), "addressId", true, true, Address.class);
     this.addAttribute(getColumnNameTime(), "time", true, true, Timestamp.class);
     this.addAttribute(getColumnNameAddressTypeId(), "addressutýpa", true, true, Integer.class);
+
+    this.addManyToManyRelationShip( Product.class, "SR_PRODUCT_SR_ADDRESS" );
   }
 
   public String getEntityName() {
