@@ -126,15 +126,13 @@ public class ClientManager implements PacketManager{
   }
 
   public static Vector getConnectedClients(String sessionId){
-    /**@todo: don't make a new instance everytime and don't add the client asking*/
+    /**@todo: don't make a new instance everytime*/
     Vector connClients=new Vector();
     Enumeration enum = ClientManager.clients.keys();
 
     while (enum.hasMoreElements()){
       String id = (String)enum.nextElement();
-      if( !id.equalsIgnoreCase(sessionId) ){
         connClients.add( new Property(id,((User)ClientManager.clients.get(id)).getName()) );
-      }
     }
 
     return connClients;
