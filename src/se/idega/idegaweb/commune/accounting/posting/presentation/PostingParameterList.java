@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.10 2003/08/27 07:38:03 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.11 2003/08/27 22:45:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,6 +20,8 @@ import com.idega.builder.data.IBPage;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.HiddenInput;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -38,21 +40,22 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * Other submodules will use this data to search for a match on 
  * Periode, Activity, Regulation sec, Company type and Commune belonging.
  * When you have a hit you can retrive accounting data such as accounts, resources, activity codes 
- * etc. These values are always mirrored in "Own entries" and "Double entries". See Book-Keeping
- * terms.
+ * etc. For PostingParameters only fields Account, Resources, Activity and double entry account
+ * can be retrieved 
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.10 2003/08/27 07:38:03 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.11 2003/08/27 22:45:57 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class PostingParameterList extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_EDIT = 1;
+	private final static int ACTION_DELETE = 1;
 	
 	private final static String KEY_HEADER = "posting_def_list.header";
 	private final static String KEY_PERIOD = "posting_def_list.periode";
@@ -67,8 +70,15 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_DOUBLE_ENTRY = "posting_parm_list.double_entry";
 	private final static String KEY_SEARCH = "posting_parm_list.search";
 	private final static String KEY_COPY = "posting_parm_list.copy";
+	private final static String KEY_EDIT = "posting_parm_list.edit";
+	private final static String KEY_BUTTON_COPY = "posting_parm_list.button_copy";
+	private final static String KEY_BUTTON_EDIT = "posting_parm_list.button_edit";
 	private final static String KEY_NEW = "posting_parm_list.new";
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
+	private final static String KEY_REMOVE_CONFIRM = "posting_parm_list.remove_confirm";
+	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
+	private final static String KEY_CLICK_COPY = "posting_parm_list.click_to_copy";
+	private final static String KEY_CLICK_EDIT = "posting_parm_list.click_to_edit";
 	private final static String KEY_CANCEL = "posting_parm_list.cancel";
 	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
 	private final static String KEY_DEFAULT_BLANK = "posting_parm_list.blank";
@@ -83,6 +93,7 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
 	private final static String PARAM_POSTING_ID = "param_posting_id";
+	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 
 	private IBPage _editPage;
@@ -90,14 +101,14 @@ public class PostingParameterList extends AccountingBlock {
 	private Date _currentToDate;
 
 	/**
-	 * Handles the property setEditPage
+	 * Handles the property editPage
 	 */
 	public void setEditPage(IBPage page) {
 		_editPage = page;
 	}
 
 	/**
-	 * Handles the property setEditPage
+	 * Handles the property editPage
 	 */
 	public IBPage getEditPage() {
 		return _editPage;
@@ -110,11 +121,14 @@ public class PostingParameterList extends AccountingBlock {
 	 */
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
-		deletePosts(iwc);
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
+					viewForm(iwc);
+					break;
+				case ACTION_DELETE :
+					deletePost(iwc);
 					viewForm(iwc);
 					break;
 			}
@@ -128,21 +142,23 @@ public class PostingParameterList extends AccountingBlock {
 	 * on the POST parameters in the specified context.
 	 */
 	private int parseAction(IWContext iwc) {
+		System.out.println("---------------------------------------> DELETE"+iwc.getParameter(PARAM_DELETE_ID));
+		if (iwc.isParameterSet(PARAM_DELETE_ID)) {
+			return ACTION_DELETE;
+		}
 		return ACTION_DEFAULT;
 	}
 
 	/*
 	 * Delete posts marked with the checkbox 
 	 */
-	private void deletePosts(IWContext iwc) {
-		String[] ids = iwc.getParameterValues(PARAM_POSTING_ID);
-		if(ids != null) {
-			for(int i = 0; i < ids.length; i++){
-				try {
-					getPostingBusiness(iwc).deletePostingParameter(Integer.parseInt(ids[i]));
-				} catch ( Exception e) {
-					super.add(new ExceptionWrapper(e, this));
-				}
+	private void deletePost(IWContext iwc) {
+		String id = iwc.getParameter(PARAM_DELETE_ID);
+		if(id != null) {
+			try {
+				getPostingBusiness(iwc).deletePostingParameter(Integer.parseInt(id));
+			} catch ( Exception e) {
+				super.add(new ExceptionWrapper(e, this));
 			}
 		}
 	}
@@ -175,13 +191,6 @@ public class PostingParameterList extends AccountingBlock {
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
 		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", _editPage);
-		buttonPanel.addLocalizedConfirmButton(
-				PARAM_REMOVE, 
-				KEY_REMOVE, 
-				"Ta bort",
-				PARAM_POSTING_ID, 
-				KEY_CONFIRM_REMOVE_MESSAGE,
-				"Vill du verkligen ta bort markerade poster?");
 		return buttonPanel;
 	}
 	
@@ -189,9 +198,9 @@ public class PostingParameterList extends AccountingBlock {
 	 * Returns the PostingList
 	 */
 	private ListTable getPostingTable(IWContext iwc) {
-		
+
 		PostingBusiness pBiz;
-		ListTable list = new ListTable(this, 9);
+		ListTable list = new ListTable(this, 10);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_ACTIVITY, "Verksamhet", 2);
@@ -200,13 +209,12 @@ public class PostingParameterList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
 		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
 		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
-		list.setLocalizedHeader(KEY_COPY, "Kopiera", 8);
-		list.setLocalizedHeader(KEY_REMOVE, "Ta bort", 9);
+		list.setLocalizedHeader(KEY_EDIT, "", 8);
+		list.setLocalizedHeader(KEY_COPY, "", 9);
+		list.setLocalizedHeader(KEY_REMOVE, "", 10);
 		
 		try {
 			pBiz = getPostingBusiness(iwc);
-			pBiz.findAllPostingParameters();
-
 			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
 			if(items != null) {
 				Iterator iter = items.iterator();
@@ -238,14 +246,27 @@ public class PostingParameterList extends AccountingBlock {
 					} else {
 						list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
 					}
+
 					list.add(p.getPostingAccount());
-					list.add(p.getDoublePostingAccount());
-					Link copy = new Link(getEditIcon(localize(KEY_COPY, "Kopiera")));
+					list.add(p.getPostingDoubleEntry());
+
+					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
+					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
+					edit.setPage(_editPage);
+					list.add(edit);
+
+					Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera")));
 					copy.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
 					copy.addParameter(PARAM_MODE_COPY, "1");
 					copy.setPage(_editPage);
 					list.add(copy);
-					list.add(getCheckBox(PARAM_POSTING_ID, p.getPrimaryKey().toString()));
+
+					SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_REMOVE, "Radera")));
+					delete.setDescription(localize(KEY_CLICK_REMOVE, "Klicka här för att radera post"));
+					delete.setValueOnClick(PARAM_DELETE_ID, p.getPrimaryKey().toString());
+					delete.setSubmitConfirm(localize(KEY_REMOVE_CONFIRM, "Vill du verkligen radera denna post?"));
+					list.add(delete);
+					
 				}
 			}			
 		} catch (Exception e) {
@@ -256,7 +277,6 @@ public class PostingParameterList extends AccountingBlock {
 	}
 	
 	private Table getSearchPanel() {
-		
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
@@ -267,21 +287,25 @@ public class PostingParameterList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 1);
 		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
+		table.add(new HiddenInput(PARAM_DELETE_ID, "-1"));
 
 		return table;
 	}
 
 	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 6),  60, 10);
-		TextInput toDate = getTextInput(param_to, formatDate(date_to, 6),  60, 10);
+		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 4),  40, 4);
+		TextInput toDate = getTextInput(param_to, formatDate(date_to, 4),  40, 4);
+		fromDate.setLength(4);
+		toDate.setLength(4);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);
 		return table;
 	}
 
-		private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
+	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}
 }
+

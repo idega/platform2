@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.12 2003/08/27 14:04:47 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.13 2003/08/27 22:45:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.12 2003/08/27 14:04:47 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.13 2003/08/27 22:45:57 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -165,7 +165,15 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private boolean saveData(IWContext iwc) {
 		
 			try {
-				getPostingBusiness(iwc).savePostingParameter(iwc.getParameter(PARAM_EDIT_ID),
+
+				String id = null;
+				if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+					id = iwc.getParameter(PARAM_EDIT_ID);
+				}
+				if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+					id = null;
+				}
+				getPostingBusiness(iwc).savePostingParameter(id,
 				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
 				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
 				iwc.getParameter(PARAM_SIGNED),
@@ -264,10 +272,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Date dd = new Date(System.currentTimeMillis());
 		
 		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
-		table.add(getTextInput(PARAM_PERIODE_FROM, (formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4)), 60,6), 2, 1);
+		table.add(getTextInput(PARAM_PERIODE_FROM, (formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4)), 40, 4), 2, 1);
 	
 		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
-		table.add(getTextInput(PARAM_PERIODE_TO, (formatDate(pp != null ? pp.getPeriodeTo() : dd, 4)), 60,6), 4, 1);
+		table.add(getTextInput(PARAM_PERIODE_TO, (formatDate(pp != null ? pp.getPeriodeTo() : dd, 4)), 40, 4), 4, 1);
 
 		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
 		table.add(getText(formatDate(pp != null ? pp.getChangedDate(): rightNow, 6)), 2, 2);
@@ -275,7 +283,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
 		table.add(""+userName, 4, 2);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
-		if(iwc.isParameterSet(PARAM_EDIT_ID) && !iwc.isParameterSet(PARAM_MODE_COPY)) {
+		if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));
+		}
+		if(iwc.isParameterSet(PARAM_EDIT_ID)) {
 			table.add(new HiddenInput(PARAM_EDIT_ID, ""+iwc.getParameter(PARAM_EDIT_ID)));
 		}
 		return table;	
@@ -316,7 +327,28 @@ public class PostingParameterListEditor extends AccountingBlock {
 		list2.setLocalizedHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
 		list2.setLocalizedHeader(KEY_POST_PROJECT, "Projekt", 7);
 		list2.setLocalizedHeader(KEY_POST_OBJECT, "Objekt", 8);
-		
+
+
+		list1.add(getTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
+		list1.add(getSmallText(""));
+		list1.add(getTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
+		list1.add(getTextInput(PARAM_ACTIVITY_CODE, pp != null ? pp.getPostingActivityCode() : "", 60, 4));
+		list1.add(getTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
+		list1.add(getSmallText(""));
+		list1.add(getSmallText(""));
+		list1.add(getSmallText(""));
+
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+		list2.add(getSmallText(""));
+
+
+		/*
 		list1.add(getTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
 		list1.add(getTextInput(PARAM_LIABILITY, pp != null ? pp.getPostingLiability() : "", 60, 10));
 		list1.add(getTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
@@ -334,7 +366,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_FIELD, pp != null ? pp.getDoublePostingActivity() : "", 80, 20));
 		list2.add(getTextInput(PARAM_DOUBLE_PROJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
 		list2.add(getTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingObject() : "", 80, 20));
-
+*/
 		try {
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, 
