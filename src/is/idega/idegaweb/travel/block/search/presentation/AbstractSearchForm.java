@@ -214,7 +214,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		super.main(iwc);
 		init(iwc);
 		handleSubmit(iwc);
-		System.out.println("[AbstractSearchFrom] Engine code = "+this.engine.getCode());
+//		System.out.println("[AbstractSearchFrom] Engine code = "+this.engine.getCode());
 		
 		Table outTable = new Table();
 		if (width != null) {
@@ -1941,6 +1941,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						}
 					}
 				}
+			} else {
+				table.setCellpaddingLeft(1, row, 5);
+				table.add(getText(iwrb.getLocalizedString("travel.search.no_info_available", "No information is available for the selected product.")), 1, row);
 			}
 			table.setCellpaddingAndCellspacing(0);
 			table.setBorder(0);
