@@ -120,6 +120,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
+        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
     }
     menu.setToSubmit();
 
@@ -218,15 +219,24 @@ public class InitialData extends TravelManager {
           }
         }else {
             if (action.equals("")) {
-              Table extra = new Table();
-                extra.setWidth("90%");
-                extra.setAlignment(1,1,"left");
-                extra.setAlignment("center");
-              Link newSupplier = new Link(iwrb.getImage("buttons/new.gif"));
-                newSupplier.addParameter("admin_action","new");
-              extra.add(newSupplier,1,1);
-              add(extra);
-              add(selectSupplier(iwc));
+              if (selected == null) {
+                Table extra = new Table();
+                  extra.setWidth("90%");
+                  extra.setAlignment(1,1,"left");
+                  extra.setAlignment("center");
+                Link newSupplier = new Link(iwrb.getImage("buttons/new.gif"));
+                  newSupplier.addParameter("admin_action","new");
+                extra.add(newSupplier,1,1);
+                add(extra);
+                add(selectSupplier(iwc));
+              }else if (selected.equals(this.parameterCreditCardRefund)){
+                try {
+                  Form form = CreditcardRefunder.creditcardRefunderForm(iwc, iwrb);
+                  add(form);
+                }catch (Exception e) {
+                  e.printStackTrace(System.err);
+                }
+              }
             }
             else if (action.equals(this.parameterNew)) {
               add(getSupplierCreation(-1));

@@ -7,6 +7,8 @@ import is.idega.idegaweb.travel.presentation.TravelManager;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.core.user.data.User;
+import com.idega.block.login.business.LoginBusiness;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -25,6 +27,9 @@ public class TravelWindow extends Window {
   protected Text text = new Text();
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+  protected User user = null;
+  protected int userId = -1;
+  protected boolean isSuperAdmin = false;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -47,6 +52,7 @@ public class TravelWindow extends Window {
 
   public void main(IWContext iwc) {
     setTemplate(iwc);
+    initialize(iwc);
     super.add(table);
   }
 
@@ -57,6 +63,14 @@ public class TravelWindow extends Window {
 
   }
 
+  private void initialize(IWContext iwc) {
+        user = LoginBusiness.getUser(iwc);
+        if (user != null) {
+          userId = user.getID();
+          isSuperAdmin = iwc.isSuperAdmin();
+        }
+
+  }
   private void setTemplate(IWContext iwc) {
     //iwrb = super.getResourceBundle(iwc);
     iwb = getBundle(iwc);

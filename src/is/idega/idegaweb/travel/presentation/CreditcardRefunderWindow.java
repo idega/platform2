@@ -26,6 +26,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private String parameterComplete = "ccrSave";
   private String parameterCACertificate = "ccrCACert";
   private String parameterKeys = "ccrKeys";
+  private String parameterNewBatch = "ccrNewBatch";
 
   private String parameterNumber = "ccrNumber";
   private String parameterYear   = "ccrYear";
@@ -48,8 +49,13 @@ public class CreditcardRefunderWindow extends TravelWindow {
       complete(iwc);
     }else if (action.equals(this.parameterKeys)){
       keys(iwc);
+      getRefundForm();
     }else if (action.equals(this.parameterCACertificate)){
       cacCertificate(iwc);
+      getRefundForm();
+    }else if (action.equals(this.parameterNewBatch)){
+      newBatch(iwc);
+      getRefundForm();
     }
   }
 
@@ -63,8 +69,13 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private void keys(IWContext iwc) {
     try {
       com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-        t.getKeys();
+      if (t.getKeys()) {
+        add(getText("Key creation successful"));
+      }else {
+        add(getText("Key creation failed"));
+      }
     }catch (Exception e) {
+      add(getText("Key creation failed"));
       e.printStackTrace(System.err);
     }
   }
@@ -72,8 +83,28 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private void cacCertificate(IWContext iwc) {
     try {
       com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-        t.getCACertifycate();
+      if (t.getCACertifycate()) {
+        add(getText("CA certificate creation successful"));
+      }else {
+        add(getText("CA certificate creation failed"));
+      }
     }catch (Exception e) {
+      add(getText("CA certificate creation failed"));
+      e.printStackTrace(System.err);
+    }
+  }
+
+  private void newBatch(IWContext iwc) {
+    try {
+      com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+      String bNum = t.createNewBatch();
+      if (bNum != null) {
+        add(getText("New batch creation successful, batch number = "+bNum));
+      }else {
+        add(getText("New batch creation failed"));
+      }
+    }catch (Exception e) {
+      add(getText("New batch creation failed"));
       e.printStackTrace(System.err);
     }
   }
@@ -138,15 +169,23 @@ public class CreditcardRefunderWindow extends TravelWindow {
     add(Text.BREAK);
     add(form);
 
-    Link keysLink = new Link("getKeys");
-      keysLink.addParameter(sAction, parameterKeys);
+    if (super.isSuperAdmin) {
+      Link keysLink = new Link(getText("Get Keys"));
+        keysLink.addParameter(sAction, parameterKeys);
 
-    Link CACLink = new Link("getCACertificate");
-      CACLink.addParameter(sAction, parameterCACertificate);
+      Link CACLink = new Link(getText("Get CACertificate"));
+        CACLink.addParameter(sAction, parameterCACertificate);
 
-    add(keysLink);
-    add(Text.NON_BREAKING_SPACE);
-    add(CACLink);
+      Link newBatchLink = new Link(getText("Create New Batch"));
+        newBatchLink.addParameter(sAction, parameterNewBatch);
+
+
+      add(CACLink);
+      add(Text.BREAK);
+      add(keysLink);
+      add(Text.BREAK);
+      add(newBatchLink);
+    }
 
   }
 
