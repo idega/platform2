@@ -152,84 +152,95 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year, boolean updateReport) throws RemoteException {
 		WorkReport report = null;
 		Group club = null;
+		int wrId  = -1;
+		boolean justCreated = false;
 		
-		createOrUpdateLeagueWorkReportGroupsForYear(year);
-		
-
 		try {
-			report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
-		}
-		catch (FinderException e) {
-			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " and year : " + year + " creating a new one.");
+			club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
+
+			
+		
+
 			try {
-
-				report = getWorkReportHome().create();
-				report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
-				report.setGroupId(groupId);
-				report.setYearOfReport(year);
+				report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
+			}
+			catch (FinderException e) {
+				System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " and year : " + year + " creating a new one.");
+				try {
+	
+					report = getWorkReportHome().create();
+					report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
+					report.setGroupId(groupId);
+					report.setYearOfReport(year);
+					report.setGroupType(club.getGroupType());
+					
+					updateAndStoreWorkReport(report);
+					
+					justCreated= true;
+				}
+				catch (CreateException e1) {
+					e1.printStackTrace();
+				}
+	
+			}
+			
+			//UPDATE ALWAYS UNLESS IS READ ONLY
+			wrId = ((Integer)report.getPrimaryKey()).intValue();
+			
+			if (report != null && 	!isWorkReportReadOnly(wrId)) {
+				createOrUpdateLeagueWorkReportGroupsForYear(year);
 				
+				if(!justCreated ) {
+					updateAndStoreWorkReport(report);
+				}
+				
+				createWorkReportData(wrId);
 			}
-			catch (CreateException e1) {
-				e1.printStackTrace();
-			}
-
+			
+			
+			
+		}
+		catch (FinderException e1) {//second catch, could be a problem?
+			e1.printStackTrace();
 		}
 		
-		//UPDATE ALWAYS UNLESS IS READ ONLY
-		if (report != null) {
-             try {
-              club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
-            } catch (FinderException e1) {
-             
-              e1.printStackTrace();
-            }
+		return wrId;
 
+	}
 
-			report.setGroupType(club.getGroupType());
-			report.setGroupName(club.getName());
-			report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-			report.setGroupShortName(club.getShortName());
-			
-			
-			//tegund felags?
-			//IWMemberConstants.META_DATA_CLUB_TYPE
-	
-			//status ovirkt?
-			//META_DATA_CLUB_STATUS
-			String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
-			if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
-				report.setAsInactive();
-			}
-			else {
-				report.setAsActive();
-			}
-	
-			try {
-				Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
-	
-				report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
-				report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-				report.setRegionalUnionAbbreviation(regionalUnion.getAbbrevation());
-	
-			}
-			catch (NoRegionalUnionFoundException e3) {
-				//no regional union, must be a league or a regional union itself
-			}
-	
-			report.store();
-
-			int wrId = ((Integer)report.getPrimaryKey()).intValue();
-	
-			if(!isWorkReportReadOnly(wrId)) {
-				createWorkReportData(((Integer)report.getPrimaryKey()).intValue());
-			}
-			
-			return wrId;
+	/**
+	 * @param report
+	 */
+	private WorkReport updateAndStoreWorkReport(WorkReport report) throws RemoteException, FinderException {
+		
+		Group club = this.getGroupBusiness().getGroupByGroupID(report.getGroupId().intValue()); //could be club,regional union or league
+		report.setGroupName(club.getName());
+		report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+		report.setGroupShortName(club.getShortName());
+		String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
+		if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
+			report.setAsInactive();
 		}
 		else {
-			return -1;
+			report.setAsActive();
 		}
-
+		
+		try {
+			Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
+		
+			report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
+			report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+			report.setRegionalUnionAbbreviation(regionalUnion.getAbbrevation());
+		
+		}
+		catch (NoRegionalUnionFoundException e3) {
+			//no regional union, must be a league or a regional union itself
+		}
+		
+		report.store();
+		
+		return report;
+		
 	}
 
 	public WorkReportHome getWorkReportHome() {
@@ -802,58 +813,60 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 
-	private Collection createOrUpdateWorkReportGroupsForYearAndGroupType(int year, String groupType) {
-		GroupBusiness groupBiz;
-		try {
-			groupBiz = getGroupBusiness();
-			WorkReportGroupHome grHome = getWorkReportGroupHome();
-
-			Collection groups = groupBiz.getGroupHome().findGroupsByType(groupType);
-			Iterator groupIter = groups.iterator();
-			while (groupIter.hasNext()) {
-				Group group = (Group)groupIter.next();
-				int groupId = ((Integer)group.getPrimaryKey()).intValue();
-				WorkReportGroup wGroup = null;
-				try {
-
-					wGroup = grHome.findWorkReportGroupByGroupIdAndYear(groupId, year);
-				}
-				catch (FinderException e1) {
-					try {
-						wGroup = grHome.create();
-					}
-					catch (CreateException e) {
-						e.printStackTrace();
-					}
-				}
-
-				wGroup.setGroupId(groupId);
-				wGroup.setName(group.getName());
-                String shortName = group.getShortName();
-                // should not happen but happens....
-                // shortName must be set!
-                if (shortName == null)  {
-                  shortName = group.getName();
-                }
-				wGroup.setShortName(shortName);
-				wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-				wGroup.setGroupType(group.getGroupType());
-				wGroup.setYearOfReport(year);
+	private void createOrUpdateWorkReportGroupsForYearAndGroupType(int year, String groupType) {
+		
+		if( canWeUpdateWorkReportDataFromDatabase(year) ) {
+			GroupBusiness groupBiz;
+			try {
+				groupBiz = getGroupBusiness();
+				WorkReportGroupHome grHome = getWorkReportGroupHome();
+	
+				Collection groups = groupBiz.getGroupHome().findGroupsByType(groupType);
 				
-				wGroup.store();
-
+				Iterator groupIter = groups.iterator();
+				while (groupIter.hasNext()) {
+					Group group = (Group)groupIter.next();
+					int groupId = ((Integer)group.getPrimaryKey()).intValue();
+					WorkReportGroup wGroup = null;
+					try {
+	
+						wGroup = grHome.findWorkReportGroupByGroupIdAndYear(groupId, year);
+					}
+					catch (FinderException e1) {
+						try {
+							wGroup = grHome.create();
+						}
+						catch (CreateException e) {
+							e.printStackTrace();
+						}
+					}
+	
+					wGroup.setGroupId(groupId);
+					wGroup.setName(group.getName());
+	                String shortName = group.getShortName();
+	                // should not happen but happens....
+	                // shortName must be set!
+	                if (shortName == null)  {
+	                  shortName = group.getName();
+	                }
+					wGroup.setShortName(shortName);
+					wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+					wGroup.setGroupType(group.getGroupType());
+					wGroup.setYearOfReport(year);
+					
+					wGroup.store();
+	
+				}
+	
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				// do nothing return empty list
 			}
 
 		}
-		catch (RemoteException e1) {
-			e1.printStackTrace();
-		}
-		catch (FinderException e1) {
-			// do nothing return empty list
-			return ListUtil.getEmptyList();
-		}
-
-		return null;
 	}
 
 	/**
@@ -1609,11 +1622,109 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   public boolean isWorkReportReadOnly(int workReportId){
   	WorkReport report = getWorkReportById(workReportId);
   	
+  	boolean isReadOnly = areAllWorkReportsTemporarelyReadOnly();
+  	if(isReadOnly) {
+  		return true;
+  	}
+  	
+  	//check if we are in the allowed timespan
+  	Date fromDate = this.getWorkReportOpenFromDate();
+  	Date toDate = this.getWorkReportOpenToDate();
+  	IWTimestamp now = IWTimestamp.RightNow();
+  	
+  	if( fromDate!=null && toDate!=null) {
+  		isReadOnly = !(now.isBetween(new IWTimestamp(fromDate),new IWTimestamp(toDate)));
+  		
+  		if(isReadOnly) {
+  			return true;
+  		}
+  	}
   	
   	
-  	//TODO Eiki check if wr year params work
   	return report.isSent();
   }
+  
+  private boolean canWeUpdateWorkReportDataFromDatabase(int year) {
+  	boolean update = true;
+  	
+  	//don't update if read only
+  	update = !areAllWorkReportsTemporarelyReadOnly();
+  	
+  	//check if is in allowed timespan
+  	update = isWorkReportYearWithinYearLimits(year);
+  	
+  	return update;
+  }
+  
+  /**
+	 * @param year
+	 * @return
+	 */
+	private boolean isWorkReportYearWithinYearLimits(int year) {
+		Date fromDate = getWorkReportOpenFromDate();
+		Date toDate = getWorkReportOpenToDate();
+		
+		if(fromDate!=null && toDate!=null) {
+			return ( (year==fromDate.getYear()) || (year==toDate.getYear()) );
+		}
+		else return true;//no limit set
+		
+	}
+
+	public Date getWorkReportOpenFromDate() {
+		String fDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE);
+		
+  	if(fDate!=null) {
+  		return (new IWTimestamp(fDate)).getDate();
+  	}
+  	
+  	return null;
+  }
+  
+	public Date getWorkReportOpenToDate() {
+		String tDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE);
+		
+		if(tDate!=null) {
+			return (new IWTimestamp(tDate)).getDate();
+		}
+  	
+		return null;
+	}
+	
+	
+	public void setWorkReportOpenFromDateWithDateString(String dateString) {
+		getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE,dateString);
+		
+	}
+	
+	public void setWorkReportOpenToDateWithDateString(String dateString) {
+		getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE,dateString);
+	}
+	
+	public void setAllWorkReportsTemporarelyReadOnly() {
+		setAllWorkReportsTemporarelyReadOnlyFlag(true);
+	}
+	
+	public void setAllWorkReportsTemporarelyReadOnlyFlag(boolean setAllAsReadOnly) {
+		if(setAllAsReadOnly) {
+			getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"TRUE");
+		}
+		else {
+			getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"FALSE");
+		}
+	}
+	
+	public void removeWorkReportsTemporarelyReadOnlyFlag() {
+		setAllWorkReportsTemporarelyReadOnlyFlag(false);
+	}
+	
+	public boolean areAllWorkReportsTemporarelyReadOnly() {
+		return "TRUE".equals(getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED));
+	}
+	
+	
+	
+	
   
 //=======
 //

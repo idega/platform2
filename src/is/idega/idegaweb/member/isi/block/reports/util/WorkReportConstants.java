@@ -35,9 +35,9 @@ public class WorkReportConstants extends IWMemberConstants{
   public static final String WR_MAIN_BOARD_NAME = "ISI_MAIN_BOARD_NAME";
 	
 
-	public static final String WR_APPLICATION_PARAM_FROM_DATE = "WORK_REPORTS_FROM_DATE";
-	public static final String WR_APPLICATION_PARAM_TO_DATE = "WORK_REPORTS_TO_DATE";
-	
+	public static final String WR_BUNDLE_PARAM_FROM_DATE = "WORK_REPORTS_FROM_DATE";
+	public static final String WR_BUNDLE_PARAM_TO_DATE = "WORK_REPORTS_TO_DATE";
+	public static final String WR_BUNDLE_PARAM_TEMP_CLOSED = "WORK_REPORTS_TEMPORARELY_CLOSED";
 
   public static final String INCOME_SUM_KEY = "FIN_income_sum";
   public static final String EXPENSES_SUM_KEY = "FIN_expenses_sum";
