@@ -457,7 +457,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	
 	public boolean isRootCommuneAdministrator(User user) throws RemoteException {
 		try {
-			if (user.getPrimaryGroup().equals(getRootCommuneAdministratorGroup()))
+			if (user.hasRelationTo(getRootCommuneAdministratorGroup()))
 				return true;
 			return false;
 		}
