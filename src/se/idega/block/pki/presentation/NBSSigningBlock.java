@@ -7,6 +7,7 @@
 package se.idega.block.pki.presentation;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
@@ -27,6 +28,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Parameter;
 
 
 /**
@@ -73,7 +75,12 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:
 					NBSSigningApplet applet = new NBSSigningApplet(initSignContract(iwc, toBeSigned));
-					applet.addParameters(_addedParameters);
+					Iterator i = _addedParameters.entrySet().iterator();
+					while(i.hasNext()){
+						Map.Entry entry = (Map.Entry) i.next();
+						applet.addParameter(new Parameter((String) entry.getKey(), (String) entry.getValue()));
+					}
+
 					add(applet);
 					break;
 										
