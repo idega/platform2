@@ -30,7 +30,7 @@ public class MessageListener implements Runnable{
     setIntervalForMsgChecking(interval);
   }
 
-  public void addMessageDialog(MessageDialog msg){
+  public synchronized void addMessageDialog(MessageDialog msg){
     if( dialogs == null ) dialogs = new Vector();
     dialogs.addElement(msg);
     length++;

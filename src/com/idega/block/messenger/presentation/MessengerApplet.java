@@ -103,7 +103,7 @@ public class MessengerApplet extends Applet implements Runnable{
         listenerStarted = true;
       }
 
-      listener.addMessageDialog(dialog);
+      //listener.addMessageDialog(dialog);
 
       SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
@@ -187,7 +187,7 @@ public class MessengerApplet extends Applet implements Runnable{
             listenerStarted = true;
           }
 
-          listener.addMessageDialog(messageDialog);
+          //debug listener.addMessageDialog(messageDialog);
 
 
         }
