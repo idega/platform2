@@ -477,7 +477,7 @@ public String getParameterString(ModuleInfo modinfo,String URL){
 		/**
 		*Temporary solution??? :// in link then no idega_session_id
 		*/
-                if (addSessionId){
+                if (addSessionId && (!modinfo.isSearchEngine()) ){
                   if(URL.indexOf("://") == -1){
                           session_id="&idega_session_id="+modinfo.getSession().getId();
                   }
