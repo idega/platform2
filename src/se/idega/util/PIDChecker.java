@@ -66,7 +66,12 @@ public class PIDChecker {
 		if (personalID.length() != 10)
 			return false;
 
-		if (!allowTemporary) {
+		if (allowTemporary) {
+			if (personalID.indexOf("TF") != -1)
+				return true;
+			return false;
+		}
+		else {
 			int values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			int sum = 0;
 			for (int i = 0; i < 10; i++) {
@@ -85,11 +90,6 @@ public class PIDChecker {
 				return true;
 			else
 				return false;
-		}
-		else {
-			if (personalID.indexOf("TF") != -1)
-				return true;
-			return false;
 		}
 	}
 
