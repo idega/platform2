@@ -62,6 +62,8 @@ private boolean noIcons = false;
 private String headerColor = "#336660";
 private String headerTextColor = "#FFFFFF";
 
+private String viewScoreIceonUrlInBundle = "shared/eye.gif";
+private String getOverviewButtonImageUrlInBundle = "getOverview.gif";
 private Text headerText = new Text();  //Bjarni added 14.08.01
 private Text tableText = new Text();
 private Text tilFraText = new Text();
@@ -424,10 +426,10 @@ private Link textLink = new Link();
 			Window updateWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),600,600,"/handicap/handicap.jsp?");
 			Window updateWindow2 = new Window(iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),600,350,"/handicap/handicap_statistics.jsp?");
 
-/*MYNDA LINKUR*/		Link tengill = new Link(iwb.getImage("shared/eye.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
-        if ( noIcons ) {
+/*MYNDA LINKUR*/		Link tengill = new Link(iwb.getImage(viewScoreIceonUrlInBundle, iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
+        /*if ( noIcons ) {
           tengill = new Link(iwb.getImage("shared/eye2.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
-        }
+        }*/
 				tengill.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
 			Link update = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.update_scorecard","Change scorecard"),11,13),updateWindow);  //
@@ -585,7 +587,7 @@ private Link textLink = new Link();
 			SubmitButton skoda = new SubmitButton(iwrb.getLocalizedString("handicap.get_overview","Get overview"));
 				skoda.setAttribute("style","font-size: 8pt");
         if ( noIcons ) {
-          skoda = new SubmitButton(iwrb.getImage("getOverview.gif"));
+          skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle));
         }
 
 				Text fra = ( (Text) tilFraText.clone());
@@ -741,6 +743,14 @@ private Link textLink = new Link();
 
     public void setTextLinkProperties(Link linkToClonePropertiesFrom){
       this.textLink = linkToClonePropertiesFrom;
+    }
+
+    public void setViewScoreIconUrlInBundle(String viewScoreIconUrlInBundle){
+      this.viewScoreIceonUrlInBundle = viewScoreIconUrlInBundle;
+    }
+
+    public void setGetOverviewButtonImageUrl(String getOverviewButtonImageUrlInBundle){
+      this.getOverviewButtonImageUrlInBundle = getOverviewButtonImageUrlInBundle;
     }
 
     public void noIcons() {
