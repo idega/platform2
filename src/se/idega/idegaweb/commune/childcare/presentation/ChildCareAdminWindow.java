@@ -80,6 +80,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
 	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";	
 	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";
+	public static final String PARAMETER_PRE_SCHOOL = "cc_pre_school";	
+	
+	
 	
 	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
@@ -523,6 +526,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 			table.add(textInput, 1, row++);
 		}
+		
+		//Pre-school
+		table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
+		TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
+		preSchool.setLength(40);
+		preSchool.setContent(application.getPreSchool());
+		table.add(preSchool, 1, row++);
 		
 		SubmitButton changeDate = null;
 		if (isAlteration)
@@ -1301,8 +1311,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private void changeDate(IWContext iwc) throws RemoteException {
 		String placingDate = iwc.getParameter(PARAMETER_CHANGE_DATE);
+		String preSchool = iwc.getParameter(PARAMETER_PRE_SCHOOL);		
 		IWTimestamp stamp = new IWTimestamp(placingDate);
-		getBusiness().changePlacingDate(_applicationID, stamp.getDate());
+		getBusiness().changePlacingDate(_applicationID, stamp.getDate(), preSchool);
 
 		close();
 	}
