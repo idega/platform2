@@ -150,7 +150,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		if (!_noCheckError && !hasOffers) {
 			Form form = new Form();
-			form.setOnSubmit("return checkApplication()");
 		
 			Table table = new Table();
 			table.setWidth(getWidth());
@@ -178,7 +177,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					submit.setDisabled(true);
 				}
 			}
-
+			submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
+			form.setToDisableOnSubmit(submit, true);
+			
 			table.add(showPrognosis, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(submit, 1, row);
@@ -189,12 +190,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				table.add(getSmallErrorText(localize("child_care.no_parent_found", "No parent found")), 1, row);
 			}
 	
-			Page page = getParentPage();
-			if (page != null) {
-				Script script = page.getAssociatedScript();
-				script.addFunction("checkApplication", getSubmitCheckScript());
-			}
-
 			add(form);
 		}
 		else {
