@@ -180,7 +180,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			report.setYearOfReport(year);
 	
 			//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
-			report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
+			report.setGroupName((club.getName() != null) ? club.getName() : club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME));
 			report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 			report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
 			report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
