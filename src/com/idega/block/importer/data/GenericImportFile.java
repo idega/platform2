@@ -251,7 +251,8 @@ public class GenericImportFile implements ImportFile{
 		String value = null;
 		while( tokens.hasMoreTokens() ){
 			if(values==null) values = new ArrayList();
-			values.add(tokens.nextToken());	
+			value = tokens.nextToken();
+			values.add(value);	
 			System.out.println("GenericImportFile : value = "+value);
 		}
 		
