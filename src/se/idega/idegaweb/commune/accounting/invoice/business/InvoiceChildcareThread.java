@@ -473,8 +473,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setDays(placementTimes.getDays());
 					invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
 					invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-					invoiceRecord.setPeriodStartPlacement(placementTimes.getStartTime().getDate());
-					invoiceRecord.setPeriodEndPlacement(placementTimes.getEndTime().getDate());
+					invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
+					invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
 					invoiceRecord.setDateCreated(currentDate);
 					invoiceRecord.setCreatedBy(BATCH_TEXT);
 					invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*placementTimes.getMonths());
@@ -767,8 +767,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setDays(placementTimes.getDays());
 		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
 		invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-		invoiceRecord.setPeriodStartPlacement(placementTimes.getStartTime().getDate());
-		invoiceRecord.setPeriodEndPlacement(placementTimes.getEndTime().getDate());
+		invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
+		invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
 		invoiceRecord.setAmount(postingDetail.getAmount()*placementTimes.getMonths());

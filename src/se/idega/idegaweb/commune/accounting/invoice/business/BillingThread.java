@@ -81,9 +81,9 @@ public abstract class BillingThread extends Thread{
 		this.iwc = iwc;
 	}
 	
-    public static String getBathRunSignatureKey () {
-        return BATCH_TEXT;
-    }
+	public static String getBathRunSignatureKey () {
+		return BATCH_TEXT;
+	}
 
 	/**
 	 * Finds existing payment reacord or creates a new payment record if needed, 
@@ -156,34 +156,30 @@ public abstract class BillingThread extends Thread{
 		return paymentRecord;
 	}
 	
-	protected InvoiceRecord createInvoiceRecord(
-			final PaymentRecord paymentRecord,final SchoolClassMember placement,final PostingDetail postingDetail, PlacementTimes placementTimes)
-			throws RemoteException, CreateException {
-		final InvoiceRecord result = getInvoiceRecordHome().create();
-		result.setAmount(placementTimes.getMonths() * postingDetail.getAmount ());
-		result.setCreatedBy(BATCH_TEXT);
-		result.setDateCreated(new Date(System.currentTimeMillis()));
-		result.setDays(placementTimes.getDays());
-		if (null != paymentRecord)
-			result.setPaymentRecord(paymentRecord);
+	protected InvoiceRecord createInvoiceRecord
+		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
+		 final PostingDetail postingDetail, PlacementTimes placementTimes)
+		throws RemoteException, CreateException {
+		final InvoiceRecord result = getInvoiceRecordHome ().create ();
+		result.setAmount (placementTimes.getMonths () * postingDetail.getAmount ());
+		result.setCreatedBy (BATCH_TEXT);
+		result.setDateCreated (new Date (System.currentTimeMillis ()));
+		result.setDays (placementTimes.getDays ());
+		if (null != paymentRecord) {
+			result.setPaymentRecord (paymentRecord);
+		}
+		result.setPeriodStartCheck (placementTimes.getFirstCheckDay ().getDate ());
+		result.setPeriodEndCheck (placementTimes.getLastCheckDay ().getDate ());
 		if (null != placement) {
-			result.setSchoolClassMember(placement);
-			final Timestamp startPlacementDate = placement.getRegisterDate();
-			final Timestamp endPlacementDate = placement.getRemovedDate();
+			result.setSchoolClassMember (placement);
+			final Timestamp startPlacementDate = placement.getRegisterDate ();
+			final Timestamp endPlacementDate = placement.getRemovedDate ();
 			if (null != startPlacementDate) {
-				result.setPeriodStartPlacement(new Date(startPlacementDate.getTime()));
+				result.setPeriodStartPlacement
+						(new Date (startPlacementDate.getTime ()));
 			}
 			if (null != endPlacementDate) {
-				result.setPeriodEndPlacement(new Date(endPlacementDate.getTime()));
-			}
-			if (null != placementTimes.getStartTime()) {
-				result.setPeriodStartCheck(placementTimes.getStartTime().getDate());
-			}
-			if (null != placementTimes.getStartTime()) {
-//Change in storing last day of month should make this obsolete
-//				final long lastDay = placementTimes.getStartTime().getTime().getTime() - (24 * 60 * 60 * 1000);
-//				result.setPeriodEndCheck(new Date(lastDay));
-				result.setPeriodEndCheck(placementTimes.getStartTime().getDate());
+				result.setPeriodEndPlacement (new Date (endPlacementDate.getTime ()));
 			}
 			final SchoolType schoolType = placement.getSchoolType ();
 			if (null != schoolType) result.setSchoolType (schoolType);
@@ -257,66 +253,28 @@ public abstract class BillingThread extends Thread{
 		}
 	}
 
-	/**
-	 * calculatest the number of days and months between the start and end date 
-	 * and sets the local variables monts and days
-	 * 
-	 * @param start
-	 * @param end
-	 */
 	protected PlacementTimes calculateTime(Date start, Date end){
-		float months = 0;
-		IWTimestamp startTime = new IWTimestamp(start);
-		startTime.setAsDate();
+		IWTimestamp firstCheckDay = new IWTimestamp(start);
+		firstCheckDay.setAsDate();
 		IWTimestamp time = new IWTimestamp(startPeriod);
 		time.setAsDate();
-		if(!startTime.isLaterThan(time)){
-			startTime = time;
+		if(!firstCheckDay.isLaterThan(time)){
+			firstCheckDay = time;
 		}
-		//Then get end date
-		IWTimestamp endTime = new IWTimestamp(endPeriod);
-		endTime.setAsDate();
+		IWTimestamp lastCheckDay = new IWTimestamp(endPeriod);
+		lastCheckDay.setAsDate();
 		if(end!=null){
-            // Since end of period is set to the day after the last day, also
-            // broken month placements must have endtime the day after the last.
-            // Calculation of 'months' and 'days' below is based on that.
-			time = new IWTimestamp(end.getTime () + (24 * 60 * 60 * 1000));
-			if(!endTime.isEarlierThan(time)){
-				endTime = time;
+			time = new IWTimestamp(end.getTime ());
+			if(!lastCheckDay.isEarlierThan(time)){
+				lastCheckDay = time;
 			}
 		}
-		endTime.addDays(1);
-		//calc the how many months are in the given time.
-		months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
-		months += 1.0;
-		months -= percentOfMonthDone(startTime);
-		months -= 1.0 - percentOfMonthDone(endTime);
-		int days = IWTimestamp.getDaysBetween(startTime, endTime);
-		PlacementTimes ret = new PlacementTimes(startTime, endTime, months, days);
-		return ret;
+		return new PlacementTimes (firstCheckDay, lastCheckDay);
 	}
 	
 	public static void main(String[] arg){
 		IWTimestamp s = new IWTimestamp();
 		s.setMonth(10);
-	}
-
-	/**
-	 * Calculates the amount of the month that has passed at the given date.
-	 * 
-	 * @param date
-	 * @return the amount (%) of the month that has passed
-	 */
-	protected float percentOfMonthDone(IWTimestamp date){
-		int daysInMonth;
-		IWTimestamp firstDay, lastDay;
-
-		firstDay = new IWTimestamp(date);
-		firstDay.setDay(1);
-		lastDay = new IWTimestamp(firstDay);
-		lastDay.addMonths(1);
-		daysInMonth = IWTimestamp.getDaysBetween(firstDay, lastDay);
-		return (float)(date.getDay()-1)/(float)daysInMonth;
 	}
 
 	/**
