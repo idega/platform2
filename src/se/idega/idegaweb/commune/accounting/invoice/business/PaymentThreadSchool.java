@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/17 17:53:32 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/18 14:44:48 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -278,11 +278,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
-		final boolean placementIsInValidGroup
-				= schoolClassMember.getSchoolClass().getValid ();
+		final boolean placementIsInValidGroup = schoolClassMember.getSchoolClass().getValid();
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
-			ArrayList conditions = getConditions (schoolClassMember);
+			ArrayList conditions = getConditions(schoolClassMember, provider);
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
 			//Get the check
@@ -602,16 +601,18 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 * else { createNewErrorMessage("payment.severeError",
 	 * "payment.DBSetupProblem"); } } }
 	 */
-	private ArrayList getConditions(SchoolClassMember schoolClassMember) {
+	private ArrayList getConditions(SchoolClassMember schoolClassMember, Provider provider) {
 		ArrayList conditions = new ArrayList();
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
-		errorRelated.append("SchoolType " + schoolClassMember.getSchoolType().getName() + "<br>");
-		errorRelated.append("School Year " + schoolClassMember.getSchoolYear().getName() + "<br>");
+		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
+		errorRelated.append("SchoolType " + schoolClassMember.getSchoolType().getName());
+		errorRelated.append("School Year " + schoolClassMember.getSchoolYear().getName());
+		errorRelated.append("StateSubsidyGrant " + provider.getStateSubsidyGrant());
 		int studyPathId = schoolClassMember.getStudyPathId();
 		if (studyPathId != -1) {
 			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
-			errorRelated.append("Study path " + schoolClassMember.getStudyPathId() + "<br>");
+			errorRelated.append("Study path " + schoolClassMember.getStudyPathId());
 		}
 		return conditions;
 	}
