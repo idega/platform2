@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import java.util.*;
 
 /**
- * Last modified: $Date: 2003/11/10 18:57:57 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/10 19:01:39 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public interface Viewpoint extends IDOEntity, Case {
     String CASE_CODE_KEY = "SYMESYN";
@@ -40,7 +40,4 @@ public interface Viewpoint extends IDOEntity, Case {
     void setRoadResponsibleId (int id);
     void setUserEmail (String email);
     void setUserName (String name);
-
-    Collection ejbFindUnhandledViewpointsInGroups (Group [] groups)
-        throws FinderException;
 }
