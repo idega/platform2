@@ -25,6 +25,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.presentation.GroupChooser;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
 
@@ -44,16 +45,19 @@ public class ClubDivisionTab extends UserGroupTab {
 	private TextInput _ssnField;
 	private DateInput _foundedField;
 	private DropdownMenu _connectionToSpecialField;
+	private GroupChooser _boardGroupField;	
 
 	private Text _numberText;
 	private Text _ssnText;
 	private Text _foundedText;
 	private Text _connectionToSpecialText;	
+	private Text _boardGroupText;
 
 	private String _numberFieldName;
 	private String _ssnFieldName;
 	private String _foundedFieldName;
 	private String _connectionToSpecialFieldName;
+	private String _boardGroupFieldName;
 	
 	public ClubDivisionTab() {
 		super();
@@ -79,7 +83,8 @@ public class ClubDivisionTab extends UserGroupTab {
 		_numberFieldName = "cdiv_number";
 		_ssnFieldName = "cdiv_ssn";
 		_foundedFieldName = "cdiv_founded";
-		_connectionToSpecialFieldName = "cit_special";
+		_connectionToSpecialFieldName = "cdiv_special";
+		_boardGroupFieldName = "cdiv_board";
 	}
 
 	/* (non-Javadoc)
@@ -90,7 +95,8 @@ public class ClubDivisionTab extends UserGroupTab {
 		fieldValues.put(_numberFieldName, "");
 		fieldValues.put(_ssnFieldName, "");
 		fieldValues.put(_foundedFieldName, new IWTimestamp().getDate().toString());
-		fieldValues.put(_connectionToSpecialFieldName, "");		
+		fieldValues.put(_connectionToSpecialFieldName, "");
+		fieldValues.put(_boardGroupFieldName,"");		
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +106,30 @@ public class ClubDivisionTab extends UserGroupTab {
 		_numberField.setContent((String) fieldValues.get(_numberFieldName));
 		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
-		_connectionToSpecialField.setSelectedElement((String) fieldValues.get(_connectionToSpecialFieldName));		
+		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
+		_connectionToSpecialField.setSelectedElement(connection);
+		if (connection != null && !connection.equals(""))
+			_connectionToSpecialField.setDisabled(true);
+		try {
+			GroupHome home = (GroupHome) com.idega.data.IDOLookup.getHome(Group.class);
+			String groupId = (String) fieldValues.get(_boardGroupFieldName);
+
+			if (groupId != null && !groupId.equals("")) {
+				try {
+					int index = groupId.indexOf("_");
+					groupId = groupId.substring(index+1);	
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+				Group group = (Group) (home.findByPrimaryKey(new Integer(groupId)));
+				_boardGroupField.setSelectedGroup(groupId,group.getName());
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}		
 	}
 
 	/* (non-Javadoc)
@@ -116,7 +145,6 @@ public class ClubDivisionTab extends UserGroupTab {
 		Collection special = null;
 		try {
 			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType("iwme_league");
-
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -129,28 +157,29 @@ public class ClubDivisionTab extends UserGroupTab {
 				_connectionToSpecialField.addMenuElement(((Integer)spec.getPrimaryKey()).intValue(),spec.getName());
 			}
 		}		
-
+		
+		_boardGroupField = new GroupChooser(_boardGroupFieldName);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
 	 */
 	public void initializeTexts() {
-			IWContext iwc = //getEventIWContext();
-	IWContext.getInstance();
+		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
 		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
 		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
 		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
+		_boardGroupText = new Text(iwrb.getLocalizedString(_boardGroupFieldName, "Board") + ":");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 4);
+		Table t = new Table(2, 5);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
@@ -159,6 +188,8 @@ public class ClubDivisionTab extends UserGroupTab {
 		t.add(_foundedField, 2, 3);
 		t.add(_connectionToSpecialText, 1, 4);
 		t.add(_connectionToSpecialField, 2, 4);
+		t.add(_boardGroupText, 1, 5);
+		t.add(_boardGroupField, 2, 5);
 
 		add(t);
 	}
@@ -172,6 +203,7 @@ public class ClubDivisionTab extends UserGroupTab {
 			String ssn = iwc.getParameter(_ssnFieldName);
 			String founded = iwc.getParameter(_foundedFieldName);
 			String connection = iwc.getParameter(_connectionToSpecialFieldName);
+			String boardGroup = iwc.getParameter(_boardGroupFieldName);
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);
@@ -189,7 +221,11 @@ public class ClubDivisionTab extends UserGroupTab {
 				fieldValues.put(_connectionToSpecialFieldName, connection);
 			else
 				fieldValues.put(_connectionToSpecialFieldName, "");
-
+			if (boardGroup != null)
+				fieldValues.put(_boardGroupFieldName, boardGroup);
+			else
+				fieldValues.put(_boardGroupFieldName, "");
+				
 			updateFieldsDisplayStatus();
 		}
 
@@ -203,18 +239,18 @@ public class ClubDivisionTab extends UserGroupTab {
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-			// get corressponding service bean
-			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
 			String number = (String) fieldValues.get(_numberFieldName);
 			String ssn = (String) fieldValues.get(_ssnFieldName);
 			String founded = (String) fieldValues.get(_foundedFieldName);
 			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
+			String board = (String) fieldValues.get(_boardGroupFieldName);
 			
 			group.setMetaData("CLUBDIV_NUMBER", number);
 			group.setMetaData("CLUBDIV_SSN", ssn);
 			group.setMetaData("CLUBDIV_FOUNDED", founded);
 			group.setMetaData("CLUBDIV_CONN", connection);
+			group.setMetaData("CLUBDIV_BOARD", board);
 			
 			group.store();
 		}
@@ -241,6 +277,7 @@ public class ClubDivisionTab extends UserGroupTab {
 			String ssn = group.getMetaData("CLUBDIV_SSN");
 			String founded = group.getMetaData("CLUBDIV_FOUNDED");
 			String connection = group.getMetaData("CLUBDIV_CONN");
+			String board = group.getMetaData("CLUBDIV_BOARD");
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);
@@ -250,7 +287,9 @@ public class ClubDivisionTab extends UserGroupTab {
 				fieldValues.put(_foundedFieldName, founded);
 			if (connection != null)
 				fieldValues.put(_connectionToSpecialFieldName, connection);
-			
+			if (board != null)
+				fieldValues.put(_boardGroupFieldName, board);
+				
 			updateFieldsDisplayStatus();
 		}
 		catch (RemoteException e) {

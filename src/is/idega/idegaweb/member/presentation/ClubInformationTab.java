@@ -185,17 +185,18 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
 		_connectionToSpecialField.setDisabled(true);
-		_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
+		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
+		_connectionToSpecialField.setSelectedElement(connection);
+		if (connection != null && !connection.equals("")) {
+			_connectionToSpecialField.setDisabled(true);
+		}
+		else {
+			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
+		}
 		_makeField.setSelectedElement(make);
 		
-//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
-//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
-//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
-		
-		_connectionToSpecialField.setSelectedElement((String) fieldValues.get(_connectionToSpecialFieldName));
 		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
-//		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
 		_inOperationField.setChecked(((Boolean) fieldValues.get(_inOperationFieldName)).booleanValue());
 		_usingMemberSystemField.setChecked(((Boolean) fieldValues.get(_usingMemberSystemFieldName)).booleanValue());
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id:$
+ * $Id$
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *

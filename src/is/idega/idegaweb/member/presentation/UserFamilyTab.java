@@ -233,7 +233,8 @@ public class UserFamilyTab extends UserTab {
 			siblings = getMemberFamilyLogic(getIWApplicationContext()).getSiblingsFor(user);
 		}
 		catch (NoSiblingFound nsf) {
-			nsf.printStackTrace(System.err);
+			System.err.println(nsf.getMessage());
+//			nsf.printStackTrace(System.err);
 			siblings = null;
 		}
 

@@ -100,7 +100,28 @@ public class ClubPlayerTab extends UserGroupTab {
 		_unionField.setText((String) fieldValues.get(_unionFieldName));
 		_cplayField.setContent((String) fieldValues.get(_cplayFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
-		_competitionField.setChecked(((Boolean) fieldValues.get(_competitionFieldName)).booleanValue());		
+		_competitionField.setChecked(((Boolean) fieldValues.get(_competitionFieldName)).booleanValue());
+		try {
+			GroupHome home = (GroupHome) com.idega.data.IDOLookup.getHome(Group.class);
+			String groupId = (String) fieldValues.get(_coachesFieldName);
+
+			if (groupId != null && !groupId.equals("")) {
+				try {
+					int index = groupId.indexOf("_");
+					groupId = groupId.substring(index+1);	
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+				Group group = (Group) (home.findByPrimaryKey(new Integer(groupId)));
+				_coachesField.setSelectedGroup(groupId,group.getName());
+			}
+
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}				
 //		_coachesField.setContent((String) fieldValues.get(_coachesFieldName));		
 	}
 
