@@ -31,8 +31,8 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public void setContractID(int p0);
  public void setCreatedDate(java.sql.Date p0);
  public void setEmploymentType(int p0);
- public void setInvoiceReciver(com.idega.user.data.User p0);
- public void setInvoiceReciverID(int p0);
+ public void setInvoiceReceiver(com.idega.user.data.User p0);
+ public void setInvoiceReceiverID(int p0);
  public void setSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0);
  public void setSchoolClassMemberID(int p0);
  public void setTerminatedDate(java.sql.Date p0);

@@ -197,11 +197,11 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		setColumn(COLUMN_WORK_SITUATION, employmentTypeID);
 	}
 	
-	public void setInvoiceReciverID(int invoiceReciverID) {
+	public void setInvoiceReceiverID(int invoiceReciverID) {
 		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciverID);
 	}
 	
-	public void setInvoiceReciver(User invoiceReciver) {
+	public void setInvoiceReceiver(User invoiceReciver) {
 		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciver);
 	}
 	

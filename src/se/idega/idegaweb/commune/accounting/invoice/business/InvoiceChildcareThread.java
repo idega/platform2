@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/09 15:51:18 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/10 12:56:26 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.122 $
+ * @version $Revision: 1.123 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -192,7 +192,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 				}
 				if(invoiceReceiver!=null){
-					contract.setInvoiceReciver(invoiceReceiver);
+					contract.setInvoiceReceiver(invoiceReceiver);
 					contract.store();
 				}
 			} catch (NoCustodianFound e1) {
@@ -205,7 +205,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//If no invoice receiver is set in contract and no fitting custodian found,  
 		//just set the owner of the contract and create a warning
 		if(invoiceReceiver == null){
-			contract.setInvoiceReciver(contract.getApplication().getOwner());
+			contract.setInvoiceReceiver(contract.getApplication().getOwner());
 			contract.store();
 			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner");
 		}
