@@ -13,10 +13,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
+ * Last modified: $Date: 2003/03/31 12:24:15 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -76,9 +76,10 @@ public class ReportGenerator implements MediaWritable
 
         final String [] headers = reportInfo.getHeaders ();
         for (int col = 0; col < columnCount; col++) {
-            data [1][col] = headers [col];
+            reportStream.write ((headers [col] + '\t').getBytes());
         }
-        for (int row = 1; row < data.length; row++) {
+        reportStream.write ("\n".getBytes());
+        for (int row = 0; row < data.length; row++) {
             final StringBuffer rowData = new StringBuffer ();
             for (int col = 0; col < columnCount; col++) {
                 rowData.append (data [row][col] + '\t');
