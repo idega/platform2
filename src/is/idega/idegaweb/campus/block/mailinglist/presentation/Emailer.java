@@ -53,6 +53,7 @@ public class Emailer extends Block {
   private static String prmUserOnly = "em_useronly";
   private static String prmHost = "em_host";
   private static String prmBody = "em_body";
+  private static String prmForm = "em_form";
   private static String prmEmailDelete = "em_email_delete";
   private static String prmEmail = "em_email";
   private ContentParsable contentParsable;
@@ -182,12 +183,13 @@ public class Emailer extends Block {
           T.add(getLetterMailingLists(letter),2,1);
       }
       else if(!saved && (iwc.isParameterSet("new_letter") || letter !=null) ){
-        T.add(getEmailLetterForm(iwc,letter),2,1);
+        T.add(getEmailLetterForm(iwc,letter),1,2);
         if(contentParsable!=null)
-          T.add(getTags(),3,1);
+          T.add(getTags(),2,2);
       }
     }
     Form F = new Form();
+    F.setName(prmForm);
     F.add(T);
     add(getLinkTable());
     add(F);
@@ -246,8 +248,8 @@ public class Emailer extends Block {
     TextInput from = new TextInput(prmFrom);
     TextInput host = new TextInput(prmHost);
     TextArea  body = new TextArea(prmBody);
-    body.setWidth(30);
-    body.setHeight(6);
+    body.setWidth(80);
+    body.setHeight(14);
     CheckBox parse = new CheckBox(prmParse);
     CheckBox useronly = new CheckBox(prmUserOnly);
 
@@ -294,8 +296,15 @@ public class Emailer extends Block {
     dTable.addTitle(iwrb.getLocalizedString("email_tags","Email tags"));
     String[] tags = contentParsable.getParseTags();
     int row = 1;
+    Link L ;
+    String tag;
     for (int i = 0; i < tags.length; i++) {
-      dTable.add(Edit.formatText(ContentParser.getFormattedTag(tags[i])),1,row++);
+      tag = ContentParser.getFormattedTag(tags[i]);
+      L = new Link(Edit.formatText(tag));
+      //L.setOnClick("this.form."+prmBody+".value += this.options[this.selectedIndex].value;");
+      L.setURL("javascript://");
+      L.setOnClick("document."+prmForm+"."+prmBody+".value += '"+tag+"' ;");
+      dTable.add(L,1,row++);
     }
 
     return dTable;
