@@ -44,6 +44,7 @@ import com.idega.util.IWTimestamp;
 public class HandicapRegister extends GolfBlock {
 
 	public void main(IWContext modinfo) throws Exception {
+		this.empty();
 		IWResourceBundle iwrb = getResourceBundle();
 
 		getParentPage().setTitle(iwrb.getLocalizedString("handicap.register_scorecard", "Register scorecard"));
@@ -209,6 +210,7 @@ public class HandicapRegister extends GolfBlock {
 		modinfo.setDefaultFontSize("1");
 
 		Form myForm = new Form();
+		maintainParentReloadURL(modinfo,myForm);
 
 		myForm.add(new HiddenInput("scorecard_id", scorecard_id));
 		myForm.add(new HiddenInput("field_id", field_id));
@@ -1042,7 +1044,7 @@ public class HandicapRegister extends GolfBlock {
 			UpdateHandicap.update(Integer.parseInt(member_id), stampur);
 
 			//if (update) {
-				//getParentPage().setParentToReload();
+				getParentPage().setParentToReloadWithURL(getParentReloadURL(modinfo));
 			//}
 
 			getParentPage().close();

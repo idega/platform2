@@ -19,15 +19,19 @@ import com.idega.presentation.IWContext;
  */
 public class HandicapRegisterWindow extends GolfWindow {
 
-    public HandicapRegisterWindow() {
-        setWidth(600);
-        setHeight(600);
-        setTitle("Handicap register");
-        add(new HandicapRegister());
+	/**
+	 * 
+	 */
+	public HandicapRegisterWindow() {
+		this("Handicap register",600,630);
+	}
+	
+    public HandicapRegisterWindow(String name, int width, int height) {
+        super(name, width, height);
+        setGolfClassToInstanciate(HandicapRegister.class);
     }
     
     public void main(IWContext iwc) throws Exception {
-  			super.main(iwc);
     		addHeading(_iwrb.getLocalizedString("handicap.register_scorecard", "Register scorecard"));
     }
 }

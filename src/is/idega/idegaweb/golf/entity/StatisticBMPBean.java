@@ -74,7 +74,7 @@ public class StatisticBMPBean extends GenericEntity implements Statistic{
 
 	public void setPutts(int putts) {
 		setColumn(COLUMN_PUTTS,putts);
-		setColumn(COLUMN_PUTTS_FLOAT, putts);
+		setColumn(COLUMN_PUTTS_FLOAT, (float)putts);
 	}
 
 	

@@ -384,7 +384,7 @@ public class GolfWindow extends Window {
   	}
   }
   
-  public void setGolfClassToInstanciate(Class c) {
+  protected void setGolfClassToInstanciate(Class c) {
   	_golfClassToInstanciate = c;
   }
 

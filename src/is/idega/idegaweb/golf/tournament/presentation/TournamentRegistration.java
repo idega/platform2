@@ -384,7 +384,7 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
 
         add(table);
         add(TournamentController.getStartingtimeTable(tournament,tournament_round_id, view));
-        Link link = new Link(iwrb.getLocalizedString("tournament.print","print"));
+        Link link = getLink(iwrb.getLocalizedString("tournament.print","print"));
         link.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ROUND_ID, tournament_round_id);
         link.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ID, tournament.getID());
         link.setWindowToOpen(TournamentStartingtimeWindow.class);

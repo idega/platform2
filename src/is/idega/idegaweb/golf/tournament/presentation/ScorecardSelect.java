@@ -9,14 +9,15 @@ import is.idega.idegaweb.golf.entity.TournamentParticipants;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundParticipants;
 import is.idega.idegaweb.golf.entity.TournamentType;
-import is.idega.idegaweb.golf.handicap.presentation.HandicapRegister;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegisterWindow;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapUtility;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
+import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -28,6 +29,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 
 /**
@@ -146,7 +148,7 @@ public class ScorecardSelect extends TournamentBlock {
 		//dialog = new GolfTournamentAdminDialog();
 		//super.add(dialog);
 		getParentPage().setPageFontSize("1");
-
+		
 		Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
 		TournamentType tournamentType = tournament.getTournamentType();
 
@@ -182,6 +184,10 @@ public class ScorecardSelect extends TournamentBlock {
 		myForm.setWindowToOpen(GroupScorecardWindow.class);
 		myForm.add(new HiddenInput("tournament_id", tournament_id));
 		myForm.add(new HiddenInput("tournament_round_id", tournament_round_id));
+		Parameter[] parentReloadParameters = getReloadParametersToAdd(tournament_id, tournament_round_id, modinfo);
+		for (int i = 0; i < parentReloadParameters.length; i++) {
+			myForm.add(parentReloadParameters[i]);
+		}
 
 		Table myTable = new Table();
 		myTable.setAlignment("center");
@@ -244,6 +250,9 @@ public class ScorecardSelect extends TournamentBlock {
 				tournamentMember.setText(members[a].getName());
 				Link memberLink = new Link(tournamentMember);
 				memberLink.setWindowToOpen(HandicapRegisterWindow.class);
+				for (int i = 0; i < parentReloadParameters.length; i++) {
+					memberLink.addParameter(parentReloadParameters[i]);
+				}
 				if (members[a].getScorecardID() > 0) {
 					memberLink.addParameter("scorecard_id", members[a].getScorecardID());
 				}
@@ -380,12 +389,14 @@ public class ScorecardSelect extends TournamentBlock {
 
 				CheckBox check = (CheckBox) checkProxy.clone();
 				check.setContent(Integer.toString(members[a].getMemberID()));
-				GolfWindow memberWindow = new GolfWindow(iwrb.getLocalizedString("tournament.registerscore", "Register score"), 600, 600);
-				memberWindow.setGolfClassToInstanciate(HandicapRegister.class);
 
 				Text tournamentMember = (Text) proxyText.clone();
 				tournamentMember.setText(members[a].getName());
-				Link memberLink = new Link(tournamentMember, memberWindow);
+				Link memberLink = new Link(tournamentMember);
+				memberLink.setWindowToOpen(HandicapRegisterWindow.class);
+				for (int i = 0; i < parentReloadParameters.length; i++) {
+					memberLink.addParameter(parentReloadParameters[i]);
+				}
 				if (members[a].getScorecardID() > 0) {
 					memberLink.addParameter("scorecard_id", members[a].getScorecardID());
 				}
@@ -455,43 +466,40 @@ public class ScorecardSelect extends TournamentBlock {
 					myTable.addText(out_differ + "", 10, a + 2);
 				}
 
-				GolfWindow changeWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200);
-				changeWindow.setGolfClassToInstanciate(HandicapUtility.class);Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
+
+				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
 				changeImage.setAlignment("absmiddle");
-				Link changeLink = new Link(changeImage, changeWindow);
+				Link changeLink = new Link(changeImage);
+				changeLink.setWindowToOpen(HandicapUtility.class);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				GolfWindow changeWindow2 = new GolfWindow(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200);
-				changeWindow2.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
 				changeImage2.setAlignment("absmiddle");
-				Link changeLink2 = new Link(changeImage2, changeWindow2);
+				Link changeLink2 = new Link(changeImage2);
+				changeLink2.setWindowToOpen(HandicapUtility.class);
 				changeLink2.addParameter(HandicapUtility.PARAMETER_MEMBER_ID, members[a].getMemberID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
-				GolfWindow positionWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200);
-				positionWindow.setGolfClassToInstanciate(ChangePosition.class);
 				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
 				positionImage.setAlignment("absmiddle");
-				Link positionLink = new Link(positionImage, positionWindow);
+				Link positionLink = new Link(positionImage);
+				positionLink.setWindowToOpen(ChangePositionWindow.class);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				GolfWindow groupWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
-				groupWindow.setGolfClassToInstanciate(ChangeGroup.class);
 				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
 				groupImage.setAlignment("absmiddle");
-				Link groupLink = new Link(groupImage, groupWindow);
+				Link groupLink = new Link(groupImage);
+				groupLink.setWindowToOpen(ChangeGroupWindow.class);
 				groupLink.addParameter("member_id", members[a].getMemberID());
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				GolfWindow dismissWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
-				dismissWindow.setGolfClassToInstanciate(Dismiss.class);
 				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
 				dismissImage.setAlignment("absmiddle");
-				Link dismissLink = new Link(dismissImage, dismissWindow);
+				Link dismissLink = new Link(dismissImage);
+				dismissLink.setWindowToOpen(DismissWindow.class);
 				dismissLink.addParameter("member_id", members[a].getMemberID());
 				dismissLink.addParameter("tournament_id", members[a].getTournamentID());
 
@@ -540,4 +548,14 @@ public class ScorecardSelect extends TournamentBlock {
 		return true;
 	}
 
+	private Parameter[] getReloadParametersToAdd(String tournament_id, String tournament_round_id,IWContext modinfo) {
+		Parameter[] parentWindowParameters = new Parameter[4];
+		parentWindowParameters[0] = new Parameter(GolfBlock.PRM_PARENT_PREFIX+"tournament",tournament_id);
+		parentWindowParameters[1] = new Parameter(GolfBlock.PRM_PARENT_PREFIX+IWMainApplication.classToInstanciateParameter,modinfo.getParameter(IWMainApplication.classToInstanciateParameter));
+		parentWindowParameters[2] = new Parameter(GolfBlock.PRM_PARENT_PREFIX+"tournament_round_id",tournament_round_id);
+		parentWindowParameters[3] = new Parameter(GolfBlock.PRM_PARENT_PREFIX+LocaleSwitcher.languageParameterString,modinfo.getParameter(LocaleSwitcher.languageParameterString));
+		return parentWindowParameters;
+
+	}
+	
 }

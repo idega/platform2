@@ -62,7 +62,7 @@ public class GroupScorecard extends GolfBlock {
 			}
 		}
 		else {
-			close();
+			close(modinfo);
 		}
 	}
 
@@ -71,6 +71,7 @@ public class GroupScorecard extends GolfBlock {
 		if (mode.equalsIgnoreCase("insert")) {
 
 			Form myForm = new Form();
+			maintainParentReloadURL(modinfo,myForm);
 			myForm.add(new HiddenInput("tournament_round_id", tournament_round_id));
 			myForm.add(new HiddenInput("mode", "save"));
 
@@ -221,6 +222,7 @@ public class GroupScorecard extends GolfBlock {
 			int holeNumber = tournament.getNumberOfHoles();
 
 			Form myForm = new Form();
+			maintainParentReloadURL(modinfo,myForm);
 
 			Table myTable = new Table();
 			myTable.setAlignment("center");
@@ -580,8 +582,11 @@ public class GroupScorecard extends GolfBlock {
 
 	}
 
-	public void close() {
-		//getParentPage().setParentToReload();
+	public void close(IWContext iwc) {
+		getParentPage().setParentToReloadWithURL(getParentReloadURL(iwc));
 		getParentPage().close();
 	}
+	
+	
+	
 }

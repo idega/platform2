@@ -22,7 +22,7 @@ public class ChangeGroupWindow extends GolfWindow {
 	 * 
 	 */
 	public ChangeGroupWindow() {
-		this("TournamentAdmin",350,200);
+		this("TournamentAdmin",350,250);
 	}
 
 	/**

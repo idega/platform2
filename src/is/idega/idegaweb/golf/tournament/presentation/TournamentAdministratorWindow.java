@@ -30,6 +30,8 @@ public class TournamentAdministratorWindow extends GolfWindow {
 
 	private String headerColor;
 	private String mainColor;
+	
+	String selectedTabText = null;
 
 	private String width = "100%";
 
@@ -71,6 +73,10 @@ public class TournamentAdministratorWindow extends GolfWindow {
 		setContentAreaAlignment(Table.HORIZONTAL_ALIGN_CENTER);
 	}
 	
+	public void setSelectedTabText(String text) {
+		selectedTabText = text;
+	}
+	
 	public void _main(IWContext iwc) throws Exception {
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
@@ -82,23 +88,34 @@ public class TournamentAdministratorWindow extends GolfWindow {
 			}
 
 			String URI = iwc.getRequestURI();
-
-//			Image iSelectTournament = iwrb.getImage("tabs/selecttournament1.gif");
-//			Image iCreateTournament = iwrb.getImage("tabs/newtournament1.gif");
-//			Image iScorecard = iwrb.getImage("tabs/registerscorecard1.gif");
-//			Image iFinishTournament = iwrb.getImage("tabs/handicapupdate1.gif");
-//			Image iSetupStartingtime = iwrb.getImage("tabs/lineupteetimes1.gif");
-//			Image iRegisterMember = iwrb.getImage("tabs/registergolfer1.gif");
-//			Image iModifyTournament = iwrb.getImage("tabs/edittournament1.gif");
-//			Image iPrintouts = iwrb.getImage("tabs/printouts1.gif");
-//			Image iLists = iwrb.getImage("tabs/lists1.gif");
-
-			//System.out.println("GolfTournamentAdminDialog : view = "+view+"
-			// ... adminView = "+adminView);
-			String selectedTabText = localize("tournament.select_tournament","Select Tournament");
+			
 			if (view == null) {
-				//                    iCreateTournamente.setSrc("tabs/ollmot.gif");
-				view = ADMIN_VIEW_SELECT_TOURNAMENT;
+				if(selectedTabText == null) {
+					if (this instanceof TournamentListsWindow) {
+						selectedTabText = localize("tournament.lists","Lists");
+					} else if (this instanceof TournamentSelectorWindow) {
+						selectedTabText = localize("tournament.select_tournament","Select Tournament");
+					} else if (this instanceof CloseTournamentWindow) {
+						selectedTabText = localize("tournament.close_tournament","Close Tournament");
+					} else if (this instanceof TournamentCreatorWindow) {
+						selectedTabText = localize("tournament.create_tournament","Create Tournament");
+					} else if (this instanceof ScorecardSelectWindow) {
+						selectedTabText = localize("tournament.scorecard","Scorecard");
+					} else if (this instanceof TournamentStartingtimeSetupWindow) {
+						selectedTabText = localize("tournament.setup_teetimes","Setup Teetimes");
+					} else if (this instanceof TournamentRegistrationWindow) {
+						selectedTabText = localize("tournament.register_member","Register Member");
+					} else if (this instanceof TournamentCreatorWindow) {
+						selectedTabText = localize("tournament.modify_tournament","Modify Tournament");
+					} else if (this instanceof PrintingWindow) {
+						selectedTabText = localize("tournament.printouts","Printouts");
+					} else {
+						view = ADMIN_VIEW_SELECT_TOURNAMENT;
+						selectedTabText = localize("tournament.select_tournament","Select Tournament");
+					}
+				} else {
+					view = ADMIN_VIEW_SELECT_TOURNAMENT;
+				}
 			} else if (view.equals(ADMIN_VIEW_LISTS)) {
 				selectedTabText = localize("tournament.lists","Lists");
 			} else if (view.equals(ADMIN_VIEW_SELECT_TOURNAMENT)) {

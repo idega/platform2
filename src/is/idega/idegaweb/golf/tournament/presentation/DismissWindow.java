@@ -22,7 +22,7 @@ public class DismissWindow extends GolfWindow {
 	 * 
 	 */
 	public DismissWindow() {
-		this("TournamentAdmin",350,200);
+		this("TournamentAdmin",350,250);
 	}
 
 	/**

@@ -9,10 +9,12 @@ import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -24,18 +26,23 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.URLUtil;
 import com.idega.util.database.ConnectionBroker;
 
 /**
  * @author laddi
  */
 public abstract class GolfBlock extends Block {
+	
+	private String parentReloadURL = "http://www.golf.is";
+	public static String PRM_PARENT_PREFIX = "parent_";
 	
 	protected static String LOCALIZATION_SAVE_KEY="save";
 	protected static String PARAM_SAVE="go_save";
@@ -755,6 +762,39 @@ public abstract class GolfBlock extends Block {
 		}
 	}
 	
+	
+	public void maintainParentReloadURL(IWContext iwc, Form myForm) {			
+		Enumeration enum = iwc.getParameterNames();
+		while (enum.hasMoreElements()) {
+			String pName = (String) enum.nextElement();
+			if(pName != null && pName.startsWith(PRM_PARENT_PREFIX)) {
+				String value = iwc.getParameter(pName);
+				myForm.addParameter(pName,value);
+			}
+		}
+	}
+
+	public String getParentReloadURL(IWContext iwc){
+		String parentClass = iwc.getParameter(PRM_PARENT_PREFIX+IWMainApplication.classToInstanciateParameter);
+		if(parentClass != null) {
+			URLUtil url = new URLUtil(iwc.getIWMainApplication().getObjectInstanciatorURI(IWMainApplication.decryptClassName(parentClass)));
+			
+			Enumeration enum = iwc.getParameterNames();
+			while (enum.hasMoreElements()) {
+				String pName = (String) enum.nextElement();
+				if(pName != null && pName.startsWith(PRM_PARENT_PREFIX)) {
+					String value = iwc.getParameter(pName);
+					url.addParameter(pName.substring(PRM_PARENT_PREFIX.length()),value);
+				}
+			}
+			parentReloadURL=url.toString();
+		}
+		return parentReloadURL;
+	}
+	
+	public void setDefaultParentReloadURL(String url) {
+		parentReloadURL=url;
+	}
 	
 	
 	/**

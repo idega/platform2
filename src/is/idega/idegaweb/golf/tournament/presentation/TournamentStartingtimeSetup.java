@@ -288,7 +288,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		//   table.setAlignment(1,row,"center");
 		table.add(iwrb.getLocalizedString("tournament.to_edit_tee_times", "To edit tee times push the button below"), 1, 4);
 
-		Link theEdit = getLocalizedLink("tournament.edit_tee_times", "Edit Tee Times");
+		GenericButton theEdit = getButton(new GenericButton(localize("tournament.edit_tee_times", "Edit Teetimes")));
 		theEdit.setWindowToOpen(ModifyStartingtimeWindow.class);
 		theEdit.addParameter("tournament_id", tournament.getID());
 		theEdit.addParameter("action", "getSearch");
