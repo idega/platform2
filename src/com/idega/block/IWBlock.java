@@ -9,7 +9,7 @@ package com.idega.block;
  * @version 1.1
  */
 
-public interface IBBlock {
+public interface IWBlock {
 
   public boolean deleteBlock(int ICObjectInstanceId);
 
