@@ -20,11 +20,12 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public static final String INFO = "type_info";
   public static final String LOC_KEY = "loc_key";
   public static final String TYPECATEGORY = "category_id";
+  public static final String SCHOOLCATEGORY = "school_category";
   public static final String SCHOOLTYPE = "sch_school_type";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute(TYPECATEGORY,"category",true,true,Integer.class);
+    this.addAttribute(SCHOOLCATEGORY,"category",true,true,String.class);
     this.addAttribute(NAME,"Schooltype",true,true,String.class);
     this.addAttribute(INFO,"Info",true,true,String.class);
     this.addAttribute(LOC_KEY,"Localization key",String.class);
@@ -54,12 +55,12 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return getStringColumnValue(INFO);
   }
 
-  public int getSchoolCategoryId(){
-    return getIntColumnValue(TYPECATEGORY);
+  public String getSchoolCategory(){
+    return getStringColumnValue(SCHOOLCATEGORY);
   }
 
-  public void setSchoolCategoryId(int categoryId){
-    setColumn(TYPECATEGORY,categoryId);
+  public void setSchoolCategory(String category){
+    setColumn(SCHOOLCATEGORY,category);
   }
 
   public String getLocalizationKey(){
@@ -74,8 +75,8 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return super.idoFindAllIDsBySQL();
   }
 
-  public Collection ejbFindAllByCategory(int iCategory) throws javax.ejb.FinderException {
-    return super.idoFindAllIDsByColumnOrderedBySQL(TYPECATEGORY,iCategory);
+  public Collection ejbFindAllByCategory(String category) throws javax.ejb.FinderException {
+    return super.idoFindAllIDsByColumnBySQL(SCHOOLCATEGORY,category);
   }
 
 }

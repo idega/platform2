@@ -49,17 +49,17 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
     }
   }
 
-  public Collection findAllSchoolTypesInCategory(int CategoryID)  {
+  public Collection findAllSchoolTypesInCategory(String Category)  {
     try{
       SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-      return shome.findAllByCategory(CategoryID);
+      return shome.findAllByCategory(Category);
     }
     catch(Exception ex){
       return new java.util.Vector();
     }
   }
 
-  public void storeSchoolType(int id,String name,String info,int categoryId,String locKey) throws java.rmi.RemoteException{
+  public void storeSchoolType(int id,String name,String info,String category,String locKey) throws java.rmi.RemoteException{
 
       SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
       SchoolType newType;
@@ -80,7 +80,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
       }
       newType.setSchoolTypeInfo(info);
       newType.setSchoolTypeName(name);
-      newType.setSchoolCategoryId(categoryId);
+      newType.setSchoolCategory(category);
       newType.setLocalizationKey(locKey);
       newType.store();
     }

@@ -81,15 +81,13 @@ public class SchoolTypeEditor extends Block {
       String id = iwc.getParameter("sch_school_type_id");
       String name = iwc.getParameter("sch_type_name");
       String info = iwc.getParameter("sch_type_info");
-      String cat = iwc.getParameter("sch_type_catid");
+      String cat = iwc.getParameter("sch_type_cat");
       String locKey = iwc.getParameter("sch_type_lockey");
       int aid = -1,catId = -1;
       if(id!=null)
         aid = Integer.parseInt(id);
-      if(cat!=null)
-        catId = Integer.parseInt(cat);
 
-      sabBean.storeSchoolType(aid,name,info,catId,locKey);
+      sabBean.storeSchoolType(aid,name,info,cat,locKey);
     }
   }
 
@@ -139,9 +137,9 @@ public class SchoolTypeEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
     T.add(tFormat.format(iwrb.getLocalizedString("localization_key","Key")),1,5);
 
-    DropdownMenu drpCategory = new DropdownMenu("sch_type_catid");
-    drpCategory.addMenuElement(SchoolType.CHILDCARE,iwrb.getLocalizedString("childcare","Childcare"));
-    drpCategory.addMenuElement(SchoolType.SCHOOL,iwrb.getLocalizedString("school","School"));
+    DropdownMenu drpCategory = new DropdownMenu("sch_type_cat");
+    drpCategory.addMenuElement("CHILDCARE",iwrb.getLocalizedString("childcare","Childcare"));
+    drpCategory.addMenuElement("SCHOOL",iwrb.getLocalizedString("school","School"));
 
     TextInput inputName = new TextInput("sch_type_name");
     TextInput inputKey = new TextInput("sch_type_lockey");
@@ -158,8 +156,8 @@ public class SchoolTypeEditor extends Block {
         inputInfo.setContent(info);
         typeId = ((Integer)type.getPrimaryKey()).intValue();
         T.add(new HiddenInput("sch_school_type_id",String.valueOf(typeId)));
-        int category = type.getSchoolCategoryId();
-        drpCategory.setSelectedElement(String.valueOf(category) );
+        String category = type.getSchoolCategory();
+        drpCategory.setSelectedElement((category) );
         String key = type.getLocalizationKey();
         if(key!=null)
           inputKey.setContent(key);
