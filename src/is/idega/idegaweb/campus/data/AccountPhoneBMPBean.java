@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.13 2004/07/21 13:25:00 palli Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.13 2004/07/21 13:25:00 palli Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.13 2004/07/21 13:25:00 palli Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.13 2004/07/21 13:25:00 palli Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -38,7 +38,6 @@ import com.idega.data.IDOQuery;
  * Title:
  * 
  * Description:
-<<<<<<< AccountPhoneBMPBean.java
  * 
  * Copyright: Copyright (c) 2001
  * 
@@ -47,15 +46,7 @@ import com.idega.data.IDOQuery;
  * @author 2000 - idega team -<br><a href="mailto:aron@idega.is">Aron Birkir
  *              </a><br>
  * 
- * 
- * Copyright: Copyright (c) 2001
- * 
- * Company: idega.is
- * 
- * @author 2000 - idega team -<br>
- *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- * 
- * @version 1.0
+ *
  *  
  */
 
@@ -88,6 +79,9 @@ public class AccountPhoneBMPBean
 	public static String getEntityTableName() {
 		return "V_PHONE_ACCOUNTS";
 	}
+	public static String getColumnNameContractId() {
+		return "CAM_CONTRACT_ID";
+	}
 	public static String getColumnNameAccountId() {
 		return "FIN_ACCOUNT_ID";
 	}
@@ -117,7 +111,7 @@ public class AccountPhoneBMPBean
 		addAttribute(getColumnNameValidTo(), "Valid to", true, true, java.sql.Date.class);
 		addAttribute(getColumnDeliverDate(), "Deliver time", true, true, java.sql.Timestamp.class);
 		addAttribute(getColumnReturnDate(), "Return time", true, true, java.sql.Timestamp.class);
-		setAsPrimaryKey(getColumnNameAccountId(),true);
+		setAsPrimaryKey(getColumnNameContractId(),true);
 	}
 	public String getEntityName() {
 		return (getEntityTableName());
@@ -143,6 +137,9 @@ public class AccountPhoneBMPBean
 	public Integer getAccountId() {
 		return getIntegerColumnValue(getColumnNameAccountId());
 	}
+	public Integer getContractId(){
+		return getIntegerColumnValue(getColumnNameContractId());
+	}
 	public String getPhoneNumber() {
 		return getStringColumnValue(getColumnNamePhoneNumber());
 	}
@@ -157,10 +154,10 @@ public class AccountPhoneBMPBean
 	 */
 	public String getCreationSQL() {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ");
+		sql.append(" create view V_PHONE_ACCOUNTS ( CAM_CONTRACT_ID,FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ");
 		sql.append(" ,VALID_FROM,VALID_TO,DELIVER_DATE,RETURN_DATE) ");
 		sql.append(" as ");
-		sql.append(" select ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ");
+		sql.append(" select CON.CAM_CONTRACT_ID,ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ");
 		sql.append(",con.valid_to, ");
 		sql.append(" con.deliver_date,con.return_date ");
 		sql.append(" from cam_phone pho,cam_contract con, fin_account acc ");
