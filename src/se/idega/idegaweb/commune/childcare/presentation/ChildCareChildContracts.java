@@ -437,7 +437,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_APPLICATION_ID)) {
 			int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
 			try {
-				getBusiness().removeFutureContracts(applicationID);
+				getBusiness().removeLatestFutureContract(applicationID, new java.sql.Date(getEarliestPossibleContractRemoveDate().getTime()));
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
