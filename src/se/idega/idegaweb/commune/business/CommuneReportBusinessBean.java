@@ -13,7 +13,6 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -125,8 +124,8 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
-		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
+		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
+		DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
 		
 		
 		//Child - Fields
@@ -353,8 +352,8 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dataFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
-		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
+		DateFormat dataFormat = DateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
+		DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
 		
 	
 		//Child - Fields

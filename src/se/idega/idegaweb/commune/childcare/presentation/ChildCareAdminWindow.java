@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1242,7 +1241,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		//Setting current date
 		Map fields = new HashMap();
-		final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, iwc.getCurrentLocale());
+		final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		fields.put(FIELD_CURRENT_DATE, dateFormat.format(new Date()));
 		contract.setUnsetFields(fields);
 		contract.store();

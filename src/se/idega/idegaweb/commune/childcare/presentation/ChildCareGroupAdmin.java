@@ -14,6 +14,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -283,7 +284,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Link link = new Link(getBundle().getImage("shared/pdf.gif"));
 		link.setWindow(getFileWindow());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_TYPE, ChildCareGroupWriter.PDF);
-		link.addParameter(ChildCareGroupWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
 		if (hasShowNotYetActive)
@@ -296,7 +297,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Link link = new Link(getBundle().getImage("shared/xls.gif"));
 		link.setWindow(getFileWindow());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_TYPE, ChildCareGroupWriter.XLS);
-		link.addParameter(ChildCareGroupWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
 		if (hasShowNotYetActive)
