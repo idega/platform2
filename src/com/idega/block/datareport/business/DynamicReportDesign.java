@@ -120,7 +120,7 @@ public class DynamicReportDesign {
 		//title.setIsSplitAllowed(true);
 			TextField tField1 = new TextField();
 			tField1.setIsBlankWhenNull(true);
-			tField1.setIsStretchWithOverflow(false);
+			tField1.setIsStretchWithOverflow(true);
 			tField1.setEvaluationTimeAsNow();
 			tField1.setHyperlinkTypeAsNone();
 				ReportElement rElement = new ReportElement(0,0,500,_reportTitleHeight);

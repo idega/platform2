@@ -532,7 +532,9 @@ public class ReportGenerator extends Block {
 					ReportableField element = (ReportableField)iterator.next();
 					row++;
 					_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale()))+":",1,row);
-					_fieldTable.add(getFieldInputObject(element.getName(),null,element.getValueClass()),2,row);
+					InterfaceObject input = getFieldInputObject(element.getName(),null,element.getValueClass());
+					_busy.addDisabledObject(input);
+					_fieldTable.add(input,2,row);
 				}
 			
 			}
@@ -547,7 +549,10 @@ public class ReportGenerator extends Block {
 						
 						row++;
 						_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale()))+":",1,row);
-						_fieldTable.add(getFieldInputObject(element.getName(),null,element.getClassObject()),2,row);
+						
+						InterfaceObject input = getFieldInputObject(element.getName(),null,element.getClassObject());
+						_busy.addDisabledObject(input);
+						_fieldTable.add(input,2,row);
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
