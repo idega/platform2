@@ -529,11 +529,9 @@ public class SchoolUserEditor extends Block {
 						getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
 
 						try {
-							System.out.println("trying to fix, test 1");
 							getSchoolUserBusiness(iwc).setUserGroups(school, user, iUserType);
 								//getSchoolBusiness(iwc).addHeadmaster(school, user);
 						} catch (Exception e) {
-							e.printStackTrace(System.err);
 							debug("User already in headmasterGroup");
 						}
 						
