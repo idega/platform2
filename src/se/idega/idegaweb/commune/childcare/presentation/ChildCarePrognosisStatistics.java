@@ -118,17 +118,19 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		return table;
 	}*/
 	
-	private Table getProviderStatTable(IWContext iwc) {
-		Table table = getTable(7);
+	private Table getProviderStatTable(IWContext iwc) throws RemoteException{
+		Table table = getTable(9);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
 		int column = 1;
 
 		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), 3, 1);
 		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), 4, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), 5, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), 6, 1);
-		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 7, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_queue3months","Within (3M)"), 5, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), 6, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), 7, 1);
+		table.add(getLocalizedSmallHeader("child_care.prognosis_queue12months","Within (12M)"), 8, 1);
+		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), 9, 1);
 
 		Collection stats = null;
         try {
@@ -143,6 +145,8 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 			Iterator iter = stats.iterator();
 			ProviderStat stat;
 			while (iter.hasNext()) {
+				int queueWithin3Months = -1;
+				int queueWithin12Months = -1;
 			    stat = (ProviderStat)iter.next();
 				column = 1;
 				if (row % 2 == 0)
@@ -159,12 +163,23 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 						table.add(getSmallText(String.valueOf(stat.getThreeMonthsPriority())), column++, row);
 					else
 						table.add(getSmallText("-"), column++, row);
+					
+					queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 3, false);
+					
+					table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
+					
 					table.add(getSmallText(String.valueOf(stat.getOneYearPrognosis())), column++, row);
 					if (stat.getOneYearPriority().intValue() != -1)
 						table.add(getSmallText(String.valueOf(stat.getOneYearPriority())), column++, row);
 					else
 						table.add(getSmallText("-"), column++, row);
+					
+					queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 12, false);
+					table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);
+					
+					
 					table.add(getSmallText(new IWTimestamp((java.sql.Date)stat.getLastUpdate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
+					
 				}
 				else {
 					table.add(getSmallText("-"), column++, row);
