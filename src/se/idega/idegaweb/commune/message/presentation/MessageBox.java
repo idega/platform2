@@ -205,6 +205,7 @@ public class MessageBox extends CommuneBlock {
 			submitTable.setWidth(Table.HUNDRED_PERCENT);
 			submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
+			messageTable.setCellpaddingRight(1, row, 12);
 			messageTable.add(submitTable, 1, row);
 
 			SubmitButton deleteButton = (SubmitButton) getButton(new SubmitButton(localize("delete", "Delete"), PARAM_DELETE_MESSAGE, "true"));
