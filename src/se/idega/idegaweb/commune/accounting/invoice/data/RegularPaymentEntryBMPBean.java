@@ -358,5 +358,32 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		.appendRightParenthesis());
 	}
 
+	/**
+	 * Find ongoing payment/s according to the date with TO date set or null. 
+	 * @param child
+	 * @param provider
+	 * @param date
+	 * @return
+	 */
+	public Collection ejbFindOngoingByUserAndProviderAndDate(User child, School provider, Date date) throws FinderException {
+		return idoFindPKsByQuery(idoQuery() 
+		.appendSelectAllFrom(this)
+		.appendWhereEquals(COLUMN_SCHOOL_ID, provider.getPrimaryKey())
+		.appendAndEquals(COLUMN_USER_ID, child.getPrimaryKey())
+		.appendAnd()
+		.append(COLUMN_FROM)
+		.appendLessThanOrEqualsSign()
+		.append(date)
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append(COLUMN_TO)
+		.appendGreaterThanOrEqualsSign()
+		.append(date)
+		.appendOr()
+		.append(COLUMN_TO)
+		.appendIsNull()
+		.appendRightParenthesis());
+	}
+
 
 }

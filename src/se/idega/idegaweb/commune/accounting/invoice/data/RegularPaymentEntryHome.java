@@ -10,6 +10,7 @@ import java.sql.Date;
 import javax.ejb.FinderException;
 
 import com.idega.block.school.data.School;
+import com.idega.user.data.User;
 
 /**
  * @author Roar
@@ -32,4 +33,13 @@ public interface RegularPaymentEntryHome extends com.idega.data.IDOHome{
 	 */
 	Collection findRegularPaymentsForPeriodeAndProvider(Date from, Date to, School provider)   throws FinderException;
 	
+	/**
+	 * @param user
+	 * @param provider
+	 * @param date
+	 * @return
+	 * @throws javax.ejb.FinderException
+	 */
+ 	Collection findOngoingRegularPaymentsForUserAndProviderByDate(User user, School provider, Date date)throws javax.ejb.FinderException;
+
 }

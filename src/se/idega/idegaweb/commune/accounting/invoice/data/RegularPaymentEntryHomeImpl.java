@@ -12,6 +12,7 @@ import java.sql.Date;
 import javax.ejb.FinderException;
 
 import com.idega.block.school.data.School;
+import com.idega.user.data.User;
 
 /**
  * @author Roar
@@ -54,6 +55,17 @@ public class RegularPaymentEntryHomeImpl  extends com.idega.data.IDOFactory impl
 		java.util.Collection ids = ((RegularPaymentEntryBMPBean)entity).ejbFindByPeriodeAndProvider(from, to, provider);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
-	}	
+	}
+	
+	/*  (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome#findOngoingRegularPaymentForUserAndProviderByDate(com.idega.user.data.User, com.idega.block.school.data.School, java.sql.Date)
+	 */
+	public Collection findOngoingRegularPaymentsForUserAndProviderByDate(User child, School provider, Date date)throws javax.ejb.FinderException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RegularPaymentEntryBMPBean)entity).ejbFindOngoingByUserAndProviderAndDate(child, provider, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
 
 }
