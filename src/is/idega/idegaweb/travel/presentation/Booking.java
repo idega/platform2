@@ -43,6 +43,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 
 
@@ -978,33 +979,29 @@ public class Booking extends TravelManager {
     	Text receiptText = (Text) super.theBoldText.clone();
     	receiptText.setText(iwrb.getLocalizedString("travel.receipt","Receipt"));
     	receiptText.setFontColor(super.BLACK);
-      Link voucherLink = new Link(voucher);
-        voucherLink.setWindowToOpen(VoucherWindow.class);
-        voucherLink.addParameter(VoucherWindow.parameterBookingId, bookingId);
-        
-    Link printCCReceipt = new Link(receiptText);
+
+    	Link voucherLink = new Link(voucher);
+    voucherLink.setWindowToOpen(VoucherWindow.class);
+    voucherLink.addParameter(VoucherWindow.parameterBookingId, bookingId);
+    
 
     try {
       CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(),  new IWTimestamp(booking.getDateOfBooking()));
         if (entry != null) {
+          Link printCCReceipt = new Link(receiptText);
+          printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+
           Receipt r = new Receipt(entry, supplier);
           iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
 
-            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
-          table.add(printCCReceipt, 1, 2);
+          //table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+          //table.add(printCCReceipt, 1, 2);
+          table.add(printCCReceipt, 1, 5);
         }
 		  } catch (Exception e) {
 		  		e.printStackTrace(System.err);
 		  }
 
-/*      ReceiptWindow rw = new ReceiptWindow();
-      Receipt r = new Receipt(getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking())), supplier);
-      rw.add(r);
-      
-      Link receiptLink = new Link(rw);
-      receiptLink.setText(receiptText);
-   */   
       Text refNum = (Text) super.theBoldText.clone();
         refNum.setText(referenceNumber);
         refNum.setFontColor(super.BLACK);
@@ -1012,7 +1009,13 @@ public class Booking extends TravelManager {
         voucherNum.setText(Integer.toString(voucherNumber));
         voucherNum.setFontColor(super.BLACK);
 
-      Link backLink = new Link(iwrb.getImage("buttons/back.gif"));
+        Link btnBook = new Link(super.getTravelSessionManager(iwc).getIWResourceBundle().getImage("buttons/change.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
+        btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
+        btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,booking.getID());
+        btnBook.addParameter(BookingForm.parameterDepartureAddressId, iwc.getParameter(BookingForm.parameterDepartureAddressId));
+
+        
+        Link backLink = new Link(iwrb.getImage("buttons/back.gif"));
         backLink.addParameter(this.parameterProductId, this.productId);
         backLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
         backLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
@@ -1026,14 +1029,17 @@ public class Booking extends TravelManager {
         table.add(voucherNumTxt, 1, 3);
         table.add(voucherNum, 2, 3);
         table.add(voucherLink, 1, 4);
-        table.add(printCCReceipt, 1, 5);
+        //table.add(printCCReceipt, 1, 5);
 //        table.add(receiptLink, 1, 5);
         table.add(backLink, 1, 6);
+        table.add(btnBook, 2, 6);
 
         table.mergeCells(1,1,2,1);
         table.mergeCells(1,4,2,4);
         table.mergeCells(1,5,2,5);
-        table.mergeCells(1,6,2,6);
+        table.setAlignment(1, 6, Table.HORIZONTAL_ALIGN_LEFT);
+        table.setAlignment(2, 6, Table.HORIZONTAL_ALIGN_RIGHT);
+        //table.mergeCells(1,6,2,6);
 
         table.setRowColor(1, super.backgroundColor);
         table.setRowColor(2, super.GRAY);
@@ -1042,7 +1048,6 @@ public class Booking extends TravelManager {
         table.setRowColor(5, super.GRAY);
         table.setRowColor(6, super.GRAY);
 
-        table.setAlignment(1, 6, "center");
 
       return table;
     }catch (FinderException fe) {
