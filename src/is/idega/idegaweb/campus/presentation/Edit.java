@@ -1,6 +1,6 @@
 /*
 
- * $Id: Edit.java,v 1.9 2003/11/21 19:01:27 tryggvil Exp $
+ * $Id: Edit.java,v 1.10 2004/02/26 08:11:49 laddi Exp $
 
  *
 
@@ -25,8 +25,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.PresentationObject;
 
 import com.idega.presentation.ui.InterfaceObject;
-
-import com.idega.presentation.ui.InterfaceObjectContainer;
 
 
 
