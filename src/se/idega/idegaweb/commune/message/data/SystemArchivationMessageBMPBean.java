@@ -24,6 +24,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	private static final String COLUMN_MESSAGE_TYPE = "MESSAGE_TYPE";
 	private static final String COLUMN_MESSAGE_DATA = "MESSAGE_DATA";
 	private static final String COLUMN_ATTATCHED_FILE_ID = "ATTATCHED_FILE_ID";
+	private static final String COLUMN_BULK_DATA = "BULK_DATA";
 	private static final String CASE_CODE_KEY = "SYMEARK";
 	private static final String CASE_CODE_DESCRIPTION = "System Archivation Message";
 	public static final String PRINT_TYPE = "ARCH";
@@ -42,6 +43,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		this.addManyToOneRelationship(COLUMN_ATTATCHED_FILE_ID, "Attatched file", ICFile.class);
 		//this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
 		//this.addAttribute(COLUMN_SENDER,"Test data column",String.class);//temp
+		this.addManyToOneRelationship(COLUMN_BULK_DATA, "Message bulk data", ICFile.class);
 	}
 	public String getCaseCodeKey()
 	{
@@ -107,6 +109,23 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{
 		return this.getIntColumnValue(COLUMN_ATTATCHED_FILE_ID);
 	}
+	
+	public ICFile getMessageBulkData() throws java.rmi.RemoteException {
+			return (ICFile) this.getColumnValue(COLUMN_BULK_DATA); //Replace this later
+		}
+
+		public int getMessageBulkDataFileID() throws java.rmi.RemoteException {
+			return this.getIntColumnValue(COLUMN_BULK_DATA);
+		}
+
+		public void setMessageBulkData(ICFile file) throws java.rmi.RemoteException { //Temp (test) method
+			this.setColumn(COLUMN_BULK_DATA, file);
+		}
+
+		public void setMessageBulkData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
+			this.setColumn(COLUMN_BULK_DATA, fileID);
+		}
+	
 	public String getSenderName()
 	{
 		try

@@ -31,7 +31,7 @@ public class ColumnList extends CommuneBlock {
    */
   public ColumnList(int cols) {
     this.cols = cols;
-    headerRow = new Text[cols];
+    headerRow = new PresentationObject[cols];
     rowList = new ArrayList();
     bottomRowList = new ArrayList();
     tempRow = new PresentationObject[cols];

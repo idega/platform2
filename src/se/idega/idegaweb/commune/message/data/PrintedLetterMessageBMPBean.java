@@ -28,6 +28,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	private static final String COLUMN_MESSAGE_TYPE = "MESSAGE_TYPE";
 	private static final String COLUMN_MESSAGE_DATA = "MESSAGE_DATA";
 	private static final String COLUMN_LETTER_TYPE = "LETTER_TYPE";
+	private static final String COLUMN_BULK_DATA = "BULK_DATA";
 
 	private static final String CASE_CODE_KEY = "SYMEBRV";
 	private static final String CASE_CODE_DESCRIPTION = "Letter Message";
@@ -48,6 +49,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		this.addAttribute(COLUMN_MESSAGE_TYPE, "Message type", String.class, 20);
 		this.addManyToOneRelationship(COLUMN_MESSAGE_DATA, "Message data", ICFile.class);
 		this.addAttribute(COLUMN_LETTER_TYPE, "Message SubType", String.class, 4);
+		this.addManyToOneRelationship(COLUMN_BULK_DATA, "Message bulk data", ICFile.class);
 		//this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
 		//this.addAttribute(COLUMN_SENDER,"Test data column",String.class);//temp
 		//this.addManyToManyRelationShip(SampleEntity.class);
@@ -141,6 +143,22 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	public void setMessageData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, fileID);
 	}
+	
+	public ICFile getMessageBulkData() throws java.rmi.RemoteException {
+			return (ICFile) this.getColumnValue(COLUMN_BULK_DATA); //Replace this later
+		}
+
+		public int getMessageBulkDataFileID() throws java.rmi.RemoteException {
+			return this.getIntColumnValue(COLUMN_BULK_DATA);
+		}
+
+		public void setMessageBulkData(ICFile file) throws java.rmi.RemoteException { //Temp (test) method
+			this.setColumn(COLUMN_BULK_DATA, file);
+		}
+
+		public void setMessageBulkData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
+			this.setColumn(COLUMN_BULK_DATA, fileID);
+		}
 
 	public String getSenderName() {
 		try {
