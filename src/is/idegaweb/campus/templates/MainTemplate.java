@@ -1,5 +1,5 @@
 /*
- * $Id: MainTemplate.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: MainTemplate.java,v 1.2 2001/07/13 12:54:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -291,6 +291,22 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   /** Width: 130 pixel
    *  Height: 79 pixel
    */
+
+  public Table getDivider() {
+    Table dividerTable = new Table(1,1);
+      dividerTable.setCellpadding(0);
+      dividerTable.setCellspacing(0);
+      dividerTable.setAlignment("center");
+
+    Image divider = new Image("/pics/line.gif","",99,3);
+      divider.setAlignment("center");
+      divider.setVerticalSpacing(8);
+
+    dividerTable.add(divider);
+
+    return dividerTable;
+  }
+
   public void setFaceLogo(Image FaceLogo){
     Face = FaceLogo;
   }
@@ -359,6 +375,12 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
    */
   public void addTopRight(ModuleObject objectToAdd){
     RightTable.add(objectToAdd,1,1);
+  }
+  /** Adds a divider to the top of right side
+   *
+   */
+  public void addTopRightDivider(){
+    RightTable.add(getDivider(),1,1);
   }
   /** Adds a ModuleObject to the upper logo area on the left
    *

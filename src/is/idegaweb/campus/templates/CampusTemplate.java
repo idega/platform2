@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTemplate.java,v 1.2 2001/06/14 20:29:24 gummi Exp $
+ * $Id: CampusTemplate.java,v 1.3 2001/07/13 12:54:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import com.idega.jmodule.quote.presentation.QuoteReader;
 import is.idegaweb.campus.service.*;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.textObject.Text;
+import javax.servlet.http.*;
 
 /**
  *
@@ -30,26 +31,27 @@ public abstract class CampusTemplate extends MainTemplate{
     InsertBottomLogo();
 
     Login login = new Login();
-    login.setVertical();
-    login.setTryAgainImageUrl("/pics/IS/inn.gif");
-    login.setUserTextColor("#000000");
-    login.setLoggedOnTextColor("#000000");
-    login.setPasswordTextColor("#000000");
-    login.setHeight("100");
-    login.setWidth("135");
-    login.setLoginImageUrl("/pics/IS/inn.gif");
-    login.setLogOutImageUrl("/pics/IS/ut.gif");
-    login.setUserTextSize("1");
-    login.setPasswordTextSize("1");
-    login.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
-    login.setInputLength(10);
+      login.setLayout(Login.LAYOUT_STACKED);
+      login.setTryAgainImageUrl("/pics/IS/inn.gif");
+      login.setUserTextColor("#000000");
+      login.setLoggedOnTextColor("#000000");
+      login.setPasswordTextColor("#000000");
+      login.setHeight("110");
+      login.setWidth("100");
+      login.setLoginImageUrl("/pics/IS/inn.gif");
+      login.setLogOutImageUrl("/pics/IS/ut.gif");
+      login.setUserTextSize(1);
+      login.setPasswordTextSize(1);
+      login.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+      login.setInputLength(14);
+      login.setSubmitButtonAlignment("right");
 
     addMenuTitle(new Image("/pics/titles/IS/menutitle.gif"));
     addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));
     addTopLeft(new Menu());
     addTopRight(login);
+    addTopRightDivider();
     addMainTitle(new Title());
     addTabs(new Tabber());
-
   }
 }
