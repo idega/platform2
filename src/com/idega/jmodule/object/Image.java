@@ -157,7 +157,7 @@ private String getImageURL(ModuleInfo modinfo){
     URIBuffer.append(imageId);
     URIBuffer.append("image?image_id=");
     URIBuffer.append(imageId);
-    String URIString = URIBuffer.toString();
+    URIString = URIBuffer.toString();
   }else useCached = true;
 
   return URIString;
