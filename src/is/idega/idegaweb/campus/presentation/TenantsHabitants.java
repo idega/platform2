@@ -27,6 +27,7 @@ import is.idega.idegaweb.campus.data.Habitant;
 import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
+import com.idega.util.idegaTimestamp;
 
 /**
  * Title:
@@ -44,6 +45,7 @@ public class TenantsHabitants extends Block implements Campus{
   private final static String PARAMETER_CAMPUS_ID = "campus_id";
   private final static String PARAMETER_ORDER_ID = "order_id";
   private final static String APPLICATION_VARIABLE = "cam_tenants";
+  private final static String APPLICATION_REFRESH_RATE = "cam_ten_refresh_rate";
 
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
@@ -56,6 +58,7 @@ public class TenantsHabitants extends Block implements Campus{
   private int _orderID = -1;
   private TextStyler styler;
   private Image image;
+  private long refreshRate = 1000*60*60*2;
 
 
   public TenantsHabitants() {
@@ -163,8 +166,18 @@ public class TenantsHabitants extends Block implements Campus{
     }
 
     Map collectionMap = (Map) iwc.getApplicationAttribute(APPLICATION_VARIABLE);
+    Long refreshed = (Long) iwc.getApplicationAttribute(APPLICATION_REFRESH_RATE);
+    boolean refresh = false;
+    if(refreshed !=null){
+      long now = idegaTimestamp.RightNow().getTimestamp().getTime();
+      long then = refreshed.longValue();
+      long diff = now-then;
+      refresh = (Math.abs(diff) >= refreshRate);
+      //System.err.println("diff: "+diff+"  refresrate: "+refreshRate);
+    }
+
     Integer CMPLX_ID = new Integer(iComplexId);
-    if(collectionMap!=null && collectionMap.containsKey(CMPLX_ID) ){
+    if(collectionMap!=null && collectionMap.containsKey(CMPLX_ID) && !refresh ){
       //System.err.println("getting from memory");
       return (List) collectionMap.get(CMPLX_ID);
     }
@@ -222,6 +235,7 @@ public class TenantsHabitants extends Block implements Campus{
       }
       collectionMap.put(CMPLX_ID,vector);
       iwc.setApplicationAttribute(APPLICATION_VARIABLE,collectionMap);
+      iwc.setApplicationAttribute(APPLICATION_REFRESH_RATE,new Long( idegaTimestamp.RightNow().getTimestamp().getTime()));
     }
 
     return vector;
@@ -280,10 +294,10 @@ public class TenantsHabitants extends Block implements Campus{
     table.add(floorLink,4,1);
 
     table.add(formatText(iwrb.getLocalizedString("phone","Residence phone")),5,1);
-    table.add(formatText(iwrb.getLocalizedString("email","E-mail")),6,1);
+    //table.add(formatText(iwrb.getLocalizedString("email","E-mail")),6,1);
 
 
-    int row = 3;
+    int row = 2;
 
     List vector = listOfComplexHabitants(_campusID,iwc);
 
@@ -309,7 +323,7 @@ public class TenantsHabitants extends Block implements Campus{
       table.add(formatText(collected.getApartment()),column++,row);
       table.add(formatText(collected.getFloor()),column++,row);
       table.add(formatText(collected.getPhone()),column++,row);
-      table.add(new Link(formatText(collected.getEmail()),"mailto:"+collected.getEmail()),column,row);
+      //table.add(new Link(formatText(collected.getEmail()),"mailto:"+collected.getEmail()),column,row);
       row++;
     }
 
@@ -373,6 +387,10 @@ public class TenantsHabitants extends Block implements Campus{
    */
   public String getLocalizedNameValue() {
     return(DEFAULT_VALUE);
+  }
+
+  public void setRefreshRate(long refreshRate){
+    this.refreshRate = refreshRate;
   }
 
 }
