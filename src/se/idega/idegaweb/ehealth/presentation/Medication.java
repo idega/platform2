@@ -22,9 +22,11 @@ import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -39,6 +41,8 @@ public class Medication extends EHealthBlock {
 	private String prefix = "patient_";
 	private String prmForm = prefix + "form_medication";
 	
+	private String prmFrom = prefix + "from";
+	private String prmTo = prefix + "to";
 	private String prmMedicName = prefix + "medicin_name";
 	private String prmMedicForm = prefix + "form";
 	private String prmDose = prefix + "dose";
@@ -281,18 +285,36 @@ public class Medication extends EHealthBlock {
 		
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_TOP);
 		
 		table.setHeight(1, 1, "25");
+		table.setHeight(1, 1, "25");
+		table.setHeight(1, 2, "25");
+		table.setHeight(1, 3, "25");
+		table.setHeight(1, 4, "25");
+		table.setWidth(2, 1, "25");
+		
+		IWTimestamp stamp = new IWTimestamp();
+		
+		DateInput from = (DateInput) getStyledInterface(new DateInput(prmFrom, true));
+		from.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
+		
+		DateInput to = (DateInput) getStyledInterface(new DateInput(prmTo, true));
+		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 			
+		
 		DropdownMenu dropShow = (DropdownMenu) getStyledInterface(new DropdownMenu(prmShow));
 		dropShow.addMenuElementFirst("1", "Visa alla");
 		dropShow.addMenuElement("2", "Visa pågående behandling");
 		dropShow.addMenuElement("3", "Visa icke pågående behandling");
 
-		table.add(dropShow, 1, 1);
-		table.add(new Break(2), 1, 1);
+		table.add(getSmallHeader(localize(prmFrom, "From")+": "), 1, 1);
+		table.add(from, 1, 2);
+		table.add(getSmallHeader(localize(prmTo, "To")+": "), 3, 1);
+		table.add(to, 3, 2);
+		table.add(dropShow, 1, 3);
+		table.add(new Break(2), 1, 4);
 				
 		return table;
 	}
