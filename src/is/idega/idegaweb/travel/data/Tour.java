@@ -28,6 +28,8 @@ public class Tour extends GenericEntity {
     addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
     addAttribute(getHotelPickupTimeColumnName(), "Hotel pick-up time", true, true, Timestamp.class);
     addAttribute(getTotalSeatsColumnName(), "Total seats", true, true, Integer.class);
+    addAttribute(getMinimumSeatsColumnName(), "Lágmark sæta", true, true, Integer.class);
+    addAttribute(getNumberOfDaysColumnName(), "Fjöldi daga", true, true, Integer.class);
     addAttribute(getLengthColumnName(), "Lengd", true, true, Float.class);
   }
   public String getEntityName() {
@@ -38,6 +40,8 @@ public class Tour extends GenericEntity {
   public void setDefaultValues() {
       this.setLength(0);
       this.setTotalSeats(0);
+      this.setMinumumSeats(0);
+      this.setNumberOfDays(1);
   }
 
   public boolean getIsHotelPickup() {
@@ -72,6 +76,22 @@ public class Tour extends GenericEntity {
     setColumn(getTotalSeatsColumnName(), totalSeats);
   }
 
+  public int getMinimumSeats() {
+    return getIntColumnValue(getMinimumSeatsColumnName());
+  }
+
+  public void setMinumumSeats(int seats) {
+    setColumn(getMinimumSeatsColumnName(), seats);
+  }
+
+  public void setNumberOfDays(int numberOfSeats) {
+    setColumn(getNumberOfDaysColumnName(), numberOfSeats);
+  }
+
+  public int getNumberOfDays() {
+    return getIntColumnValue(getNumberOfDaysColumnName());
+  }
+
   public void setLength(float length) {
     setColumn(getLengthColumnName(), length);
   }
@@ -84,6 +104,8 @@ public class Tour extends GenericEntity {
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
   public static String getTotalSeatsColumnName() {return "TOTAL_SEATS";}
+  public static String getMinimumSeatsColumnName() {return "MINIMUM_SEATS";}
+  public static String getNumberOfDaysColumnName() {return "NUMBER_OF_SEATS";}
   public static String getLengthColumnName() {return "TOUR_LENGTH";}
 
 }

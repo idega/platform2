@@ -8,7 +8,8 @@ import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import is.idega.travel.data.BookingEntry;
 import is.idega.travel.data.Booking;
-
+import com.idega.util.database.ConnectionBroker;
+import java.sql.Connection;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -75,6 +76,9 @@ public class Booker {
         booking.setEmail(email);
         if (hotelPickupPlaceId != -1) {
           booking.setHotelPickupPlaceID(hotelPickupPlaceId);
+          if (roomNumber != null) {
+            booking.setRoomNumber(roomNumber);
+          }
         }
         booking.setName(name);
         booking.setPostalCode(postalCode);
@@ -136,12 +140,16 @@ public class Booker {
 
   public static int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType){
     int returner = 0;
+    Connection conn = null;
     try {
+      conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
             sql.append("Select "+Booking.getTotalCountColumnName()+" from "+Booking.getBookingTableName());
             sql.append(" where ");
             sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+            //sql.append(" and ");
+            //sql.append(Booking.getAttendanceColumnName()+" = -1");
             sql.append(" and ");
             sql.append(Booking.getIsValidColumnName()+" = 'Y'");
             if ( (fromStamp != null) && (toStamp == null) ) {
@@ -157,15 +165,43 @@ public class Booker {
               sql.append(" and ");
               sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
             }
-        many = SimpleQuerier.executeStringQuery(sql.toString());
+        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
         for (int i = 0; i < many.length; i++) {
             returner += Integer.parseInt(many[i]);
         }
+/*
+        sql = new StringBuffer();
+            sql.append("Select "+Booking.getAttendanceColumnName()+" from "+Booking.getBookingTableName());
+            sql.append(" where ");
+            sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(Booking.getAttendanceColumnName()+" > 0");
+            sql.append(" and ");
+            sql.append(Booking.getIsValidColumnName()+" = 'Y'");
+            if ( (fromStamp != null) && (toStamp == null) ) {
+              sql.append(" and ");
+              sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
+            }else if ( (fromStamp != null) && (toStamp != null)) {
+              sql.append(" and (");
+              sql.append(Booking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(" and ");
+              sql.append(Booking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
+            }
+            if (bookingType != -1) {
+              sql.append(" and ");
+              sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
+            }
+        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
-
+        for (int i = 0; i < many.length; i++) {
+            returner += Integer.parseInt(many[i]);
+        }
+*/
     }catch (Exception e) {
         e.printStackTrace(System.err);
+    }finally {
+      ConnectionBroker.freeConnection(conn);
     }
 
     return returner;

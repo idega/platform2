@@ -14,6 +14,7 @@ import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 
 import is.idega.travel.data.Service;
 
@@ -42,6 +43,7 @@ public class ServiceDesigner extends TravelManager {
   public static String parameterUpdateAction = "seviceDesignerUpdate";
   public static String parameterUpdateServiceId = "serviceDesignerUpdateServiceId";
   public static String parameterProductPriceId = "serviceDesignerProductPriceId";
+  public static String parameterProductCategoryId = "parameterProductCategoryId";
 
   public static String parameterCreate = "create";
 
@@ -158,40 +160,7 @@ public class ServiceDesigner extends TravelManager {
       this.priceCategoryCreation = new Boolean(true);
       if (this.getService(iwc) != null) {
         ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
-          String sHowMany = iwc.getParameter("how_many");
-          int iHowMany = 2;
-          if (sHowMany == null) {
-            if (prices.length > 0) {
-              sHowMany = Integer.toString(prices.length);
-            }else {
-              sHowMany = "2";
-            }
-          }else {
-            //Integer.parseInt(sHowMany);
-          }
-          iHowMany = Integer.parseInt(sHowMany);
 
-          Form howManyForm = new Form();
-  //            sb.add(howManyForm);
-              Parameter par = new Parameter(this.ServiceAction, this.PriceCategoryRefresh);
-                par.keepStatusOnAction();
-              howManyForm.add(par);
-
-          Table tableHowMany = new Table();
-            howManyForm.add(tableHowMany);
-
-          Text howManyText = (Text) theText.clone();
-            howManyText.setText("T - Hve marga verðliði");
-
-          TextInput howMany = new TextInput("how_many",sHowMany);
-            howMany.setAsIntegers("Temp - bara tölur takk");
-            howMany.setAsNotEmpty("Temp - selja e-ð ");
-
-          SubmitButton howManySubmit = new SubmitButton("T - áfram");
-
-          tableHowMany.add(howManyText,1,1);
-          tableHowMany.add(howMany,2,1);
-          tableHowMany.add(howManySubmit,3,1);
 
 
           Form form = new Form();
@@ -200,82 +169,101 @@ public class ServiceDesigner extends TravelManager {
           Table table = new Table();
             form.add(table);
             table.setAlignment("center");
-            table.setWidth("95%");
+            table.setWidth("90%");
+            table.setColor(super.WHITE);
+            table.setCellspacing(1);
             int row = 1;
 
           PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
-          DropdownMenu toClone = new DropdownMenu(cats,"price_category_id");
-  //          toClone.keepStatusOnAction();
-          DropdownMenu categories;
           TextInput priceDiscount;
+
+          Text categoryName;
+          Text infoText;
 
 
 
           Text counter;
 
           Text catName = (Text) theText.clone();
-            catName.setText("T - nafn");
+            catName.setText(iwrb.getLocalizedString("travel.name","Name"));
+            catName.setFontColor(super.WHITE);
           Text priceDiscountText = (Text) theText.clone();
-            priceDiscountText.setText("T - Price / Discount");
-
-          table.setColor(1,row,super.backgroundColor);
-          table.mergeCells(1,row,3,row);
-
-          Link link = new Link();
-            link.setText("t PriceCategoryDesigner");
-            link.setWindowToOpen(PriceCategoryDesigner.class);
-
-            table.add(link,1,row);
-            table.setAlignment(1,row,"right");
+            priceDiscountText.setText(iwrb.getLocalizedString("travel.price_discount","Price / Discount"));
+            priceDiscountText.setFontColor(super.WHITE);
 
 
-          for (int i = 1; i <= iHowMany; i++) {
+          table.add(catName,1,row);
+          table.add(priceDiscountText,2,row);
+          table.add("",3,row);
+          table.setRowColor(row,super.backgroundColor);
+
+          DecimalFormat df = new DecimalFormat("0.00");
+
+          for (int i = 0; i < cats.length; i++) {
+              categoryName = (Text) theText.clone();
+                categoryName.setFontColor(super.BLACK);
+                categoryName.setText(cats[i].getName());
+              infoText = (Text) theText.clone();
+                infoText.setFontColor(super.BLACK);
+                infoText.setText(cats[i].getName());
+
+
               priceDiscount = new TextInput("price_discount");
-                priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
-                priceDiscount.keepStatusOnAction();
-              categories = (DropdownMenu) toClone.clone();
-//              categories = new DropdownMenu(cats,"price_category_id");
-//                categories.keepStatusOnAction();
 
-              try {
-                if (prices[i-1].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
-                  priceDiscount.setContent(Integer.toString((int)prices[i-1].getPrice()));
-                }else {
-                  priceDiscount.setContent(Float.toString(prices[i-1].getPrice()));
+              if (cats[i].getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                infoText.setText("");
+              }else if (cats[i].getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
+                try {
+                  infoText.setText("%");
+                  infoText.addToText(Text.NON_BREAKING_SPACE);
+                  infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
+                  infoText.addToText(Text.NON_BREAKING_SPACE);
+                  infoText.addToText(new PriceCategory(cats[i].getParentId()).getName());
+                }catch (SQLException sql) {
+                  sql.printStackTrace(System.err);
                 }
-                categories.setSelectedElement(Integer.toString(prices[i-1].getPriceCategoryID()));
-                table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[i-1].getID())),1,row);//PriceCategoryID())),1,row);
-              }catch (ArrayIndexOutOfBoundsException a) {
-                table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
               }
 
-              ++row;
-              table.add(catName,2,row);
-              table.add(categories,3,row);
+              if (prices.length == 0) {
+                table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+              }
+              for (int j = 0; j < prices.length; j++) {
+                if (cats[i].getID() == prices[j].getPriceCategoryID()) {
+                  try {
+                    if (prices[j].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
+                      priceDiscount.setContent(df.format(prices[j].getPrice()));
+                    }else {
+                      priceDiscount.setContent(Float.toString(prices[j].getPrice()));
+                    }
+                    table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[j].getID())),1,row);//PriceCategoryID())),1,row);
+                  }catch (ArrayIndexOutOfBoundsException a) {
+                    table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                  }
+                }else {
+                  table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+                }
+              }
+
 
               ++row;
-              table.add(priceDiscountText,2,row);
-              table.add(priceDiscount,3,row);
+              table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(cats[i].getID())),1,row);
+              table.add(categoryName,1,row);
+              table.add(priceDiscount,2,row);
+              table.setWidth(2,"100");
+              table.add(infoText,3,row);
+              table.setRowColor(row,super.GRAY);
 
-              ++row;
-              table.mergeCells(1,row,3,row);
-              table.setHeight(row,"15");
-              table.setColor(1,row, super.backgroundColor);
+
+
 
           }
 
-          table.setAlignment(1,row,"right");
-          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),1,row);
+          ++row;
+          table.setRowColor(row,super.GRAY);
+          table.setAlignment(3,row,"right");
+          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),3,row);
 
-
-          if (iHowMany > 0) {
-            //SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
-
-          }
-
-
-          add(howManyForm);
-          add(Text.getBreak());
+          add(Text.BREAK);
           add(form);
       }else {
         add("TEMP SERVICE ER NULL");
@@ -286,7 +274,7 @@ public class ServiceDesigner extends TravelManager {
 
   private void priceCategorySave(IWContext iwc) {
       String[] priceDiscount = (String[]) iwc.getParameterValues("price_discount");
-      String[] priceCategoryIds = (String[]) iwc.getParameterValues("price_category_id");
+      String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.parameterProductCategoryId);
 
       String[] productPriceIds = (String[]) iwc.getParameterValues(this.parameterProductPriceId);
 
@@ -299,8 +287,10 @@ public class ServiceDesigner extends TravelManager {
 
           ProductPrice.clearPrices(service.getID());
 
+          float price;
           PriceCategory pCategory;
           for (int i = 0; i < priceDiscount.length; i++) {
+            if (!priceDiscount[i].equals("")) {
               productPriceId = Integer.parseInt(productPriceIds[i]);
               priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
               pCategory = new PriceCategory(priceCategoryId);
@@ -309,10 +299,18 @@ public class ServiceDesigner extends TravelManager {
                 priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
                 tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
               }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
-                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
                 priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
-                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
+                if (priceDiscount[i].indexOf(",") > 0) {
+                  priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
+                  price = (float) Float.parseFloat(priceDiscount[i]);
+                  price = price / 100;
+                }else {
+                  price = (float) Float.parseFloat(priceDiscount[i]);
+                }
+
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, ProductPrice.PRICETYPE_PRICE);
               }
+            }
           }
         }
         this.removeService(iwc);

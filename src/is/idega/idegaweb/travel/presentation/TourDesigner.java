@@ -8,7 +8,7 @@ import com.idega.idegaweb.*;
 import is.idega.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
-
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.data.Address;
 import com.idega.core.data.AddressType;
 import is.idega.travel.data.*;
@@ -84,9 +84,6 @@ public class TourDesigner extends TravelManager {
 
 
   public Form getTourDesignerForm(IWContext iwc,int tourId) {
-//    System.err.println("TOUR_ID = "+tourId);
-
-
     boolean isDataValid = true;
 
     if (tourId != -1) {
@@ -97,13 +94,7 @@ public class TourDesigner extends TravelManager {
         form.setName(NAME_OF_FORM);
       Table table = new Table();
         form.add(table);
-/*
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-        sb.add(table);
-*/
+
     if (isDataValid) {
 
       table.setWidth("90%");
@@ -148,6 +139,8 @@ public class TourDesigner extends TravelManager {
         sundays.keepStatusOnAction();
 
 
+      TextInput number_of_days = new TextInput("number_of_days");
+          number_of_days.keepStatusOnAction();
       TextInput departure_from = new TextInput("departure_from");
           departure_from.setSize(40);
           departure_from.keepStatusOnAction();
@@ -186,6 +179,9 @@ public class TourDesigner extends TravelManager {
       TextInput numberOfSeats = new TextInput("number_of_seats");
         numberOfSeats.keepStatusOnAction();
 
+      TextInput minNumberOfSeats = new TextInput("min_number_of_seats");
+        minNumberOfSeats.keepStatusOnAction();
+
 
       ++row;
       Text nameText = (Text) theBoldText.clone();
@@ -197,25 +193,17 @@ public class TourDesigner extends TravelManager {
 
       Text descText = (Text) theBoldText.clone();
           descText.setText(iwrb.getLocalizedString("travel.description","Description"));
-      Table descFixTable = new Table(3,1);
-        descFixTable.setCellpadding(0);
-        descFixTable.setCellspacing(0);
-        descFixTable.setBorder(0);
-        descFixTable.setAlignment("left");
-        descFixTable.setAlignment(1,1,"left");
-        descFixTable.setColumnAlignment(1,"center");
-        descFixTable.setColumnAlignment(2,"center");
-        descFixTable.setColumnAlignment(3,"center");
+      Text imgText = (Text) theBoldText.clone();
+          imgText.setText(iwrb.getLocalizedString("travel.image","Image"));
 
+      ImageInserter imageInserter = new ImageInserter("design_image_id");
+        imageInserter.setWindowToReload(true);
 
-      descFixTable.add(description,1,1);
-      com.idega.jmodule.image.presentation.ImageInserter imageInserter = new com.idega.jmodule.image.presentation.ImageInserter("design_image_id");
-      descFixTable.add(imageInserter,3,1);
 
       table.setVerticalAlignment(1,row,"top");
       table.setVerticalAlignment(2,row,"top");
-      table.add(descText,1,row);
-      table.add(descFixTable,2,row);
+      table.add(imgText,1,row);
+      table.add(imageInserter,2,row);
 
 
       ++row;
@@ -304,10 +292,20 @@ public class TourDesigner extends TravelManager {
       table.add(weekdayFixTable,2,row);
 
       ++row;
+      Text numOfDays = (Text) theBoldText.clone();
+        numOfDays.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
+      table.add(numOfDays,1,row);
+      table.add(number_of_days,2,row);
+
+      ++row;
       Text departureFromText = (Text) theBoldText.clone();
           departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
       table.add(departureFromText,1,row);
       table.add(departure_from,2,row);
+      Link addDepAddress = new Link(iwrb.getImage("/buttons/new.gif"));
+        addDepAddress.setWindowToOpen(AddressAdder.class);
+      table.add(addDepAddress,2,row);
+
 
       ++row;
       Text departureTimeText = (Text) theBoldText.clone();
@@ -334,13 +332,9 @@ public class TourDesigner extends TravelManager {
         hotels.setName("hotelPickupId");
         hotels.keepStatusOnAction();
 
-      Link alink = new Link(iwrb.getImage("buttons/changeresource.gif"));
-        //alink.setText("T-pickupPlaceDesigner");
-        alink.setWindowToOpen(HotelPickupPlaceDesigner.class);
 
       table.add(hotelPickupText,1,row);
       table.add(hotels,2,row);
-      table.add(alink,2,row);
 
       table.setVerticalAlignment(1,row,"top");
       table.setVerticalAlignment(2,row,"top");
@@ -350,9 +344,15 @@ public class TourDesigner extends TravelManager {
       ++row;
 
       Text nOSText = (Text) theBoldText.clone();
-        nOSText.setText("TEMP-Number of seats");
+        nOSText.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
       table.add(nOSText,1,row);
       table.add(numberOfSeats,2,row);
+
+      ++row;
+      Text mNOSText = (Text) theBoldText.clone();
+        mNOSText.setText(iwrb.getLocalizedString("travel.minimum_number_of_seats","Minimum number of seats"));
+      table.add(mNOSText,1,row);
+      table.add(minNumberOfSeats,2,row);
 
       ++row;
       table.mergeCells(1,row,2,row);
@@ -373,7 +373,7 @@ public class TourDesigner extends TravelManager {
           table.add(par2);
 
           name.setContent(service.getName());
-          description.setContent(service.getDescription());
+//          description.setContent(service.getDescription());
           active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
           active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
           active_yearly.setSelected(timeframe.getIfYearly());
@@ -389,6 +389,10 @@ public class TourDesigner extends TravelManager {
               else if (days[i] == ServiceDay.SATURDAY) saturdays.setChecked(true);
           }
 
+          Product product = service.getProduct();
+          if (product.getFileId() != -1) {
+            imageInserter.setImageId(product.getFileId());
+          }
           if (depAddress != null)
           departure_from.setContent(depAddress.getStreetName());
           idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
@@ -414,15 +418,16 @@ public class TourDesigner extends TravelManager {
           }
 
           numberOfSeats.setContent(Integer.toString(tour.getTotalSeats()));
-
+          minNumberOfSeats.setContent(Integer.toString(tour.getMinimumSeats()));
+          number_of_days.setContent(Integer.toString(tour.getNumberOfDays()));
 
       }
 
 
-      }else {
-        table.add("Gögn eru ósamræmd");
-      }
-      return form;
+    }else {
+      table.add("Gögn eru ósamræmd");
+    }
+    return form;
 
   }
 
@@ -434,10 +439,12 @@ public class TourDesigner extends TravelManager {
 
       String name = iwc.getParameter("name_of_trip");
       String description = iwc.getParameter("description");
+        if (description == null) description = "";
       String imageId = iwc.getParameter("design_image_id");
       String activeFrom = iwc.getParameter("active_from");
       String activeTo = iwc.getParameter("active_to");
       String activeYearly = iwc.getParameter("active_yearly");
+      String numberOfDays = iwc.getParameter("number_of_days");
 
       String allDays = iwc.getParameter("all_days");
       String mondays = iwc.getParameter("mondays");
@@ -455,6 +462,7 @@ public class TourDesigner extends TravelManager {
       String[] hotelPickup = iwc.getParameterValues("hotelPickupId");
 
       String numberOfSeats = iwc.getParameter("number_of_seats");
+      String minNumberOfSeats = iwc.getParameter("min_number_of_seats");
 /*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";
@@ -484,6 +492,28 @@ public class TourDesigner extends TravelManager {
         }
       }else {
         iNumberOfSeats = new Integer(0);
+      }
+
+      Integer iMinNumberOfSeats = null;
+      if (minNumberOfSeats != null) {
+        try {
+        iMinNumberOfSeats = new Integer(minNumberOfSeats);
+        }catch (NumberFormatException n) {
+          iMinNumberOfSeats = new Integer(0);
+        }
+      }else {
+        iMinNumberOfSeats = new Integer(0);
+      }
+
+      Integer iNumberOfDays = null;
+      if (numberOfDays != null) {
+        try {
+          iNumberOfDays = new Integer(numberOfDays);
+        }catch (NumberFormatException n) {
+          iNumberOfDays = new Integer(0);
+        }
+      }else {
+        iNumberOfDays = new Integer(0);
       }
 
       idegaTimestamp activeFromStamp = null;
@@ -538,11 +568,11 @@ public class TourDesigner extends TravelManager {
 
         if (tourId == -1) {
             tb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays);
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays);
         }
 
         /**

@@ -225,6 +225,40 @@ public class ResellerManager {
     //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
   }
 
+  public static Supplier[] getSuppliers(int resellerId) {
+    return getSuppliers(resellerId,"");
+  }
+
+  public static Supplier[] getSuppliers(int resellerId, String orderBy) {
+    Supplier[] suppliers = {};
+    try {
+        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+
+        StringBuffer sql = new StringBuffer();
+          sql.append("Select s.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
+          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
+          sql.append(" WHERE ");
+          sql.append(" r."+reseller.getIDColumnName()+" = "+resellerId);
+          sql.append(" AND ");
+          sql.append(" s."+supplier.getIDColumnName()+" = rs."+supplier.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
+          sql.append(" AND ");
+          sql.append("s."+Supplier.getColumnNameIsValid()+" = 'Y'");
+          if (!orderBy.equals("")) {
+            sql.append(" ORDER BY s."+orderBy);
+          }
+
+        suppliers = (Supplier[]) (Supplier.getStaticInstance(Supplier.class)).findAll(sql.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return suppliers;
+  }
+
   public static Reseller[] getResellers(int supplierId) {
     return getResellers(supplierId,"");
   }

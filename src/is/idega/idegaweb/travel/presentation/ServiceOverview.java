@@ -16,6 +16,7 @@ import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
+import java.text.DecimalFormat;
 
 import is.idega.travel.data.*;
 import com.idega.core.data.*;
@@ -146,6 +147,7 @@ public class ServiceOverview extends TravelManager {
 
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
+      DecimalFormat df = new DecimalFormat("0.00");
 
       String[] dayOfWeekName = new String[8];
         dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
@@ -190,7 +192,8 @@ public class ServiceOverview extends TravelManager {
           activeDaysText.addToText(":");
           activeDaysText.setFontColor(super.BLACK);
 
-      Image image = new Image("/pics/mynd.gif");
+      Image imageToClone = new Image("/pics/mynd.gif");
+      Image image;
 
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
@@ -225,10 +228,16 @@ public class ServiceOverview extends TravelManager {
             contRow = 0;
             contentTable = new Table();
 
+
             service = TravelStockroomBusiness.getService(products[i]);
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
             address = service.getAddress();
-
+            if (products[i].getFileId() != -1) {
+              image = new Image(products[i].getFileId());
+              image.setMaxImageWidth(138);
+            }else{
+              image = (Image) imageToClone.clone();
+            }
             prodName = (Text) theBoldText.clone();
                 prodName.setText(service.getName());
                 prodName.setFontColor(super.BLACK);
@@ -260,6 +269,8 @@ public class ServiceOverview extends TravelManager {
 
             actDays = (Text) theBoldText.clone();
                 actDays.setFontColor(super.BLACK);
+
+
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -327,7 +338,7 @@ public class ServiceOverview extends TravelManager {
               priceText = (Text) theBoldText.clone();
                 priceText.setFontColor(super.BLACK);
               try {
-                priceText.setText(Integer.toString((int)tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
               }catch (ProductPriceException p) {
@@ -353,7 +364,7 @@ public class ServiceOverview extends TravelManager {
             contentTable.setWidth("100%");
             contentTable.setBorder(0);
             contentTable.setAlignment("center");
-            contentTable.setWidth(1,"100");
+            contentTable.setWidth(1,"138");
             contentTable.setWidth(2,"90");
             contentTable.setWidth(3,"300");
             contentTable.setWidth(4,"90");

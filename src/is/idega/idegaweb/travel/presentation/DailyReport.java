@@ -350,6 +350,7 @@ public class DailyReport extends TravelManager {
       String theColor = super.GRAY;
 
       BookingEntry[] entries;
+      int iBookingId = 0;
       table.setRowColor(row,super.backgroundColor);
       for (int i = 0; i < bookings.length; i++) {
           row++;
@@ -363,6 +364,7 @@ public class DailyReport extends TravelManager {
           amount = Booker.getBookingPrice(bookings[i]);
 
           totalBookings += ibookings;
+          if (attendance != -1000)
           totalAttendance += attendance;
           totalAmount += amount;
 
@@ -370,24 +372,47 @@ public class DailyReport extends TravelManager {
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
 
+          payTypeText = (Text) smallText.clone();
+          iBookingId = bookings[i].getBookingTypeID();
+
+          switch (iBookingId) {
+            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING :
+                payTypeText.setText(iwrb.getLocalizedString("travel.credit_card","Credit card"));
+              break;
+            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING :
+                payTypeText.setText(iwrb.getLocalizedString("travel.voucher_reseller","Voucher - Reseller"));
+            break;
+            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING :
+                payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
+            break;
+            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING :
+                payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
+            break;
+            default:
+                payTypeText.setText("");
+            break;
+          }
+
+
           bookedText = (Text) smallText.clone();
             bookedText.setText(Integer.toString(ibookings));
 
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
-          if (attendance != 0) {
+          if (attendance != -1000) {
             attTextBox.setContent(Integer.toString(attendance));
             }
           amountText = (Text) smallText.clone();
             amountText.setText(Integer.toString((int) amount));
 
           nameText.setFontColor(super.BLACK);
+          payTypeText.setFontColor(super.BLACK);
           bookedText.setFontColor(super.BLACK);
           amountText.setFontColor(super.BLACK);
 
           table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
           table.add(nameText,1,row);
-
+          table.add(payTypeText,2,row);
           table.add(bookedText,3,row);
           table.add(attTextBox,4,row);
           table.add(amountText,5,row);
@@ -399,7 +424,6 @@ public class DailyReport extends TravelManager {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++row;
-//              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
               table.setRowColor(row, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
@@ -466,18 +490,23 @@ public class DailyReport extends TravelManager {
           amount = Booker.getBookingPrice(bookings[i]);
 
           totalBookings += ibookings;
+          if (attendance != -1000)
           totalAttendance += attendance;
           totalAmount += amount;
 
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
 
+          payTypeText = (Text) smallText.clone();
+            payTypeText.setText(iwrb.getLocalizedString("travel.paid_on_location","Paid on loaction"));
+
+
           bookedText = (Text) smallText.clone();
             bookedText.setText(Integer.toString(ibookings));
 
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
-          if (attendance != 0) {
+          if (attendance != -1000) {
             attTextBox.setContent(Integer.toString(attendance));
           }
           amountText = (Text) smallText.clone();
@@ -485,16 +514,16 @@ public class DailyReport extends TravelManager {
 
 
           nameText.setFontColor(super.BLACK);
+          payTypeText.setFontColor(super.BLACK);
           bookedText.setFontColor(super.BLACK);
           amountText.setFontColor(super.BLACK);
 
           addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
           addTable.add(nameText,1,addRow);
-
+          addTable.add(payTypeText,2,addRow);
           addTable.add(bookedText,3,addRow);
           addTable.add(attTextBox,4,addRow);
           addTable.add(amountText,5,addRow);
-//          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
           addTable.setRowColor(addRow, theColor);
 
           if (closerLook)
@@ -502,7 +531,6 @@ public class DailyReport extends TravelManager {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++addRow;
-//              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
               addTable.setRowColor(addRow, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
@@ -568,9 +596,10 @@ public class DailyReport extends TravelManager {
           attendance = bookings[i].getAttendance();
           amount = Booker.getBookingPrice(bookings[i]);
 
-          //totalBookings += ibookings;
-          //totalAttendance += attendance;
-          //totalAmount += amount;
+          totalBookings += ibookings;
+          if (attendance != -1000)
+          totalAttendance += attendance;
+          totalAmount += amount;
 
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
@@ -580,7 +609,7 @@ public class DailyReport extends TravelManager {
 
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
-          if (attendance != 0) {
+          if (attendance != -1000) {
             attTextBox.setContent(Integer.toString(attendance));
           }
           amountText = (Text) smallText.clone();
@@ -596,7 +625,6 @@ public class DailyReport extends TravelManager {
           correctionTable.add(bookedText,3,corrRow);
           correctionTable.add(attTextBox,4,corrRow);
           correctionTable.add(amountText,5,corrRow);
-//          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
           correctionTable.setRowColor(corrRow, theColor);
 
           if (closerLook)
@@ -604,7 +632,6 @@ public class DailyReport extends TravelManager {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++corrRow;
-//              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
               correctionTable.setRowColor(corrRow, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
@@ -682,14 +709,12 @@ public class DailyReport extends TravelManager {
           int tRow = 1;
           int many;
 
-//          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
           totalTable.setRowColor(tRow, theColor);
 
           if (closerLook)
           for (int i = 0; i < prices.length; i++) {
             try {
               ++tRow;
-//              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
               totalTable.setRowColor(tRow, theColor);
               many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger())).intValue();
               nameText = (Text) smallText.clone();
@@ -707,7 +732,6 @@ public class DailyReport extends TravelManager {
               totalTable.add(nameText,2,tRow);
               totalTable.add(bookedText,3,tRow);
               totalTable.add(amountText,4,tRow);
-//              totalTable.add(prices[i].getPriceCategory().getName() +" , "+ );
             }catch (SQLException sql) {
               sql.printStackTrace(System.err);
             }
@@ -737,7 +761,7 @@ public class DailyReport extends TravelManager {
       theTable.add(correctionTable,1,6);
       theTable.add(totalTable,1,8);
 
-      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction, this.parameterUpdate);
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterUpdate);
 
       SubmitButton open = null;
       if (this.closerLook) {

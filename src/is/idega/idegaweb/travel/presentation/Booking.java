@@ -15,7 +15,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.travel.business.*;
 import com.idega.util.text.*;
 import java.sql.SQLException;
-
+import java.util.*;
 import is.idega.travel.business.Booker;
 import is.idega.travel.business.Inquirer;
 import is.idega.travel.data.*;
@@ -249,8 +249,10 @@ public class Booking extends TravelManager {
       return topTable;
   }
 
-  public Table getContentHeader(IWContext iwc) {
+  public Form getContentHeader(IWContext iwc) {
+    Form form = new Form();
       Table table = new Table(3,4);
+      form.add(table);
       table.setBorder(0);
       table.setWidth("100%");
 
@@ -298,11 +300,19 @@ public class Booking extends TravelManager {
           table.add(depFrom,2,4);
           table.add(depAt,3,4);
 
+          List depDays = TourBusiness.getDepartureDays(iwc, tour);
+          String dateStr = iwc.getParameter("booking_date");
+          DropdownMenu menu = TourBusiness.getDepartureDaysDropdownMenu(iwc, depDays, "booking_date");
+            if (dateStr != null) menu.setSelectedElement(dateStr);
+            menu.setToSubmit();
+          if (tour.getNumberOfDays() > 1)
+          table.add(menu,3,4);
+
       }catch (SQLException sql) {
           sql.printStackTrace(System.err);
       }
 
-      return table;
+      return form;
   }
 
   public Table getContentTable(IWContext iwc) {
@@ -316,6 +326,7 @@ public class Booking extends TravelManager {
       int row = 1;
       boolean isDayVisible = false;
       boolean isExpired = false;
+      int iBookings = 0;
       try {
         if (reseller != null) {
           isExpired = TravelStockroomBusiness.getIfExpired(contract, stamp);
@@ -325,12 +336,21 @@ public class Booking extends TravelManager {
         }
         else {
           isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
+          if (supplier == null) {
+            if (isDayVisible) {
+              iBookings = Booker.getNumberOfBookings(productId, stamp);
+              if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
+                isDayVisible = false;
+              }
+            }
+          }
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
       }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
             tfnfe.printStackTrace(System.err);
       }
+
 
       if (isDayVisible) {
           table.mergeCells(1,row,5,row);
@@ -522,28 +542,47 @@ public class Booking extends TravelManager {
       int lengthOfMonth = cal.getLengthOfMonth(month, year);
 
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
+      int iBookings = 0;
+
+      List depDays = TourBusiness.getDepartureDays(iwc, tour);
 
       try {
         if (contract != null) {
+          for (int i = 0; i < depDays.size(); i++) {
+            temp = (idegaTimestamp) depDays.get(i);
+            if (!TravelStockroomBusiness.getIfExpired(contract, temp))
+            if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
+                sm.setDayColor(temp, colorForAvailableDay);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+            }
+          }
+
+          /*
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (!TravelStockroomBusiness.getIfExpired(contract, temp))
             if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
-              sm.setDayColor(temp, colorForAvailableDay);
-              sm.setDayFontColor(temp,colorForAvailableDayText);
+                sm.setDayColor(temp, colorForAvailableDay);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
             }
+
             temp.addDays(1);
-          }
+          }*/
         }
         else if (supplier != null) {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
               sm.setDayFontColor(temp,colorForAvailableDayText);
-            }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
-              sm.setDayColor(temp, colorForAvailableDay);
-              sm.setDayFontColor(temp,colorForAvailableDayText);
-            }
+            }/*else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
+                sm.setDayColor(temp, colorForAvailableDay);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+            }*/
             temp.addDays(1);
+          }
+          for (int i = 0; i < depDays.size(); i++) {
+            temp = (idegaTimestamp) depDays.get(i);
+            sm.setDayColor(temp, colorForAvailableDay);
+            sm.setDayFontColor(temp,colorForAvailableDayText);
           }
         }
         else {
@@ -551,11 +590,22 @@ public class Booking extends TravelManager {
             if (Inquirer.getInqueredSeats(productId, temp,resellerId, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
               sm.setDayFontColor(temp,colorForAvailableDayText);
-            }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
+            }/*else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
+              iBookings = Booker.getNumberOfBookings(productId, temp);
+              if (iBookings >= tour.getMinimumSeats() && iBookings <= tour.getTotalSeats()) {
+                sm.setDayColor(temp, colorForAvailableDay);
+                sm.setDayFontColor(temp,colorForAvailableDayText);
+              }
+            }*/
+            temp.addDays(1);
+          }
+          for (int i = 0; i < depDays.size(); i++) {
+            temp = (idegaTimestamp) depDays.get(i);
+            iBookings = Booker.getNumberOfBookings(productId, temp);
+            if (iBookings >= tour.getMinimumSeats() && iBookings <= tour.getTotalSeats()) {
               sm.setDayColor(temp, colorForAvailableDay);
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }
-            temp.addDays(1);
           }
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
@@ -974,7 +1024,7 @@ public class Booking extends TravelManager {
             txtPerPerson.setText(iwrb.getLocalizedString("travel.per_person","per person"));
 
           Text totalText = (Text) theBoldText.clone();
-            totalText.setText("T - Total");
+            totalText.setText(iwrb.getLocalizedString("travel.total","Total"));
           ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
             TotalPassTextInput.setSize(5);
           ResultOutput TotalTextInput = new ResultOutput("total","0");
@@ -1084,10 +1134,10 @@ public class Booking extends TravelManager {
               ccYear.setAsIntegers("T - cc ár rangt");
 
             Text ccText = (Text) theText.clone();
-              ccText.setText("T- creditcard number");
+              ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
 
             Text ccMY = (Text) theText.clone();
-              ccMY.setText("T- month / year");
+              ccMY.setText(iwrb.getLocalizedString("travel.month_year","month / year"));
 
             Text ccSlash = (Text) theText.clone();
               ccSlash.setText(" / ");
@@ -1152,27 +1202,33 @@ public class Booking extends TravelManager {
       String month = iwc.getParameter("month");
       String day = iwc.getParameter("day");
 
-      String chYear = iwc.getParameter("chosen_year");
-      if ((chYear != null) && (year != null)) year = chYear;
+      String dateStr = iwc.getParameter("booking_date");
 
-      if (stamp == null)
+      if (dateStr == null) {
+          String chYear = iwc.getParameter("chosen_year");
+          if ((chYear != null) && (year != null)) year = chYear;
 
-      try {
-          if ( (day != null) && (month != null) && (year != null)) {
-              stamp = new idegaTimestamp(day,month,year);
+          if (stamp == null)
+
+          try {
+              if ( (day != null) && (month != null) && (year != null)) {
+                  stamp = new idegaTimestamp(day,month,year);
+              }
+              else if ((day == null) && (month == null) && (year != null)) {
+                  stamp = new idegaTimestamp(1,idegaTimestamp.RightNow().getMonth(),Integer.parseInt(year));
+              }
+              else if ((day == null) && (month != null) && (year != null)) {
+                  stamp = new idegaTimestamp(1,Integer.parseInt(month),Integer.parseInt(year));
+              }
+              else {
+                  stamp = idegaTimestamp.RightNow();
+              }
           }
-          else if ((day == null) && (month == null) && (year != null)) {
-              stamp = new idegaTimestamp(1,idegaTimestamp.RightNow().getMonth(),Integer.parseInt(year));
-          }
-          else if ((day == null) && (month != null) && (year != null)) {
-              stamp = new idegaTimestamp(1,Integer.parseInt(month),Integer.parseInt(year));
-          }
-          else {
+          catch (Exception e) {
               stamp = idegaTimestamp.RightNow();
           }
-      }
-      catch (Exception e) {
-          stamp = idegaTimestamp.RightNow();
+      }else {
+        stamp = new idegaTimestamp(dateStr);
       }
 
       return stamp;
@@ -1198,12 +1254,12 @@ public class Booking extends TravelManager {
       form.maintainParameter(this.parameterBookingId);
 
     boolean tooMany = false;
-    String available = iwc.getParameter("available");
+    String sAvailable = iwc.getParameter("available");
 
 
-    int iAvailable = Integer.parseInt(available);
+    int iAvailable = Integer.parseInt(sAvailable);
 
-    if (iAvailable != -1234) {
+    if (iAvailable != available) {
       String many;
       int iMany = 0;
       ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
@@ -1260,7 +1316,6 @@ public class Booking extends TravelManager {
       String country = iwc.getParameter("country");
       String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
       String roomNumber = iwc.getParameter("room_number");
-
       String referenceNumber = iwc.getParameter("reference_number");
 
       String ccNumber = iwc.getParameter("ccNumber");

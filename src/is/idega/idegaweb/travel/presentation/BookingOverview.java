@@ -572,8 +572,9 @@ public class BookingOverview extends TravelManager {
       Table table = new Table();
         table.setWidth("95%");
         table.setBorder(0);
-        table.setCellspacing(0);
+        table.setCellspacing(1);
         table.setCellpadding(2);
+        table.setColor(super.WHITE);
 
         int row = 1;
 
@@ -612,6 +613,9 @@ public class BookingOverview extends TravelManager {
           table.add(bookedText,6,row);
           table.add(availableText,7,row);
           table.add(hotelPickupText,8,row);
+          table.add(Text.NON_BREAKING_SPACE, 9,row);
+
+          table.setRowColor(row, super.backgroundColor);
 
           idegaTimestamp currentStamp = new idegaTimestamp(view_date);
           int seats = 0;
@@ -641,6 +645,13 @@ public class BookingOverview extends TravelManager {
           assignedTextBold.setText(Integer.toString(assigned));
           inqTextBold.setText(Integer.toString(iInqueries));
           bookedTextBold.setText(Integer.toString(booked));
+            dateTextBold.setFontColor(super.BLACK);
+            nameTextBold.setFontColor(super.BLACK);
+            countTextBold.setFontColor(super.BLACK);
+            availableTextBold.setFontColor(super.BLACK);
+            assignedTextBold.setFontColor(super.BLACK);
+            inqTextBold.setFontColor(super.BLACK);
+            bookedTextBold.setFontColor(super.BLACK);
 
           ++row;
           table.add(dateTextBold,1,row);
@@ -654,13 +665,7 @@ public class BookingOverview extends TravelManager {
             table.add(availableTextBold,7,row);
           }
 
-          table.setColor(3,row,super.backgroundColor);
-          table.setColor(4,row,super.ORANGE);
-          table.setColor(5,row,super.YELLOW);
-          table.setColor(6,row,super.RED);
-          table.setColor(7,row,super.LIGHTGREEN);
-          table.setColor(8,row,super.backgroundColor);
-
+          table.setRowColor(row, super.GRAY);
 
           Text Tname;
           Text Temail;
@@ -677,6 +682,9 @@ public class BookingOverview extends TravelManager {
               Tname = (Text) super.theSmallBoldText.clone();
                 Tname.setText("&nbsp;&nbsp;"+resellers[i].getName());
               Temail = (Text) super.theSmallBoldText.clone();
+
+              Tname.setFontColor(super.BLACK);
+              Temail.setFontColor(super.BLACK);
 
               try {
                 emails = resellers[i].getEmails();
@@ -696,15 +704,10 @@ public class BookingOverview extends TravelManager {
               table.add(Temail,3,row);
               table.setAlignment(3,row,"left");
               table.add(Tbooked,4,row);
+              table.setRowColor(row, super.GRAY);
 
 
-              table.setColor(1,row,super.ORANGE);
-              table.setColor(2,row,super.ORANGE);
-              table.setColor(4,row,super.ORANGE);
-              table.setColor(5,row,super.YELLOW);
-              table.setColor(6,row,super.RED);
-              table.setColor(7,row,super.LIGHTGREEN);
-              table.setColor(8,row,super.backgroundColor);
+
             }
           }
 
@@ -722,20 +725,17 @@ public class BookingOverview extends TravelManager {
             Tbooked = (Text) super.theSmallBoldText.clone();
               Tbooked.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
 
+              Tname.setFontColor(super.BLACK);
+              Temail.setFontColor(super.BLACK);
+              Tbooked.setFontColor(super.BLACK);
+
             table.mergeCells(2,row,4, row);
             table.add(Tname,1,row);
             table.add(Temail,2,row);
             table.setAlignment(3,row,"left");
             table.add(Tbooked,5,row);
+            table.setRowColor(row, super.GRAY);
 
-
-            table.setColor(1,row,super.YELLOW);
-            table.setColor(2,row,super.YELLOW);
-            table.setColor(4,row,super.YELLOW);
-            table.setColor(5,row,super.YELLOW);
-            table.setColor(6,row,super.RED);
-            table.setColor(7,row,super.LIGHTGREEN);
-            table.setColor(8,row,super.backgroundColor);
           }
 
 
@@ -754,7 +754,12 @@ public class BookingOverview extends TravelManager {
 
                       HotelPickupPlace place = new HotelPickupPlace(bookings[i].getHotelPickupPlaceID());
                       Thotel = (Text) super.theSmallBoldText.clone();
-                      Thotel.setText("&nbsp;&nbsp;"+place.getName());
+                        Thotel.setFontColor(super.BLACK);
+                      Thotel.setText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                      Thotel.addToText(place.getName());
+                      Thotel.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+                      if (bookings[i].getRoomNumber() != null)
+                      Thotel.addToText(bookings[i].getRoomNumber());
                   }catch (Exception e){Thotel.setText("");}
               }else {
                   Thotel.setText("");
@@ -767,6 +772,11 @@ public class BookingOverview extends TravelManager {
               Tbooked = (Text) super.theSmallBoldText.clone();
                 Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
 
+                Tname.setFontColor(super.BLACK);
+                Temail.setFontColor(super.BLACK);
+                Tbooked.setFontColor(super.BLACK);
+
+
               table.mergeCells(2, row, 5, row);
               table.add(Tname, 1, row);
               table.add(Temail, 2, row);
@@ -774,35 +784,32 @@ public class BookingOverview extends TravelManager {
               table.add(Tbooked, 6, row);
               table.add(Thotel, 8, row);
 
-              table.setColor(1, row, super.RED);
-              table.setColor(2, row, super.RED);
-              table.setColor(6, row, super.RED);
-              table.setColor(7, row, super.LIGHTGREEN);
-              table.setColor(8, row, super.backgroundColor);
+              table.setRowColor(row, super.GRAY);
 
               link = (Link) changeLink.clone();
                 link.addParameter(Booking.BookingAction,Booking.parameterUpdateBooking);
                 link.addParameter(Booking.parameterBookingId,bookings[i].getID());
-              table.add(link, 8, row);
+              table.add(link, 9, row);
+              table.add(Text.NON_BREAKING_SPACE,9,row);
 
               link = (Link) deleteLink.clone();
                 link.addParameter(this.parameterBookingId,bookings[i].getID());
-              table.add(link, 8, row);
+              table.add(link, 9, row);
 
           }
 
         ++row;
         table.mergeCells(1,row,6,row);
         availableTextBold.setText(Integer.toString(available));
-        table.setColor(1, row, super.LIGHTGREEN);
-        table.setColor(7, row, super.LIGHTGREEN);
-        table.setColor(8, row, super.backgroundColor);
+          availableTextBold.setFontColor(super.BLACK);
         Text Tavail = (Text) super.theSmallBoldText.clone();
+          Tavail.setFontColor(super.BLACK);
           Tavail.setText(iwrb.getLocalizedString("travel.available_seats","Available seats"));
         if (seats > 0) {
           table.add(Tavail, 1, row);
           table.add(availableTextBold, 7, row);
         }
+        table.setRowColor(row, super.GRAY);
 
 
 
@@ -819,6 +826,7 @@ public class BookingOverview extends TravelManager {
     table.setWidth(5,cellWidth);
     table.setWidth(6,cellWidth);
     table.setWidth(7,cellWidth);
+    table.setWidth(9,"140");
 
     return table;
 

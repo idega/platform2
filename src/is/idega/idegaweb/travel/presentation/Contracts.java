@@ -27,6 +27,7 @@ public class Contracts extends TravelManager {
   private IWResourceBundle iwrb;
 
   private Supplier supplier;
+  private Reseller reseller;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   private String sAction = "contractAction";
@@ -39,9 +40,16 @@ public class Contracts extends TravelManager {
   private String parameterContractId = "contractContractId";
   private String parameterSaveNewReseller = "contractSaveNewReseller";
   private String parameterUpdateReseller = "contractUpdateReseller";
+  private String parameterAddReseller = "contractAddReseller";
+  private String parameterAddResellerSave = "contractAddResellerSave";
+  private String parameterCheckBox = "parameterCheckBox";
+
+  private String parameterSupplierId = "parameterSupplierId";
+  private String parameterViewContract = "parameterViewContract";
+  private String parameterViewProducts = "parameterViewProducts";
 
   Reseller[] resellers = {};
-
+  Supplier[] suppliers = {};
 
   public Contracts() {
   }
@@ -71,6 +79,16 @@ public class Contracts extends TravelManager {
         }else if (action.equals(this.parameterSaveProductInfo)) {
           saveProductInfo(iwc);
           assignReseller(iwc);
+        }else if (action.equals(this.parameterAddReseller)) {
+          selectReseller(iwc);
+        }else if (action.equals(this.parameterAddResellerSave)) {
+          addResellers(iwc);
+          selectReseller(iwc);
+        }else if (action.equals(this.parameterViewContract)) {
+          add(viewContract(iwc, new Product(Integer.parseInt(iwc.getParameter(this.parameterProductId)))));
+        }else if (action.equals(this.parameterViewProducts)) {
+          assignReseller(iwc);
+          //add(viewProducts(iwc));
         }
     }else {
       add(super.getLoggedOffTable(iwc));
@@ -83,8 +101,13 @@ public class Contracts extends TravelManager {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
+      reseller = super.getReseller();
 
-      resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
+      if (supplier != null)
+        resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
+
+      if (reseller != null)
+        suppliers = ResellerManager.getSuppliers(reseller.getID(), Supplier.getColumnNameName());
 
   }
 
@@ -104,6 +127,13 @@ public class Contracts extends TravelManager {
       Link newReseller = new Link(iwrb.getImage("buttons/newreseller.gif"));
         newReseller.addParameter(this.sAction,this.parameterNewReseller);
         linkTable.add(newReseller,1,1);
+
+        linkTable.add(Text.NON_BREAKING_SPACE);
+
+      Link addReseller = new Link(iwrb.getImage("buttons/add.gif"));
+        addReseller.addParameter(this.sAction,this.parameterAddReseller);
+        linkTable.add(addReseller,1,1);
+
       form.add(linkTable);
       form.add(Text.BREAK);
 
@@ -133,36 +163,50 @@ public class Contracts extends TravelManager {
       table.setRowColor(row, super.backgroundColor);
 
 
-      if (resellers == null) {
-        resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
-      }
 
       String theColor = super.GRAY;
-      for (int i = 0; i < resellers.length; i++) {
-          ++row;
-          resName = (Text) theText.clone();
-            resName.setFontColor(super.BLACK);
-            resName.setText(resellers[i].getName());
-          refNum = (Text) theText.clone();
-            refNum.setText(resellers[i].getReferenceNumber());
-            refNum.setFontColor(super.BLACK);
-          assign = new Link(iwrb.getImage("buttons/closer.gif"));
-            assign.addParameter(this.sAction,this.parameterAssignReseller);
-            assign.addParameter(this.parameterResellerId,resellers[i].getID());
-          edit = new Link(iwrb.getImage("buttons/change.gif"));
-            edit.addParameter(this.sAction,this.parameterEditReseller);
-            edit.addParameter(this.parameterResellerId,resellers[i].getID());
+      if (supplier != null) {
+        for (int i = 0; i < resellers.length; i++) {
+            ++row;
+            resName = (Text) theText.clone();
+              resName.setFontColor(super.BLACK);
+              resName.setText(resellers[i].getName());
+            refNum = (Text) theText.clone();
+              refNum.setText(resellers[i].getReferenceNumber());
+              refNum.setFontColor(super.BLACK);
+            assign = new Link(iwrb.getImage("buttons/closer.gif"));
+              assign.addParameter(this.sAction,this.parameterAssignReseller);
+              assign.addParameter(this.parameterResellerId,resellers[i].getID());
+            edit = new Link(iwrb.getImage("buttons/change.gif"));
+              edit.addParameter(this.sAction,this.parameterEditReseller);
+              edit.addParameter(this.parameterResellerId,resellers[i].getID());
 
-          table.add(resName,1,row);
-          table.add(refNum,2,row);
-          table.add(edit,3,row);
-          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,3,row);
-          table.add(assign,3,row);
-          table.setRowColor(row,theColor);
-          table.setAlignment(3,row,"right");
+            table.add(resName,1,row);
+            table.add(refNum,2,row);
+            table.add(edit,3,row);
+            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,3,row);
+            table.add(assign,3,row);
+            table.setRowColor(row,theColor);
+            table.setAlignment(3,row,"right");
 
+        }
+      }else if (reseller != null) {
+        for (int i = 0; i < suppliers.length; i++) {
+            ++row;
+            resName = (Text) theText.clone();
+              resName.setFontColor(super.BLACK);
+              resName.setText(suppliers[i].getName());
+            assign = new Link(iwrb.getImage("buttons/closer.gif"));
+              assign.addParameter(this.sAction,this.parameterViewProducts);
+              assign.addParameter(this.parameterSupplierId,suppliers[i].getID());
+
+            table.add(resName,1,row);
+            table.add(assign,3,row);
+            table.setRowColor(row,theColor);
+            table.setAlignment(3,row,"right");
+
+        }
       }
-//      table.add(resellers);
 
       add(form);
   }
@@ -496,26 +540,23 @@ public class Contracts extends TravelManager {
   }
 
   private void assignReseller(IWContext iwc) throws SQLException {
-    String sResellerId = iwc.getParameter(this.parameterResellerId);
     String sProductId = iwc.getParameter(this.parameterProductId);
     int productId = -1;
     if (sProductId != null) productId = Integer.parseInt(sProductId);
+
+    String sResellerId = iwc.getParameter(this.parameterResellerId);
+
     int resellerId = -1;
-    if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
-    Reseller reseller = new Reseller(Integer.parseInt(sResellerId));
-
-    Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(resellerId), Contract.getColumnNameServiceId(), Integer.toString(productId));
-    Contract contract = null;
-    if (contracts.length > 0) {
-      contract = contracts[0];
+    Reseller tReseller = null;
+    if (supplier != null) {
+      if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
+      tReseller = new Reseller(Integer.parseInt(sResellerId));
+    }else if (reseller != null) {
+      resellerId = reseller.getID();
     }
+    if (reseller != null) tReseller = reseller;
 
-/*
-    ShadowBox sb = new ShadowBox();
-      sb.setWidth("90%");
-*/
     Form form = new Form();
-//      sb.add(form);
     Table table = new Table();
       table.setAlignment("center");
       table.setWidth("90%");
@@ -525,54 +566,46 @@ public class Contracts extends TravelManager {
       table.setColor(super.WHITE);
       form.add(table);
 
-    Product[] products = tsb.getProducts(supplier.getID());
+
+    Product[] products = null;
+    String supplier_id = null;
+    if (supplier != null) {
+      products = tsb.getProducts(supplier.getID());
+    }else if (reseller != null) {
+      supplier_id = iwc.getParameter(this.parameterSupplierId);
+      products = tsb.getProducts(Integer.parseInt(supplier_id));
+    }
+
     int[] serviceDays;
     int row = 1;
 
 
     Text header = (Text) theBoldText.clone();
-      header.setText(reseller.getName());
-//      header.setFontSize(Text.FONT_SIZE_12_HTML_3 );
+      header.setText(tReseller.getName());
     table.add(header,1,row);
     table.setRowColor(row, super.backgroundColor);
     table.mergeCells(1,row,4,row+1);
 
-    Text tNumberOfSeatsPerTour = (Text) theText.clone();
-      tNumberOfSeatsPerTour.setText(iwrb.getLocalizedString("travel.number_of_seats_per_tour","Number of seats per tour"));
-      tNumberOfSeatsPerTour.addToText("&nbsp;&nbsp;");
-    Text tWeekdays = (Text) theText.clone();
-      tWeekdays.setText(iwrb.getLocalizedString("travel.weekdays","Weekdays"));
-    Text tDiscount = (Text) theText.clone();
-      tDiscount.setText(iwrb.getLocalizedString("travel.discount","Discount"));
-    Text tTimeframe = (Text) theText.clone();
-      tTimeframe.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
-    Text tValidUntil = (Text) theText.clone();
-      tValidUntil.setText("T - valid until");
-    Text tDaysBefore = (Text) theText.clone();
-      tDaysBefore.setText("T - days before departure");
-    Text tfFromText = (Text) theText.clone();
-      tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
-    Text tfToText = (Text) theText.clone();
-      tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
 
     Text pName;
-    TextInput pAlot;
-    DateInput pFrom = new DateInput("from");
-    DateInput pTo = new DateInput("to");
-    TextInput pDays;
-    TextInput pDiscount;
 
     Timeframe timeframe;
 
     Link closerLook = new Link(iwrb.getImage("buttons/closer.gif"));
-      closerLook.setFontColor(super.textColor);
       closerLook.addParameter(this.sAction, this.parameterAssignReseller);
-      closerLook.addParameter(this.parameterResellerId , reseller.getID());
+      if (supplier != null) {
+        closerLook.addParameter(this.parameterResellerId , tReseller.getID());
+      }else if (reseller != null) {
+        closerLook.addParameter(this.parameterSupplierId, supplier_id);
+      }
 
     Link closeLook = new Link(iwrb.getImage("buttons/close.gif"));
       closeLook.addParameter(this.sAction, this.parameterAssignReseller);
-      closeLook.addParameter(this.parameterResellerId , reseller.getID());
-
+      if (supplier != null) {
+        closeLook.addParameter(this.parameterResellerId , tReseller.getID());
+      }else if (reseller != null) {
+        closeLook.addParameter(this.parameterSupplierId, supplier_id);
+      }
     Link temp;
 
     ++row;
@@ -590,7 +623,7 @@ public class Contracts extends TravelManager {
         table.mergeCells(1,row,3,row);
 
         if (products[i].getID() == productId) {
-            form.add(new HiddenInput(this.parameterResellerId , Integer.toString(reseller.getID())));
+            form.add(new HiddenInput(this.parameterResellerId , Integer.toString(tReseller.getID())));
             form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
 
             table.setAlignment(4,row,"right");
@@ -598,170 +631,9 @@ public class Contracts extends TravelManager {
             table.add(temp,4,row);
             table.add(Text.NON_BREAKING_SPACE,4,row);
 
-            pAlot = new TextInput("alotment");
-              pAlot.setSize(3);
-            pDays = new TextInput("valid");
-              pDays.setSize(3);
-            pDiscount = new TextInput("discount");
-              pDiscount.setSize(3);
-
-            serviceDays  = ServiceDay.getDaysOfWeek(products[i].getID());
-
-          CheckBox allDays = new CheckBox("all_days");
-          CheckBox mondays = new CheckBox("mondays");
-          CheckBox tuesdays = new CheckBox("tuesdays");
-          CheckBox wednesdays = new CheckBox("wednesdays");
-          CheckBox thursdays = new CheckBox("thursdays");
-          CheckBox fridays = new CheckBox("fridays");
-          CheckBox saturdays = new CheckBox("saturdays");
-          CheckBox sundays = new CheckBox("sundays");
-
-          Table weekdayFixTable = new Table(9,2);
-            weekdayFixTable.setCellpadding(0);
-            weekdayFixTable.setCellspacing(1);
-            weekdayFixTable.setWidth("350");
-            weekdayFixTable.setColumnAlignment(1,"center");
-            weekdayFixTable.setColumnAlignment(2,"center");
-            weekdayFixTable.setColumnAlignment(3,"center");
-            weekdayFixTable.setColumnAlignment(4,"center");
-            weekdayFixTable.setColumnAlignment(5,"center");
-            weekdayFixTable.setColumnAlignment(6,"center");
-            weekdayFixTable.setColumnAlignment(7,"center");
-            weekdayFixTable.setColumnAlignment(8,"center");
-            weekdayFixTable.setColumnAlignment(9,"center");
-
-            Text alld = (Text) smallText.clone();
-                alld.setText(iwrb.getLocalizedString("travel.all_days","All"));
-            Text mond = (Text) smallText.clone();
-                mond.setText(iwrb.getLocalizedString("travel.mon","mon"));
-            Text tued = (Text) smallText.clone();
-                tued.setText(iwrb.getLocalizedString("travel.tue","tue"));
-            Text wedd = (Text) smallText.clone();
-                wedd.setText(iwrb.getLocalizedString("travel.wed","wed"));
-            Text thud = (Text) smallText.clone();
-                thud.setText(iwrb.getLocalizedString("travel.thu","thu"));
-            Text frid = (Text) smallText.clone();
-                frid.setText(iwrb.getLocalizedString("travel.fri","fri"));
-            Text satd = (Text) smallText.clone();
-                satd.setText(iwrb.getLocalizedString("travel.sat","sat"));
-            Text sund = (Text) smallText.clone();
-                sund.setText(iwrb.getLocalizedString("travel.sun","sun"));
-
-
-            weekdayFixTable.add(alld,1,1);
-            weekdayFixTable.add(mond,3,1);
-            weekdayFixTable.add(tued,4,1);
-            weekdayFixTable.add(wedd,5,1);
-            weekdayFixTable.add(thud,6,1);
-            weekdayFixTable.add(frid,7,1);
-            weekdayFixTable.add(satd,8,1);
-            weekdayFixTable.add(sund,9,1);
-
-            weekdayFixTable.add(allDays,1,2);
-
-            if (ServiceDay.getIfDay(productId,ServiceDay.MONDAY))
-              weekdayFixTable.add(mondays,3,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.TUESDAY))
-            weekdayFixTable.add(tuesdays,4,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.WEDNESDAY))
-            weekdayFixTable.add(wednesdays,5,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.THURSDAY))
-            weekdayFixTable.add(thursdays,6,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.FRIDAY))
-            weekdayFixTable.add(fridays,7,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.SATURDAY))
-            weekdayFixTable.add(saturdays,8,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.SUNDAY))
-            weekdayFixTable.add(sundays,9,2);
-
-            pFrom = new DateInput("from");
-            pTo = new DateInput("to");
-
-            if (contract != null) {
-                pAlot.setContent(Integer.toString(contract.getAlotment()));
-                pDays.setContent(Integer.toString(contract.getExpireDays()) );
-                pDiscount.setContent(contract.getDiscount());
-                int[] days = ResellerDay.getDaysOfWeek(resellerId, productId);
-                for (int j = 0; j < days.length; j++) {
-                  if (days[j] == ResellerDay.MONDAY) mondays.setChecked(true);
-                  if (days[j] == ResellerDay.TUESDAY) tuesdays.setChecked(true);
-                  if (days[j] == ResellerDay.WEDNESDAY) wednesdays.setChecked(true);
-                  if (days[j] == ResellerDay.THURSDAY) thursdays.setChecked(true);
-                  if (days[j] == ResellerDay.FRIDAY) fridays.setChecked(true);
-                  if (days[j] == ResellerDay.SATURDAY) saturdays.setChecked(true);
-                  if (days[j] == ResellerDay.SUNDAY) sundays.setChecked(true);
-                }
-
-                form.add(new HiddenInput(this.parameterContractId,Integer.toString(contract.getID())));
-            }
-
-
-            try {
-              if (contract == null) {
-                timeframe = tsb.getTimeframe(products[i]);
-                pFrom.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
-                pTo.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
-              }else {
-                pFrom.setDate(new idegaTimestamp(contract.getFrom()).getSQLDate());
-                pTo.setDate(new idegaTimestamp(contract.getTo()).getSQLDate());
-              }
-            }catch (TravelStockroomBusiness.TimeframeNotFoundException tnfe) {
-              tnfe.printStackTrace(System.err);
-              timeframe = null;
-            }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
-              snfe.printStackTrace(System.err);
-              timeframe = null;
-            }
-
-
-            pName.setFontColor(super.BLACK);
             ++row;
             table.mergeCells(1,row,4,row);
-
-            Table infoTable = new Table();
-              table.add(infoTable,1,row);
-              infoTable.setBorder(0);
-              infoTable.setCellspacing(0);
-              infoTable.setWidth("100%");
-              infoTable.setColor(super.backgroundColor);
-
-            int infoRow = 1;
-
-            infoTable.add(tDiscount,1,infoRow);
-            infoTable.add(pDiscount,3,infoRow);
-
-            ++infoRow;
-            infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
-            infoTable.add(pAlot,3,infoRow);
-
-            ++infoRow;
-            infoTable.add(tWeekdays,1,infoRow);
-            infoTable.add(weekdayFixTable,3,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
-
-            ++infoRow;
-            infoTable.add(tTimeframe,1,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
-            infoTable.add(tfFromText,2,infoRow);
-            infoTable.add(pFrom,3,infoRow);
-            infoTable.add(tfToText,3,infoRow);
-            infoTable.add(pTo,3,infoRow);
-
-            ++infoRow;
-            infoTable.add(tValidUntil,1,infoRow);
-            infoTable.mergeCells(3,infoRow,4,infoRow);
-            infoTable.add(pDays,3,infoRow);
-            infoTable.add(tDaysBefore,3,infoRow);
-
-            ++infoRow;
-            //table.setRowColor(row, theColor);
-            SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
-            infoTable.add(submit,4,infoRow);
-            infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
-            infoTable.setAlignment(4,infoRow,"right");
-            //table.mergeCells(1,row,3,row);
-            //table.setRowColor(row, theColor);
-
+            table.add(viewContract(iwc,products[i]),1,row);
         }else {
           temp = (Link) closerLook.clone();
             temp.addParameter(this.parameterProductId, products[i].getID());
@@ -882,4 +754,322 @@ public class Contracts extends TravelManager {
 
   }
 
+  public void selectReseller(IWContext iwc) {
+    Form form = new Form();
+    Table table = new Table();
+      form.add(table);
+      table.setCellspacing(1);
+      table.setColor(super.WHITE);
+      table.setWidth("90%");
+
+    Text nameTxt = (Text) theText.clone();
+      nameTxt.setText(iwrb.getLocalizedString("travel.name","Name"));
+      nameTxt.setFontColor(super.WHITE);
+
+    Text addTxt = (Text) theText.clone();
+      addTxt.setText(iwrb.getLocalizedString("travel.add","Add"));
+      addTxt.setFontColor(super.WHITE);
+
+    try {
+      Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
+      Reseller[] myResellers = ResellerManager.getResellers(this.supplier.getID());
+      int[] resellerIds = new int[myResellers.length];
+      for (int i = 0; i < resellerIds.length; i++) {
+        resellerIds[i] = myResellers[i].getID();
+      }
+
+
+      int row = 1;
+      CheckBox box;
+      Text nameText;
+
+      table.setRowColor(row, super.backgroundColor);
+      table.add(nameTxt,1,row);
+      table.add(addTxt,2,row);
+      table.setAlignment(2,row,"right");
+      table.setRowColor(row, super.backgroundColor);
+      int resId;
+
+      for (int i = 0; i < tResellers.length; i++) {
+        resId = tResellers[i].getID();
+        ++row;
+
+        nameText = (Text) nameTxt.clone();
+          nameText.setFontColor(super.BLACK);
+          nameText.setText(tResellers[i].getName());
+        box = new CheckBox(this.parameterCheckBox+"_"+resId);
+        for (int j = 0; j < resellerIds.length; j++) {
+          if (resId == resellerIds[j]) box.setChecked(true);
+        }
+
+        table.setRowColor(row, super.GRAY);
+        table.add(new HiddenInput(this.parameterResellerId,Integer.toString(tResellers[i].getID())));
+        table.add(nameText,1,row);
+        table.add(box,2,row);
+        table.setAlignment(2,row,"right");
+      }
+
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    Table tableTwo= new Table(2,1);
+      form.add(tableTwo);
+      tableTwo.setWidth("90%");
+      tableTwo.setAlignment("center");
+      tableTwo.setAlignment(2,1,"right");
+
+    SubmitButton saveBtn = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction ,this.parameterAddResellerSave);
+      tableTwo.add(saveBtn,2,1);
+
+    Link backLnk = new Link(iwrb.getImage("buttons/back.gif"));
+      tableTwo.add(backLnk,1,1);
+
+    add(Text.BREAK);
+    add(form);
+  }
+
+
+  private void addResellers(IWContext iwc) {
+    String[] ids = iwc.getParameterValues(this.parameterResellerId);
+    if (ids == null) ids = new String[0];
+    String box;
+
+    Reseller reseller;
+    for (int i = 0; i < ids.length; i++) {
+      box = iwc.getParameter(this.parameterCheckBox+"_"+ids[i]);
+      try {
+        if (box != null) {
+          supplier.addTo(Reseller.class, Integer.parseInt(ids[i]));
+        }else {
+          reseller = new Reseller(Integer.parseInt(ids[i]));
+          supplier.removeFrom(reseller);
+        }
+      }catch (SQLException sql) {
+      }
+    }
+
+  }
+
+
+  private Table viewContract(IWContext iwc, Product product) throws SQLException {
+    int productId = product.getID();
+    String sResellerId = iwc.getParameter(this.parameterResellerId);
+
+    int resellerId = -1;
+    Reseller tReseller = null;
+    if (supplier != null) {
+      if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
+      resellerId = Integer.parseInt(sResellerId);
+      tReseller = new Reseller(resellerId);
+    }else if (reseller != null) {
+      resellerId = reseller.getID();
+      tReseller = reseller;
+    }
+
+    Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(resellerId), Contract.getColumnNameServiceId(), Integer.toString(productId));
+    Contract contract = null;
+    if (contracts.length > 0) {
+      contract = contracts[0];
+    }
+    Text tNumberOfSeatsPerTour = (Text) theText.clone();
+      tNumberOfSeatsPerTour.setText(iwrb.getLocalizedString("travel.number_of_seats_per_tour","Number of seats per tour"));
+      tNumberOfSeatsPerTour.addToText("&nbsp;&nbsp;");
+    Text tWeekdays = (Text) theText.clone();
+      tWeekdays.setText(iwrb.getLocalizedString("travel.weekdays","Weekdays"));
+    Text tDiscount = (Text) theText.clone();
+      tDiscount.setText(iwrb.getLocalizedString("travel.discount","Discount"));
+    Text tTimeframe = (Text) theText.clone();
+      tTimeframe.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
+    Text tValidUntil = (Text) theText.clone();
+      tValidUntil.setText("T - valid until");
+    Text tDaysBefore = (Text) theText.clone();
+      tDaysBefore.setText("T - days before departure");
+    Text tfFromText = (Text) theText.clone();
+      tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
+    Text tfToText = (Text) theText.clone();
+      tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
+
+    Text pName = null;
+    TextInput pAlot;
+    DateInput pFrom = new DateInput("from");
+    DateInput pTo = new DateInput("to");
+    TextInput pDays;
+    TextInput pDiscount;
+
+    Timeframe timeframe;
+
+    Link closerLook = new Link(iwrb.getImage("buttons/closer.gif"));
+      closerLook.setFontColor(super.textColor);
+      closerLook.addParameter(this.sAction, this.parameterAssignReseller);
+      closerLook.addParameter(this.parameterResellerId , tReseller.getID());
+
+    Link closeLook = new Link(iwrb.getImage("buttons/close.gif"));
+      closeLook.addParameter(this.sAction, this.parameterAssignReseller);
+      closeLook.addParameter(this.parameterResellerId , tReseller.getID());
+
+    Link temp;
+
+            pAlot = new TextInput("alotment");
+              pAlot.setSize(3);
+            pDays = new TextInput("valid");
+              pDays.setSize(3);
+            pDiscount = new TextInput("discount");
+              pDiscount.setSize(3);
+
+            int[] serviceDays  = ServiceDay.getDaysOfWeek(productId);
+
+          CheckBox allDays = new CheckBox("all_days");
+          CheckBox mondays = new CheckBox("mondays");
+          CheckBox tuesdays = new CheckBox("tuesdays");
+          CheckBox wednesdays = new CheckBox("wednesdays");
+          CheckBox thursdays = new CheckBox("thursdays");
+          CheckBox fridays = new CheckBox("fridays");
+          CheckBox saturdays = new CheckBox("saturdays");
+          CheckBox sundays = new CheckBox("sundays");
+
+          Table weekdayFixTable = new Table(9,2);
+            weekdayFixTable.setCellpadding(0);
+            weekdayFixTable.setCellspacing(1);
+            weekdayFixTable.setWidth("350");
+            weekdayFixTable.setColumnAlignment(1,"center");
+            weekdayFixTable.setColumnAlignment(2,"center");
+            weekdayFixTable.setColumnAlignment(3,"center");
+            weekdayFixTable.setColumnAlignment(4,"center");
+            weekdayFixTable.setColumnAlignment(5,"center");
+            weekdayFixTable.setColumnAlignment(6,"center");
+            weekdayFixTable.setColumnAlignment(7,"center");
+            weekdayFixTable.setColumnAlignment(8,"center");
+            weekdayFixTable.setColumnAlignment(9,"center");
+
+            Text alld = (Text) smallText.clone();
+                alld.setText(iwrb.getLocalizedString("travel.all_days","All"));
+            Text mond = (Text) smallText.clone();
+                mond.setText(iwrb.getLocalizedString("travel.mon","mon"));
+            Text tued = (Text) smallText.clone();
+                tued.setText(iwrb.getLocalizedString("travel.tue","tue"));
+            Text wedd = (Text) smallText.clone();
+                wedd.setText(iwrb.getLocalizedString("travel.wed","wed"));
+            Text thud = (Text) smallText.clone();
+                thud.setText(iwrb.getLocalizedString("travel.thu","thu"));
+            Text frid = (Text) smallText.clone();
+                frid.setText(iwrb.getLocalizedString("travel.fri","fri"));
+            Text satd = (Text) smallText.clone();
+                satd.setText(iwrb.getLocalizedString("travel.sat","sat"));
+            Text sund = (Text) smallText.clone();
+                sund.setText(iwrb.getLocalizedString("travel.sun","sun"));
+
+
+            weekdayFixTable.add(alld,1,1);
+            weekdayFixTable.add(mond,3,1);
+            weekdayFixTable.add(tued,4,1);
+            weekdayFixTable.add(wedd,5,1);
+            weekdayFixTable.add(thud,6,1);
+            weekdayFixTable.add(frid,7,1);
+            weekdayFixTable.add(satd,8,1);
+            weekdayFixTable.add(sund,9,1);
+
+            weekdayFixTable.add(allDays,1,2);
+
+            if (ServiceDay.getIfDay(productId,ServiceDay.MONDAY))
+              weekdayFixTable.add(mondays,3,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.TUESDAY))
+            weekdayFixTable.add(tuesdays,4,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.WEDNESDAY))
+            weekdayFixTable.add(wednesdays,5,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.THURSDAY))
+            weekdayFixTable.add(thursdays,6,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.FRIDAY))
+            weekdayFixTable.add(fridays,7,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.SATURDAY))
+            weekdayFixTable.add(saturdays,8,2);
+            if (ServiceDay.getIfDay(productId,ServiceDay.SUNDAY))
+            weekdayFixTable.add(sundays,9,2);
+
+            pFrom = new DateInput("from");
+            pTo = new DateInput("to");
+
+            if (contract != null) {
+                pAlot.setContent(Integer.toString(contract.getAlotment()));
+                pDays.setContent(Integer.toString(contract.getExpireDays()) );
+                pDiscount.setContent(contract.getDiscount());
+                int[] days = ResellerDay.getDaysOfWeek(resellerId, productId);
+                for (int j = 0; j < days.length; j++) {
+                  if (days[j] == ResellerDay.MONDAY) mondays.setChecked(true);
+                  if (days[j] == ResellerDay.TUESDAY) tuesdays.setChecked(true);
+                  if (days[j] == ResellerDay.WEDNESDAY) wednesdays.setChecked(true);
+                  if (days[j] == ResellerDay.THURSDAY) thursdays.setChecked(true);
+                  if (days[j] == ResellerDay.FRIDAY) fridays.setChecked(true);
+                  if (days[j] == ResellerDay.SATURDAY) saturdays.setChecked(true);
+                  if (days[j] == ResellerDay.SUNDAY) sundays.setChecked(true);
+                }
+
+                table.add(new HiddenInput(this.parameterContractId,Integer.toString(contract.getID())));
+            }
+
+
+            try {
+              if (contract == null) {
+                timeframe = tsb.getTimeframe(product);
+                pFrom.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
+                pTo.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
+              }else {
+                pFrom.setDate(new idegaTimestamp(contract.getFrom()).getSQLDate());
+                pTo.setDate(new idegaTimestamp(contract.getTo()).getSQLDate());
+              }
+            }catch (TravelStockroomBusiness.TimeframeNotFoundException tnfe) {
+              tnfe.printStackTrace(System.err);
+              timeframe = null;
+            }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+              snfe.printStackTrace(System.err);
+              timeframe = null;
+            }
+
+
+            Table infoTable = new Table();
+              infoTable.setBorder(0);
+              infoTable.setCellspacing(0);
+              infoTable.setWidth("100%");
+              infoTable.setColor(super.backgroundColor);
+
+            int infoRow = 1;
+
+            infoTable.add(tDiscount,1,infoRow);
+            infoTable.add(pDiscount,3,infoRow);
+
+            ++infoRow;
+            infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
+            infoTable.add(pAlot,3,infoRow);
+
+            ++infoRow;
+            infoTable.add(tWeekdays,1,infoRow);
+            infoTable.add(weekdayFixTable,3,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+
+            ++infoRow;
+            infoTable.add(tTimeframe,1,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+            infoTable.add(tfFromText,2,infoRow);
+            infoTable.add(pFrom,3,infoRow);
+            infoTable.add(tfToText,3,infoRow);
+            infoTable.add(pTo,3,infoRow);
+
+            ++infoRow;
+            infoTable.add(tValidUntil,1,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+            infoTable.add(pDays,3,infoRow);
+            infoTable.add(tDaysBefore,3,infoRow);
+
+            ++infoRow;
+            //table.setRowColor(row, theColor);
+            SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
+            if (supplier != null)
+            infoTable.add(submit,4,infoRow);
+            infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+            infoTable.setAlignment(4,infoRow,"right");
+            //table.mergeCells(1,row,3,row);
+            //table.setRowColor(row, theColor);
+      return infoTable;
+  }
 }

@@ -1,5 +1,6 @@
 package is.idega.travel.presentation;
 
+import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -8,7 +9,6 @@ import com.idega.block.trade.stockroom.data.*;
 import is.idega.travel.data.*;
 import com.idega.core.data.*;
 import java.sql.SQLException;
-
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -19,165 +19,177 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class HotelPickupPlaceDesigner extends TravelWindow {
+public class HotelPickupPlaceDesigner extends TravelManager {
 
-  private int supplierId = -1;
-  private Supplier supplier;
-  private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  private static String parameterHotelPickupPlaceId = "parameterHotelPickupPlaceId";
+  private static String parameterSaveHotelPickupPlaceInfo = "parameterSaveHotelPickupPlaceInfo";
 
-  private String dropdownMenuName = "hppdId";
+  private static String sAction = "actionForHPPD";
 
-  private String action = "hppdAction";
-
-  private String parameterCreate = "createPickupPlace";
-  private String parameterDelete = "deletePickupPlace";
-  private String parameterSave = "savePickupPlace";
-  private String parameterClose = "closeWindow";
+  private Supplier supplier = null;
+  private IWResourceBundle iwrb = null;
 
   public HotelPickupPlaceDesigner() {
-    super.setTitle("idegaWeb Travel");
   }
 
-  public void main(IWContext iwc) {
+
+  public HotelPickupPlaceDesigner(IWContext iwc) throws Exception{
     super.main(iwc);
+    supplier = super.getSupplier();
+    iwrb = super.getResourceBundle();
+  }
 
-    if (checkForEverything(iwc)) {
-      String action = iwc.getParameter(this.action);
-
-
-      if (action == null) {
-        mainMenu(iwc);
-      }else if (action.equals(this.parameterCreate) ) {
-        createPickupPlace(iwc);
-      }else if (action.equals(this.parameterDelete) ) {
-        deletePickupPlace(iwc);
-      }else if (action.equals(this.parameterSave) ) {
-        savePickupPlace(iwc);
-      }else if (action.equals(this.parameterClose) ) {
-        closer();
+  public static void handleInsert(IWContext iwc, Supplier supplier) {
+    String action = iwc.getParameter(sAction);
+    if (action != null) {
+      if (action.equals(parameterSaveHotelPickupPlaceInfo)) {
+        saveHotelPickupPlaces(iwc, supplier);
       }
-
     }
   }
 
-  public void closer() {
-    jPage.setParentToReload();
-    jPage.setOnUnLoad("window.opener."+ServiceDesigner.NAME_OF_FORM+".submit()");
-    super.close(false);
-  }
+  private static boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) {
+    String[] hppIds = iwc.getParameterValues("parameterHotelPickupPlaceId");
+    String[] hppNames = iwc.getParameterValues("hotel_pickup_place_name");
 
-  private void savePickupPlace(IWContext iwc) {
-      String address = iwc.getParameter("address");
+    boolean returner = false;
+    String del;
+    if (hppNames != null && hppIds != null)
+    try {
+      for (int i = 0; i < hppNames.length; i++) {
+        if (hppIds[i].equals("-1")) {
+          if  ( (hppNames[i] != null) && (!hppNames[i].equals("")) ) {
+            Address hotelPickupAddress = new Address();
+              hotelPickupAddress.setAddressTypeID(AddressType.getId(TravelStockroomBusiness.uniqueHotelPickupAddressType));
+              hotelPickupAddress.setStreetName(hppNames[i]);
+              hotelPickupAddress.insert();
 
-      try {
-        if  ( (address != null) && (!address.equals("")) ) {
-          Address hotelPickupAddress = new Address();
-            hotelPickupAddress.setAddressTypeID(AddressType.getId(TravelStockroomBusiness.uniqueHotelPickupAddressType));
-            hotelPickupAddress.setStreetName(address);
-            hotelPickupAddress.insert();
+            HotelPickupPlace hpp = new HotelPickupPlace();
+              hpp.setName(hppNames[i]);
+              hpp.setAddress(hotelPickupAddress);
+              hpp.insert();
+            hpp.addTo(supplier);
 
-          HotelPickupPlace hpp = new HotelPickupPlace();
-            hpp.setName(address);
-            hpp.setAddress(hotelPickupAddress);
-            hpp.insert();
+          }
+        }else {
+          del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
 
-          hpp.addTo(this.supplier);
+          HotelPickupPlace hpp = new HotelPickupPlace(Integer.parseInt(hppIds[i]));
+          Address address = hpp.getAddress();
+
+          if (del == null) {
+            hpp.setName(hppNames[i]);
+            hpp.update();
+            if (address != null) {
+              address.setStreetName(hppNames[i]);
+              address.update();
+            }
+          }else {
+            hpp.removeFrom(supplier);
+          }
 
         }
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
+
       }
-      mainMenu(iwc);
-  }
-
-  private void deletePickupPlace(IWContext iwc) {
-    String placeId = iwc.getParameter(this.dropdownMenuName);
-    try {
-      HotelPickupPlace place = new HotelPickupPlace(Integer.parseInt(placeId));
-        place.delete();
+      returner = true;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
     }
-    catch (Exception e) {
-      add("T- Villa");
-    }
-    mainMenu(iwc);
-  }
 
-  private void createPickupPlace(IWContext iwc) {
-    Form form = new Form();
-    Table table = new Table();
-      form.add(table);
-
-      Text address = (Text) super.text.clone();
-        address.setText(iwrb.getLocalizedString("travel.address_long","Address"));
-
-      TextInput addressInput = new TextInput("address");
-
-      SubmitButton save = new SubmitButton("T-Save",this.action, this.parameterSave);
-
-
-      table.add(address,1,2);
-      table.add(addressInput,2,2);
-      table.mergeCells(1,3,2,3);
-      table.add(save,1,3);
-
-    add(form);
+      return returner;
   }
 
 
-  private void mainMenu(IWContext iwc) {
-    int row = 1;
+  public Form getHotelPickupPlaceForm(int supplierId) throws SQLException{
+    int extraFields = 3;
+    int textInputWidth = 60;
+
+    Supplier supplier = new Supplier(supplierId);
+
     Form form = new Form();
     Table table = new Table();
       form.add(table);
       table.setBorder(0);
+      table.setColor(TravelManager.WHITE);
+      table.setCellspacing(1);
       table.setAlignment("center");
-      table.setWidth("90%");
-      HotelPickupPlace[] places = tsb.getHotelPickupPlaces(supplier);
+      HotelPickupPlace[] places = TravelStockroomBusiness.getHotelPickupPlaces(supplier);
 
-    Text header = (Text) text.clone();
+    Text header = (Text) theText.clone();
       header.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
-      header.setFontSize(Text.FONT_SIZE_12_HTML_3);
       header.setBold();
+    Text deleteTxt = (Text) theText.clone();
+      deleteTxt.setText(iwrb.getLocalizedString("travel.delete","Delete"));
+      deleteTxt.setBold();
 
-    SubmitButton lNew = new SubmitButton("T - new",this.action, this.parameterCreate);
-    SubmitButton lDel = new SubmitButton("T - del",this.action, this.parameterDelete);
+    Text nrTxt;
+    TextInput nameInp;
+    CheckBox delBox;
 
-    DropdownMenu dmPlaces = new DropdownMenu(places, this.dropdownMenuName);
+    table.setWidth(1,"15");
+    table.setWidth(3,"2");
 
-    table.add(header,1,row);
-    table.setAlignment(1,row,"center");
-    table.mergeCells(1,row,2,row);
-    ++row;
-    table.add(dmPlaces,1,row);
-    table.mergeCells(1,row,2,row);
-    ++row;
-    table.add(lNew,1,row);
-    table.add(lDel,2,row);
-    table.setAlignment(1,row,"left");
-    table.setAlignment(2,row,"right");
+    int row = 1;
+    table.add(header,2,row);
+    table.add(deleteTxt,3,row);
+    table.setRowColor(row,super.backgroundColor);
 
-    SubmitButton lClose = new SubmitButton("T - Close",this.action, this.parameterClose);
 
-    Paragraph p = new Paragraph();
-      p.add(lClose);
-      p.setAlign("right");
-    form.add(p);
+    int counter = 0;
 
-    add(form);
-  }
+    for (int i = 0; i < places.length; i++) {
+        ++row;
+        ++counter;
+        nrTxt = (Text) super.smallText.clone();
+          nrTxt.setFontColor(super.BLACK);
+          nrTxt.setText(Integer.toString(counter));
 
-  private boolean checkForEverything(IWContext iwc) {
-    boolean returner = true;
-    try {
+        nameInp = new TextInput("hotel_pickup_place_name");
+          nameInp.setContent(places[i].getAddress().getStreetName());
+          nameInp.setSize(textInputWidth);
 
-      this.supplierId = tsb.getUserSupplierId(iwc);
-      this.supplier = new Supplier(supplierId);
+        delBox = new CheckBox("hotel_pickup_place_to_delete_"+places[i].getID());
 
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-      returner = false;
+        table.setRowColor(row,super.GRAY);
+
+        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, Integer.toString(places[i].getID())),1,row);
+        table.add(nrTxt,1,row);
+        table.add(Text.NON_BREAKING_SPACE,2,row);
+        table.add(nameInp,2,row);
+        table.add(Text.NON_BREAKING_SPACE,2,row);
+        table.add(delBox,3,row);
     }
-    return returner;
+    for (int i = 0; i < extraFields; i++) {
+        ++row;
+        ++counter;
+        nrTxt = (Text) super.smallText.clone();
+          nrTxt.setFontColor(super.BLACK);
+          nrTxt.setText(Integer.toString(counter));
+
+        nameInp = new TextInput("hotel_pickup_place_name");
+          nameInp.setSize(textInputWidth);
+
+        table.setRowColor(row,super.GRAY);
+
+        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, "-1"),1,row);
+        table.add(nrTxt,1,row);
+        table.add(Text.NON_BREAKING_SPACE,2,row);
+        table.add(nameInp,2,row);
+        table.add(Text.NON_BREAKING_SPACE,2,row);
+    }
+
+
+    ++row;
+    table.setRowColor(row,super.GRAY);
+    SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterSaveHotelPickupPlaceInfo);
+    table.mergeCells(1,row,3,row);
+    table.add(lSave,1,row);
+    table.setColumnAlignment(1,"center");
+    table.setColumnAlignment(3,"center");
+    table.setAlignment(1,row,"right");
+
+    return form;
   }
 
-  }
+
+}

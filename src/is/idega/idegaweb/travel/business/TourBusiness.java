@@ -11,14 +11,14 @@ import com.idega.util.*;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.EntityControl;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import com.idega.util.datastructures.HashtableDoubleKeyed;
 import com.idega.presentation.IWContext;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
 import com.idega.data.SimpleQuerier;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -34,15 +34,15 @@ public class TourBusiness extends TravelStockroomBusiness {
   public TourBusiness() {
   }
 
-  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception{
-    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays) throws Exception{
+    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats, minNumberOfSeats, numberOfDays);
   }
 
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
-    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays) throws Exception {
+    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats,minNumberOfSeats, numberOfDays);
   }
 
-  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
+  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays) throws Exception {
 
       boolean isError = false;
 
@@ -134,6 +134,8 @@ public class TourBusiness extends TravelStockroomBusiness {
             tour = new Tour(tourId);
           }
             tour.setTotalSeats(numberOfSeats.intValue());
+            tour.setMinumumSeats(minNumberOfSeats.intValue());
+            tour.setNumberOfDays(numberOfDays.intValue());
 
           if (arrivalAddressIds.length > 0)
           for (int i = 0; i < arrivalAddressIds.length; i++) {
@@ -245,5 +247,70 @@ public class TourBusiness extends TravelStockroomBusiness {
     }
   }
 
+
+  public static DropdownMenu getDepartureDaysDropdownMenu(IWContext iwc, List days, String name) {
+    DropdownMenu menu = new DropdownMenu(name);
+    idegaTimestamp stamp;
+
+    for (int i = 0; i < days.size(); i++) {
+      stamp = (idegaTimestamp) days.get(i);
+      menu.addMenuElement(stamp.toSQLDateString(),stamp.getLocaleDate(iwc));
+    }
+
+    return menu;
+  }
+
+  public static List getDepartureDays(IWContext iwc, Tour tour) {
+    return getDepartureDays(iwc, tour, null, null);
+  }
+
+  public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp from, idegaTimestamp to) {
+    List returner = new Vector();
+    try {
+      Service service = new Service(tour.getID());
+      Timeframe frame = service.getTimeframe();
+      int numberOfDays = tour.getNumberOfDays();
+
+      if (from == null) from = new idegaTimestamp(frame.getFrom());
+      if (to == null)   to   = new idegaTimestamp(frame.getTo());
+
+      idegaTimestamp stamp = new idegaTimestamp(from);
+      idegaTimestamp temp;
+
+
+      while (to.isLaterThan(stamp)) {
+        temp = getNextAvailableDay(iwc, service, stamp);
+        if (temp != null) {
+          returner.add(temp);
+          stamp = new idegaTimestamp(temp);
+          stamp.addDays(numberOfDays);
+        }
+      }
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Service service, idegaTimestamp from) {
+    idegaTimestamp stamp = new idegaTimestamp(from);
+    boolean found = false;
+    for (int i = 1; i <= 7; i++) {
+      if (TravelStockroomBusiness.getIfDay(iwc,service.getID(), stamp.getDayOfWeek())) {
+        found = true;
+        break;
+      }else {
+        stamp.addDays(1);
+      }
+    }
+
+    if (found) {
+      return stamp;
+    }else {
+      return null;
+    }
+  }
 
 }

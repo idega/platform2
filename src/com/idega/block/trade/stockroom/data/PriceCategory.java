@@ -37,8 +37,8 @@ public class PriceCategory extends GenericEntity{
     addAttribute(getColumnNameParentId(),"parent_id", true, true, Integer.class, "many_to_one", PriceCategory.class);
     addAttribute(getColumnNameIsValid(), "is valid", true, true, Boolean.class);
 
-
-   this.addTreeRelationShip();
+    this.addManyToManyRelationShip(Address.class);
+    this.addTreeRelationShip();
   }
 
   public void delete() {

@@ -482,18 +482,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             else {
               serviceDayHash.put(key1, key2, new Boolean(false) );
             }
-            /*
-              idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
-              idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
-              if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
-                  isDay = true;
-                  serviceDayHash.put(key1, key2, new Boolean(true) );
-              }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
-                  isDay = true;
-                  serviceDayHash.put(key1, key2, new Boolean(true) );
-              }else {
-                  serviceDayHash.put(key1, key2, new Boolean(false) );
-              }*/
           }else {
               serviceDayHash.put(key1, key2, new Boolean(false) );
           }
@@ -556,6 +544,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           String[] result = SimpleQuerier.executeStringQuery(sb.toString());
 
           if (result != null) {
+            if (result.length > 0)
             if (!result[0].equals("0")) {
               returner = true;
             }
@@ -691,6 +680,5 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       return returner;
   }
-
 
 }
