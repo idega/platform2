@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/01/26 15:39:26 $ by $Author: joakim $
- * @version $Revision: 1.85 $
+ * Last modified: $Date: 2004/01/29 10:20:13 $ by $Author: anders $
+ * @version $Revision: 1.86 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1060,6 +1060,41 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindPKsBySQL(sql.toString());		
     }
 
+    public Collection ejbFindByCategorydManagementCommune(
+    		String category, 
+			String managementType, 
+			int communeId, 
+			int seasonId) throws FinderException {
+    	String today = (new Date(System.currentTimeMillis())).toString();
+		IDOQuery query = idoQuery();
+		query.appendSelect();
+		query.append("cm.*");
+		query.appendFrom();
+		query.append("sch_class_member cm,");
+		query.append("sch_school_class sc,");
+		query.append("sch_school s,");
+		query.append("sch_school_type st,");
+		query.append("ic_user u");
+		query.appendWhere();
+		query.appendEquals("cm.ic_user_id", "u.ic_user_id");
+		
+		query.appendAnd().appendLeftParenthesis();
+		query.append("cm.removed_date is null");
+		query.appendOr().append("cm.removed_date").appendGreaterThanSign().append("'" + today + "'");
+		query.appendRightParenthesis();
+		
+		query.appendAnd().append("cm.register_date").appendLessThanOrEqualsSign().append("'" + today + "'");
+		query.appendAndEquals("sc.sch_school_season_id", seasonId);
+		query.appendAndEquals("cm.sch_school_type_id", "st.sch_school_type_id");
+		query.appendAndEqualsQuoted("st.school_category", category);
+		query.appendAndEquals("s.commune", communeId);
+		query.appendAndEquals("sc.school_id", "s.sch_school_id");
+		query.appendAndEquals("sc.sch_school_class_id", "cm.sch_school_class_id");
+		query.appendAndEqualsQuoted("s.management_type", managementType);
+		
+		return idoFindPKsByQuery(query);
+    }
+    
 	 /**
 	  * This method returns a Collection with the domain of allowed values (types) 
 	  * for the invoice_int column 
