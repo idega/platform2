@@ -248,10 +248,11 @@ public class InvoiceChildcareThread extends BillingThread{
 					User child = null;
 					try{
 						child = schoolClassMember.getStudent();
-						errorRelated.append("Child "+contract.getChild().getName());
 					}catch (NullPointerException e){
+						errorRelated.append("Placement id in contract "+ contract.getSchoolClassMemberId ());
 						throw new NoSchoolClassMemberException("");
 					}
+					errorRelated.append("Child "+contract.getChild().getName());
 //					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					errorRelated.append("SchoolType "+schoolType.getName());
