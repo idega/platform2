@@ -480,6 +480,39 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
+	public Integer ejbFindApplicationByChildAndChoiceNumberWithStatus(int childID, int choiceNumber, String caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select c.* from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Integer ejbFindApplicationByChildAndChoiceNumberInStatus(int childID, int choiceNumber, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Integer ejbFindApplicationByChildAndChoiceNumberNotInStatus(int childID, int choiceNumber, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, childID);
+		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
 	public Collection ejbFindApplicationByChild(int childID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID,childID);
