@@ -147,10 +147,11 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
             tour.setHotelPickup(false);
           }
 
+          tour.store();
+
           tour.setTourTypes(tourTypeIDs);
           
           
-          tour.store();
 
 
           this.removeDepartureDaysApplication(this.getIWApplicationContext(), product);
