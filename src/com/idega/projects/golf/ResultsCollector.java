@@ -40,6 +40,7 @@ public class ResultsCollector {
   private int holes_ = 0;
   private int hole_ = 0;
   private int numberOfRounds_ = 0;
+  private int fieldPar_ = 0;
 
   public ResultsCollector() {
     resultType_ = TOTALSTROKESWITHHANDICAP;
@@ -151,19 +152,22 @@ public class ResultsCollector {
         getPointsInfo();
       break;
     }
+
   }
 
   public void getStrokesInfo() {
     int size = 0;
     int roundTotal = 0;
+    fieldPar_ = 0;
 
-    if ( strokes_ != null )
+    if ( strokes_ != null ) {
       size = strokes_.size();
+      hole_ = size;
+    }
 
     if ( size < 9 ) {
       for (int i = 0; i < size; i++) {
         totalStrokes_ += ((Double)strokes_.elementAt(i)).intValue();
-        hole_++;
       }
     }
     else {
@@ -171,12 +175,13 @@ public class ResultsCollector {
         totalStrokes_ += ((Double)strokes_.elementAt(i)).intValue();
         roundTotal += ((Double)strokes_.elementAt(i)).intValue();
         totalPar_ += ((Integer)par_.elementAt(i)).intValue();
-        hole_++;
+        fieldPar_ += ((Integer)par_.elementAt(i)).intValue();
         if ( (i+1) % holes_ == 0 ) {
           if ( resultType_ == TOTALSTROKESWITHHANDICAP )
             roundTotal -= (int) handicap_;
           roundScore_.add(new Integer(roundTotal));
           roundTotal = 0;
+          fieldPar_ = 0;
         }
       }
 
@@ -187,7 +192,7 @@ public class ResultsCollector {
         totalStrokes_ += ((Double)strokes_.elementAt(i)).intValue();
         roundTotal += ((Double)strokes_.elementAt(i)).intValue();
         totalPar_ += ((Integer)par_.elementAt(i)).intValue();
-        hole_++;
+        fieldPar_ += ((Integer)par_.elementAt(i)).intValue();
       }
 
       for (int i = size - 6; i < size - 3; i++) {
@@ -196,7 +201,7 @@ public class ResultsCollector {
         totalStrokes_ += ((Double)strokes_.elementAt(i)).intValue();
         roundTotal += ((Double)strokes_.elementAt(i)).intValue();
         totalPar_ += ((Integer)par_.elementAt(i)).intValue();
-        hole_++;
+        fieldPar_ += ((Integer)par_.elementAt(i)).intValue();
       }
 
       for (int i = size - 9; i < size - 6; i++) {
@@ -204,7 +209,7 @@ public class ResultsCollector {
         totalStrokes_ += ((Double)strokes_.elementAt(i)).intValue();
         roundTotal += ((Double)strokes_.elementAt(i)).intValue();
         totalPar_ += ((Integer)par_.elementAt(i)).intValue();
-        hole_++;
+        fieldPar_ += ((Integer)par_.elementAt(i)).intValue();
       }
 
       if ( resultType_ == TOTALSTROKESWITHHANDICAP )
@@ -225,15 +230,15 @@ public class ResultsCollector {
   public void getPointsInfo() {
     int size = 0;
     int roundTotal = 0;
-    roundScore_ = new Vector();
 
-    if ( strokes_ != null )
-      size = strokes_.size();
+    if ( strokes_ != null ) {
+      size = points_.size();
+      hole_ = size;
+    }
 
     if ( size < 9 ) {
       for (int i = 0; i < size; i++) {
         totalPoints_ += ((Double)points_.elementAt(i)).intValue();
-        hole_++;
       }
 
     }
@@ -241,7 +246,6 @@ public class ResultsCollector {
       for (int i = 0; i < size - 9; i++) {
         totalPoints_ += ((Double)points_.elementAt(i)).intValue();
         roundTotal += ((Double)points_.elementAt(i)).intValue();
-        hole_++;
         if ( (i+1) % holes_ == 0 ) {
           roundScore_.add(new Integer(roundTotal));
           roundTotal = 0;
@@ -254,22 +258,19 @@ public class ResultsCollector {
         lastThree_ += ((Double)points_.elementAt(i)).doubleValue();
         totalPoints_ += ((Double)points_.elementAt(i)).intValue();
         roundTotal += ((Double)points_.elementAt(i)).intValue();
-        hole_++;
       }
 
       for (int i = size - 6; i < size - 3; i++) {
         lastNine_ += ((Double)points_.elementAt(i)).doubleValue();
         lastSix_ += ((Double)points_.elementAt(i)).doubleValue();
         totalPoints_ += ((Double)points_.elementAt(i)).intValue();
-        roundTotal += ((Double)strokes_.elementAt(i)).intValue();
-        hole_++;
+        roundTotal += ((Double)points_.elementAt(i)).intValue();
       }
 
       for (int i = size - 9; i < size - 6; i++) {
         lastNine_ += ((Double)points_.elementAt(i)).doubleValue();
         totalPoints_ += ((Double)points_.elementAt(i)).intValue();
         roundTotal += ((Double)points_.elementAt(i)).intValue();
-        hole_++;
       }
 
       roundScore_.add(new Integer(roundTotal));
@@ -307,6 +308,10 @@ public class ResultsCollector {
 
   public String getAbbrevation() {
     return(abbrevation_);
+  }
+
+  public int getHandicap() {
+    return((int) handicap_);
   }
 
   public int getDifference() {
@@ -367,6 +372,10 @@ public class ResultsCollector {
 
   public int getHoles() {
     return(holes_);
+  }
+
+  public int getFieldPar() {
+    return(fieldPar_);
   }
 
   public String getHole() {

@@ -9,528 +9,394 @@ package com.idega.projects.golf;
  * @version 1.3
  */
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
 import java.sql.*;
 import java.util.*;
-import java.math.*;
 import java.io.*;
 import com.idega.util.*;
+import com.idega.util.text.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.projects.golf.*;
 import com.idega.projects.golf.business.*;
-import com.idega.data.*;
-import com.idega.projects.golf.service.*;
 import com.idega.projects.golf.entity.*;
 
 public class TournamentResults extends JModuleObject {
 
-private Tournament tournament;
-private TournamentType type;
-private TournamentRound[] tournamentRounds;
-private int tournament_id = 0;
-private String tournamentType;
-private int numberOfGolfers = 10;
-private Text tournamentName;
-private Text typeName;
-private Text positionText;
-private Text memberText;
-private Text unionText;
-private Text strokesText;
-private Text pointsText;
-private Text bruttoText;
-private Text nettoText;
-private Text differenceText;
-private String categoryText = "#000000";
-private String headerText = "#000000";
-private boolean showHeader = true;
-private int tournament_group_id = 0;
-private String groupSQLString = "";
-private String gender = null;
+  private int tournamentId_ = -1;
+  private int tournamentGroupId_ = -1;
+  private int tournamentType_ = -1;
+  private int[] tournamentRounds_ = null;
+  private String gender_ = null;
+  private int sortBy = -1;
 
-  public TournamentResults(int tournament_id, int tournament_group_id) {
-    this.tournament_id=tournament_id;
-    this.tournament_group_id=tournament_group_id;
+  private Vector result = null;
+  private Table myTable = null;
+  private Tournament tournament = null;
+  private int numberOfRounds = -1;
+  private int numberOfColumns = -1;
+
+  public static final int TOTALSTROKES = 1;
+  public static final int TOTALSTROKESWITHHANDICAP = 2;
+  public static final int TOTALPOINTS = 3;
+  public static final int NAME = 4;
+  public static final int ABBREVATION = 5;
+  public static final int TOURNAMENTROUND = 6;
+
+  public void sortBy(int toSortBy) {
+      sortBy = toSortBy;
   }
 
-  public TournamentResults(int tournament_id) {
-    this.tournament_id=tournament_id;
+  public TournamentResults(int tournamentId, int tournamentType) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
   }
 
-  public TournamentResults(int tournament_id, String gender) {
-    this.tournament_id=tournament_id;
-    this.gender=gender;
+  public TournamentResults(int tournamentId, int tournamentType, int tournamentGroupId) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentGroupId_ = tournamentGroupId;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, String gender) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    gender_ = gender;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, int[] tournamentRounds) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentRounds_ = tournamentRounds;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, int tournamentGroupId, String gender) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentGroupId_ = tournamentGroupId;
+    gender_ = gender;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, int tournamentGroupId, int[] tournamentRounds) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentGroupId_ = tournamentGroupId;
+    tournamentRounds_ = tournamentRounds;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, int[] tournamentRounds, String gender) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentRounds_ = tournamentRounds;
+    gender_ = gender;
+  }
+
+  public TournamentResults(int tournamentId, int tournamentType, int tournamentGroupId, int[] tournamentRounds, String gender) {
+    tournamentId_ = tournamentId;
+    tournamentType_ = tournamentType;
+    tournamentGroupId_ = tournamentGroupId;
+    tournamentRounds_ = tournamentRounds;
+    gender_ = gender;
   }
 
   public void main(ModuleInfo modinfo) throws SQLException {
-
-    if ( tournament_group_id != 0 ) {
-     groupSQLString = "and tournament_group_id = "+tournament_group_id+" ";
+    try {
+      tournament = new Tournament(tournamentId_);
+      numberOfRounds = tournament.getNumberOfRounds();
+      getMemberVector();
+      sortMemberVector();
+      drawResultTable();
+      getResults();
     }
-    if ( gender != null ) {
-     groupSQLString = "and m.gender = '"+gender+"' ";
+    catch (Exception e) {
+      e.printStackTrace(System.out);
     }
-
-    tournament = new Tournament(tournament_id);
-    type = tournament.getTournamentType();
-    tournamentRounds = (TournamentRound[]) (new TournamentRound()).findAllByColumnOrdered("tournament_id",tournament_id+"","round_number");
-    tournamentType = type.getTournamentType();
-    setTextValues();
-
-    if ( tournamentType.equalsIgnoreCase("strokes") ) {
-      getStrokesResult(modinfo);
-    }
-
-    if ( tournamentType.equalsIgnoreCase("points") ) {
-      getPointsResult(modinfo);
-    }
-
-    if ( tournamentType.equalsIgnoreCase("holes") ) {
-      getHolesResult(modinfo);
-    }
-
-    if ( tournamentType.equalsIgnoreCase("texas_scramble") ) {
-      getTexasScrambleResult(modinfo);
-    }
-
-    if ( tournamentType.equalsIgnoreCase("greensome") ) {
-      getGreensomeResult(modinfo);
-    }
-
-    if ( tournamentType.equalsIgnoreCase("groups") ) {
-      getGroupsResult(modinfo);
-    }
-
   }
 
-  private void getStrokesResult(ModuleInfo modinfo) throws SQLException {
-
-    boolean withHandicap = type.getWithHandicap();
-    boolean withoutHandicap = type.getWithoutHandicap();
-
-    Table strokesTable = new Table();
-      strokesTable.setWidth("100%");
-      strokesTable.setCellpadding(3);
-      strokesTable.setCellspacing(1);
-
-    Text withText = new Text("Með forgjöf");
-      withText.setBold();
-      withText.setFontColor(headerText);
-    Text withoutText = new Text("Án forgjafar");
-      withoutText.setBold();
-      withoutText.setFontColor(headerText);
-
-    if ( showHeader ) {
-      strokesTable.add(tournamentName,1,1);
-      strokesTable.add(typeName,1,1);
+  private void getMemberVector() {
+    try {
+      ResultDataHandler handler = new ResultDataHandler(tournamentId_,tournamentType_,tournamentGroupId_,tournamentRounds_,gender_);
+      result = handler.getTournamentMembers();
     }
-
-    if ( withHandicap && !withoutHandicap ) {
-
-      if ( showHeader ) {
-        strokesTable.add(getWithHandicapTable(),1,3);
-      }
-      else {
-        strokesTable.add(getWithHandicapTable(),1,1);
-      }
-
+    catch (Exception e) {
+      e.printStackTrace(System.err);
     }
-
-    if ( !withHandicap && withoutHandicap ) {
-
-      if ( showHeader ) {
-        strokesTable.add(getWithoutHandicapTable(),1,3);
-      }
-      else {
-        strokesTable.add(getWithoutHandicapTable(),1,1);
-      }
-
-    }
-
-    if ( withHandicap && withoutHandicap ) {
-
-      if ( showHeader ) {
-        strokesTable.add(withText,1,3);
-        strokesTable.add(getWithHandicapTable(),1,4);
-        strokesTable.add(withoutText,1,6);
-        strokesTable.add(getWithoutHandicapTable(),1,7);
-      }
-      else {
-        strokesTable.add(withText,1,1);
-        strokesTable.add(getWithHandicapTable(),1,2);
-        strokesTable.add(withoutText,1,4);
-        strokesTable.add(getWithoutHandicapTable(),1,5);
-      }
-
-    }
-
-    add(strokesTable);
-
   }
 
-  private void getPointsResult(ModuleInfo modinfo) throws SQLException {
-
-    Table strokesTable = new Table();
-      strokesTable.setWidth("100%");
-      strokesTable.setCellpadding(3);
-      strokesTable.setCellspacing(1);
-
-    Text withText = new Text("Með forgjöf");
-      withText.setBold();
-    Text withoutText = new Text("Án forgjafar");
-      withoutText.setBold();
-
-    if ( showHeader ) {
-      strokesTable.add(tournamentName,1,1);
-      strokesTable.add(typeName,1,1);
-      strokesTable.add(getPointsTable(),1,3);
-    }
-    else {
-      strokesTable.add(getPointsTable(),1,1);
-    }
-
-    add(strokesTable);
+  private void sortMemberVector() {
+    ResultComparator comparator = new ResultComparator(sortBy);
+    Collections.sort(result,comparator);
   }
 
-  private void getHolesResult(ModuleInfo modinfo) {
-    add("holes");
-  }
-
-  private void getTexasScrambleResult(ModuleInfo modinfo) {
-    add("texas_scramble");
-  }
-
-  private void getGreensomeResult(ModuleInfo modinfo) {
-    add("greensome");
-  }
-
-  private void getGroupsResult(ModuleInfo modinfo) {
-    add("groups");
-  }
-
-  private Table getWithHandicapTable() throws SQLException {
-
-      Table myTable = new Table();
-        myTable.setWidth("100%");
-        myTable.setCellpadding(3);
+  private void drawResultTable() {
+    try {
+      myTable = new Table();
+        myTable.setCellpadding(1);
         myTable.setCellspacing(1);
+        myTable.setWidth("100%");
+        myTable.setBorder(0);
 
-      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"strokes_with_handicap");
-
-      if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
-        numberOfGolfers = strokesScores.length;
+      String[] headers = { "Sæti","Kylfingur","Klúbbur","Fgj." };
+      for ( int a = 0; a < headers.length; a++ ) {
+        addHeaders(headers[a],a+1,1);
+        myTable.mergeCells(a+1,1,a+1,2);
+        //myTable.setVerticalAlignment(a+1,1,"bottom");
       }
 
-      for ( int a = 0; a < numberOfGolfers; a++ ) {
+      getTotalHeaders();
 
-        Text memberName = new Text(strokesScores[a].getName());
-
-        Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
-
-        Link seeScores = new Link(memberName,scoreWindow);
-                seeScores.addParameter("member_id",strokesScores[a].getMemberID());
-                seeScores.addParameter("tournament_id",tournament_id);
-                seeScores.addParameter("tournament_group_id",strokesScores[a].getTournamentGroupID());
-
-        if ( a == 0 ) {
-          myTable.add((a+1)+"",1,a+2);
-        }
-
-        else {
-          if ( strokesScores[a].getStrokesWithHandicap() != strokesScores[a-1].getStrokesWithHandicap() ) {
-            myTable.add((a+1)+"",1,a+2);
-          }
-        }
-
-        int difference = strokesScores[a].getDifference();
-        String out_differ = "E";
-          if ( difference == 0 ) { out_differ = "E"; }
-          else if ( difference < 0 ) { out_differ = String.valueOf(difference); }
-          else if ( difference > 0 ) { out_differ = "+"+String.valueOf(difference); }
-
-        myTable.add(seeScores,2,a+2);
-        myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",4,a+2);
-        myTable.add(strokesScores[a].getStrokesWithHandicap()+"",5,a+2);
-      }
-
-      myTable.add(positionText,1,1);
-      myTable.add(memberText,2,1);
-      myTable.add(unionText,3,1);
-      myTable.add(bruttoText,4,1);
-      myTable.add(nettoText,5,1);
-
-      for ( int c = 1; c <= myTable.getColumns(); c++ ) {
-        myTable.setColumnAlignment(c,"center");
-      }
-
-      myTable.setColumnAlignment(2,"left");
-
-      return myTable;
+      add(myTable);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
   }
 
-  private Table getWithoutHandicapTable() throws SQLException {
+  private void getResults() {
+    try {
+      int size = 0;
+      if ( result != null )
+        size = result.size();
 
-      Table myTable = new Table();
-        myTable.setWidth("100%");
-        myTable.setCellpadding(3);
-        myTable.setCellspacing(1);
+      for ( int a = 0; a < size; a++ ) {
+        ResultsCollector collector = (ResultsCollector) result.elementAt(a);
+        int handicap = collector.getHandicap();
+        int finalScore = collector.getTotalScore();
+        int difference = collector.getDifference();
+        String hole = collector.getHole();
 
-      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"difference");
+        Text positionText = new Text(Integer.toString(a+1));
+          positionText.setFontSize(1);
+        Text memberText = new Text(collector.getName());
+          memberText.setFontSize(1);
+        Text clubText = new Text(collector.getAbbrevation());
+          clubText.setFontSize(1);
+        Text handicapText = new Text(Integer.toString(handicap));
+          handicapText.setFontSize(1);
+        Text holeText = new Text(hole);
+          holeText.setFontSize(1);
+        Text firstNineText = new Text();
+          firstNineText.setFontSize(1);
+        Text lastNineText = new Text();
+          lastNineText.setFontSize(1);
+        Text totalRoundScore = new Text();
+          totalRoundScore.setFontSize(1);
+        Text diffText = new Text();
+          diffText.setFontSize(1);
+        Text bruttoText = new Text();
+          bruttoText.setFontSize(1);
 
-      if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
-        numberOfGolfers = strokesScores.length;
-      }
+        int totalScore = 0;
+        int totalDifference = 0;
+        int totalBrutto = 0;
 
-      for ( int a = 0; a < numberOfGolfers; a++ ) {
+        if ( hole.equalsIgnoreCase("f") ) {
+          int lastNine = (int) collector.getLastNine();
+          Vector roundScore = collector.getRoundScore();
+          if ( roundScore != null ) {
+            totalScore = ((Integer)roundScore.elementAt(roundScore.size()-1)).intValue();
+            totalDifference = totalScore - collector.getFieldPar();
+            totalBrutto = totalScore + handicap;
+          }
+          int firstNine = totalScore - lastNine;
 
-        Text memberName = new Text(strokesScores[a].getName());
-
-        Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
-
-        Link seeScores = new Link(memberName,scoreWindow);
-                seeScores.addParameter("member_id",strokesScores[a].getMemberID());
-                seeScores.addParameter("tournament_id",tournament_id);
-                seeScores.addParameter("tournament_group_id",strokesScores[a].getTournamentGroupID());
-
-        if ( a == 0 ) {
-          myTable.add((a+1)+"",1,a+2);
+          lastNineText.setText(Integer.toString(lastNine));
+          firstNineText.setText(Integer.toString(firstNine));
+          totalRoundScore.setText(Integer.toString(totalScore));
+          diffText.setText(Integer.toString(totalDifference));
+          bruttoText.setText(Integer.toString(totalBrutto));
         }
 
-        else {
-          if ( strokesScores[a].getStrokesWithoutHandicap() != strokesScores[a-1].getStrokesWithoutHandicap() ) {
-            myTable.add((a+1)+"",1,a+2);
-          }
-        }
-
-        int difference = strokesScores[a].getDifference();
-        String out_differ = "E";
-          if ( difference == 0 ) { out_differ = "E"; }
-          else if ( difference < 0 ) { out_differ = String.valueOf(difference); }
-          else if ( difference > 0 ) { out_differ = "+"+String.valueOf(difference); }
-
-        myTable.add(seeScores,2,a+2);
-        myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",4,a+2);
-        myTable.add(out_differ,5,a+2);
-      }
-
-      myTable.add(positionText,1,1);
-      myTable.add(memberText,2,1);
-      myTable.add(unionText,3,1);
-      myTable.add(strokesText,4,1);
-      myTable.add(differenceText,5,1);
-
-      for ( int c = 1; c <= myTable.getColumns(); c++ ) {
-        myTable.setColumnAlignment(c,"center");
-      }
-
-      myTable.setColumnAlignment(2,"left");
-
-      return myTable;
-
-  }
-
-  private Table getPointsTable() throws SQLException {
-
-      Table myTable = new Table();
-        myTable.setWidth("100%");
-        myTable.setCellpadding(3);
-        myTable.setCellspacing(1);
-
-      System.out.println("Getting all: "+new idegaTimestamp().getTimestampRightNow().toString());
-      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"total_points");
-
-      if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
-        numberOfGolfers = strokesScores.length;
-      }
-
-      System.out.println("Getting scores: "+new idegaTimestamp().getTimestampRightNow().toString());
-      for ( int a = 0; a < numberOfGolfers; a++ ) {
-
-        Text memberName = new Text(strokesScores[a].getName());
-          memberName.setFontSize(1);
-        Text abbrevationText = new Text(strokesScores[a].getAbbrevation());
-          abbrevationText.setFontSize(1);
-        Text playedText = new Text("");
-          int holesPlayed = strokesScores[a].getHolesPlayed();
-          if ( holesPlayed == 18 ) {
-            playedText.setText("F");
-          }
-          else if ( holesPlayed == 0 ) {
-            playedText.setText("");
-          }
-          else {
-            playedText.setText(Integer.toString(holesPlayed));
-          }
-          playedText.setFontSize(1);
-        Text totalText = new Text(Integer.toString(strokesScores[a].getTotalPoints()));
-          totalText.setFontSize(1);
-
-        Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
-
-        Link seeScores = new Link(memberName,scoreWindow);
-                seeScores.addParameter("member_id",strokesScores[a].getMemberID());
-                seeScores.addParameter("tournament_id",tournament_id);
-                seeScores.addParameter("tournament_group_id",strokesScores[a].getTournamentGroupID());
-
-        TournamentParticipants[] rounds = TournamentController.getTournamentParticipants("member_id",Integer.toString(strokesScores[a].getMemberID())+" and tournament_id = "+tournament_id,"round_number");
-
-        int c = 4;
-        int d = 4;
-        for ( int b = 0; b < rounds.length; b++ ) {
-          try {
-            String[] frontNine = com.idega.data.SimpleQuerier.executeStringQuery("select sum(point_count) from stroke st,tee t where st.tee_id = t.tee_id and scorecard_id = "+rounds[b].getScorecardID()+" and hole_number <= 9");
-            String[] backNine = com.idega.data.SimpleQuerier.executeStringQuery("select sum(point_count) from stroke st,tee t where st.tee_id = t.tee_id and scorecard_id = "+rounds[b].getScorecardID()+" and hole_number > 9");
-            if ( frontNine.length > 0 ) {
-              Text frontNineText = new Text(frontNine[0]);
-                frontNineText.setFontSize(1);
-              myTable.add(frontNineText,c,a+3);
-              c++;
+        switch (tournamentType_) {
+          case ResultComparator.TOTALSTROKES :
+            int roundScoreColumn = 10;
+            for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int roundScore = collector.getRoundScore(b);
+              Text roundScoreText = new Text(Integer.toString(roundScore));
+                roundScoreText.setFontSize(1);
+              if ( roundScore > 0 ) {
+                myTable.add(roundScoreText,roundScoreColumn,a+3);
+                roundScoreColumn++;
+              }
             }
-            if ( backNine.length > 0 ) {
-              Text backNineText = new Text(backNine[0]);
-                backNineText.setFontSize(1);
-              myTable.add(backNineText,c,a+3);
-              c++;
+            Text finalScoreText = new Text(Integer.toString(finalScore));
+              finalScoreText.setFontSize(1);
+              finalScoreText.setBold();
+              finalScoreText.setFontFace("Verdana,Arial,sans-serif");
+            Text finalDifferenceText = new Text(Integer.toString(difference));
+              finalDifferenceText.setFontSize(1);
+              finalDifferenceText.setBold();
+              finalDifferenceText.setFontFace("Verdana,Arial,sans-serif");
+            myTable.add(finalScoreText,numberOfColumns-1,a+3);
+            myTable.add(finalDifferenceText,numberOfColumns,a+3);
+            myTable.add(totalRoundScore,8,a+3);
+            myTable.add(diffText,9,a+3);
+          break;
+
+          case ResultComparator.TOTALSTROKESWITHHANDICAP :
+            int roundScoreColumn2 = 10;
+            int roundSize = 0;
+            Vector roundSizeVector = collector.getRoundScore();
+            if ( roundSizeVector != null ) {
+              roundSize = roundSizeVector.size();
             }
-          }
-          catch (Exception e) {
-            e.printStackTrace(System.err);
-          }
-          Text totalPointsText = new Text(Integer.toString(rounds[b].getTotalPoints()));
-            totalPointsText.setFontSize(1);
-          myTable.add(totalPointsText,c,a+3);
-          c++;
 
-          if ( a == 0 ) {
-            Text roundText = new Text("Hringur "+(b+1));
-              roundText.setFontSize(1);
-            Text frontNineText = new Text("F9");
-              frontNineText.setFontSize(1);
-            Text backNineText = new Text("S9");
-              backNineText.setFontSize(1);
-            Text allText = new Text("Samt");
-              allText.setFontSize(1);
+            for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int roundScore = collector.getRoundScore(b);
+              int roundScoreBrutto = roundScore + handicap;
+              Text roundScoreText = new Text(Integer.toString(roundScore));
+                roundScoreText.setFontSize(1);
+              Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
+                roundScoreBruttoText.setFontSize(1);
+              if ( roundScore > 0 ) {
+                myTable.add(roundScoreBruttoText,roundScoreColumn2,a+3);
+                myTable.add(roundScoreText,roundScoreColumn2+1,a+3);
+                roundScoreColumn2 += 2;
+              }
+            }
+            Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
+              finalBruttoText.setFontSize(1);
+              finalBruttoText.setBold();
+              finalBruttoText.setFontFace("Verdana,Arial,sans-serif");
+            Text finalScoreText2 = new Text(Integer.toString(finalScore));
+              finalScoreText2.setFontSize(1);
+              finalScoreText2.setBold();
+              finalScoreText2.setFontFace("Verdana,Arial,sans-serif");
+            myTable.add(finalBruttoText,numberOfColumns-1,a+3);
+            myTable.add(finalScoreText2,numberOfColumns,a+3);
+            myTable.add(bruttoText,8,a+3);
+            myTable.add(totalRoundScore,9,a+3);
+          break;
 
-            myTable.mergeCells(d,1,(d+2),1);
-            myTable.add(roundText,d,1);
-            myTable.add(frontNineText,d,2);
-            d++;
-            myTable.add(backNineText,d,2);
-            d++;
-            myTable.add(allText,d,2);
-            d++;
-          }
+          case ResultComparator.TOTALPOINTS :
+            int roundScoreColumn3 = 9;
+            for ( int b = 1; b <= numberOfRounds; b++ ) {
+              int roundScore = collector.getRoundScore(b);
+              Text roundScoreText = new Text(Integer.toString(roundScore));
+                roundScoreText.setFontSize(1);
+              if ( roundScore > 0 ) {
+                myTable.add(roundScoreText,roundScoreColumn3,a+3);
+                roundScoreColumn3++;
+              }
+            }
+            Text finalScoreText3 = new Text(Integer.toString(finalScore));
+              finalScoreText3.setFontSize(1);
+              finalScoreText3.setBold();
+              finalScoreText3.setFontFace("Verdana,Arial,sans-serif");
+            myTable.add(finalScoreText3,numberOfColumns,a+3);
+            myTable.add(totalRoundScore,8,a+3);
+          break;
         }
 
-        Text placeText = new Text(Integer.toString(a+1));
-          placeText.setFontSize(1);
+        myTable.add(positionText,1,a+3);
+        myTable.add(memberText,2,a+3);
+        myTable.add(clubText,3,a+3);
+        myTable.add(handicapText,4,a+3);
+        myTable.add(holeText,5,a+3);
+        myTable.add(firstNineText,6,a+3);
+        myTable.add(lastNineText,7,a+3);
+        myTable.setHeight(a+3,"20");
 
-        if ( a == 0 ) {
-          myTable.add(placeText,1,a+3);
-        }
-
-        else {
-          if ( strokesScores[a].getTotalPoints() != strokesScores[a-1].getTotalPoints() ) {
-            myTable.add(placeText,1,a+3);
-          }
-        }
-
-        myTable.add(seeScores,2,a+3);
-        myTable.add(abbrevationText,3,a+3);
-        myTable.add(playedText,c,a+3);
-        myTable.add(totalText,c+1,a+3);
       }
-      System.out.println("Getting scores: "+new idegaTimestamp().getTimestampRightNow().toString());
+      for ( int c = 1; c <= numberOfColumns; c++ ) {
+        if ( c != 2 ) {
+          myTable.setColumnAlignment(c,"center");
+        }
+      }
+      myTable.setAlignment(2,1,"center");
+      myTable.setHorizontalZebraColored("#DCEFDE","#EAFAEC");
+      myTable.setRowColor(1,"#336661");
+      myTable.setRowColor(2,"#336661");
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
 
-      myTable.add(positionText,1,2);
-      myTable.add(memberText,2,2);
-      myTable.add(unionText,3,2);
+  private void addHeaders(String header, int column, int row) {
+    try {
+      Text headerText = new Text(header);
+        headerText.setFontSize(1);
+        headerText.setBold();
+        headerText.setFontFace("Verdana,Arial,sans-serif");
+        headerText.setFontColor("#FFFFFF");
 
-      for ( int c = 1; c <= myTable.getColumns(); c++ ) {
-        myTable.setColumnAlignment(c,"center");
+      myTable.add(headerText,column,row);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  private void getTotalHeaders() {
+    try {
+      String frontNine = "F9";
+      String backNine = "S9";
+      String total = "Sam";
+      String netto = "Net";
+      String difference = "Staða";
+
+      int firstColumn = 6;
+      int column = firstColumn;
+      addHeaders(frontNine,column,2);
+      addHeaders(backNine,column+1,2);
+
+      switch (tournamentType_) {
+        case ResultComparator.TOTALSTROKES :
+          addHeaders(total,column+2,2);
+          addHeaders(difference,column+3,2);
+          column += 4;
+          for ( int a = 0; a < numberOfRounds; a++ ) {
+            addHeaders("H"+Integer.toString(a+1),column+a,2);
+          }
+          myTable.mergeCells(column,1,column+numberOfRounds-1,1);
+          addHeaders("Hringir",column,1);
+          addHeaders(total,column+numberOfRounds,2);
+          addHeaders(difference,column+numberOfRounds+1,2);
+          myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds+1,1);
+          addHeaders("Samtals",column+numberOfRounds,1);
+        break;
+
+        case ResultComparator.TOTALSTROKESWITHHANDICAP :
+          addHeaders(total,column+2,2);
+          addHeaders(netto,column+3,2);
+          column += 4;
+          int roundColumn = column;
+          for ( int a = 0; a < numberOfRounds; a++ ) {
+            myTable.mergeCells(roundColumn,1,roundColumn+1,1);
+            addHeaders(total,roundColumn,2);
+            addHeaders(netto,roundColumn+1,2);
+            addHeaders("H"+Integer.toString(a+1),roundColumn,1);
+            roundColumn += 2;
+          }
+          addHeaders(total,roundColumn,2);
+          addHeaders(netto,roundColumn+1,2);
+          myTable.mergeCells(roundColumn,1,roundColumn+1,1);
+          addHeaders("Samtals",roundColumn,1);
+        break;
+
+        case ResultComparator.TOTALPOINTS :
+          addHeaders(total,column+2,2);
+          column += 3;
+          for ( int a = 0; a < numberOfRounds; a++ ) {
+            addHeaders("H"+Integer.toString(a+1),column+a,2);
+          }
+          myTable.mergeCells(column,1,column+numberOfRounds-1,1);
+          addHeaders("Hringir",column,1);
+          myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds,2);
+          addHeaders("Samtals",column+numberOfRounds,1);
+        break;
       }
 
-      myTable.setColumnAlignment(2,"left");
+      myTable.mergeCells(firstColumn-1,1,column-1,1);
+      addHeaders("Hola",firstColumn-1,2);
+      addHeaders("Í dag",firstColumn-1,1);
 
-      return myTable;
-
-  }
-
-  private void setTextValues() {
-
-    tournamentName = new Text(tournament.getName());
-      tournamentName.setFontSize(3);
-      tournamentName.setBold();
-      tournamentName.setFontColor(headerText);
-
-    typeName = new Text(" - "+type.getName());
-      typeName.setFontColor(headerText);
-
-    positionText = new Text("Sæti");
-      positionText.setFontSize(1);
-      positionText.setBold();
-      positionText.setFontColor(categoryText);
-
-    memberText = new Text("Kylfingur");
-      memberText.setFontSize(1);
-      memberText.setBold();
-      memberText.setFontColor(categoryText);
-
-    unionText = new Text("Klúbbur");
-      unionText.setFontSize(1);
-      unionText.setBold();
-      unionText.setFontColor(categoryText);
-
-    strokesText = new Text("Högg");
-      strokesText.setFontSize(1);
-      strokesText.setBold();
-      strokesText.setFontColor(categoryText);
-
-    pointsText = new Text("Punktar");
-      pointsText.setFontSize(1);
-      pointsText.setBold();
-      pointsText.setFontColor(categoryText);
-
-    bruttoText = new Text("Brúttó");
-      bruttoText.setFontSize(1);
-      bruttoText.setBold();
-      bruttoText.setFontColor(categoryText);
-
-    nettoText = new Text("Nettó");
-      nettoText.setFontSize(1);
-      nettoText.setBold();
-      nettoText.setFontColor(categoryText);
-
-    differenceText = new Text("Par");
-      differenceText.setFontSize(1);
-      differenceText.setBold();
-      differenceText.setFontColor(categoryText);
-
-  }
-
-  public void setNumberOfGolfers(int numberOfGolfers){
-    this.numberOfGolfers=numberOfGolfers;
-  }
-
-  public void showAll(){
-    this.numberOfGolfers=0;
-  }
-
-  public void setShowHeader(boolean showHeader){
-    this.showHeader=showHeader;
-  }
-
-  public void setCategoryText(String categoryText){
-    this.categoryText=categoryText;
-  }
-
-  public void setHeaderText(String headerText){
-    this.headerText=headerText;
+      numberOfColumns = myTable.getColumns();
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
   }
 
 }
