@@ -75,8 +75,14 @@ public class ClubSelectionBox extends GroupSelectionBox {
 					Iterator iter = divGroups.iterator();
 					while (iter.hasNext()) {
 						Group div = (Group) iter.next();
-						Group club = (Group) div.getParentGroups().iterator().next();
-						groups.add(club);
+						List parentClub = div.getParentGroups();
+						if(parentClub!=null && !parentClub.isEmpty()){
+							Group club = (Group) parentClub.iterator().next();
+							groups.add(club);
+						}
+						else{
+							System.err.println("The Division "+div.getName()+" id: "+div.getPrimaryKey()+" does not have a club parent!");
+						}
 					}
 				}
 				
