@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.11 2001/07/16 17:58:33 tryggvil Exp $
+ * $Id: Table.java,v 1.12 2001/07/25 17:15:56 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -185,13 +185,16 @@ public class Table extends ModuleObjectContainer {
     ModuleObjectContainer theNewObjects[][];
     theNewObjects = new ModuleObjectContainer[columns][rows];
 
-    for (int x=0;x<columns;x++){
+    /*for (int x=0;x<columns;x++){
       for(int y=0;y<rows;y++){
         if(x<this.cols && y<this.rows){
           theNewObjects[x][y]=theObjects[x][y];
         }
 
       }
+    }*/
+    for (int x=0;x<this.cols;x++){
+      System.arraycopy(theObjects[x],0,theNewObjects[x],0,this.rows);
     }
     theObjects=theNewObjects;
     this.cols=columns;
@@ -1126,4 +1129,7 @@ public boolean isEmpty(int x, int y){
     }
   }
 
+  public void setResizable(boolean resizable){
+    this.isResizable=resizable;
+  }
 }

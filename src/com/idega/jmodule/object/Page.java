@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.13 2001/07/18 20:01:22 tryggvil Exp $
+ * $Id: Page.java,v 1.14 2001/07/25 17:15:56 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,7 +53,7 @@ public class Page extends ModuleObjectContainer {
   private final static String START_TAG="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>";
   private final static String END_TAG="</html>";
 
-  private static final String slash = "/";
+
 
 
   public Page() {
@@ -390,7 +390,7 @@ public class Page extends ModuleObjectContainer {
   }
 
   public String getMetaInformation(ModuleInfo modinfo){
-      String theReturn = "\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n";
+      String theReturn = "\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idegaWeb 1.3\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n";
       if (getRedirectInfo() != null) {
         theReturn += "<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">";
       }
@@ -402,8 +402,6 @@ public class Page extends ModuleObjectContainer {
    */
   public static Page getPage(ModuleInfo modinfo){
       String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
-      String classKey = modinfo.getParameter(IW_FRAME_CLASS_PARAMETER);
-
 
       if(frameKey!=null){
 
@@ -411,20 +409,7 @@ public class Page extends ModuleObjectContainer {
         return page;
         //return getPageFromSession(modinfo,frameKey);
       }
-      else if(classKey!=null){
-        try{
-        Page page = (Page)Class.forName(classKey).newInstance();
-        return page;
-        }
-        catch(Exception e){
-          Page page = new Page();
-          page.add("Page invalid");
-          page.addBreak();
-          page.add(e.getClass().getName()+"Message: "+e.getMessage());
-          e.printStackTrace();
-          return page;
-        }
-      }
+
       else{
       /**
        * Inside a top level page:
@@ -444,6 +429,36 @@ public class Page extends ModuleObjectContainer {
           storeObject("idega_page",page);
         }
         return page;*/
+  }
+
+  public static Page loadPage(ModuleInfo modinfo){
+      String classKey = modinfo.getParameter(IW_FRAME_CLASS_PARAMETER);
+      String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
+
+      if(frameKey!=null){
+
+        Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
+        System.out.println("Page 1");
+        return page;
+        //return getPageFromSession(modinfo,frameKey);
+      }
+      else if(classKey!=null){
+        try{
+        Page page = (Page)Class.forName(classKey).newInstance();
+        return page;
+        }
+        catch(Exception e){
+          Page page = new Page();
+          page.add("Page invalid");
+          page.addBreak();
+          page.add(e.getClass().getName()+"Message: "+e.getMessage());
+          e.printStackTrace();
+          return page;
+        }
+      }
+      else{
+        return new Page();
+      }
   }
 
 
@@ -492,12 +507,9 @@ public class Page extends ModuleObjectContainer {
     IWCoreServlet.storeObject(IW_PAGE_KEY,page);
   }
 
-
   public static boolean isRequestingTopPage(ModuleInfo modinfo){
     return !modinfo.isParameterSet(IW_FRAME_STORAGE_PARMETER);
   }
-
-
 
   protected void setFrameProperty(String propertyName,String propertyValue){
     if(frameProperties ==null){

@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.IWURL;
 
 
 /**
@@ -130,6 +131,7 @@ public void setOnSubmit(String script){
 }
 
 
+
 private List findAllInputNamesHelper(List vector,ModuleObjectContainer cont){
 	List objects = cont.getAllContainingObjects();
 	if (objects != null){
@@ -182,6 +184,10 @@ public void main(ModuleInfo modinfo){
   }
 }
 
+public void addParameter(String parameterName,String parameterValue){
+  add(new Parameter(parameterName,parameterValue));
+}
+
 public void maintainAllParameters(){
 	maintainAllParameters=true;
 }
@@ -211,6 +217,22 @@ public void maintainParameter(String parameterName){
 }
 
 
+
+private void addGloballyMaintainedParameters(ModuleInfo modinfo){
+  List list = com.idega.idegaweb.IWURL.getGloballyMaintainedParameters(modinfo);
+  if(list!=null){
+    Iterator iter = list.iterator();
+    while (iter.hasNext()) {
+      String parameterName = (String)iter.next();
+      String parameterValue = modinfo.getParameter(parameterName);
+      if(parameterValue!=null){
+        addParameter(parameterName,parameterValue);
+      }
+    }
+  }
+}
+
+
 /**
  * For printing out the maintained hidden parameters
  *
@@ -229,14 +251,7 @@ private void addTheMaintainedParameters(ModuleInfo modinfo){
           }
         }*/
 
-        String WindowParameterValue = modinfo.getParameter(IWMainApplication.windowOpenerParameter);
-        if(WindowParameterValue!=null){
-          add(new Parameter(IWMainApplication.windowOpenerParameter,WindowParameterValue));
-        }
-        String objectInstanciatorValue = modinfo.getParameter(IWMainApplication.classToInstanciateParameter);
-        if(objectInstanciatorValue!=null){
-          add(new Parameter(IWMainApplication.classToInstanciateParameter,objectInstanciatorValue));
-        }
+        this.addGloballyMaintainedParameters(modinfo);
 
 	if (maintainAllParameters){
 		if (modinfo.getParameter("idega_special_form_parameter") != null){

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.14 2001/07/19 17:21:26 gummi Exp $
+ * $Id: ModuleObject.java,v 1.15 2001/07/25 17:15:56 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,7 +36,9 @@ public class ModuleObject extends Object implements Cloneable {
   //private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb";
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.core";
 
-   private HttpServletRequest Request;
+  protected static final String slash = "/";
+
+  private HttpServletRequest Request;
   private HttpServletResponse Response;
   private PrintWriter out;
   private String interfaceStyle;

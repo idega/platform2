@@ -25,12 +25,21 @@ public Script(){
 public Script(String scriptLanguage){
 	super();
 	setScriptLanguage(scriptLanguage);
+        setType();
 	scriptCode = new Hashtable();
 }
 
 /*public void setScriptType(String scriptType){
 	setAttribute("language",scriptType);
 }*/
+
+protected void setType(){
+  setType("text/javascript");
+}
+
+protected void setType(String type){
+  setAttribute("type",type);
+}
 
 public void setScriptLanguage(String scriptLanguage){
 	setAttribute("language",scriptLanguage);

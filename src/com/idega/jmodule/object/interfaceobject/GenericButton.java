@@ -50,7 +50,7 @@ public void print(ModuleInfo modinfo) throws Exception{
 
 			if (getInterfaceStyle().equals("default")){
 				println("<input type=\"button\" name=\""+getName()+"\" "+getAttributeString()+" >");
-				println("</input>");
+				//println("</input>");
 			}
 		}
 	//}

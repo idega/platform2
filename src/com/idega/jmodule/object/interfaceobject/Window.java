@@ -16,7 +16,9 @@ import com.idega.idegaweb.*;
 import java.util.Hashtable;
 import java.util.Map;
 
-/*Class to create pop up windows and such*/
+/**
+ * Class to create pop-up windows and Windows to open with various settings
+ * */
 public class Window extends Page{
 
 private String title;
@@ -250,6 +252,24 @@ private String returnCheck(boolean checkBool){
 }
 
 
+public static String getWindowURL(Class windowClass){
+  String url = IWMainApplication.windowOpenerURL;
+  url+="?";
+  url+=IW_FRAME_CLASS_PARAMETER;
+  url+="=";
+  url+=windowClass.getName();
+  return url;
+}
+
+public static String getCallingScriptString(Class windowClass){
+  return getCallingScriptString(windowClass,true);
+}
+
+public static String getCallingScriptString(Class windowClass,boolean includeURL){
+  String url = getWindowURL(windowClass);
+  return getCallingScriptString(windowClass,url,includeURL);
+}
+
 public static String getCallingScriptString(Class windowClass,String url,boolean includeURL){
       String theURL=null;
       Window windowInstance = (Window)allOpenedWindowClasses.get(windowClass);
@@ -307,7 +327,7 @@ public void setBackgroundImage(String imageURL){
 }
 
 public void setBackgroundImage(Image backgroundImage){
-	setAttribute("background",backgroundImage.getURL());
+	setBackgroundImage(backgroundImage.getURL());
 }
 
 public boolean doPrint(ModuleInfo modinfo){

@@ -10,6 +10,7 @@ import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.IWURL;
 
 //added by gummi@idega.is
 //begin
@@ -34,7 +35,7 @@ private boolean addSessionId = true;
 private static String sessionStorageName=IWMainApplication.windowOpenerParameter;
 private Form formToSubmit;
 private Class windowClass;
-
+private boolean maintainAllGlobalParameters = false;
 
 public Link(){
   this("");
@@ -424,9 +425,15 @@ public ModuleObject getObject(){
         linkObj.formToSubmit = (Form)this.formToSubmit.clone();
       }
 
+      if(windowClass != null){
+        linkObj.windowClass = this.windowClass;
+      }
+
+
       linkObj.ObjectType = this.ObjectType;
       linkObj.parameterString = this.parameterString;
       linkObj.addSessionId = this.addSessionId;
+      linkObj.maintainAllGlobalParameters=this.maintainAllGlobalParameters;
 
       if(this.parameterString != null){
         linkObj.parameterString = new StringBuffer(this.parameterString.toString());
@@ -440,10 +447,29 @@ public ModuleObject getObject(){
     return linkObj;
   }
 
+private void addTheMaintainedParameters(ModuleInfo modinfo){
+  List list = com.idega.idegaweb.IWURL.getGloballyMaintainedParameters(modinfo);
+  if(list!=null){
+    Iterator iter = list.iterator();
+    while (iter.hasNext()) {
+      String parameterName = (String)iter.next();
+      String parameterValue = modinfo.getParameter(parameterName);
+      if(parameterValue!=null){
+        addParameter(parameterName,parameterValue);
+      }
+    }
+  }
+}
 
+public void setToMaintainGlobalParameters(){
+  this.maintainAllGlobalParameters=true;
+}
 
+protected String getParameterString(ModuleInfo modinfo,String URL){
+        if(maintainAllGlobalParameters){
+          addTheMaintainedParameters(modinfo);
+        }
 
-public String getParameterString(ModuleInfo modinfo,String URL){
         if (URL == null){
           URL="";
         }
@@ -451,7 +477,10 @@ public String getParameterString(ModuleInfo modinfo,String URL){
 	if (parameterString == null){
           parameterString = new StringBuffer();
           if (addSessionId && (!modinfo.isSearchEngine()) ){
-		if(URL.indexOf("://") == -1){//does not include ://
+		if(URL.equals("#")){
+                  return "";
+                }
+                else if(URL.indexOf("://") == -1){//does not include ://
                   if (URL.indexOf("?") != -1){
                     parameterString.append("&idega_session_id=");
                     parameterString.append(modinfo.getSession().getId());
