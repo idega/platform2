@@ -226,7 +226,8 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   public int getSelectedLocaleId(IWContext iwc) {
     String sLocaleId = iwc.getParameter(PARAMETER_LOCALE_DROP);
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     int iLocaleId = -1;
     if(sLocaleId!= null){

@@ -83,8 +83,8 @@ public CalendarTypeEditor(){
 
     addTitle(_iwrb.getLocalizedString("calendar_type_editor","Calendar Type Editor"));
 
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
 
     String sLocaleId = iwc.getParameter(CalendarParameters.PARAMETER_LOCALE_DROP);

@@ -84,8 +84,8 @@ public BoxCategoryEditor(){
 
     addTitle(_iwrb.getLocalizedString("box_category_editor","Category Editor"));
 
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
 
     try {

@@ -123,7 +123,8 @@ public class TextEditorWindow extends AbstractChooserWindow{
     }
 
     boolean doView = true;
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     String sLocaleId = iwc.getParameter(prmLocale);
 		sTextId = iwc.getParameter(prmUsedTextId);

@@ -68,7 +68,8 @@ public PollAdminWindow(){
     iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     try {
       _userID = LoginBusinessBean.getUser(iwc).getID();

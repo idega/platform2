@@ -46,7 +46,8 @@ public PollQuestionChooser(){
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_question_chooser","Poll Question Chooser"));
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     try {
       userID = LoginBusinessBean.getUser(iwc).getID();

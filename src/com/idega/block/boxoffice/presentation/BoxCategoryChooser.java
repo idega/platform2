@@ -86,9 +86,8 @@ public BoxCategoryChooser(){
 
     addTitle(_iwrb.getLocalizedString("box_category_choose","Category Chooser"));
 
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-
-
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     try {
 

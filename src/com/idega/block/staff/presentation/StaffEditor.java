@@ -55,7 +55,8 @@ public StaffEditor(){
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("staff_admin","Staff admin"));
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
     String sLocaleId = iwc.getParameter(StaffBusiness.PARAMETER_LOCALE_DROP);
 

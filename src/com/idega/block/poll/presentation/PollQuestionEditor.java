@@ -89,8 +89,8 @@ public PollQuestionEditor(){
 
     addTitle(iwrb.getLocalizedString("poll_question_editor","Poll Question Editor"));
 
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
 
 
     String sLocaleId = iwc.getParameter(PollAdminWindow.prmLocale);
