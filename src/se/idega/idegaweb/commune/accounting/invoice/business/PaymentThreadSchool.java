@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/17 12:23:14 $ by $Author: roar $
+ * Last modified: $Date: 2004/02/17 14:24:38 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.121 $
+ * @version $Revision: 1.122 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -361,7 +361,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		if (placementIsInValidGroup && placementIsInPeriod
 				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)
 				&& !comp_by_agreement) {
-			//sdfgsfdg
+
 			ArrayList conditions = getConditions(schoolClassMember, provider);
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Date:" + calculationDate.toString());
@@ -491,7 +491,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			return resourceConditions;
 		}
 		if(null!=schoolClassMember.getSchoolYear()){
-			errorRelated.append("SchoolYear:"+schoolClassMember.getSchoolYear().getName());
+//			errorRelated.append("SchoolYear:"+schoolClassMember.getSchoolYear().getName());
 		}else{
 			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolYear");
 			return resourceConditions;
@@ -767,7 +767,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
 		if(null!=schoolClassMember){
-			errorRelated.append("SchoolType:" + schoolClassMember.getSchoolType().getName());
+//			errorRelated.append("SchoolType:" + schoolClassMember.getSchoolType().getName());
 			errorRelated.append("School Year:" + schoolClassMember.getSchoolYear().getName());
 		}
 		if(null!=provider){

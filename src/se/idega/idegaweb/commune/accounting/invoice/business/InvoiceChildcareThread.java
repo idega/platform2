@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/17 10:07:20 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/17 14:24:38 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.127 $
+ * @version $Revision: 1.128 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -277,7 +277,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}catch (NullPointerException e){
 						throw new NoSchoolTypeException("");
 					}
-					errorRelated.append("SchoolType: "+schoolType.getName());
+//					errorRelated.append("SchoolType: "+schoolType.getName());
 					
 					// check if this is either inside commune or private childcare
 					final Provider provider = new Provider (school);
