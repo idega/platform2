@@ -14,6 +14,8 @@ import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import is.idega.idegaweb.project.data.IPCategory;
 import com.idega.presentation.PresentationObject;
+import is.idega.idegaweb.project.data.IPProject;
+import com.idega.data.EntityFinder;
 
 import java.util.List;
 import java.util.Iterator;
@@ -84,7 +86,6 @@ public class IPProjectCreator extends IWAdminWindow {
 
     categoryFieldTemplate = new DropdownMenu(projectCategoryFieldName);
 
-
     okButton = new SubmitButton(_PRM_SUBMIT,"   OK   ");
     cancelButton = new CloseButton(" Cancel ");
 
@@ -103,7 +104,8 @@ public class IPProjectCreator extends IWAdminWindow {
     projectDescriptionText.setText("Description: ");
   }
 
-  public PresentationObject lineUpElements(IWContext iwc) throws Exception {
+  public PresentationObject lineUpElements(IWContext iwc, IPProject project) throws Exception {
+
     Table frameTable = new Table(1,2);
     frameTable.setAlignment("center");
     frameTable.setVerticalAlignment("middle");
@@ -118,10 +120,19 @@ public class IPProjectCreator extends IWAdminWindow {
     nameTable.setHeight(2,rowHeight);
 
     nameTable.add(projectNameText,1,1);
+    if(project != null){
+      projectNameField.setContent(project.getName());
+    }
     nameTable.add(projectNameField,1,2);
     nameTable.add(projectNumberText,1,3);
+    if(project != null){
+      projectNumberField.setContent(project.getProjectNumber());
+    }
     nameTable.add(projectNumberField,1,4);
     nameTable.add(projectDescriptionText,1,7);
+    if(project != null){
+      projectDescriptionField.setContent(project.getDescription());
+    }
     nameTable.add(projectDescriptionField,1,8);
     // nameTable end
     if(business == null){
@@ -137,6 +148,7 @@ public class IPProjectCreator extends IWAdminWindow {
       categoryTable.setColumnAlignment(2,"right");
       Iterator iter = catTypes.iterator();
       int index = 1;
+      categoryFieldTemplate.addMenuElement(-1,"No category");
       while (iter.hasNext()) {
         IPCategoryType item = (IPCategoryType)iter.next();
 
@@ -150,6 +162,21 @@ public class IPProjectCreator extends IWAdminWindow {
             IPCategory item2 = (IPCategory)iter2.next();
             menu.addMenuElement(item2.getID(),item2.getName());
           }
+        }
+        if(project != null){
+          try {
+            IPCategory c = business.getProjectCategory(item.getID(),project.getID());
+            if(c != null){
+              menu.setSelectedElement(Integer.toString(c.getID()));
+            } else {
+              menu.setSelectedElement("-1");
+            }
+          }
+          catch (Exception ex) {
+            ex.printStackTrace();
+            menu.setSelectedElement("-1");
+          }
+
         }
         categoryTable.add(menu,2,index);
 
@@ -184,12 +211,65 @@ public class IPProjectCreator extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
     myForm.empty();
     myForm.maintainParameter(_PRM_INSTANCE_ID);
+    myForm.maintainParameter(_PRM_UPDATE);
     this.add(myForm);
     business = ProjectBusiness.getInstance();
 
     if(iwc.getParameter(_PRM_SUBMIT) != null){
-       if(iwc.getParameter(_PRM_UPDATE) != null){
+       if(iwc.getParameter(_PRM_UPDATE) != null && !iwc.getParameter(_PRM_UPDATE).equalsIgnoreCase("false")){
           boolean succeeded= false;
+
+          try {
+            String instID = iwc.getParameter(_PRM_INSTANCE_ID);
+            int instanceId = -1;
+            if(instID != null && !instID.equals("")){
+              instanceId = Integer.parseInt(instID);
+            }
+            String name = iwc.getParameter(projectNameFieldName);
+            if(name == null){
+              //error
+            } else if(name.equals("")){
+              name = "Untitled project";
+            }
+            String pNumber = iwc.getParameter(projectNumberFieldName);
+            String description = iwc.getParameter(projectDescriptionFieldName);
+            String parent = null;//iwc.getParameter(projectNameFieldName);
+            Integer parentId = null;
+            if(parent != null && !parent.equals("")){
+              parentId = new Integer(parent);
+            }
+            String[] catIds = iwc.getParameterValues(projectCategoryFieldName);
+            int[] categoryIds = null;
+            if(catIds != null && catIds.length > 0){
+              categoryIds = new int[catIds.length];
+              for (int i = 0; i < catIds.length; i++) {
+                try {
+                  categoryIds[i] = Integer.parseInt(catIds[i]);
+                }
+                catch (NumberFormatException ex) {
+                  if(catIds[i].equals("")){
+                    categoryIds[i] = 0;
+                  }else{
+                    ex.printStackTrace();
+                  }
+                }
+              }
+            }
+
+            business.updateIPProject(instanceId,name,pNumber,description,parentId,categoryIds);
+
+            boolean triggerPage = true;
+            if(triggerPage){
+              business.changeNameOfPageLink(instanceId,name);
+            }
+
+            succeeded = true;
+          }
+          catch (Exception ex) {
+            succeeded = false;
+            ex.printStackTrace();
+          }
+
           if(succeeded){
             this.close();
             this.setParentToReload();
@@ -230,15 +310,9 @@ public class IPProjectCreator extends IWAdminWindow {
 
             int projectId = business.createIPProject(name,pNumber,description,parentId,categoryIds);
 
-            String instID = iwc.getParameter(_PRM_INSTANCE_ID);
-            int instanceId = 0;
-            if(instID != null && !instID.equals("")){
-              instanceId = Integer.parseInt(instID);
-            }
-
             boolean triggerPage = true;
-            if(triggerPage && instanceId != 0){
-              business.createPageLink(iwc,instanceId, projectId,name);
+            if(triggerPage){
+              business.createPageLink(iwc,projectId,name);
             }
 
             succeeded = true;
@@ -253,7 +327,12 @@ public class IPProjectCreator extends IWAdminWindow {
           }
        }
     } else {
-      myForm.add(lineUpElements(iwc));
+      IPProject project = null;
+      if(iwc.getParameter(_PRM_UPDATE) != null && !iwc.getParameter(_PRM_UPDATE).equalsIgnoreCase("false")){
+        project = new IPProject(Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)));
+      }
+
+      myForm.add(lineUpElements(iwc,project));
     }
 
   }

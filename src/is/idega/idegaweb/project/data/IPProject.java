@@ -4,6 +4,8 @@ import java.sql.*;
 import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.user.data.User;
 
 
 /**
@@ -23,7 +25,9 @@ public class IPProject extends GenericEntity{
     public final static String _COLUMN_PROJECT_NUMBER = "project_number";
     public final static String _COLUMN_PARENT_ID = "parent_id";
     public final static String _COLUMN_CREATION_DATE = "creation_date";
-
+    public final static String _COLUMN_DELETED = "deleted";
+    public final static String _COLUMN_DELETED_BY = "deleted_by";
+    public final static String _COLUMN_DELETED_WHEN = "deleted_when";
 
     public IPProject(){
       super();
@@ -41,10 +45,37 @@ public class IPProject extends GenericEntity{
       addAttribute(_COLUMN_PROJECT_NUMBER,"projectnumber",true,true,"java.lang.String");
       addAttribute(_COLUMN_CREATION_DATE,"creationdate",true,true,"java.sql.Date");
       addAttribute(_COLUMN_PARENT_ID,"yfirverk",true,true,"java.lang.Integer");
+      addAttribute(_COLUMN_DELETED,"Deleted",true,true,Boolean.class);
+      addAttribute(_COLUMN_DELETED_BY,"Deleted by",true,true,Integer.class,"many-to-one",User.class);
+      addAttribute(_COLUMN_DELETED_WHEN,"Deleted when",true,true,Timestamp.class);
       this.addManyToManyRelationShip(IPCategory.class,"ip_project_category");
       this.addManyToManyRelationShip(PageLink.class,"ip_project_dpt_page_link");
+      this.addManyToManyRelationShip(GenericGroup.class, "ip_project_ic_group");
     }
 
+    public void setDeleted(boolean value){
+      setColumn(_COLUMN_DELETED,value);
+    }
+
+    public void setDeletedBy(int userId){
+      setColumn(_COLUMN_DELETED_BY,userId);
+    }
+
+    public void setDeletedWhen(Timestamp time){
+      setColumn(_COLUMN_DELETED_WHEN,time);
+    }
+
+    public boolean getDeleted(){
+      return getBooleanColumnValue(_COLUMN_DELETED);
+    }
+
+    public int getDeletedBy(){
+      return getIntColumnValue(_COLUMN_DELETED_BY);
+    }
+
+    public Timestamp getDeletedWhen(){
+      return (Timestamp)this.getColumnValue(_COLUMN_DELETED_WHEN);
+    }
 
     public String getEntityName(){
       return "ip_project";

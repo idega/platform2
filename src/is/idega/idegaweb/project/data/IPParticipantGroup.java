@@ -29,4 +29,9 @@ public class IPParticipantGroup extends GenericGroup {
   public static IPParticipantGroup getStaticGroupInstance(){
     return (IPParticipantGroup)getStaticInstance(IPParticipantGroup.class);
   }
+
+
+  protected boolean identicalGroupExistsInDatabase() throws Exception {
+    return false;
+  }
 }

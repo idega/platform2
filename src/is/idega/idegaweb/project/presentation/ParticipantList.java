@@ -14,6 +14,8 @@ import com.idega.presentation.text.Text;
 import com.idega.core.user.data.User;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
+import is.idega.idegaweb.project.business.ProjectBusiness;
+import com.idega.core.data.GenericGroup;
 
 /**
  * Title:        IW Project
@@ -26,37 +28,56 @@ import com.idega.block.staff.business.StaffHolder;
 
 public class ParticipantList extends AbstractContentList {
 
-  int[] groupIdsToList = new int[0];
+  int groupId = -1;
 
 
   public ParticipantList() {
     super();
+    groupId = 5;
   }
+
 
 
   public synchronized Object clone(){
     ParticipantList obj = (ParticipantList)super.clone();
 
-    obj.groupIdsToList = (int[])this.groupIdsToList.clone();
+    obj.groupId = this.groupId;
 
     return obj;
   }
 
-  public List getEntityList(IWContext iwc) throws java.lang.Exception {
-    List l = null;
-    for (int i = 0; i < groupIdsToList.length; i++) {
-      List li = UserBusiness.getUsersInGroup(groupIdsToList[i]);
 
-      if(li != null){
-        if(l == null){
-          l = new Vector();
-        }
-        l.addAll(li);
+  public String getGroupName(){
+    if(groupId != -1){
+      try {
+        GenericGroup gr = new GenericGroup(groupId);
+        return gr.getName();
+      }
+      catch (Exception ex) {
+        return null;
       }
     }
+    return null;
+  }
 
-    // temp
-    l = UserBusiness.getUsers();
+
+  public int getGroupId(IWContext iwc) throws Exception{
+    if(groupId != -1){
+      GenericGroup gr = ProjectBusiness.getProjectParticipantGroup(groupId,ProjectBusiness.getCurrentProjectId(iwc));
+      if(gr != null){
+        return gr.getID();
+      }
+    }
+    return -1;
+  }
+
+  public List getEntityList(IWContext iwc) throws Exception {
+    List l = null;
+    int gID = getGroupId(iwc);
+    if(gID != -1){
+      l = UserBusiness.getUsersInGroup(gID);
+    }
+  //    l = UserBusiness.getUsers();
 
     if(l != null){
       String[] names = new String[3];
@@ -72,6 +93,7 @@ public class ParticipantList extends AbstractContentList {
     return l;
 
   }
+
   public void initColumns(IWContext iwc) throws java.lang.Exception {
     this.setColumns(5);
     this.setWidth("527");

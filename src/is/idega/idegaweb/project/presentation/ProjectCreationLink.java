@@ -55,7 +55,7 @@ public class ProjectCreationLink extends Block {
 
     createProjectLink.setName("create project");
     createProjectLink.setWindowToOpen(IPProjectCreator.class);
-    createProjectLink.addParameter(IPProjectCreator._PRM_INSTANCE_ID, this.getICObjectInstanceID());
+    //createProjectLink.addParameter(IPProjectCreator._PRM_INSTANCE_ID, this.getICObjectInstanceID());
     this.add(createProjectLink);
 
   }

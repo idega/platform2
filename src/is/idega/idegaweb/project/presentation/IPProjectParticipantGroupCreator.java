@@ -207,7 +207,7 @@ public class IPProjectParticipantGroupCreator extends IWAdminWindow {
     /**
      * @todo implement connection between Project instnces and participantgroups ()
      */
-    business.createParticipant(new PageTriggerInfo(1),name,description);
+    business.createParticipantGroup(new PageTriggerInfo(1),name,description);
 
   }
 
