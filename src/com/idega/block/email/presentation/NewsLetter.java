@@ -19,7 +19,7 @@ import com.idega.presentation.ui.TextInput;
 import java.util.Collection;
 import java.util.Iterator;
 
-/**
+/**240
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *
  * @author     <br>
@@ -55,6 +55,8 @@ public class NewsLetter extends CategoryBlock {
   private Image submitImage;
 
   private int viewType = DROP;
+  private String _inputStyle = "";
+  private int _inputLength = 18;
 
 
   /**  Constructor for the NewsLetter object */
@@ -104,29 +106,34 @@ public class NewsLetter extends CategoryBlock {
     iwrb = getResourceBundle(iwc);
     Table T = new Table();
     int row = 1;
+    int categoryID = getCategoryId();
 
-    if (getCategoryId() > 0) {
+    if (categoryID > 0) {
       processForm(iwc);
       topics = MailFinder.getInstance().getInstanceTopics(getICObjectInstanceID());
+    }
+
+    if(iwc.hasEditPermission(this)){
+      T.add(getAdminView(iwc), 1, row);
+      T.setAlignment(1, row++, "left");
+    }
+
+    if (categoryID > 0) {
+      T.add(getMailInputTable(),1,row++);
 
       switch (viewType) {
-        case DROP:
-          T.add(getDropdownView(iwc),1,3);
-          break;
-        case CHECK:
-          T.add(getCheckBoxView(iwc),1,3);
-          break;
-        case SINGLE:
-          T.add(getCheckBoxView(iwc),1,3);
-          break;
+	case DROP:
+	  T.add(getDropdownView(iwc),1,row);
+	  break;
+	case CHECK:
+	  T.add(getCheckBoxView(iwc),1,row);
+	  break;
+	case SINGLE:
+	  T.add(getCheckBoxView(iwc),1,row);
+	  break;
       }
+    }
 
-    }
-    if(iwc.hasEditPermission(this)){
-      T.add(getAdminView(iwc), 1, 1);
-      T.setAlignment(1, row, "left");
-    }
-    T.add(getMailInputTable(),1,2);
     Form F = new Form();
     F.add(T);
     add(F);
@@ -146,15 +153,15 @@ public class NewsLetter extends CategoryBlock {
       DropdownMenu drp = new DropdownMenu("nl_list");
       Iterator iter = topics.iterator();
       if(topics.size() > 1){
-        while (iter.hasNext()) {
-          EmailTopic tpc = (EmailTopic) iter.next();
-          drp.addMenuElement(tpc.getListId(), tpc.getName());
-        }
-        T.add(drp, 1, 2);
+	while (iter.hasNext()) {
+	  EmailTopic tpc = (EmailTopic) iter.next();
+	  drp.addMenuElement(tpc.getListId(), tpc.getName());
+	}
+	T.add(drp, 1, 2);
       }
       else if(iter.hasNext()){
-        EmailTopic tpc = (EmailTopic) iter.next();
-        T.add(new HiddenInput("nl_list",tpc.toString()));
+	EmailTopic tpc = (EmailTopic) iter.next();
+	T.add(new HiddenInput("nl_list",tpc.toString()));
       }
     }
     return T;
@@ -163,6 +170,8 @@ public class NewsLetter extends CategoryBlock {
   private PresentationObject getMailInputTable(){
     Table T = new Table();
     TextInput email = new TextInput("nl_email");
+      email.setStyleAttribute(_inputStyle);
+      email.setLength(_inputLength);
     SubmitButton send;
     if (submitImage != null) {
       send = new SubmitButton(submitImage, "nl_send");
@@ -188,11 +197,11 @@ public class NewsLetter extends CategoryBlock {
       Iterator iter = topics.iterator();
       int row = 1;
       while (iter.hasNext()) {
-        EmailTopic tpc = (EmailTopic) iter.next();
-        chk = new CheckBox("nl_list",tpc.toString());
-        T.add(chk, 1, row);
-        T.add(tpc.getName(),2,row);
-        row++;
+	EmailTopic tpc = (EmailTopic) iter.next();
+	chk = new CheckBox("nl_list",tpc.toString());
+	T.add(chk, 1, row);
+	T.add(tpc.getName(),2,row);
+	row++;
       }
     }
     return T;
@@ -228,15 +237,15 @@ public class NewsLetter extends CategoryBlock {
   private void processForm(IWContext iwc) {
     if (iwc.isParameterSet("nl_send") || iwc.isParameterSet("nl_send.x")) {
       if (iwc.isParameterSet("nl_email")) {
-        String email = iwc.getParameter("nl_email");
-        if (email.indexOf("@") > 0) {
-          String[] sids = iwc.getParameterValues("nl_list");
-          int[] ids = new int[sids.length];
-          for (int i = 0; i < sids.length; i++) {
-            ids[i] = Integer.parseInt(sids[i]);
-          }
-          MailBusiness.getInstance().saveEmailToLists(email, ids);
-        }
+	String email = iwc.getParameter("nl_email");
+	if (email.indexOf("@") > 0) {
+	  String[] sids = iwc.getParameterValues("nl_list");
+	  int[] ids = new int[sids.length];
+	  for (int i = 0; i < sids.length; i++) {
+	    ids[i] = Integer.parseInt(sids[i]);
+	  }
+	  MailBusiness.getInstance().saveEmailToLists(email, ids);
+	}
       }
     }
   }
@@ -294,6 +303,26 @@ public class NewsLetter extends CategoryBlock {
 
 
   /**
+   *  Sets the input style attribute of the NewsLetter object
+  *
+  * @param inputStyle - the new value for _inputStyle
+  */
+  public void setInputStyle(String inputStyle){
+    _inputStyle = inputStyle;
+  }
+
+
+  /**
+   *  Sets the input length attribute of the NewsLetter object
+  *
+  * @param inputLength - the new value for _inputStyle
+  */
+  public void setInputLength(int inputLength){
+    _inputLength = inputLength;
+  }
+
+
+  /**
    *  Sets the submitImage attribute of the NewsLetter object
    *
    * @param  submitImage  The new submitImage value
@@ -301,5 +330,4 @@ public class NewsLetter extends CategoryBlock {
   public void setSubmitImage(Image submitImage) {
     this.submitImage = submitImage;
   }
-
 }
