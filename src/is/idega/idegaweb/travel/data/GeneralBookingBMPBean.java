@@ -27,7 +27,7 @@ import is.idega.idegaweb.travel.interfaces.*;
  */
 
 
-public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.GeneralBooking {
+public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.GeneralBooking, Booking {
 
   public GeneralBookingBMPBean(){
           super();
@@ -204,9 +204,10 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     setColumn(getIsValidColumnName(), isValid);
   }
 
-  public BookingEntry[] getBookingEntries() throws FinderException {
+  public BookingEntry[] getBookingEntries() throws FinderException , RemoteException{
     try {
-      return (BookingEntry[]) (is.idega.idegaweb.travel.data.BookingEntryBMPBean.getStaticInstance(BookingEntry.class).findAllByColumn(is.idega.idegaweb.travel.data.BookingEntryBMPBean.getBookingIDColumnName(), this.getID()));
+    	BookingEntry[] entries = (BookingEntry[]) (is.idega.idegaweb.travel.data.BookingEntryBMPBean.getStaticInstance(BookingEntry.class).findAllByColumn(is.idega.idegaweb.travel.data.BookingEntryBMPBean.getBookingIDColumnName(), this.getID())); 
+      return entries; 
     }catch (SQLException sql) {
       throw new FinderException(sql.getMessage());
     }
@@ -350,6 +351,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         sql.append(" and ");
         sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
         sql.append(" and ");
+//				sql.append(" b."+getBookingDateColumnName()+" like '%"+TextSoap.findAndCut(stamp.toSQLDateString(),"-")+"%'");
         sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
 
     returner = this.idoFindPKsBySQL(sql.toString());
@@ -378,7 +380,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
         String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
         String returning = "sum(b."+getTotalCountColumnName()+")";
-        if (returnsTotalCountInsteadOfNumberOfBookings) {
+        if (!returnsTotalCountInsteadOfNumberOfBookings) {
         	returning = "count(*)";
         }
 
@@ -421,7 +423,9 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             sql.append(" and ");
             sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
+//						sql.append(" b."+getBookingDateColumnName()+" like '%"+TextSoap.findAndCut(stamp.toSQLDateString(),"-")+"%'");
             sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
+            
         many = SimpleQuerier.executeStringQuery(sql.toString());
 
         if (many != null && many.length > 0) {
