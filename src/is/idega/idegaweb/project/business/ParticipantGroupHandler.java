@@ -4,7 +4,7 @@ import com.idega.builder.handler.PropertyHandler;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
-import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import com.idega.core.data.GenericGroup;
 
 
 /**
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -43,7 +43,7 @@ public class ParticipantGroupHandler implements PropertyHandler {
       /**
        * @todo link to project app (hardcoded dpt_id 1)
        */
-      List list = DPTTriggerBusiness.getInstance().getDPTPermissionGroups(((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).findByPrimaryKeyLegacy(ProjectBusiness.tmpHardcodedPageTriggerInfoId));
+      List list = DPTTriggerBusinessBean.getInstance(iwc).getDPTPermissionGroups(((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).findByPrimaryKeyLegacy(ProjectBusiness.tmpHardcodedPageTriggerInfoId));
       if (list != null) {
         Iterator iter = list.iterator();
         while (iter.hasNext()) {

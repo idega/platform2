@@ -9,6 +9,7 @@ import is.idega.idegaweb.project.data.IPParticipantGroup;
 
 import com.idega.core.component.data.ICObject;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.data.EntityFinder;
@@ -39,7 +40,7 @@ import java.sql.SQLException;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -347,7 +348,7 @@ public class ProjectBusiness {
 
     IPProject project = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId);
 
-    DPTTriggerBusiness business = DPTTriggerBusiness.getInstance();
+    DPTTriggerBusiness business = DPTTriggerBusinessBean.getInstance(iwc);
 
 
     List l = EntityFinder.findAll(com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoBMPBean.getStaticInstance(PageTriggerInfo.class));
@@ -365,7 +366,7 @@ public class ProjectBusiness {
 
       // replicate permissions
 
-      List participantGroups = DPTTriggerBusiness.getDPTPermissionGroups(info);
+      List participantGroups = DPTTriggerBusinessBean.getInstance(iwc).getDPTPermissionGroups(info);
 
       if(participantGroups != null && participantGroups.size() > 0 ){
 		BuilderService bservice = BuilderServiceFactory.getBuilderService(iwc);
@@ -559,7 +560,7 @@ public class ProjectBusiness {
 
 
   public void createParticipantGroup(PageTriggerInfo pti, String name, String description) throws SQLException {
-    DPTTriggerBusiness.createDPTPermissionGroup(pti,name,description);
+    DPTTriggerBusinessBean.createDPTPermissionGroup(pti,name,description);
   }
 
 
@@ -726,7 +727,7 @@ public class ProjectBusiness {
 
       List l = EntityFinder.findRelated(p,com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class));
       if(l != null && l.size() > 0){
-        boolean b = DPTTriggerBusiness.getInstance().invalidatePageLink( iwc, (PageLink)l.get(0),userId);
+        boolean b = DPTTriggerBusinessBean.getInstance(iwc).invalidatePageLink( iwc, (PageLink)l.get(0),userId);
         if(!b){
           return false;
         }
