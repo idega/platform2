@@ -38,7 +38,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocater extends KeyEditor{
+public class CampusAllocator extends KeyEditor{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -55,7 +55,7 @@ public class CampusAllocater extends KeyEditor{
   private SystemProperties SysProps = null;
    private String bottomThickness = "8";
 
-  public CampusAllocater(String sHeader) {
+  public CampusAllocator(String sHeader) {
     super(sHeader);
   }
 
@@ -143,6 +143,7 @@ public class CampusAllocater extends KeyEditor{
       int totalCount = 0,totalFree = 0,totalApplied = 0,totApp1 = 0,totApp2= 0,totApp3 = 0;
       int freeCount = 0;
       int type,cmpx;
+      Image printImage = new Image("/pics/print.gif");
       for (int i = 0; i < cLen; i++) {
         ApartmentCategory AC = (ApartmentCategory) Categories.get(i);
         List L = BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
@@ -172,6 +173,7 @@ public class CampusAllocater extends KeyEditor{
             catapp += appliedCount;
             totApp1 += appCnt1;totApp2 += appCnt2;totApp3 += appCnt3;
             catcnt1+=appCnt1;catcnt2+= appCnt2;catcnt3+= appCnt3;
+            T.add(getPDFLink(printImage,type,cmpx),1,row);
             T.add(getListLink(eAprtType),2,row);
             T.add(formatText(listCount),3,row);
             T.add(formatText(freeCount),4,row);
@@ -198,6 +200,7 @@ public class CampusAllocater extends KeyEditor{
       T.add(headerText(iwrb.getLocalizedString("choice1","1.Choice")),6,1);
       T.add(headerText(iwrb.getLocalizedString("choice2","2.Choice")),7,1);
       T.add(headerText(iwrb.getLocalizedString("choice3","3.Choice")),8,1);
+      T.add(getPDFLink(printImage,-1,-1),1,row);
       T.add(boldText(totalCount),3,row);
       T.add(boldText(totalFree),4,row);
       T.add(boldText(totalApplied),5,row);
@@ -275,14 +278,16 @@ public class CampusAllocater extends KeyEditor{
         try{
           Applicant A = new Applicant(WL.getApplicantId().intValue());
           Frame.add(formatText(WL.getOrder().intValue()),1,i+1);
-          Frame.add(formatText(A.getFullName()),2,i+1);
+           Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),2,i+1);
+          Frame.add(formatText(A.getFullName()),3,i+1);
+
 
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
             Contract C = (Contract) HT.get(new Integer(A.getID()));
-            Frame.add(getChangeLink(C.getID()),3,i+1);
+            Frame.add(getChangeLink(C.getID()),2,i+1);
           }
           else{
-            Frame.add(getAllocateLink(A.getID()),3,i+1);
+            Frame.add(getAllocateLink(A.getID()),2,i+1);
           }
 
         }
@@ -571,6 +576,25 @@ public class CampusAllocater extends KeyEditor{
   private Text boldText(int i){
     return boldText(String.valueOf(i));
   }
+
+   public Link getPDFLink(ModuleObject MO,int cam_app_id){
+    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("cam_app_id",cam_app_id);
+    return L;
+  }
+  public Link getPDFLink(ModuleObject MO,int aprt_type_id,int cmplx_id){
+    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("aprt_type_id",aprt_type_id);
+    L.addParameter("cmplx_id",cmplx_id);
+    return L;
+  }
+
 
 
 }

@@ -138,6 +138,7 @@ public class CampusApprover extends KeyEditor{
       T.add(headerText(iwrb.getLocalizedString("residence","Residence")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("po","PO")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("phone","Residence phone")),col++,row);
+      T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
       int lastcol = 1;
       for (int i = 0; i < len; i++) {
@@ -154,6 +155,7 @@ public class CampusApprover extends KeyEditor{
         T.add(formatText(A.getResidence()),col++,row);
         T.add(formatText(A.getPO()),col++,row);
         T.add(formatText(A.getResidencePhone()),col++,row);
+        T.add((getPDFLink(new Text("P"),A.getID())),col++,row);
         T.add( getApplicationLink(a.getID()),col,row);
         if(lastcol < col)
           lastcol = col;
@@ -166,6 +168,7 @@ public class CampusApprover extends KeyEditor{
       T.setRowColor(lastrow,this.redColor);
       T.add(formatText(" "),1,lastrow);
       T.setHeight(lastrow,bottomThickness);
+      T.add(getPDFLink(new Text("Print"),sGlobalStatus,iSubjectId),1,++row);
     }
     else{
       T.add(formatText("Engar umsóknir í gagnagrunni"));
@@ -595,5 +598,24 @@ public class CampusApprover extends KeyEditor{
     T.setFontSize(1);
     return T;
   }
+
+  public Link getPDFLink(ModuleObject MO,int cam_app_id){
+    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("cam_app_id",cam_app_id);
+    return L;
+  }
+  public Link getPDFLink(ModuleObject MO,String status,int subject_id){
+    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("app_status",status);
+    L.addParameter("app_sub_id",subject_id);
+    return L;
+  }
+
 }
 

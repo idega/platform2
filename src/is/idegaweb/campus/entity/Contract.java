@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.7 2001/07/13 11:05:43 aron Exp $
+ * $Id: Contract.java,v 1.8 2001/07/18 11:42:51 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ public class Contract extends GenericEntity {
   private static final String applicantId_ = "app_applicant_id";
 
   public static final String statusCreated = "C";
+  public static final String statusPrinted = "P";
   public static final String statusSigned = "S";
   public static final String statusRejected = "R";
   public static final String statusTerminated = "T";
@@ -121,33 +122,31 @@ public class Contract extends GenericEntity {
         (status.equalsIgnoreCase(statusEnded)) ||
         (status.equalsIgnoreCase(statusRejected)) ||
         (status.equalsIgnoreCase(statusSigned)) ||
-        (status.equalsIgnoreCase(statusTerminated)))
+        (status.equalsIgnoreCase(statusTerminated))||
+        (status.equalsIgnoreCase(statusPrinted)))
       setColumn(status_,status);
     else
       throw new IllegalStateException("Undefined state : " + status);
   }
-
   public String getStatus() {
     return((String)getColumnValue(status_));
   }
-
   public void setStatusCreated() {
     setStatus(statusCreated);
   }
-
   public void setStatusEnded() {
     setStatus(statusEnded);
   }
-
   public void setStatusRejected() {
     setStatus(statusRejected);
   }
-
   public void setStatusSigned() {
     setStatus(statusSigned);
   }
-
   public void setStatusTerminated() {
     setStatus(statusTerminated);
+  }
+  public void setStatusPrinted() {
+    setStatus(statusPrinted);
   }
 }
