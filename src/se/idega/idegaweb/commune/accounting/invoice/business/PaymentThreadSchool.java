@@ -63,11 +63,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/17 08:09:28 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/17 10:38:59 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -275,10 +275,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
 			dispTime("Found " + schoolClassMember.getStudent().getName());
 		}
+		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
 		final boolean userIsInDefaultCommune = getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent());
-		errorRelated.logToConsole();
-		if (placementIsInPeriod  && (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
+		final boolean placementIsInValidGroup
+				= schoolClassMember.getSchoolClass().getValid ();
+		if (placementIsInValidGroup && placementIsInPeriod
+				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)) {
 			ArrayList conditions = getConditions (schoolClassMember);
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + currentDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
