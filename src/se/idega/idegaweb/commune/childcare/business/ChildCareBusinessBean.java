@@ -1168,9 +1168,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if(employmentType>0)
 			    childcareContract.setEmploymentType(employmentType);
 			
-			if(careTime != null && childcareContract.getCareTime().equals(careTime)){
+			if(careTime != null && !childcareContract.getCareTime().equals(careTime)){
 			    childcareContract.setCareTime(careTime);
-			    
 			}
 			
 			
