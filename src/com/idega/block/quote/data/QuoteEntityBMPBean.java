@@ -77,7 +77,7 @@ public class QuoteEntityBMPBean extends GenericEntity implements QuoteEntity {
   }
 
   public int ejbHomeGetNumberOfQuotes(int localeID) throws FinderException, IDOException {
-    IDOQuery ido = new IDOQuery();
+    IDOQuery ido = idoQuery();
     ido.appendSelectCountFrom(getEntityName()).appendWhereEquals(getColumnNameICLocaleID(), localeID);
     
     return super.idoGetNumberOfRecords(ido.toString());

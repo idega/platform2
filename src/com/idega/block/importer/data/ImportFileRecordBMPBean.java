@@ -31,7 +31,7 @@ public class ImportFileRecordBMPBean extends ICFileBMPBean implements ImportFile
   }
  
   public Integer ejbFindImportFileRecordFromNameAndSize(String name, Integer sizeInBytes)throws FinderException{
-    IDOQuery sql = new IDOQuery();
+    IDOQuery sql = idoQuery();
     sql.appendSelectAllFrom(this.getEntityName())
     .appendWhere().appendEqualsQuoted(getColumnNameName(),name)
     .appendAndEqualsQuoted(getColumnNameFileSize(),sizeInBytes.toString());
