@@ -8,7 +8,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.golf.business.TournamentController;
-import com.idega.jmodule.ModuleEvent;
+//import com.idega.jmodule.ModuleEvent;
 import java.sql.SQLException;
 import java.io.IOException;
 import com.idega.data.EntityFinder;
@@ -228,6 +228,8 @@ public void checkAction(IWContext iwc) throws Exception{
 }
 
 
+
+/*
 public void actionPerformed(ModuleEvent e)throws Exception{
 
         IWContext iwc = e.getIWContext();
@@ -239,18 +241,18 @@ public void actionPerformed(ModuleEvent e)throws Exception{
 		if(e.getSource().equals(Button1)){
 			createTournament(iwc);
 		}
-		/*else if(e.getSource().equals(modifyTournamentB1)){
-			editTournament();
-		}*/
+		//else if(e.getSource().equals(modifyTournamentB1)){
+		//	editTournament();
+		//}
 		else if(e.getSource().equals(Button2)){
 			createTournament2(iwc);
 		}
-		/*else if(e.getSource().equals(Dropdown2)){
-			editTournament2();
-		}*/
-		/*else if(e.getSource().equals(editTournament1)){
-			editTournament2();
-		}*/
+		//else if(e.getSource().equals(Dropdown2)){
+		//	editTournament2();
+		//}
+		//else if(e.getSource().equals(editTournament1)){
+		//	editTournament2();
+		//}
 		else if(e.getSource().equals(entityPar)){
 			if (((String)iwc.getSessionAttribute("group_tournament")).equals("Y")){
 				createTournament3(iwc);
@@ -285,32 +287,32 @@ public void actionPerformed(ModuleEvent e)throws Exception{
 		else if(e.getSource().equals(Button6)){
 			SaveTournament(iwc);
 		}
-		/*else if (e.getSource().equals(RegisterButton1)){
-			FindRegistrationMember();
+		//else if (e.getSource().equals(RegisterButton1)){
+		//	FindRegistrationMember();
+		//}
+		//else if (e.getSource().equals(RegistermodifyTournamentB1)){
+		//	RegisterMember();
+		//}
+		//else if (e.getSource().equals(RegisterButton3)){
+		//	SaveRegistration();
+		//}
+		//else if (e.getSource().equals(selectedTournament)){
+		//	tournamentInfo();
+		//}
+		//else if (e.getSource().equals(startingTimeB1)){
+		//	setupStartingtime();
 		}
-		else if (e.getSource().equals(RegistermodifyTournamentB1)){
-			RegisterMember();
-		}
-		else if (e.getSource().equals(RegisterButton3)){
-			SaveRegistration();
-		}
-		else if (e.getSource().equals(selectedTournament)){
-			tournamentInfo();
-		}
-		else if (e.getSource().equals(startingTimeB1)){
-			setupStartingtime();
-		}*/
-		else{
-                        createTournament(iwc);
-		}
+		//else{
+                //        createTournament(iwc);
+		//}
 	//}
-	/*catch(SQLException ex){
-		throw new IOException(ex.getMessage());
-		//ex.printStackTrace();
-		//throw (IOException) ex.fillInStackTrace();
-	}*/
+	//catch(SQLException ex){
+	//	throw new IOException(ex.getMessage());
+	//	//ex.printStackTrace();
+	//	//throw (IOException) ex.fillInStackTrace();
+	//}
 }
-
+*/
 
 public void createTournament(IWContext iwc)throws SQLException{
 	GolfDialog dialog1;
