@@ -92,26 +92,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       e.printStackTrace(System.err);
     }
 
-    try {
-        System.out.println("CODEBASE = "+getCodeBase());
-        faceLabel = new ImageLabel(getCodeBase(),"face_in.gif");
-        logoLabel = new ImageLabel(getCodeBase(),"idegalogo.gif");
-        alertSound = getAudioClip(getCodeBase(),"notify.au");
-
-      }
-      catch (Exception ex) {
-        ex.printStackTrace(System.err);
-      }
-
-    ImageLabel imageLabel = new ImageLabel(getImage(getCodeBase(),"idegalogo.gif"));
-System.out.println("BEFORE RESIZE");
-    imageLabel.resize(220, 202);
-    System.out.println("BEFORE BORDER");
-    imageLabel.setBorder(5);
-    System.out.println("BORDER COLOR");
-    imageLabel.setBorderColor(Color.lightGray);
-System.out.println("ADD");
-    add(imageLabel);
+    faceLabel = new ImageLabel(getImage(getCodeBase(),"face_in.gif"));
+    logoLabel = new ImageLabel(getImage(getCodeBase(),"idegalogo.gif"));
+    alertSound = getAudioClip(getCodeBase(),"notify.au");
 
   }
 
@@ -334,8 +317,8 @@ System.out.println("ADD");
         }
 /**@todo check if latter check is neccessary this should have been done in ClientManager*/
        if( (userlist!=null) && (!userListVersion.equalsIgnoreCase(listVersion)) ){
-        this.removeAll();//debug
-        dialogs.clear();
+       // this.removeAll();//debug
+     //   dialogs.clear();
 
          userListVersion = listVersion;
          int length2 = userlist.size();
