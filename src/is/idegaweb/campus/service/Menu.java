@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.21 2001/10/17 12:54:26 gummi Exp $
+ * $Id: Menu.java,v 1.22 2001/11/06 17:05:53 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,6 +42,7 @@ public class Menu extends Block{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
+	private int templateId = -1;
 
   public Menu(){
     MiddleColor = "#9FA9B3";
@@ -178,6 +179,10 @@ public class Menu extends Block{
   public int getAct(){
     return iAct;
   }
+
+	public void setTemplate(com.idega.builder.data.IBPage templatePage){
+	  templateId = templatePage.getID();
+	}
 
   public String getObjectName(){
       return iObjectName;

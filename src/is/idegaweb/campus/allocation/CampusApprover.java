@@ -101,12 +101,14 @@ public class CampusApprover extends PresentationObjectContainer{
           bEdit = false;
         }
 
+				System.err.println("before save id = "+id);
         if(iwc.getParameter("save")!= null){
-          updateWholeApplication(iwc,id);
+          id = updateWholeApplication(iwc,id);
         }
         else{
           updateApplication(iwc,id);
         }
+				System.err.println("after save id = "+id);
 
         if(bEdit){
           add(makeApplicationForm(id,bEdit,iwc,iwrb));
@@ -115,11 +117,15 @@ public class CampusApprover extends PresentationObjectContainer{
           add(makeApplicationTable(id,bEdit,iwc,iwrb));
         }
       }
+			else if(iwc.getParameter("new")!=null){
+		    add(makeApplicationForm(-1,true,iwc,iwrb));
+			}
       else{
         add(subjectForm());
         add(makeApplicantTable(iwc,iwrb));
       }
     }
+
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
     //add(String.valueOf(iSubjectId));
@@ -137,6 +143,7 @@ public class CampusApprover extends PresentationObjectContainer{
 
   private void updateApplication(IWContext iwc,int id){
     //int id = Integer.parseInt(iwc.getParameter("application_id"));
+
     String status = iwc.getParameter("status_drop");
     try{
       Application A = new Application(id);
@@ -149,32 +156,56 @@ public class CampusApprover extends PresentationObjectContainer{
     }
   }
 
-  private void updateWholeApplication(IWContext iwc,int id){
+  private int updateWholeApplication(IWContext iwc,int id){
+		int returnid = id;
     try {
-      Application eApplication = new Application(id);
-      Applicant eApplicant = new Applicant(eApplication.getApplicantId());
+			Application eApplication = null;
+			Applicant eApplicant = null;
+			CampusApplication eCampusApplication = null;
+			if(id > 0){
+        eApplication = new Application(id);
+				eApplicant = new Applicant(eApplication.getApplicantId());
+				CampusApplication A = new CampusApplication();
+				eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+			}
+			else{
+				eApplicant = new Applicant();
+				eApplicant.insert();
+			  eApplication = new Application();
+				eApplication.setApplicantId(eApplicant.getID());
+				eApplication.setSubmitted(idegaTimestamp.getTimestampRightNow());
+				eApplication.setStatusSubmitted();
+				eApplication.setSubjectId(iSubjectId);
+				eApplication.insert();
+				eCampusApplication = new CampusApplication();
+				eCampusApplication.setAppApplicationId(new Integer(eApplication.getID()));
+				eCampusApplication.insert();
+				returnid = eApplication.getID();
+			}
+
       if( eApplication !=null && eApplicant != null){
-        CampusApplication A = new CampusApplication();
-        CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
         updateApplicant(iwc,eApplicant,eCampusApplication);
-        updateApartment(iwc,eCampusApplication,L);
+        L = updateApartment(iwc,eCampusApplication,L);
         updateSpouse(iwc,eCampusApplication);
         updateChildren(iwc,eCampusApplication);
         try {
           eApplicant.update();
           eCampusApplication.update();
-          for (int i = 0; i < L.size(); i++) {
-            Applied applied = (Applied) L.get(i);
-            int aid = applied.getID();
-            if(aid == -1)
-              applied.insert();
-            else if(aid < -1)
-              applied.delete();
-            else if(aid > 0)
-              applied.update();
-          }
-
+					//if(L!=null){
+						System.err.println("applied length :"+L.size() );
+						for (int i = 0; i < L.size(); i++) {
+							Applied applied = (Applied) L.get(i);
+							int aid = applied.getID();
+							System.err.println("applied id :"+aid);
+							if(aid == -1)
+								applied.insert();
+							else if(aid < -1)
+								applied.delete();
+							else if(aid > 0)
+								applied.update();
+						}
+					//}
         }
         catch (SQLException ex) {
           ex.printStackTrace();
@@ -182,11 +213,11 @@ public class CampusApprover extends PresentationObjectContainer{
       }
     }
     catch (SQLException ex) {
-
+		  ex.printStackTrace();
     }
-
-
+		return returnid;
   }
+
 
   public PresentationObject makeApplicantTable(IWContext iwc,IWResourceBundle iwrb){
 
@@ -362,14 +393,20 @@ public class CampusApprover extends PresentationObjectContainer{
         }
       }
       else{
+				if(id > 0){
         eApplication = new Application(id);
         eApplicant = new Applicant(eApplication.getApplicantId());
+				}
       }
 
+			CampusApplication A = null;
+			CampusApplication eCampusApplication = null;
+			List L = null;
       if( eApplication !=null && eApplicant != null){
-        CampusApplication A = new CampusApplication();
-        CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
-        List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
+        A = new CampusApplication();
+        eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+        L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
+      }
 
         int border = 0;
         OuterFrame.setBorder(border);
@@ -406,15 +443,16 @@ public class CampusApprover extends PresentationObjectContainer{
           OtherFrame.setWidth("200");
           OtherFrame.setRowVerticalAlignment(1,"top");
           OtherFrame.add(new HiddenInput("application_id",String.valueOf(id)));
-          OtherFrame.add(this.getRemoteControl(eApplication.getStatus(),bEdit,iwrb),1,1);
+					String stat = Application.statusSubmitted;
+					if(eApplication !=null)
+						stat = eApplication.getStatus();
+          OtherFrame.add(this.getRemoteControl(stat,bEdit,iwrb),1,1);
           OtherFrame.add(this.getKnobs(iwrb),1,2);
 
 
         OuterFrame.add(Frame,1,1);
         OuterFrame.add(OtherFrame,2,1);
 
-
-      }
     }
     catch(SQLException sql){sql.printStackTrace();}
     catch(Exception e){e.printStackTrace();}
@@ -497,29 +535,57 @@ public class CampusApprover extends PresentationObjectContainer{
       col = 2;
       row = 2;
 
-      TextInput tiFullName = new TextInput("ti_full",eApplicant.getFullName()!=null?eApplicant.getFullName():"");
+      TextInput tiFullName = new TextInput("ti_full");
       Edit.setStyle(tiFullName);
-      TextInput tiSsn = new TextInput("ti_ssn",eApplicant.getSSN()!=null?eApplicant.getSSN():"");
+      TextInput tiSsn = new TextInput("ti_ssn");
       Edit.setStyle(tiSsn);
-      TextInput tiLegRes = new TextInput("ti_legres",eApplicant.getLegalResidence()!=null?eApplicant.getLegalResidence():"");
+      TextInput tiLegRes = new TextInput("ti_legres");
       Edit.setStyle(tiLegRes);
-      TextInput tiRes = new TextInput("ti_res",eApplicant.getResidence()!=null?eApplicant.getResidence():"");
+      TextInput tiRes = new TextInput("ti_res");
       Edit.setStyle(tiRes);
-      TextInput tiPo = new TextInput("ti_po",eApplicant.getPO()!=null?eApplicant.getPO():"");
+      TextInput tiPo = new TextInput("ti_po");
       Edit.setStyle(tiPo);
-      TextInput tiResPho = new TextInput("ti_respho",eApplicant.getResidencePhone()!=null?eApplicant.getResidencePhone():"");
+      TextInput tiResPho = new TextInput("ti_respho");
       Edit.setStyle(tiResPho);
-      TextInput tiMobPho = new TextInput("ti_mobpho",eApplicant.getMobilePhone()!=null?eApplicant.getMobilePhone():"");
+      TextInput tiMobPho = new TextInput("ti_mobpho");
       Edit.setStyle(tiMobPho);
-      TextInput tiEmail = new TextInput("ti_email",eCampusApplication.getEmail()!=null?eCampusApplication.getEmail():"");
+      TextInput tiEmail = new TextInput("ti_email");
       Edit.setStyle(tiEmail);
-      TextInput tiFac = new TextInput("ti_facult",eCampusApplication.getFaculty()!=null?eCampusApplication.getFaculty():"");
+      TextInput tiFac = new TextInput("ti_facult");
       Edit.setStyle(tiFac);
-      TextInput tiTrack= new TextInput("ti_track",eCampusApplication.getStudyTrack()!=null?eCampusApplication.getStudyTrack():"");
+      TextInput tiTrack= new TextInput("ti_track");
       Edit.setStyle(tiTrack);
-      TextInput tiIncome= new TextInput("ti_income",eCampusApplication.getIncome().toString());
+      TextInput tiIncome= new TextInput("ti_income");
       Edit.setStyle(tiIncome);
       tiIncome.setAsIntegers();
+
+			idegaTimestamp today = idegaTimestamp.RightNow();
+			String beginMonth = String.valueOf(today.getMonth());
+			String beginYear = String.valueOf(today.getYear()) ;
+
+      String endMonth = String.valueOf(today.getMonth());
+      String endYear = String.valueOf(today.getYear());
+
+			if(eApplicant !=null && eCampusApplication !=null){
+
+				tiFullName.setContent(eApplicant.getFullName()!=null?eApplicant.getFullName():"");
+				tiSsn.setContent(eApplicant.getSSN()!=null?eApplicant.getSSN():"");
+				tiLegRes.setContent(eApplicant.getLegalResidence()!=null?eApplicant.getLegalResidence():"");
+				tiRes.setContent(eApplicant.getResidence()!=null?eApplicant.getResidence():"");
+				tiPo.setContent(eApplicant.getPO()!=null?eApplicant.getPO():"");
+				tiResPho.setContent(eApplicant.getResidencePhone()!=null?eApplicant.getResidencePhone():"");
+				tiMobPho.setContent(eApplicant.getMobilePhone()!=null?eApplicant.getMobilePhone():"");
+				tiEmail.setContent(eCampusApplication.getEmail()!=null?eCampusApplication.getEmail():"");
+				tiFac.setContent(eCampusApplication.getFaculty()!=null?eCampusApplication.getFaculty():"");
+				tiTrack.setContent(eCampusApplication.getStudyTrack()!=null?eCampusApplication.getStudyTrack():"");
+				tiIncome.setContent(eCampusApplication.getIncome().toString());
+
+				beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
+				endMonth = (eCampusApplication.getStudyEndMonth().toString());
+				beginYear = eCampusApplication.getStudyBeginYear().toString();
+				endYear = eCampusApplication.getStudyEndYear().toString();
+
+			}
 
       T.add(tiFullName,col,row++);
       T.add(tiSsn,col,row++);
@@ -531,14 +597,12 @@ public class CampusApprover extends PresentationObjectContainer{
       T.add(tiEmail,col,row++);
       T.add(tiFac,col,row++);
       T.add(tiTrack,col,row++);
-      String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
-      String endMonth = (eCampusApplication.getStudyEndMonth().toString());
-      String beginYear = eCampusApplication.getStudyBeginYear().toString();
-      String endYear = eCampusApplication.getStudyEndYear().toString();
+
       DropdownMenu drBM = intDrop("dr_bm",beginMonth,1,12);
       DropdownMenu drEM = intDrop("dr_em",endMonth,1,12);
       DropdownMenu drBY = intDrop("dr_by",beginYear,year-10,year+10);
       DropdownMenu drEY = intDrop("dr_ey",endYear,year-10,year+10);
+
       Edit.setStyle(drBM);
       Edit.setStyle(drEM);
       Edit.setStyle(drBY);
@@ -585,7 +649,7 @@ public class CampusApprover extends PresentationObjectContainer{
 
     try{
       int iIncome = 0;
-      if(sIncome != null)
+      if(!"".equals(sIncome))
        iIncome = Integer.parseInt(sIncome);
       int iBM = sBM!=null ?Integer.parseInt(sBM):0;
       int iEM = sEM!=null ?Integer.parseInt(sEM):0;
@@ -687,11 +751,31 @@ public class CampusApprover extends PresentationObjectContainer{
       col = 2;
       row = 2;
 
-      TextInput tiSpName = new TextInput("ti_sp_name",eCampusApplication.getSpouseName());
-      TextInput tiSpSsn = new TextInput("ti_sp_ssn",eCampusApplication.getSpouseSSN());
-      TextInput tiSpSchl = new TextInput("ti_sp_schl",eCampusApplication.getSpouseSchool());
-      TextInput tiSpStTr = new TextInput("ti_sp_sttr",eCampusApplication.getSpouseStudyTrack());
-      TextInput tiSPIncome = new TextInput("ti_sp_income",eCampusApplication.getSpouseIncome().toString());
+      TextInput tiSpName = new TextInput("ti_sp_name");
+      TextInput tiSpSsn = new TextInput("ti_sp_ssn");
+      TextInput tiSpSchl = new TextInput("ti_sp_schl");
+      TextInput tiSpStTr = new TextInput("ti_sp_sttr");
+      TextInput tiSPIncome = new TextInput("ti_sp_income");
+
+			idegaTimestamp today = idegaTimestamp.RightNow();
+			String beginMonth = String.valueOf(today.getMonth());
+			String beginYear = String.valueOf(today.getYear()) ;
+      String endMonth = String.valueOf(today.getMonth());
+      String endYear = String.valueOf(today.getYear());
+			if(eCampusApplication !=null){
+			  tiSpName.setContent(eCampusApplication.getSpouseName());
+			  tiSpSsn.setContent(eCampusApplication.getSpouseSSN());
+			  tiSpSchl.setContent(eCampusApplication.getSpouseSchool());
+			  tiSpStTr.setContent(eCampusApplication.getSpouseStudyTrack());
+			  tiSPIncome.setContent(eCampusApplication.getSpouseIncome().toString());
+
+				beginMonth = eCampusApplication.getSpouseStudyBeginMonth().toString();
+        endMonth = eCampusApplication.getSpouseStudyEndMonth().toString();
+        beginYear = eCampusApplication.getSpouseStudyBeginYear().toString();
+        endYear = eCampusApplication.getSpouseStudyEndYear().toString();
+			}
+			else
+				tiSPIncome.setContent("0");
       Edit.setStyle(tiSpName);
       Edit.setStyle(tiSpSsn);
       Edit.setStyle(tiSpSchl);
@@ -703,10 +787,7 @@ public class CampusApprover extends PresentationObjectContainer{
       T.add(tiSpSchl,col,row++);
       T.add(tiSpStTr,col,row++);
 
-      String beginMonth = eCampusApplication.getSpouseStudyBeginMonth().toString();
-      String endMonth = eCampusApplication.getSpouseStudyEndMonth().toString();
-      String beginYear = eCampusApplication.getSpouseStudyBeginYear().toString();
-      String endYear = eCampusApplication.getSpouseStudyEndYear().toString();
+
       DropdownMenu drBM = intDrop("dr_sp_bm",beginMonth,1,12);
       DropdownMenu drEM = intDrop("dr_sp_em",endMonth,1,12);
       DropdownMenu drBY = intDrop("dr_sp_by",beginYear,year-10,year+10);
@@ -810,7 +891,10 @@ public class CampusApprover extends PresentationObjectContainer{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("children","Children")),col,row++);
-      TextArea taChilds = new TextArea("ti_sp_childs",eCampusApplication.getChildren());
+      TextArea taChilds = new TextArea("ti_sp_childs");
+			if(eCampusApplication!=null){
+			  taChilds.setContent(eCampusApplication.getChildren());
+			}
       taChilds.setWidth(30);
       taChilds.setHeight(4);
       Edit.setStyle(taChilds);
@@ -946,7 +1030,10 @@ public class CampusApprover extends PresentationObjectContainer{
       T.add(Edit.titleText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 4;
       row = 2;
-      idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
+      idegaTimestamp iT = new idegaTimestamp();
+			if(eCampusApplication !=null){
+			  iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
+			}
 
       DateInput diRentFrom = new DateInput("ap_rentfrom",true);
       diRentFrom.setDate(iT.getSQLDate());
@@ -956,11 +1043,11 @@ public class CampusApprover extends PresentationObjectContainer{
       Edit.setStyle(chkFurni);
       CheckBox chkWait = new CheckBox("ap_wait","true");
       Edit.setStyle(chkWait);
-      if(eCampusApplication.getWantFurniture())
-        chkFurni.setChecked(true);
-      T.add(chkFurni,col,row++);
-      if(eCampusApplication.getOnWaitinglist())
-        chkWait.setChecked(true);
+
+			if(eCampusApplication !=null){
+				chkFurni.setChecked(eCampusApplication.getWantFurniture());
+			  chkWait.setChecked(eCampusApplication.getOnWaitinglist());
+			}
       T.add(chkWait,col,row++);
       T.mergeCells(1,1,2,1);
       T.mergeCells(3,1,4,1);
@@ -978,11 +1065,14 @@ public class CampusApprover extends PresentationObjectContainer{
       return T;
   }
 
-  public void updateApartment(IWContext iwc,CampusApplication eCampusApplication,List lApplied){
+  public List updateApartment(IWContext iwc,CampusApplication eCampusApplication,List lApplied){
     String sRentFrom = iwc.getParameter("ap_rentfrom");
     String sFurni = iwc.getParameter("ap_furni");
     String sWait = iwc.getParameter("ap_wait");
-    System.err.println("RentFrom "+sRentFrom);
+		Vector V = new Vector();
+		if(eCampusApplication == null)
+			eCampusApplication = new CampusApplication();
+    //System.err.println("RentFrom "+sRentFrom);
     if(sRentFrom!= null)
       eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
     if("true".equals(sFurni)){
@@ -1004,17 +1094,21 @@ public class CampusApprover extends PresentationObjectContainer{
       Applied applied2 = null;
       Applied applied3 = null;
       if(lApplied!=null){
-        System.err.println("lapplied er nul");
         applied1 = (Applied) lApplied.get(0);
       }
       else{
+				System.err.println("lapplied er nul");
         applied1 = new Applied();
+				lApplied = (List)new Vector();
+				lApplied.add(applied1);
       }
       int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
       int complex = ApartmentTypeComplexHelper.getPartKey(key1,2);
       applied1.setApartmentTypeId(type);
+			applied1.setApplicationId(eCampusApplication.getID());
       applied1.setComplexId(complex);
       applied1.setOrder(1);
+			V.add(applied1);
 
       if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
         if(lApplied.size() >= 2){
@@ -1026,8 +1120,10 @@ public class CampusApprover extends PresentationObjectContainer{
         type = ApartmentTypeComplexHelper.getPartKey(key2,1);
         complex = ApartmentTypeComplexHelper.getPartKey(key2,2);
         applied2.setApartmentTypeId(type);
+				applied2.setApplicationId(eCampusApplication.getID());
         applied2.setComplexId(complex);
         applied2.setOrder(2);
+				V.add(applied2);
       }
 
       if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
@@ -1040,33 +1136,43 @@ public class CampusApprover extends PresentationObjectContainer{
         type = ApartmentTypeComplexHelper.getPartKey(key3,1);
         complex = ApartmentTypeComplexHelper.getPartKey(key3,2);
         applied3.setApartmentTypeId(type);
+				applied3.setApplicationId(eCampusApplication.getID());
         applied3.setComplexId(complex);
         applied3.setOrder(3);
+				V.add(applied3);
 
       }
 
-      if(applied3 == null && lApplied.size() >= 3){
+      if(applied3 == null && lApplied != null && lApplied.size() >= 3){
         ((Applied)lApplied.get(2)).setID(-3);
       }
-      if(applied2 == null && lApplied.size() >= 2){
+      if(applied2 == null && lApplied != null && lApplied.size() >= 2){
         ((Applied)lApplied.get(1)).setID(-3);
       }
     }
     else{
       System.err.println("no key parameters for apartment");
     }
+		return V;
   }
 
 
   public PresentationObject getViewApplication(Application eApplication){
     Table T = new Table();
+
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
-      T.add(Edit.formatText(eApplication.getSubmitted().toString()),2,2);
+
       T.add(Edit.formatText(iwrb.getLocalizedString("changed","Status change")),1,3);
-      T.add(Edit.formatText(eApplication.getStatusChanged().toString()),2,3);
+
       T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),3,2);
-      T.add(Edit.formatText(getStatus(eApplication.getStatus())),3,3);
+
+
+			if(eApplication !=null){
+			  T.add(Edit.formatText(eApplication.getSubmitted().toString()),2,2);
+				T.add(Edit.formatText(eApplication.getStatusChanged().toString()),2,3);
+				T.add(Edit.formatText(getStatus(eApplication.getStatus())),3,3);
+			}
 
 
       T.setCellpadding(1);
@@ -1087,10 +1193,10 @@ public class CampusApprover extends PresentationObjectContainer{
   private PresentationObject getRemoteControl(String sStatus,boolean bEdit,IWResourceBundle iwrb){
       Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("control","Control")),1,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_progress","Study progress")),1,3);
-      T.add(Edit.titleText(iwrb.getLocalizedString("choice1","Choice 1")),1,4);
-      T.add(Edit.titleText(iwrb.getLocalizedString("choice2","Choice 2")),1,5);
+      T.add(Edit.formatText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_progress","Study progress")),1,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("choice1","Choice 1")),1,4);
+      T.add(Edit.formatText(iwrb.getLocalizedString("choice2","Choice 2")),1,5);
       TextInput units = new TextInput("unit");
        units.setLength(1);
        Edit.setStyle(units);
@@ -1180,6 +1286,7 @@ public class CampusApprover extends PresentationObjectContainer{
     DropdownMenu drp = subjectDrop(String.valueOf(this.iSubjectId));
     DropdownMenu status = statusDrop("global_status",sGlobalStatus);
     DropdownMenu order = orderDrop("global_order",sGlobalOrder);
+		SubmitButton New = new SubmitButton("new","New");
     drp.setToSubmit();
     status.setToSubmit();
     order.setToSubmit();
@@ -1188,6 +1295,8 @@ public class CampusApprover extends PresentationObjectContainer{
     myForm.add(drp);
     myForm.add(status);
     myForm.add(order);
+		if(iSubjectId > 0)
+		  myForm.add(New);
     return myForm;
   }
 
