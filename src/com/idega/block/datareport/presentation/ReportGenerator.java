@@ -26,14 +26,11 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JasperDesign;
-
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.QueryHome;
@@ -67,7 +64,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.DownloadLink;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
@@ -797,11 +794,11 @@ public class ReportGenerator extends Block {
 			String relativeFilePath = (String) _reportFilePathsMap.get(formats[i]);
 			if(relativeFilePath != null){
 				j++;
-				//Link link = new Link(_reportName, filePath);
-				//link.setTarget(Link.TARGET_NEW_WINDOW);
-				DownloadLink link = new DownloadLink(_reportName);
-				link.setRelativeFilePath(relativeFilePath);
-				
+				Link link = new Link(_reportName, relativeFilePath);
+				link.setTarget(Link.TARGET_NEW_WINDOW);
+//				DownloadLink link = new DownloadLink(_reportName);
+//				link.setRelativeFilePath(relativeFilePath);
+//				
 				reports.add(formatNames[i], 1, j);
 				reports.add(link, 2, j);
 			}
