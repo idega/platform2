@@ -1,6 +1,7 @@
 package com.idega.block.messenger.business;
 
 import java.util.Hashtable;
+import java.util.Map;/**@todo use this instead of Hashtable directly*/
 import java.util.Vector;
 import java.util.Enumeration;
 import com.idega.core.user.data.User;
@@ -20,6 +21,8 @@ import com.idega.block.messenger.data.Packet;
 public class ClientManager implements PacketManager{
 
   private static Hashtable clients = new Hashtable();
+  private static Hashtable reverseClients = new Hashtable();//for double loggin check
+
 
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
@@ -30,10 +33,11 @@ public class ClientManager implements PacketManager{
   private static String PREFIX = "v.";
   private int version = 0;
 
-  public void clientCheckIn(String sessionId, String memberId){
+  public void clientCheckIn(String sessionId, String userId){
     try{
-      User user = new User(Integer.parseInt(memberId));
+      User user = new User(Integer.parseInt(userId));
       clients.put(sessionId,user);
+      reverseClients.put(userId,sessionId);
       version++;
     }
     catch(SQLException e){
@@ -42,7 +46,9 @@ public class ClientManager implements PacketManager{
     }
   }
 
-  public void clientCheckOut(String sessionId, String memberId){
+  public void clientCheckOut(String sessionId){
+    System.out.println("ClientManager:logging off user "+this.getClientName(sessionId)+" sessionid "+sessionId);
+    clients.remove(sessionId);
     version++;
   }
 
@@ -57,7 +63,7 @@ public class ClientManager implements PacketManager{
   public synchronized void processPacket(Packet packet){
   System.out.println("ClientManager : process packet");
   String sessionId = null;
-  String memberId = null;
+  String userId = null;
   String packetUserListVersion = null;
 
     if( packet!=null ){
@@ -74,8 +80,8 @@ public class ClientManager implements PacketManager{
             System.out.println("ClientManager: session id "+sessionId);
           }
           else if( key.equalsIgnoreCase(USER_ID) ){
-            memberId = (String) prop.getValue();
-            System.out.println("ClientManager: user id "+memberId);
+            userId = (String) prop.getValue();
+            System.out.println("ClientManager: user id "+userId);
           }
           else if( key.equalsIgnoreCase(USER_LIST_VERSION) ){
             packetUserListVersion = (String) prop.getValue();
@@ -83,17 +89,18 @@ public class ClientManager implements PacketManager{
           }
           else if( key.equalsIgnoreCase(LOG_OUT) ){
             sessionId = (String) prop.getValue();
-            clients.remove(sessionId);
-            version++;
-            System.out.println("ClientManager:logging off user "+prop.getValue());
+            clientCheckOut(sessionId);
           }
 
         }
       }
 
       if( sessionId!=null ){
-        User user = (User) ClientManager.clients.get(sessionId);
-        if( user == null ) clientCheckIn(sessionId,memberId);//register this client
+        User user = (User) ClientManager.clients.get(sessionId);//already logged on
+        if( user == null ){
+          clientCheckIn(sessionId,userId);//register this client and check that he's not double logged on
+          removeDoubleRegistry(sessionId,userId);
+        }
       }
 
       //userlist stuff
@@ -129,6 +136,17 @@ public class ClientManager implements PacketManager{
     }
 
     return connClients;
+  }
+
+  private boolean removeDoubleRegistry(String toId, String userId){
+    boolean existed = false;
+    String fromId = (String) reverseClients.get(userId);
+    if( fromId!=null){
+      MessageManager.moveMessages(fromId,toId);
+      existed = true;
+    }
+
+    return existed;
   }
 
 

@@ -88,6 +88,26 @@ public class MessageManager implements PacketManager{
     else  System.out.println("MessageManager : packet is NULL!");
   }
 
+  public static void moveMessages(String fromId, String toId){
 
+    Vector messageFrom = (Vector) inbox.get(fromId);
+    Vector messageTo = (Vector) inbox.get(toId);
+
+    if( messageFrom != null ){
+      if(messageTo==null){
+        messageTo = new Vector();
+      }
+      int length = messageFrom.size();
+      Message msg;
+      for (int i = 0; i < length; i++) {
+        msg = (Message)messageFrom.elementAt(i);
+        msg.setRecipient(toId);
+        messageTo.addElement(msg);
+      }
+      inbox.remove(fromId);
+      inbox.put(toId,messageTo);
+    }
+
+  }
 
 }
