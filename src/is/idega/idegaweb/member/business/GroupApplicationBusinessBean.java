@@ -3,10 +3,12 @@ package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import javax.ejb.CreateException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -25,23 +27,8 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	private static final String GENDER_MALE = "m"; 
 	private static final String GENDER_FEMALE = "f";
 	 
-	public boolean createGroupApplication(Group applicationGroup, String name, String pin , String gender) throws RemoteException, CreateException{
-		UserBusiness userBiz = this.getUserBusiness();
-		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
-		user.setGender((Integer) this.getGender(gender).getPrimaryKey() );
-		if( user.getCreated() == null ){
-			user.setCreated(IWTimestamp.getTimestampRightNow());
-		}
-		
-			
-		user.store();
-				
-		
-		return true;
-		
-	}
 	
-	public boolean createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment) throws RemoteException, CreateException{
+	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment, String[] groupIds) throws RemoteException, CreateException ,IDOAddRelationshipException{
 		UserBusiness userBiz = this.getUserBusiness();
 		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
 		
@@ -50,19 +37,21 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		user.store();
 		
 		
+		List groups = null;
+		String status = getGroupApplicationHome().getPendingStatusString();
 		
 		
-		return true;
+		return createGroupApplication(applicationGroup, user, status, comment, groups);
 		
 	}
 	
-	public GroupApplication createGroupApplication(Group applicationGroup, User user, String status, String userComment) throws RemoteException, CreateException{
+	public GroupApplication createGroupApplication(Group applicationGroup, User user, String status, String userComment, List groups) throws RemoteException, CreateException, IDOAddRelationshipException{
 		
 		GroupApplication appl = getGroupApplicationHome().create();
 		appl.setApplicationGroupId(((Integer)applicationGroup.getPrimaryKey()).intValue());
 		appl.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		appl.setStatus(status);
-		//appl.addGroups(java.util.List p0);
+		appl.addGroups(groups);
 		appl.setUserComment(userComment);
 		appl.setCreated(IWTimestamp.getTimestampRightNow());
 		

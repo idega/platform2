@@ -59,7 +59,13 @@ public class GroupApplicationFormHandler extends Block {
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
 				
-				biz.createGroupApplication(applicationGroup,name,pin,gender,email,address,phone,comment);
+				try {
+					biz.createGroupApplication(applicationGroup,name,pin,gender,email,address,phone,comment,groups);
+				
+				} catch (Exception e) {
+					add("Error : Application creation failed!");
+					e.printStackTrace();
+				}
 				
 
 			
