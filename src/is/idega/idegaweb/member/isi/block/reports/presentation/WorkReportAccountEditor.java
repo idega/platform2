@@ -416,14 +416,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       // handle the special case that the group id is null
-      String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD : group.getName();
+      String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : group.getName();
       Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
     // add new entry
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD));
+      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD_GROUP_NAME));
     }
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
@@ -575,7 +575,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
           }
         }
         // add default value: no league (because main board members are not assigned to a league)
-        optionMap.put(WorkReportConstants.MAIN_BOARD, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
+        optionMap.put(WorkReportConstants.MAIN_BOARD_GROUP_NAME, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
         return optionMap;
       }
     };     
