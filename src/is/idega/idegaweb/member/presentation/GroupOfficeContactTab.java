@@ -316,8 +316,7 @@ public class GroupOfficeContactTab extends UserGroupTab {
 					getGroupBusiness(iwc).updateGroupMail(group, (String) fieldValues.get(emailFieldName));
 			}
 			if ((String) fieldValues.get(homepageFieldName) != null && ((String) fieldValues.get(homepageFieldName)).length() > 0)
-				// to do: put this to group business or a plugin business!!        
-				group.setMetaData("homepage", (String) fieldValues.get(homepageFieldName));
+				group.setHomePageURL((String) fieldValues.get(homepageFieldName));
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -333,8 +332,7 @@ public class GroupOfficeContactTab extends UserGroupTab {
 			Group group = groupBiz.getGroupByGroupID(getGroupId());
 			Phone[] phones = groupBiz.getGroupPhones(group);
 			Email mail = groupBiz.getGroupEmail(group);
-			// to do: put this to a business object
-			String homepage = group.getMetaData("homepage");
+			String homepage = group.getHomePageURL();
 
 			for (int a = 0; a < phones.length; a++) {
 				if (a == 0) {
