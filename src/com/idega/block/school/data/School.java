@@ -25,6 +25,8 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public int getHeadmasterUserId();
  public java.util.Collection getImages()throws com.idega.data.IDORelationshipException;
  public com.idega.block.text.data.LocalizedText getLocalizedText(int p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolManagementType getManagementType();
+ public int getManagementTypeId();
  public java.lang.String getMapUrl();
  public java.lang.String getName();
  public java.lang.String getOpenHours();
@@ -60,6 +62,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void setImages(java.util.Collection p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
  public void setLocalizedText(java.lang.String p0,int p1)throws com.idega.data.IDORelationshipException;
+ public void setManagementTypeId(int p0);
  public void setMapUrl(java.lang.String p0);
  public void setOpenHours(java.lang.String p0);
  public void setOrganizationNumber(java.lang.String p0);
