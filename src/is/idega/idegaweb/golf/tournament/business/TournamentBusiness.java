@@ -1,5 +1,8 @@
 package is.idega.idegaweb.golf.tournament.business;
 
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.Tournament;
+
 
 public interface TournamentBusiness extends com.idega.business.IBOService
 {
@@ -19,6 +22,7 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public com.idega.presentation.ui.DropdownMenu getDropdownOrderedByUnion(com.idega.presentation.ui.DropdownMenu p0,com.idega.presentation.IWContext p1,int p2) throws java.rmi.RemoteException;
  public boolean getHasMemberPaid(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.Member p1)throws java.lang.Exception, java.rmi.RemoteException;
  public int getInt() throws java.rmi.RemoteException;
+ public int getTournamentGroup(Member member, Tournament tournament) throws Exception;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastClosedTournaments(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastTournaments(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastTwoTournaments()throws java.lang.Exception, java.rmi.RemoteException;
