@@ -676,9 +676,7 @@ public abstract class ContractFinder {
   }
 
 
-  /**
-   *
-   *//*
+  /*
   public static Contract findByUser(int user){
     Contract contract = null;
     try {
