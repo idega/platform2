@@ -385,6 +385,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 			if (child != null) {
 				personalId = child.getPersonalID();
+				if (personalId != null)
+					personalId = PersonalIDFormatter.format(personalId, iwc.getCurrentLocale());
 				userName = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 			}
 		}
