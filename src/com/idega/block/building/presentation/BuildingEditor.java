@@ -103,6 +103,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
         BuildingCacher.setToReloadNextTimeReferenced();
       }
     }
+    if(includeLinks)
     outerTable.add(makeLinkTable(iAction),1,1);
     switch (iAction) {
       case COMPLEX  : doComplex(modinfo);   break;
@@ -701,6 +702,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
     imageInsert.setAdminURL("/image/imageview.jsp");
+    imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
     //imageInsert.setDefaultImageURL(sMemberImageURL);
     imageObject = imageInsert;
     return imageObject;

@@ -36,6 +36,8 @@ private String sUseBoxString;
 private int maxImageWidth = 140;
 private boolean hasUseBox = true;
 private boolean selected = false;
+private boolean openInWindow = false;
+private Class windowClass = null;
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -62,6 +64,14 @@ public ImageInserter(int imageId, String imSessionImageName) {
   this.sHiddenInputName = imSessionImageName;
 }
 
+public ImageInserter(Class WindowToOpen) {
+  this.imSessionImageName=imSessionImageName;
+  this.sHiddenInputName = imSessionImageName;
+  windowClass = WindowToOpen;
+  openInWindow = true;
+
+}
+
   public void main(ModuleInfo modinfo)throws Exception{
 
       iwb = getBundle(modinfo);
@@ -69,7 +79,9 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
       nameOfWindow = iwrb.getLocalizedString("new_image","New image");
       sUseBoxString = iwrb.getLocalizedString("use_image","Use image");
+
       String imageSessionId = (String) modinfo.getSession().getAttribute(imSessionImageName);
+
 
       if ( imageSessionId != null ) {
         imageId = Integer.parseInt(imageSessionId);
@@ -86,11 +98,19 @@ public ImageInserter(int imageId, String imSessionImageName) {
         image.setMaxImageWidth(this.maxImageWidth);
         image.setNoImageLink();
 
-      Window insertNewsImageWindow = new Window(nameOfWindow,ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
-      Link imageAdmin = new Link(image,insertNewsImageWindow);
-        imageAdmin.addParameter("submit","new");
-        imageAdmin.addParameter("im_image_session_name",imSessionImageName);
-        if ( imageId != -1 )  imageAdmin.addParameter("image_id",imageId);
+      Link imageAdmin = null;
+      if(windowClass== null){
+        Window insertNewsImageWindow = new Window(nameOfWindow,ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
+        imageAdmin = new Link(image,insertNewsImageWindow);
+      }
+      else{
+        imageAdmin = new Link(image);
+        imageAdmin.setWindowToOpen(windowClass);
+      }
+      imageAdmin.addParameter("submit","new");
+      imageAdmin.addParameter("im_image_session_name",imSessionImageName);
+      if ( imageId != -1 )
+        imageAdmin.addParameter(imSessionImageName,imageId);
 
       HiddenInput hidden = new HiddenInput(sHiddenInputName,imageId+"");
       CheckBox insertImage = new CheckBox("insertImage","Y");
@@ -152,10 +172,16 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
   public void setImSessionImageName(String imSessionImageName) {
     this.imSessionImageName=imSessionImageName;
+    this.sHiddenInputName = imSessionImageName;
   }
 
   public String getImSessionImageName() {
     return this.imSessionImageName;
+  }
+
+  public void setWindowClassToOpen(Class WindowClass){
+    windowClass = WindowClass;
+    openInWindow = true;
   }
 
   public String getBundleIdentifier(){
