@@ -86,7 +86,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
 
 
-  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo) throws Exception {
+  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking) throws Exception {
 
     PriceCategory cat = new PriceCategory();
 
@@ -104,9 +104,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       cat.setExtraInfo(extraInfo);
     }
 
+    cat.isNetbookingCategory(isNetbooking);
+    cat.setSupplierId(supplierId);
+
     cat.insert();
 
-    cat.addTo(Supplier.class,supplierId);
 
     return cat.getID();
   }
@@ -450,6 +452,33 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     TourNotFoundException(){
       super("Tour not found");
     }
+  }
+
+  /**
+   * @todo skoða betur
+   */
+  public static int getCurrencyIdForIceland(){
+      com.idega.block.trade.data.Currency curr = new com.idega.block.trade.data.Currency();
+      int returner = -1;
+      try {
+        String iceKr = "Íslenskar Krónur";
+        String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+curr.getColumnNameCurrencyName() +" = '"+iceKr+"'");
+        if (id == null || id.length == 0) {
+            curr = new com.idega.block.trade.data.Currency();
+            curr.setCurrencyName(iceKr);
+            curr.setCurrencyAbbreviation("Kr");
+            curr.insert();
+            returner = curr.getID();
+        } else if (id.length > 0) {
+          returner = Integer.parseInt(id[id.length -1]);
+        }
+
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+
+      return returner;
   }
 
 

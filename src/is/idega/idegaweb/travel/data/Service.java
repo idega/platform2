@@ -55,6 +55,10 @@ public class Service extends GenericEntity{
         tf[i].delete();
       }
 
+      /**
+       * @todo delete Tour
+       */
+
       ServiceDay.deleteService(this.getID());
 
       Product product = new Product(this.getID());

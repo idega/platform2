@@ -32,7 +32,7 @@ public class Product extends GenericEntity {
     this.addAttribute(getColumnNameProductName(),"Nafn vöru",true,true,String.class,255);
     this.addAttribute(getColumnNameProductDescription(),"Lýsing vöru",true,true,String.class,510);
     this.addAttribute(getColumnNameIsValid(),"í notkun",true,true,Boolean.class);
-    this.addManyToManyRelationShip(PriceCategory.class,"SR_PRODUCT_PRICE_CATEGORY");
+//    this.addManyToManyRelationShip(PriceCategory.class,"SR_PRODUCT_PRICE_CATEGORY");
     this.addManyToManyRelationShip(ProductCategory.class,"SR_PRODUCT_PRODUCT_CATEGORY");
     this.setNullable(getColumnNameFileId(), true);
   }

@@ -29,10 +29,10 @@ public class ProductPrice extends GenericEntity{
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameProductId(), "Vara" ,true, true, Integer.class, "many_to_one", Product.class);
-    addAttribute(getColumnNamePriceCategoryId(), "Verðflokkur" ,true, true, Integer.class, "many_to_one", ProductCategory.class);
+    addAttribute(getColumnNamePriceCategoryId(), "Verðflokkur" ,true, true, Integer.class, "many_to_one", PriceCategory.class);
     addAttribute(getColumnNameCurrencyId(),"Gjaldmiðill",true,true,Integer.class,"many_to_one", Currency.class);
-    addAttribute(getColumnNamePrice(), "Verð", true, true, Double.class);
-    addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, java.sql.Date.class);
+    addAttribute(getColumnNamePrice(), "Verð", true, true, Float.class);
+    addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, Timestamp.class);
     addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
   }
 

@@ -28,7 +28,25 @@ public class Currency extends GenericEntity {
     return "TR_CURRENCY";
   }
 
+  public String getName() {
+    return getCurrencyName();
+  }
 
+  public String getCurrencyName() {
+    return getStringColumnValue(getColumnNameCurrencyName());
+  }
+
+  public String getCurrencyAbbreviation() {
+    return getStringColumnValue(getColumnNameCurrencyAbbreviation());
+  }
+
+  public void setCurrencyName(String name) {
+    setColumn(getColumnNameCurrencyName(), name);
+  }
+
+  public void setCurrencyAbbreviation(String abbreviation) {
+    setColumn(getColumnNameCurrencyAbbreviation(), abbreviation);
+  }
 
 
 

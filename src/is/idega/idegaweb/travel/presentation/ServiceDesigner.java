@@ -35,9 +35,10 @@ public class ServiceDesigner extends TravelManager {
   private Service service;
 
   private String ServiceAction = "service_action";
-
   private String PriceCategoryRefresh = "refresh_categories";
   private String PriceCategorySave = "save_categories";
+  private String ServiceSessionAttribute = "service_designer_service_id";
+
 
   public ServiceDesigner() {
   }
@@ -64,6 +65,8 @@ public class ServiceDesigner extends TravelManager {
             createService(modinfo);
         }else if (action.equals(this.PriceCategoryRefresh) ) {
             priceCategoryCreation(modinfo);
+        }else if (action.equals(this.PriceCategorySave)) {
+            priceCategorySave(modinfo);
         }
 
 
@@ -455,9 +458,9 @@ public class ServiceDesigner extends TravelManager {
 
       try {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-          //tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-          //int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
-          //setService(serviceId);
+          tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+          int serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays, iNumberOfSeats);
+          setService(modinfo,serviceId);
         priceCategoryCreation(modinfo);
 
 
@@ -470,18 +473,28 @@ public class ServiceDesigner extends TravelManager {
 
   }
 
-  private void setService(int serviceId) throws SQLException{
+  private void setService(ModuleInfo modinfo,int serviceId) throws SQLException{
       service = new Service(serviceId);
+      modinfo.setSessionAttribute(this.ServiceSessionAttribute, service);
   }
 
-  private Service getService() {
+  private Service getService(ModuleInfo modinfo) {
+    if (service == null) {
+      service = (Service) modinfo.getSessionAttribute(this.ServiceSessionAttribute);
+    }
     return service;
+
+  }
+
+  private void removeService(ModuleInfo modinfo) {
+      service = null;
+      modinfo.removeSessionAttribute(this.ServiceSessionAttribute);
   }
 
 
   private void priceCategoryCreation(ModuleInfo modinfo) {
 
-//      if (service != null) {
+      if (this.getService(modinfo) != null) {
 
           ShadowBox sb = new ShadowBox();
             sb.setWidth("90%");
@@ -596,6 +609,8 @@ public class ServiceDesigner extends TravelManager {
 
           }
 
+          table.add(new SubmitButton("T - save",this.ServiceAction, this.PriceCategorySave),1,row);
+
           if (iHowMany > 0) {
             SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
 
@@ -603,31 +618,37 @@ public class ServiceDesigner extends TravelManager {
 
           add(Text.getBreak());
           add(sb);
-//      }else {
-  //      add("TEMP SERVICE ER NULL");
-    //  }
+      }else {
+        add("TEMP SERVICE ER NULL");
+      }
 
   }
 
   private void priceCategorySave(ModuleInfo modinfo) {
-      String[] name = (String[]) modinfo.getParameterValues("price_name");
-      String[] desc = (String[]) modinfo.getParameterValues("price_description");
-      String[] type = (String[]) modinfo.getParameterValues("price_type");
-      String[] info = (String[]) modinfo.getParameterValues("price_extra_info");
+      String[] name =   (String[]) modinfo.getParameterValues("price_name");
+      String[] desc =   (String[]) modinfo.getParameterValues("price_description");
+      String[] type =   (String[]) modinfo.getParameterValues("price_type");
+      String[] info =   (String[]) modinfo.getParameterValues("price_extra_info");
       String[] online = (String[]) modinfo.getParameterValues("price_online");
 
       String[] priceDiscount = (String[]) modinfo.getParameterValues("price_discount");
 
-      Service service = this.getService();
+      Service service = this.getService(modinfo);
       TravelStockroomBusiness sb = TravelStockroomBusiness.getNewInstance();
 
       try {
         int priceCategoryId;
+        boolean bOnline;
         for (int i = 0; i < name.length; i++) {
-            priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i]);
-            // ERROR DURING COMPILATION!!!!! - Laddi
-            //sb.setPrice(service.getID() , priceCategoryId, com.idega.block.trade.data.Currency);
+            if (online[i].equals("Y")) {
+                bOnline = true;
+            }else {
+              bOnline = false;
+            }
+            priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline);
+            sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]));
         }
+        this.removeService(modinfo);
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
