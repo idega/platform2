@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.4 2003/10/04 23:59:12 kjell Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.5 2003/10/15 12:11:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds special calculation types ("Subventionerad", "Syskon", "Maxtaxa", "Låginkomst". "Allmän förskola") 
  * 
  * <p>
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.4 2003/10/04 23:59:12 kjell Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.5 2003/10/15 12:11:55 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SpecialCalculationTypeBMPBean extends GenericEntity implements SpecialCalculationType {
 	
@@ -75,6 +75,7 @@ public class SpecialCalculationTypeBMPBean extends GenericEntity implements Spec
 	public Collection ejbFindAllSpecialCalculationTypes() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
+		sql.appendOrderBy(COLUMN_SPECIAL_CALCULATION_TYPE);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
