@@ -9,14 +9,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.SQLQuery;
-import com.idega.block.dataquery.data.xml.*;
+import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;
@@ -56,31 +53,27 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   public QueryResult executeQueries(SQLQuery sqlQuery, List executedSQLStatements) {
   	QueryResult queryResult = null;
   	List postStatements = new ArrayList();
-  	UserTransaction transactionManager = getSessionContext().getUserTransaction();
 		Connection connection = ConnectionBroker.getConnection();
   	try {
-  		transactionManager.begin();
   		queryResult = executeSQL(sqlQuery, connection, postStatements, executedSQLStatements);
-  		// drop created views 
-  		// delete the view in reverse direction because of dependencies
-  		for (int i = postStatements.size() - 1; i > -1 ; i--) {
-  			String postStatement = (String) postStatements.get(i);
+  	}
+  	catch (SQLException ex) {
+			logError("[QueryToSQLBridge] Statements could not be executed");
+			log(ex);
+  	}
+  	// drop created views 
+  	// delete the view in reverse direction because of dependencies
+  	for (int i = postStatements.size() - 1; i > -1 ; i--) {
+  		String postStatement = (String) postStatements.get(i);
+  		try {
   			executePostStatement(postStatement,connection, executedSQLStatements);
   		}
-  		// finally...done!!
-  		transactionManager.commit();
-  	}
-  	catch (Exception ex)	{
-  		ex.printStackTrace(System.err);
-  		try {
-  			transactionManager.rollback();
-  		}
-  		catch (SystemException sys)	{
+  		catch (SQLException ex){
+  			logError("[QueryToSQLBridge] post sql statements could not be executed. ");
+  			log(ex);
   		}
   	}
-   	finally {
-  		ConnectionBroker.freeConnection(connection);
-  	}
+  	ConnectionBroker.freeConnection(connection);
   	return queryResult;  			
   }
   
