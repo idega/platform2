@@ -9,6 +9,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Block;
 import com.idega.user.data.Group;
+import com.idega.user.presentation.GroupSelectionDoubleBox;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -23,7 +24,7 @@ public class GroupApplicationFormHandler extends Block {
 	private static final String ADDRESS_PARAM = "address";
 	private static final String EMAIL_PARAM = "email";
 	private static final String COMMENT_PARAM = "comment";
-	private static final String GROUPS_PARAM = "groups";
+	private static final String GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;//hack!
 	private static final String GENDER_PARAM = "gender";
 	
 	
