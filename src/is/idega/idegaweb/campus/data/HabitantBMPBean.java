@@ -1,25 +1,8 @@
 /*
-<<<<<<< HabitantBMPBean.java
- * $Id: HabitantBMPBean.java,v 1.4 2004/07/30 09:12:31 aron Exp $ Copyright
- * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
+ * Copyright (C) 2001 Idega hf. 
+ * All Rights Reserved. 
+ * This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
-=======
-
- * $Id: HabitantBMPBean.java,v 1.4 2004/07/30 09:12:31 aron Exp $
-
- *
-
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
-
- *
-
- * This software is the proprietary information of Idega hf.
-
- * Use is subject to license terms.
-
- *
-
-
  */
 package is.idega.idegaweb.campus.data;
 
@@ -86,6 +69,10 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	public static String getEntityTableName() {
 		return "V_HABITANTS";
 	}
+	
+	public static String getColumnApplicantId() {
+		return "APP_APPLICANT_ID";
+	}
 	public static String getColumnUserId() {
 		return "IC_USER_ID";
 	}
@@ -115,7 +102,8 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	public HabitantBMPBean(int id) throws SQLException {
 	}
 	public void initializeAttributes() {
-		addAttribute(getColumnUserId(), "Account Id", true, true, Integer.class);
+		addAttribute(getColumnApplicantId(), "Applicant", true, true, Integer.class);
+		addAttribute(getColumnUserId(), "User ", true, true, Integer.class);
 		addAttribute(getColumnContractId(), "ContractId", true, true, Integer.class);
 		addAttribute(getColumnComplexId(), "ComplexId", true, true, Integer.class);
 		addAttribute(getColumnFullname(), "Fullname", true, true, String.class);
@@ -123,6 +111,7 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 		addAttribute(getColumnApartment(), "Apartment", true, true, String.class);
 		addAttribute(getColumnFloor(), "Floor", true, true, String.class);
 		addAttribute(getColumnNumber(), "Phone number", true, true, String.class);
+		setAsPrimaryKey(getColumnApplicantId(),true);
 	}
 	public String getEntityName() {
 		return (getEntityTableName());
@@ -162,7 +151,7 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 	 */
 	public String getCreationSQL() {
 		StringBuffer sql = new StringBuffer();
-		sql.append(" create view V_HABITANTS ( ");
+		sql.append(" create view V_HABITANTS ( APP_APPLICANT_ID, ");
 		sql.append(" IC_USER_ID, ");
 		sql.append(" CAM_CONTRACT_ID , ");
 		sql.append(" BU_COMPLEX_ID, ");
@@ -172,7 +161,7 @@ public class HabitantBMPBean extends com.idega.data.GenericView implements is.id
 		sql.append(" FLOOR, ");
 		sql.append(" NUMBER) ");
 		sql.append(" as ");
-		sql.append(" select c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name, ");
+		sql.append(" select a.app_applicant_id,c.ic_user_id,c.cam_contract_id,x.bu_complex_id, a.full_name, ");
 		sql.append(" b.name address, ");
 		sql.append(" g.name apartment,f.name floor,p.phone_number number ");
 		sql.append(" from app_applicant a,app_applicant_tree t, cam_contract c, ");
