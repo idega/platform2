@@ -1,11 +1,14 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -18,6 +21,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 /**
  * A presentation object for dynamic reports to choose groups. By default it
  * creates a selectionbox with all groups but subclassing it or using the
@@ -34,6 +38,8 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private boolean _stringResults = false;
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private String userType;
+	private WorkReportBusiness workBiz;
 
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
@@ -84,20 +90,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		try {
 			groupBiz = getGroupBusiness(iwc);
 
-			Collection groups = null;
-
-			if (groupType != null) {
-				String[] type = { groupType };
-				try {
-					groups = groupBiz.getGroups(type, true);
-				}
-				catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-			else {
-				groups = groupBiz.getAllGroups();
-			}
+			Collection groups = getGroups(iwc);
 
 			if (groups != null) {
 				Iterator iter = groups.iterator();
@@ -107,7 +100,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 					name = getNameForGroup(group);
 
 					boolean showGroup = true;
-					if(metaDataMap!=null && metaDataMap.size()>0) {
+					if(metaDataMap!=null && !metaDataMap.isEmpty()) {
 						showGroup = checkMetaData(group, metaDataMap);
 					}
 					if(showGroup) {
@@ -119,6 +112,25 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected Collection getGroups(IWContext iwc) throws RemoteException {
+		Collection groups = null;
+
+		if (groupType != null) {
+			String[] type = { groupType };
+			try {
+				groups = groupBiz.getGroups(type, true);
+			}
+			catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		else {
+			groups = groupBiz.getAllGroups();
+		}
+		
+		return groups;
 	}
 
 	private boolean checkMetaData(Group group, Map metaData) {
@@ -135,7 +147,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		return true;
 	}
 
-	private String getNameForGroup(Group group) {
+	protected String getNameForGroup(Group group) {
 		StringBuffer groupName = new StringBuffer();
 		String name;
 		
@@ -278,6 +290,65 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 */
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	protected Integer setUserTypeAndReturnGroupId(IWContext iwc) {
+		User user = iwc.getCurrentUser();
+
+		try {
+			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
+			if (!union.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_UNION;
+				return null;
+			}
+
+			List federation = getWorkReportBusiness(iwc).getFederationListForUserFromTopNodes(user, iwc); //should only be one
+			if (!federation.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
+				return null;
+			}
+
+			List club = getWorkReportBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
+			if (!club.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
+				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
+			}
+
+			List regional = getWorkReportBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
+			if (!regional.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
+				return ((Integer) ((Group)regional.iterator().next()).getPrimaryKey());
+			}
+
+			List leagues = getWorkReportBusiness(iwc).getLeaguesListForUserFromTopNodes(user, iwc); //should only be one
+			if (!leagues.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
+				return ((Integer) ((Group)leagues.iterator().next()).getPrimaryKey());
+			}
+
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
+	
+	protected String getUserType() {
+		return userType;
+	}
+	
+	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
+		if (workBiz == null) {
+			try {
+				workBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workBiz;
 	}
 
 }
