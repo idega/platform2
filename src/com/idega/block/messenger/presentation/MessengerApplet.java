@@ -112,17 +112,17 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       //message checking is done in another thread
       repaint();
 
-    /*  if(isfirstRun){
+      if(isfirstRun){
         if(cycler==null){
           cycler = new MessageListener(checkTimer);
           cycler.addActionListener(this);
         }
-        cycler.start();
+      //  cycler.start();
         isfirstRun=false;
-      }*/
+      }
 
-      try {//keep the wait insync with the performance of the machine it is on
-        getToolkit().sync();
+      try {
+        //getToolkit().sync();
         t.sleep(threadSleep);
       }
       catch (InterruptedException e) {
