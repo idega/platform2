@@ -176,37 +176,59 @@ public class CarRentalSearch extends AbstractSearchForm {
 				String dp = iwc.getParameter(PARAMETER_DROPOFF_PLACE);
 				if (pp != null) { pickupPlaces.setSelectedElement(pp); }
 				if (dp != null) { dropoffPlaces.setSelectedElement(dp); }
-				
+					Table localTable = new Table();
+					localTable.setCellpaddingAndCellspacing(0);					
+					table.add(localTable, 1, row++);
+					table.setCellpaddingLeft(1, row, 10);
+					table.setCellpaddingBottom(1, row, 9);
+					int localRow = 1;
 					if ( errorFields != null) {
 						if (errorFields.contains(PARAMETER_PICKUP_PLACE)) {
-							table.add(getErrorText("* "), 1, row);
+							localTable.add(getErrorText("* "), 1, localRow);
 						}
 						if (errorFields.contains(PARAMETER_PICKUP_TIME)) {
-							table.add(getErrorText("* "), 2, row);
+							localTable.add(getErrorText("* "), 2, localRow);
 						}
 						if (errorFields.contains(PARAMETER_DROPOFF_PLACE)) {
-							table.add(getErrorText("* "), 1, row+2);
+							localTable.add(getErrorText("* "), 1, localRow+2);
 						}
 						if (errorFields.contains(PARAMETER_DROPOFF_TIME)) {
-							table.add(getErrorText("* "), 2, row+2);
+							localTable.add(getErrorText("* "), 2, localRow+2);
 						}
 					}
-					table.add(getText(iwrb.getLocalizedString("travel.search.pickup","Pickup")), 1, row);
-					table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
-					++row;
-					table.add(pickupPlaces, 1, row);
-					table.add(pickupTime, 2, row);
-					table.mergeCells(2, row, 3, row);
-					++row;
+					
+					localTable.setCellpaddingLeft(1, localRow, 10);
+					localTable.setCellpaddingBottom(1, localRow, 5);
+					localTable.setCellpaddingLeft(2, localRow, 10);
+					localTable.setCellpaddingBottom(2, localRow, 5);
+					localTable.add(getText(iwrb.getLocalizedString("travel.search.pickup","Pickup")), 1, localRow);
+					localTable.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, localRow);
+					++localRow;
+					localTable.setCellpaddingLeft(1, localRow, 10);
+					localTable.setCellpaddingBottom(1, localRow, 5);
+					localTable.setCellpaddingLeft(2, localRow, 10);
+					localTable.setCellpaddingBottom(2, localRow, 5);
+					localTable.add(pickupPlaces, 1, localRow);
+					localTable.add(pickupTime, 2, localRow);
+					localTable.mergeCells(2, localRow, 3, localRow);
+					++localRow;
 //				} 
 //				if (bDrop) {
-					table.add(getText(iwrb.getLocalizedString("travel.search.dropoff","Dropoff")), 1, row);
-					table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
-					++row;
-					table.add(dropoffPlaces, 1, row);
-					table.add(dropoffTime, 2, row);
-					table.mergeCells(2, row, 3, row);
-					++row;
+					localTable.setCellpaddingLeft(1, localRow, 10);
+					localTable.setCellpaddingBottom(1, localRow, 5);
+					localTable.setCellpaddingLeft(2, localRow, 10);
+					localTable.setCellpaddingBottom(2, localRow, 5);
+					localTable.add(getText(iwrb.getLocalizedString("travel.search.dropoff","Dropoff")), 1, localRow);
+					localTable.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, localRow);
+					++localRow;
+					localTable.setCellpaddingLeft(1, localRow, 10);
+					localTable.setCellpaddingBottom(1, localRow, 5);
+					localTable.setCellpaddingLeft(2, localRow, 10);
+					localTable.setCellpaddingBottom(2, localRow, 5);
+					localTable.add(dropoffPlaces, 1, localRow);
+					localTable.add(dropoffTime, 2, localRow);
+					localTable.mergeCells(2, localRow, 3, localRow);
+					++localRow;
 //				}
 			} catch (Exception e) {
 				e.printStackTrace();
