@@ -9,9 +9,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.Form;
@@ -29,13 +31,19 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
 	
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardmembereditor.step_name";
   
+  public WorkReportBoardMemberEditor() {
+    super();
+    setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+  }  
+  
+  
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
     
     if (this.getWorkReportId() != -1) {
-			//sets this step as bold, if another class calls it this will be overridden
+			//sets this step as bold, if another class calls it this will be overwritten 
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-      //parseAction(iwc);
+      parseAction(iwc);
       Form form = new Form();
       PresentationObject pres = getContent(iwc);
       form.maintainParameters(this.getParametersToMaintain());
@@ -44,8 +52,17 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
   }
   
+  private String parseAction(IWContext iwc) {
+    EntityPathValueContainer entityPathValueContainer = TextEditorConverter.getResultByParsing(iwc);
+    if (entityPathValueContainer.isValid()) {
+      // store
+      Object object = entityPathValueContainer.getValue();
+    }
+    return "";
+  }
+  
   private PresentationObject getContent(IWContext iwc) {
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     Collection coll;
     try {
       coll =
@@ -86,41 +103,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     browser.setEntities("dummy_string", entities);
     return browser;
   }
-    
-  private WorkReport getWorkReport(int workreportId)  {
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness();
-    try {
-      return workReportBusiness.getWorkReportById(workreportId);
-    } catch (RemoteException e) {
-      throw new RuntimeException("[WorkReportMemberDataEditor] Can't get WorkReportBusiness.");
-    }  
-    
-  }
-    
-	/**
-	 * 
-	 */
-	public WorkReportBoardMemberEditor() {
-		super();
-		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-	}
-
-  public WorkReportBusiness getWorkReportBusiness() {
-    try {
-      return (WorkReportBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), WorkReportBusiness.class);
-    }
-    catch (RemoteException ex) {
-      System.err.println("[WorkReportMemberDataEditor]: Can't retrieve WorkReportBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[WorkReportMemberDataEditor]: Can't retrieve WorkReportBusiness");
-    }
-  }    
-      
-    
-   
-    
-    
-    
-
 }
 
 
