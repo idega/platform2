@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/11 17:40:02 $ by $Author: laddi $
- * @version $Revision: 1.66 $
+ * Last modified: $Date: 2003/11/11 18:29:50 $ by $Author: laddi $
+ * @version $Revision: 1.67 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -219,8 +219,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public Collection ejbFindBySchoolClass(int schoolClassID) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(getEntityName()).appendWhere();
-		sql.append(this.SCHOOLCLASS).appendEqualSign().append(schoolClassID);
+		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(this.SCHOOLCLASS, schoolClassID);
         sql.appendAndIsNull(REMOVED_DATE);
 
 		return super.idoFindPKsBySQL(sql.toString());
@@ -228,10 +227,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public Collection ejbFindBySchoolClassAndYear(int schoolClassID, int schoolYearID) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(getEntityName()).appendWhere();
-		sql.append(this.SCHOOLCLASS).appendEqualSign().append(schoolClassID);
+		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(this.SCHOOLCLASS, schoolClassID);
 		if (schoolYearID != -1)
-			sql.append(this.SCHOOL_YEAR).appendEqualSign().append(schoolYearID);
+			sql.appendAndEquals(this.SCHOOL_YEAR, schoolYearID);
 		sql.appendAndIsNull(REMOVED_DATE);
 
 		return super.idoFindPKsBySQL(sql.toString());
