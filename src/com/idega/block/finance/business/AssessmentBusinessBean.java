@@ -281,7 +281,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
       AR.setAsNew(name);
       AR.store();
 
-		System.err.println("Assessment rount created :"+AR.getPrimaryKey().toString());
+		System.err.println("Assessment round created :"+AR.getPrimaryKey().toString());
       Iterator iter = tariffs.iterator();
       Tariff tariff;
       while(iter.hasNext()){
@@ -344,6 +344,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
       AE.setName(Name);
       AE.setInfo(Info);
       AE.setStatus(status);
+      System.out.println("AE(account: "+iAccountId+" ,key: "+iAccountKeyId+" ,cashier: "+iCashierId+ ",round:"+iRoundId+")");
       AE.store();
     return AE;
   }
