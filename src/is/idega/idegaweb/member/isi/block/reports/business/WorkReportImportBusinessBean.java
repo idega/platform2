@@ -1136,7 +1136,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				String last_name = "";
 				try {
 					if (name != null) {
-						//name = TextSoap.removeWhiteSpaceFromBeginningAndEndOfString(name);
+						name = TextSoap.removeWhiteSpaceFromBeginningAndEndOfString(name);
 						int first_space = name.indexOf(" ");
 						first_name = name.substring(0, first_space);
 						int last_space = name.lastIndexOf(" ");
@@ -1157,6 +1157,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					catch (Exception e) {
 						if (ssn.length() >= 6) {
 						    user = findByFirstSixLettersOfPersonalIDAndFirstNameAndLastName(ssn, first_name, last_name);
+						    System.out.println(name+"  "+ssn);
+						    System.out.println(user.getName()+"  "+user.getPersonalID());
 						}
 						else {
 							throw new FinderException("SSN shorter than 6 letters");
