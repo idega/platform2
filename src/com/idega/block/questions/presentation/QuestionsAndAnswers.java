@@ -69,6 +69,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	private boolean showDeletedQuestions = true;
 	private boolean showDeleteButton = true;
 	private boolean showMoveButtons = true;
+	private boolean showHomeButton = true;
 	
 	private String questionPrefixText = "Q:";
 	private String answerPrefixText = "A:";
@@ -197,11 +198,12 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		 
 		while(iter.hasNext()){
 			ICCategory cat = (ICCategory) iter.next();
+			String primKey = cat.getPrimaryKey().toString();
 			boolean headerAdded = false;
 			int headerRow = row;
 			row++;
 			if(cat.isLeaf()){
-				if(showAllCategories || (!showAllCategories && cat.getPrimaryKey().toString().equals(valViewCategory))){
+				if(showAllCategories || (!showAllCategories && primKey.equals(valViewCategory))){
 					Table questionsTable =(Table) getCategoryQuestions(iwc,cat,QandATable);
 					if(showQuestionList)
 						T.add(questionsTable,2,row++);
@@ -212,7 +214,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 				}
 				if(!showAllCategories){
 					Link headerLink = new Link(getStyleText( cat.getName(),STYLENAME_C_TITLE));
-					headerLink.addParameter(prmViewCategory,cat.getPrimaryKey().toString());
+					headerLink.addParameter(prmViewCategory,primKey);
 					T.add(headerLink,1,headerRow);
 					headerAdded = true;
 				}
@@ -223,8 +225,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}
 			
 			if(!headerAdded){
-				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(),STYLENAME_C_TITLE),"Cat"+cat.getPrimaryKey().toString());
+				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(),STYLENAME_C_TITLE),"Cat"+primKey);
+				Anchor backAncor = new Anchor();
 				T.add(anc,1,headerRow);
+				T.add(new Anchor("bc"+primKey),1,headerRow);
 			}
 			row++;
 		}
@@ -439,8 +443,11 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			if(showQuestionTitle && ans.getLocalizedText().getHeadline().length()>0)
 				T.add(getStyleText(ans.getLocalizedText().getHeadline(),STYLENAME_A_TITLE),2,row++);
 			if(showQuestionBody){
-				T.add(getStyleText(ans.getLocalizedText().getBody(),STYLENAME_A_BODY),2,row);
+				T.add(getStyleText(ans.getLocalizedText().getBody(),STYLENAME_A_BODY),2,row++);
+				if(showHomeButton && showAllCategories)
+				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.getPrimaryKey().toString()),1,row);
 			}
+			
 		}
 		T.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
 		QandATable.add(T,1,qaRow++);
@@ -522,6 +529,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	
 	public void setShowMoveButtons(boolean showMoveButtons){
 		this.showMoveButtons = showMoveButtons;
+	}
+	
+	public void setShowHomeButton(boolean showHomeButton){
+		this.showHomeButton = showHomeButton;
 	}
 	
 	public void setShowDeletedQuestions(boolean showDeletedQuestions){
