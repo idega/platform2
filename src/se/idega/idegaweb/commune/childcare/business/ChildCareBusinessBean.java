@@ -2283,13 +2283,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString) throws RemoteException {
+	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString, boolean isFreetime) throws RemoteException {
 		try {
 			SortedMap areaMap = new TreeMap(new SchoolAreaComparator(locale));
 			if (schoolAreas != null) {
 				List areas = new ArrayList(schoolAreas);
 
-				Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory(getSchoolBusiness().getChildCareSchoolCategory());
+				Collection schoolTypes = getChildCareSchoolTypes(isFreetime);
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
 					SortedMap providerMap = new TreeMap(new SchoolComparator(locale));
@@ -2313,6 +2313,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 			return null;
+		}
+	}
+	
+	private Collection getChildCareSchoolTypes(boolean isFreetime) {
+		try {
+			if (isFreetime) {
+				return getSchoolBusiness().getSchoolTypeHome().findAllFreetimeTypes();
+			}
+			else {
+				return getSchoolBusiness().findAllSchoolTypesInCategory(getSchoolBusiness().getChildCareSchoolCategory());
+			}
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+		catch (FinderException e) {
+			return new ArrayList();
 		}
 	}
 	
