@@ -112,8 +112,13 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		if( address!=null ){			
 			
 			//nytt find fall og breyta interfacinu
-			PostalCode code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postal,((Integer)addressBiz.getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue() );
-						
+			//svindl
+			PostalCode code = null;
+			if( postal!=null){
+				code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postal,104 );//((Integer)addressBiz.getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue()
+			}
+			else System.err.println("Postal code is missing!");
+			
 			Address uAddress = getUserBusiness().getUsersMainAddress(user);
 			boolean add = false;
 			if( uAddress == null ){	
@@ -126,7 +131,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
 			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
 			
-			uAddress.setPostalCode(code);
+			if( code!=null ) uAddress.setPostalCode(code);
 			
 			uAddress.store();
 			if ( add ) user.addAddress(uAddress);
@@ -155,7 +160,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			if( addPhone1 && phone != null){
 				Phone uPhone = phoneHome.create();
 				uPhone.setNumber(phone);
-				uPhone.setPhoneTypeId(1);//weeeeee...
+				uPhone.setPhoneTypeId(1);//weeeeee...svindl
 				uPhone.store();
 				user.addPhone(uPhone);
 			}
@@ -163,7 +168,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			if( addPhone2 && phone2 != null){
 				Phone uPhone = phoneHome.create();
 				uPhone.setNumber(phone2);
-				uPhone.setPhoneTypeId(3);//weeeeee...
+				uPhone.setPhoneTypeId(3);//weeeeee...svindl
 				uPhone.store();
 				user.addPhone(uPhone);
 			}
