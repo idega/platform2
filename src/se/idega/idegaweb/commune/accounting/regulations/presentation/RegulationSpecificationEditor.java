@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.12 2003/10/03 00:31:26 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.13 2003/12/10 17:02:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/10/03 00:31:26 $
+ * $Date: 2003/12/10 17:02:22 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -46,7 +46,6 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 	private final static int ACTION_DELETE = 5;
 	
 	private final static String PP = "cacc_reg_spec_"; // Parameter prefix 
-	private final static String Z = "z_cacc_reg_spec."; // Auto localize prefix 
 
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
@@ -66,8 +65,8 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_HEADER_REG_SPEC_TYPE = KP + "reg_spec_type_header";
 	private final static String KEY_HEADER_MAIN_RULE = KP + "main_rule_header";
-	private final static String KEY_HEADER_EDIT = KP + "edit_header";
-	private final static String KEY_HEADER_REMOVE = KP + "remove_header";
+//	private final static String KEY_HEADER_EDIT = KP + "edit_header";
+//  private final static String KEY_HEADER_REMOVE = KP + "remove_header";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_MAIN_RULE = KP + "main_rule";
 	private final static String KEY_SAVE = KP + "save";
@@ -247,7 +246,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		ret = ret.replaceAll("'","_").replaceAll(".","_").replaceAll("`", "_");
 		ret = ret.replaceAll("`","_").replaceAll(" ","_").replaceAll("=", "_");
 */
-		return Z + ret;
+		return PP + ret;
 	}
 
 	/*
@@ -288,11 +287,11 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(this, 4);
+		ListTable list = new ListTable(this, 2);
 		list.setLocalizedHeader(KEY_HEADER_REG_SPEC_TYPE, "Regelspecificeringstyp", 1);
 		list.setLocalizedHeader(KEY_HEADER_MAIN_RULE, "Huvudregel", 2);
-		list.setLocalizedHeader(KEY_HEADER_EDIT, "Redigera", 3);
-		list.setLocalizedHeader(KEY_HEADER_REMOVE, "Ta bort", 4);
+//		list.setLocalizedHeader(KEY_HEADER_EDIT, "Redigera", 3);
+//		list.setLocalizedHeader(KEY_HEADER_REMOVE, "Ta bort", 4);
 
 		if (regSpecTypes != null) {
 			Iterator iter = regSpecTypes.iterator();
@@ -307,13 +306,13 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 				Link edit = new Link(getEditIcon(localize(KEY_CLICK_EDIT, "Redigera")));
 				edit.addParameter(PARAMETER_REGULATION_SPEC_TYPE_ID, rst.getPrimaryKey().toString());
 				edit.addParameter(PARAMETER_EDIT, "1");
-				list.add(edit);
+//				list.add(edit);
 	
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_CLICK_REMOVE, "Radera")));
 				delete.setDescription(localize(KEY_CLICK_REMOVE, "Klicka här för att radera post"));
 				delete.setValueOnClick(PARAMETER_DELETE_ID, rst.getPrimaryKey().toString());
 				delete.setSubmitConfirm(localize(KEY_REMOVE_CONFIRM, "Vill du verkligen radera denna post?"));
-				list.add(delete);
+//				list.add(delete);
 	
 
 			}
