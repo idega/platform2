@@ -48,11 +48,11 @@ import com.idega.util.text.ContentParser;
 
 public class MailingListServiceBean extends IBOServiceBean implements MailingListService {
 
-	/**  @todo Description of the Field */
+	/**  IC category type identifier */
 	public static String CATEGORYTYPE = "cam_mail";
 
 	/**
-	 *  @todo Description of the Method
+	 *  Creates a new mailing list undir given category
 	 *
 	 * @param  iCategoryId  Description of the Parameter
 	 * @param  name         Description of the Parameter
@@ -63,7 +63,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Removes email from given mailinglist
 	 *
 	 * @param  mlist     Description of the Parameter
 	 * @param  email_id  Description of the Parameter
@@ -179,7 +179,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Sends the specified letter to addresses contained in the entityholder
 	 *
 	 * @param  letterId  Description of the Parameter
 	 * @param  holder    Description of the Parameter
@@ -202,7 +202,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Process the given mail event type for the given contract
 	 *
 	 * @param  iContractId  Description of the Parameter
 	 * @param  type         Description of the Parameter
@@ -213,7 +213,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Process the given mail event type for the given entityholder
 	 *
 	 * @param  holder  Description of the Parameter
 	 * @param  type    Description of the Parameter
@@ -381,7 +381,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Stores email letter to datastore
 	 *
 	 * @param  iEmailLetterId  Description of the Parameter
 	 * @param  sHost           Description of the Parameter
@@ -438,7 +438,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Creates new letter and stores to datastore
 	 *
 	 * @param  sHost      Description of the Parameter
 	 * @param  sFrom      Description of the Parameter
@@ -461,7 +461,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Creates new email letter and stores to datastore
 	 *
 	 * @param  emailletter  Description of the Parameter
 	 * @param  sHost        Description of the Parameter
@@ -487,7 +487,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 * Removes given letter from datastore
 	 *
 	 * @param  letter  Description of the Parameter
 	 */
@@ -501,7 +501,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Removes given mailinglist and relations to emails from datastore
 	 *
 	 * @param  list  Description of the Parameter
 	 */
@@ -526,7 +526,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Returns all email letters in datastore
 	 *
 	 * @return    Description of the Return Value
 	 */
@@ -546,7 +546,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Gets all mailinglists from the datastore
 	 *
 	 * @return    Description of the Return Value
 	 */
@@ -565,7 +565,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	}
 
 	/**
-	 *  @todo Description of the Method
+	 *  Maps mailinglists related to given letter with their primarykey as key
 	 *
 	 * @param  letter  Description of the Parameter
 	 * @return         Description of the Return Value
@@ -594,6 +594,7 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 
 	
 	/**
+	 * Stores and removes relations betsween an email letter and mailing lists
 	 * @param letter
 	 * @param newIds
 	 * @param oldIds
