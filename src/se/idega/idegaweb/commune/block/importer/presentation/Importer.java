@@ -134,12 +134,13 @@ public class Importer extends Block {
 
       String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
       ImportBusiness biz = (ImportBusiness) IBOLookup.getServiceInstance(iwc,ImportBusiness.class);
+      //ImportBusinessBean biz = new ImportBusinessBean();
 
       for (int i = 0; i < values.length; i++) {
       /** @todo make a dropdown of possible importers and support for uploaded files
        *
        */
-        ImportFile importFile = new NackaImportFile(new File(values[i]));
+        NackaImportFile importFile = new NackaImportFile(new File(values[i]));
         boolean success = biz.importRecords(importFile);
         addBreak();
 
