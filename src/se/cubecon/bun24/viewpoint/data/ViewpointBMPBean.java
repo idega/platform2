@@ -8,10 +8,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/05/23 08:25:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/02 07:00:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -30,7 +30,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         = "ROADRESPONSIBLE_ID";
     private static final String COLUMN_USERNAME = "INITIATERNAME";
     private static final String COLUMN_USEREMAIL = "INITIATEREMAIL";
-
+    private static final String COLUMN_ANSWERDATE = "ANSWERDATE";
+    
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -70,6 +71,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
                       Integer.class, "many-to-one", RoadResponsible.class);
 		addAttribute (COLUMN_USEREMAIL, "UserEmail", String.class);
 		addAttribute (COLUMN_USERNAME, "UserName", String.class);
+		addAttribute (COLUMN_ANSWERDATE, "AnswerDate", java.sql.Date.class);
     }
 
     public Group getHandlerGroup () {
@@ -112,6 +114,14 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         return getStringColumnValue (COLUMN_USERNAME);
     }
 
+    public java.util.Date getAnswerDate () {
+        return (java.util.Date) getColumnValue (COLUMN_ANSWERDATE);
+    }
+
+    public java.util.Date getQuestionDate () throws RemoteException {
+        return getCreated ();
+    }
+
     public void setHandlerGroupId (final int handlerGroupId) {
         setHandler (handlerGroupId);
     }
@@ -134,6 +144,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public void setAnswer (final String answer) {
         setColumn (COLUMN_ANSWER, answer);
+        setColumn (COLUMN_ANSWERDATE,
+                   new java.sql.Date (new java.util.Date ().getTime ()));
     }
 
     public void setHandler (final User user) throws RemoteException {
@@ -156,7 +168,6 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     public void setUserName (final String name) {
         setColumn (COLUMN_USERNAME, name);
     }
-
 
     public Collection ejbFindUnhandledViewpointsInGroups
         (final Group [] groups) throws FinderException, RemoteException {

@@ -5,13 +5,13 @@ import com.idega.data.IDOEntity;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
-import java.util.Collection;
+import java.util.*;
 
 /**
- * Last modified: $Date: 2003/05/23 08:25:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/02 07:00:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface Viewpoint extends IDOEntity, Case {
     String CASE_CODE_KEY = "SYMESYN";
@@ -27,6 +27,8 @@ public interface Viewpoint extends IDOEntity, Case {
     Integer getRoadResponsibleId ();
     String getUserEmail ();
     String getUserName ();
+    Date getAnswerDate ();
+    Date getQuestionDate () throws RemoteException;
 
     void setHandlerGroupId (int handlerGroupId) throws RemoteException;
     void setUser (User user) throws RemoteException;
