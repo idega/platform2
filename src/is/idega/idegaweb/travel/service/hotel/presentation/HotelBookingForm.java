@@ -75,7 +75,6 @@ public class HotelBookingForm extends BookingForm {
 
 
   private Form getForm(IWContext iwc) throws RemoteException, FinderException {
-        	System.out.println("[HotelBookingForm] in here 1");
   	
     Form form = new Form();
     Table table = new Table();
@@ -95,7 +94,6 @@ public class HotelBookingForm extends BookingForm {
 //    table.setColumnAlignment(4,"left");
 
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
-        	System.out.println("[HotelBookingForm] in here 2");
     List addresses;
     try {
       addresses = _product.getDepartureAddresses(false);
@@ -112,8 +110,6 @@ public class HotelBookingForm extends BookingForm {
       addressId = ((TravelAddress) addresses.get(0)).getID();
     }
 
-        	System.out.println("[HotelBookingForm] in here 3");
-
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
@@ -126,11 +122,8 @@ public class HotelBookingForm extends BookingForm {
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, false);
       misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, false);
     }
-        	System.out.println("[HotelBookingForm] in here 4");
 
     if (prices.length > 0) {
-
-        	System.out.println("[HotelBookingForm] in here 5");
 
         int row = 1;
         int textInputSizeLg = 38;
@@ -180,8 +173,6 @@ public class HotelBookingForm extends BookingForm {
         Text commentText = (Text) theText.clone();
             commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 
-        	System.out.println("[HotelBookingForm] in here 6");
-
         DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
           depAddr.setToSubmit();
           depAddr.setSelectedElement(Integer.toString(addressId));
@@ -217,7 +208,6 @@ public class HotelBookingForm extends BookingForm {
 
         DropdownMenu usersDrop = null;
         DropdownMenu payType = getBooker(iwc).getPaymentTypeDropdown(iwrb, "payment_type");
-        	System.out.println("[HotelBookingForm] in here 7");
 
         ++row;
         table.add(surnameText,1,row);
@@ -259,7 +249,6 @@ public class HotelBookingForm extends BookingForm {
           table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addressId)));
         }
 
-        	System.out.println("[HotelBookingForm] in here 8");
 
 	      DropdownMenu pickupMenu = null;
 	      TextInput roomNumber = null;
@@ -290,10 +279,8 @@ public class HotelBookingForm extends BookingForm {
 	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
 	          table.add(roomNumber,2,row);
 	      }
-        	System.out.println("[HotelBookingForm] in here 9");
 	
         if (_booking == null) {
-        	System.out.println("[HotelBookingForm] in here 10?");
           ++row;
           table.add(fromText, 1, row);
           table.add(fromDate, 2, row);
@@ -376,6 +363,7 @@ public class HotelBookingForm extends BookingForm {
         for (int i = 0; i < miscLength; i++) {
           pPrices[i+pricesLength] = misc[i];
         }
+        	System.out.println("[HotelBookingForm] in here 10 length : "+pPrices.length);
 
         for (int i = 0; i < pPrices.length; i++) {
             try {
@@ -411,12 +399,30 @@ public class HotelBookingForm extends BookingForm {
                 }
 
                 if (_booking != null) {
+        	/** Bokur er med timaramma.... en ekki ferdin... taddara */
                   if (entries != null) {
                     for (int j = 0; j < entries.length; j++) {
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
                         pPri = entries[j].getProductPrice();
                         currentCount = entries[j].getCount();
-                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+                        Collection pTimeframes;
+												try {
+	                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+												} catch (ProductPriceException e) {
+													try {
+		                        int pTimeframeId = -1;
+														pTimeframes = pPri.getTimeframes();
+		                        if (pTimeframes != null && pTimeframes.size()>0) {
+		                        	Iterator its = pTimeframes.iterator();
+		                        	pTimeframeId = ((Timeframe)its.next()).getID();	
+		                        }
+		                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), pTimeframeId, addressId);
+													} catch (IDORelationshipException idoe) {
+                        	System.out.println("[HotelBookingForm] old price NOT found");
+														idoe.printStackTrace(System.err);
+													}
+												}
+//                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), pTimeframeId, addressId);
                         currentSum = (int) (currentCount * price);
 
                         totalCount += currentCount;
