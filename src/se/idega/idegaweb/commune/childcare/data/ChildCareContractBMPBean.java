@@ -373,15 +373,16 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 
 	public Collection ejbFindByDateRangeWhereStatusActive(Date startDate, Date endDate) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelect().append(" distinct a.* from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
-		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
+		sql.appendSelect().append(" distinct a.COMM_CHILDCARE_ARCHIVE_ID from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
+		sql.appendWhereEquals("a."+COLUMN_APPLICATION_ID, "c.COMM_CHILDCARE_ID");
 		sql.appendAnd().appendLeftParenthesis();
 		sql.appendEqualsQuoted("c.APPLICATION_STATUS","F");
 		sql.appendOr().appendEqualsQuoted("c.APPLICATION_STATUS","V");
 		sql.appendRightParenthesis();
-		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
-		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
-		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendAnd().append("a."+COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
+		sql.appendAnd().appendLeftParenthesis().append("a."+COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
+		sql.appendOr().append("a."+COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		System.out.println("SQL: "+sql);
 		return idoFindPKsByQuery(sql);
 	}
 
