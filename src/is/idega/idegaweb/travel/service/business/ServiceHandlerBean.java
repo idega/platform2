@@ -260,6 +260,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
 		
 		Link hotelLink = new Link(iwrb.getLocalizedImageButton("travel.hotel_setup","Hotel setup"), HotelSetup.class);
 		list.add(hotelLink);
+		list.add(new Link(iwrb.getLocalizedImageButton("travel.tour_setup","Tour setup"), TourSetup.class));
 		return list;	
 	}
 
