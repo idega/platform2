@@ -8,6 +8,7 @@ import com.idega.data.SimpleQuerier;
 import is.idega.idegaweb.campus.exception.*;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccounts;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Hashtable;
@@ -95,6 +96,7 @@ public class CampusAssessmentBusiness  {
 
     List listOfTariffs = Finder.listOfTariffs();
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+		//Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
     int iAccountCount = 0;
     if(listOfTariffs !=null){
       if(listOfUsers!=null){
