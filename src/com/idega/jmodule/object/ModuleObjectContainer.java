@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.12 2001/09/10 10:52:20 palli Exp $
+ * $Id: ModuleObjectContainer.java,v 1.13 2001/09/19 23:32:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -238,16 +238,18 @@ public class ModuleObjectContainer extends ModuleObject {
 
   public ModuleObject getContainedObject(int objectInstanceID) {
     List list = this.getAllContainingObjects();
-    Iterator iter = list.iterator();
-    while (iter.hasNext()) {
-      ModuleObject item = (ModuleObject)iter.next();
-      if(item.getICObjectInstanceID()==objectInstanceID){
-        return item;
-      }
-      else if(item instanceof ModuleObjectContainer){
-        ModuleObject theReturn = ((ModuleObjectContainer)item).getContainedObject(objectInstanceID);
-        if(theReturn != null){
-          return theReturn;
+    if (list != null) {
+      Iterator iter = list.iterator();
+      while (iter.hasNext()) {
+        ModuleObject item = (ModuleObject)iter.next();
+        if(item.getICObjectInstanceID()==objectInstanceID){
+          return item;
+        }
+        else if(item instanceof ModuleObjectContainer){
+          ModuleObject theReturn = ((ModuleObjectContainer)item).getContainedObject(objectInstanceID);
+          if(theReturn != null){
+            return theReturn;
+          }
         }
       }
     }
@@ -260,15 +262,16 @@ public class ModuleObjectContainer extends ModuleObject {
       return getContainedObject(Integer.parseInt(objectInstanceID));
     }
     catch(NumberFormatException e){
-      int objectInstanceIDInt = Integer.parseInt(objectInstanceID.substring(0,objectInstanceID.indexOf(".") + 1));
+      int objectInstanceIDInt = Integer.parseInt(objectInstanceID.substring(0,objectInstanceID.indexOf(".")));
 
       String index = objectInstanceID.substring(objectInstanceID.indexOf(".") + 1,objectInstanceID.length());
       if(index.indexOf(".") == -1){
         return ((ModuleObjectContainer)getContainedObject(objectInstanceIDInt)).objectAt(Integer.parseInt(index));
       }
       else{
-        int xindex = Integer.parseInt(index.substring(0,index.indexOf(".") + 1));
+        int xindex = Integer.parseInt(index.substring(0,index.indexOf(".")));
         int yindex = Integer.parseInt(index.substring(index.indexOf(".") + 1,index.length()));
+
         return ((Table)getContainedObject(objectInstanceIDInt)).containerAt(xindex,yindex);
       }
     }
