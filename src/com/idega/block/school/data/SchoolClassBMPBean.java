@@ -30,6 +30,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String SEASON = "sch_school_season_id";
   public final static String NAME = "class_name";
   public final static String COLUMN_VALID = "valid";
+  public final static String COLUMN_READY = "ready";
   public final static String SCHOOL = "school_id";
 
 	public final static String VALID = "Y";
@@ -43,6 +44,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
     addManyToOneRelationship(SEASON,"Season",SchoolSeason.class);
     addAttribute(NAME,"Name",true,true,String.class);
     addAttribute(COLUMN_VALID,"Valid",true,true,String.class,1);
+    addAttribute(COLUMN_READY,"Ready",true,true,String.class,1);
   }
   public String getEntityName() {
     return SCHOOLCLASS;
@@ -98,6 +100,23 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 			setColumn(COLUMN_VALID, VALID);
 		else
 			setColumn(COLUMN_VALID, INVALID);
+	}
+
+	public boolean getReady() {
+		String valid = getStringColumnValue(COLUMN_READY);
+		if ((valid == null) || (valid.equals(INVALID)))
+			return (false);
+		else if (valid.equals(VALID))
+			return (true);
+		else
+			return (false);
+	}
+
+	public void setReady(boolean valid) {
+		if (valid)
+			setColumn(COLUMN_READY, VALID);
+		else
+			setColumn(COLUMN_READY, INVALID);
 	}
 
   public Collection ejbFindBySchool(School school)throws FinderException ,RemoteException{

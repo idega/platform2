@@ -26,6 +26,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public final static String SCHOOLCLASSMEMBERID = "sch_class_member_id";
   public final static String SCHOOLCLASSMEMBER = "sch_class_member";
   public final static String MEMBER = "ic_user_id";
+  public final static String NOTES = "notes";
   public final static String SCHOOLCLASS = "sch_school_class_id";
   public final static String REGISTER_DATE = "register_date";
   public final static String REGISTRATOR = "registrator";
@@ -34,6 +35,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     this.addAttribute(getIDColumnName());
     this.addAttribute(MEMBER,"classmember",true,true,Integer.class,MANY_TO_ONE ,com.idega.core.user.data.User.class);
     this.addAttribute(SCHOOLCLASS,"class",true,true,Integer.class,MANY_TO_ONE,SchoolClass.class);
+    this.addAttribute(NOTES,"notes",true,true,String.class,255);
     this.addAttribute(REGISTER_DATE,"registerdate",true,true,Timestamp.class);
     this.addAttribute(REGISTRATOR,"registrator",true,true,Integer.class,MANY_TO_ONE,com.idega.core.user.data.User.class);
   }
@@ -63,6 +65,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   }
   public int getRegistratorId(){
     return this.getIntColumnValue(REGISTRATOR);
+  }
+  public void setNotes(String notes) {
+  	this.setColumn(NOTES, notes);
+  }
+  public String getNotes() {
+  	return this.getStringColumnValue(NOTES);
   }
 
   public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException,RemoteException {

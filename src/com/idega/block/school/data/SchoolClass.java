@@ -5,6 +5,7 @@ import javax.ejb.*;
 public interface SchoolClass extends com.idega.data.IDOEntity
 {
  public java.lang.String getName() throws java.rmi.RemoteException;
+ public boolean getReady() throws java.rmi.RemoteException;
  public java.lang.String getSchoolClassName(java.lang.String p0) throws java.rmi.RemoteException;
  public int getSchoolId() throws java.rmi.RemoteException;
  public int getSchoolSeasonId() throws java.rmi.RemoteException;
@@ -12,6 +13,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public int getTeacherId() throws java.rmi.RemoteException;
  public boolean getValid() throws java.rmi.RemoteException;
  public void initializeAttributes() throws java.rmi.RemoteException;
+ public void setReady(boolean p0) throws java.rmi.RemoteException;
  public void setSchoolClassName(java.lang.String p0) throws java.rmi.RemoteException;
  public void setSchoolId(int p0) throws java.rmi.RemoteException;
  public void setSchoolSeasonId(int p0) throws java.rmi.RemoteException;

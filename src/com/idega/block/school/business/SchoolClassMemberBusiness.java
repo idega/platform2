@@ -13,5 +13,6 @@ public interface SchoolClassMemberBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolClassMemberHome getSchoolClassMemberHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeSchoolClassMember(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeSchoolClassMemberFromClass(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void storeSchoolClassMember(int p0,int p1,java.sql.Timestamp p2,int p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolClassMember(int p0,int p1,java.sql.Timestamp p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
 }

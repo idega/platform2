@@ -116,6 +116,10 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 	}
 	
 	public void storeSchoolClassMember(int studentID,int schoolClassID,Timestamp registerDate,int registrator) throws RemoteException {
+		storeSchoolClassMember(studentID,schoolClassID,registerDate,registrator,null);	
+	}
+
+	public void storeSchoolClassMember(int studentID,int schoolClassID,Timestamp registerDate,int registrator,String notes) throws RemoteException {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID,schoolClassID);
 			if (member == null)
@@ -128,6 +132,8 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 					member.setRegisterDate(registerDate);
 				if ( registrator != -1 )
 					member.setRegistratorId(registrator);
+				if (notes != null)
+					member.setNotes(notes);
 				
 				member.store();
 			}
