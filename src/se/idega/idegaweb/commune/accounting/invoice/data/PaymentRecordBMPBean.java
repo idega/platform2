@@ -276,4 +276,31 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
 		return idoGetNumberOfRecords(sql);
 	}
+
+	/**
+	 * Gets tottal amount paid for the given provider and period
+	 * @param providerID
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetTotAmountForProviderAndPeriod(int providerID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		sql.append("select sum("+COLUMN_TOT_AMOUNT+") from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhereEquals("h.school_id", providerID);
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		return idoGetNumberOfRecords(sql);
+	}
+
 }

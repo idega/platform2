@@ -46,6 +46,13 @@ public int getPlacementCountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)t
 	return theReturn;
 }
 
+public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotAmountForProviderAndPeriod(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getTotAmountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotAmountForSchoolCategoryAndPeriod(p0,p1);

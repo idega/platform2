@@ -116,6 +116,13 @@ public int getContractsCountByApplication(int p0)throws com.idega.data.IDOExcept
 	return theReturn;
 }
 
+public int getContractsCountByDateRangeAndProvider(java.sql.Date p0,java.sql.Date p1,int p2)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareContractBMPBean)entity).ejbHomeGetContractsCountByDateRangeAndProvider(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getFutureContractsCountByApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ChildCareContractBMPBean)entity).ejbHomeGetFutureContractsCountByApplication(p0,p1);

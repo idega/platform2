@@ -277,6 +277,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoGetNumberOfRecords(sql);
 	}
 
+
 	public int ejbHomeGetNumberOfTerminatedLaterNotWithProvider(int childID, int providerID, Date date) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(*) from ").append(this.getEntityName()).append(" a, comm_childcare c");
@@ -300,6 +301,17 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoGetNumberOfRecords(sql);
 	}
 
+	public int ejbHomeGetContractsCountByDateRangeAndProvider(Date startDate, Date endDate, int providerID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(*) from ").append(this.getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
+		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendAndEquals("c."+ChildCareApplicationBMPBean.PROVIDER_ID, providerID);
+		return idoGetNumberOfRecords(sql);
+	}
+
 	public Integer ejbFindByContractFileID(int contractFileID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_FILE_ID, contractFileID);
@@ -315,6 +327,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
 		return idoFindPKsByQuery(sql);
 	}
+
 	
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQueryGetSelect();
