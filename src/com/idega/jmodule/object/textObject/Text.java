@@ -238,6 +238,7 @@ private void setDefaultAttributes(ModuleInfo modinfo){
       obj.bold = this.bold;
       obj.italic = this.italic;
       obj.underline = this.underline;
+      obj.addHTMLFontTag = this.addHTMLFontTag;
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);
