@@ -13,9 +13,9 @@ public class CheckHomeImpl extends com.idega.data.IDOFactory implements CheckHom
  }
 
 
-public java.util.Collection findChecksByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindChecksByUser(p0);
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindAllCasesByStatus(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -27,6 +27,20 @@ public java.util.Collection findApprovedChecksByUser(com.idega.user.data.User p0
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findChecks()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindChecks();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findChecksByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindChecksByUser(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findChecksByUserAndStatus(com.idega.user.data.User p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindChecksByUserAndStatus(p0,p1);
@@ -34,16 +48,9 @@ public java.util.Collection findChecksByUserAndStatus(com.idega.user.data.User p
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindAllCasesByStatus(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findChecks()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindChecks();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindNonApprovedChecks();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

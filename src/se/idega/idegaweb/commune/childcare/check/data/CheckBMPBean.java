@@ -45,6 +45,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	private static final String COLUMN_RULE_3 = "RULE_3";
 	private static final String COLUMN_RULE_4 = "RULE_4";
 	private static final String COLUMN_RULE_5 = "RULE_5";
+	private static final String COLUMN_USER_NOTES = "USER_NOTES";
 
 	public CheckBMPBean() {
 	}
@@ -75,6 +76,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		this.addAttribute(COLUMN_RULE_3, "Control rule for work situation approved", Boolean.class);
 		this.addAttribute(COLUMN_RULE_4, "Control rule for dept", Boolean.class);
 		this.addAttribute(COLUMN_RULE_5, "Control rule for special need", Boolean.class);
+		this.addAttribute(COLUMN_USER_NOTES, "Notes to the user about the check request", String.class, 1000);
 		//    this.addManyToManyRelationShip(SampleEntity.class);
 	}
 
@@ -249,6 +251,14 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		return this.getBooleanColumnValue(COLUMN_RULE_5);
 	}
 
+	public void setUserNotes(String userNotes) throws java.rmi.RemoteException {
+		this.setColumn(COLUMN_USER_NOTES, userNotes);
+	}
+
+	public String getUserNotes() throws java.rmi.RemoteException {
+		return this.getStringColumnValue(COLUMN_USER_NOTES);
+	}
+
 	public Collection ejbFindChecks() throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(this.getEntityName());
@@ -280,6 +290,11 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		catch (RemoteException e) {
 			return null;
 		}
+	}
+
+	public Collection ejbFindNonApprovedChecks() throws FinderException, RemoteException {
+		String[] statusArray = { getCaseStatusOpen(),CASE_STATUS_KEYS[2] };
+		return ejbFindAllCasesByStatusArray(statusArray);
 	}
 
 	/**
