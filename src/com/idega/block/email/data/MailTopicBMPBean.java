@@ -44,6 +44,9 @@ public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic
    * @todo    Description of the Field
    */
   public final static String CREATED = "created";
+  
+  public final static String SENDER_NAME = "sender";
+  public final static String SENDER_EMAIL = "email";
 
 
   /**  Constructor for the Topic object */
@@ -69,6 +72,8 @@ public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic
     addAttribute(LIST, "List id", true, true, Integer.class, MANY_TO_ONE, MailList.class);
     addAttribute(NAME, "Name", true, true, String.class);
     addAttribute(DESCRIPTION, "Description", true, true, String.class);
+	addAttribute(SENDER_NAME, "Sender", true, true, String.class);
+	addAttribute(SENDER_EMAIL, "Sender email", true, true, String.class);
     addAttribute(CREATED, "created", true, true, Timestamp.class);
     addManyToManyRelationShip(MailAccount.class);
     addManyToManyRelationShip(MailLetter.class);
@@ -143,6 +148,16 @@ public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic
   public String getDescription() {
     return getStringColumnValue(DESCRIPTION);
   }
+  
+  public String getSenderName() {
+  	 String r = getStringColumnValue(SENDER_NAME);
+		return r!=null ? r : "";
+	}
+	
+	public String getSenderEmail() {
+		String r = getStringColumnValue(SENDER_EMAIL);
+		return r!=null ? r : "";
+	}
 
 
   /**
@@ -163,6 +178,13 @@ public class MailTopicBMPBean extends CategoryEntityBMPBean implements MailTopic
   public void setName(String name) {
     setColumn(NAME, name);
   }
+  
+  public void setSenderName(String name) {
+	 setColumn(SENDER_NAME, name);
+   }
+   public void setSenderEmail(String email) {
+	  setColumn(SENDER_EMAIL, email);
+	}
 
 
   /**

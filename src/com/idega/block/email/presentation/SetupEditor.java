@@ -415,8 +415,10 @@ public class SetupEditor extends Block {
   public void saveTopic(IWContext iwc) {
     String name = iwc.getParameter("name");
     String info = iwc.getParameter("info");
+    String senderName = iwc.getParameter("snd_name");
+    String senderEmail = iwc.getParameter("snd_email");
     int catId = Integer.parseInt(iwc.getParameter("cat"));
-    MailBusiness.getInstance().saveTopic(topic, name, info, catId);
+    MailBusiness.getInstance().saveTopic(topic, name, info, catId,senderName,senderEmail);
 
   }
 
@@ -686,10 +688,14 @@ public class SetupEditor extends Block {
 
   	T.add(tf.format(iwrb.getLocalizedString("name", "Name"),tf.HEADER), 1, row++);
     T.add(tf.format(iwrb.getLocalizedString("description", "Description"),tf.HEADER), 1, row++);
+	T.add(tf.format(iwrb.getLocalizedString("sender_name", "Sender name"),tf.HEADER), 1, row++);
+	T.add(tf.format(iwrb.getLocalizedString("sender_email", "Sender email"),tf.HEADER), 1, row++);
     T.add(tf.format(iwrb.getLocalizedString("category", "Category"),tf.HEADER), 1, row++);
     row=1;
     TextInput name = new TextInput("name");
     TextInput info = new TextInput("info");
+	TextInput snd_name = new TextInput("snd_name");
+	TextInput snd_email = new TextInput("snd_email");
     //DropdownMenu grps = getGroupDropdown("grp", String.valueOf(group));
     DropdownMenu cats = getCategoryDropdown("cat","");
     if(topic>0){
@@ -697,11 +703,15 @@ public class SetupEditor extends Block {
     	if(top!=null){
     		name.setContent(top.getName());
     		info.setContent(top.getDescription());
+    		snd_name.setContent(top.getSenderName());
+			snd_email.setContent(top.getSenderEmail());
     		cats.setSelectedElement(top.getCategoryId());
     	}
     }    
     T.add(name,2,row++);
     T.add(info,2,row++);
+	T.add(snd_name,2,row++);
+	T.add(snd_email,2,row++);
     T.add(cats,2,row++);
     T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "save_topic"),2,row);
      T.add(new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"),"remove_topic"),2,row);

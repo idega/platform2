@@ -89,7 +89,7 @@ public class MailBusiness {
    * @return           Description of the Return Value
    * @todo             Description of the Method
    */
-  public MailTopic saveTopic(int id, String name, String info, int iCategoryId) {
+  public MailTopic saveTopic(int id, String name, String info, int iCategoryId,String senderName,String senderEmail) {
     try {
       MailTopic topic = ((MailTopicHome) IDOLookup.getHome(MailTopic.class)).create();
       boolean update = false;
@@ -101,6 +101,8 @@ public class MailBusiness {
       topic.setName(name);
       topic.setDescription(info);
       topic.setCategoryId(iCategoryId);
+      topic.setSenderName(senderName);
+      topic.setSenderEmail(senderEmail);
       if (update) {
         topic.store();
       } else {

@@ -22,136 +22,174 @@ import com.idega.util.text.TextFormat;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-public class LetterWindow extends IWAdminWindow{
+public class LetterWindow extends IWAdminWindow {
 
+	private IWBundle iwb;
+	private IWResourceBundle iwrb;
+	public final static String prmInstanceId = "eml_inst";
+	private Collection topics;
+	private int instance = -1;
+	private TextFormat tf;
+	String inpFromname, inpFromaddress,inpSubject , inpBody; 
+	EmailTopic defaultTopic = null;
+	int topic=-1;
 
-  private IWBundle iwb;
-  private IWResourceBundle iwrb;
-  public final static String prmInstanceId = "eml_inst";
-  private Collection topics;
-  private int instance = -1;
-	private TextFormat tf ;
+	public LetterWindow() {
+		super();
+		setScrollbar(false);
+		setWidth(800);
+		setHeight(600);
+		setLocation(true);
+		setResizable(true);
+		setTitlebar(true);
+	}
 
-  public LetterWindow() {
-    super();
-    setScrollbar(false);
-    setWidth(800 );
-    setHeight(500 );
-    setLocation(true);
-    setResizable(true);
-    setTitlebar(true);
-  }
+	public String getBundleIdentifier() {
+		return "com.idega.block.email";
+	}
 
+	public void main(IWContext iwc) throws RemoteException {
+		//debugParameters(iwc);
 
-  public String getBundleIdentifier(){
-    return "com.idega.block.email";
-  }
-
-  public void main(IWContext iwc)throws RemoteException{
-    //debugParameters(iwc);
-
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
+		iwrb = getResourceBundle(iwc);
 		tf = TextFormat.getInstance();
 
-    setTitle("Letter");
-    addTitle("Letter Editor");
+		setTitle("Letter");
+		addTitle("Letter Editor");
 
-    if(iwc.isParameterSet(prmInstanceId))
-      instance = Integer.parseInt(iwc.getParameter(prmInstanceId));
+		if (iwc.isParameterSet(prmInstanceId))
+			instance = Integer.parseInt(iwc.getParameter(prmInstanceId));
 
-    if(instance > 0)
-      topics = MailFinder.getInstance().getInstanceTopics(instance);
+		if (instance > 0)
+			topics = MailFinder.getInstance().getInstanceTopics(instance);
 
-    processForm(iwc);
+		boolean sent = processForm(iwc);
 
-    Form F = new Form();
-    F.addParameter(prmInstanceId,instance);
-    F.add(getLetterForm(iwc));
-    add(F);
-  }
+		Form F = new Form();
+		F.addParameter(prmInstanceId, instance);
+		if (sent)
+			F.add(getSentInfo(iwc));
+		else
+			F.add(getLetterForm(iwc));
+		add(F);
+	}
 
-	public PresentationObject getLetters(IWContext iwc){
-	  Table T = new Table();
-
+	public PresentationObject getLetters(IWContext iwc) {
+		Table T = new Table();
 
 		return T;
 	}
 
-	public PresentationObject getLetterLinks(IWContext iwc){
-	  Table T = new Table();
+	public PresentationObject getLetterLinks(IWContext iwc) {
+		Table T = new Table();
 
 		return T;
 	}
 
-  public PresentationObject getLetterForm(IWContext iwc){
-    Table T = new Table();
-    TextInput fromAddress = new TextInput("from_address");
-    fromAddress.setLength(80);
-    TextInput fromName = new TextInput("from_name");
-    fromName.setLength(80);
-    TextInput subject = new TextInput("subject");
-    subject.setLength(80);
-    TextArea body = new TextArea("body",70,20);
-    int row = 1;
+	public PresentationObject getSentInfo(IWContext iwc) {
+		Table T = new Table();
+		T.add(
+			tf.format(
+				iwrb.getLocalizedString("list.sent_info", "Letter has been sent to all recipients"),
+				tf.HEADER));
+		return T;
+	}
 
-    if(topics !=null && topics.size() > 0){
-      T.add(tf.format(iwrb.getLocalizedString("list.topic","Topic"),tf.HEADER),1,row);
-      DropdownMenu drp = new DropdownMenu("topic_id");
-      java.util.Iterator iter = topics.iterator();
-      if(topics.size() > 0){
-        while (iter.hasNext()) {
-          EmailTopic tpc = (EmailTopic) iter.next();
-          drp.addMenuElement(tpc.toString(), tpc.getName());
-        }
-        T.add(drp ,2,row++);
-      }
-      else if(iter.hasNext()){
-        EmailTopic tpc = (EmailTopic) iter.next();
-        T.add(new HiddenInput("topic_id",tpc.toString()),2,row++);
-      }
-    }
+	public PresentationObject getLetterForm(IWContext iwc) {
+		Table T = new Table();
+		TextInput fromAddress = new TextInput("from_address");
+		fromAddress.setLength(80);
+		TextInput fromName = new TextInput("from_name");
+		fromName.setLength(80);
+		TextInput subject = new TextInput("subject");
+		subject.setLength(80);
+		TextArea body = new TextArea("body", 70, 20);
+		int row = 1;
 
-    T.add(tf.format(iwrb.getLocalizedString("letter.from_name","Sender name"),tf.HEADER),1,row);
-    T.add(fromName,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.from_address","Sender address"),tf.HEADER),1,row);
-    T.add(fromAddress,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.subject","Subject"),tf.HEADER),1,row);
-    T.add(subject,2,row++);
-    T.add(tf.format(iwrb.getLocalizedString("letter.body","Body"),tf.HEADER),1,row);
-    T.add(body,2,row++);
+		if (topics != null && topics.size() > 0) {
+			T.add(tf.format(iwrb.getLocalizedString("list.topic", "Topic"), tf.HEADER), 1, row);
+			DropdownMenu drp = new DropdownMenu("topic_id");
+			drp.setToSubmit();
+			java.util.Iterator iter = topics.iterator();
+			EmailTopic tpc;
+			if (topics.size() > 1) {
+				while (iter.hasNext()) {
+					tpc = (EmailTopic) iter.next();
+					if(defaultTopic == null)
+						defaultTopic = tpc;
+					drp.addMenuElement(tpc.toString(), tpc.getName());
+				}
+				if(topic>0)
+					drp.setSelectedElement(topic);
+				T.add(drp, 2, row++);
+			} 
+			else if (iter.hasNext()) {
+				 tpc = (EmailTopic) iter.next();
+				defaultTopic = tpc;
+				T.add(new HiddenInput("topic_id", tpc.toString()), 2, row++);
+			}
+		}
+		
+		if(defaultTopic!=null){
+			fromName.setContent(defaultTopic.getSenderName());
+			fromAddress.setContent(defaultTopic.getSenderEmail());
+			if(inpSubject!=null)
+				subject.setContent(inpSubject);
+				body.setContent(inpBody);
+			
+				
+		}
 
-    SubmitButton send = new SubmitButton(iwrb.getLocalizedImageButton("send","Send"),"send");
-    //SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
+		T.add(
+			tf.format(iwrb.getLocalizedString("letter.from_name", "Sender name"), tf.HEADER),	1,	row);
+		T.add(fromName, 2, row++);
+		T.add(tf.format(iwrb.getLocalizedString("letter.from_address", "Sender address"), tf.HEADER),1,row);
+		T.add(fromAddress, 2, row++);
+		T.add(tf.format(iwrb.getLocalizedString("letter.subject", "Subject"), tf.HEADER), 1, row);
+		T.add(subject, 2, row++);
+		T.add(tf.format(iwrb.getLocalizedString("letter.body", "Body"), tf.HEADER), 1, row);
+		T.add(body, 2, row++);
 
-		CheckBox save = new CheckBox("save","true");
-    Table submitTable = new Table(5,1);
-		submitTable.add(tf.format(iwrb.getLocalizedString("save_to_archive","Save to archive")),3,1);
-    submitTable.add(save,3,1);
-    submitTable.add(send,5,1);
-    T.add(submitTable,2,row);
-    T.setAlignment(2,row,"right");
+		SubmitButton send = new SubmitButton(iwrb.getLocalizedImageButton("send", "Send"), "send");
+		//SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
 
-    return T;
-  }
+		CheckBox save = new CheckBox("save", "true");
+		Table submitTable = new Table(5, 1);
+		//submitTable.add(tf.format(iwrb.getLocalizedString("save_to_archive","Save to archive")),3,1);
+		//submitTable.add(save,3,1);
+		submitTable.add(send, 5, 1);
+		T.add(submitTable, 2, row);
+		T.setAlignment(2, row, "right");
 
-  public void processForm(IWContext iwc)throws RemoteException{
-    String fromname = iwc.getParameter("from_name");
-    String fromaddress = iwc.getParameter("from_address");
-    String subject = iwc.getParameter("subject");
-    String body = iwc.getParameter("body");
+		return T;
+	}
 
-    if(iwc.isParameterSet("send.x")){
-      int topic = Integer.parseInt(iwc.getParameter("topic_id"));
-      EmailLetter letter = MailBusiness.getInstance().saveTopicLetter(-1,fromname,fromaddress,subject,body,EmailLetter.TYPE_SENT,topic);
-      if(topic >0){
-        MailBusiness.getInstance().sendLetter(letter,MailFinder.getInstance().getTopic(topic));
-      }
-    }
-    else if(iwc.isParameterSet("save.x")){
+	public boolean processForm(IWContext iwc) throws RemoteException {
+		inpFromname = iwc.getParameter("from_name");
+		inpFromaddress = iwc.getParameter("from_address");
+		inpSubject = iwc.getParameter("subject");
+		if(inpSubject == null)
+			inpSubject = "";
+		inpBody = iwc.getParameter("body");
+		if(inpBody == null)
+			inpBody = "";
+		topic = iwc.isParameterSet("topic_id")? Integer.parseInt(iwc.getParameter("topic_id")):-1;
+		
+		if (iwc.isParameterSet("send.x")) {
+			EmailLetter letter =	MailBusiness.getInstance().saveTopicLetter(-1,inpFromname,	inpFromaddress,	inpSubject,inpBody,EmailLetter.TYPE_SENT,topic);			
+			if (topic > 0) {
+				MailBusiness.getInstance().sendLetter(letter,MailFinder.getInstance().getTopic(topic));
+				return true;
+			}
+		} else if (iwc.isParameterSet("save.x")) {
 
-    }
-  }
-  
-  
+		}
+		else{
+			if(topic >0)
+				defaultTopic = MailFinder.getInstance().getTopic(topic);
+		}
+		return false;
+	}
+
 }

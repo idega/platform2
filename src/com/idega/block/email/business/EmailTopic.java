@@ -103,6 +103,8 @@ public interface EmailTopic{
   public int getListId();
 
   public int getCategoryId();
+  public String getSenderName();
+  public String getSenderEmail();
 
 }
 
