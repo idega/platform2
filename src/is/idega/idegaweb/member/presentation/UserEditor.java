@@ -159,7 +159,7 @@ public class UserEditor extends Block {
 	private UserSearcher searcher = null;
 	private boolean showMiddleNameInput = true;
 	private int nameInputLength = 25;
-	private int personalIdInputLength = 14;
+	private int personalIdInputLength = 15;
 	private int streetInputLength = 40;
 	private int emailInputLength = 40;
 	private int postalcodeInputLength = 10;
@@ -395,7 +395,8 @@ public class UserEditor extends Block {
 	protected void presentateButtonClose(IWContext iwc) {
 		CloseButton close = new CloseButton(iwrb.getLocalizedString("mbe.close", "Close"));
 		close.setStyleClass(buttonStyleName);
-		getParentPage().setToReload();
+		 close.setOnClick("window.opener.location.reload()");
+		//getParentPage().setParentToReload();
 		addButton(close,true);
 	}
 	
