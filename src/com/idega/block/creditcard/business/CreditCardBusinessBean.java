@@ -28,6 +28,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.user.data.Group;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
@@ -131,42 +132,61 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	
 	public CreditCardInformation getCreditCardInformation(Supplier supplier,IWTimestamp stamp) {
 		try {
+			Timestamp toCheck = null;
+			if (stamp != null) {
+				stamp.getTimestamp();
+			} else {
+				toCheck = IWTimestamp.getTimestampRightNow();
+			}
+
+			CreditCardInformation ccInfo = null;
+			
+			// Checking for merchants configured to this supplier
 			Collection coll = this.getCreditCardInformations(supplier); 
 			if (coll != null) {
 				Iterator iter = coll.iterator();
-				Timestamp toCheck = null;
-				if (stamp != null) {
-					stamp.getTimestamp();
-				} else {
-					toCheck = IWTimestamp.getTimestampRightNow();
-				}
-				Timestamp starts;
-				Timestamp ends;
-				CreditCardInformation info;
-				CreditCardMerchant merchant;
-				while (iter.hasNext()) {
-					info = (CreditCardInformation) iter.next();
-					merchant = getCreditCardMerchant(info);
-					if (merchant != null && !merchant.getIsDeleted()) {
-						starts = merchant.getStartDate();
-						ends = merchant.getEndDate();
-						
-						if (ends == null) {
-							return info;
-						} else if (starts != null && starts.before(toCheck) && ends.after(toCheck)) {
-							return info;
-						} else if (starts == null) {
-							return info;
-						}
-					}
-				}
+				ccInfo = getCreditCardInformationInUse(iter, toCheck);
 			}
+			
+			// Checking for merchants configured to this supplier's supplierManager 
+			coll = getCreditCardInformations(supplier.getSupplierManager());
+			if (ccInfo == null) {
+				Iterator iter = coll.iterator();
+				ccInfo = getCreditCardInformationInUse(iter, toCheck);
+			}
+			
+			return ccInfo;
+			
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 		return null;
 	}
 	
+	private CreditCardInformation getCreditCardInformationInUse(Iterator iter, Timestamp toCheck) {
+		Timestamp starts;
+		Timestamp ends;
+		CreditCardInformation info;
+		CreditCardMerchant merchant;
+		while (iter.hasNext()) {
+			info = (CreditCardInformation) iter.next();
+			merchant = getCreditCardMerchant(info);
+			if (merchant != null && !merchant.getIsDeleted()) {
+				starts = merchant.getStartDate();
+				ends = merchant.getEndDate();
+				
+				if (ends == null) {
+					return info;
+				} else if (starts != null && starts.before(toCheck) && ends.after(toCheck)) {
+					return info;
+				} else if (starts == null) {
+					return info;
+				}
+			}
+		}
+		return null;
+	}
+
 	public CreditCardMerchant getCreditCardMerchant(Supplier supplier, Object PK) {
 		try {
 			Collection coll = supplier.getCreditCardInformation();
@@ -263,6 +283,11 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 	  		}
 	  	}
 	  	return coll;
+	}
+	
+	public Collection getCreditCardInformations(Group supplierManager) throws FinderException, IDOLookupException {
+		CreditCardInformationHome ccInfoHome = (CreditCardInformationHome) IDOLookup.getHome(CreditCardInformation.class);
+		return ccInfoHome.findBySupplierManager(supplierManager);
 	}
 	
 	public static String encodeCreditCardNumber(String originalNumber) throws IllegalArgumentException {
