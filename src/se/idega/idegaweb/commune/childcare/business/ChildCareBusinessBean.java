@@ -528,6 +528,55 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		return false;
 	}
+
+	
+	public boolean rejectOffer(int applicationId, User user) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			ChildCareApplication application = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
+			
+			UserTransaction t = getSessionContext().getUserTransaction();
+			try {
+				t.begin();
+				CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
+//				application.setCaseStatus(getCaseStatusInactive());
+				IWTimestamp now = new IWTimestamp();
+				application.setRejectionDate(now.getDate());
+//				application.store();
+				caseBiz.changeCaseStatus(application, getCaseStatusCancelled().getStatus(), user);
+			
+			
+				t.commit();
+			
+				return true;
+			}
+			catch (Exception e) {
+				try {
+					t.rollback();
+				}
+				catch (SystemException ex) {
+					ex.printStackTrace();
+				}
+				e.printStackTrace();
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+		
+	}
+	
+
+/*	public boolean signApplication(ChildCareApplication application) {
+		return false;	
+	}
+	*/
+
 	
 	public boolean removeFromQueue(int applicationId, User user) {
 		try {

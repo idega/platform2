@@ -53,6 +53,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean redeemApplication(java.lang.String p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public boolean rejectApplication(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
  public boolean rejectApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
+ public boolean rejectOffer(int application, com.idega.user.data.User user) throws java.rmi.RemoteException;
  public boolean removeFromQueue(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public boolean removeFromQueue(int p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public void setAsPriorityApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
