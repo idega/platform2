@@ -45,7 +45,6 @@ import com.idega.block.datareport.xml.methodinvocation.MethodInput;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationDocument;
 import com.idega.block.datareport.xml.methodinvocation.MethodInvocationParser;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOSession;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -58,6 +57,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -67,6 +67,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.TimestampInput;
+import com.idega.util.IWTimestamp;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLException;
 
@@ -89,7 +90,8 @@ public class ReportGenerator extends Block {
 	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	public final static String PRIFIX_PRM = "dr_";
-	private static final String PRM_DR_GEN_STATE="dr_gen_state";
+	private static final String PRM_STATE="dr_gen_state";
+	private static final String VALUE_STATE_GENERATE_REPORT = "2";
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.datareport";
 	
 	private Integer _queryPK=null;
@@ -109,6 +111,7 @@ public class ReportGenerator extends Block {
 	
 	private String _reportName = "Generated Report";
 	private boolean _canChangeReportName = true;
+	private boolean _showReportNameInputIfCannotChangeIt = false;
 	private String PRM_REPORT_NAME = "report_name";
 	
 
@@ -412,55 +415,87 @@ public class ReportGenerator extends Block {
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		if(_queryPK!=null){
-			String genState = iwc.getParameter(PRM_DR_GEN_STATE);
-			if(genState==null || "".equals(genState)){
-				parseQuery();
-				lineUpElements(iwrb,iwc);
-				Form submForm = new Form();
-				submForm.add(_fieldTable);
-				this.add(submForm);
+		try {
+			if(_queryPK!=null){
+				String genState = iwc.getParameter(PRM_STATE);
+				if(genState==null || "".equals(genState)){
+					parseQuery();
+					lineUpElements(iwrb,iwc);
+					Form submForm = new Form();
+					submForm.add(_fieldTable);
+					this.add(submForm);
+				} else {
+					parseQuery();
+					generateDataSource(iwc);
+					generateLayout(iwc);
+					generateReport(iwc);
+					this.add(getReportLink(iwc));
+				}
+			} else if(_methodInvacationPK != null){
+				String genState = iwc.getParameter(PRM_STATE);
+				if(genState==null || "".equals(genState)){
+					parseMethodInvocationXML(iwrb);
+					lineUpElements(iwrb,iwc);
+					Form submForm = new Form();
+					submForm.add(_fieldTable);
+					this.add(submForm);
+				} else {
+					System.out.println("\n[ReportGenerator]: starts generating...");
+					System.out.println("[ReportGenerator]: parsing xml...");
+					long time1 = System.currentTimeMillis();
+					parseMethodInvocationXML(iwrb);
+					long time2 = System.currentTimeMillis();
+					System.out.println("[ReportGenerator]: took "+(time2-time1)+"ms, total of "+(time2-time1)+"ms");
+					System.out.println("[ReportGenerator]: generating datasource...");
+					generateDataSource(iwc);
+					long time3 = System.currentTimeMillis();
+					System.out.println("[ReportGenerator]: took "+(time3-time2)+"ms, total of "+(time3-time1)+"ms");
+					System.out.println("[ReportGenerator]: generating layout...");
+					generateLayout(iwc);
+					long time4 = System.currentTimeMillis();
+					System.out.println("[ReportGenerator]: took "+(time4-time3)+"ms, total of "+(time4-time1)+"ms");
+					System.out.println("[ReportGenerator]: generating report...");
+					generateReport(iwc);
+					long time5 = System.currentTimeMillis();
+					System.out.println("[ReportGenerator]: took "+(time5-time4)+"ms, total of "+(time5-time1)+"ms");
+					System.out.println("[ReportGenerator]: getting link to the report");
+					this.add(getReportLink(iwc));
+					long time6 = System.currentTimeMillis();
+					System.out.println("[ReportGenerator]: took "+(time6-time5)+"ms, total of "+(time6-time1)+"ms");
+					System.out.println("[ReportGenerator]: ...finished\n");
+			
+				}
+			} else if(hasEditPermission()){
+				add(iwrb.getLocalizedString("no_query_has_been_chosen_for_this_instance","No query has been chosen for this instance"));
+			}//else{//Do nothing}
+			
+		}catch (ReportGeneratorException e) {
+			add(e.getLocalizedMessage());
+			add(Text.getBreak());
+			add(Text.getBreak());
+			BackButton back = new BackButton();
+			setStyle(back);
+			add(back);
+			
+			//TMP
+			Throwable cause = e.getCause();
+			if(cause != null){
+				cause.printStackTrace();
 			} else {
-				parseQuery();
-				generateDataSource(iwc);
-				generateLayout(iwc);
-				generateReport(iwc);
-				this.add(getReportLink(iwc));
+				e.printStackTrace();
 			}
-		} else if(_methodInvacationPK != null){
-			String genState = iwc.getParameter(PRM_DR_GEN_STATE);
-			if(genState==null || "".equals(genState)){
-				parseMethodInvocationXML();
-				lineUpElements(iwrb,iwc);
-				Form submForm = new Form();
-				submForm.add(_fieldTable);
-				this.add(submForm);
-			} else {
-				System.out.println("\n[ReportGenerator]: starts generating...");
-				System.out.println("[ReportGenerator]: parsing xml...");
-				long time1 = System.currentTimeMillis();
-				parseMethodInvocationXML();
-				long time2 = System.currentTimeMillis();
-				System.out.println("[ReportGenerator]: took "+(time2-time1)+"ms, total of "+(time2-time1)+"ms");
-				System.out.println("[ReportGenerator]: generating datasource...");
-				generateDataSource(iwc);
-				long time3 = System.currentTimeMillis();
-				System.out.println("[ReportGenerator]: took "+(time3-time2)+"ms, total of "+(time3-time1)+"ms");
-				System.out.println("[ReportGenerator]: generating layout...");
-				generateLayout(iwc);
-				long time4 = System.currentTimeMillis();
-				System.out.println("[ReportGenerator]: took "+(time4-time3)+"ms, total of "+(time4-time1)+"ms");
-				System.out.println("[ReportGenerator]: generating report...");
-				generateReport(iwc);
-				long time5 = System.currentTimeMillis();
-				System.out.println("[ReportGenerator]: took "+(time5-time4)+"ms, total of "+(time5-time1)+"ms");
-				System.out.println("[ReportGenerator]: ...finished\n");
-				this.add(getReportLink(iwc));
-
-			}
-		} else if(hasEditPermission()){
-			add(iwrb.getLocalizedString("no_query_has_been_chosen_for_this_instance","No query has been chosen for this instance"));
-		}//else{//Do nothing}
+			
+//			if(false){  // if is developer
+//				add(Text.getBreak());
+//				add(Text.getBreak());
+//				Throwable cause = e.getCause();
+//				if(cause != null){
+//					cause.printStackTrace();
+//					add(stackTrace);
+//				}	
+//			}
+			
+		}
 	}
 
 
@@ -468,10 +503,21 @@ public class ReportGenerator extends Block {
 	/**
 	 * 
 	 */
-	private void parseMethodInvocationXML() throws IDOLookupException, FinderException, XMLException {
-		MethodInvocationXMLFile file = (MethodInvocationXMLFile)((MethodInvocationXMLFileHome)IDOLookup.getHome(MethodInvocationXMLFile.class)).findByPrimaryKey(_methodInvacationPK);
+	private void parseMethodInvocationXML(IWResourceBundle iwrb) throws IDOLookupException, ReportGeneratorException {
+		MethodInvocationXMLFile file;
+		
+		try {
+			file = (MethodInvocationXMLFile) ((MethodInvocationXMLFileHome)IDOLookup.getHome(MethodInvocationXMLFile.class)).findByPrimaryKey(_methodInvacationPK);
+		}catch (FinderException e) {
+			throw new ReportGeneratorException(iwrb.getLocalizedString("report_transcription_not_found","The report transcription was not found"),e);
+			//e.printStackTrace();
+		}
 		if(file != null){
-			_methodInvokeDoc = (MethodInvocationDocument)new MethodInvocationParser().parse(file.getFileValue());
+			try {
+				_methodInvokeDoc = (MethodInvocationDocument)new MethodInvocationParser().parse(file.getFileValue());
+			} catch (XMLException e1) {
+				throw new ReportGeneratorException(iwrb.getLocalizedString("error_while_parsing_transcription","Error occured when trying to read the report generation transcription file"),e1);
+			}
 		}
 		
 		if(_methodInvokeDoc != null){
@@ -526,13 +572,14 @@ public class ReportGenerator extends Block {
 		
 		int row = 0;
 		
-		row++;
-		_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","Report name"))+":",1,row);
-		InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME,null,String.class);
-		nameInput.setDisabled(!_canChangeReportName);
-		nameInput.setValue(_reportName);
-		_fieldTable.add(nameInput,2,row);
-		_fieldTable.add(new HiddenInput(PRM_DR_GEN_STATE,"2"),2,row);
+		if(_canChangeReportName || (!_canChangeReportName && _showReportNameInputIfCannotChangeIt)){
+			row++;
+			_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","Report name"))+":",1,row);
+			InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME,null,String.class);
+			nameInput.setDisabled(!_canChangeReportName);
+			nameInput.setValue(_reportName);
+			_fieldTable.add(nameInput,2,row);
+		}
 
 		//TODO Let Reportable field and ClassDescription impliment the same interface (IDODynamicReportableField) to decrease code duplications
 		if(_queryPK != null){
@@ -577,8 +624,12 @@ public class ReportGenerator extends Block {
 		
 		InterfaceObject generateButton = (InterfaceObject)getSubmitButton(iwrb.getLocalizedString("generate_report"," Generate "));
 		_fieldTable.add(generateButton,1,++row);
-		_fieldTable.mergeCells(1,row,2,row);
+		_fieldTable.add(new HiddenInput(PRM_STATE,VALUE_STATE_GENERATE_REPORT),1,row);
+		if(_fieldTable.getRows() > 1){
+			_fieldTable.mergeCells(1,row,2,row);
+		}
 		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+	
 		
 		_busy.addDisabledObject(generateButton);
 		_busy.addBusyObject(generateButton);
@@ -591,7 +642,7 @@ public class ReportGenerator extends Block {
 	}
 	
 	private PresentationObject getSubmitButton(String text){
-		SubmitButton button = new SubmitButton(text,PRM_DR_GEN_STATE,"2");
+		SubmitButton button = new SubmitButton(text,PRM_STATE,VALUE_STATE_GENERATE_REPORT);
 		setStyle(button);
 		return button;
 	}
@@ -607,22 +658,41 @@ public class ReportGenerator extends Block {
 		return PRIFIX_PRM+key;
 	}
 	
-	private Object getParameterObject(IWContext iwc,String prmValue, Class prmClassType) throws ParseException{
+	private Object getParameterObject(IWContext iwc,String prmValue, Class prmClassType) throws ReportGeneratorException{
+		Locale locale = iwc.getCurrentLocale();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if(prmValue != null){
 			if(prmClassType.equals(Integer.class)) {
-				return Integer.decode(prmValue);
+				try {
+					return Integer.decode(prmValue);
+				} catch (NumberFormatException e) {
+					throw new ReportGeneratorException("'"+prmValue+"' "+ iwrb.getLocalizedString("integer_format_not_right","is not of the right format, it should be an integer"),e);
+				}
 			} else if(prmClassType.equals(Time.class)){
-				DateFormat df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-				java.util.Date current = df.parse(prmValue);
-				return new Time(current.getTime());
+				DateFormat df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT,locale); 
+				try {
+					java.util.Date current = df.parse(prmValue);
+					return new Time(current.getTime());
+				} catch (ParseException e) {
+					throw new ReportGeneratorException("'"+prmValue+"' "+iwrb.getLocalizedString("time_format_not_right_"+locale.getLanguage()+"_"+locale.getCountry(),"is not of the right format, it should be of the format: "+df.format(IWTimestamp.RightNow().getDate())),e);
+				}
 			} else if(prmClassType.equals(Date.class)) {
-				DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-				java.util.Date current = df.parse(prmValue);
-				return new Date(current.getTime());
+				DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT,locale); 
+				try {
+					java.util.Date current = df.parse(prmValue);
+					return new Date(current.getTime());
+				} catch (ParseException e) {
+					
+					throw new ReportGeneratorException("'"+prmValue+"' "+ iwrb.getLocalizedString("date_format_not_right_"+locale.getLanguage()+"_"+locale.getCountry(),"is not of the right format, it should be of the format: "+df.format(IWTimestamp.RightNow().getDate())),e);
+				}
 			} else if(prmClassType.equals(Timestamp.class)) {
 				DateFormat df = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT,SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-				java.util.Date current = df.parse(prmValue);
-				return new Timestamp(current.getTime());
+				try {
+					java.util.Date current = df.parse(prmValue);
+					return new Timestamp(current.getTime());
+				} catch (ParseException e) {
+					throw new ReportGeneratorException("'"+prmValue+"' "+ iwrb.getLocalizedString("timestamp_format_not_right_"+locale.getLanguage()+"_"+locale.getCountry(),"is not of the right format, it should be of the format: "+df.format(IWTimestamp.RightNow().getDate())),e);
+				}
 			} 
 		}
 		//else {
@@ -690,5 +760,82 @@ public class ReportGenerator extends Block {
 			_reportName = name;
 		}
 	}
+
+
+	private class ReportGeneratorException extends Exception{
+		
+		//	jdk 1.3 - 1.4 fix
+		private Throwable _cause = this;
+		
+		private String _localizedMessage = null;
+//		
+//		private String _localizedKey = null;
+//		private String _defaultUserFriendlyMessage = null;
+		
+		
+		public ReportGeneratorException(String tecnicalMessage, Throwable cause,String localizedMessage) {
+			this(tecnicalMessage,cause);
+			_localizedMessage = localizedMessage;
+//			_localizedKey = localizedKey;
+//			_defaultUserFriendlyMessage = defaultUserFriendlyMessage;
+		}
+		
+		/**
+		 * @param message
+		 * @param cause
+		 */
+		public ReportGeneratorException(String message, Throwable cause) {
+			super(message);
+			_localizedMessage = message;
+			// jdk 1.3 - 1.4 fix
+			_cause = cause;
+		}
+		
+		/**
+		 * 
+		 */
+		private ReportGeneratorException() {
+			super();
+		}
+		/**
+		 * @param message
+		 */
+		private ReportGeneratorException(String message) {
+			super(message);
+		}
+
+		/**
+		 * @param cause
+		 */
+		private ReportGeneratorException(Throwable cause) {
+			super();
+			// jdk 1.3 - 1.4 fix
+			_cause = cause;
+			
+		}
+		
+		//	jdk 1.3 - 1.4 fix
+		public Throwable getCause(){
+			return _cause;
+		}
+		
+		
+//		public String getLocalizedMessageKey(){
+//			return _localizedKey;
+//		}
+//		
+//		public String getDefaultLocalizedMessage(){
+//			return _defaultUserFriendlyMessage;
+//		}
+		
+		public String getLocalizedMessage(){
+			return _localizedMessage;
+		}
+		
+		
+		
+		
+	}
+
 
 }
