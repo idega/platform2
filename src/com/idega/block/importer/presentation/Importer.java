@@ -115,7 +115,7 @@ public class Importer extends Window {
      selectFiles = true;
     }
     
-    //if importing into sepecific group. Used for compatabilty to idegaWeb Member system
+    //if importing into a specific group. Used for compatabilty to idegaWeb Member system
     groupId = iwc.getParameter(this.PARAMETER_GROUP_ID);
 
     if( groupId!=null ){
@@ -135,7 +135,7 @@ public class Importer extends Window {
     	if( usingLocalFileSystem ){
 			showLocalFileSystemSelection(iwc);
       	}
-      	else {
+      	else if( importFolder!=null ){
       		showIWFileSystemSelection(iwc);      	
       	}
 
@@ -176,31 +176,48 @@ public class Importer extends Window {
 	private void importFiles(IWContext iwc) throws Exception{
 		 add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
 	
-	     String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
+	     String[] values = null;
+	     if(usingLocalFileSystem) values = iwc.getParameterValues(IMPORT_FILE_PATHS);//for local file importing
+	     else values = iwc.getParameterValues(IMPORT_FILE_IDS);
+	     
 	     String groupIDFromSession = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
 	     String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
 	     String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
 	     
-	      // for each file to import
-	     for (int i = 0; i < values.length; i++) {
-	        boolean success = false;
-	        
-	        if(groupIDFromSession!=null){
-	        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupIDFromSession));       
-	        }
-	        else{
-	        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
-	        }
-	        
-	        //MediaBusiness.getCachedFileInfo(icfileid,iwc)
-	        
-	        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
-	        Text fileStatus = new Text(values[i]+" : "+status);
-	        fileStatus.setBold();
-	
+	     if(values!=null){
+		      // for each file to import
+		     for (int i = 0; i < values.length; i++) {
+		        boolean success = false;
+		        String path;
+		        if(usingLocalFileSystem){
+		        	path = values[i];
+		        }
+		        else{/**@todo read directly from the database or at least do this in the business class**/
+		        	path = MediaBusiness.getCachedFileInfo(Integer.parseInt(values[i]),iwc.getApplication()).getRealPathToFile();
+		        }
+		        
+		        if(groupIDFromSession!=null){
+		        	success = getImportBusiness(iwc).importRecords(handler,fileClass,path,new Integer(groupIDFromSession));       
+		        }
+		        else{
+		        	success = getImportBusiness(iwc).importRecords(handler,fileClass,path);
+		        }		        
+		        
+		        
+		        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
+		        Text fileStatus = new Text(path+" : "+status);
+		        fileStatus.setBold();
+		
+				addBreak();
+		        add(fileStatus);
+		        addBreak();
+		     }
+		
+		}
+		else{
+			add(new Text(iwrb.getLocalizedString("importer.no.file.selected","No file selected!")));
 			addBreak();
-	        add(fileStatus);
-	        addBreak();
+			add(new BackButton(iwrb.getLocalizedString("importer.back","back")));
 		}
 	}
 
