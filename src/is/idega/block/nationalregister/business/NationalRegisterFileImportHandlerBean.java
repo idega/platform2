@@ -376,6 +376,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				if (groupFix != null) {
 					groupFix.addGroup(user);
 					user.setPrimaryGroup(groupFix);
+					user.store();
 				}
 				if (relationOnly && familyId != null && !"".equals(familyId.trim())) {
 					_familyRelations.put(familyId, ssn);
@@ -386,12 +387,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			}
 		}
 		
-		
 		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-	    floor,sex,maritialStatus,empty,prohibitMarking,
-	    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-			addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-			agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+		    floor,sex,maritialStatus,empty,prohibitMarking,
+		    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+				addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+		
 		if (success) {
 			_familyRelations.put(familyId, ssn);
 		}
