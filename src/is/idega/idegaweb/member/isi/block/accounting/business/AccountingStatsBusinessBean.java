@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.util.IWMemberConstants;
@@ -158,7 +159,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 catch (FinderException e) {
 		 	e.printStackTrace();
 		 }
-		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		 String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
+		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
 		 //Iterating through reports and creating report data 
@@ -206,7 +208,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 	 reportCollection.addAll(datas);
 		 }
 	
-		 ReportableField[] sortFields = new ReportableField[] {groupField, divisionField};
+		 ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField };
 		 Comparator comparator = new FieldsComparator(sortFields);
 		 Collections.sort(reportCollection, comparator);
 		 
@@ -215,25 +217,666 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	}
 	
 	/*
+	 * Report A29.2 of the ISI Specs
+	 */
+	public ReportableCollection getPaymentOverviewByDivisionsGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
+			Date dateToFilter,
+			Collection divisionsFilter,
+			Collection groupsFilter)
+	throws RemoteException {
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionField);
+		
+		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		reportCollection.addField(groupField);
+		
+		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		reportCollection.addField(nameField);
+		
+		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		reportCollection.addField(personalIDField);
+		
+		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
+		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		reportCollection.addField(amountField);
+		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
+		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		reportCollection.addField(amountEqualizedField);
+		
+		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		reportCollection.addField(tariffTypeField);
+		
+		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		reportCollection.addField(infoField);
+		
+		//Gathering data	 
+		//then for each division get its financeRecords and
+		//create a row and insert into an ordered map
+		//then iterate the map and insert into the final report collection.
+		//getGroupBusiness().getpar
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		String[] types = {FinanceEntryBMPBean.TYPE_PAYMENT };
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Map financeEntriesByDivisions = new TreeMap();
+		
+		//Iterating through reports and creating report data 
+		Iterator iter = finEntries.iterator();
+		while (iter.hasNext()) {
+			FinanceEntry financeEntry = (FinanceEntry) iter.next();
+			//try {
+			Group division = financeEntry.getDivision();
+			Group group = financeEntry.getGroup();
+			User user = financeEntry.getUser();
+			
+			String personalID = user.getPersonalID();
+			if (personalID != null && personalID.length() == 10) {
+				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			}
+			//create a new ReportData for each row
+			ReportableData data = new ReportableData();
+			//	add the data to the correct fields/columns
+			data.addData(divisionField, division.getName() );
+			data.addData(groupField, group.getName() );
+			data.addData(nameField, user.getName() );
+			data.addData(personalIDField, personalID );
+			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(infoField, financeEntry.getInfo() );
+			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			
+			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			if (statsForDivision == null)
+				statsForDivision = new Vector();
+			statsForDivision.add(data);
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			//}
+			//catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+		} 
+		// iterate through the ordered map and ordered lists and add to the final collection
+		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		while (statsDataIter.hasNext()) {
+			
+			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			// don't forget to add the row to the collection
+			reportCollection.addAll(datas);
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
+	 * Report A29.3 of the ISI Specs
+	 */
+	public ReportableCollection getDebtOverviewByDivisionsGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
+			Date dateToFilter,
+			Collection divisionsFilter,
+			Collection groupsFilter)
+	throws RemoteException {
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionField);
+		
+		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		reportCollection.addField(groupField);
+		
+		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		reportCollection.addField(nameField);
+		
+		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		reportCollection.addField(personalIDField);
+		
+		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
+		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		reportCollection.addField(amountField);
+		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
+		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		reportCollection.addField(amountEqualizedField);
+		
+		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		reportCollection.addField(tariffTypeField);
+		
+		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		reportCollection.addField(infoField);
+		
+		//Gathering data	 
+		//then for each division get its financeRecords and
+		//create a row and insert into an ordered map
+		//then iterate the map and insert into the final report collection.
+		//getGroupBusiness().getpar
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		String[] types = null;
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Map financeEntriesByDivisions = new TreeMap();
+		
+		//Iterating through reports and creating report data 
+		Iterator iter = finEntries.iterator();
+		while (iter.hasNext()) {
+			FinanceEntry financeEntry = (FinanceEntry) iter.next();
+			//try {
+			Group division = financeEntry.getDivision();
+			Group group = financeEntry.getGroup();
+			User user = financeEntry.getUser();
+			
+			String personalID = user.getPersonalID();
+			if (personalID != null && personalID.length() == 10) {
+				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			}
+			//create a new ReportData for each row
+			ReportableData data = new ReportableData();
+			//	add the data to the correct fields/columns
+			data.addData(divisionField, division.getName() );
+			data.addData(groupField, group.getName() );
+			data.addData(nameField, user.getName() );
+			data.addData(personalIDField, personalID );
+			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(infoField, financeEntry.getInfo() );
+			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			
+			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			if (statsForDivision == null)
+				statsForDivision = new Vector();
+			statsForDivision.add(data);
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			//}
+			//catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+		} 
+		// iterate through the ordered map and ordered lists and add to the final collection
+		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		while (statsDataIter.hasNext()) {
+			
+			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			// don't forget to add the row to the collection
+			reportCollection.addAll(datas);
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
+	 * Report A29.4 of the ISI Specs
+	 */
+	public ReportableCollection getEntryOverviewByDivisionsGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
+			Date dateToFilter,
+			Collection divisionsFilter,
+			Collection groupsFilter)
+	throws RemoteException {
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionField);
+		
+		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		reportCollection.addField(groupField);
+		
+		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		reportCollection.addField(nameField);
+		
+		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		reportCollection.addField(personalIDField);
+		
+		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
+		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		reportCollection.addField(amountField);
+		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
+		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		reportCollection.addField(amountEqualizedField);
+		
+		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		reportCollection.addField(tariffTypeField);
+		
+		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		reportCollection.addField(infoField);
+		
+		//Gathering data	 
+		//then for each division get its financeRecords and
+		//create a row and insert into an ordered map
+		//then iterate the map and insert into the final report collection.
+		//getGroupBusiness().getpar
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		String[] types = null;
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Map financeEntriesByDivisions = new TreeMap();
+		
+		//Iterating through reports and creating report data 
+		Iterator iter = finEntries.iterator();
+		while (iter.hasNext()) {
+			FinanceEntry financeEntry = (FinanceEntry) iter.next();
+			//try {
+			Group division = financeEntry.getDivision();
+			Group group = financeEntry.getGroup();
+			User user = financeEntry.getUser();
+			
+			String personalID = user.getPersonalID();
+			if (personalID != null && personalID.length() == 10) {
+				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			}
+			//create a new ReportData for each row
+			ReportableData data = new ReportableData();
+			//	add the data to the correct fields/columns
+			data.addData(divisionField, division.getName() );
+			data.addData(groupField, group.getName() );
+			data.addData(nameField, user.getName() );
+			data.addData(personalIDField, personalID );
+			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(infoField, financeEntry.getInfo() );
+			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			
+			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			if (statsForDivision == null)
+				statsForDivision = new Vector();
+			statsForDivision.add(data);
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			//}
+			//catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+		} 
+		// iterate through the ordered map and ordered lists and add to the final collection
+		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		while (statsDataIter.hasNext()) {
+			
+			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			// don't forget to add the row to the collection
+			reportCollection.addAll(datas);
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {entryDateField, divisionField, groupField, personalIDField};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
+	 * Report A29.5 of the ISI Specs
+	 */
+	public ReportableCollection getLatePaymentListByDivisionsGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
+			Date dateToFilter,
+			Collection divisionsFilter,
+			Collection groupsFilter)
+	throws RemoteException {
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionField);
+		
+		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		reportCollection.addField(groupField);
+		
+		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		reportCollection.addField(nameField);
+		
+		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		reportCollection.addField(personalIDField);
+		
+		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
+		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		reportCollection.addField(amountField);
+		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
+		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		reportCollection.addField(amountEqualizedField);
+		
+		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		reportCollection.addField(tariffTypeField);
+		
+		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		reportCollection.addField(infoField);
+		
+		//Gathering data	 
+		//then for each division get its financeRecords and
+		//create a row and insert into an ordered map
+		//then iterate the map and insert into the final report collection.
+		//getGroupBusiness().getpar
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		String[] types = null;
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Map financeEntriesByDivisions = new TreeMap();
+		
+		//Iterating through reports and creating report data 
+		Iterator iter = finEntries.iterator();
+		while (iter.hasNext()) {
+			FinanceEntry financeEntry = (FinanceEntry) iter.next();
+			//try {
+			Group division = financeEntry.getDivision();
+			Group group = financeEntry.getGroup();
+			User user = financeEntry.getUser();
+			
+			String personalID = user.getPersonalID();
+			if (personalID != null && personalID.length() == 10) {
+				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			}
+			//create a new ReportData for each row
+			ReportableData data = new ReportableData();
+			//	add the data to the correct fields/columns
+			data.addData(divisionField, division.getName() );
+			data.addData(groupField, group.getName() );
+			data.addData(nameField, user.getName() );
+			data.addData(personalIDField, personalID );
+			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(infoField, financeEntry.getInfo() );
+			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			
+			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			if (statsForDivision == null)
+				statsForDivision = new Vector();
+			statsForDivision.add(data);
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			//}
+			//catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+		} 
+		// iterate through the ordered map and ordered lists and add to the final collection
+		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		while (statsDataIter.hasNext()) {
+			
+			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			// don't forget to add the row to the collection
+			reportCollection.addAll(datas);
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
+	 * Report A29.6 of the ISI Specs
+	 */
+	public ReportableCollection getPaymentListByDivisionsGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
+			Date dateToFilter,
+			Collection divisionsFilter,
+			Collection groupsFilter)
+	throws RemoteException {
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"label_current_date", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+				"current_date", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
+		
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters		
+		ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
+		reportCollection.addField(divisionField);
+		
+		ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
+		reportCollection.addField(groupField);
+		
+		ReportableField nameField = new ReportableField(FIELD_NAME_NAME, String.class);
+		nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
+		reportCollection.addField(nameField);
+		
+		ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
+		reportCollection.addField(personalIDField);
+		
+		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
+		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
+		reportCollection.addField(amountField);
+		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
+		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
+		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
+		reportCollection.addField(amountEqualizedField);
+		
+		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
+		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
+		reportCollection.addField(tariffTypeField);
+		
+		ReportableField infoField = new ReportableField(FIELD_NAME_INFO, String.class);
+		infoField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_INFO, "Info"), currentLocale);
+		reportCollection.addField(infoField);
+		
+		//Gathering data	 
+		//then for each division get its financeRecords and
+		//create a row and insert into an ordered map
+		//then iterate the map and insert into the final report collection.
+		//getGroupBusiness().getpar
+		Group club = null;
+		try {
+			club = getClubForUser(this.getCurrentUser() );
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		String[] types = null;
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
+		Map financeEntriesByDivisions = new TreeMap();
+		
+		//Iterating through reports and creating report data 
+		Iterator iter = finEntries.iterator();
+		while (iter.hasNext()) {
+			FinanceEntry financeEntry = (FinanceEntry) iter.next();
+			//try {
+			Group division = financeEntry.getDivision();
+			Group group = financeEntry.getGroup();
+			User user = financeEntry.getUser();
+			
+			String personalID = user.getPersonalID();
+			if (personalID != null && personalID.length() == 10) {
+				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
+			}
+			//create a new ReportData for each row
+			ReportableData data = new ReportableData();
+			//	add the data to the correct fields/columns
+			data.addData(divisionField, division.getName() );
+			data.addData(groupField, group.getName() );
+			data.addData(nameField, user.getName() );
+			data.addData(personalIDField, personalID );
+			data.addData(amountField, new Double(financeEntry.getAmount()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
+			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(infoField, financeEntry.getInfo() );
+			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
+			
+			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
+			if (statsForDivision == null)
+				statsForDivision = new Vector();
+			statsForDivision.add(data);
+			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			//}
+			//catch (Exception e) {
+			//	e.printStackTrace();
+			//}
+		} 
+		// iterate through the ordered map and ordered lists and add to the final collection
+		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		while (statsDataIter.hasNext()) {
+			
+			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			// don't forget to add the row to the collection
+			reportCollection.addAll(datas);
+		}
+		
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
 	 * Returns a club the user is a member of.
 	 */
 	public Group getClubForUser(User user) throws FinderException, RemoteException{
 		Collection parents = getGroupBusiness().getParentGroupsRecursive(user);
-		Group group = null;
+		Group club = null;
 		if(parents!=null && !parents.isEmpty()){
 			Iterator iter = parents.iterator();
 			while (iter.hasNext()) {
-				group = (Group) iter.next();
-				if(IWMemberConstants.GROUP_TYPE_CLUB.equals(group.getGroupType())){
-					return group;
+				club = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB.equals(club.getGroupType())){
+					return club;
 				}
 			}
 		}
-		if(group == null){
+		if(club == null){
 			//if no club is found we throw the exception
 			throw new FinderException(user.getName());
 		}
-		else return group;
+		else 
+			return club;
 	}
 
 }
