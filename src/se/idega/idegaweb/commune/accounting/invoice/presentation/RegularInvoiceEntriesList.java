@@ -371,11 +371,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (entry.getAmount() == 0){
 			errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
 		}
-		
-		//TODO: uncomment this code
-//		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
-//			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
-//		}
+
+		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
+			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
+		}
 		
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, entry, user, errorMessages);					
@@ -880,7 +879,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		
 			public String getNote() {
-				return getValue(PAR_REMARK);
+				return getValue(PAR_REMARK) != null ? getValue(PAR_REMARK) : "";
 			}
 		
 			public Date getCreatedDate() {
