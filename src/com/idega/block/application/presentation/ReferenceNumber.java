@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.8 2002/02/20 00:04:51 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.9 2002/02/22 12:54:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -205,6 +205,10 @@ public class ReferenceNumber extends Block {
     return(IW_BUNDLE_IDENTIFIER);
   }
 
+  public void setHelpButton(boolean usehelp){
+    hasHelpButton = usehelp;
+  }
+
   public void addHelpButton() {
     hasHelpButton = true;
   }
@@ -282,5 +286,19 @@ public class ReferenceNumber extends Block {
   public void setTextStyle(String styleAttribute){
     this.textStyles=styleAttribute;
   }
+
+  public Object clone() {
+    ReferenceNumber obj = null;
+    try {
+      obj = (ReferenceNumber)super.clone();
+
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
 
 }
