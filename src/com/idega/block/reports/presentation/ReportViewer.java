@@ -34,7 +34,6 @@ public class ReportViewer extends AbstractMenuBlock implements MenuBlock,Reports
   public static String prmClass = "rep_clss";
 
   public void main(IWContext iwc){
-    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     if(iwc.isParameterSet(PRM_CATEGORYID))
