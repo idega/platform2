@@ -70,7 +70,7 @@ public class BookingEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getCountColumnName() {return "PASSENGER_COUNT";}
   public static String getProductPriceIDColumnName() {return "SR_PRODUCT_PRICE_ID";}
 
-  public Collection getEntries(Booking booking) throws FinderException, RemoteException{
+  public Collection ejbHomeGetEntries(Booking booking) throws FinderException, RemoteException{
     return super.idoFindAllIDsByColumnBySQL(getBookingIDColumnName(), Integer.toString(booking.getID()));
 //    return null;
   }
