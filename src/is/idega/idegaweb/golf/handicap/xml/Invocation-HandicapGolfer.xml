@@ -12,19 +12,19 @@
 			<class_description class="java.lang.String" default_display_name="Golfer" name="golfer">
 				<localized_name name="Kylfingur (kennitala)" locale="is_IS"/>
 				<localized_name name="Golfer (personal ID)" locale="en"/>
-				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.TextInputHandler" />
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.PersonalIDHandler" />
 			</class_description>
 		
 			<class_description class="java.sql.Date" default_display_name="Date from" name="date_from">
 				<localized_name name="Dags frá" locale="is_IS"/>
 				<localized_name name="Date from" locale="en"/>
-				<class_handler class="com.idega.presentation.ui.DateInput" />
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.DateHandler" />
 			</class_description>
 		
 			<class_description class="java.sql.Date" default_display_name="Date to" name="date_to">
 				<localized_name name="Dags til" locale="is_IS"/>
 				<localized_name name="Date to" locale="en"/>
-				<class_handler class="com.idega.presentation.ui.DateInput" />
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.DateHandler" />
 			</class_description>
 		
 		</input>
