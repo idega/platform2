@@ -547,9 +547,10 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity imple
 		query.addColumn(new WildCardColumn());
 	
 	query.addJoin(campusApplication,application);
-	
-	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getSubjectIdColumnName()),MatchCriteria.EQUALS,subjectID.intValue() ));
-	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,status ));
+	if(subjectID!=null && subjectID.intValue()>0)
+		query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getSubjectIdColumnName()),MatchCriteria.EQUALS,subjectID.intValue() ));
+	if(status!=null)
+		query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,status ));
 	if(order!=null)
 		query.addOrder(application,order,true);
 	return query.toString();
