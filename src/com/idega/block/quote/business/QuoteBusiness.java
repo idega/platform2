@@ -22,7 +22,7 @@ public static final String PARAMETER_CLOSE = "close";
       QuoteEntity[] quotes = (QuoteEntity[]) QuoteEntity.getStaticInstance(QuoteEntity.class).findAllByColumn(QuoteEntity.getColumnNameICLocaleID(),localeID);
       if ( quotes != null ) {
         if ( quotes.length > 0 ) {
-          int quoteNumber = (int) Math.round(Math.random() * (quotes.length + 1));
+          int quoteNumber = (int) Math.round(Math.random() * (quotes.length - 1));
           return quotes[quoteNumber];
         }
       }
