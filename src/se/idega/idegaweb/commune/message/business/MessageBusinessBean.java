@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.22 2002/12/27 23:11:22 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.23 2002/12/28 11:49:25 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
@@ -417,7 +418,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 
 	protected UserProperties getUserPreferences(User user) throws Exception {
-		UserProperties property = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserProperties(user);	
+		UserProperties property = getCommuneUserBusiness().getUserProperties(user);	
 		return property;
 	}
 	
@@ -461,6 +462,26 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference){
 		IWPropertyList propertyList = getUserMessagePreferences(user);
 		propertyList.setProperty(USER_PROP_SEND_TO_MESSAGE_BOX, new Boolean(preference));
+	}
+	
+	public void sendMessageToCommuneAdministrators(String subject, String body) throws RemoteException {
+		try {
+			Collection administrators = getCommuneUserBusiness().getAllCommuneAdministrators();
+			if (!administrators.isEmpty()) {
+				Iterator iterator = administrators.iterator();
+				while (iterator.hasNext()) {
+					User administrator = (User) iterator.next();
+					createUserMessage(administrator,subject,body);
+				}
+			}
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();		
+		}
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
 	}
 
 }
