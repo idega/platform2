@@ -30,7 +30,7 @@ private String width="100%";
 
   private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
 
-    String mode = modinfo.getParameter("mode");
+    String mode = modinfo.getRequest().getParameter("mode");
       if ( mode == null ) { mode = "image"; }
 
     Form categoryForm = new Form();
@@ -148,12 +148,12 @@ private String width="100%";
     boolean isQuery = true;
     boolean allCategories = false;
 
-    String searchString = modinfo.getParameter("searchString");
+    String searchString = modinfo.getRequest().getParameter("searchString");
       if ( searchString == null || searchString.equalsIgnoreCase("") ) {
         searchString = "";
         isQuery = false;
       }
-    String category_id = modinfo.getParameter("catagory_id");
+    String category_id = modinfo.getRequest().getParameter("catagory_id");
       if ( category_id.equalsIgnoreCase("0") ) {
         allCategories = true;
       }
