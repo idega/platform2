@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -224,8 +225,14 @@ public class ContractEditor extends ChildCareBlock {
 				cancelled.setEarliestPossibleDate(contract.getValidFromDate(),localize("child_care.date_warning.termination_earlier_than_start", "You can not choose a termination date earlier than the start date."));
 			}
 			
-			ChildCareContract latestTerminatedContract = contractHome.findLatestTerminatedContractByChild(contract.getChildID(),null);
-			if(latestTerminatedContract!=null){
+			
+			ChildCareContract latestTerminatedContract = null;
+            try {
+                latestTerminatedContract = contractHome.findLatestTerminatedContractByChild(contract.getChildID(),null);
+            } catch (FinderException e1) {
+                e1.printStackTrace();
+            }
+            if(latestTerminatedContract!=null){
 			    from.setEarliestPossibleDate(latestTerminatedContract.getTerminatedDate(),localize("child_care.date_warning.start_earlier_than_latest_termination", "You can not choose a start date earlier than latest termination date."));
 			}
 			
@@ -431,9 +438,10 @@ public class ContractEditor extends ChildCareBlock {
 						isCancelled = true;
 					}
 					
-					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-					viewContract.setFile(contract.getContractFileID());
-					viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+					//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+					//viewContract.setFile(contract.getContractFileID());
+					//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+					viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
 					
 					editLink = new Link(getEditIcon(localize("child_care.edit_contract", "Edit contract")));
 					editLink.addParameter(ACTION, ACTION_EDIT);
