@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.13 2003/08/28 10:31:08 aron Exp $
+ * $Id: ListTable.java,v 1.14 2003/08/28 12:56:32 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/28 10:31:08 $
+ * Last modified: $Date: 2003/08/28 12:56:32 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -56,6 +56,20 @@ public class ListTable extends AccountingBlock {
 		table.setRowColor(1, getHeaderColor());
 		table.setNoWrap(col, 1);
 	}
+
+	/**
+	 * Sets a Header text label at the specified column.
+	 * @param defaultText the default text for the title
+	 * @param col the header column for the label 
+	 */
+	public void setHeader(String defaultText, int col) {
+		// Check boundaries, null?
+		Text t = getSmallHeader(defaultText);
+		table.add(t, col, 1);
+		table.setRowColor(1, getHeaderColor());
+		table.setNoWrap(col, 1);
+	}
+
 
 	/**
 	 * Sets a header label object at the specified column.
