@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import javax.ejb.FinderException;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -312,65 +313,82 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	public boolean collect(IWContext iwc) {
 
 		if (iwc != null) {
-			String female = iwc.getParameter(femaleFieldName);
-			String male = iwc.getParameter(maleFieldName);
-			String lowerAgeLimit = iwc.getParameter(lowerAgeLimitFieldName);
-			String upperAgeLimit = iwc.getParameter(upperAgeLimitFieldName);
-			String ageLimitIsStringentCondition = iwc.getParameter(ageLimitIsStringentConditionFieldName);
-
-			String keyDate = iwc.getParameter(keyDateForAgeFieldName);
-			// only modify key date if month and day is set by the user.
-			// not selected is indicated by -1.
-			// key date = "year-month-day"
-			// year is always not selected.
-			// e.g:
-			// "-1-03-11" changes to "03-11"
-			// "-1--1-12 (month is not selected) changes to ""
-			// "-1--09--23 changes to ""
-			// "-1-07--30 changes to ""
-			if ((keyDate != null) && (keyDate.length() != 0) && keyDate.indexOf("--") == -1) {
-				// month and day are selected
-				int i = keyDate.indexOf("-", 1); // 1 in order to skip the year
-				keyDate = keyDate.substring(++i);
-			}
-			else {
-				keyDate = "";
-			}
-			fieldValues.put(keyDateForAgeFieldName, keyDate);
-
-			fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition != null));
-
-			fieldValues.put(femaleFieldName, new Boolean(female != null));
-			fieldValues.put(maleFieldName, new Boolean(male != null));
-
-			if (lowerAgeLimit != null) {
-				fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
-			}
-			if (upperAgeLimit != null) {
-				fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
-			}
+			Group group;
 			try {
-				// get corressponding service bean
-				AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
+				group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			
+//				special case because the age and gender stuff should be controlled by the club member template group
+				//for other group types it is never read only
+				boolean readOnly = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
+				if(!readOnly){
+				
+					String female = iwc.getParameter(femaleFieldName);
+					String male = iwc.getParameter(maleFieldName);
+					String lowerAgeLimit = iwc.getParameter(lowerAgeLimitFieldName);
+					String upperAgeLimit = iwc.getParameter(upperAgeLimitFieldName);
+					String ageLimitIsStringentCondition = iwc.getParameter(ageLimitIsStringentConditionFieldName);
+		
+					String keyDate = iwc.getParameter(keyDateForAgeFieldName);
+					// only modify key date if month and day is set by the user.
+					// not selected is indicated by -1.
+					// key date = "year-month-day"
+					// year is always not selected.
+					// e.g:
+					// "-1-03-11" changes to "03-11"
+					// "-1--1-12 (month is not selected) changes to ""
+					// "-1--09--23 changes to ""
+					// "-1-07--30 changes to ""
+					if ((keyDate != null) && (keyDate.length() != 0) && keyDate.indexOf("--") == -1) {
+						// month and day are selected
+						int i = keyDate.indexOf("-", 1); // 1 in order to skip the year
+						keyDate = keyDate.substring(++i);
+					}
+					else {
+						keyDate = "";
+					}
+					fieldValues.put(keyDateForAgeFieldName, keyDate);
+		
+					fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition != null));
+		
+					fieldValues.put(femaleFieldName, new Boolean(female != null));
+					fieldValues.put(maleFieldName, new Boolean(male != null));
+		
+					if (lowerAgeLimit != null) {
+						fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
+					}
+					if (upperAgeLimit != null) {
+						fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
+					}
+					// get corressponding service bean
+					AgeGenderPluginBusiness ageGenderPluginBusiness = getAgeGenderPluginBusiness(iwc);
+	
+					// validate upper and lower age limit
+					int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
+					int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
+					lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
+					upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
+					lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
+					// set error text if necessary
+					fieldValues.put(lowerAgeTooSmallFieldName, ((lowerAgeTooSmall) ? lowerAgeTooSmallError : ""));
+					fieldValues.put(upperAgeTooLargeFieldName, ((upperAgeTooLarge) ? upperAgeTooLargeError : ""));
+					fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, ((lowerAgeGreaterThanUpperAge) ? lowerAgeGreaterThanUpperAgeError : ""));
 
-				// validate upper and lower age limit
-				int lowerAge = ((Integer) fieldValues.get(lowerAgeLimitFieldName)).intValue();
-				int upperAge = ((Integer) fieldValues.get(upperAgeLimitFieldName)).intValue();
-				lowerAgeTooSmall = (lowerAge < ageGenderPluginBusiness.getLowerAgeLimitDefault());
-				upperAgeTooLarge = (upperAge > ageGenderPluginBusiness.getUpperAgeLimitDefault());
-				lowerAgeGreaterThanUpperAge = (lowerAge > upperAge);
-				// set error text if necessary
-				fieldValues.put(lowerAgeTooSmallFieldName, ((lowerAgeTooSmall) ? lowerAgeTooSmallError : ""));
-				fieldValues.put(upperAgeTooLargeFieldName, ((upperAgeTooLarge) ? upperAgeTooLargeError : ""));
-				fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, ((lowerAgeGreaterThanUpperAge) ? lowerAgeGreaterThanUpperAgeError : ""));
+					this.updateFieldsDisplayStatus();
+		
+				}
+				
+				return true;
 			}
-			catch (RemoteException ex) {
-				System.err.println("[GroupAgeGenderTab] Problem to get the AgeGenderPluginBusiness bean: " + ex.getMessage());
-				ex.printStackTrace(System.err);
+			catch (IDOLookupException e) {
+				e.printStackTrace();
 			}
-			this.updateFieldsDisplayStatus();
-
-			return true;
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		return false;
 	}
@@ -380,9 +398,9 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 */
 	public boolean store(IWContext iwc) {
 		
-		Group group;
+		
 		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 			
 			//special case because the age and gender stuff should be controlled by the club member template group
 			//for other group types it is never read only
