@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.45 2003/10/14 20:52:18 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.46 2003/10/17 13:44:21 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
@@ -45,6 +46,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+
 
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -987,7 +989,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"getResourceName",
 					"")
 			);
-	
 			arr.add(new ConditionHolder(
 					RuleTypeConstant.CONDITION_ID_VAT, 
 					"Momssats", 
@@ -1003,9 +1004,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"Årskurs", 
 					LP + "aarskurs", 
 					"com.idega.block.school.business.SchoolBusiness", 
-					"findAllSchoolYears",
+					"findSchoolYearsBySchoolCategory",
 					"getSchoolYearName",
-					"")
+					OperationID)
 			);
 	
 			arr.add(new ConditionHolder(
