@@ -530,11 +530,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		boolean hasBankId = false;
-		try{
-			hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)application.getOwner().getPrimaryKey()).intValue());
-		}catch(SQLException ex){
-			//ignore
-		}
+
+		hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
+	
 		
 		if (hasBankId){
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
