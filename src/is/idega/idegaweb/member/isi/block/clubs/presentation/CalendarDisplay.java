@@ -7,7 +7,6 @@ import com.idega.block.cal.presentation.CalendarView;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.inet.pool.c;
 
 /**
  * Description: <br>
