@@ -59,9 +59,11 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       int[] arrivalAddressIds = setArrivalAddress(tourId, arrivalAt);
 
       int[] hotelPickupPlaceIds ={};
-      if (pickupPlaceIds != null && pickupPlaceIds.length > 0 && !pickupPlaceIds[0].equals("") ) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
-      for (int i = 0; i < pickupPlaceIds.length; i++) {
-        hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
+      if (pickupPlaceIds != null && pickupPlaceIds.length > 0 && !pickupPlaceIds[0].equals("") ) {
+        hotelPickupPlaceIds = new int[pickupPlaceIds.length];
+        for (int i = 0; i < pickupPlaceIds.length; i++) {
+          hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
+        }
       }
 
       int serviceId = -1;
@@ -515,7 +517,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   protected ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
-  
+
   protected StockroomBusiness getStockroomBusiness() throws RemoteException {
     return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
   }
