@@ -311,35 +311,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public WorkReportMember createWorkReportMember(int reportID, User user) throws CreateException {
 		Age age = null;
    
-    WorkReportMember member = getWorkReportMemberHome().create();
+        WorkReportMember member = getWorkReportMemberHome().create();
     
-    // add all leagues to the member
-   /* Collection groups = getUserGroupsDirectlyRelated(user);
-    Iterator iterator = groups.iterator();
-    WorkReport workReport = getWorkReportById(reportID);
-    int year = workReport.getYearOfReport().intValue();
-    WorkReportGroupHome home = getWorkReportGroupHome();
-    while (iterator.hasNext())  {
-      Group group = (Group) iterator.next();
-      if (group != null) {
-      String groupType = group.getGroupType();
-      if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-        int groupPk = ( (Integer) group.getPrimaryKey()).intValue();
-        try {
-          WorkReportGroup workReportGroup = home.findWorkReportGroupByGroupIdAndYear(groupPk,year);
-
-          addWorkReportGroupToEntity(reportID, workReportGroup, member);
-        }
-        catch (FinderException ex) {
-          String message =
-            "[WorkReportBusiness]: Can't retrieve WorkReportBusiness.";
-          System.err.println(message + " Message is: " + ex.getMessage());
-          ex.printStackTrace(System.err);
-        }
-      }
-      }
-    }  */
-      
+     
 		if (user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
 
@@ -421,19 +395,74 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			int pk = ((Integer)workReportGroup.getPrimaryKey()).intValue();
 			member.setWorkReportGroupID(pk);
 		}
-
-		if (true)
-			member.setAsMale();
-		else
-			member.setAsFemale();
-
-		member.store();
-		return member;
-
-	}
-
+        int gender = user.getGenderID();
+        try {
+          int male = getGenderId("male").intValue();
+          if (gender == male) {
+            member.setAsMale();
+          }
+          else {
+            member.setAsFemale();
+          }
+        }
+        catch (Exception ex) {
+          String errorMessage = "[WorkreportBusiness] Gender can not be retrieved. Message is. " + ex.getMessage();
+          System.err.println(errorMessage);
+          ex.printStackTrace(System.err);
+          throw new CreateException(errorMessage);
+        }
+        // address
+        try {
+          Address address = getUsersMainAddress(user);
+          if (address != null) {
+            String streetAddress = address.getStreetAddress();
+          if (streetAddress != null) {
+            member.setStreetName(streetAddress);
+          }
+          int postalCodeId = address.getPostalCodeID();
+          if (postalCodeId > 0) {
+            member.setPostalCodeID(postalCodeId);
+          }
+        }
+      }
+      catch (RemoteException ex) {
+        String message = "[WorkReportBusiness]: Can't retrieve  user's main address.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+        throw new RuntimeException(message);
+      }
+      member.store();
+	  return member;
+    }
+    
 	public WorkReportDivisionBoard createWorkReportDivisionBoard(int reportId, Group clubDivision, WorkReportGroup league) throws CreateException {
-		// get group business
+		// does the division board already exist?
+        try {
+          WorkReportDivisionBoardHome workReportDivisionBoardHome = getWorkReportDivisionBoardHome();
+          int workReportGroupId = ((Integer) league.getPrimaryKey()).intValue();
+          WorkReportDivisionBoard divisionBoard = 
+            workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
+          if (divisionBoard != null) {
+            // division board exist be sure that the league was added to the work report
+            WorkReport workReport = getWorkReportById(reportId);
+            try {
+              workReport.addLeague(league);
+              workReport.store();   
+            }
+            catch (IDORelationshipException ex) {
+              String message =
+                "[WorkReportBusiness]: Can't define realtion ship.";
+              System.err.println(message + " Message is: " + ex.getMessage());
+              ex.printStackTrace(System.err);
+              // do nothing
+            }
+          }
+        }
+        catch (FinderException ex) {
+          // work report division does not exist, go further, create it!
+        }
+        
+        // get group business
 		GroupBusiness groupBusiness = null;
 		try {
 			groupBusiness = getGroupBusiness();
@@ -531,36 +560,29 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			workReportDivisionBoard.setEmail(eMail);
 		}
 
-    // league
-    if (league != null) {
-      int pk = ((Integer) league.getPrimaryKey()).intValue();
-      workReportDivisionBoard.setWorKReportGroupID(pk);
-    }
-    // +++++++++++++++++++++++++++++++
-    // add league to work report group
-    // +++++++++++++++++++++++++++++++
-    WorkReport workReport = getWorkReportById(reportId);
-    try {
-      workReport.addLeague(league);
-    }
-    catch (IDORelationshipException ex) {
-      String message =
-        "[WorkReportBusiness]: Can't define realtion ship.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      // do nothing
-    }
-    workReport.store();   
-
-		// league
-		if (league != null) {
-			int pk = ((Integer)league.getPrimaryKey()).intValue();
-			workReportDivisionBoard.setWorKReportGroupID(pk);
-		}
-
-		workReportDivisionBoard.store();
-		return workReportDivisionBoard;
-	}
+        // league
+        if (league != null) {
+          int pk = ((Integer) league.getPrimaryKey()).intValue();
+          workReportDivisionBoard.setWorKReportGroupID(pk);
+        }
+        // +++++++++++++++++++++++++++++++
+        // add league to work report group
+        // +++++++++++++++++++++++++++++++
+        WorkReport workReport = getWorkReportById(reportId);
+        try {
+          workReport.addLeague(league);
+          workReport.store();   
+        }
+        catch (IDORelationshipException ex) {
+          String message =
+            "[WorkReportBusiness]: Can't define realtion ship.";
+          System.err.println(message + " Message is: " + ex.getMessage());
+          ex.printStackTrace(System.err);
+          // do nothing
+        }
+        workReportDivisionBoard.store();
+        return workReportDivisionBoard;
+      }
 
 	public WorkReport getWorkReportById(int id) {
 		try {
@@ -1977,6 +1999,21 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();
+      
+      // add ADA league to the work report
+      WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year);
+      try {
+        workReport.addLeague(adaGroup);
+        workReport.store();   
+      }
+      catch (IDORelationshipException ex) {
+        String message =
+          "[WorkReportBusiness]: Can't define realtion ship.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+        // do nothing
+      }
+
       boolean boardDataCreated = 
         createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
       boolean memberDataCreated = (isLeague || isRegionalUnion) ? 
