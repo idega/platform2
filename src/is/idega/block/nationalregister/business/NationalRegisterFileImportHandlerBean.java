@@ -777,7 +777,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			System.out.println("NationalRegisterImport : postalCode not found : '"+po+"'");
 			try {
 				group = cBiz.getOtherCommuneCreateIfNotExist().getGroup();
-				System.out.println("NationalRegisterImport : connecting po:'"+po+"' to group:'"+group.getName()+"'");
+				if(null!=group) {
+					System.out.println("NationalRegisterImport : connecting po:'"+po+"' to group:'"+group.getName()+"'");
+				}
 				postalToGroupMap.put(po, group);
 			}
 			catch (FinderException e) {
