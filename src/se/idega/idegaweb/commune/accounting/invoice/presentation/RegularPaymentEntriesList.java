@@ -120,7 +120,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
-	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
+//	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
 	
 	private static final String PAR_PK = "pk";	
 	private static final String PAR_DELETE_PK = "delete_pk";
@@ -141,7 +141,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		ACTION_SAVE = 8,
 		ACTION_CANCEL_NEW_EDIT = 9,
 		ACTION_OPFIELD_DETAILSCREEN = 10,
-		ACTION_OPFIELD_MAINSCREEN = 11;
+		ACTION_OPFIELD_MAINSCREEN = 11,
+		ACTION_SELECTED_PROVIDER = 12;
 			
 	private static final String PAR = "PARAMETER_";
 	private static final String 
@@ -154,6 +155,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
 		PAR_OPFIELD_MAINSCREEN = PAR + ACTION_OPFIELD_MAINSCREEN;
+	public static final String PAR_SELECTED_PROVIDER = PAR + ACTION_SELECTED_PROVIDER;
 	
 //	int ijk = 0;
 //	String searchPeopleAction = ""; 
@@ -214,7 +216,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 					break;	
 				
 				default:
-					handleDefaultAction(iwc, school, fromDate, toDate);				
+					handleEditAction(iwc, getNotStoredEntry(iwc));		
 					
 			}
 		}
@@ -567,6 +569,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
+		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
+		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
 		searcher.setToFormSubmit(true);
 
 		try{
@@ -598,6 +602,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		} catch(NumberFormatException ex){		}
 				
 		addDropDown(formTable, PAR_SELECTED_PROVIDER, KEY_PROVIDER, getProvidersForOperationalField(iwc), selectedProvider, "getSchoolName", 1, formTableRow++);
+		
 
 		if (errorMessage != null){
 			formTable.mergeCells(2, formTableRow, 10, formTableRow);
@@ -795,6 +800,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		table.mergeCells(1, row, 10, row);
+		
 		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		table.add(postingBlock, 1, row++);
 						
@@ -850,7 +856,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private RegularPaymentEntry getNotStoredEntry(IWContext iwc, Regulation reg, String[] posting) {
 		final IWContext _iwc = iwc;
 		final Regulation _reg = reg;
-		final String[] _posting = posting;		
+		final String[] _posting = posting;	
+
+		
+
 		
 		return new RegularPaymentEntry() {
 		
@@ -909,6 +918,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public String getOwnPosting() {
+//				try{
+//					return new PostingBlock(_iwc).getOwnPosting();				
+//				}catch(Exception ex){
+//					return "";
+//				}
+				
 				if (_posting != null && _posting.length >= 1){
 					return _posting[0];
 				}
@@ -916,6 +931,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public String getDoublePosting() {
+//				try{
+//					return new PostingBlock(_iwc).getDoublePosting();				
+//				}catch(Exception ex){
+//					return "";
+//				}			
 				if (_posting != null && _posting.length >= 2){
 					return _posting[1];
 				}					
