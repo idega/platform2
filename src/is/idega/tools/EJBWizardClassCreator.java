@@ -17,7 +17,8 @@ public class EJBWizardClassCreator {
   private ClassIntrospector introspector;
   private String baseName;
 
-  private String entityBeanClassSuffix = "Bean";
+  private String entityBeanClassSuffix = "BMPBean";
+
   private String factorySuperClass="com.idega.data.IDOFactory";
   private String remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
 
@@ -237,7 +238,8 @@ public class EJBWizardClassCreator {
     if(f.exists()){
       String testString = "public class "+this.getBaseName();
       try{
-        if(com.idega.util.FileSearch.doesFileContainString(f,testString)){
+        boolean isClassValid=true;
+        if(isClassValid){
           String newFileName = this.getEntityBeanName()+".java";
           com.idega.util.FileUtil.copyFile(f,newFileName);
         }
