@@ -20,8 +20,6 @@ import com.idega.block.building.data.Floor;
 import com.idega.block.building.data.FloorHome;
 import com.idega.block.building.data.Room;
 import com.idega.block.building.data.RoomHome;
-import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextFinder;
 import com.idega.business.IBOServiceBean;
 
 /**
