@@ -31,6 +31,7 @@ public class Dictionary extends CategoryBlock implements IWBlock {
   private int _numberOfColumns = 3;
 
   private boolean _styles = true;
+  private boolean _showCategoryName = true;
   private String _width;
   private String _textStyle;
   private String _headerStyle;
@@ -109,9 +110,11 @@ public class Dictionary extends CategoryBlock implements IWBlock {
       Iterator iter = collection.iterator();
       while (iter.hasNext()) {
 	ICCategory category = (ICCategory) iter.next();
-	table.setHeight(row,"16");
-	table.add(formatText(category.getName(),_headerStyle),1,row++);
-	table.setBackgroundImage(1,row++,_divider);
+	if ( _showCategoryName ) {
+	  table.setHeight(row,"16");
+	  table.add(formatText(category.getName(),_headerStyle),1,row++);
+	  table.setBackgroundImage(1,row++,_divider);
+	}
 
 	List words = new Vector(_dicBusiness.getWordHome().findAllWordsByCategory(((Integer)category.getPrimaryKey()).intValue()));
 	if ( words != null && words.size() > 0 ) {
@@ -163,6 +166,13 @@ public class Dictionary extends CategoryBlock implements IWBlock {
       Word word = _dicBusiness.getWord(_wordID);
       if ( word != null ) {
 	table.add(formatText(word.getWord(),_headerStyle),1,row++);
+	if ( word.getImageID() != -1 ) {
+	  Image image = _dicBusiness.getImage(word.getImageID());
+	    image.setHorizontalSpacing(8);
+	    image.setVerticalSpacing(4);
+	    image.setAlignment(Image.ALIGNMENT_RIGHT);
+	  table.add(image,1,row);
+	}
 	table.add(formatText(TextFormatter.formatText(word.getDescription(),1,Table.HUNDRED_PERCENT)),1,row++);
 	if ( _state != DictionaryBusiness.RANDOM_WORD )
 	  table.add(getBackLink(),1,row++);
@@ -316,6 +326,10 @@ public class Dictionary extends CategoryBlock implements IWBlock {
 
   public void setWidth(String width) {
     _width = width;
+  }
+
+  public void setShowCategoryName(boolean showName) {
+    _showCategoryName = showName;
   }
 
   private void setDefaultValues() {

@@ -1,5 +1,7 @@
 package com.idega.block.dictionary.business;
 
+import java.sql.SQLException;
+import com.idega.presentation.Image;
 import javax.ejb.*;
 import com.idega.core.data.ICCategory;
 import com.idega.core.business.CategoryFinder;
@@ -28,6 +30,7 @@ public class DictionaryBusiness {
 
   public static final String PARAMETER_WORD = "di_word";
   public static final String PARAMETER_DESCRIPTION = "di_desc";
+  public static final String PARAMETER_IMAGE_ID = "di_i_id";
 
   private static DictionaryBusiness instance;
 
@@ -62,7 +65,7 @@ public class DictionaryBusiness {
     }
   }
 
-  public void saveWord(int wordID,String categoryID,String wordName,String description) {
+  public void saveWord(int wordID,String categoryID,String wordName,String description,String imageID) {
     try {
       Word word = getWordHome().create();
       if ( wordID != -1 )
@@ -75,6 +78,14 @@ public class DictionaryBusiness {
 	int category = Integer.parseInt(categoryID);
 	if ( category != -1 )
 	  word.setCategoryID(category);
+      }
+      catch (NumberFormatException e) {
+      }
+
+      try {
+	int image = Integer.parseInt(imageID);
+	if ( image != -1 )
+	  word.setImageID(image);
       }
       catch (NumberFormatException e) {
       }
@@ -114,6 +125,15 @@ public class DictionaryBusiness {
       return (Word) collection.get(wordNumber);
     }
     return null;
+  }
+
+  public Image getImage(int imageID) {
+    try {
+      return new Image(imageID);
+    }
+    catch (SQLException e) {
+      return null;
+    }
   }
 
   public DropdownMenu getCategoryMenu() throws IDOException,FinderException,RemoteException {

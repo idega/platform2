@@ -25,15 +25,18 @@ public class WordBMPBean extends GenericEntity implements Word {
     addAttribute(getColumnCategoryID(), "Category", true, true, Integer.class,"many-to-one",ICCategory.class);
     addAttribute(getColumnWord(), "Name", true, true, String.class);
     addAttribute(getColumnDescription(), "Description", true, true, String.class,10000);
+    addAttribute(getColumnImage(), "Image", true, true, Integer.class,"many-to-one",ICFile.class);
+    setNullable(getColumnImage(),true);
   }
 
   public String getIDColumnName(){ return "DI_WORD_ID";}
 
   protected static String getEntityTableName(){ return "DI_WORD";}
 
-  protected static String getColumnCategoryID(){ return "BO_PUBLISHER_ID";}
-  protected static String getColumnWord(){ return "BOOK_NAME";}
-  protected static String getColumnDescription(){ return "REVIEW";}
+  protected static String getColumnCategoryID(){ return "WORD_CATEGORY_ID";}
+  protected static String getColumnWord(){ return "WORD";}
+  protected static String getColumnDescription(){ return "DESCRIPTION";}
+  protected static String getColumnImage(){ return "IC_FILE_ID";}
 
 
   public String getEntityName(){
@@ -62,6 +65,14 @@ public class WordBMPBean extends GenericEntity implements Word {
 
   public void setDescription(String description){
     setColumn(getColumnDescription(), description);
+  }
+
+  public int getImageID(){
+    return getIntColumnValue(getColumnImage());
+  }
+
+  public void setImageID(int imageID){
+    setColumn(getColumnImage(), imageID);
   }
 
   public Collection ejbFindAllWordsInCategories(int[] categories) throws FinderException {

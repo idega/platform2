@@ -69,6 +69,9 @@ public WordEditor(){
       word.setLength(24);
     TextArea description = new TextArea(DictionaryBusiness.PARAMETER_DESCRIPTION,54,9);
     DropdownMenu menu = getDictionaryBusiness().getCategoryMenu();
+    ImageInserter imageInsert = new ImageInserter(DictionaryBusiness.PARAMETER_IMAGE_ID);
+      imageInsert.setMaxImageWidth(130);
+      imageInsert.setHasUseBox(false);
 
     if ( _update ) {
       if ( _word.getWord() != null ) {
@@ -80,10 +83,14 @@ public WordEditor(){
       if ( _word.getCategoryID() != -1 ) {
 	menu.setSelectedElement(String.valueOf(_word.getCategoryID()));
       }
+      if ( _word.getImageID() != -1 ) {
+	imageInsert.setImageId(_word.getImageID());
+      }
     }
     addLeft(_iwrb.getLocalizedString("word","Word")+":",word,true);
     addLeft(_iwrb.getLocalizedString("description","Description")+":",description,true);
     addLeft(_iwrb.getLocalizedString("category","Category")+":",menu,true);
+    addRight(_iwrb.getLocalizedString("image","Image")+":",imageInsert,true,false);
 
     addHiddenInput(new HiddenInput(DictionaryBusiness.PARAMETER_WORD_ID,Integer.toString(_wordID)));
 
@@ -92,11 +99,13 @@ public WordEditor(){
   }
 
   private void saveWord(IWContext iwc) {
+    iwc.removeSessionAttribute(DictionaryBusiness.PARAMETER_IMAGE_ID);
     String name = iwc.getParameter(DictionaryBusiness.PARAMETER_WORD);
     String description = iwc.getParameter(DictionaryBusiness.PARAMETER_DESCRIPTION);
     String categoryID = iwc.getParameter(DictionaryBusiness.PARAMETER_CATEGORY_ID);
+    String imageID = iwc.getParameter(DictionaryBusiness.PARAMETER_IMAGE_ID);
 
-    getDictionaryBusiness().saveWord(_wordID,categoryID,name,description);
+    getDictionaryBusiness().saveWord(_wordID,categoryID,name,description,imageID);
 
     setParentToReload();
     close();
