@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.63 2004/06/24 15:20:17 aron Exp $
+ * $Id: CampusAllocator.java,v 1.64 2004/06/24 21:32:38 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,12 +29,14 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
@@ -42,6 +44,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationHome;
+import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.Apartment;
@@ -80,6 +83,7 @@ import com.idega.util.LocaleUtil;
  */
 public class CampusAllocator extends CampusBlock implements Campus {
 	
+	private static final String PRM_ALLOCATE = "allocate";
 	private static final String COMPLEX_ID = "cplx_id";
 	private static final String TYPE_ID = "type_id";
 	private int acceptanceSeconds = 60 * 60 * 24 * 3; // default 3 days
@@ -108,6 +112,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	private String sGlobalStatus = "S";
 	protected String styleAttribute = "font-size: 8pt";
 	private SystemProperties SysProps = null;
+	private Map subjectMap = null;
+	
 	public CampusAllocator() {
 		LightColor = "#D7DADF";
 		MiddleColor = "#9fA9B3";
@@ -154,8 +160,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		if (isAdmin) {
 			if (typeID!=null && complexID!=null && typeID.intValue() > 0 && complexID.intValue() > 0) {
 				// Allocate apartment to an applicant
-				if (iwc.getParameter("allocate") != null) {
-					Integer applicantID = Integer.valueOf(iwc.getParameter("allocate"));
+				if (iwc.getParameter(PRM_ALLOCATE) != null) {
+					Integer applicantID = Integer.valueOf(iwc.getParameter(PRM_ALLOCATE));
 					Integer waitinglistID = new Integer(-1);
 					if (iwc.isParameterSet("wl_id"))
 						waitinglistID = Integer.valueOf(iwc.getParameter("wl_id"));
@@ -296,7 +302,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 	private Link getAllocateLink(Applicant applicant) {
 		Link L = new Link(getBundle().getImage("red.gif"));
-		L.addParameter("allocate", applicant.getPrimaryKey().toString());
+		L.addParameter(PRM_ALLOCATE, applicant.getPrimaryKey().toString());
 		L.setToolTip(localize("tooltip_nr_alloc_create", "Allocate"));
 		if (pTypeId != null && pComplexId != null) {
 			L.addParameter(pTypeId);
@@ -691,7 +697,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 
 	private Link getAllocateLink(int id) {
 		Link L = new Link(getBundle().getImage("red.gif"));
-		L.addParameter("allocate", String.valueOf(id));
+		L.addParameter(PRM_ALLOCATE, String.valueOf(id));
 		L.setToolTip(localize("tooltip_nr_alloc_create","Allocate"));
 		if (pTypeId != null && pComplexId != null) {
 			L.addParameter(pTypeId);
@@ -755,7 +761,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				}
 			}
 			else{
-				L.addParameter("allocate", waitingList.getApplicantId().toString());
+				L.addParameter(PRM_ALLOCATE, waitingList.getApplicantId().toString());
 				number.setFontColor("#FF0000");
 			}
 			L.addParameter("applicant", waitingList.getApplicantId().toString());
@@ -1164,6 +1170,34 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		else
 			return SysProps.getContractDate();
 	}
+	
+	private String getSubjectColor(Integer subjectId){
+		try {
+			if(subjectMap==null){
+				Collection subjects = campusService.getApplicationService().getSubjectHome().findNonExpired();
+				subjectMap = new HashMap(subjects.size());
+				for (Iterator iter = subjects.iterator(); iter.hasNext();) {
+					ApplicationSubject subject = (ApplicationSubject) iter.next();
+					subjectMap.put((Integer)subject.getPrimaryKey(),subject);
+				}
+			}
+			if(subjectMap.containsKey(subjectId)){
+				return ((ApplicationSubject)subjectMap.get(subjectId)).getExtraAttribute();
+			}
+			else{
+				ApplicationSubject subject = campusService.getApplicationService().getSubjectHome().findByPrimaryKey(subjectId);
+				return subject.getExtraAttribute();
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
 	private PresentationObject getWaitingList(IWContext iwc, Integer conID)
 		throws FinderException, RemoteException {
 		Image registerImage = getBundle().getImage("/pen.gif", localize("sign", "Sign"));
@@ -1233,6 +1267,12 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						if (application.getSubjectId() == 15) {
 							TextFontColor = "#00CC00";
 						}*/
+						if(application!=null){
+							String subjectColor = getSubjectColor(new Integer(application.getSubjectId()));
+							System.out.println(application.getSubjectId()+ " subjectcolor = "+subjectColor);
+							if(subjectColor!=null)
+								TextFontColor = subjectColor;
+						}
 						//Frame.add(getText(String.valueOf(numberOnList)), col++, row);
 						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey().toString(),numberOnList,typeID.intValue(), complexID.intValue(),listSize), col++, row);
 						numberOnList++;
@@ -1393,5 +1433,11 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	
 	public Text getHeader(int text){
 		return getHeader(String.valueOf(text));
+	}
+	
+	public Text getText(String text){
+		Text t = super.getText(text);
+		t.setFontColor(text);
+		return t;
 	}
 }
