@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
