@@ -75,7 +75,21 @@ public class ServiceDesigner extends TravelManager {
     if (pCatType != null) {
       PRODUCT_CATEGORY_TYPE = pCatType;
     }else {
-      PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
+			Collection coll;
+			try {
+				coll = supplier.getProductCategories();
+				Iterator iter = coll.iterator();
+				ProductCategory pCat;
+				String type;
+				if (iter.hasNext()) {
+				  pCat = (ProductCategory) iter.next();
+				  PRODUCT_CATEGORY_TYPE = pCat.getCategoryType();
+				}
+			} catch (IDORelationshipException e) {
+				PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     }
 
     String id = iwc.getParameter(this.parameterUpdateServiceId);
