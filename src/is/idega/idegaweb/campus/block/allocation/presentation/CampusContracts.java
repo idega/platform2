@@ -15,6 +15,7 @@ import java.util.Iterator;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
@@ -406,6 +407,7 @@ public class CampusContracts extends CampusBlock {
 	}
 	private PresentationObject getApartmentTable(Apartment A) {
 		Table T = new Table();
+		ApartmentType type = A.getApartmentType();
 		Floor F = A.getFloor();
 		Building B = F.getBuilding();
 		Complex C = B.getComplex();
@@ -413,6 +415,8 @@ public class CampusContracts extends CampusBlock {
 		T.add(getText(F.getName()), 2, 1);
 		T.add(getText(B.getName()), 3, 1);
 		T.add(getText(C.getName()), 4, 1);
+		if(type.getAbbreviation()!=null)
+			T.add(" ("+type.getAbbreviation()+")",5,1);
 		return T;
 	}
 	private String getStatus(String status) {
