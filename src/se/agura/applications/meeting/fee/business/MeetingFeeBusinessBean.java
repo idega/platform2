@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.17 2005/03/11 13:38:35 anna Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.18 2005/03/14 09:18:57 anna Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -295,7 +295,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 					if (participant.getPersonalID() != null) {
 						participants.append(PersonalIDFormatter.format(participant.getPersonalID(), locale));
 					}
-					participants.append("\t").append(hours).append(":").append(minutes == 0 ? "00" : String.valueOf(minutes)).append("\t").append(amount);
+					participants.append("\t").append(hours).append(":").append(minutes == 0 ? "00" : String.valueOf(minutes)).append("\t").append("\tSEK\t").append(amount);
 					if (iter.hasNext()) {
 						participants.append("\n");
 					}
@@ -307,7 +307,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 
 			Object[] arguments = { user.getName(), userParish.getName(), parish.getName(), participantGroup.getName(), from.getLocaleDate(locale, IWTimestamp.SHORT), comment, speakerName, location, participants.toString() };
 
-			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate:\t {4}\nMeeting group:\t {3}\nLocation:\t {5}\nSpeaker: \t{6}\nComment:\t {7}\n\nParticipants:\nSirname, Name Personal number, hours, SEK\n{8}"), arguments), null);
+			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate:\t {4}\nMeeting group:\t {3}\nLocation:\t {5}\nSpeaker: \t{6}\nComment:\t {7}\n\nParticipants:\n{8}"), arguments), null);
 			}
 	}
 
