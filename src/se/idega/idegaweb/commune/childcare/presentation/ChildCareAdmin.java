@@ -366,18 +366,21 @@ public class ChildCareAdmin extends ChildCareBlock {
 		IWTimestamp stamp = new IWTimestamp();
 		
 		DateInput from = (DateInput) getStyledInterface(new DateInput(getSession().getParameterFrom(), true));
+		table.add(from, 3, 2);		
 		from.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));
 		from.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 		if (getSession().getFromTimestamp() != null)
 			from.setDate(getSession().getFromTimestamp().getDate());
 
 		DateInput to = (DateInput) getStyledInterface(new DateInput(getSession().getParameterTo(), true));
+		table.add(to, 5, 2);		
 		to.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));
 		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 		if (getSession().getToTimestamp() != null)
 			to.setDate(getSession().getToTimestamp().getDate());
 
 		DropdownMenu sortBy = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterSortBy()));
+		table.add(sortBy, 1, 2);		
 		sortBy.setAsNotEmpty(localize("child_care.sort_can_not_be_empty","You must select a sorting method"), "-1");
 		sortBy.addMenuElement(-1, localize("child_care.sort","- Sort -"));
 		sortBy.addMenuElement(SORT_DATE_OF_BIRTH, localize("child_care.date_of_birth","Date of birth"));
@@ -395,9 +398,6 @@ public class ChildCareAdmin extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.from","From")+":"), 3, 1);		
 		table.add(getSmallHeader(localize("child_care.to","To")+":"), 5, 1);		
 
-		table.add(sortBy, 1, 2);		
-		table.add(from, 3, 2);		
-		table.add(to, 5, 2);		
 		table.add(submit, 7, 2);
 		
 		return form;
