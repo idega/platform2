@@ -57,8 +57,10 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findStudentsBySchoolAndSeasonAndYear(int p0,int p1,int p2) throws java.rmi.RemoteException;
  public java.util.Collection findStudentsInClass(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findStudentsInSchool(int p0,int p1) throws java.rmi.RemoteException;
- public java.util.Collection findStudentsInSchoolByDate(int p0,int p1,java.sql.Date p2,boolean p3) throws java.rmi.RemoteException;
  public java.util.Collection findStudentsInSchoolByDate(int p0,int p1,java.sql.Date p2) throws java.rmi.RemoteException;
+ public java.util.Collection findStudentsInSchoolByDate(int p0,int p1,java.lang.String p2,java.sql.Date p3) throws java.rmi.RemoteException;
+ public java.util.Collection findStudentsInSchoolByDate(int p0,int p1,java.sql.Date p2,boolean p3) throws java.rmi.RemoteException;
+ public java.util.Collection findStudentsInSchoolByDate(int p0,int p1,java.lang.String p2,java.sql.Date p3,boolean p4) throws java.rmi.RemoteException;
  public java.util.Collection getAssistantHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategory getCategoryChildcare() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategory getCategoryCollege() throws java.rmi.RemoteException;
@@ -104,6 +106,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolYearPlaces getSchoolYearPlaces(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearPlacesHome getSchoolYearPlacesHome() throws java.rmi.RemoteException;
  public boolean hasEditPermission(com.idega.user.data.User p0,com.idega.block.school.data.School p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasAfterSchoolActivities(int p0) throws java.rmi.RemoteException;
  public boolean hasSchoolRelationToYear(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1) throws java.rmi.RemoteException;
  public void invalidateSchoolClass(int p0) throws java.rmi.RemoteException;
  public void removeProvider(int p0)throws javax.ejb.RemoveException, java.rmi.RemoteException;

@@ -1326,8 +1326,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date, boolean showNotYetActive) {
+		return findStudentsInSchoolByDate(schoolID, schoolClassID, null, date, showNotYetActive);
+	}
+	
+	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date, boolean showNotYetActive) {
 		try {
-			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date, showNotYetActive);
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, schoolCategory, date, showNotYetActive);
 		}
 		catch (FinderException e) {
 			return new Vector();
@@ -1335,8 +1339,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) {
+		return findStudentsInSchoolByDate(schoolID, schoolClassID, null, date);
+	}
+	
+	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date) {
 		try {
-			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date);
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, schoolCategory, date);
 		}catch(FinderException e) {
 			return new Vector();
 		}
@@ -1839,6 +1847,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		try {
 			int relations = getSchoolHome().getNumberOfRelations(school, schoolYear);
 			if (relations > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException ie) {
+			return false;
+		}
+	}
+	
+	public boolean hasAfterSchoolActivities(int schoolID) {
+		try {
+			int types = getSchoolHome().getNumberOfFreetimeTypes(schoolID);
+			if (types > 0)
 				return true;
 			return false;
 		}
