@@ -1716,6 +1716,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
 		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, typeID, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();
 	}
 	
