@@ -7,8 +7,6 @@ import com.idega.data.IDOLegacyEntity;
 
 import javax.ejb.FinderException;
 
-import sun.security.krb5.internal.crypto.g;
-
 import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 
 import com.idega.idegaweb.IWApplicationContext;
