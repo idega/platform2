@@ -42,8 +42,6 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(UserUpdateClubDivisionTemplate.class, UpdateClubDivisionTemplate.class);
 		repository.addImplementor(UserCashierWindow.class, CashierWindow.class);
 		repository.addImplementor(UserClubMemberExchangeWindow.class, ClubMemberExchangeWindow.class);
-		repository.addImplementor(UserNationalRegisterImportFile.class,NationalRegisterImportFile.class);
-		repository.addImplementor(UserNationalRegisterFileImportHandler.class, NationalRegisterFileImportHandler.class);
 		repository.addImplementor(UserWorkReportWindow.class, WorkReportWindow.class);
 	}
 	
