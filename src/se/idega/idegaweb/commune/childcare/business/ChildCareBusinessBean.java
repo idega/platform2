@@ -2633,6 +2633,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		Phone phone = getUserBusiness().getHomePhone(parent1);
 
 		School provider = application.getProvider();
+		String addressProvider = provider.getSchoolAddress();
 		User parent2 = null;
 		Collection parents = getUserBusiness().getParentsForChild(child);
 		if (parents != null) {
@@ -2661,6 +2662,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				addressString += ", " + code.getPostalAddress();
 			}
 		}
+		
+		String addressStreetString = "-";
+		if (address != null) {
+			addressStreetString = address.getStreetAddress();			
+		}
+		
+		String addressPostalString = "-";
+		if (address != null) {
+			PostalCode code = address.getPostalCode();
+			if (code != null) {
+				addressPostalString = code.getPostalAddress();
+			}
+		}
 
 		String phoneString = "-";
 		if (phone != null)
@@ -2685,6 +2699,93 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		peer.setContent(application.getPreSchool());
 		map.put(peer.getAlias(), peer);
 
+		peer = new XmlPeer(ElementTags.CHUNK, "ctChange");
+		if (isChange) {
+			peer.setContent("x");
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "ctNew");
+		if (!isChange) {
+			peer.setContent("x");
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
+		
+		String careTimeTemp = "  ";
+		peer = new XmlPeer(ElementTags.CHUNK, "careTimeFSKHEL");
+		if (careTime != null && isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+					if (careTime.equals("FSKHEL"))
+						careTimeTemp = "x";
+					else
+						careTimeTemp = "  ";
+			}
+			peer.setContent(String.valueOf(careTimeTemp));
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "careTimeFSKDEL");
+		if (careTime != null && isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+					if (careTime.equals("FSKDEL"))
+						careTimeTemp = "x";
+					else
+						careTimeTemp="  ";
+			}
+			peer.setContent(String.valueOf(careTimeTemp));
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "careTimeFSKDEL4-5A");
+		if (careTime != null && isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+					if (careTime.equals("FSKDEL4-5A"))
+						careTimeTemp = "x";
+					else
+						careTimeTemp="  ";
+			}
+			peer.setContent(String.valueOf(careTimeTemp));
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "careTimeFSKHEL4-5");
+		if (careTime != null && isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+					if (careTime.equals("FSKHEL4-5"))
+						careTimeTemp = "x";
+					else
+						careTimeTemp="  ";
+			}
+			peer.setContent(String.valueOf(careTimeTemp));
+		}
+		else
+			peer.setContent("  ");
+		map.put(peer.getAlias(), peer);
+		
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
 		if (careTime != null && !isChange) {
 			try {
@@ -2738,7 +2839,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(provider.getSchoolName()));
 		peer.setContent(provider.getSchoolName());
 		map.put(peer.getAlias(), peer);
-
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "providerAddress");
+		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(provider.getSchoolName()));
+		peer.setContent(provider.getSchoolAddress());
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "providerPostal");
+		peer.setContent(provider.getSchoolZipCode() + " " + provider.getSchoolZipArea());
+		map.put(peer.getAlias(), peer);
+		
 		peer = new XmlPeer(ElementTags.CHUNK, "parent1");
 		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(parent1Name));
 		peer.setContent(parent1Name);
@@ -2760,6 +2870,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		peer = new XmlPeer(ElementTags.CHUNK, "address");
 		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(addressString));
 		peer.setContent(addressString);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "postalAddress");
+		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(addressString));
+		peer.setContent(addressPostalString);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "streetAddress");
+		// peer.setContent(TextSoap.convertSpecialCharactersToNumeric(addressString));
+		peer.setContent(addressStreetString);
 		map.put(peer.getAlias(), peer);
 
 		peer = new XmlPeer(ElementTags.CHUNK, "phone");
