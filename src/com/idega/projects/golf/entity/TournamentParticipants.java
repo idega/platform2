@@ -18,6 +18,7 @@ public class TournamentParticipants extends GolfEntity{
 
 	public void initializeAttributes(){
 		addAttribute("member_id","númer meðlims",true,true,"java.lang.Integer");
+		addAttribute("social_security_number","Kennitala",true,true,"java.lang.String");
 		addAttribute("first_name","Fornafn",true,true,"java.lang.String");
 		addAttribute("middle_name","Miðnafn",true,true,"java.lang.String");
 		addAttribute("last_name","Eftirnafn",true,true,"java.lang.String");
@@ -39,6 +40,10 @@ public class TournamentParticipants extends GolfEntity{
 
 	public int getMemberID() {
 		return getIntColumnValue("member_id");
+	}
+
+	public String getSocialSecurityNumber(){
+		return (String) getColumnValue("social_security_number");
 	}
 
 	public String getName(){

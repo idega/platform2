@@ -18,12 +18,14 @@ public class DisplayScores extends GolfEntity{
 
 	public void initializeAttributes(){
 		addAttribute("member_id","númer meðlims",true,true,"java.lang.Integer");
+		addAttribute("social_security_number","Kennitala",true,true,"java.lang.String");
 		addAttribute("first_name","Fornafn",true,true,"java.lang.String");
 		addAttribute("middle_name","Miðnafn",true,true,"java.lang.String");
 		addAttribute("last_name","Eftirnafn",true,true,"java.lang.String");
 		addAttribute("abbrevation", "Skammstöfun", true, true, "java.lang.String");
 		addAttribute("tournament_id","Mót",true,true,"java.lang.Integer");
 		addAttribute("tournament_group_id","Mótahópur",true,true,"java.lang.Integer");
+		addAttribute("tournament_handicap","Leikforgjöf",true,true,"java.lang.Float");
 		addAttribute("holes_played","Spilaðar holur",true, true , "java.lang.Integer");
 		addAttribute("strokes_without_handicap","Heildar högg án forgjafar",true, true , "java.lang.Integer");
 		addAttribute("strokes_with_handicap","Heildar högg með forgjöf",true, true , "java.lang.Integer");
@@ -31,8 +33,12 @@ public class DisplayScores extends GolfEntity{
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 	}
 
-	public int getMemberID() {
+  	public int getMemberID() {
 		return getIntColumnValue("member_id");
+	}
+
+	public String getSocialSecurityNumber(){
+		return (String) getColumnValue("social_security_number");
 	}
 
 	public String getName(){
@@ -80,6 +86,10 @@ public class DisplayScores extends GolfEntity{
 
 	public int getTournamentGroupID(){
 		return getIntColumnValue("tournament_group_id");
+	}
+
+	public float getTournamentHandicap(){
+		return getFloatColumnValue("tournament_handicap");
 	}
 
 	public int getHolesPlayed(){
