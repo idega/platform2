@@ -65,9 +65,9 @@ public class EJBWizardClassCreator {
     String codeString="";
 
     // -- generate package name if there is one --
-    if (!this.introspector.getPackage().equals(""))
+    if (!this.introspector.getPackage().equals("")){
       codeString+="package "+this.introspector.getPackage()+";\n\n";
-
+    }
       // -- ejb import statement --
       codeString+="import javax.ejb.*;\n";
 
@@ -77,7 +77,10 @@ public class EJBWizardClassCreator {
       Class[] superInterfaces = this.introspector.getImplementedInterfaces();
       if(superInterfaces!=null){
         for (int i = 0; i < superInterfaces.length; i++) {
-          codeString+=superInterfaces[i].getName();
+          String interfaceName = superInterfaces[i].getName();
+          if(!getRemoteInterfaceSuperInterface().equals(interfaceName)){
+            codeString+=","+interfaceName;
+          }
         }
 
       }
@@ -110,7 +113,11 @@ public class EJBWizardClassCreator {
   }
 
   public String getHome(){
-    String codeString="\npublic interface ";
+    String codeString="";
+    if (!this.introspector.getPackage().equals("")){
+      codeString+="package "+this.introspector.getPackage()+";\n\n";
+    }
+    codeString+="\npublic interface ";
     codeString=codeString+getHomeName()+ " extends com.idega.data.IDOHome\n{\n";
 
     /*String[] constructors=this.introspector.getConstructors();
@@ -126,17 +133,17 @@ public class EJBWizardClassCreator {
         if(throwRemoteExceptionsInHome()){
           codeString+=", java.rmi.RemoteException";
         }
-        codeString+="\n;";
+        codeString+=";\n";
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
         if(throwRemoteExceptionsInHome()){
           codeString+=", java.rmi.RemoteException";
         }
-        codeString+="\n;";
+        codeString+=";\n";
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Integer id) throws javax.ejb.FinderException";
         if(throwRemoteExceptionsInHome()){
           codeString+=", java.rmi.RemoteException";
         }
-        codeString+="\n;";
+        codeString+=";\n";
 
     codeString +="\n}";
     return codeString;
@@ -147,7 +154,12 @@ public class EJBWizardClassCreator {
   //}
 
   public String getFactory(){
-    String codeString="\npublic class ";
+    String codeString="";
+    if (!this.introspector.getPackage().equals("")){
+      codeString+="package "+this.introspector.getPackage()+";\n\n";
+    }
+
+    codeString+="\npublic class ";
     codeString=codeString+getFactoryName()+ " extends "+getFactorySuperClass()+" implements "+getHomeName()+"\n{\n";
 
     /*String[] constructors=this.introspector.getConstructors();
@@ -161,24 +173,24 @@ public class EJBWizardClassCreator {
       }
     }*/
 
-        codeString+=" Class getEntityInterfaceClass()";
+        codeString+=" protected Class getEntityInterfaceClass()";
         codeString+="{\n";
         codeString+="  return "+this.introspector.getShortName()+".class;";
         codeString+="\n }\n";
 
         codeString+=" public "+this.introspector.getShortName()+" create() throws javax.ejb.CreateException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.create(getEntityInterfaceClass());";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoCreate(getEntityInterfaceClass());";
         codeString+="\n }\n";
 
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.findByPrimaryKey(getEntityInterfaceClass(),id);";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
         codeString+="\n }\n";
 
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Integer id) throws javax.ejb.FinderException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.findByPrimaryKey(getEntityInterfaceClass(),id);";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
         codeString+="\n }\n";
 
     codeString +="\n}";

@@ -148,7 +148,7 @@ public class ClassIntrospector {
   //}
 
   public String getPackage(){
-    return sourceClass.getPackage().toString();
+    return sourceClass.getPackage().getName();
   }
 
   public String getShortName(){
