@@ -129,7 +129,7 @@ public class MyInbox extends EHealthBlock {
 		
 		
 		ArrayList info = new ArrayList();
-		if (user !=null && user.getGroupID() == 142 ) {
+		if (user !=null && user.getGroupID() == 142) {
 			info.add(localize(keyMessage1U1, "Message"));
 			info.add(localize(keyMessage2U2, "Message"));
 			info.add(localize(keyMessage3U1, "Message"));
@@ -228,7 +228,7 @@ public class MyInbox extends EHealthBlock {
 		ArrayList senders = new ArrayList();
 		ArrayList careunits = new ArrayList();
 		
-		if (user !=null && user.getGroupID() == 142 ) {
+		if (user !=null && user.getGroupID() == 142) {
 			cases.add("Ont i foten");
 			cases.add("Halsont");
 			cases.add("Böld på smalb..");

@@ -95,6 +95,7 @@ public class SendMessage extends EHealthBlock {
 			dropDr.addMenuElementFirst("-1", "Till");
 			dropDr.addMenuElement("1", "Dr Magne Syhl");
 			dropDr.addMenuElement("2", "Dr Alve Don");
+			dropDr.addMenuElement("2", "Dr Inga Pren");
 			dropDr.setStyleClass("lul_form");
 			table.mergeCells(2, row, 4, row);
 			table.setWidth(1, row, "10");
