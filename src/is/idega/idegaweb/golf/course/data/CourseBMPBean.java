@@ -50,13 +50,17 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		addAttribute(COLUMN_TYPE, "The course's type", true, true, String.class, 255);
 		addAttribute(COLUMN_NUMBER_OF_HOLES, "Number of holes", true, true, Integer.class);
 		addAttribute(COLUMN_VALID, "Is valid", true, true, Boolean.class);
-		addOneToOneRelationship(COLUMN_CLUB_ID, Group.class);
+		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
 	}
 	
 	//Getters
 	public String getCourseName() {
 		return getStringColumnValue(COLUMN_NAME);
-	}	
+	}
+	
+	public String getPrepps() {
+		return null;
+	}
 
 	public String getCourseType() {
 		return getStringColumnValue(COLUMN_TYPE);
@@ -70,8 +74,8 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return getBooleanColumnValue(COLUMN_VALID, true);
 	}	
 
-	public int getClubID() {
-		return getIntColumnValue(COLUMN_CLUB_ID);
+	public Object getClubID() {
+		return getColumnValue(COLUMN_CLUB_ID);
 	}	
 
 	public Group getClub() {
@@ -95,12 +99,12 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		setColumn(COLUMN_VALID, isValid);
 	}	
 
-	public void setClubID(int clubID) {
+	public void setClubID(Object clubID) {
 		setColumn(COLUMN_CLUB_ID, clubID);
 	}	
 
 	public void setClub(Group club) {
-		setColumn(COLUMN_CLUB_ID, club.getPrimaryKey());
+		setColumn(COLUMN_CLUB_ID, club);
 	}
 	
 	//Find methods
@@ -111,9 +115,9 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return this.idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbFindCoursesByClub(Object clubPrimaryKey) throws FinderException {
+	public Collection ejbFindCoursesByClub(Object clubID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey).appendOrderBy(COLUMN_NAME);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID).appendOrderBy(COLUMN_NAME);
 
 		return this.idoFindPKsByQuery(query);
 	}
@@ -125,9 +129,9 @@ public class CourseBMPBean extends GenericEntity implements Course {
 		return this.idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindCourseByClubAndName(Object clubPrimaryKey, String name) throws FinderException {
+	public Integer ejbFindCourseByClubAndName(Object clubID, String name) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey).appendAndEqualsQuoted(COLUMN_NAME, name);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID).appendAndEqualsQuoted(COLUMN_NAME, name);
 
 		return (Integer) idoFindOnePKByQuery(query);
 	}

@@ -87,24 +87,24 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 		return (Date) getColumnValue(COLUMN_VALID_TO);
 	}
 
-	public int getCourseID() {
-		return getIntColumnValue(COLUMN_COURSE_ID);
+	public Object getCourseID() {
+		return getColumnValue(COLUMN_COURSE_ID);
 	}
 
 	public Course getCourse() {
 		return (Course) getColumnValue(COLUMN_COURSE_ID);
 	}
 	
-	public int getTeeColorID() {
-		return getIntColumnValue(COLUMN_TEE_COLOR_ID);
+	public Object getTeeColorID() {
+		return getColumnValue(COLUMN_TEE_COLOR_ID);
 	}
 
 	public TeeColor getTeeColor() {
 		return (TeeColor) getColumnValue(COLUMN_TEE_COLOR_ID);
 	}
 	
-	public int getGenderID() {
-		return getIntColumnValue(COLUMN_GENDER_ID);
+	public Object getGenderID() {
+		return getColumnValue(COLUMN_GENDER_ID);
 	}
 
 	public Gender getGender() {
@@ -136,45 +136,52 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 		setColumn(COLUMN_VALID_TO, validTo);
 	}
 
-	public void setCourseID(int courseID) {
+	public void setCourseID(Object courseID) {
 		setColumn(COLUMN_COURSE_ID, courseID);
 	}
 	
-	public void setTeeColorID(int teeColorID) {
+	public void setTeeColorID(Object teeColorID) {
 		setColumn(COLUMN_TEE_COLOR_ID, teeColorID);
 	}
 	
-	public void setGenderID(int genderID) {
+	public void setGenderID(Object genderID) {
 		setColumn(COLUMN_GENDER_ID, genderID);
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByCourse(Object coursePrimaryKey) throws FinderException {
+	public Collection ejbFindAllByCourse(Object courseID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
 		return idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindTeeByCourse(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey) throws FinderException {
+	public Integer ejbFindTeeByCourse(Object courseID, Object teeColorID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
-		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey).appendAndEquals(COLUMN_GENDER_ID, genderPrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public Collection ejbFindAllByCourseAndDate(Object coursePrimaryKey, Date date) throws FinderException {
+	public Integer ejbFindTeeByCourse(Object courseID, Object teeColorID, Object genderID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID).appendAndEquals(COLUMN_GENDER_ID, genderID);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+	
+	public Collection ejbFindAllByCourseAndDate(Object courseID, Date date) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID);
 		query.appendAnd().append(COLUMN_VALID_FROM).appendGreaterThanOrEqualsSign().append(date);
 		query.appendAnd().appendLeftParenthesis().append(COLUMN_VALID_TO).appendLessThanOrEqualsSign().append(date);
 		query.appendOr().append(COLUMN_VALID_TO).appendIsNull().appendRightParenthesis();
 		return idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindTeeByCourseAndDate(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey, Date date) throws FinderException {
+	public Integer ejbFindTeeByCourseAndDate(Object courseID, Object teeColorID, Object genderID, Date date) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
-		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey).appendAndEquals(COLUMN_GENDER_ID, genderPrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID).appendAndEquals(COLUMN_GENDER_ID, genderID);
 		query.appendAnd().append(COLUMN_VALID_FROM).appendGreaterThanOrEqualsSign().append(date);
 		query.appendAnd().appendLeftParenthesis().append(COLUMN_VALID_TO).appendLessThanOrEqualsSign().append(date);
 		query.appendOr().append(COLUMN_VALID_TO).appendIsNull().appendRightParenthesis();

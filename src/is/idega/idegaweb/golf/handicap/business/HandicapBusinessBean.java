@@ -11,12 +11,15 @@ import is.idega.idegaweb.golf.handicap.data.Strokes;
 import is.idega.idegaweb.golf.handicap.data.StrokesHome;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 
 /**
@@ -24,24 +27,34 @@ import com.idega.business.IBOServiceBean;
  */
 public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusiness {
 
-	protected ScorecardHome getScorecardHome() throws RemoteException {
-		return (ScorecardHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Scorecard.class);
+	protected ScorecardHome getScorecardHome() {
+		try {
+			return (ScorecardHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Scorecard.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
-	protected StrokesHome getStrokesHome() throws RemoteException {
-		return (StrokesHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Strokes.class);
+	protected StrokesHome getStrokesHome() {
+		try {
+			return (StrokesHome) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Strokes.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
-	public Scorecard getScorecard(Object scorecardPrimaryKey) throws RemoteException, FinderException {
-		return getScorecardHome().findByPrimaryKey(scorecardPrimaryKey);
+	public Scorecard getScorecard(Object scorecardID) throws FinderException {
+		return getScorecardHome().findByPrimaryKey(scorecardID);
 	}
 
-	public Collection getScorecardsByUser(Object userPrimaryKey) throws RemoteException, FinderException {
-		return getScorecardHome().findAllByUser(userPrimaryKey);
+	public Collection getScorecardsByUser(Object userID) throws FinderException {
+		return getScorecardHome().findAllByUser(userID);
 	}
 
-	public Collection getStrokes(Object scorecardPrimaryKey) throws RemoteException, FinderException {
-		return getStrokesHome().findAllByScorecard(scorecardPrimaryKey);
+	public Collection getStrokes(Object scorecardID) throws FinderException {
+		return getStrokesHome().findAllByScorecard(scorecardID);
 	}
 
 	public int getCourseHandicap(float handicap, Tee tee) {
@@ -62,10 +75,59 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 			return maxHandicap;
 		return courseHandicap;
 	}
-
-	public void updateScorecard(Object scorecardPrimaryKey) throws RemoteException {
+	
+	public boolean storeScorecard(Object scorecardID, Object userID, Object teeID, float handicap, int totalPoints, int totalStrokes, Timestamp datePlayed) {
+		Scorecard scorecard = null;
 		try {
-			Scorecard scorecard = getScorecardHome().findByPrimaryKey(scorecardPrimaryKey);
+			scorecard = getScorecardHome().findByPrimaryKey(scorecardID);
+		}
+		catch (FinderException fe) {
+			try {
+				scorecard = getScorecardHome().create();
+			}
+			catch (CreateException ce) {
+				return false;
+			}
+		}
+		
+		scorecard.setHandicapBefore(handicap);
+		scorecard.setTeeID(teeID);
+		scorecard.setTotalPoints(totalPoints);
+		scorecard.setTotalStrokes(totalStrokes);
+		scorecard.setUserID(userID);
+		scorecard.setDatePlayed(datePlayed);
+		scorecard.store();
+		
+		return true;
+	}
+	
+	public boolean storeStrokes(Object scorecardID, Object holeID, int strokes, int points, int putts, boolean hitFairway, boolean greenInRegulation) {
+		Strokes stroke = null;
+		try {
+			stroke = getStrokesHome().findStrokesByScorecardAndHole(scorecardID, holeID);
+		}
+		catch (FinderException fe) {
+			try {
+				stroke = getStrokesHome().create(scorecardID, holeID);
+			}
+			catch (CreateException ce) {
+				return false;
+			}
+		}
+		
+		stroke.setStrokes(strokes);
+		stroke.setPoints(points);
+		stroke.setPutts(putts);
+		stroke.setHitFairway(hitFairway);
+		stroke.setGreenInRegulation(greenInRegulation);
+		stroke.store();
+		
+		return true;
+	}
+
+	public void updateScorecard(Object scorecardID) {
+		try {
+			Scorecard scorecard = getScorecardHome().findByPrimaryKey(scorecardID);
 			updateScorecard(scorecard);
 		}
 		catch (FinderException e) {
@@ -73,7 +135,7 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 		}
 	}
 	
-	public void updateScorecard(Scorecard scorecard) throws RemoteException {
+	public void updateScorecard(Scorecard scorecard) {
 		try {
 			Tee tee = scorecard.getTee();
 			int courseHandicap = getCourseHandicap(scorecard.getHandicapBefore(), tee.getSlope(), tee.getCourseRating(), tee.getPar());

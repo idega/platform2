@@ -8,6 +8,22 @@ public class StrokesHomeImpl extends com.idega.data.IDOFactory implements Stroke
  }
 
 
+public Strokes create(java.lang.Object p0,java.lang.Object p1)throws javax.ejb.CreateException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((StrokesBMPBean)entity).ejbCreate(p0,p1);
+	((StrokesBMPBean)entity).ejbPostCreate(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	try{
+		return this.findByPrimaryKey(pk);
+	}
+	catch(javax.ejb.FinderException fe){
+		throw new com.idega.data.IDOCreateException(fe);
+	}
+	catch(Exception e){
+		throw new com.idega.data.IDOCreateException(e);
+	}
+}
+
  public Strokes create() throws javax.ejb.CreateException{
   return (Strokes) super.createIDO();
  }
@@ -18,6 +34,13 @@ public java.util.Collection findAllByScorecard(java.lang.Object p0)throws javax.
 	java.util.Collection ids = ((StrokesBMPBean)entity).ejbFindAllByScorecard(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public Strokes findByPrimaryKey(java.lang.Object p0,java.lang.Object p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((StrokesBMPBean)entity).ejbFindByPrimaryKey(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
 }
 
 public Strokes findStrokesByScorecardAndHole(java.lang.Object p0,java.lang.Object p1)throws javax.ejb.FinderException{

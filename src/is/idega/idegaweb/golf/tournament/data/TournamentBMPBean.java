@@ -40,6 +40,13 @@ public class TournamentBMPBean extends GenericEntity implements Tournament {
 	public static final String COLUMN_TOURNAMENT_FORM_ID = "tournament_form_id";
 	
 	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_TOURNAMENT_ID;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {

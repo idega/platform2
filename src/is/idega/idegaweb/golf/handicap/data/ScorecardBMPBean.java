@@ -104,16 +104,16 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		return getBooleanColumnValue(COLUMN_IS_CORRECTION, false);
 	}
 	
-	public int getUserID() {
-		return getIntColumnValue(COLUMN_USER_ID);
+	public Object getUserID() {
+		return getColumnValue(COLUMN_USER_ID);
 	}
 
 	public User getUser() {
 		return (User) getColumnValue(COLUMN_USER_ID);
 	}
 
-	public int getTeeID() {
-		return getIntColumnValue(COLUMN_TEE_ID);
+	public Object getTeeID() {
+		return getColumnValue(COLUMN_TEE_ID);
 	}
 	
 	public Tee getTee() {
@@ -137,6 +137,10 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		setColumn(COLUMN_HANDICAP_AFTER, handicapAfter);
 	}
 
+	public void setDatePlayed(Timestamp datePlayed) {
+		setColumn(COLUMN_DATE_PLAYED, datePlayed);
+	}
+
 	public void setCanIncreaseHandicap(boolean canIncreaseHandicap) {
 		setColumn(COLUMN_CAN_INCREASE_HANDICAP, canIncreaseHandicap);
 	}
@@ -149,26 +153,26 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		setColumn(COLUMN_IS_CORRECTION, isCorrection);
 	}
 
-	public void setUserID(int userID) {
+	public void setUserID(Object userID) {
 		setColumn(COLUMN_USER_ID, userID);
 	}
 	
 	public void setUser(User user) {
-		setUserID(((Integer) user.getPrimaryKey()).intValue());
+		setColumn(COLUMN_USER_ID, user);
 	}
 	
-	public void setTeeID(int teeID) {
+	public void setTeeID(Object teeID) {
 		setColumn(COLUMN_TEE_ID, teeID);
 	}
 
 	public void setTee(Tee tee) {
-		setTeeID(((Integer) tee.getPrimaryKey()).intValue());
+		setColumn(COLUMN_TEE_ID, tee);
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByUser(Object userPrimaryKey) throws FinderException {
+	public Collection ejbFindAllByUser(Object userID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_USER_ID, userPrimaryKey).appendOrderBy(COLUMN_DATE_PLAYED);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_USER_ID, userID).appendOrderBy(COLUMN_DATE_PLAYED);
 		return idoFindPKsByQuery(query);
 	}
 }

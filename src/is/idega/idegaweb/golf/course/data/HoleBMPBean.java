@@ -85,16 +85,16 @@ public class HoleBMPBean extends GenericEntity implements Hole {
 		return (Date) getColumnValue(COLUMN_VALID_TO);
 	}
 
-	public int getCourseID() {
-		return getIntColumnValue(COLUMN_COURSE_ID);
+	public Object getCourseID() {
+		return getColumnValue(COLUMN_COURSE_ID);
 	}
 
 	public Course getCourse() {
 		return (Course) getColumnValue(COLUMN_COURSE_ID);
 	}
 	
-	public int getTeeColorID() {
-		return getIntColumnValue(COLUMN_TEE_COLOR_ID);
+	public Object getTeeColorID() {
+		return getColumnValue(COLUMN_TEE_COLOR_ID);
 	}
 
 	public TeeColor getTeeColor() {
@@ -126,40 +126,40 @@ public class HoleBMPBean extends GenericEntity implements Hole {
 		setColumn(COLUMN_VALID_TO, validTo);
 	}
 
-	public void setCourseID(int courseID) {
+	public void setCourseID(Object courseID) {
 		setColumn(COLUMN_COURSE_ID, courseID);
 	}
 	
-	public void setTeeColorID(int teeColorID) {
+	public void setTeeColorID(Object teeColorID) {
 		setColumn(COLUMN_TEE_COLOR_ID, teeColorID);
 	}
 	
 	//Find methods
-	public Collection ejbFindAllByCourse(Object coursePrimaryKey) throws FinderException {
+	public Collection ejbFindAllByCourse(Object courseID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndIsNull(COLUMN_VALID_TO);
 		query.appendOrderBy(COLUMN_NUMBER);
 		return idoFindPKsByQuery(query);
 	}
 
-	public Collection ejbFindAllByCourseAndTeeColor(Object coursePrimaryKey, Object teeColorPrimaryKey) throws FinderException {
+	public Collection ejbFindAllByCourseAndTeeColor(Object courseID, Object teeColorID) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
 		query.appendAndIsNull(COLUMN_VALID_TO).appendOrderBy(COLUMN_NUMBER);
 		return idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindHoleByCourseAndTeeColorAndNumber(Object coursePrimaryKey, Object teeColorPrimaryKey, int holeNumber) throws FinderException {
+	public Integer ejbFindHoleByCourseAndTeeColorAndNumber(Object courseID, Object teeColorID, int holeNumber) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
 		query.appendAndIsNull(COLUMN_VALID_TO).appendAndEquals(COLUMN_NUMBER, holeNumber);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public int ejbHomeGetCoursePar(Object coursePrimaryKey, Object teeColorPrimaryKey) throws IDOException {
+	public int ejbHomeGetCoursePar(Object courseID, Object teeColorID) throws IDOException {
 		IDOQuery query = idoQuery();
 		query.appendSelect().appendSum(COLUMN_PAR).appendFrom().append(ENTITY_NAME);
-		query.appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey);
+		query.appendWhereEquals(COLUMN_COURSE_ID, courseID).appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorID);
 		return idoGetNumberOfRecords(query);
 	}
 }
