@@ -366,6 +366,18 @@ public class ProjectBusiness {
       Vector v = new Vector();
       this.collectSubpages(v,rootPage);
 
+
+      // debug
+      System.out.println("rootPage: "+rootPage.getNodeID());
+      System.out.print("projectpages: ");
+      Iterator outIter = v.iterator();
+      while (outIter.hasNext()) {
+        PageTreeNode item = (PageTreeNode)outIter.next();
+        System.out.print(item.getNodeID()+", ");
+      }
+      System.out.println();
+      // debug ends
+
       Set s = new HashSet();
       Set pages = new HashSet();
       Iterator setIter = v.iterator();
@@ -378,6 +390,30 @@ public class ProjectBusiness {
           s.addAll(set);
         }
       }
+
+
+      // debug
+      System.out.print("s: ");
+      Iterator out2Iter = s.iterator();
+      while (out2Iter.hasNext()) {
+        String item = (String)out2Iter.next();
+        System.out.print(item+", ");
+      }
+      System.out.println();
+      // debug ends
+
+      // debug
+      System.out.print("pages: ");
+      Iterator out3Iter = pages.iterator();
+      while (out3Iter.hasNext()) {
+        String item = (String)out3Iter.next();
+        System.out.print(item+", ");
+      }
+      System.out.println();
+      // debug ends
+
+
+
 
       Iterator iter = participantGroups.iterator();
       while (iter.hasNext()) {
