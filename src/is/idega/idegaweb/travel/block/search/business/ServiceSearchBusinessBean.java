@@ -21,9 +21,12 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.data.PostalCode;
@@ -250,25 +253,26 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				e.printStackTrace();
 			}
 			BookingForm bf;
+			ProductPrice[] prices;
 			Iterator iter = results.iterator();
 			boolean productIsValid = true;
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product = pHome.findByPrimaryKey(iter.next());
 					bf = getServiceHandler().getBookingForm(iwc, product);
-					//bus = getBusiness(product);
-					tmp = new IWTimestamp(from);
-					productIsValid = true;
-					while ( tmp.isEarlierThan(to) && productIsValid) {
-						productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
-						//productIsValid = bus.getIfDay(iwc, product, tmp);
-						tmp.addDays(1);
-					}
-					if (productIsValid) {
-						map.put(product.getPrimaryKey(), new Boolean(true));
-//						coll.add(product.getPrimaryKey());
-					} else {
-						map.put(product.getPrimaryKey(), new Boolean(false));
+					prices = ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+
+					if (prices != null && prices.length > 0) { 
+					/** Not inserting product without proper price categories */
+						tmp = new IWTimestamp(from);
+						productIsValid = true;
+						while ( tmp.isEarlierThan(to) && productIsValid) {
+							productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
+							//productIsValid = bus.getIfDay(iwc, product, tmp);
+							tmp.addDays(1);
+						}
+						map.put(product.getPrimaryKey(), new Boolean(productIsValid));
+						
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
