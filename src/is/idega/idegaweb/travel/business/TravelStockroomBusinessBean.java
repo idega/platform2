@@ -886,7 +886,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	  	return weekDays;
 	  	
   	} catch (FinderException f) {
-  		f.printStackTrace();
+  		//f.printStackTrace();
   	}
 		catch (IDORelationshipException e) {
 			e.printStackTrace();
