@@ -64,7 +64,7 @@ public class NewMemberWindow extends IWAdminWindow {
 	private List failedInserts;
 
 	public NewMemberWindow() {
-		setHeight(600);
+		setHeight(200);
 		setWidth(400);
 	}
 

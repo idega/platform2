@@ -163,6 +163,37 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return false;
 	}
 
+	public boolean createSpecialConnectionDivision(String connection, int parentGroupId, String clubName) {
+		if (connection == null || connection.equals(""))
+			return false;
+
+		try {
+			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(parentGroupId)));
+			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(connection)));
+
+			Group child = null;
+			boolean foundIt = false;
+			List children = specialGroup.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					foundIt = true;
+					break;
+				}
+			}
+
+			if (foundIt && child != null) {
+				insertCopyOfChild(group, child, specialGroup, clubName);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
 	private void insertCopyOfChild(Group parent, Group templateParent, Group special, String clubName) {
 		try {
 			List child = templateParent.getChildGroups();

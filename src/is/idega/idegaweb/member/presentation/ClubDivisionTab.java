@@ -249,7 +249,19 @@ public class ClubDivisionTab extends UserGroupTab {
 			group.setMetaData("CLUBDIV_NUMBER", number);
 			group.setMetaData("CLUBDIV_SSN", ssn);
 			group.setMetaData("CLUBDIV_FOUNDED", founded);
-			group.setMetaData("CLUBDIV_CONN", connection);
+//			group.setMetaData("CLUBDIV_CONN", connection);
+				String oldConnection = group.getMetaData("CLUBDIV_CONN");
+				if (oldConnection == null && connection != null) {
+//					String clubName = null; 
+//					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
+//					if (club != null)
+//						clubName = club.getName();
+					getClubInformationPluginBusiness(iwc).createSpecialConnectionDivision(connection, getGroupId(), group.getName());
+					group.setMetaData("CLUBDIV_CONN", connection);
+				}
+
+			
+
 			group.setMetaData("CLUBDIV_BOARD", board);
 			
 			group.store();
