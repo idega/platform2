@@ -5,7 +5,7 @@ import com.idega.projects.golf.*;
 import java.util.Vector;
 import java.sql.SQLException;
 import com.idega.util.idegaTimestamp;
-import com.idega.projects.golf.business.TournamentController;
+import com.idega.util.text.TextSoap;
 
 public class UpdateHandicap {
 
@@ -70,9 +70,12 @@ public class UpdateHandicap {
               }
             }
 
+            grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
+
             //System.out.println("Number of scorecards: "+scorecard.length);
             for (int m=0; m < scorecard.length; m++) {
 
+                //System.out.println("Handicap: "+grunn);
                 int scorecardID = scorecard[m].getID();
                 round = new TournamentRound(scorecard[m].getTournamentRoundId());
 
@@ -91,7 +94,6 @@ public class UpdateHandicap {
                       field_par = field.getFieldPar();
 
                     leikForgjof = new Handicap(grunn);
-                    //System.out.println("Handicap: "+leikForgjof);
                       if ( isTournament ) {
                       //System.out.println("Is tournament");
                         if ( round.getRoundNumber() == 1 ) {
@@ -146,6 +148,7 @@ public class UpdateHandicap {
                       realTotalPoints = Handicap.calculatePointsWithoutUpdate(stroke2,realLeik);
                     }
                     else {
+                      grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                       scorecard[m].setHandicapBefore((float) grunn);
                     }
 
@@ -156,7 +159,7 @@ public class UpdateHandicap {
                       else {
                         grunn = reiknaHandicap2(member,(double)grunn,heildarpunktar);
                       }
-
+                      grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                       scorecard[m].setHandicapAfter((float) grunn);
                     }
                     else {
@@ -169,11 +172,13 @@ public class UpdateHandicap {
                       scorecard[m].setHandicapBefore(memberInfo.getFirstHandicap());
                     }
                     grunn = (double) scorecard[m].getHandicapAfter();
+                    grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                 }
 
-                  scorecard[m].update();
+                scorecard[m].update();
 
-                //System.out.print(".");
+                //System.out.println("HandicapNew: "+grunn);
+                //System.out.println("----------------------------");
 
             }
 
@@ -182,7 +187,7 @@ public class UpdateHandicap {
       }
 
       catch (Exception e) {
-          e.printStackTrace(System.out);
+          e.printStackTrace(System.err);
       }
 
     }
