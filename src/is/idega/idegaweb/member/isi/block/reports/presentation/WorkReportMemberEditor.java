@@ -381,7 +381,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       Iterator membersLeagueIterator = membersLeague.iterator();
       Collection membersLeagueNames = new ArrayList();
       while (membersLeagueIterator.hasNext())  {
-        String leagueName = (String) membersLeagueIterator.next();
+        WorkReportGroup league= (WorkReportGroup) membersLeagueIterator.next();
+        String leagueName = league.getName();
         membersLeagueNames.add(leagueName);
       }
       Iterator leagueIterator = leagueList.iterator();
@@ -527,7 +528,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     // add more columns
     Iterator iterator = leagueList.iterator();
-    int i = 6;
+    int i = 100;
     while (iterator.hasNext())  {
       String leagueName = (String) iterator.next();
       EntityToPresentationObjectConverter converter = new WorkReportCheckBoxConverter(leagueName);
