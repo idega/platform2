@@ -424,7 +424,7 @@ public class PublicBooking extends Block  {
     String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
     String room_number = iwc.getParameter("room_number");
 
-    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), false);
+    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
 
     Table table = new Table();
       table.setCellpadding(3);

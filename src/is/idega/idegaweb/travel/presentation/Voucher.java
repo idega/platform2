@@ -88,9 +88,11 @@ public class Voucher extends TravelManager {
   public Table getVoucher() {
     Table bigTable = new Table();
       bigTable.setColor(BLACK);
-      bigTable.setCellspacing(1);
+      bigTable.setCellspacing(0);
       bigTable.setCellpadding(0);
       bigTable.setWidth(width);
+      bigTable.setBorder(1);
+      bigTable.setBorderColor(BLACK);
 
     Table table = new Table(3,2);
       bigTable.add(table);
@@ -142,7 +144,7 @@ public class Voucher extends TravelManager {
 
         table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or fully payment for the following services")),1,2);
+        table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or full payment for the following services")),1,2);
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
