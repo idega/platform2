@@ -214,6 +214,10 @@ public class TravelManager extends Block {
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
 
+            Link lResellers = new Link(iContracts, ResellerCreator.class);
+              lResellers.addParameter(this.sAction, this.parameterContracts);
+            table.add(lResellers, 1, 1);
+
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
