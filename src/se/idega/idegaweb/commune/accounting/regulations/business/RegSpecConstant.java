@@ -6,6 +6,7 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
  */
 public class RegSpecConstant {
 	public static final String CHECK ="cacc_reg_spec_type.check";
+	public static final String BLANK ="cacc_reg_spec_type.blank";
 	public static final String SUBVENTION ="cacc_reg_spec_type.grundsubvention";
 	public static final String CHECKTAXA ="cacc_reg_spec_type.checktaxa";
 	public static final String LAGINKOMSTSKYDD =	"cacc_reg_spec_type.laginkomstskydd";
