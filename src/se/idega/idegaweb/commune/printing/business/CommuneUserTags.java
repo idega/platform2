@@ -38,6 +38,9 @@ public class CommuneUserTags {
 /** the postaladdress tag */
     public static final String POSTALADDRESS = "postaladdress";
     
+/** the addresscountry tag */
+    public static final String ADDRESSCOUNTRY = "addresscountry";
+    
 /** the phone tag */
     public static final String PHONE = "phone";
     

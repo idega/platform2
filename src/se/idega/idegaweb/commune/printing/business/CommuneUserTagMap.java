@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.util.HashMap;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.data.Address;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -68,13 +69,18 @@ public class CommuneUserTagMap extends HashMap {
         	peer.setContent(ub.getUsersMainEmail(user).getEmailAddress());
         	put(peer.getAlias(), peer); 
         	
-        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.STREETADDRESS);
-        	peer.setContent(ub.getUsersMainAddress(user).getStreetAddress());
+        	Address address = getUserMailReceiveAddress(ub,user);
         	
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.STREETADDRESS);
+        	peer.setContent(address.getStreetAddress());
         	put(peer.getAlias(), peer);
         	
         	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.POSTALADDRESS);
-        	peer.setContent(ub.getUsersMainAddress(user).getPostalAddress());
+        	peer.setContent(address.getPostalAddress());
+        	put(peer.getAlias(), peer);
+        	
+        	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.ADDRESSCOUNTRY);
+        	peer.setContent(address.getCountry().getName());
         	put(peer.getAlias(), peer);
         	
         	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.PHONE);
@@ -85,6 +91,14 @@ public class CommuneUserTagMap extends HashMap {
         
         }
    
+    }
+    
+    private Address getUserMailReceiveAddress(UserBusiness ub,User user)throws RemoteException{
+    	int userID =(( Integer) user.getPrimaryKey()).intValue();
+    	Address addr = ub.getUserAddressByAddressType(userID,ub.getAddressHome().getAddressType2());
+    	if(addr==null)
+    		addr = ub.getUsersMainAddress(userID);
+    	return addr;
     }
     
     private UserBusiness getUserBusiness(IWApplicationContext iwac) {
