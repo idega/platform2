@@ -73,14 +73,9 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 			throws CreateException, RemoteException;
 			
 			
-	public boolean moveCitizenFromCommune(User user) throws RemoteException;
-	public boolean moveCitizenFromCommune(User user, java.sql.Timestamp time) throws RemoteException;
-
-	public boolean moveCitizenToCommune(User user) throws RemoteException;
-	public boolean moveCitizenToCommune(User user, java.sql.Timestamp time) throws RemoteException;
-
-	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException;
-	public boolean moveCitizenToProtectedCitizenGroup(User user, java.sql.Timestamp time) throws RemoteException;
+	public boolean moveCitizenFromCommune(User user, java.sql.Timestamp time, User performer) throws RemoteException;
+	public boolean moveCitizenToCommune(User user, java.sql.Timestamp time, User performer) throws RemoteException;
+	public boolean moveCitizenToProtectedCitizenGroup(User user, java.sql.Timestamp time, User performer) throws RemoteException;
 
 	public int getRootAdministratorGroupID() throws RemoteException;
 	public void updateCitizen(int userID, String firstName, String middleName, String lastName, String personalID) throws RemoteException;

@@ -640,9 +640,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
-
-	public boolean moveCitizenFromCommune(User user, Timestamp time) {
-
+	
+		public boolean moveCitizenFromCommune(User user, Timestamp time, User performer) {
 		/*UserTransaction transaction =  getSessionContext().getUserTransaction();
 		
 		try{
@@ -663,16 +662,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			ex.printStackTrace();
 			return false;
 		}
-    // try to get the current user
-    User currentUser;
-    try {
-      currentUser = IWContext.getInstance().getCurrentUser();
-    }
-    catch (Exception ex)  {
-      currentUser = null;
-    }
 
-		rootGroup.removeUser(user,currentUser,time);
+
+		rootGroup.removeUser(user,performer,time);
 		
 		rootSpecialGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootSpecialGroup);
@@ -696,8 +688,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		return true;
 	}
-
-	public boolean moveCitizenToCommune(User user, Timestamp time) {
+	
+	public boolean moveCitizenToCommune(User user, Timestamp time, User performer) {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -720,15 +712,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			return false;
 		}
     
-    // try to get the current user
-    User currentUser;
-    try {
-      currentUser = IWContext.getInstance().getCurrentUser();
-    }
-    catch (Exception ex)  {
-      currentUser = null;
-    }
-		rootSpecialGroup.removeUser(user,currentUser,time);
+
+		rootSpecialGroup.removeUser(user,performer,time);
 		rootGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootGroup);
 		user.store();
@@ -754,13 +739,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return true;
 	}
 	
-	
-	public boolean moveCitizenToCommune(User user) {
-		return moveCitizenToCommune(user,IWTimestamp.getTimestampRightNow());
-	}
-	
-	
-	public boolean moveCitizenToProtectedCitizenGroup(User user,Timestamp time) {
+	public boolean moveCitizenToProtectedCitizenGroup(User user,Timestamp time, User performer) {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -791,16 +770,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			ex.printStackTrace();
 			return false;
 		}
-    // try to get the current user
-    User currentUser;
-    try {
-      currentUser = IWContext.getInstance().getCurrentUser();
-    }
-    catch (Exception ex)  {
-      currentUser = null;
-    }
-		rootSpecialGroup.removeUser(user, currentUser,time);
-		rootGroup.removeUser(user, currentUser,time);
+
+		rootSpecialGroup.removeUser(user, performer,time);
+		rootGroup.removeUser(user, performer,time);
 		
 		rootProtectedGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootProtectedGroup);
@@ -1124,18 +1096,6 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		//TODO add more actions when user registered as deceased 
 		return false;
-	}
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenFromCommune(com.idega.user.data.User)
-	 */
-	public boolean moveCitizenFromCommune(User user) {
-		return moveCitizenFromCommune(user,IWTimestamp.getTimestampRightNow());
-	}
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenToProtectedCitizenGroup(com.idega.user.data.User)
-	 */
-	public boolean moveCitizenToProtectedCitizenGroup(User user) {
-		return moveCitizenToProtectedCitizenGroup(user,IWTimestamp.getTimestampRightNow());
 	}
 		
 	public Collection findSchoolChildrenBySearchCondition(String searchString) {
