@@ -33,6 +33,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberLog;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
@@ -2459,8 +2461,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (isSeparateFunction) {
 			buffer.append("\nfunction checkGroup(){\n\t");
 		}
+		
 		PlacementHelper helper = getPlacementHelper();
-//		ChildCareApplication application = helper.getApplication();
+		String currentCareTime = helper.getCurrentCareTimeHours();
+		Integer currentSchoolTypeId = helper.getCurrentSchoolTypeID();
+		Integer currentGroupId = helper.getCurrentClassID();		
+
+		try {
+			ChildCareContract contract = getBusiness().getValidContract(_applicationID);
+			currentCareTime = contract.getCareTime();
+			SchoolClassMember member = contract.getSchoolClassMember();
+			currentSchoolTypeId = new Integer(member.getSchoolTypeId());
+			currentGroupId = new Integer(member.getClassMemberId());
+			SchoolClassMemberLog log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDateBack(member, new java.sql.Date(System.currentTimeMillis()));
+			currentGroupId = new Integer(log.getSchoolClassID());
+		} catch (Exception e) {}
+		
 
 		buffer.append("\n\t var careTimeInput = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
 		if (isUsePredefinedCareTimeValues()) {
@@ -2480,9 +2496,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t var dYear = ").append("yearInput.options[yearInput.selectedIndex].value.toString();");
 		buffer.append("\n\t var d = ").append("parseInt(dYear + dMonth + dDay, 10);");
 
-		buffer.append("\n\t var oldCareTime = '").append(helper.getCurrentCareTimeHours()).append("';");
-		buffer.append("\n\t var oldSchoolType = '").append(helper.getCurrentSchoolTypeID()).append("';");
-		buffer.append("\n\t var oldSchoolClass = '").append(helper.getCurrentClassID()).append("';");
+		buffer.append("\n\t var oldCareTime = '").append(currentCareTime).append("';");
+		buffer.append("\n\t var oldSchoolType = '").append(currentSchoolTypeId).append("';");
+		buffer.append("\n\t var oldSchoolClass = '").append(currentGroupId).append("';");
+
 		IWTimestamp oldD = new IWTimestamp(helper.getApplication().getFromDate());
 		buffer.append("\n\t var oldD = '").append(oldD.getDateString("yyyyMMdd")).append("';");
 
@@ -2515,6 +2532,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			buffer.append("\n\t\t }");
 		}
 
+		if (getBusiness().hasFutureContracts(_applicationID)) {
+			buffer.append("\n\t\t if (careTime != oldCareTime || schoolType != oldSchoolType) {");
+			buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.future_contracts_must_be_removed", "Future contracts must be removed before care time can be altered.")).append("';");
+			buffer.append("\n\t\t }");			
+		}
+		
 		buffer.append("\n\t }");
 
 		buffer.append("\n\t if (dateMessage != '') {");
