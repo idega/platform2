@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/27 10:57:35 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 20:31:33 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.55 $
+ * @version $Revision: 1.56 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -185,8 +185,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 */
 	public void removeInvoiceRecord(InvoiceRecord invoiceRecord) throws RemoteException, RemoveException {
 		PaymentRecord paymentRecord;
-		String ruleSpecType = invoiceRecord.getRuleSpecType();
-		if (null != ruleSpecType && RegSpecConstant.CHECK.equals(ruleSpecType)) {
+        RegulationSpecType regSpecType = invoiceRecord.getRegSpecType ();
+		String typeName = regSpecType != null ? regSpecType.getRegSpecType() : null;
+		if (null != typeName && RegSpecConstant.CHECK.equals(typeName)) {
 			try {
 				paymentRecord =
 					getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRecord.getPaymentRecordId()));
@@ -408,7 +409,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
          final String invoiceText, final String note,
          final Integer numberOfDays, final String ownPosting,
          final Date placementStartPeriod, final Date placementEndPeriod,
-         final Integer providerId, final String regulationSpecType,
+         final Integer providerId, final Integer regSpecTypeId,
          final Integer vatAmount, final Integer vatRule, final String ruleText,
          final Integer placementId)
         throws CreateException {
@@ -416,8 +417,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             final InvoiceRecord record = getInvoiceRecordHome ().create ();
             if (null != createdBy) {
                 final String createdBySignature
-                        = createdBy.getFirstName ().charAt (0)
-                        + "" + createdBy.getLastName ().charAt (0);
+                        = createdBy.getFirstName ()
+                        + " " + createdBy.getLastName ();
                 record.setCreatedBy (createdBySignature);
             }
             record.setDateCreated (new Date (new java.util.Date ().getTime()));
@@ -442,7 +443,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
                                                   (checkStartPeriod);
             if (null != placementStartPeriod) record.setPeriodStartPlacement
                                                       (placementStartPeriod);
-            record.setRuleSpecType (regulationSpecType);
+            if (null != regSpecTypeId) record.setRegSpecTypeId
+                                               (regSpecTypeId.intValue ());
             if (null != vatRule)  record.setVATType (vatRule.intValue ());
             if (null != providerId) record.setProviderId
                                             (providerId.intValue ());

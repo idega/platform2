@@ -80,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/27 14:05:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 20:31:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.62 $
+ * @version $Revision: 1.63 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -95,6 +95,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String AMOUNT_DEFAULT = "Belopp";
     private static final String AMOUNT_KEY = PREFIX + "amount";
+    private static final String CANCEL_DEFAULT = "Avbryt";
+    private static final String CANCEL_KEY = PREFIX + "cancel";
     private static final String CHECK_END_PERIOD_KEY = PREFIX + "check_end_period";
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
@@ -190,7 +192,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
-    private static final String SIGNATURE_DEFAULT = "Sigantur";
+    private static final String SIGNATURE_DEFAULT = "Signatur";
     private static final String SIGNATURE_KEY = PREFIX + "signature";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "personal_id";
@@ -380,87 +382,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                               INVOICE_COMPILATION_DEFAULT, viewLink));
     }
 
-	private PdfPTable getOwnPostingPdfTable
-        (final IWContext context, final InvoiceRecord [] records,
-         final Color lightBlue) throws RemoteException {
-		final PostingField [] fields = getCurrentPostingFields (context);
-        final PdfPTable table = new PdfPTable (fields.length + 1);
-        table.setWidthPercentage (100f);
-        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
-        for (int i = 0; i < fields.length; i++) {
-            addPhrase (table, fields [i].getFieldTitle ());
-        }
-        addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
-        for (int i = 0; i < records.length; i++) {
-            final InvoiceRecord record = records [i];
-            final String postingString = record.getOwnPosting ();
-            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
-                                                        : lightBlue);
-            int offset = 0;
-            for (int j = 0; j < fields.length; j++) {
-                final PostingField field = fields [j];
-                final int endPosition = min (offset + field.getLen (),
-                                             postingString.length ());
-                addPhrase (table, postingString.substring
-                           (offset, endPosition).trim ());
-                offset = endPosition;
-            }
-            addPhrase (table, ((long)record.getAmount ()) + "");
-        }
-		return table;
-	}
-
-	private PdfPTable getInvoiceRecordPdfTable
-        (final String [] columnNames, final InvoiceBusiness business,
-         final InvoiceRecord[] records, final Color lightBlue)
-        throws RemoteException {
-        final PdfPTable table = new PdfPTable
-                (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
-		table.setWidthPercentage (100f);
-        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
-        for (int i = 0; i < columnNames.length; i++) {
-            addPhrase (table, columnNames [i]);
-        }
-        table.setHeaderRows (1);  // this is the end of the table header
-        for (int i = 0; i < records.length; i++) {
-            final InvoiceRecord record = records [i];
-            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
-                                                        : lightBlue);
-            addInvoiceRecordOnAPdfRow (business, table, record);
-        }
-		return table;
-	}
-
-	private void addInvoiceRecordOnAPdfRow
-        (final InvoiceBusiness business, final PdfPTable table,
-         final InvoiceRecord record) throws RemoteException {
-		final User child = business.getChildByInvoiceRecord (record);
-		final String ssn = null != child ? formatSsn (child.getPersonalID ())
-                : "";
-		final String firstName = null != child ? child.getFirstName () : "";
-		addPhrase (table, ssn);
-		addPhrase (table, firstName);
-		addPhrase (table, record.getInvoiceText ());
-		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (table, record.getDays () + "");
-		addPhrase (table, ((long) record.getAmount ()) + "");
-		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
-		addPhrase (table, record.getNotes ());
-	}
-
-	private static float mmToPoints (final float mm) {
-		return mm*72/25.4f;
-	}
-
-	private final static Font SANSSERIF_FONT
-		= FontFactory.getFont (FontFactory.HELVETICA, 9);
-    
-    private void addPhrase (final PdfPTable table, final String string) {
-        if (null != string) {
-            table.addCell (new Phrase (new Chunk (string, SANSSERIF_FONT)));
-        }
+    private int dayDiff (final Date date1, final Date date2) {
+        long millis1 = date1.getTime ();
+        long millis2 = date2.getTime ();
+        long millisDiff = millis2 - millis1;
+        return 0 < millisDiff ? (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
     }
 
     private void newRecord (final IWContext context)
@@ -471,14 +397,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                         CHECK_END_PERIOD_KEY);
         final Date checkStartPeriod
                 = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
+        final Integer numberOfDays
+                = new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
         final String doublePosting = getPostingString (context,
                                                        DOUBLE_POSTING_KEY);
         final Integer invoiceCompilation
                 = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
         final String note = context.getParameter (NOTE_KEY);
-        final Integer numberOfDays = getIntegerParameter (context,
-                                                          NUMBER_OF_DAYS_KEY);
         final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
         final Date placementEndPeriod
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
@@ -497,8 +423,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             providerId = (Integer)
                     placement.getSchoolClass ().getSchool ().getPrimaryKey ();
         }
-        final String regulationSpecType
-                = context.getParameter (REGULATION_SPEC_TYPE_KEY);
+        final Integer regulationSpecTypeId
+                = getIntegerParameter (context, REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
         final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
         final String ruleText = context.getParameter (RULE_TEXT_KEY);
@@ -512,7 +438,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  ownPosting,
                  new java.sql.Date (placementStartPeriod.getTime ()),
                  new java.sql.Date (placementEndPeriod.getTime ()),
-                 providerId, regulationSpecType, vatAmount, vatRule, ruleText,
+                 providerId, regulationSpecTypeId, vatAmount, vatRule, ruleText,
                  placementId);
         final String [][] parameters =
                 {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
@@ -533,12 +459,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                         CHECK_END_PERIOD_KEY);
         final Date checkStartPeriod
                 = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
+        final Integer numberOfDays
+                = new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
         final String doublePosting = getPostingString (context,
                                                        DOUBLE_POSTING_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
         final String note = context.getParameter (NOTE_KEY);
-        final Integer numberOfDays = getIntegerParameter (context,
-                                                          NUMBER_OF_DAYS_KEY);
         final String ownPosting = getPostingString (context, OWN_POSTING_KEY);
         final Date placementEndPeriod
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
@@ -557,8 +483,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             providerId = (Integer)
                     placement.getSchoolClass ().getSchool ().getPrimaryKey ();
         }
-        final String regulationSpecType
-                = context.getParameter (REGULATION_SPEC_TYPE_KEY);
+        final Integer regSpecTypeId
+                = getIntegerParameter (context, REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
         final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
         final String ruleText = context.getParameter (RULE_TEXT_KEY);
@@ -586,7 +512,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != providerId) record.setProviderId (providerId.intValue ());
         if (null != placementId) record.setSchoolClassMemberId
                                          (placementId.intValue ());
-        record.setRuleSpecType (regulationSpecType);
+        if (null != regSpecTypeId) record.setRegSpecTypeId
+                                           (regSpecTypeId.intValue ());
         if (null != vatRule) record.setVATType (vatRule.intValue ());
         record.setRuleText (ruleText);
 
@@ -608,8 +535,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         throws RemoteException, FinderException {
         final java.util.Map inputs = new java.util.HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
+        final InvoiceHeader header = getInvoiceHeader (context);
+        inputs.put (INVOICE_RECEIVER_KEY, getSmallText
+                    (getUserInfo (context, header.getCustodianId ())));
         inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
-        inputs.put (NUMBER_OF_DAYS_KEY, getStyledInput (NUMBER_OF_DAYS_KEY));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, nowPeriod));
         inputs.put (CHECK_END_PERIOD_KEY, getStyledInput
@@ -618,12 +547,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     (PLACEMENT_START_PERIOD_KEY, nowPeriod));
         inputs.put (PLACEMENT_END_PERIOD_KEY, getStyledInput
                     (PLACEMENT_END_PERIOD_KEY, nowPeriod));
-        inputs.put (DATE_CREATED_KEY, getSmallText (dateFormatter.format
-                                                    (new Date ())));
-        final User currentUser = context.getCurrentUser ();
-        inputs.put (CREATED_SIGNATURE_KEY, getSmallText (getSignature
-                                                         (currentUser)));
-
         inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
         inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
         inputs.put (NOTE_KEY, getStyledInput (NOTE_KEY));
@@ -642,7 +565,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
-        final InvoiceHeader header = getInvoiceHeader (context);
         inputs.put (RULE_TEXT_KEY, getRuleTextDropdown (header));
         inputs.put (PROVIDER_KEY, getProviderDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
@@ -654,10 +576,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceRecord record = getInvoiceRecord (context);
         final java.util.Map inputs = new java.util.HashMap ();
+        final InvoiceHeader header = getInvoiceHeader (context);
+        inputs.put (INVOICE_RECEIVER_KEY, getSmallText
+                    (getUserInfo (context, header.getCustodianId ())));
         inputs.put (INVOICE_TEXT_KEY, getStyledInput
                     (INVOICE_TEXT_KEY, record.getInvoiceText ()));
-        inputs.put (NUMBER_OF_DAYS_KEY, getStyledInput
-                    (NUMBER_OF_DAYS_KEY, record.getDays () + ""));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, getFormattedPeriod
                      (record.getPeriodStartCheck ())));
@@ -686,9 +609,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
                 (business.getAllRegulationSpecTypes ());
         inputs.put (REGULATION_SPEC_TYPE_KEY, regulationSpecTypeDropdown);
-        final String regulationSpecType = record.getRuleSpecType ();
-        if (null != regulationSpecType) {
-            regulationSpecTypeDropdown.setSelectedElement (regulationSpecType);
+        final int regulationSpecTypeId = record.getRegSpecTypeId ();
+        if (0 < regulationSpecTypeId) {
+            regulationSpecTypeDropdown.setSelectedElement
+                    (regulationSpecTypeId + "");
         }
         final PresentationObject ownPostingForm = getPostingParameterForm
                 (context, OWN_POSTING_KEY, record.getOwnPosting ());
@@ -723,6 +647,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceRecord record = getInvoiceRecord (context);
         final java.util.Map details = new java.util.HashMap ();
+        final InvoiceHeader header = getInvoiceHeader (context);
+        details.put (INVOICE_RECEIVER_KEY, getSmallText
+                    (getUserInfo (context, header.getCustodianId ())));
         addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
         addSmallText (details, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
         details.put (ADJUSTED_SIGNATURE_KEY,
@@ -749,9 +676,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallText (details, PROVIDER_KEY, getProviderName
                       (context, record.getProviderId (),
                        record.getSchoolClassMemberId ()));
-        final String ruleSpecType = record.getRuleSpecType ();
-        addSmallText (details, REGULATION_SPEC_TYPE_KEY,
-                      localize (ruleSpecType, ruleSpecType));
+        final RegulationSpecType regSpecType = record.getRegSpecType ();
+        if (null != regSpecType) {
+            final String typeName = regSpecType.getRegSpecType ();
+            addSmallText (details, REGULATION_SPEC_TYPE_KEY,
+                          localize (typeName, typeName));
+        }
         if (0 < record.getVATType ()) {
             final VATRule rule = business.getVatRule (record.getVATType ());
             final String ruleName = rule.getVATRule ();
@@ -893,6 +823,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
                                     NEW_DEFAULT), 1, row);
+        addCancelButton (table, 1, row);
         final Form form = new Form ();
         form.maintainParameter (INVOICE_COMPILATION_KEY);
         form.setOnSubmit("return checkInfoForm()");
@@ -951,6 +882,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private String getUserInfo (final User user) {
         return user == null ? "" : getUserName (user) + " (" + formatSsn
                 (user.getPersonalID ()) + "), " + getAddressString (user);
+    }
+    
+    private String getUserInfo (final IWContext context, final int userId) {
+        return (0 >= userId) ? ""
+                : getUserInfo (getUser (context, new Integer (userId)));
     }
     
     private boolean isCustodian (final IWContext context, final User user)
@@ -1065,14 +1001,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             table.add (getSubmitButton (ACTION_NEW_COMPILATION,
                                         CREATE_INVOICE_COMPILATION_KEY,
                                         CREATE_INVOICE_COMPILATION_DEFAULT), 1,
-                       row++);
+                       row);
         } else if (null != searcher.getUsersFound ()) {
             // many users found
             table.mergeCells (1, row, table.getColumns (), row);
             table.add (getSearcherResultTable
                        (searcher.getUsersFound (),
-                        ACTION_SHOW_NEW_COMPILATION_FORM), 1, row++);
+                        ACTION_SHOW_NEW_COMPILATION_FORM), 1, row);
         }
+        addCancelButton (table, 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
@@ -1122,6 +1059,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         int col = 1;
         addOperationalFieldRow (table, context, header, row++);
         col = 1;
+        addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
+                        INVOICE_RECEIVER_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, INVOICE_RECEIVER_KEY,
+                         col++, row);
+        col = 1; row++;
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
         addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
                       row);
@@ -1143,11 +1086,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPresentation (table, presentationObjects, INVOICE_TEXT_KEY, col++,
                          row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
-                        NUMBER_OF_DAYS_DEFAULT, ":");
-        addPresentation (table, presentationObjects, NUMBER_OF_DAYS_KEY, col++,
-                         row);
-        col = 1; row++;
+        if (presentationObjects.containsKey (NUMBER_OF_DAYS_KEY)) {
+            addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
+                            NUMBER_OF_DAYS_DEFAULT, ":");
+            addPresentation (table, presentationObjects, NUMBER_OF_DAYS_KEY,
+                             col++, row);
+            col = 1; row++;
+        }
         addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
                         CHECK_PERIOD_DEFAULT, ":");
         addSmallHeader (table, col, row, START_PERIOD_KEY,
@@ -1169,24 +1114,26 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPresentation (table, presentationObjects, PLACEMENT_END_PERIOD_KEY,
                          col++, row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, DATE_CREATED_KEY,
-                        DATE_CREATED_DEFAULT, ":");
-        addPresentation (table, presentationObjects, DATE_CREATED_KEY, col++,
-                         row);
-        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
-                        ":");
-        addPresentation (table, presentationObjects, CREATED_SIGNATURE_KEY,
-                         col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
-                        DATE_ADJUSTED_DEFAULT, ":");
-        addPresentation (table, presentationObjects, DATE_ADJUSTED_KEY, col++,
-                         row);
-        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
-                        ":");
-        addPresentation (table, presentationObjects, ADJUSTED_SIGNATURE_KEY,
-                         col++, row);
-        col = 1; row++;
+        if (presentationObjects.containsKey (DATE_CREATED_KEY)) {
+            addSmallHeader (table, col++, row, DATE_CREATED_KEY,
+                            DATE_CREATED_DEFAULT, ":");
+            addPresentation (table, presentationObjects, DATE_CREATED_KEY,
+                             col++,  row);
+            addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                            ":");
+            addPresentation (table, presentationObjects, CREATED_SIGNATURE_KEY,
+                             col++, row);
+            col = 1; row++;
+            addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
+                            DATE_ADJUSTED_DEFAULT, ":");
+            addPresentation (table, presentationObjects, DATE_ADJUSTED_KEY,
+                             col++, row);
+            addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                            ":");
+            addPresentation (table, presentationObjects, ADJUSTED_SIGNATURE_KEY,
+                             col++, row);
+            col = 1; row++;
+        }
         addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
         addPresentation (table, presentationObjects, AMOUNT_KEY, col++, row);
         col = 1; row++;
@@ -1223,7 +1170,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         table.setHeight (row++, 12);
         table.mergeCells (col, row, table.getColumns (), row);
-        addPresentation (table, presentationObjects, ACTION_KEY, 1, row++);
+        addPresentation (table, presentationObjects, ACTION_KEY, 1, row);
+        addCancelButton (table, 1, row);
         final Form form = new Form ();
         form.maintainParameter (INVOICE_COMPILATION_KEY);
         form.maintainParameter (INVOICE_RECORD_KEY);
@@ -1233,6 +1181,96 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         outerTable.add (form, 1, 1);
         add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
                               outerTable));
+    }
+
+    private void addCancelButton (final Table table, final int col,
+                                  final int row) {
+        table.add (Text.getNonBrakingSpace(), col, row);
+        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST,
+                                    CANCEL_KEY, CANCEL_DEFAULT), col, row);
+    }
+
+	private PdfPTable getOwnPostingPdfTable
+        (final IWContext context, final InvoiceRecord [] records,
+         final Color lightBlue) throws RemoteException {
+		final PostingField [] fields = getCurrentPostingFields (context);
+        final PdfPTable table = new PdfPTable (fields.length + 1);
+        table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < fields.length; i++) {
+            addPhrase (table, fields [i].getFieldTitle ());
+        }
+        addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            final String postingString = record.getOwnPosting ();
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            int offset = 0;
+            for (int j = 0; j < fields.length; j++) {
+                final PostingField field = fields [j];
+                final int endPosition = min (offset + field.getLen (),
+                                             postingString.length ());
+                addPhrase (table, postingString.substring
+                           (offset, endPosition).trim ());
+                offset = endPosition;
+            }
+            addPhrase (table, ((long)record.getAmount ()) + "");
+        }
+		return table;
+	}
+
+	private PdfPTable getInvoiceRecordPdfTable
+        (final String [] columnNames, final InvoiceBusiness business,
+         final InvoiceRecord[] records, final Color lightBlue)
+        throws RemoteException {
+        final PdfPTable table = new PdfPTable
+                (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
+		table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < columnNames.length; i++) {
+            addPhrase (table, columnNames [i]);
+        }
+        table.setHeaderRows (1);  // this is the end of the table header
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            addInvoiceRecordOnAPdfRow (business, table, record);
+        }
+		return table;
+	}
+
+	private void addInvoiceRecordOnAPdfRow
+        (final InvoiceBusiness business, final PdfPTable table,
+         final InvoiceRecord record) throws RemoteException {
+		final User child = business.getChildByInvoiceRecord (record);
+		final String ssn = null != child ? formatSsn (child.getPersonalID ())
+                : "";
+		final String firstName = null != child ? child.getFirstName () : "";
+		addPhrase (table, ssn);
+		addPhrase (table, firstName);
+		addPhrase (table, record.getInvoiceText ());
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+		addPhrase (table, record.getDays () + "");
+		addPhrase (table, ((long) record.getAmount ()) + "");
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+		addPhrase (table, record.getNotes ());
+	}
+
+	private static float mmToPoints (final float mm) {
+		return mm*72/25.4f;
+	}
+
+	private final static Font SANSSERIF_FONT
+		= FontFactory.getFont (FontFactory.HELVETICA, 9);
+    
+    private void addPhrase (final PdfPTable table, final String string) {
+        if (null != string) {
+            table.addCell (new Phrase (new Chunk (string, SANSSERIF_FONT)));
+        }
     }
 
     private void addPresentation
@@ -2162,8 +2200,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         for (int i = 0; i < types.length; i++) {
             final RegulationSpecType type = types [i];
             final String regSpecType = type.getRegSpecType ();
-            dropdown.addMenuElement (regSpecType, localize (regSpecType,
-                                                            regSpecType));
+            dropdown.addMenuElement (type.getPrimaryKey () + "",
+                                     localize (regSpecType, regSpecType));
         }
         return dropdown;
     }

@@ -41,7 +41,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public static final String COLUMN_AMOUNT_VAT = "amount_vat";
 	public static final String COLUMN_NOTES = "notes";
 	public static final String COLUMN_ORDER_ID = "order_id";
-	public static final String COLUMN_RULE_SPEC_TYPE = "rule_spec_type";
+	public static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	public static final String COLUMN_OWN_POSTING = "own_posting";
 	public static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	public static final String COLUMN_VAT_TYPE = "vat_type";
@@ -52,10 +52,6 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-//		addAttribute(COLUMN_INVOICE_HEADER, "", true, true, java.lang.Integer.class);
-//		addAttribute(COLUMN_PAYMENT_RECORD_ID, "", true, true, java.lang.Integer.class);
-//		addAttribute(COLUMN_PROVIDER_ID, "", true, true, java.lang.Integer.class);
-//		addAttribute(COLUMN_SCHOOL_CLASS_MEMBER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_INVOICE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_RULE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DAYS, "", true, true, java.lang.Integer.class);
@@ -71,7 +67,6 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_AMOUNT_VAT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_NOTES, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
-//		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.String.class, 255);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
@@ -80,7 +75,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_CLASS_MEMBER_ID, SchoolClassMember.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
-		addManyToOneRelationship(COLUMN_RULE_SPEC_TYPE, RegulationSpecType.class);
+		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
 		
 		setNullable(COLUMN_INVOICE_HEADER, true);
 	}
@@ -141,8 +136,11 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public int getOrderId() {
 		return getIntColumnValue(COLUMN_ORDER_ID);
 	}
-	public String getRuleSpecType() {
-		return getStringColumnValue(COLUMN_RULE_SPEC_TYPE);
+	public int getRegSpecTypeId() {
+		return getIntColumnValue(COLUMN_REG_SPEC_TYPE_ID);
+	}
+	public RegulationSpecType getRegSpecType() {
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
 	}
 	public String getOwnPosting() {
 		return getStringColumnValue(COLUMN_OWN_POSTING);
@@ -224,11 +222,11 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setOrderId(int i) {
 		setColumn(COLUMN_ORDER_ID, i);
 	}
-	public void setRuleSpecType(String s) {
-		setColumn(COLUMN_RULE_SPEC_TYPE, s);
+	public void setRegSpecTypeId(int i) {
+		setColumn(COLUMN_REG_SPEC_TYPE_ID, i);
 	}
-	public void setRuleSpecType(RegulationSpecType r) {
-		setColumn(COLUMN_RULE_SPEC_TYPE, r);
+	public void setRegSpecType(RegulationSpecType r) {
+		setColumn(COLUMN_REG_SPEC_TYPE_ID, r);
 	}
 	public void setOwnPosting(String s) {
 		setColumn(COLUMN_OWN_POSTING, s);

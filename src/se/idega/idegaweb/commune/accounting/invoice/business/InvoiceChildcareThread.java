@@ -36,6 +36,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
@@ -343,7 +344,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*months);
 					invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
 					invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
-					invoiceRecord.setRuleSpecType(regularInvoiceEntry.getRegSpecType());
+					invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
 
 					invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
 					invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
@@ -596,7 +597,13 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setAmount(postingDetail.getAmount()*months);
 		invoiceRecord.setAmountVAT(postingDetail.getVat()*months);
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
-		invoiceRecord.setRuleSpecType(postingDetail.getRuleSpecType());
+        RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+        try {
+            RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
+            invoiceRecord.setRegSpecType(regSpecType);
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
 
 		//Set the posting strings
 		invoiceRecord.setOwnPosting(ownPosting);
