@@ -18,7 +18,7 @@ import com.idega.presentation.*;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.book.data.*;
 import com.idega.block.book.business.BookBusiness;
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 

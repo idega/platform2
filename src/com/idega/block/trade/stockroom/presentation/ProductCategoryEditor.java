@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import com.idega.block.presentation.CategoryWindow;
+import com.idega.block.category.presentation.CategoryWindow;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;

@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.email.business.EmailLetter;
 import com.idega.block.email.business.EmailTopic;
 import com.idega.block.email.business.MailBusiness;
 import com.idega.block.email.business.MailFinder;
-import com.idega.block.presentation.CategoryBlock;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;

@@ -1,7 +1,7 @@
 /*
  * Created on 6.7.2003
  */
-package com.idega.block.presentation;
+package com.idega.block.category.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;

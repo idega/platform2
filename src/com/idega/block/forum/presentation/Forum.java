@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
-import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.category.business.CategoryBusiness;

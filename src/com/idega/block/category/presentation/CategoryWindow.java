@@ -1,4 +1,4 @@
-package com.idega.block.presentation;
+package com.idega.block.category.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;

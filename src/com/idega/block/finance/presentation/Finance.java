@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.finance.business.FinanceException;
 import com.idega.block.finance.business.FinanceService;
-import com.idega.block.presentation.CategoryBlock;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;

@@ -1,7 +1,7 @@
 package com.idega.block.category.business;
 import java.util.Comparator;
 
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.core.category.data.ICCategory;
 import com.idega.util.IsCollator;
 /**

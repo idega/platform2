@@ -22,7 +22,7 @@ import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarCategory;
 import com.idega.block.calendar.data.CalendarEntry;
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;

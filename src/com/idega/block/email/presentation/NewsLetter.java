@@ -3,10 +3,10 @@ package com.idega.block.email.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.email.business.EmailTopic;
 import com.idega.block.email.business.MailBusiness;
 import com.idega.block.email.business.MailFinder;
-import com.idega.block.presentation.CategoryBlock;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

@@ -17,7 +17,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.block.forum.business.CommuneForumBusiness;
 
 import com.idega.block.category.business.CategoryFinder;
-import com.idega.block.presentation.CategoryWindow;
+import com.idega.block.category.presentation.CategoryWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.category.data.ICCategory;
 import com.idega.core.category.data.ICCategoryHome;

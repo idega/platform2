@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.questions.business.QuestionsService;
 import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
@@ -100,14 +100,14 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	}
 	
 	/**
-	 * @see com.idega.block.presentation.CategoryBlock#getCategoryType()
+	 * @see com.idega.block.category.presentation.CategoryBlock#getCategoryType()
 	 */
 	public String getCategoryType() {
 		return "QA";
 	}
 	
 	/**
-	 * @see com.idega.block.presentation.CategoryBlock#getMultible()
+	 * @see com.idega.block.category.presentation.CategoryBlock#getMultible()
 	 */
 	public boolean getMultible() {
 		return true;

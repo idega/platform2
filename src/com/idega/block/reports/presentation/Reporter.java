@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportEntityHandler;
 import com.idega.block.reports.business.ReportFinder;
