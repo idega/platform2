@@ -49,6 +49,7 @@ public class TextReader extends Block implements Builderaware {
 	private int tableTextSize = 1;
 	private int headlineSize = -2;
 	private String tableWidth = "";
+	private String bgColor = null;
 	private String textBgColor = null;
 	private String textColor;
 	private String headlineBgColor = null;
@@ -70,8 +71,8 @@ public class TextReader extends Block implements Builderaware {
 	private String textStyleName = "body";
 	private String headlineStyleName = "headline";
 	
-	private String textStyleClassName;
-	private String headlineStyleClassName;
+	private String textStyleClassName = null;
+	private String headlineStyleClassName = null;
 
 	public static String prmTextId = "txtr.textid";
 
@@ -166,6 +167,8 @@ public class TextReader extends Block implements Builderaware {
 		int bodyRow = 2;
 
 		T.setWidth("100%");
+		if(bgColor != null) 
+		  T.setColor(bgColor);
 		String sHeadline = locText.getHeadline() != null ? locText.getHeadline() : "";
 		Text headline = getStyleText(sHeadline,headlineStyleName);
 		if(headlineStyleClassName != null)
@@ -291,6 +294,10 @@ public class TextReader extends Block implements Builderaware {
 
 	public void setAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+	
+	public void setBgColor(String bgColor) {
+	  this.bgColor = bgColor;
 	}
 
 	public void setTextBgColor(String textBgColor) {
