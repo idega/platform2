@@ -77,6 +77,19 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   // -1 is reserved for "new entity"
   private static final Integer NULL_GROUP_ID = new Integer(-42);
+  
+  private static final List specialFieldList;
+  
+  static { 
+    specialFieldList = new ArrayList();
+    
+    specialFieldList.add(LEAGUE_NAME);
+    specialFieldList.add(INCOME_SUM_KEY);
+    specialFieldList.add(EXPONSES_SUM_KEY);
+    specialFieldList.add(INCOME_EXPONSES_SUM_KEY);
+    specialFieldList.add(ASSET_SUM_KEY);
+    specialFieldList.add(DEBT_SUM_KEY); 
+  }   
 
   private List fieldList = new ArrayList();
       
@@ -426,7 +439,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     browser.setUseExternalForm(true);
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
-    TextEditorConverter textEditorConverter = new WorkReportAccountInputConverter(form);
+    WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(form);
+    EntityToPresentationObjectConverter textConverter = new WorkReportAccountTextConverter();
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     // define path short keys and map corresponding converters
     int i = 1;
@@ -436,7 +450,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (fieldListIterator.hasNext()) {
       String fieldName = fieldListIterator.next().toString();
       browser.setMandatoryColumn(i++, fieldName);
-      browser.setEntityToPresentationConverter(fieldName, textEditorConverter);
+      EntityToPresentationObjectConverter converter =
+        (specialFieldList.contains(fieldName)) ? textConverter : textEditorConverter;
+      browser.setEntityToPresentationConverter(fieldName, converter);
     }
     browser.setMandatoryColumn(i++, CHECK_BOX);
     browser.setEntityToPresentationConverter(CHECK_BOX, checkBoxConverter);
