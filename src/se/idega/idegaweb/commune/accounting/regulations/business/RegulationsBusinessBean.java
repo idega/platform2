@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.29 2003/09/25 10:22:42 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.30 2003/09/26 01:16:56 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -70,6 +70,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE = "Kunde inte spara regelspecifikationstypen";
 	public final static String KEY_ERROR_PARAM_DATE_ORDER = KP + "from_date_lare_than_to_date";
 	public final static String KEY_ERROR_REGULATION_CREATE = KP + "cannot_create";
+	public final static String KEY_ERROR_PARAM_NAME_EMPTY = KP + "name_empty";
+	public final static String KEY_ERROR_PARAM_ORDER_EMPTY = KP + "order_empty";
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
 	public final static String KEY_ERROR_PARAM_MAIN_OPERATION = "main_op_error";
@@ -132,8 +134,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		if (operation.compareTo("0") == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_MAIN_OPERATION, "Huvudverksamhet måste väljas");			
 		}
+		
 		if (periodeFrom.after(periodeTo)) {
 			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
+		}
+		if (name.length() == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_NAME_EMPTY, "Namn saknas!");			
+		}
+		if (conditionOrder.length() == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_ORDER_EMPTY, "Villkorsordning saknas!");			
 		}
 	
 		try {
