@@ -407,12 +407,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     int i = 100;
     while (iterator.hasNext())  {
       String leagueName = (String) iterator.next();
-      EntityToPresentationObjectConverter converter = new WorkReportCheckBoxConverter(leagueName);
+     WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(leagueName);
+      converter.maintainParameters(getParametersToMaintain());
       browser.setMandatoryColumn(i++, leagueName);
       browser.setEntityToPresentationConverter(leagueName, converter);
     }
     browser.setDefaultNumberOfRows(Math.min(entities.size(), 20));
     browser.setEntities("dummy_string", entities);
+    browser.setLinesBetween(true);
     return browser;
   }
   
@@ -619,11 +621,10 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
       String text;
       if (shouldBeChecked) {
-        text = "_";
+        text = "=";
       }
       else {
-        // unicode black dot
-        text = String.valueOf('\u25A0');
+        text = "_";
       }
       Link link = new Link(text);
       link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());
