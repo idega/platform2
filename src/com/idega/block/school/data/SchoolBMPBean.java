@@ -518,7 +518,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		sql.append(" and t.school_category = c.category");
 		sql.append(" and c.category = '"+schoolCategory.getPrimaryKey().toString()+"'");
 		sql.append(" and s.commune = "+homeCommunePK);
-		System.out.println("SQL "+sql);
+
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
