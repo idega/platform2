@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.50 2003/07/25 18:00:16 aron Exp $
+ * $Id: CampusAllocator.java,v 1.51 2003/07/29 10:40:37 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -589,10 +589,9 @@ public class CampusAllocator extends Block implements Campus {
 					}
 					Frame.add(formatText(cypher), col++, row);
 
+					// already has allocation
 					if (bcontracts && HT.containsKey(new Integer(A.getID()))) {
 						C = (Contract) HT.get(new Integer(A.getID()));
-					//C = cHome.findByApplicant((Integer)A.getPrimaryKey);
-					//if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated)){
 						if (C.getID() == ContractId ) {
 							TempColor = TextFontColor;
 							TextFontColor = "FF0000";
@@ -613,10 +612,13 @@ public class CampusAllocator extends Block implements Campus {
 							
 						}
 						
-						if(WL.getNumberOfRejections()>0)
+						if(WL.getNumberOfRejections()>0){
 							Frame.add(getDenialChangeLink((Integer)C.getPrimaryKey(),WL,isOnTime),col++,row);
-						else						
-							Frame.add(getChangeLink(C.getID(), C.getApplicantId().intValue(),isOnTime), col++, row);
+						}
+						// if accepted allocation
+						else{				
+							Frame.add(getChangeLink((Integer)C.getPrimaryKey(), WL,isOnTime), col++, row);
+						}
 						con_id = C.getID();
 					}
 					// if applicant has requested removal from list
@@ -701,12 +703,22 @@ public class CampusAllocator extends Block implements Campus {
 			if(contractID!=null){
 				L.addParameter("change", contractID.toString());
 				// if reject status on , handle by office
-				if(waitingList.getRejectFlag())
+				if(waitingList.getAcceptedDate()!=null){
+					if(onTime)
+						number.setFontColor("#ff9900");
+					else
+						number.setFontColor("#996600");
+				}
+				else if(waitingList.getRejectFlag()){
 					number.setFontColor("#000000");
-				else if(onTime)
+				}
+				else if(onTime){
 					number.setFontColor("#00FF00");
-				else 
-					number.setFontColor("#f9dd09");
+				}
+				else{ 
+				
+					number.setFontColor("#ffff00");
+				}
 			}
 			else{
 				L.addParameter("allocate", waitingList.getApplicantId().toString());
@@ -728,11 +740,13 @@ public class CampusAllocator extends Block implements Campus {
 		return L;
 	}
 
-	private Link getChangeLink(int Contractid, int iApplicantId,boolean onTime) {
+	private Link getChangeLink(Integer contractID,WaitingList waitingList,boolean onTime) {
 		Image color = iwb.getImage(onTime? "green.gif" :  "yellow.gif");
+		if(waitingList.getAcceptedDate()!=null)
+			color = iwb.getImage(onTime?"orange.gif":"brown.gif");
 		Link L = new Link(color);
-		L.addParameter("change", String.valueOf(Contractid));
-		L.addParameter("applicant", String.valueOf(iApplicantId));
+		L.addParameter("change", contractID.toString());
+		L.addParameter("applicant", waitingList.getApplicantId().toString());
 		L.setToolTip(iwrb.getLocalizedString("tooltip_alloc_change","Change"));
 		if (pTypeId != null && pComplexId != null) {
 			L.addParameter(pTypeId);
@@ -740,6 +754,20 @@ public class CampusAllocator extends Block implements Campus {
 		}
 		return L;
 	}
+	
+	private Link getAcceptsLink(int Contractid, int iApplicantId,boolean onTime) {
+		
+			Image color = iwb.getImage(onTime? "orange.gif" :  "brown.gif");
+			Link L = new Link(color);
+			L.addParameter("change", String.valueOf(Contractid));
+			L.addParameter("applicant", String.valueOf(iApplicantId));
+			L.setToolTip(iwrb.getLocalizedString("tooltip_alloc_change","Change"));
+			if (pTypeId != null && pComplexId != null) {
+				L.addParameter(pTypeId);
+				L.addParameter(pComplexId);
+			}
+			return L;
+		}
 	
 	public PresentationObject getOffWaitingList(Integer wID){
 		Form form = new Form();
@@ -796,52 +824,67 @@ public class CampusAllocator extends Block implements Campus {
 	}
 	
 	public PresentationObject getColorButtonInfo(){
-			Table T = new Table();
-			T.setCellspacing(5);
-			int col = 1;
-			T.add(iwb.getImage("green.gif"),col++,1);
-			T.add(iwrb.getLocalizedString("greenbutton_info","Has been allocated"),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
+		Table T = new Table();
+		T.setCellspacing(5);
+		int col = 1;
+		int row = 1;
+		T.add(iwb.getImage("green.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("greenbutton_info","Has been allocated"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		
+		col++;
+		T.add(iwb.getImage("yellow.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("yellowbutton_info","Has not accepted yet"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
 			
-			col++;
-			T.add(iwb.getImage("yellow.gif"),col++,1);
-			T.add(iwrb.getLocalizedString("yellowbutton_info","Has not accepted yet"),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
+		col++;
+		T.add(iwb.getImage("red.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("redbutton_info","Not been allocated"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
 			
-			col++;
-			T.add(iwb.getImage("red.gif"),col++,1);
-			T.add(iwrb.getLocalizedString("redbutton_info","Not been allocated"),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
+		col++;
+		T.add(iwb.getImage("blue.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("bluebutton_info","Wants off this list"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		
+		row++;
+		col = 1;
+		
+		T.add(iwb.getImage("orange.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("orangebutton_info","Allocation accepted"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		
+		col++;
+		T.add(iwb.getImage("brown.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("brownbutton_info","Allocation accepted late"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
 			
-			col++;
-			T.add(iwb.getImage("blue.gif"),col++,1);
-			T.add(iwrb.getLocalizedString("bluebutton_info","Wants off this list"),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
+		col++;
+		T.add(iwb.getImage("black.gif"),col++,row);
+		T.add(iwrb.getLocalizedString("blackbutton_info","Denial"),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		T.add(Text.getNonBrakingSpace(),col,row);
+		
+		col++;
+		Text number12 = new Text(" 1 2 ");
+		number12.setBold();
+		number12.setFontColor("#00FF00");
+		number12.setFontSize(Text.FONT_SIZE_14_HTML_4);
+		Text number3 = new Text(" 3 ");
+		number3.setBold();
+		number3.setFontColor("#0000FF");
+		number3.setFontSize(Text.FONT_SIZE_14_HTML_4);
+		T.add(number12,col,row);
+		T.add(number3,col++,row);
+		T.add(iwrb.getLocalizedString("numberbutton_info","Number of denials"),col++,row);
 			
-			col++;
-			T.add(iwb.getImage("black.gif"),col++,1);
-			T.add(iwrb.getLocalizedString("blackbutton_info","Denial"),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			T.add(Text.getNonBrakingSpace(),col,1);
-			
-			col++;
-			Text number12 = new Text(" 1 2 ");
-			number12.setBold();
-			number12.setFontColor("#00FF00");
-			number12.setFontSize(Text.FONT_SIZE_14_HTML_4);
-			Text number3 = new Text(" 3 ");
-			number3.setBold();
-			number3.setFontColor("#0000FF");
-			number3.setFontSize(Text.FONT_SIZE_14_HTML_4);
-			T.add(number12,col++,1);
-			T.add(number3,col++,1);
-			T.add(iwrb.getLocalizedString("numberbutton_info","Number of denials"),col++,1);
-			
-			return T;
+		return T;
 	}
 
 	private Link getHomeLink() {
