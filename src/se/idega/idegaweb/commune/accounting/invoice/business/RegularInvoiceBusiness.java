@@ -23,12 +23,12 @@ public interface RegularInvoiceBusiness {
 	 * @param userId
 	 * @return Collection of RegularPaymentEntry
 	 */
-	Collection findRegularPaymentsForPeriodeAndUser(Date from, Date to, int userId);
+	Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId);
 	/**
 	 * 
 	 * @param from
 	 * @param to
 	 * @return Collection of RegularPaymentEntry
 	 */
-	Collection findRegularPaymentsForPeriode(Date from, Date to);
+	Collection findRegularInvoicesForPeriode(Date from, Date to);
 }
