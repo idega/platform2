@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +32,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	 * Report A29.1 of the ISI Specs
 	 */
 	public ReportableCollection getPaymentStatusByLeaguesGroupsAndDateIntervalFiltering(
+			Date dateFromFilter,
 			Collection leaguesFilter,
 			Collection regionalUnionsFilter)
 	throws RemoteException {
