@@ -578,6 +578,7 @@ public class TournamentController{
     public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound) {
         int counter = -1;
         try {
+            counter = 1;
             boolean done = false;
             Startingtime[] startingtimes;
             com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
@@ -610,7 +611,7 @@ public class TournamentController{
             com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tournamentRound.getRoundDate());
             com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tournamentRound.getRoundEndDate());
 
-            members = EntityFinder.findAll(new com.idega.projects.golf.entity.Member(),"SELECT member.* from startingtime, member, tournament_startingtime where tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND startingtime.field_id = "+tournament.getFieldId()+" AND STARTINGTIME.STARTINGTIME_DATE >= '"+startStamp.toSQLString()+"' AND STARTINGTIME.STARTINGTIME_DATE <= '"+endStamp.toSQLString()+"' order by grup_num");
+            members = EntityFinder.findAll(new com.idega.projects.golf.entity.Member(),"SELECT member.* from startingtime, member, tournament_startingtime, tournament where tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND startingtime.field_id = "+tournament.getFieldId()+" AND STARTINGTIME.STARTINGTIME_DATE >= '"+startStamp.toSQLString()+"' AND STARTINGTIME.STARTINGTIME_DATE <= '"+endStamp.toSQLString()+"' AND member.member_id = startingtime.member_id ORDER by grup_num");
         }
         catch (Exception ex) {
             ex.printStackTrace(System.err);
