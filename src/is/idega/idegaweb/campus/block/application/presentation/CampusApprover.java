@@ -152,7 +152,7 @@ public class CampusApprover extends Block{
 
       if(status.equals("A")) {
         /**@todo setja inn aftur */
-//        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
 
         CampusApplicationHome CAHome = null;
         CampusApplication CA = null;

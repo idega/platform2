@@ -116,6 +116,12 @@ public class CampusAllocator extends Block implements Campus{
       if(iwc.getSessionAttribute("sess_type_id")!=null)
         iwc.removeSessionAttribute("sess_type_id");
     }
+
+    if (iwc.getParameter("approveAll") != null) {
+      is.idega.idegaweb.campus.block.application.business.ApproveAllWithPriorityA tmp = new is.idega.idegaweb.campus.block.application.business.ApproveAllWithPriorityA();
+      tmp.approveAll();
+    }
+
     if(iwc.getParameter("type_id")!=null){
       pTypeId = new Parameter("type_id",iwc.getParameter("type_id"));
       this.iTypeId = Integer.parseInt(iwc.getParameter("type_id"));
@@ -139,6 +145,9 @@ public class CampusAllocator extends Block implements Campus{
 
     Table Frame = new Table();
     Frame.add(getHomeLink(),1,1);
+    Link tmp = new Link("Do not use");
+    tmp.addParameter("approveAll","");
+    Frame.add(tmp,1,1);
     int row = 2;
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
