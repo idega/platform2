@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/22 10:53:08 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/22 11:18:54 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -518,7 +518,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 */
 	private Table getDetailedPaymentRecordListTable
 		(final IWContext context, final Collection invoiceRecords)
-		throws RemoteException, FinderException {
+		throws RemoteException {
 		// set up header row
 		final String [][] columnNames =
 				{{ SSN_KEY, SSN_DEFAULT },
@@ -555,7 +555,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 	
 	private Table getDetailedPaymentRecordSummaryTable
 		(final IWContext context, final Collection invoiceRecords)
-		throws RemoteException, FinderException {
+		throws RemoteException {
 		final Set placements = new HashSet ();
 		final Set individuals = new HashSet ();
 		long totalAmountVatExcluded = 0;
@@ -608,7 +608,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 	
 	private void showDetailedPaymentRecordOnARow
 		(final Table table, final int row, final InvoiceRecord record,
-		 final SchoolClassMemberHome home) throws FinderException {
+		 final SchoolClassMemberHome home) {
 		final String checkPeriod = getFormattedDate
 				(record.getPeriodStartCheck ()) + " - "
 				+ getFormattedDate (record.getPeriodEndCheck ());
