@@ -430,7 +430,14 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private void addDocumentsList(IWContext iwc)throws Exception{
   	Form uForm = new Form("uform");
   	Form pForm = new Form("pform");
-  	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
+	Table  uT = new Table();
+	Table pT = new Table();
+	uForm.add(uT);
+	pForm.add(pT);
+	add(uForm);
+	add(pForm);
+	int urow = 1;
+	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);
   	
   	ColumnList unPrintedLetterDocs = new ColumnList(4);
 		
@@ -457,17 +464,18 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		addDateParametersToLink(viewUnprintedLink);
 		unPrintedLetterDocs.add(viewUnprintedLink);
 		
-		uForm.add(unPrintedLetterDocs);
-		uForm.add(Text.getBreak());
+		uT.add(unPrintedLetterDocs,1,urow++);
+		uT.add(Text.getBreak(),1,urow++);
 	
 		ColumnList printedLetterDocs = new ColumnList(3);
 		
 		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
 		
-	uForm.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
-	uForm.add(getPrintedDatesForm(iwc));
-	uForm.add(printedLetterDocs);
-	uForm.add(getCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P,count_p));
+		int prow = 1;
+	pT.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"),1,prow++);
+	pT.add(getPrintedDatesForm(iwc),1,prow++);
+	pT.add(printedLetterDocs,1,prow++);
+	pT.add(getCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P,count_p),1,prow++);
 			
 			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),1);
 			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
@@ -522,7 +530,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		unPrintedLetterDocs.setHeader(localize("printdoc.subject","Subject"),4);
 		//unPrintedLetterDocs.setHeader(localize("printdoc.file","File"),5);
 		CheckBox checkAll = new CheckBox("checkall");
-		checkAll.setSelectedOnAction(checkAll.ACTION_ON_SELECT,PRM_U_CHK,true);
+		checkAll.setToCheckOnClick(PRM_U_CHK,true);
 		unPrintedLetterDocs.setHeader(checkAll,5);
 		//unPrintedLetterDocs.setHeader(localize("printdoc.select","Select"),5);
 		unPrintedLetterDocs.setHeader(localize("printdoc.bulk_file","Bulk ID"),6);
@@ -684,4 +692,5 @@ public class PrintDocumentsViewer extends CommuneBlock {
   public void setDefaultNumberOfShownDays(int number){
   	this.defaultDays = number;
   }
+  // http://localhost:8080/nacka/index.jsp?prv_let_tp=PASS&prv_pfrm=2003-02-14+08%3A41%3A08&prv_ufrm=2003-02-14+08%3A41%3A08&prv_pto=2003-02-21+08%3A41%3A08&prv_uto=2003-02-21+08%3A41%3A08&iw_language=sv_SE&ib_page=299&idega_session_id=8BEE24A6C87C5C9514E48C3D31503DCA
 }
