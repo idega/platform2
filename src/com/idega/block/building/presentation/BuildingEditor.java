@@ -5,6 +5,7 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.*;
 import com.idega.block.building.data.*;
+import com.idega.block.building.business.BuildingCacher;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -12,6 +13,8 @@ import com.oreilly.servlet.*;
 import com.idega.data.GenericEntity;
 import com.idega.jmodule.object.Editor;
 import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title:
@@ -35,6 +38,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   protected int fontSize = 1;
   protected boolean fontBold = false;
   private Table outerTable;
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.login";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
   protected void control(ModuleInfo modinfo){
     outerTable = new Table(1,2);
@@ -83,6 +94,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
             case TYPE     : deleteApartmentType(eId);   break;
         }
         eId = 0;
+        BuildingCacher.setToReloadNextTimeReferenced();
       }
     }
     outerTable.add(makeLinkTable(iAction),1,1);
@@ -542,32 +554,32 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       LinkTable.setCellspacing(3);
       headerTable.add(LinkTable,1,2);
 
-    Link B1 = new Link("Garður");
+    Link B1 = new Link(iwrb.getLocalizedString("complex","Complex"));
       B1.setFontStyle("text-decoration: none");
       B1.setFontColor("#FFFFFF");
       B1.setBold();
       B1.addParameter(sAction,COMPLEX);
-    Link B2 = new Link("Hús");
+    Link B2 = new Link(iwrb.getLocalizedString("building","Building"));
       B2.setFontStyle("text-decoration: none");
       B2.setFontColor("#FFFFFF");
       B2.setBold();
       B2.addParameter(sAction,BUILDING);
-    Link B3 = new Link("Hæð");
+    Link B3 = new Link(iwrb.getLocalizedString("floor","Floor"));
       B3.setFontStyle("text-decoration: none");
       B3.setFontColor("#FFFFFF");
       B3.setBold();
       B3.addParameter(sAction,FLOOR);
-    Link B4 = new Link("Flokkur");
+    Link B4 = new Link(iwrb.getLocalizedString("category","Category"));
       B4.setFontStyle("text-decoration: none");
       B4.setFontColor("#FFFFFF");
       B4.setBold();
       B4.addParameter(sAction,CATEGORY);
-    Link B5 = new Link("Gerð");
+    Link B5 = new Link(iwrb.getLocalizedString("type","Type"));
       B5.setFontStyle("text-decoration: none");
       B5.setFontColor("#FFFFFF");
       B5.setBold();
       B5.addParameter(sAction,TYPE);
-    Link B6 = new Link("Íbúð");
+    Link B6 = new Link(iwrb.getLocalizedString("apartment","Apartment"));
       B6.setFontStyle("text-decoration: none");
       B6.setFontColor("#FFFFFF");
       B6.setBold();
@@ -621,7 +633,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     imageInsert.setHasUseBox(false);
     imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
-    imageInsert.setAdminURL("/image/imagesaver.jsp");
+    imageInsert.setAdminURL("/image/imageview.jsp");
     //imageInsert.setDefaultImageURL(sMemberImageURL);
     imageObject = imageInsert;
     return imageObject;
@@ -645,7 +657,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T.setCellpadding(8);
       T.setAlignment("center");
       T.setWidth("100%");
-    Table T2 = new Table(1,1);
+    Table T2 = new Table();
       T2.setCellpadding(8);
       T2.setAlignment("center");
       T2.setHeight("100%");
@@ -666,14 +678,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T.add(HI);
     T.add(HA);
     T.add(categories,1,1);
-    T.add(formatText("Name:"),1,2);
+    T.add(formatText(iwrb.getLocalizedString("photo","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
-    T.add(formatText("Info:"),1,3);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add( makeTextArea(sInfo),1,3);
-    T2.add(new SubmitButton("save","Save"),1,1);
-    T2.add(new SubmitButton("del","Delete"),1,1);
+    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
+    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
     form.add(Frame);
     return form;
   }
@@ -730,27 +742,27 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     serie.setLength(5);
     serie.setMaxlength(5);
     T.add(houses,1,1);
-    T.add(formatText("Name:"),1,2);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
-    T.add(formatText("Address:"),1,3);
+    T.add(formatText(iwrb.getLocalizedString("address","Address")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add(address,1,3);
-    T.add(formatText("Complex:"),1,4);
+    T.add(formatText(iwrb.getLocalizedString("complex","Complex")),1,4);
     T.add(Text.getBreak(),1,4);
     T.add(complex,1,4);
-    T.add(formatText("Serie: "),1,5);
+    T.add(formatText(iwrb.getLocalizedString("serie","Serie")),1,5);
     T.add(serie,1,5);
-    T.add(formatText("Info:"),1,6);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,6);
     T.add(Text.getBreak(),1,6);
     T.add( makeTextArea(sInfo),1,6);
 
-    T2.add(formatText("Photo:"),1,1);
+    T2.add(formatText(iwrb.getLocalizedString("photo","Photo")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(iPhotoId,"photoid"),1,1);
     Frame.add(HI);
-    T2.add(new SubmitButton("save","Save"),1,2);
-    T2.add(new SubmitButton("del","Delete"),1,2);
+    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
+    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
     form.add(Frame);
     return form;
   }
@@ -797,22 +809,22 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
 
     T.add(floors,1,1);
 
-    T.add(formatText("Name:"),1,2);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
-    T.add(formatText("Building:"),1,3);
+    T.add(formatText(iwrb.getLocalizedString("building","Building")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add(buildings,1,3);
-    T.add(formatText("Info:"),1,4);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,4);
     T.add(Text.getBreak(),1,4);
     T.add( makeTextArea(sInfo),1,4);
-    T2.add(formatText("Photo:"),1,1);
+    T2.add(formatText(iwrb.getLocalizedString("photo","Photo")),1,1);
     T2.add(Text.getBreak(),1,1);
     T2.add(this.makeImageInput(1,"photoid"),1,1);
     Frame.add(HI);
     Frame.add(HA);
-    T2.add(new SubmitButton("save","Save"),1,2);
-    T2.add(new SubmitButton("del","Delete"),1,2);
+    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
+    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
     form.add(Frame);
     return form;
   }
@@ -856,14 +868,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T.add(HI);
     T.add(HA);
     T.add(categories,1,1);
-    T.add(formatText("Name:"),1,2);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
-    T.add(formatText("Info:"),1,3);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add( makeTextArea(sInfo),1,3);
-    T2.add(new SubmitButton("save","Save"),1,1);
-    T2.add(new SubmitButton("del","Delete"),1,1);
+    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,1);
+    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,1);
     form.add(Frame);
     return form;
   }
@@ -957,44 +969,44 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T.add(HI);
     T.add(HA);
 
-    T.add(formatText("Type:"),1,1);
+    T.add(formatText(iwrb.getLocalizedString("type","Type")),1,1);
     T.add(Text.getBreak(),1,1);
     T.add(apartmenttypes,1,1);
-    T.add(formatText("Name:"),1,2);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
-    T.add(formatText("Category: "),1,3);
+    T.add(formatText(iwrb.getLocalizedString("category","Category")),1,3);
     T.add(categories,1,3);
-    InnerTable.add(formatText("Room count"),1,1);
+    InnerTable.add(formatText(iwrb.getLocalizedString("room_count","Room count")),1,1);
     InnerTable.add(roomcount,2,1);
-    InnerTable.add(formatText("Area(m2)"),3,1);
+    InnerTable.add(formatText(iwrb.getLocalizedString("area","Area(m2)")),3,1);
     InnerTable.add(area,4,1);
-    InnerTable.add(formatText("Kitchen"),1,2);
+    InnerTable.add(formatText(iwrb.getLocalizedString("kitchen","Kitchen")),1,2);
     InnerTable.add(kitch,2,2);
-    InnerTable.add(formatText("Bathroom"),3,2);
+    InnerTable.add(formatText(iwrb.getLocalizedString("bath","Bath")),3,2);
     InnerTable.add(bath,4,2);
-    InnerTable.add(formatText("Storage"),1,3);
+    InnerTable.add(formatText(iwrb.getLocalizedString("storage","Storage")),1,3);
     InnerTable.add(stor,2,3);
-    InnerTable.add(formatText("Study"),3,3);
+    InnerTable.add(formatText(iwrb.getLocalizedString("study","Study")),3,3);
     InnerTable.add(study,4,3);
-    InnerTable.add(formatText("Loft"),1,4);
+    InnerTable.add(formatText(iwrb.getLocalizedString("loft","Loft")),1,4);
     InnerTable.add(loft,2,4);
-    InnerTable.add(formatText("Furniture"),3,4);
+    InnerTable.add(formatText(iwrb.getLocalizedString("furniture","Furniture")),3,4);
     InnerTable.add(furni,4,4);
-    InnerTable.add(formatText("Balcony"),1,5);
+    InnerTable.add(formatText(iwrb.getLocalizedString("balcony","Balcony")),1,5);
     InnerTable.add(balc,2,5);
-    InnerTable.add(formatText("Rent"),1,6);
+    InnerTable.add(formatText(iwrb.getLocalizedString("Rent")),1,6);
     InnerTable.add(rent,2,6);
     T.add(InnerTable,1,4);
-    T.add(formatText("Info:"),1,5);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,5);
     T.add(Text.getBreak(),1,5);
     T.add( makeTextArea(sInfo),1,5);
-    T.add(formatText("ExtraInfo:"),1,6);
+    T.add(formatText(iwrb.getLocalizedString("extra_info","ExtraInfo:")),1,6);
     T.add(Text.getBreak(),1,6);
     T.add( makeTextArea("extra_info",sExtraInfo),1,6);
-    T2.add(formatText("Photo:"),1,1);
+    T2.add(formatText(iwrb.getLocalizedString("photo","Photo:")),1,1);
     T2.add(this.makeImageInput(iImageId,"tphotoid"),1,1);
-    T2.add(formatText("Plan:"),1,2);
+    T2.add(formatText(iwrb.getLocalizedString("plan","Plan:")),1,2);
     T2.add(this.makeImageInput(iPlanId,"tplanid"),1,2);
     form.maintainParameter("tphotoid");
     form.maintainParameter("tplanid");
@@ -1056,7 +1068,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       chooserWindow.setWidth(550);
       chooserWindow.setHeight(500);
       chooserWindow.setResizable(true);
-    Link chooser = new Link(new Image("/pics/list.gif","Select appartment",13,13),chooserWindow);
+    Link chooser = new Link(new Image("/pics/list.gif",iwrb.getLocalizedString("select_apartment","Select appartment"),13,13),chooserWindow);
 
     form.add(HI);
     setStyle(name);
@@ -1068,32 +1080,32 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     name.setLength(30);
     //T.add(apartments,1,2);
     int a = 1;
-    T.add(formatText("Name:"),1,1);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,1);
     T.add(Text.getBreak(),1,1);
     T.add(name,1,1);
     T.add(formatText("&nbsp;&nbsp;"));
     T.add(chooser,1,1);
-    T.add(formatText("Floor:"),1,2);
+    T.add(formatText( iwrb.getLocalizedString("floor","Floor")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(floors,1,2);
-    T.add(formatText("Type:"),1,3);
+    T.add(formatText(iwrb.getLocalizedString("type","Type")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add(types,1,3);
-    T.add(formatText("Serie: "),1,4);
+    T.add(formatText(iwrb.getLocalizedString("serie","Serie")),1,4);
     T.add(serie,1,4);
-    T.add(formatText("Rentable: "),1,5);
+    T.add(formatText(iwrb.getLocalizedString("rentable","Rentable")),1,5);
     T.add(rentable,1,5);
-    T.add(formatText("Info:"),1,6);
+    T.add(formatText(iwrb.getLocalizedString("info","Info")),1,6);
     T.add(Text.getBreak(),1,6);
     T.add( makeTextArea(sInfo),1,6);
-    T2.add(formatText("Photo:"),1,1);
+    T2.add(formatText(iwrb.getLocalizedString("photo","Photo:")),1,1);
     T2.add(this.makeImageInput(1,"photoid"),1,1);
     form.add(HI);
     form.add(HA);
     if(e)
       form.add(HID);
-    T2.add(new SubmitButton("save","Save"),1,2);
-    T2.add(new SubmitButton("del","Delete"),1,2);
+    T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
+    T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
     form.add(Frame);
     return form;
   }
@@ -1176,16 +1188,16 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
         T.setCellspacing(2);
 
         int row = 1,col = 1;
-        T.add(getHeaderText("Name"),col++,row);
-        T.add(getHeaderText("Area(m2)"),col++,row);
-        T.add(getHeaderText("Rooms"),col++,row);
-        T.add(getHeaderText("Kitchen"),col++,row);
-        T.add(getHeaderText("Bath"),col++,row);
-        T.add(getHeaderText("Storage"),col++,row);
-        T.add(getHeaderText("Study"),col++,row);
-        T.add(getHeaderText("Loft"),col++,row);
-        T.add(getHeaderText("Furniture"),col++,row);
-        T.add(getHeaderText("Balcony"),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("name","Name")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("area","Area(m2)")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("rooms","Rooms")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("kitchen","Kitchen")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("bath","Bath")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("storage","Storage")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("study","Study")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("loft","Loft")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("furniture","Furniture")),col++,row);
+        T.add(getHeaderText(iwrb.getLocalizedString("balcony","Balcony")),col++,row);
         T.setColumnAlignment(3,"center");
         T.setColumnAlignment(4,"center");
         T.setColumnAlignment(5,"center");
@@ -1354,6 +1366,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   }
 
   public void main(ModuleInfo modinfo)  {
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
     try{
     isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     this.getParentPage().setName("b_editor");
