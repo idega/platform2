@@ -66,8 +66,8 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	      boolean status = false;
 	      
 	      	
-	      ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
-	      ImportFile file = (ImportFile)Class.forName(fileClass).newInstance();
+	      ImportFileHandler handler = this.getImportFileHandler(handlerClass);
+	      ImportFile file = this.getImportFile(fileClass);
 	      
 	      file.setFile(new File(filePath));
 	      	      
@@ -94,8 +94,8 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	public boolean importRecords(String handlerClass,String fileClass,String filePath)throws RemoteException {
 		try{
 	      boolean status = false;
-	      ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
-	      ImportFile file = (ImportFile)Class.forName(fileClass).newInstance();
+	      ImportFileHandler handler = this.getImportFileHandler(handlerClass);
+	      ImportFile file = this.getImportFile(fileClass);
 	      
 	      file.setFile(new File(filePath));
 	      	      
@@ -118,5 +118,24 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	public GroupBusiness getGroupBusiness() throws Exception{
     	return (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
   	}
+  	
+  	public ImportFileHandler getImportFileHandler(String handlerClass) throws Exception{
+  		//tempory this should get the interface for the bean but is the beans them selves are in the database now!!!
+  		//FIX!!
+  		//
+    	ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
+	    ((IBOServiceBean)handler).setIWApplicationContext(this.getIWApplicationContext());
+	    return handler;
+  	}
+ 
+  	public ImportFile getImportFile(String fileClass) throws Exception{
+	      return (ImportFile)Class.forName(fileClass).newInstance();
+  	}
+
+  	
+  	
+  	
+  	
+  	
 
 }
