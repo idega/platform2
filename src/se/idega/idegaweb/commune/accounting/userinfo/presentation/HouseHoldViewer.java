@@ -386,10 +386,10 @@ public class HouseHoldViewer extends AccountingBlock {
 		add(form);
 		*/
 		ButtonPanel bPanel  = new ButtonPanel(this);
-		bPanel.addObject(drp);
-		bPanel.addObject(getUserEditorButton(iwc));
-		bPanel.addObject(getBruttoIncomeEditorButton(iwc));
-		bPanel.addObject(getLowIncomeEditorButton(iwc));
+		bPanel.add(drp);
+		bPanel.add(getUserEditorButton(iwc));
+		bPanel.add(getBruttoIncomeEditorButton(iwc));
+		bPanel.add(getLowIncomeEditorButton(iwc));
 		appForm.setButtonPanel(bPanel);
 		
 	}

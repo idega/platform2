@@ -9,6 +9,20 @@
  */
 package se.idega.idegaweb.commune.school.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceComparator;
+import se.idega.idegaweb.commune.school.business.SchoolFreetimeWriter;
+import se.idega.idegaweb.commune.school.data.SchoolChoice;
+import se.idega.idegaweb.commune.school.event.SchoolEventListener;
+
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
@@ -18,23 +32,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
-
-import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-import se.idega.idegaweb.commune.school.business.SchoolChoiceComparator;
-import se.idega.idegaweb.commune.school.business.SchoolFreetimeWriter;
-import se.idega.idegaweb.commune.school.data.SchoolChoice;
-import se.idega.idegaweb.commune.school.event.SchoolEventListener;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * This class does something very clever.....

@@ -11,7 +11,6 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
 
 import com.idega.block.school.data.SchoolClassMember;
