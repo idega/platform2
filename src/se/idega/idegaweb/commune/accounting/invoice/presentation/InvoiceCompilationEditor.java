@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/05 14:44:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/06 14:29:35 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.83 $
+ * @version $Revision: 1.84 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -2074,11 +2074,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                     : ""));
     }
 
-    private void addSmallPeriodText (final java.util.Map map, final String key,
+    /*private void addSmallPeriodText (final java.util.Map map, final String key,
                                      final Date date) {
         map.put (key, getSmallText (null != date ? periodFormatter.format (date)
                                     : ""));
-    }
+    }*/
 
     private Image getEditIcon () {
         return getEditIcon (localize (EDIT_ROW_KEY,
