@@ -146,7 +146,7 @@ public class QueryHelper {
 				Iterator iter = listOfRelatedEntities.iterator();
 				XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
 				if(entitiesLock)
-					related.setAttribute(QueryXMLConstants.LOCK,Boolean.toString(entitiesLock));
+					related.setAttribute(QueryXMLConstants.LOCK,String.valueOf(entitiesLock));
 				while(iter.hasNext()){
 					related.addContent(((QueryPart)iter.next()).getQueryElement());
 				}
@@ -157,7 +157,7 @@ public class QueryHelper {
 					iter = listOfFields.iterator();
 					XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
 					if(fieldsLock)
-						fields.setAttribute(QueryXMLConstants.LOCK,Boolean.toString(entitiesLock));
+						fields.setAttribute(QueryXMLConstants.LOCK,String.valueOf(entitiesLock));
 					while(iter.hasNext()){
 						fields.addContent(((QueryPart)iter.next()).getQueryElement());
 					}
