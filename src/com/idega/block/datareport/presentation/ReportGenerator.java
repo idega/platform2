@@ -554,6 +554,10 @@ public class ReportGenerator extends Block {
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		if (!iwc.isParameterSet(PRM_REPORT_NAME)) {
+			_reportName = iwrb.getLocalizedString(PRM_REPORT_NAME, _reportName);
+		}
+		
 		try {
 			if (_queryPK != null) {
 				String genState = iwc.getParameter(PRM_STATE);
