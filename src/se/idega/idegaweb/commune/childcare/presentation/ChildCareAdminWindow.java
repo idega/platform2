@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 import javax.ejb.FinderException;
 
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -525,15 +527,31 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
+		
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		boolean hasBankId = false;
+		try{
+			hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)application.getOwner().getPrimaryKey()).intValue());
+		}catch(SQLException ex){
+			//ignore
+		}
+		
+		if (hasBankId){
+			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+			table.add(getSmallText("" + application.getCareTime()), 1, row++);
+			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, "" + application.getCareTime()));
+			
+		} else {
+			TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+			textInput.setLength(2);
+			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
 
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
-		textInput.setLength(2);
-		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
-		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
+			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+			table.add(textInput, 1, row++);
+		}
 
-		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
-		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
-		table.add(textInput, 1, row++);
 		
 		DropdownMenu groups = getGroups(-1, -1);
 		groups.addMenuElementFirst("-1","");
@@ -1000,10 +1018,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					String value = iwc.getParameter(name);
 					if (value != null && value.length() != 0) {
 						fieldValues.put(name.substring(PARAMETER_TEXT_FIELD.length()), iwc.getParameter(name));
+						ChildCareApplication application = getBusiness().getChildCareContractArchiveHome().findApplicationByContract(((Integer)contract.getPrimaryKey()).intValue()).getApplication();
+						if (name.equals(PARAMETER_TEXT_FIELD + "care-time")){
+							application.setCareTime(Integer.parseInt(value));
+							application.store();
+						}
 					}
 				}
 			}
-			
+
 			contract.setUnsetFields(fieldValues);
 			ContractTagHome contractHome = (ContractTagHome) IDOLookup.getHome(ContractTag.class);
 			Collection tags = contractHome.findAllByCategory(contract.getCategoryId().intValue());
@@ -1132,7 +1155,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		nbsSigningBlock.setParameter(PARAMETER_METHOD, ""+METHOD_SIGN_CONTRACT);		
 		nbsSigningBlock.setParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
 		table.add(nbsSigningBlock, 1, 1);
-		table.add(close, 1, 2);
+		CloseButton closeBtn = new CloseButton(localize("ccconsign_CANCEL", "avbryt"));
+		closeBtn.setAsImageButton(true);
+		table.add(closeBtn, 1, 2);
 		table.setHeight(2, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);		
 		return table; 
@@ -1142,6 +1167,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void processSignContract(IWContext iwc) throws Exception{
 			NBSSigningBlock nbsSigningBlock = new NBSSigningBlock();
 			nbsSigningBlock.processSignContract(iwc);	
+
+			ChildCareApplication application = getBusiness().getChildCareContractArchiveHome().findApplicationByContract(((Integer)getContract(iwc).getPrimaryKey()).intValue()).getApplication();
+			
+			User owner = application.getOwner();
+			com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
+						
+			getBusiness().sendMessageToProvider(
+				application,
+				localize("ccecw_signcon_subject", "Contract signed"),
+				owner.getName() + " " + localize("ccecw_signcon_body", " has signed the contract for ") + " " +
+				child.getName() + " " +  child.getPersonalID() + ".",
+				application.getOwner());	
+			
 	}
 			
 	/**
