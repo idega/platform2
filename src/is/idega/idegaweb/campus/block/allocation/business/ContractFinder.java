@@ -558,11 +558,11 @@ public abstract class ContractFinder {
     sql.append(" and con.app_applicant_id = p.app_applicant_id");
     //sql.append(" and con.status in ('T','E') ");
     if(iComplexId > 0){
-      sql.append(" and bu_complex_id  = ");
+      sql.append(" and b.bu_complex_id  = ");
       sql.append(iComplexId);
     }
     if(iApartmentTypeId  > 0){
-      sql.append(" and bu_aprt_type_id = ");
+      sql.append(" and a.bu_aprt_type_id = ");
       sql.append(iApartmentTypeId);
     }
     //System.err.println(sql.toString());
