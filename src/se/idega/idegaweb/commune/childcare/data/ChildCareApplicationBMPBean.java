@@ -427,7 +427,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendOrderBy("c."+QUEUE_ORDER);
+		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}		
