@@ -87,6 +87,11 @@ public class CampusApprover extends PresentationObjectContainer{
     }
 
     if(isAdmin){
+			if(iwc.getParameter("cam_app_trash")!=null){
+				  int trashid = Integer.parseInt(iwc.getParameter("cam_app_trash"));
+					trashApplication(trashid);
+			}
+
       if(iwc.getParameter("view")!=null){
         int id = Integer.parseInt(iwc.getParameter("view"));
         add(makeApplicationTable(id,false,iwc,iwrb));
@@ -101,14 +106,13 @@ public class CampusApprover extends PresentationObjectContainer{
           bEdit = false;
         }
 
-				System.err.println("before save id = "+id);
         if(iwc.getParameter("save")!= null){
           id = updateWholeApplication(iwc,id);
         }
+
         else{
           updateApplication(iwc,id);
         }
-				System.err.println("after save id = "+id);
 
         if(bEdit){
           add(makeApplicationForm(id,bEdit,iwc,iwrb));
@@ -156,6 +160,20 @@ public class CampusApprover extends PresentationObjectContainer{
     }
   }
 
+	private void trashApplication(int id){
+    //int id = Integer.parseInt(iwc.getParameter("application_id"));
+
+    try{
+      Application A = new Application(id);
+      A.setStatus(A.statusGarbage);
+      A.update();
+    }
+    catch(Exception e){
+      e.printStackTrace();
+
+    }
+  }
+
   private int updateWholeApplication(IWContext iwc,int id){
 		int returnid = id;
     try {
@@ -192,12 +210,9 @@ public class CampusApprover extends PresentationObjectContainer{
         try {
           eApplicant.update();
           eCampusApplication.update();
-					//if(L!=null){
-						System.err.println("applied length :"+L.size() );
 						for (int i = 0; i < L.size(); i++) {
 							Applied applied = (Applied) L.get(i);
 							int aid = applied.getID();
-							System.err.println("applied id :"+aid);
 							if(aid == -1)
 								applied.insert();
 							else if(aid < -1)
@@ -205,7 +220,6 @@ public class CampusApprover extends PresentationObjectContainer{
 							else if(aid > 0)
 								applied.update();
 						}
-					//}
         }
         catch (SQLException ex) {
           ex.printStackTrace();
@@ -232,9 +246,9 @@ public class CampusApprover extends PresentationObjectContainer{
       int len = L.size();
       int row = 1;
       int col = 1;
-       System.out.println("lengd:"+len);
-      Image printImage = new Image("/pics/print.gif");
-      Image viewImage = new Image("/pics/view.gif");
+      Image printImage = iwb.getImage("print.gif");
+      Image viewImage = iwb.getImage("view.gif");
+			Image trashImage = iwb.getImage("trashcan.gif");
       T.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
@@ -245,6 +259,12 @@ public class CampusApprover extends PresentationObjectContainer{
       T.add(headerText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("v","V")),col++,row);
       T.add(headerText(iwrb.getLocalizedString("p","P")),col++,row);
+			boolean showcan = false;
+			if(sGlobalStatus.equals(Application.statusRejected)){
+				T.add(headerText(iwrb.getLocalizedString("g","g")),col++,row);
+				showcan = true;
+			}
+
       int lastcol = 1;
       for (int i = 0; i < len; i++) {
         row = i+2;
@@ -262,7 +282,8 @@ public class CampusApprover extends PresentationObjectContainer{
         T.add(Edit.formatText(A.getResidencePhone()!=null?A.getResidencePhone():""),col++,row);
         T.add(Edit.formatText(A.getMobilePhone()!=null?A.getMobilePhone():""),col++,row);
         T.add((getPDFLink(printImage,A.getID())),col++,row);
-        T.add( getApplicationLink(viewImage,a.getID()),col,row);
+        T.add( getApplicationLink(viewImage,a.getID()),col++,row);
+				T.add( getTrashLink(trashImage,a.getID()),col,row);
         if(lastcol < col)
           lastcol = col;
       }
@@ -637,7 +658,6 @@ public class CampusApprover extends PresentationObjectContainer{
     String sPo = iwc.getParameter("ti_po");
     String sResPho = iwc.getParameter("ti_respho");
     String sMobPho = iwc.getParameter("ti_mobpho");
-    System.err.print(sMobPho);
     String sEmail = iwc.getParameter("ti_email");
     String sFac = iwc.getParameter("ti_facult");
     String sTrack= iwc.getParameter("ti_track");
@@ -741,13 +761,13 @@ public class CampusApprover extends PresentationObjectContainer{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("spouse","Spouse")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("school","School")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("school","School")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
       col = 2;
       row = 2;
 
@@ -1015,19 +1035,19 @@ public class CampusApprover extends PresentationObjectContainer{
       Edit.setStyle(drpTwo);
       Edit.setStyle(drpThree);
 
-      T.add(Edit.titleText(1),1,row);
+      T.add(Edit.formatText(1),1,row);
       T.add(drpOne,2,row++);
-      T.add(Edit.titleText(2),1,row);
+      T.add(Edit.formatText(2),1,row);
       T.add(drpTwo,2,row++);
-      T.add(Edit.titleText(3),1,row);
+      T.add(Edit.formatText(3),1,row);
       T.add(drpThree,2,row++);
 
       col = 3;
       row = 1;
        T.add(headerText(iwrb.getLocalizedString("requests","Requests")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 4;
       row = 2;
       idegaTimestamp iT = new idegaTimestamp();
@@ -1072,7 +1092,6 @@ public class CampusApprover extends PresentationObjectContainer{
 		Vector V = new Vector();
 		if(eCampusApplication == null)
 			eCampusApplication = new CampusApplication();
-    //System.err.println("RentFrom "+sRentFrom);
     if(sRentFrom!= null)
       eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
     if("true".equals(sFurni)){
@@ -1097,7 +1116,6 @@ public class CampusApprover extends PresentationObjectContainer{
         applied1 = (Applied) lApplied.get(0);
       }
       else{
-				System.err.println("lapplied er nul");
         applied1 = new Applied();
 				lApplied = (List)new Vector();
 				lApplied.add(applied1);
@@ -1373,6 +1391,12 @@ public class CampusApprover extends PresentationObjectContainer{
     T.setFontColor(Edit.colorWhite);
     T.setFontSize(1);
     return T;
+  }
+
+	public Link getTrashLink(PresentationObject MO,int cam_app_id){
+    Link L = new Link(MO);
+    L.addParameter("cam_app_trash",cam_app_id);
+    return L;
   }
 
   public Link getPDFLink(PresentationObject MO,int cam_app_id){
