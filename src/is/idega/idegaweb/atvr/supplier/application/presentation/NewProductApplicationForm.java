@@ -109,8 +109,10 @@ public class NewProductApplicationForm extends Block {
 			return;
 		}
 		catch (RemoteException e) {
+			e.printStackTrace();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		add("Villa við sendingu umsóknar");
@@ -120,9 +122,6 @@ public class NewProductApplicationForm extends Block {
 		int typeId = parseType(_type);
 
 		Form form = new Form();
-//		DropdownMenu types = (DropdownMenu) getTypeDropdown(iwc, typeId);
-//		form.add(types);
-//		types.setToSubmit();
 
 		if (typeId == TYPE_TRIAL || typeId == TYPE_SPECIAL || typeId == TYPE_MONTH) {
 			Table t = new Table(2, 12);
@@ -162,7 +161,7 @@ public class NewProductApplicationForm extends Block {
 			}
 
 			DropdownMenu category = (DropdownMenu) getCategoryDropdown(iwc, selectedCategory);
-			category.setToSubmit();
+//			category.setToSubmit();
 			t.add(category, 2, 8);
 			t.add(getSubCategoryDropdown(iwc, selectedCategory), 2, 9);
 
@@ -206,7 +205,7 @@ public class NewProductApplicationForm extends Block {
 			}
 
 			DropdownMenu category = (DropdownMenu) getCategoryDropdown(iwc, selectedCategory);
-			category.setToSubmit();
+//			category.setToSubmit();
 			t.add(category, 2, 2);
 			t.add(getSubCategoryDropdown(iwc, selectedCategory), 2, 3);
 
@@ -262,8 +261,6 @@ public class NewProductApplicationForm extends Block {
 		menu.addMenuElement(1, "England");
 		menu.addMenuElement(2, "Svíþjóð");
 		menu.addMenuElement(3, "Finnland");
-
-		//		menu.setSelectedElement(selected);
 
 		return menu;
 	}
