@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.12 2003/08/28 10:31:08 aron Exp $
+ * $Id: ButtonPanel.java,v 1.13 2003/09/02 09:56:44 goranb Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,20 +9,20 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import com.idega.builder.data.IBPage;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.builder.data.IBPage;
 
 /**
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/28 10:31:08 $
+ * Last modified: $Date: 2003/09/02 09:56:44 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -53,6 +53,20 @@ public class ButtonPanel extends AccountingBlock {
 		SubmitButton button = new SubmitButton(parameter, localize(textKey, defaultText));
 		addButton(button);
 	}
+
+  // Added by Göran Borgman 20030902
+  /**
+   * Adds a localized and formatted submit button to the panel.
+   * The buttoms are added from left to right.
+   * @param parameter the form parameter name for the button
+   * @param parameterValue the form parameter value sent with this parameter
+   * @param textKey the text to localize
+   * @param defaultText the default localized text
+   */
+  public void addLocalizedButton(String parameterName, String parameterValue, String textKey, String defaultText) {
+    SubmitButton button = new SubmitButton(localize(textKey, defaultText), parameterName, parameterValue);
+    addButton(button);
+  }
 
 	/**
 	 * Adds a localized and formatted button to the panel with a window to open.
