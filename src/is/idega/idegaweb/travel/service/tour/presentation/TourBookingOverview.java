@@ -150,7 +150,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
             if (_supplier != null) {
               bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
             }else if (_reseller != null) {
-              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,prod,tempStamp);
+              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,getContract(prod),prod,tempStamp);
             }
             if (bContinue) {
               iCount = 0;
@@ -186,7 +186,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
                 //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                 iAvailable = iCount - iBooked - iAssigned;
               }else if (_reseller != null) {
-                iCount = _contract.getAlotment();
+                iCount = getContract(prod).getAlotment();
                 iBooked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = 0;
 
@@ -241,7 +241,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
                 table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                 table.add(btnBook,8,row);
               } else if (_reseller != null) {
-                if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, tempStamp))
+                if (!getTravelStockroomBusiness(iwc).getIfExpired(getContract(prod), tempStamp))
                   table.add(btnBook,8,row);
               }
               table.setRowColor(row,theColor);
