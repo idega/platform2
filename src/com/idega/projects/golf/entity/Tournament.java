@@ -57,8 +57,9 @@ public class Tournament extends GolfEntity{
 
                 // added 25.4.2001
                 addAttribute("FIRST_REGISTRATION_DATE","Fyrsti skráningardagur",true,true,"java.sql.Timestamp");
-                addAttribute("max_handicap","Hámarksforgjöf",true,true,"java.lang.Float");
-
+                addAttribute("max_handicap","Hámarksforgjöf karla",true,true,"java.lang.Float");
+                // added 27.4.2001
+                addAttribute("max_female_handicap","Hámarksforgjöf kvenna",true,true,"java.lang.Float");
         }
 
 	public void setDefaultValues(){
@@ -78,6 +79,8 @@ public class Tournament extends GolfEntity{
                 end.setSecond(59);
 		setLastRegistrationDate(end.getTimestamp());
                 setNumberOfHoles(18);
+                setMaxHandicap(36);
+                setMaxFemaleHandicap(36);
         }
 
 	public String getEntityName(){
@@ -106,6 +109,14 @@ public class Tournament extends GolfEntity{
 
 	public float getMaxHandicap(){
 		return getFloatColumnValue("max_handicap");
+	}
+
+	public void setMaxFemaleHandicap(float maxFemaleHandicap){
+		setColumn("max_female_handicap",maxFemaleHandicap);
+	}
+
+	public float getFemaleMaxHandicap(){
+		return getFloatColumnValue("max_female_handicap");
 	}
 
 	public void setRegistrationForm(String form){
