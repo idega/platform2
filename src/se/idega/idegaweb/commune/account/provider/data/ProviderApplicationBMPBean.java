@@ -1,0 +1,76 @@
+package se.idega.idegaweb.commune.account.provider.data;
+
+import com.idega.data.*;
+import com.idega.block.process.data.*;
+
+/**
+ * Title:        idegaWeb
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega software
+ * @author
+ * @version 1.0
+ */
+
+public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements ProviderApplication,Case{
+
+  private static final String CASE_CODE_KEY="ANANSKO";
+  private static final String TABLE_NAME="COMM_ACC_PROV";
+  private static final String COLUMN_EMAIL="PROV_EMAIL";
+  private static final String COLUMN_NAME="PROV_NAME";
+  private static final String COLUMN_ADDRESS="PROV_ADDRESS";
+  private static final String COLUMN_PLACES="PROV_PLACES";
+
+
+  public void initializeAttributes() {
+    addGeneralCaseRelation();
+    this.addAttribute(COLUMN_EMAIL,"Admin email",String.class);
+    this.addAttribute(COLUMN_NAME,"Provider name",String.class);
+    this.addAttribute(COLUMN_ADDRESS,"Provider address",String.class);
+    this.addAttribute(COLUMN_PLACES,"Provider places",Integer.class);
+
+  }
+  public String getEntityName() {
+    return this.TABLE_NAME;
+  }
+  public String getCaseCodeKey() {
+    return CASE_CODE_KEY;
+  }
+  public String getCaseCodeDescription() {
+    return "Application for School Administrators";
+  }
+
+
+  public String getEmailAddress(){
+    return this.getStringColumnValue(COLUMN_EMAIL);
+  }
+
+  public void setEmailAddress(String emailAddress){
+    this.setColumn(COLUMN_EMAIL,emailAddress);
+  }
+
+
+  public String getName(){
+    return this.getStringColumnValue(COLUMN_NAME);
+  }
+
+  public void setName(String providerName){
+    this.setColumn(COLUMN_NAME,providerName);
+  }
+
+  public String getAddress(){
+    return this.getStringColumnValue(COLUMN_ADDRESS);
+  }
+
+  public void setAddress(String providerAddress){
+    this.setColumn(COLUMN_ADDRESS,providerAddress);
+  }
+
+  public int getNumberOfPlaces(){
+    return this.getIntColumnValue(COLUMN_PLACES);
+  }
+
+  public void setNumberOfPlaces(int places){
+    this.setColumn(COLUMN_PLACES,places);
+  }
+}
