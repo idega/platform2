@@ -182,7 +182,7 @@ public class NewsFinder {
     sql.append(Content.getColumnNameCreated());
     sql.append(" desc ");
     //
-		System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(new NwNews(),sql.toString());
     }
