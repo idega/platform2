@@ -61,6 +61,7 @@ public class RunResultViewer extends Block {
 	private RunBusiness _runBiz;
 	private GroupBusiness _groupBiz;
 	
+	private Object runPK;
 	private Group run;
 	private SelectorUtility util;
 	
@@ -70,6 +71,10 @@ public class RunResultViewer extends Block {
 		_collator = Collator.getInstance(iwc.getCurrentLocale());
 		util = new SelectorUtility();
 
+		if (runPK != null) {
+			run = getGroupBiz().getGroupByGroupID(Integer.parseInt(runPK.toString()));
+		}
+		
 		if (run == null) {
 			add("No run set...");
 			return;
@@ -296,7 +301,7 @@ public class RunResultViewer extends Block {
 	/**
 	 * @param run The run to set.
 	 */
-	public void setRun(Group run) {
-		this.run = run;
+	public void setRun(Object runPK) {
+		this.runPK = runPK;
 	}
 }
