@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.6 2001/08/20 17:51:46 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.7 2001/08/21 13:53:45 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -198,7 +198,7 @@ public class ApplicationForm extends ModuleObjectContainer {
     input8.setLength(3);
     input8.setStyle("formstyle");
 
-    t.setWidth(1,"250");
+    t.setWidth(1,"220");
     t.setCellpadding(5);
     //t.setWidth(1,"50%");
     //t.setWidth(2,"50%");

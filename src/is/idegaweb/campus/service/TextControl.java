@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.4 2001/08/20 17:16:16 laddi Exp $
+ * $Id: TextControl.java,v 1.5 2001/08/21 13:53:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,14 +79,13 @@ public class TextControl extends JModuleObject {
   }
 
   public void doMenu(){
-    Table T = new Table(3,1);
-     T.setWidth("100%");
-     T.setBorder(0);
-     T.setWidth(1,"50%");
-     T.setWidth(3,"50%");
-     T.setWidth(2,"20");
-     T.setVerticalAlignment(1,1,"top");
-     T.setVerticalAlignment(3,1,"top");
+    Table T = new Table(2,1);
+      T.setWidth("100%");
+      T.setBorder(0);
+      T.setWidth(1,"500");
+      T.setAlignment(2,1,"center");
+      T.setVerticalAlignment(1,1,"top");
+      T.setVerticalAlignment(2,1,"top");
 
     try {
       for ( int a = 5; a < 13; a++ ) {
@@ -100,15 +99,16 @@ public class TextControl extends JModuleObject {
           texti.setWidth("100%");
           texti.setEnableDelete(false);
 
-        if ( a < 8 ) {
           T.add(texti,1,1);
-          T.addBreak(1,1);
-        }
-        else {
-          T.add(texti,3,1);
-          T.addBreak(3,1);
-        }
+          if ( a + 1 < 13 ) {
+            T.addBreak(1,1);
+          }
       }
+
+      Image textImage = new Image("/pics/text_pictures/info.jpg");
+        textImage.setVerticalSpacing(12);
+        T.add(textImage,2,1);
+
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
@@ -119,7 +119,18 @@ public class TextControl extends JModuleObject {
 
   public void doText(int action) {
     try {
+      Table T = new Table(2,1);
+        T.setWidth("100%");
+        T.setBorder(0);
+        T.setWidth(1,"500");
+        T.setAlignment(2,1,"center");
+        T.setVerticalAlignment(1,1,"top");
+        T.setVerticalAlignment(2,1,"top");
+
       TextModule text = new TextModule(action);
+
+      Image textImage = new Image("/pics/text_pictures/picture"+Integer.toString(action)+".jpg");
+        textImage.setVerticalSpacing(12);
 
       if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
         text.setDefaultValues();
@@ -130,7 +141,9 @@ public class TextControl extends JModuleObject {
         textReader.setEnableDelete(false);
         textReader.setTableWidth("400");
 
-      add(textReader);
+      T.add(textReader,1,1);
+      T.add(textImage,2,1);
+      add(T);
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
