@@ -196,14 +196,18 @@ public class ReportEditor extends Editor{
       U.setCellpadding(0);
       U.setCellspacing(0);
       M.setBorder(BORDER);
+      M.setColor(this.MiddleColor);
       M.setCellpadding(0);
       M.setCellspacing(0);
       ML.setBorder(BORDER);
+      ML.setColor(this.MiddleColor);
       ML.setCellpadding(0);
       ML.setCellspacing(0);
       MLL.setBorder(BORDER);
+      MLL.setColor(this.MiddleColor);
       MLL.setCellpadding(0);
       MLL.setCellspacing(0);
+      MLL.setVerticalAlignment("top");
       if(this.sManual != null)
         MLL.add(this.formatText(sManual));
 
@@ -214,7 +218,7 @@ public class ReportEditor extends Editor{
       M.setWidth(1,"40%");
       M.add(box,1,1);
       M.add(ML,2,1);
-      M.add(MLL,2,1);
+      M.add(MLL,4,1);
       T.add(U,1,1);
       T.add(M,1,2);
       T.add(B,1,3);

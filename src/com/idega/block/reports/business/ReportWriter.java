@@ -3,6 +3,8 @@ package com.idega.block.reports.business;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfWriter;
 import com.idega.block.reports.data.Report;
 import com.idega.util.database.ConnectionBroker;
 
@@ -112,7 +114,57 @@ public class ReportWriter {
       return returner;
   }
 
-  public static boolean writePDF(Report report){
-    return false;
+  public static boolean writePDF(Report report,String realpath){
+    boolean returner = false;
+    try {
+        String[] Headers = report.getHeaders();
+        int Hlen = Headers.length;
+        String sql = report.getSQL();
+        String file = realpath;
+
+        Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+        PdfWriter.getInstance(document, new FileOutputStream(file));
+        document.addTitle(report.getName());
+        document.addAuthor("Idega Golf");
+        document.addSubject(report.getInfo());
+        document.open();
+
+        Table datatable = new Table(Headers.length);
+        datatable.setCellpadding(0);
+        datatable.setCellspacing(3);
+        datatable.setBorder(Rectangle.NO_BORDER);
+        datatable.setWidth(100);
+        for (int i = 0; i < Hlen; i++) {
+          //datatable.addCell(Headers[i]);
+          datatable.addCell(new Phrase(Headers[i], new Font(Font.HELVETICA, 14, Font.BOLD)));
+        }
+        datatable.endHeaders();
+
+        Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
+        Statement stmt = Conn.createStatement();
+        ResultSet RS  = stmt.executeQuery(sql);
+        ResultSetMetaData MD = RS.getMetaData();
+        String temp = null;
+        while(RS.next()){
+          for(int i = 1; i <= Hlen; i++){
+            temp = RS.getString(i);
+            temp = temp!=null?temp:"";
+            datatable.addCell(temp);
+          }
+        }
+
+        RS.close();
+        stmt.close();
+        ConnectionBroker.freeConnection(Conn);
+
+        document.add(datatable);
+        document.close();
+        returner = true;
+    }
+    catch (Exception ex) {
+      returner = false;
+    }
+
+    return returner;
   }
 }
