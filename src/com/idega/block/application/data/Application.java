@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.4 2001/06/27 14:40:19 palli Exp $
+ * $Id: Application.java,v 1.5 2001/06/27 23:37:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -81,8 +81,8 @@ public class Application extends GenericEntity {
     setColumn(subjectId_,id);
   }
 
-  public Integer getSubjectId() {
-    return((Integer)getColumnValue(subjectId_));
+  public int getSubjectId() {
+    return(getIntColumnValue(subjectId_));
   }
 
   public void setApplicantId(int id) {
@@ -93,8 +93,8 @@ public class Application extends GenericEntity {
     setColumn(applicantId_,id);
   }
 
-  public Integer getApplicantId() {
-    return((Integer)getColumnValue(applicantId_));
+  public int getApplicantId() {
+    return getIntColumnValue(applicantId_);
   }
 
   public void setSubmitted(Timestamp submitted) {
@@ -127,7 +127,7 @@ public class Application extends GenericEntity {
   }
 
   public String getStatus() {
-    return((String)getColumnValue(status_));
+    return(getStringColumnValue(status_));
   }
 
   public void setStatusChanged(Timestamp statusChanged) {
