@@ -48,8 +48,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setChoiceNumber(int p0);
  public void setContractFileId(java.lang.Integer p0);
  public void setContractFileId(int p0);
- public void setContractId(java.lang.Integer p0);
  public void setContractId(int p0);
+ public void setContractId(java.lang.Integer p0);
  public void setExtraContractMessage(java.lang.String p0);
  public void setExtraContractMessageOther(java.lang.String p0);
  public void setFromDate(java.sql.Date p0);
