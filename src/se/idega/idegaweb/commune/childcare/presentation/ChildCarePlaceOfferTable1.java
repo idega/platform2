@@ -189,7 +189,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int column = 1;
 
 		//row=2 for first row because of heading is in row 1
-		add(new HiddenInput(CCConstants.APPID + index, "" + app.getNodeID()));
+		add(new HiddenInput(CCConstants.APPID + index, "" + app.getNodeID()), 1, 1);
 		String textColor = "black";
 		if (isCancelled) {
 			textColor = "red";
@@ -220,7 +220,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 				rb1.setDisabled(true);
 			
 			if (hasAcceptedApplication) {
-//				rb1.setOnClick("document.getElementById('" + rb1.getID() + "').checked = false; alert('" + _page.localize("child_care.must_delete_accepted_offer", "You must delete accepted offer before you can choose a new offer.") + "'); return false;");
+				rb1.setOnClick("document.getElementById('" + rb1.getID() + "').checked = false; alert('" + _page.localize("child_care.must_delete_accepted_offer", "You must delete accepted offer before you can choose a new offer.") + "'); return false;");
 			}
 
 			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
