@@ -554,6 +554,8 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 3);
 		t.add(goalTimeField, column, row++);
 		
+		t.setHeight(row++, 8);
+		
 		t.add(agreementText,column,row++);
 		t.setHeight(row++, 3);
 		t.add(agreeField,column,row);
