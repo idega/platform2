@@ -28,6 +28,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.GroupPropertyWindow;
+import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
 
 /**
  * @author palli
@@ -35,7 +36,7 @@ import com.idega.user.presentation.GroupPropertyWindow;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class UpdateClubDivisionTemplate extends IWAdminWindow {
+public class UpdateClubDivisionTemplate extends IWAdminWindow implements UserUpdateClubDivisionTemplate{
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
 

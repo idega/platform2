@@ -20,6 +20,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
+import com.idega.user.presentation.FamilyTab;
 import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.user.presentation.UserTab;
 
@@ -31,7 +32,7 @@ import com.idega.user.presentation.UserTab;
  * @author 2000 - idega team - <a href="mailto:gummi@idega.is">Gu�mundur �g�st S�mundsson</a>
  * @version 1.0
  */
-public class UserFamilyTab extends UserTab {
+public class UserFamilyTab extends UserTab implements FamilyTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
 	private static final String TAB_NAME = "usr_fam_tab_name";

@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import com.idega.block.importer.data.GenericImportFile;
 import com.idega.block.importer.data.ImportFile;
+import com.idega.user.data.UserNationalRegisterImportFile;
 
 /**
  * @author palli
@@ -17,7 +18,7 @@ import com.idega.block.importer.data.ImportFile;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class NationalRegisterImportFile extends GenericImportFile implements ImportFile {
+public class NationalRegisterImportFile extends GenericImportFile implements ImportFile, UserNationalRegisterImportFile {
 	public NationalRegisterImportFile() {
 		super();
 		setRecordDilimiter("\n");

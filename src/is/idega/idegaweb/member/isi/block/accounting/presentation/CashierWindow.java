@@ -33,11 +33,12 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupPropertyWindow;
+import com.idega.user.presentation.UserCashierWindow;
 
 /**
  * @author palli
  */
-public class CashierWindow extends StyledIWAdminWindow {
+public class CashierWindow extends StyledIWAdminWindow implements UserCashierWindow {
 
     public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 

@@ -1,7 +1,9 @@
 package is.idega.idegaweb.member.block.importer.business;
 
+import com.idega.user.business.UserPinLookupToGroupImportHandler;
 
-public interface PinLookupToGroupImportHandler extends com.idega.business.IBOSession,com.idega.block.importer.business.ImportFileHandler
+
+public interface PinLookupToGroupImportHandler extends com.idega.business.IBOSession,com.idega.block.importer.business.ImportFileHandler, UserPinLookupToGroupImportHandler
 {
  public java.util.List getFailedRecords() throws java.rmi.RemoteException;
  public boolean handleRecords()throws java.rmi.RemoteException, java.rmi.RemoteException;

@@ -24,6 +24,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserWorkReportWindow;
 import com.idega.util.IWTimestamp;
 /**
  * This window is used to work with a clubs work reports.
@@ -31,7 +32,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 
-public class WorkReportWindow extends StyledIWAdminWindow {
+public class WorkReportWindow extends StyledIWAdminWindow implements UserWorkReportWindow {
 	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
 	public static final String STATS_LAYOUT_PREFIX = "STATS_LAYOUT_PREFIX";
 	private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";
