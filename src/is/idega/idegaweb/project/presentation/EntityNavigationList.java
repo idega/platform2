@@ -32,7 +32,6 @@ import java.util.ListIterator;
 public abstract class EntityNavigationList extends Block {
 
   protected Table table = null;
-  protected Table rowTemplateTable = null;
   protected ProjectBusiness business = null;
 
   protected String[] linkColumns = null;
@@ -69,7 +68,6 @@ public abstract class EntityNavigationList extends Block {
   public EntityNavigationList() {
     super();
     table = new Table();
-    rowTemplateTable = new Table();
     linkColumns = new String[0];
     this.add(table);
     initDefaultState();
@@ -329,9 +327,6 @@ public abstract class EntityNavigationList extends Block {
     EntityNavigationList obj = (EntityNavigationList)super.clone();
     if(table != null){
       obj.table = (Table)this.table.clone();
-    }
-    if(rowTemplateTable != null){
-      obj.rowTemplateTable = (Table)this.rowTemplateTable.clone();
     }
 
     // clone ?

@@ -26,6 +26,7 @@ import com.idega.idegaweb.IWConstants;
 import is.idega.idegaweb.project.presentation.IPCategoryTypeCreator;
 import is.idega.idegaweb.project.presentation.IPCategoryCreator;
 import is.idega.idegaweb.project.presentation.IPProjectCreator;
+import is.idega.idegaweb.project.presentation.IPProjectParticipantGroupCreator;
 
 
 /**
@@ -142,6 +143,12 @@ public class Project extends IWApplication {
       Link lin = new Link("create project");
       lin.setWindowToOpen(IPProjectCreator.class);
       this.add(lin);
+
+      this.add(Text.getBreak());
+
+      Link link = new Link("create project participants group");
+      link.setWindowToOpen(IPProjectParticipantGroupCreator.class);
+      this.add(link);
 
       /*this.add(ICObjectLinkList.class);
       this.add(IBPermissionFrame.class);

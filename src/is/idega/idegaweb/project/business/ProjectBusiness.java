@@ -5,6 +5,7 @@ import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import is.idega.idegaweb.project.data.IPCategory;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import is.idega.idegaweb.project.data.IPProject;
+import is.idega.idegaweb.project.data.IPParticipantGroup;
 import com.idega.core.data.ICObject;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
@@ -214,6 +215,18 @@ public class ProjectBusiness {
     project.addTo(PageLink.class, pageLinkID);
   }
 
+
+  public void createParticipant(PageTriggerInfo pti, String name, String description) throws SQLException {
+    IPParticipantGroup newGroup = new IPParticipantGroup();
+    newGroup.setName(name);
+    newGroup.setDescription(description);
+
+    newGroup.insert();
+
+
+    pti.addTo(newGroup);
+
+  }
 
 
 
