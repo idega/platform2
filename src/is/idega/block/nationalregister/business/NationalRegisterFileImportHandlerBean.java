@@ -6,6 +6,7 @@ import is.idega.block.family.data.FamilyMember;
 import is.idega.block.family.data.FamilyMemberHome;
 import is.idega.block.nationalregister.data.NationalRegister;
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -98,6 +99,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private Group citizenGroup = null;
 	private User performer = null;
 	private FamilyLogic famLog = null;
+	private final static int BYTES_PER_RECORD = 301;
+	NumberFormat twoDigits = 	NumberFormat.getNumberInstance();
+	NumberFormat precentNF = NumberFormat.getPercentInstance();
+
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -138,21 +143,53 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				System.out.println("NationalRegisterHandler relationsOnly variable set to TRUE");
 			}
 			
-			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
+			long totalBytes = _file.getFile().length();
+			long totalRecords = totalBytes / BYTES_PER_RECORD;
+			
+			twoDigits.setMinimumIntegerDigits(2);
+			
+			long beginTime  = System.currentTimeMillis();
+			long lastTimeCheck = beginTime;
+			//long averageTimePerUser = 0;
+			long averageTimePerUser100 = 0;
+			//long timeLeft = 0;
+			long timeLeft100 = 0;
+			//long estimatedTimeFinished = beginTime;
+			long estimatedTimeFinished100 = beginTime;
+
+			IWTimestamp stamp;
+			double progress = 0;
+			int intervalBetweenOutput = 100;
+			
+			System.out.println("NatRegImport processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) _file.getNextRecord()).equals("")) {
 				count++;
 
 				if (!processRecord(item))
 					_failedRecords.add(item);
 
-				if ((count % 100) == 0) {
-					System.out.println("NationalRegisterHandler processing RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+				if ((count % intervalBetweenOutput) == 0) {
+					averageTimePerUser100 = (System.currentTimeMillis() - lastTimeCheck) / intervalBetweenOutput;
+					lastTimeCheck = System.currentTimeMillis();
+					timeLeft100 = averageTimePerUser100 * (totalRecords - count);
+					estimatedTimeFinished100 = System.currentTimeMillis() + timeLeft100;
+					
+					//averageTimePerUser = (System.currentTimeMillis() - beginTime) / count;
+					progress = ((double) count)/((double)totalRecords);
+					//timeLeft = averageTimePerUser * (totalRecords - count);
+					//estimatedTimeFinished = timeLeft + System.currentTimeMillis();
+					
+					System.out.print("NatRegImport "+IWTimestamp.getTimestampRightNow().toString()+", processing RECORD [" + count + " / "+totalRecords+"]");
+					//stamp = new IWTimestamp(estimatedTimeFinished);
+					//System.out.println("    "+precentNF.format(progress)+" done, guestimated time left of PHASE 1 : "+getTimeString(timeLeft)+"  finish at "+stamp.toString());
+					stamp = new IWTimestamp(estimatedTimeFinished100);
+					System.out.println(" | "+precentNF.format(progress)+" done, guestimated time left of PHASE 1 : "+getTimeString(timeLeft100)+"  finish at "+stamp.getTime().toString());
 				}
 
 				item = null;
 			}
 			_file.close();
-			System.out.println("NationalRegisterHandler processed RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+			System.out.println("NatRegImport processed RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 			clock.stop();
 			long msTime = clock.getTime();
 			long secTime = msTime / 1000;
@@ -188,6 +225,20 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 	}
 
+	
+
+	 public String getTimeString(long time) {
+	 	long t = time;
+	 	int milli = (int) (t % 1000);
+		 t = (t - milli) / 1000;
+		 int second = (int) (t % 60);
+		 t = (t - second) / 60;
+		 int minut = (int) (t) % 60;
+		 int hour = (int) ((t - minut) / 60);
+		 return twoDigits.format(hour) + ":" + twoDigits.format(minut) + ":" + twoDigits.format(second)+"."+milli;
+	 }
+
+	
 	/**
 	 * After all lines in the import file has been imported, the relations are handled. 
 	 * When the records are processed, the relations are stored in the ArrayList _familyRelations
@@ -209,6 +260,22 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		}
 		
 		if (affectedFamilies != null && userHome != null && natReg != null) {
+
+			long totalRecords = affectedFamilies.size();
+
+			long beginTime  = System.currentTimeMillis();
+			//long lastTimeCheck = beginTime;
+			long averageTimePerUser = 0;
+			//long averageTimePerUser100 = 0;
+			long timeLeft = 0;
+			//long timeLeft100 = 0;
+			long estimatedTimeFinished = beginTime;
+			//long estimatedTimeFinished100 = beginTime;
+
+			IWTimestamp stamp;
+			double progress = 0;
+			int intervalBetweenOutput = 100;
+			
 			Iterator keysIter = affectedFamilies.iterator();
 			Iterator ssnIter;
 			String key;
@@ -216,8 +283,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			int counter = 0;
 			Collection ssnColl;
 			Collection familyColl;
-			System.out.println("NationalRegisterHandler Total families to handle = "+affectedFamilies.size());
-			System.out.println("NationalRegisterHandler processing family relations RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
+			System.out.println("NatRegImport Total families to handle = "+totalRecords);
+			System.out.println("NatRegImport processing family relations RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 			//Loop through all households/families
 			while (keysIter.hasNext()) {
 				++counter;
@@ -227,14 +294,31 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					familyColl = getFamilyMemberHome().findAllByFamilyNR(key);
 					handleFamilyCollection(natReg, familyLogic, userHome, familyColl);
 				} catch (Exception e) {
-					System.out.println("NationalRegisterHandler ERROR, familyRelation failed for family : "+key);
+					System.out.println("NatRegImport ERROR, familyRelation failed for family : "+key);
 					e.printStackTrace();
 				}
-				if ((counter % 100) == 0) {
-					System.out.println("NationalRegisterHandler processing family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+				if ((counter % intervalBetweenOutput) == 0) {
+					/*
+					averageTimePerUser100 = (System.currentTimeMillis() - lastTimeCheck) / intervalBetweenOutput;
+					lastTimeCheck = System.currentTimeMillis();
+					timeLeft100 = averageTimePerUser100 * (totalRecords - counter);
+					estimatedTimeFinished100 = System.currentTimeMillis() + timeLeft100;
+					*/
+					
+					averageTimePerUser = (System.currentTimeMillis() - beginTime) / counter;
+					progress = ((double) counter)/((double)totalRecords);
+					timeLeft = averageTimePerUser * (totalRecords - counter);
+					estimatedTimeFinished = timeLeft + System.currentTimeMillis();
+					
+					System.out.print("NatRegImport "+IWTimestamp.getTimestampRightNow().toString()+", processing family RECORD [" + counter + " / "+totalRecords+"]");
+					stamp = new IWTimestamp(estimatedTimeFinished);
+					System.out.println(" | "+precentNF.format(progress)+" done, guestimated time left of PHASE 2 : "+getTimeString(timeLeft)+"  finish at "+stamp.getTime().toString());
+					//stamp = new IWTimestamp(estimatedTimeFinished100);
+					//System.out.println("    "+precentNF.format(progress)+" done, guestimated time left of PHASE 2 : "+getTimeString(timeLeft100)+"  finish at "+stamp.toString());
+					//System.out.println("NationalRegisterHandler processing family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 				}
 			}
-			System.out.println("NationalRegisterHandler processed family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
+			System.out.println("NatRegImport processed family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 		}
 		
 		return true;
