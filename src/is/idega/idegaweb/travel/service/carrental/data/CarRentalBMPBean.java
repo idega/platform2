@@ -55,7 +55,7 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 			Iterator iter = allPlaces.iterator();
 			while (iter.hasNext()) {
 				obj = iter.next();
-				pPlace = pHome.findByPrimaryKey(obj);
+				pPlace = (PickupPlace) obj;
 				if (pPlace.getIsPickup()) {
 					pickupPlaces.add(obj);
 				}else {
