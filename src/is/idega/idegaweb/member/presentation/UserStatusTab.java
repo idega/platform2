@@ -134,10 +134,15 @@ public class UserStatusTab extends UserTab {
 	public void initializeFields() {
 		System.out.println("initializeFields");
 		_inactiveField = new CheckBox(_inactiveFieldName);
+		_inactiveField.setWidth("10");
+		_inactiveField.setHeight("10");
 
 		_groupField = new Text(); //see initFieldContents
 
 		_parent3StatusField = new CheckBox(_parent3StatusFieldName);
+		_parent3StatusField.setWidth("10");
+		_parent3StatusField.setHeight("10");
+
 		_statusField = new SelectDropdown(_statusFieldName);
 
 		IWContext iwc = IWContext.getInstance();
@@ -177,12 +182,19 @@ public class UserStatusTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active") + ":");
-		_groupText = new Text(iwrb.getLocalizedString(_groupFieldName, "Group") + ":");
-		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
+		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active"));
+		_inactiveText.setBold();
+		
+		_groupText = new Text(iwrb.getLocalizedString(_groupFieldName, "Group"));
+		_groupText.setBold();
+		
+		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status"));
+		_statusText.setBold();
+		
 //		_parent1StatusText = new Text(iwrb.getLocalizedString(_parent1StatusFieldName, "Parent status1") + ":");
 //		_parent2StatusText = new Text(iwrb.getLocalizedString(_parent2StatusFieldName, "Parent status2") + ":");
-		_parent3StatusText = new Text(iwrb.getLocalizedString(_parent3StatusFieldName, "Parent status3") + ":");
+		_parent3StatusText = new Text(iwrb.getLocalizedString(_parent3StatusFieldName, "Parent status3"));
+		_parent3StatusText.setBold();
 	}
 
 	/* (non-Javadoc)
@@ -192,21 +204,29 @@ public class UserStatusTab extends UserTab {
 		empty();
 
 		Table t = new Table(2, 5);
-		t.add(_inactiveText, 1, 1);
-		t.add(_inactiveField, 2, 1);
-		t.add(_groupText, 1, 2);
-		t.add(_groupField, 2, 2);
-		t.add(_statusText, 1, 3);
-		t.add(_statusField, 2, 3);
+		t.setCellpadding(5);
+		t.setCellspacing(0);
+		t.add(_groupText, 1, 1);
+		t.add(_groupField, 2, 1);
+		t.add(_statusText, 1, 2);
+		t.add(_statusField, 2, 2);
 //		t.add(_parent1StatusText, 1, 4);
 //		t.add(_parent1StatusField, 2, 4);
 //		t.add(_parent2StatusText, 1, 5);
 //		t.add(_parent2StatusField, 2, 5);
-		t.add(_parent3StatusText, 1, 4);
-		t.add(_parent3StatusField, 2, 4);
-		t.add(getHelpButton(),1,5);
-
+		t.mergeCells(1, 4, 2, 4);
+		t.add(_inactiveField, 1, 4);
+		t.add(_inactiveText, 1, 4);
+		t.mergeCells(1, 5, 2, 5);
+		t.add(_parent3StatusField, 1, 5);
+		t.add(_parent3StatusText, 1, 5);
 		add(t);
+	}
+
+	public void main(IWContext iwc) {
+		if (getPanel() != null) {
+			getPanel().addHelpButton(getHelpButton());		
+		}
 	}
 
 	/* (non-Javadoc)

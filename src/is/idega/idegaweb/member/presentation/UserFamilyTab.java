@@ -78,14 +78,12 @@ public class UserFamilyTab extends UserTab {
 	}
 
 	public void initFieldContents() {
+		resize(1, 1);
+		setCellpadding(5);
+		setCellspacing(0);
 		user = getUser();
 
 		empty();
-
-		frameTable = new Table(1, 2);
-		frameTable.setCellpadding(0);
-		frameTable.setCellspacing(0);
-		add(frameTable);
 
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -95,11 +93,9 @@ public class UserFamilyTab extends UserTab {
 		attachLink.addParameter(FamilyConnector._PARAM_USER_ID, getUserId());
 		attachLink.addParameter(FamilyConnector._PARAM_METHOD, FamilyConnector._METHOD_ATTACH);
 		attachLink.addParameter(FamilyConnector._PARAM_ACTION, FamilyConnector._ACTION_ATTACH);
-		frameTable.add(attachLink, 1, 1);
-		frameTable.add(getHelpButton(),1,2);
-		frameTable.add(Text.getBreak(), 1, 1);
-		frameTable.add(Text.getBreak(), 1, 1);
-		frameTable.add(Text.getBreak(),1,2);
+		add(attachLink, 1, 1);
+		add(Text.getBreak(), 1, 1);
+		add(Text.getBreak(), 1, 1);
 
 		if (user != null) {
 			try {
@@ -116,24 +112,30 @@ public class UserFamilyTab extends UserTab {
 			}
 
 			if (custodianTable != null) {
-				frameTable.add(custodianTable, 1, 1);
-				frameTable.add(Text.getBreak(), 1, 1);
+				add(custodianTable, 1, 1);
+				add(Text.getBreak(), 1, 1);
 			}
 			if (spouseTable != null) {
-				frameTable.add(spouseTable, 1, 1);
-				frameTable.add(Text.getBreak(), 1, 1);
+				add(spouseTable, 1, 1);
+				add(Text.getBreak(), 1, 1);
 			}
 			if (childrenTable != null) {
-				frameTable.add(childrenTable, 1, 1);
-				frameTable.add(Text.getBreak(), 1, 1);
+				add(childrenTable, 1, 1);
+				add(Text.getBreak(), 1, 1);
 			}
 			if (siblingsTable != null) {
-				frameTable.add(siblingsTable, 1, 1);
-				frameTable.add(Text.getBreak(), 1, 1);
+				add(siblingsTable, 1, 1);
+				add(Text.getBreak(), 1, 1);
 			}
 		}
 		else {
 			System.out.println("lineUpFields: User is null");
+		}
+	}
+
+	public void main(IWContext iwc) {
+		if (getPanel() != null) {
+			getPanel().addHelpButton(getHelpButton());		
 		}
 	}
 
@@ -142,11 +144,18 @@ public class UserFamilyTab extends UserTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		spouseText = new Text(iwrb.getLocalizedString("usr_fam_spouse","Spouse") + ":");
+		spouseText.setBold();
+		
 		custodiansText = new Text(iwrb.getLocalizedString("usr_fam_custodians","Custodians") + ":");
+		custodiansText.setBold();
+		
 		childrenText = new Text(iwrb.getLocalizedString("usr_fam_children","Children") + ":");
+		childrenText.setBold();
+		
 		siblingsText = new Text(iwrb.getLocalizedString("usr_fam_siblings","Siblings") + ":");
-
+		siblingsText.setBold();
 	}
+	
 	public Help getHelpButton() {
 		IWContext iwc = IWContext.getInstance();
 		IWBundle iwb = getBundle(iwc);
@@ -288,6 +297,7 @@ public class UserFamilyTab extends UserTab {
 
 		Link link = new Link(iwrb.getLocalizedString("usr_fam_detach","Detach"));
 		link.setWindowToOpen(FamilyConnector.class);
+		link.setStyleClass("styledLink"); 
 		link.addParameter(FamilyConnector._PARAM_USER_ID, getUserId());
 		link.addParameter(FamilyConnector._PARAM_RELATED_USER_ID, user.getPrimaryKey().toString());
 		link.addParameter(FamilyConnector._PARAM_METHOD, FamilyConnector._METHOD_DETACH);

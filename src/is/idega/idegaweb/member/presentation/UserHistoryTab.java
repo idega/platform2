@@ -69,7 +69,8 @@ public class UserHistoryTab extends UserTab {
 	public void initializeFields() {
 		memberofFrame = new IFrame("ic_user_history", UserHistoryList.class);
 		memberofFrame.setHeight(280);
-		memberofFrame.setWidth(370);
+		memberofFrame.setWidth("100%");
+		memberofFrame.setStyleAttribute("border", "1px #bbbbbb solid;");
 		memberofFrame.setScrolling(IFrame.SCROLLING_YES);
 	}
 
@@ -82,8 +83,8 @@ public class UserHistoryTab extends UserTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 //		memberof = this.getTextObject();
-		memberof = new Text();
-		memberof.setText(iwrb.getLocalizedString("usr_history","History") + ":");
+		memberof = new Text(iwrb.getLocalizedString("usr_history","History"));
+		memberof.setBold();
 	}
 
 	public boolean store(IWContext iwc) {
@@ -91,12 +92,13 @@ public class UserHistoryTab extends UserTab {
 	}
 
 	public void lineUpFields() {
-		this.resize(1, 2);
+		this.resize(1, 1);
+		setCellpadding(5);
+		setCellspacing(0);
 
 		this.add(memberof, 1, 1);
-		this.add(memberofFrame, 1, 2);
-		this.add(getHelpButton(),1,3);
-
+		add(Text.getBreak(), 1, 1);
+		this.add(memberofFrame, 1, 1);
 	}
 
 	public boolean collect(IWContext iwc) {
@@ -116,6 +118,9 @@ public class UserHistoryTab extends UserTab {
 	}
 
 	public void main(IWContext iwc) throws Exception {
+		if (getPanel() != null) {
+			getPanel().addHelpButton(getHelpButton());		
+		}
 		User viewedUser = getUser();
 		User viewingUser = iwc.getCurrentUser();
 		boolean isAdmin = iwc.isSuperAdmin();

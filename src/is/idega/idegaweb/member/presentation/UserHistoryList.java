@@ -18,7 +18,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
 import com.idega.presentation.ui.util.EventEntry;
 import com.idega.presentation.ui.util.EventHistoryList;
 import com.idega.user.data.Group;
@@ -48,7 +47,7 @@ public class UserHistoryList extends Page {
 		Collection history = (Collection) iwc.getSessionAttribute(UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY);
 		Collection status = (Collection) iwc.getSessionAttribute(UserHistoryTab.SESSIONADDRESS_USERGROUPS_STATUS);
 
-		Table table = null;
+		//Table table = null;
 		EventHistoryList eventList = new EventHistoryList();
 		//eventList.setShowUser(false);
 		try {
@@ -60,11 +59,13 @@ public class UserHistoryList extends Page {
 					size += history.size();
 				if (status != null)
 					size += status.size();
-				table = new Table(4, size + 1);
-				table.add(iwrb.getLocalizedString("plugin.history.group","Group"), 1, row);
-				table.add(iwrb.getLocalizedString("plugin.history.status","Status"), 2, row);
-				table.add(iwrb.getLocalizedString("plugin.history.start_date","Startdate"), 3, row);
-				table.add(iwrb.getLocalizedString("plugin.history.end_date","Enddate"), 4, row++);
+				//table = new Table(4, size + 1);
+				//table.setBorder(1);
+				//table.setWidth(Table.HUNDRED_PERCENT);
+				//table.add(iwrb.getLocalizedString("plugin.history.group","Group"), 1, row);
+				//table.add(iwrb.getLocalizedString("plugin.history.status","Status"), 2, row);
+				//table.add(iwrb.getLocalizedString("plugin.history.start_date","Startdate"), 3, row);
+				//table.add(iwrb.getLocalizedString("plugin.history.end_date","Enddate"), 4, row++);
 				String typeAddedToGroup = iwrb.getLocalizedString("plugin.history.type_addedtogroup","Added to group");
 				String typeRemovedFromGroup = iwrb.getLocalizedString("plugin.history.type.removed_fromgroup","Removed from group");
 				String typeAddedStatus = iwrb.getLocalizedString("plugin.history.status_added","Added status");
@@ -90,19 +91,11 @@ public class UserHistoryList extends Page {
 							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedFromGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",""));//rel.getPrimaryKey().toString()));
 							}
 							
-							/*
-
-							table.add(getGroupName(rel.getGroup()), 1, row);
-							table.add(df.format(from.getDate()), 3, row);
-							if (to != null)
-								table.add(df.format(to.getDate()), 4, row);
-							row++;
-							*/
 							doneBy = null;
 						}
 					}
 				}
-				table.setLineAfterRow(row-1);
+				//table.setLineAfterRow(row-1);
 
 				if (status != null) {
 					iter = status.iterator();
@@ -141,9 +134,9 @@ public class UserHistoryList extends Page {
 			e.printStackTrace();
 		}
 
-		if (table != null) {
+		/*if (table != null) {
 			table.setWidth("100%");
-		}
+		}*/
 
 		return eventList;
 	}

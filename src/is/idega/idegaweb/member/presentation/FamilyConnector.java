@@ -20,6 +20,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.StyledButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
@@ -60,6 +61,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		setTitle(iwrb.getLocalizedString(TAB_NAME, DEFAULT_NAME));
+		addTitle(iwrb.getLocalizedString(TAB_NAME, DEFAULT_NAME), TITLE_STYLECLASS);
 		//		super("Family connections");
 		setAllMargins(0);
 		setWidth(240);
@@ -99,18 +101,24 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(2, 5);
 
 		Table frameTable = new Table();
-		frameTable.setWidth(210);
-		frameTable.setHeight(130);
+		frameTable.setWidth(Table.HUNDRED_PERCENT);
 		frameTable.setStyleClass(mainStyleClass);
+		frameTable.setCellpadding(5);
+		frameTable.setCellspacing(0);
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_pin","Personal ID")), 1, 1);
-		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 1, 2);
-		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","The person to connect is")), 1, 3);
-		frameTable.add(getRelationMenu(iwc), 1, 4);
+		frameTable.add(Text.getBreak(), 1, 1);
+		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 1, 1);
+		
+		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","The person to connect is")), 1, 2);
+		frameTable.add(Text.getBreak(), 1, 2);
+		frameTable.add(getRelationMenu(iwc), 1, 2);
 		
 		Table bottomTable = new Table();
 		bottomTable.setStyleClass(mainStyleClass);
@@ -119,16 +127,17 @@ public class FamilyConnector extends StyledIWAdminWindow {
 		bottomTable.setWidth("100%");
 		Help help = getHelp(HELP_TEXT_KEY_ATTATCH);
 		bottomTable.add(help,1,1);
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save"));
-		submit.setAsImageButton(true);
-		bottomTable.add(submit, 2, 1);
-		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
-		CloseButton close = new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel"));
-		close.setAsImageButton(true);
-		bottomTable.add(close, 2, 1);
-
-		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
-		table.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		
+		Table buttonTable = new Table();
+		buttonTable.setCellpadding(0);
+		buttonTable.setCellspacing(0);
+		buttonTable.setWidth(2, "5");
+		StyledButton submit = new StyledButton(new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save")));
+		buttonTable.add(submit, 1, 1);
+		StyledButton close = new StyledButton(new CloseButton(iwrb.getLocalizedString("usr_fam_win_cancel","Cancel")));
+		buttonTable.add(close, 3, 1);
+		bottomTable.add(buttonTable, 2, 1);
+		
 		table.add(frameTable,1,1);
 		table.add(bottomTable,1,3);
 		form.add(table);
