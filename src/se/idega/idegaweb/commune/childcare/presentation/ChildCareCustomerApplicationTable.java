@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.46 2003/06/30 21:03:02 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.47 2003/06/30 23:02:11 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -507,7 +507,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				Iterator i = contracts.iterator();
 				while (i.hasNext()){
 					Contract c = ((ChildCareContractArchive) i.next()).getContract();
-					System.out.println("CONTRACT: " + c.getPrimaryKey());
+					//System.out.println("CONTRACT: " + c.getPrimaryKey());
 					if (! c.isSigned()){
 						Link signBtn = new Link(localize(SIGN_TOOLTIP));
 						signBtn.setWindowToOpen(ChildCareWindowBig.class);
