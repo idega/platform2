@@ -213,7 +213,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionAbbreviation);
 		
 		//fake columns (data gotten by business methods)
-		ReportableField leagueString = new ReportableField("league_info", String.class);
+		final ReportableField leagueString = new ReportableField("league_info", String.class);
 		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
@@ -363,16 +363,24 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					} else if (data2==null) {
 						return 1;
 					}
+					String league1 = (String) data1.getFieldValue(leagueString);
 					String regionalUnionCode1 = (String) data1.getFieldValue(regionalUnionAbbreviation);
 					String clubName1 = (String) data1.getFieldValue(clubName);
 					
+					String league2 = (String) data2.getFieldValue(leagueString);
 					String regionalUnionCode2 = (String) data2.getFieldValue(regionalUnionAbbreviation);
 					String clubName2 = (String) data2.getFieldValue(clubName);;
+					
+					boolean sameLeague = league1==league2 || (league1!=null && league1.equals(league2));
+					if(!sameLeague) {
+						// not same league, sort by league first
+						return league1==null?-1:league1.compareTo(league2);
+					}
 					
 					int i1 = getInt(regionalUnionCode1);
 					int i2 = getInt(regionalUnionCode2);
 					if(i1!=-1 && i2!=-1) {
-						// sort by regional union
+						// sort by regional union second
 						int di = i1-i2;
 						if(di!=0) {
 							// regional union code differs, sorting by that
