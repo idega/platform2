@@ -3,10 +3,9 @@
 */
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
-import java.rmi.RemoteException;
-
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -29,6 +28,7 @@ public class ClubPageIncluder extends PageIncluder {
     
 	private Page parentPage;
 	private String menuStyleSrc = "cssmenu/CSSMultiLevelMenu.css";
+    private ICPage page;
 	
     public ClubPageIncluder() {
         super();
@@ -71,14 +71,19 @@ public class ClubPageIncluder extends PageIncluder {
             //the division id
             finalUrl.append(PARAM_ROOT_CLUB_ID).append("=").append(groupId);
             
-            //the page the includer is currently on
-            IWApplicationContext iwac = iwc.getIWMainApplication().getIWApplicationContext();
-            BuilderService bs;
-            try {
-                bs = BuilderServiceFactory.getBuilderService(iwac);
-                finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append(bs.getCurrentPageId(iwc));
-            } catch (Exception e) {
-                e.printStackTrace();
+            if(page!=null) {
+                finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append( page.getPrimaryKey().toString());
+            }
+            else {
+	            //the page the includer is currently on
+	            IWApplicationContext iwac = iwc.getIWMainApplication().getIWApplicationContext();
+	            BuilderService bs;
+	            try {
+	                bs = BuilderServiceFactory.getBuilderService(iwac);
+	                finalUrl.append("&").append(PARAM_CALLING_PAGE_ID).append("=").append(bs.getCurrentPageId(iwc));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
             }
         }
         
@@ -88,5 +93,11 @@ public class ClubPageIncluder extends PageIncluder {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+	
+	public void setCallingPage(ICPage page) {
+	    this.page = page;
+	    
+	}
+	
 
 }
