@@ -9,7 +9,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import com.idega.block.presentation.CategoryWindow;
-import com.idega.block.text.data.LocalizedTextBMPBean;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductCategory;
