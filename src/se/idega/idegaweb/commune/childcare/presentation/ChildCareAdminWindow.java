@@ -2387,7 +2387,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (checkGroupPlacement) {
 			buffer.append(getCheckGroupScript(iwc, false));
 		} else {
-			buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("');");
+			buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("').value;");
 			buffer.append("\n\t if (close == 'true') return true;");			
 		}
 		buffer.append("\n\t var message = '';");
@@ -2491,7 +2491,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		} catch (Exception e) {}
 		
 
-		buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("');");
+		buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("').value;");
 		buffer.append("\n\t if (close == 'true') return true;");			
 
 		buffer.append("\n\t var careTimeInput = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
