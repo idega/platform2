@@ -167,7 +167,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//just set the owner of the contract and create a warning
 		if(invoiceReceiver == null){
 			invoiceReceiver = contract.getApplication().getOwner();
-			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound");
+			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner");
 		}
 		return invoiceReceiver;
 	}
