@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl3.java,v 1.3 2001/07/12 21:55:21 laddi Exp $
+ * $Id: TextControl3.java,v 1.4 2001/07/12 22:02:37 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,93 +34,25 @@ public class TextControl3 extends TextControl {
      T.setVerticalAlignment(3,1,"top");
 
     try {
-      TextReader texti = new TextReader(5);
-        if ( texti == null ) {
-          TextModule text = new TextModule(5);
+      for ( int a = 5; a < 13; a++ ) {
+        TextModule text = new TextModule(a);
+        if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
             text.setDefaultValues();
             text.insert();
-            texti = new TextReader(5);
         }
-        texti.setWidth("100%");
 
-      TextReader texti2 = new TextReader(6);
-        if ( texti == null ) {
-          TextModule text = new TextModule(6);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(6);
+        TextReader texti = new TextReader(a);
+          texti.setWidth("100%");
+
+        if ( a < 8 ) {
+          T.add(texti,1,1);
+          T.addBreak(1,1);
         }
-        texti2.setWidth("100%");
-
-      TextReader texti3 = new TextReader(7);
-        if ( texti == null ) {
-          TextModule text = new TextModule(7);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(7);
+        else {
+          T.add(texti,3,1);
+          T.addBreak(3,1);
         }
-        texti3.setWidth("100%");
-
-      TextReader texti4 = new TextReader(8);
-        if ( texti == null ) {
-          TextModule text = new TextModule(8);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(8);
-        }
-        texti4.setWidth("100%");
-
-      TextReader texti5 = new TextReader(9);
-        if ( texti == null ) {
-          TextModule text = new TextModule(9);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(9);
-        }
-        texti5.setWidth("100%");
-
-      TextReader texti6 = new TextReader(10);
-        if ( texti == null ) {
-          TextModule text = new TextModule(10);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(10);
-        }
-        texti6.setWidth("100%");
-
-      TextReader texti7 = new TextReader(11);
-        if ( texti == null ) {
-          TextModule text = new TextModule(11);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(11);
-        }
-        texti7.setWidth("100%");
-
-      TextReader texti8 = new TextReader(12);
-        if ( texti == null ) {
-          TextModule text = new TextModule(12);
-            text.setDefaultValues();
-            text.insert();
-            texti = new TextReader(12);
-        }
-        texti8.setWidth("100%");
-
-      T.add(texti,1,1);
-      T.addBreak(1,1);
-      T.add(texti2,1,1);
-      T.addBreak(1,1);
-      T.add(texti3,1,1);
-
-      T.add(texti4,3,1);
-      T.addBreak(3,1);
-      T.add(texti5,3,1);
-      T.addBreak(3,1);
-      T.add(texti6,3,1);
-      T.addBreak(3,1);
-      T.add(texti7,3,1);
-      T.addBreak(3,1);
-      T.add(texti8,3,1);
+      }
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
