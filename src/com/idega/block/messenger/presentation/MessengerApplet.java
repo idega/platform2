@@ -234,7 +234,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try{
 
      // if( isfirstRun ){
-        if( packetToServlet != null) packetToServlet = new Packet();
+        if( packetToServlet == null) packetToServlet = new Packet();
 
         packetToServlet.addProperty(new Property(SESSION_ID,sessionId));
         packetToServlet.addProperty(new Property(USER_ID,userId));
