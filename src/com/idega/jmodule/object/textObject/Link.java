@@ -529,6 +529,19 @@ public void print(ModuleInfo modinfo)throws IOException{
   }
 
 
+  public void setToFormSubmit(Form form) {
+      this.setOnClick("document."+form.getID()+".submit()");
+  }
+
+  public void setAsBackLink(int backUpHowManyPages) {
+      this.setOnClick("history.go(-"+backUpHowManyPages+")");
+  }
+
+  public void  setAsBackLink() {
+      setAsBackLink(1);
+  }
+
+
 //end
 
 
