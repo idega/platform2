@@ -496,11 +496,13 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 				while (iter.hasNext()) {
 					msg = (PrintMessage) iter.next();
 					dpc.setMessage(msg);
-					if (!areAddressMessages) addTemplateToPage(template, writer, type);
+					if (!areAddressMessages) 
+					    addTemplateToPage(template, writer, type);
 					//contentReturn = createContent(outerDocument, msg,
 					// performer,writer,locale);
 					//contentReturn = createContent(dpc);
 					createHandlerContent(dpc);
+					
 					//System.err.println("letter content returns : "+contentReturn+" for
 					// msg: "+msg.getPrimaryKey().toString());
 					if (contentReturn != ADDRESS_ERROR) {
@@ -601,11 +603,11 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		if(!fileName.endsWith(".pdf") &&  !fileName.endsWith(".PDF"))
 		    fileName +=".pdf";
 		
-		/* *** writing pdf to cachefolder manually
+		/* *** writing pdf to cachefolder manually*/
 		String folder = getIWApplicationContext().getIWMainApplication().getRealPath(getIWApplicationContext().getIWMainApplication().getCacheDirectoryURI()+"/prints");
-		File tfile = FileUtil.getFileAndCreateIfNotExists(folder,fileName);
-		FileOutputStream fos = new FileOutputStream(tfile);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		java.io.File tfile = com.idega.util.FileUtil.getFileAndCreateIfNotExists(folder,fileName);
+		java.io.FileOutputStream fos = new java.io.FileOutputStream(tfile);
+		java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
 		while (mis.available() > 0) {
 			baos.write(mis.read());
 		}
@@ -613,7 +615,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		baos.flush();
     		baos.close();
     		mis.reset();
-    		*/
+    		
 		
 		file.setFileValue(mis);
 		file.setMimeType("application/x-pdf");
@@ -681,7 +683,9 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	}
 
 	private PdfTemplate getLetterTemplate(String type, PdfWriter writer) throws Exception {
-		if (type.equals(MessageConstants.LETTER_TYPE_PASSWORD)) { return createPasswordLetterTemplate(writer); }
+		if (type.equals(MessageConstants.LETTER_TYPE_PASSWORD)) { 
+		    return createPasswordLetterTemplate(writer); 
+		}
 		return null;
 	}
 

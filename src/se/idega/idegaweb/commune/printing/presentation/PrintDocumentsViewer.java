@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
+import se.idega.idegaweb.commune.printing.business.DocumentService;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
 import com.idega.core.builder.data.ICPage;
@@ -287,8 +288,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private void printAllUnPrintedMessages(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
-		Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType,-1,-1);
-		getDocumentBusiness(iwc).writeBulkPDF(
+		
+	    Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType,-1,-1);
+		/*getDocumentBusiness(iwc).writeBulkPDF(
 			unPrintedLetters,
 			iwc.getCurrentUser(),
 			localize("printdoc.bulkletter_filename","BulkLetterPDF"),
@@ -296,27 +298,18 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			currentType,
 			false,
 			true,
-			true);
+			true);*/
+		getDocumentService(iwc).createPDF(iwc,unPrintedLetters,currentType,localize("printdoc.bulkletter_filename","BulkLetterPDF"),true);
 	}
 
 	private void printMessage(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		if (msgID > 0) {
-			PrintedLetterMessage msg =
-				getDocumentBusiness(iwc)
-					.getPrintedLetterMessageHome()
-					.findByPrimaryKey(
-					new Integer(msgID));
-			fileID =
-				getDocumentBusiness(iwc).writePDF(
-					msg,
-					iwc.getCurrentUser(),
-					localize("printdoc.letter_filename","LetterPDF"),
-					iwc.getApplicationSettings().getDefaultLocale(),
-					true);
+			PrintedLetterMessage msg =getDocumentBusiness(iwc).getPrintedLetterMessageHome().findByPrimaryKey(new Integer(msgID));
+			//fileID =getDocumentBusiness(iwc).writePDF(msg,iwc.getCurrentUser(),localize("printdoc.letter_filename","LetterPDF"),iwc.getApplicationSettings().getDefaultLocale(),true);
 			
 			//TODO
-			////fileID = getDocumentService(iwc).createPDF(iwc,msg,localize("printdoc.letter_filename","LetterPDF"),false).intValue();
+			fileID = getDocumentService(iwc).createPDF(iwc,msg,localize("printdoc.letter_filename","LetterPDF"),false).intValue();
 			//System.err.println("file id written :"+fileID);
 			//getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
 		}
@@ -327,8 +320,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		if (iwc.isParameterSet(PRM_PRINT_SELECTED)) {
 			printSelected(iwc);
 		}
-		else if (iwc.isParameterSet(PRM_PRINT_SELECTED)) {
-			printSelected(iwc);
+		else if (iwc.isParameterSet(PRM_REPRINT_SELECTED)) {
+			reprintSelected(iwc);
 		} else if ("undel".equals(processPrm)) {
 			undeleteSelected(iwc);
 		} else if ("del".equals(processPrm)) {
@@ -344,8 +337,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		boolean flag = !iwc.isParameterSet("prv_mark");
 		String[] ids = iwc.getParameterValues(PRM_U_CHK);
 		if (ids != null && ids.length > 0) {
-			getDocumentBusiness(iwc).writeBulkPDF(
-				ids,
+		    /*
+			getDocumentBusiness(iwc).writeBulkPDF(ids,
 				iwc.getCurrentUser(),
 				localize("printdoc.bulkletter_filename","BulkLetterPDF"),
 				iwc.getApplicationSettings().getDefaultLocale(),
@@ -353,17 +346,27 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				true,
 				flag,
 				bulk);
+			*/
+		    DocumentService serv = getDocumentService(iwc);
+		    /*PrintedLetterMessageHome phome = getDocumentBusiness(iwc).getPrintedLetterMessageHome();
+		    
+		    for (int i = 0; i < ids.length; i++) {
+		       PrintedLetterMessage msg =phome.findByPrimaryKey(new Integer(ids[i]));
+                serv.createPDF(iwc,msg,"letter.pdf",false);
+            }*/
+            serv.createPDF(iwc,ids,currentType,"letters.pdf",flag);
 		}
 	}
 	
-	/*private void reprintSelected(IWContext iwc) throws Exception {
+	private void reprintSelected(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		//boolean bulk = iwc.isParameterSet("prv_bulk");
 		// show bulk list when printing to bulk files
 		//isBulkManual = bulk;
 		//boolean flag = !iwc.isParameterSet("prv_mark");
-		String[] ids = iwc.getParameterValues(PRM_U_CHK);
+		String[] ids = iwc.getParameterValues(PRM_P_CHK);
 		if (ids != null && ids.length > 0) {
+		    /*
 			getDocumentBusiness(iwc).writeBulkPDF(
 				ids,
 				iwc.getCurrentUser(),
@@ -372,9 +375,19 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				currentType,
 				 true,
 				false,
-				false);
+				true);
+				*/
+			 DocumentService serv = getDocumentService(iwc);
+			 /*
+			 PrintedLetterMessageHome phome = getDocumentBusiness(iwc).getPrintedLetterMessageHome();
+			    for (int i = 0; i < ids.length; i++) {
+			       PrintedLetterMessage msg =phome.findByPrimaryKey(new Integer(ids[i]));
+	                serv.createPDF(iwc,msg,"letter.pdf",false);
+	            }
+	            */
+			 serv.createPDF(iwc,ids,currentType,"letters.pdf",false);
 		}
-	}*/
+	}
 
 	private void deleteSelected(IWContext iwc) throws Exception {
 		String[] ids = iwc.getParameterValues(PRM_U_CHK);
@@ -1021,7 +1034,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			//viewLink.setFile(fileID);
 			//Link viewLink = new Link(String.valueOf(fileID));
 			//viewLink.setFile(fileID);
-			CheckBox box = getCheckBox(PRM_U_CHK, msg.getPrimaryKey().toString());
+			CheckBox box = getCheckBox(PRM_P_CHK, msg.getPrimaryKey().toString());
 			printedLetterDocs.add(box);
 			printedLetterDocs.add(getViewLink(String.valueOf(fileID),fileID));
 			
@@ -1313,10 +1326,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private DocumentBusiness getDocumentBusiness(IWContext iwc) throws RemoteException {
 		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentBusiness.class);
 	}
-	/*
+	
 	private DocumentService getDocumentService(IWContext iwc) throws RemoteException {
 		return (DocumentService) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentService.class);
-	}*/
+	}
 
 
 	/* Commented out since it is never used...

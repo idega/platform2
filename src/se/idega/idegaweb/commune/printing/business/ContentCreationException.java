@@ -9,7 +9,7 @@ package se.idega.idegaweb.commune.printing.business;
  * @author aron 
  * @version 1.0
  */
-public class ContentCreationException extends Exception {
+public class ContentCreationException extends RuntimeException {
 	/**
 	 * 
 	 */
