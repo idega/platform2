@@ -7,6 +7,7 @@
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
 import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusinessBean;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -19,8 +20,10 @@ import java.util.List;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.presentation.Block;
-import com.idega.presentation.DynamicJSMenu;
+import com.idega.presentation.CSSMultiLevelMenu;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.CSSMultiLevelMenu.CSSMenu;
+import com.idega.presentation.text.Link;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 
@@ -41,20 +44,23 @@ public class ClubInfoBar extends Block {
 			System.out.println("No club to show division menu for");
 			return;
 		}
-		System.out.println("creating link bar for club " + club.getName());
+		
+		//System.out.println("creating link bar for club " + club.getName());
+		
 		_biz = getBusiness(iwc);
 		Collection divisions = _biz.getDivisionsForClub(club);
 		Iterator divIter = divisions.iterator();
-		DynamicJSMenu divMenu = new DynamicJSMenu();
+		CSSMultiLevelMenu menuBar = new CSSMultiLevelMenu();
+		
 		while(divIter.hasNext()) {
 			Group division = (Group) divIter.next();
 			
-			addDivisionToMenu(divMenu, division);
+			addDivisionToMenuBar(menuBar, division);
 		}
-		add(divMenu);
+		add(menuBar);
 	}
 	
-	private void addDivisionToMenu(DynamicJSMenu menu, Group division) {
+	private void addDivisionToMenuBar(CSSMultiLevelMenu menuBar, Group division) {
 		List flocks = new ArrayList(division.getChildGroups());
 		
 		Collections.sort(flocks, new Comparator() {
@@ -66,15 +72,18 @@ public class ClubInfoBar extends Block {
 		});
 		
 		String divName = division.getName();
-		menu.addLinkToMenu(_menuCount, divName, null);
 		
-		Iterator flockIter = flocks.iterator();
-		while(flockIter.hasNext()) {
-			Group flock = (Group) flockIter.next();
-			menu.addLinkToMenu(_menuCount, flock.getName(), null);
+		CSSMenu topLevelMenu = menuBar.createCSSMenu(division.getName());
+		menuBar.add(topLevelMenu);
+		
+		Iterator playerGroupIter = flocks.iterator();
+		while(playerGroupIter.hasNext()) {
+			Group playerGroup = (Group) playerGroupIter.next();
+			Link link = new Link(playerGroup.getName());
+			link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
+			topLevelMenu.add(link);
 		}
-		
-		_menuCount++;
+
 	}
 		
 	public String getBundleIdentifier() {
