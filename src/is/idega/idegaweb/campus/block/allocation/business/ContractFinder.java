@@ -612,7 +612,11 @@ public abstract class ContractFinder {
     sql.append(" and b.bu_complex_id = c.bu_complex_id ");
     sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
     sql.append(" and con.app_applicant_id = p.app_applicant_id");
-    //sql.append(" and con.status in ('T','E') ");
+	/** @todo  which contract statuses are defined apartment as available */
+	// 
+    sql.append(" and con.status not in ('G') ");
+    // not the ones in garbage
+    /** */
     if(iComplexId > 0){
       sql.append(" and b.bu_complex_id  = ");
       sql.append(iComplexId);
