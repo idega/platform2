@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.4 2003/08/20 09:03:26 kjell Exp $
+ * $Id: ButtonPanel.java,v 1.5 2003/08/20 09:34:04 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,27 +9,18 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.*;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
 import com.idega.builder.data.IBPage;
 
 /**
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/20 09:03:26 $
+ * Last modified: $Date: 2003/08/20 09:34:04 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -57,14 +48,11 @@ public class ButtonPanel extends AccountingBlock {
 	 */
 	public void addButton(String parameter, String label) {
 		GenericButton button = new GenericButton(parameter, label);
-		button = getButton(button);
-		table.add(button, buttonColumn , 1);
-		buttonColumn++;
-		table.setWidth(buttonColumn * COLUMN_WIDTH);
+		addButton(button);
 	}
 
 	/**
-	 * Adds a button to the panel.
+	 * Adds a button to the panel with a window to open.
 	 * The buttoms are added from left to right.
 	 * @param parameter the form parameter name for the button
 	 * @param label the text label for the button
@@ -74,14 +62,11 @@ public class ButtonPanel extends AccountingBlock {
 	public void addButton(String parameter, String label, Class windowClass) {
 		GenericButton button = new GenericButton(parameter, label);
 		button.setWindowToOpen(windowClass);
-		button = getButton(button);
-		table.add(button, buttonColumn , 1);
-		buttonColumn++;
-		table.setWidth(buttonColumn * COLUMN_WIDTH);
+		addButton (button);
 	}
 
 	/**
-	 * Adds a button to the panel.
+	 * Adds a button to the panel with a page to open.
 	 * The buttoms are added from left to right.
 	 * @param parameter the form parameter name for the button
 	 * @param label the text label for the button
@@ -91,10 +76,16 @@ public class ButtonPanel extends AccountingBlock {
 	public void addButton(String parameter, String label, IBPage page) {
 		GenericButton button = new GenericButton(parameter, label);
 		button.setPageToOpen(page);
+		addButton(button);
+	}
+
+	/*
+	 * Adds a button to the panel.
+	 */
+	private void addButton(GenericButton button) {
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
 		table.setWidth(buttonColumn * COLUMN_WIDTH);
 	}
-
 }
