@@ -29,7 +29,7 @@ import com.idega.util.idegaTimestamp;
 
 public class MessageBox extends CommuneBlock {
 
-  private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.message";
+  private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
   private final static int ACTION_VIEW_MESSAGE_LIST = 1;
   private final static int ACTION_VIEW_MESSAGE = 2;
