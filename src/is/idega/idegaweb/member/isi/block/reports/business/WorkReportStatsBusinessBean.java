@@ -3501,25 +3501,34 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			if(showMembers) {
 				int members;
 				if(filterByAge) {
+					System.out.println("between ages " + age1 + " and " + age2);
 					if(gender==null) {
 						members = getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
 						          getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						System.out.println("bothgenders");
 					} else if(gender.equals("m")) {
 						members = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
 						          getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						System.out.println("males");
 					} else {
 						members = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
 						          getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						System.out.println("females");
 					}
 				} else {
+					System.out.println("all ages");
 					if (gender==null) {
 						members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+						System.out.println("both genders");
 					} else if(gender.equals("m")) {
 						members = getWorkReportBusiness().getCountOfMaleMembersByWorkReport(report);
+						System.out.println("males");
 					} else {
 						members = getWorkReportBusiness().getCountOfFemaleMembersByWorkReport(report);
+						System.out.println("females");
 					}
 				}
+				System.out.println("members is " + members);
 				ruMembers = addToIntegerCount(count, ruMembers, members);
 				if(showClubs) {
 					ReportableData rdClubMembers = new ReportableData();
@@ -3552,6 +3561,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
 					}
 				}
+				System.out.println("players is " + players);
 				ruPlayers = addToIntegerCount(count, ruPlayers, players);
 				if(showClubs) {
 					ReportableData rdClubPlayers = new ReportableData();
