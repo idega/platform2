@@ -16,6 +16,11 @@ import com.idega.presentation.PresentationObject;
  * @author palli
  */
 public interface CheckoutPlugin {
+    
+    public static final String ACTION_PAY = "co_pay";
+    
+	public static final String LABEL_PAYMENT_TYPE = "isi_acc_co_payment_type";
+    
 	/**
 	 * The business part of the checkout plugins. Should implement the actual checkout.
 	 * 

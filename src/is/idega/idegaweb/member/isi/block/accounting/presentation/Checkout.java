@@ -43,7 +43,7 @@ import com.idega.user.business.UserBusiness;
  */
 public class Checkout extends CashierSubWindowTemplate {
 
-	protected static final String ACTION_PAY = "co_pay";
+	protected static final String ACTION_PAY = CheckoutPlugin.ACTION_PAY;
 
 	protected static final String ACTION_REMOVE = "co_remove";
 
@@ -63,7 +63,7 @@ public class Checkout extends CashierSubWindowTemplate {
 
 	private final static String LABEL_AMOUNT_REMAINING = "isi_acc_co_remaining";
 
-	private final static String LABEL_PAYMENT_TYPE = "isi_acc_co_payment_type";
+	private final static String LABEL_PAYMENT_TYPE = CheckoutPlugin.LABEL_PAYMENT_TYPE;
 
 	private final static String LABEL_DISCOUNT = "isi_acc_co_discount";
 

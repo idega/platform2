@@ -207,7 +207,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 
                     sumAmount += entry.getAmount();
                     sumRemaining += entry.getItemPrice().doubleValue();
-
                 }
 
                 paymentTable.mergeCells(6, row, 7, row);

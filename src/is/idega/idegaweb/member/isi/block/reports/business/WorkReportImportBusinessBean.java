@@ -522,13 +522,15 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							debtSubSum[i] += val;
 						}
 
+						float f = (float) val;
+						
 						try {
 							WorkReportClubAccountRecord rec = clubRecordHome
 									.create();
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
-							rec.setAmount((float) val);
+							rec.setAmount(val);
 							rec.store();
 
 							try {
