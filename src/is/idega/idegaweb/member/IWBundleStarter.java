@@ -5,8 +5,6 @@ package is.idega.idegaweb.member;
 
 import is.idega.idegaweb.member.presentation.LinkToUserStatsImpl;
 
-import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
-import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
