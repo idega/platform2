@@ -1,13 +1,11 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -27,7 +25,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserChooserBrowser;
-import com.idega.user.presentation.UserClubMemberExchangeWindow;
 import com.idega.util.IWTimestamp;
 /**
  * This window is used to change a members club on a specific date.
@@ -36,7 +33,7 @@ import com.idega.util.IWTimestamp;
  */
 
 
-public class ClubMemberExchangeWindow extends StyledIWAdminWindow implements UserClubMemberExchangeWindow { //changed from extends IWAdminWindow - birna
+public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed from extends IWAdminWindow - birna
 
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;

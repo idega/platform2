@@ -3,10 +3,8 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
-
 import java.rmi.RemoteException;
 import java.util.List;
-
 import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -24,7 +22,6 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.presentation.UserWorkReportWindow;
 import com.idega.util.IWTimestamp;
 /**
  * This window is used to work with a clubs work reports.
@@ -32,7 +29,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 
-public class WorkReportWindow extends StyledIWAdminWindow implements UserWorkReportWindow {
+public class WorkReportWindow extends StyledIWAdminWindow {
 	private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
 	public static final String STATS_LAYOUT_PREFIX = "STATS_LAYOUT_PREFIX";
 	private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";

@@ -20,7 +20,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
-import com.idega.user.presentation.FamilyTab;
+import com.idega.user.plugin.FamilyTab;
 import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.user.presentation.UserTab;
 

@@ -27,8 +27,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.plugin.UserUpdateClubDivisionTemplate;
 import com.idega.user.presentation.GroupPropertyWindow;
-import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
 
 /**
  * @author palli
