@@ -9,6 +9,7 @@ import com.idega.block.finance.presentation.Finance;
 import com.idega.projects.campus.admin.BuildingMaker;
 import java.sql.SQLException;
 import java.io.IOException;
+import com.idega.projects.campus.tariffs.*;
 
 
 /**
@@ -64,7 +65,7 @@ public class Adminer extends CampusObject implements Tabs{
 }
 
     private void doAct1(ModuleInfo modinfo) throws SQLException {
-      add(new Finance("Fjármál"));
+      add(new CampusFinance("Fjármál"));
     }
     private void doAct2(ModuleInfo modinfo) throws SQLException{
     }

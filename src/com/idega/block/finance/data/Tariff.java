@@ -28,6 +28,7 @@ public class Tariff extends GenericEntity {
     addAttribute("account_key_id","Bókhaldsliður",true,true,"java.lang.Integer","one-to-many","com.idega.block.finance.data.AccountKey");
     addAttribute("from_date","Upphafsdags",true,true,"java.sql.Timestamp");
     addAttribute("to_date","Lokadags",true,true,"java.sql.Timestamp");
+    addAttribute("tariff_attribute","",true,true,"java.lang.String");
   }
   public String getEntityName() {
     return "tariff";
@@ -37,6 +38,12 @@ public class Tariff extends GenericEntity {
   }
   public void setName(String name){
     setColumn("name", name);
+  }
+  public String getTariffAttribute(){
+    return getStringColumnValue("tariff_attribute");
+  }
+  public void setTariffAttribute(String attribute){
+    setColumn("tariff_attribute", attribute);
   }
   public int getPrice(){
     return getIntColumnValue("price");
