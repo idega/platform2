@@ -13,7 +13,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.user.presentation.UserChooser;
 
 /**
  * @author palli
@@ -21,7 +20,9 @@ import com.idega.user.presentation.UserChooser;
 public class UserCreditcard extends CashierSubWindowTemplate {
 	private final static String USER_CHOOSER_NAME = "ucc_user_chooser_name";
 	
-	private final static String LABEL_SELECT_USER = "isi_acc_ucc_select_user";
+	private final static String LABEL_SELECTED_USER = "isi_acc_ucc_select_user";
+	
+	private final static String ERROR_NO_SELECTED_USER = "isi_acc_no_user_selected";
 	
 	/**
 	 * 
@@ -33,22 +34,31 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 	public void main(IWContext iwc) {
 		Form f = new Form();
 		Table t = new Table();
+		Table inputTable = new Table();
+		Table dataTable = new Table();
 		t.setCellpadding(5);
-
+		inputTable.setCellpadding(5);
+		dataTable.setCellpadding(5);
+		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECT_USER, "Select user"));
+		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
-		UserChooser chooser = new UserChooser(USER_CHOOSER_NAME);
-		
 		int row = 1;
-		t.add(labelUser,1,row++);
-		t.add(chooser,1,row);
+		t.add(labelUser, 1, row);
+		t.add(Text.getNonBrakingSpace(), 1, row);
+		if (getUser() != null) {
+			t.add(getUser().getName(), 1, row);
+		}
+		else {
+			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab.."), 1, row);
+		}
 		
 		f.add(t);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
+		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		
 		add(f);

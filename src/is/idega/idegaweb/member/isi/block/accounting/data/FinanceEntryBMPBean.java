@@ -32,6 +32,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_STATUS = "status";
 	protected final static String COLUMN_TYPE = "entry_type";
 	protected final static String COLUMN_DATE_OF_ENTRY = "date_of_entry";
+	protected final static String COLUMN_INFO = "text_info";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -63,6 +64,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		addAttribute(COLUMN_STATUS, "Status", true, true, String.class, 1);
 		addAttribute(COLUMN_TYPE, "Type", true, true, String.class, 1);
 		addAttribute(COLUMN_DATE_OF_ENTRY, "Timestamp", true, true, Timestamp.class);
+		addAttribute(COLUMN_INFO, "Text info", true, true, String.class, 255);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -188,6 +190,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	
 	public void setUser(User user) {
 		setColumn(COLUMN_USER_ID, user);
+	}
+	
+	public String getInfo() {
+		return getStringColumnValue(COLUMN_INFO);
+	}
+	
+	public void setInfo(String info) {
+		setColumn(COLUMN_INFO, info);
 	}
 	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {

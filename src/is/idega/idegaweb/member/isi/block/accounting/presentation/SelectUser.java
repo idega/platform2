@@ -47,10 +47,6 @@ public class SelectUser extends CashierSubWindowTemplate {
 		Table t = new Table();
 		t.setCellpadding(5);
 
-		//Try to find the currently selected user from the context.
-		String userId = iwc.getParameter(CashierWindow.PARAMETER_USER_ID);
-		System.out.println("userId = " + userId);
-
 		//Has a new user been selected?
 		String userPrm = UserSearcher.getUniqueUserParameterName(USER_CHOOSER_NAME);
 		String selectedUser = iwc.getParameter(userPrm);
@@ -64,21 +60,9 @@ public class SelectUser extends CashierSubWindowTemplate {
 		int row = 1;
 		t.add(labelUser, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
-		if (userId != null) {
-			if (userId != null) {
-				try {
-					User user = getUserBusiness(iwc).getUser(new Integer(userId));
-					if (user != null)
-						t.add(user.getName(), 1, row);
-				}
-				catch (NumberFormatException e) {
-					e.printStackTrace();
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		if (getUser() != null)
+			t.add(getUser().getName(), 1, row);
+		
 		row++;
 		t.add(getSearchItem(iwc, USER_CHOOSER_NAME), 1, row++);
 		t.add(submit, 1, row);
