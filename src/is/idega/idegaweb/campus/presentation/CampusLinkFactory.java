@@ -4,7 +4,6 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import is.idega.idegaweb.campus.templates.CampusPage;
 
 import com.idega.block.building.presentation.BuildingViewer;
 import com.idega.block.finance.presentation.AccountViewer;

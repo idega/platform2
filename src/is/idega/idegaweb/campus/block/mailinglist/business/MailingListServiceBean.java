@@ -5,7 +5,6 @@ import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
 import is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome;
 import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.business.CampusSettings;
-import is.idega.idegaweb.campus.presentation.Campus;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -28,8 +27,6 @@ import com.idega.core.contact.data.EmailHome;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOStoreException;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
