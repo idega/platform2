@@ -23,8 +23,6 @@ import is.idega.idegaweb.member.isi.block.accounting.data.PaymentContract;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentContractHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
-import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCard;
-import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCardHome;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CashierWindowPlugin;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CreditCardExtraInfo;
 import is.idega.idegaweb.member.util.IWMemberConstants;
@@ -490,80 +488,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 
         return false;
     }
-
-    public boolean insertCreditCard(Group club, String division, String type,
-            String number, String expMonth, String expYear, User user) {
-        Group div = null;
-        if (division != null || !division.equals("-1")) {
-            try {
-                GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-                div = gHome.findByPrimaryKey(new Integer(division));
-            } catch (IDOLookupException e) {
-            } catch (NumberFormatException e) {
-            } catch (FinderException e) {
-            }
-        }
-
-        CreditCardType cType = null;
-        if (type != null) {
-            try {
-                cType = getCreditCardTypeHome().findByPrimaryKey(
-                        new Integer(type));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            } catch (FinderException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return insertCreditCard(club, div, cType, number, expMonth, expYear,
-                user);
-    }
-
-    public boolean insertCreditCard(Group club, Group division,
-            CreditCardType type, String number, String expMonth,
-            String expYear, User user) {
-        try {
-            UserCreditCard eCard = getUserCreditCardHome().create();
-            eCard.setClub(club);
-            eCard.setDivision(division);
-            eCard.setCardType(type);
-            eCard.setCardOwner(user);
-            eCard.setCardNumber(number);
-            eCard.setExpirationMonth(expMonth);
-            eCard.setExpirationYear(expYear);
-
-            eCard.store();
-
-            return true;
-        } catch (CreateException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public boolean deleteCreditCards(String ids[]) {
-        try {
-            for (int i = 0; i < ids.length; i++) {
-                Integer id = new Integer(ids[i]);
-                UserCreditCard eCard = getUserCreditCardHome()
-                        .findByPrimaryKey(id);
-                eCard.setDeleted(true);
-                eCard.store();
-            }
-
-            return true;
-        } catch (FinderException e) {
-            e.printStackTrace();
-        } catch (EJBException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public Collection findAllAssessmentRoundByClubAndDivision(Group club,
+  
+      public Collection findAllAssessmentRoundByClubAndDivision(Group club,
             Group division) {
         try {
             return getAssessmentRoundHome().findAllByClubAndDivision(club,
@@ -641,16 +567,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
         }
 
         return false;
-    }
-
-    public Collection findAllUsersCreditCards(Group club, User user,
-            Group division) {
-        try {
-            return getUserCreditCardHome().findAllByUser(club, division, user);
-        } catch (FinderException e) {
-        }
-
-        return null;
     }
 
     private ClubTariffTypeHome getClubTariffTypeHome() {
@@ -1223,16 +1139,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
     private PaymentTypeHome getPaymentTypeHome() {
         try {
             return (PaymentTypeHome) IDOLookup.getHome(PaymentType.class);
-        } catch (IDOLookupException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private UserCreditCardHome getUserCreditCardHome() {
-        try {
-            return (UserCreditCardHome) IDOLookup.getHome(UserCreditCard.class);
         } catch (IDOLookupException e) {
             e.printStackTrace();
         }
