@@ -228,8 +228,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.setColumn(PHONE, phone);
 	}
 
-public String getSchoolEmail() {
-			return this.getStringColumnValue(EMAIL);
+	public String getSchoolEmail() {
+		return this.getStringColumnValue(EMAIL);
 	}
  	
 	public void setSchoolEmail(String email) {
@@ -316,6 +316,15 @@ public String getSchoolEmail() {
 
 	public Collection ejbFindAllBySchoolType(int typeId) throws javax.ejb.FinderException {
 		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
+				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
+				" order by s."+NAME;
+		return super.idoFindPKsBySQL(select);
+	}
+
+	public Collection ejbFindAllByAreaTypeManagement(int areaId, int typeId, String managementType) throws javax.ejb.FinderException {
+		String select = "select s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id = " + typeId + " and m.sch_school_id = s.sch_school_id " +
+				" and " + SCHOOLAREA + " = " + areaId + 
+				" and " + MANAGEMENT_TYPE + " = '" + managementType + "'" + 
 				" and (termination_date is null or termination_date > '" + getCurrentDate() + "')" +
 				" order by s."+NAME;
 		return super.idoFindPKsBySQL(select);
