@@ -26,7 +26,7 @@ public abstract class CategoryBlock extends Block{
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
-  private boolean invalidateBlockCache = false;
+  private boolean invalidateBlockCache = true;
   private boolean orderManually = false;
 
   /**
