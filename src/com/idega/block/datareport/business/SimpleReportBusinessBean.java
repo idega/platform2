@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleReportBusinessBean.java,v 1.3 2004/10/14 09:09:28 sigtryggur Exp $
+ * $Id: SimpleReportBusinessBean.java,v 1.4 2004/10/15 13:58:15 sigtryggur Exp $
  * Created on 21.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,14 +24,15 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.idega.block.datareport.util.ReportDescription;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOServiceBean;
+import com.idega.util.text.TextSoap;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 09:09:28 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2004/10/15 13:58:15 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleReportBusiness {
 
@@ -48,14 +49,12 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 		if(nameOfReport==null || "".equals(nameOfReport)){
 			nameOfReport = "Report";
 		}
+		System.out.println(nameOfReport);
+		System.out.println(TextSoap.encodeToValidExcelSheetName(nameOfReport));
+		System.out.println(nameOfReport);
+		
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = null;
-		if (nameOfReport.length() > 31) {
-	        sheet = wb.createSheet(nameOfReport.substring(0,31));
-		} 
-	    else {
-	        sheet = wb.createSheet(nameOfReport);
-	    }
+		HSSFSheet sheet = sheet = wb.createSheet(TextSoap.encodeToValidExcelSheetName(nameOfReport));
 	    int rowIndex = 0;
 
 	    
