@@ -11,14 +11,18 @@ import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.UserQuery;
+import com.idega.block.dataquery.data.UserQueryHome;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
+import com.idega.builder.business.FileBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityRepresentation;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.io.Storable;
 import com.idega.io.UploadFile;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -29,6 +33,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.RadioGroup;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.StringAlphabeticalComparator;
 
@@ -46,8 +51,10 @@ public class QueryUploader extends Block {
 	private final static String KEY_QUERY_FILE_ID = "key_file_id";
 	private final static String KEY_QUERY_NAME = "key_query_name";
 	private final static String KEY_PERMISSION = "key_private_query";
-	private final static String KEY_CHOSEN_QUERY = "key_chosen_query";
+	private final static String KEY_CHOSEN_QUERY_FOR_DOWNLOADING = "key_chosen_query_for_downloading";
+	private final static String KEY_CHOSEN_QUERY_FOR_REPLACING = "key_chosen_query_for_replacing";
 	public final static String KEY_QUERY_UPLOAD_IS_SUBMITTED = "key_query_upload_is_submitted"; 
+	public final static String KEY_QUERY_DOWNLOAD_IS_SUBMITTED = "key_query_download_is_submitted";
 	
 	private final static String PRIVATE = "private";
 	private final static String PUBLIC = "public";
@@ -58,6 +65,8 @@ public class QueryUploader extends Block {
 	
 	private int userQueryId = -1;
 	private String layoutFolderId = null;
+	private String downloadUrl = null;
+	
 	
 	public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -66,14 +75,18 @@ public class QueryUploader extends Block {
 	public void main(IWContext iwc) throws Exception {
 		parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
+		
+		// uploading
+		Text uploadingText = new Text(resourceBundle.getLocalizedString("query_uploader_upload_query_headline", "Upload Query"));
+		uploadingText.setBold();
+		add(uploadingText);
 		Form form = new Form();
 		addMaintainParametersToForm(form);
-		
-		Table table = new Table(2, 5);
+		Table table = new Table(2, 4);
 		int row = 1;
 		String queryInfo = resourceBundle.getLocalizedString("query_uploader_replace_query", "Replace query");
 		table.add(queryInfo, 1, row);
-		PresentationObject queryList = getDropDownOfQueries(resourceBundle, iwc);
+		PresentationObject queryList = getDropDownOfQueriesForReplacing(resourceBundle, iwc);
 		table.add(queryList, 2, row);
 		row++;
 		String defaultName = resourceBundle.getLocalizedString("query_uploader_default_queryname", "My query");
@@ -86,18 +99,37 @@ public class QueryUploader extends Block {
 		SimpleFileChooser uploader = new SimpleFileChooser(form, KEY_QUERY_FILE_ID);
 		row++;
 		table.add(uploader, 2,row);
-		row++;
-		table.add(getGoBackButton(resourceBundle), 1 ,row);
+
 		form.add(table);
 		form.addParameter(KEY_QUERY_UPLOAD_IS_SUBMITTED, KEY_QUERY_UPLOAD_IS_SUBMITTED);
 		add(form);
+		
+		// downloading
+		add(Text.getBreak());
+		Text downloadingText = new Text(resourceBundle.getLocalizedString("query_uploader_download_query_headline", "Download Query"));
+		downloadingText.setBold();
+		add(downloadingText);
+		Form downloadForm = new Form();
+		row = 1;
+		addMaintainParametersToForm(downloadForm);
+		Table downloadTable = new Table(2, 3);
+		PresentationObject downloadQueryList = getDropDownOfQueriesForDownloading(iwc);
+		downloadTable.add(downloadQueryList, 1, row);
+		downloadTable.add(getDownloadButton(resourceBundle), 2, row++);
+		if (downloadUrl != null) {
+  		String downloadText = resourceBundle.getLocalizedString("query_uploader_download_query", "Download");
+  		downloadTable.add(new Link(downloadText, downloadUrl), 1, row++);
+		}
+		downloadTable.add(getGoBackButton(resourceBundle), 1 ,row);
+		downloadForm.add(downloadTable);
+		add(downloadForm);
 	}
 	
 	private void addMaintainParametersToForm(Form form) {
 			form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
 	}
 	
-	private void parseAction(IWContext iwc) throws NumberFormatException, IDOStoreException, IOException, RemoteException {
+	private void parseAction(IWContext iwc) throws NumberFormatException, IDOStoreException, IOException, RemoteException, FinderException {
 		if (iwc.isParameterSet(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID)) {
 			layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
 		}
@@ -105,7 +137,7 @@ public class QueryUploader extends Block {
 			return;
 		}
 		if (iwc.isParameterSet(KEY_QUERY_UPLOAD_IS_SUBMITTED)) {
-			Object queryToBeReplacedId = iwc.getParameter(KEY_CHOSEN_QUERY);
+			Object queryToBeReplacedId = iwc.getParameter(KEY_CHOSEN_QUERY_FOR_REPLACING);
 			if (VALUE_DO_NOT_REPLACE_A_QUERY.equals(queryToBeReplacedId)) {
 				queryToBeReplacedId = null;
 			}
@@ -121,8 +153,28 @@ public class QueryUploader extends Block {
 			UserQuery userQuery = queryService.storeQuery(name, icFile, isPrivate, queryToBeReplacedId, iwc);
 			userQueryId = ((Integer) userQuery.getPrimaryKey()).intValue();
 		}
+		else if (iwc.isParameterSet(KEY_QUERY_DOWNLOAD_IS_SUBMITTED)) {
+			Object queryToBeDownloadedId = iwc.getParameter(KEY_CHOSEN_QUERY_FOR_DOWNLOADING);
+			if (! VALUE_DO_NOT_REPLACE_A_QUERY.equals(queryToBeDownloadedId)) {
+				Integer queryToBeDownloaded = new Integer((String)queryToBeDownloadedId);
+				UserQueryHome  userQueryHome = (UserQueryHome)IDOLookup.getHome(UserQuery.class);
+				UserQuery userQuery = userQueryHome.findByPrimaryKey(queryToBeDownloaded);
+				ICFile realQuery = userQuery.getSource();
+				FileBusiness fileBusiness = (FileBusiness) IBOLookup.getServiceInstance(iwc, FileBusiness.class);
+				downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) realQuery);
+			}
+		}
 	}
+
 	
+	private PresentationObject getDownloadButton(IWResourceBundle resourceBundle) {
+  	SubmitButton downloadButton = new SubmitButton(resourceBundle.getLocalizedString("ro_download","Download..."), KEY_QUERY_DOWNLOAD_IS_SUBMITTED, "true");
+  	downloadButton.setAsImageButton(true);
+  	return downloadButton;
+	}	
+
+		
+				
 	
 	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
@@ -140,9 +192,23 @@ public class QueryUploader extends Block {
 		return radioGroup;
 	}
 		
-	private PresentationObject getDropDownOfQueries(IWResourceBundle iwrb, IWContext iwc) throws RemoteException, FinderException {
+	private PresentationObject getDropDownOfQueriesForReplacing(IWResourceBundle iwrb, IWContext iwc) throws RemoteException, FinderException {
+		DropdownMenu dropDownMenu = getDropDownOfQueries(KEY_CHOSEN_QUERY_FOR_REPLACING, iwc);
+		String doNotUseReplaceAQuery = iwrb.getLocalizedString("step_5_do_not_replace_a_query","don't replace a query");
+		dropDownMenu.addMenuElementFirst(VALUE_DO_NOT_REPLACE_A_QUERY, doNotUseReplaceAQuery );
+		return dropDownMenu;
+	}
+
+	private PresentationObject getDropDownOfQueriesForDownloading(IWContext iwc) throws RemoteException, FinderException {
+		return getDropDownOfQueries(KEY_CHOSEN_QUERY_FOR_DOWNLOADING, iwc);
+	}
+
+	
+
+	
+	private DropdownMenu getDropDownOfQueries(String key, IWContext iwc) throws RemoteException, FinderException {
 		SortedMap sortedMap = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
-		DropdownMenu drp = new DropdownMenu(KEY_CHOSEN_QUERY);
+		DropdownMenu drp = new DropdownMenu(key);
 		Iterator iterator = ReportQueryOverview.getOwnQueries(iwc).iterator();
 		while (iterator.hasNext()) {
 			EntityRepresentation userQuery = (EntityRepresentation) iterator.next();
@@ -162,8 +228,6 @@ public class QueryUploader extends Block {
 			String name = (String) entry.getKey();
 			drp.addMenuElement(id, name);
 		}
-		String doNotUseReplaceAQuery = iwrb.getLocalizedString("step_5_do_not_replace_a_query","don't replace a query");
-		drp.addMenuElementFirst(VALUE_DO_NOT_REPLACE_A_QUERY, doNotUseReplaceAQuery );
 		return drp;
 	}
 	
@@ -175,5 +239,8 @@ public class QueryUploader extends Block {
 	public int getUserQueryId() {
 		return userQueryId;
 	}
+	
+
+
 
 }

@@ -72,7 +72,8 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
  	   	ReportQueryOverview overview = new ReportQueryOverview();
     	add(overview,iwc);
     }
-    else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_QUERY)) {
+    else if (	iwc.isParameterSet(ReportQueryOverview.UPLOAD_QUERY) ||
+    						iwc.isParameterSet(QueryUploader.KEY_QUERY_DOWNLOAD_IS_SUBMITTED)) {
     	QueryUploader queryUploader = new QueryUploader();
     	add(queryUploader, iwc);
     }
@@ -83,7 +84,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
  	   	ReportQueryOverview overview = new ReportQueryOverview();
     	overview.setShowOnlyOneQueryWithId(queryId);
     	add(overview,iwc);
-    }	
+    }
     else if (iwc.isParameterSet(ReportQueryBuilder.SHOW_WIZARD))	{
     	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	add(queryBuilder,iwc);
