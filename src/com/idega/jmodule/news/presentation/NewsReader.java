@@ -11,6 +11,11 @@ import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
 
+/*
+**
+** need to look at numberofdisplayed news
+**
+*/
 
 public class NewsReader extends JModuleObject{
 
@@ -18,7 +23,6 @@ private boolean isAdmin=false;
 private boolean showNewsCollectionButton=true;
 private int categoryId = 0;
 private String date = null;
-private int numberOfNews = 3;
 private boolean backbutton = false;
 private boolean cutNews = true;// or default true?
 private boolean showAll = false;
@@ -28,7 +32,9 @@ private String newsCollectionURL = "/news/newsall.jsp";
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
-
+private String selectFrom = "select * from news where ";
+private String orderBy = " order by news_date DESC";
+private String sNewsCategoryId = "news_category_id ='";
 
 private Text textProxy = new Text();
 private Text headlineProxy = new Text();
@@ -36,6 +42,10 @@ private Text informationProxy = new Text();
 
 private int numberOfLetters = 273;
 private int numberOfDisplayedNews = 3;
+private int numberOfExpandedNews = 3;
+private int currentColumnPosition = 1;
+private int currentRowPosition = 1;
+
 private boolean limitNumberOfNews = false;
 
 private Image change;
@@ -51,32 +61,17 @@ private String attributeName = "union_id";
 //private int attributeId = -1;
 private int attributeId = 3;
 
+public static final int SINGLE_FILE_LAYOUT = 1;
+public static final int NEWS_SITE_LAYOUT = 2;
+public static final int NEWS_PAPER_LAYOUT = 3;
+private int LAYOUT = 1;
+
+
+
 public NewsReader(){
   showAll = true;
 }
 
-/**
- * @deprecated replaced with the default constructor
- */
-public NewsReader(boolean isAdmin){
-  this.showAll=true;
-}
-
-/**
- * @deprecated replaced with the categoryId constructor
- */
-public NewsReader(boolean isAdmin, int categoryId){
-  this.categoryId=categoryId;
-  this.showAll = false;
-}
-
-/**
- * @deprecated replaced with the date or idegaTimestamp constructor
- */
-public NewsReader(boolean isAdmin, String date){
-  this.date=date;
-  this.showAll=true;
-}
 
 public NewsReader(String date){
   this.date=date;
@@ -88,14 +83,6 @@ public NewsReader(idegaTimestamp timestamp){
   this.date = timestamp.toSQLString();
 }
 
-/**
- * @deprecated replaced with the categoryId,date constructor
- */
-public NewsReader(boolean isAdmin, int categoryId, String date){
-  this.categoryId=categoryId;
-  this.date=date;
-  this.showAll = false;
-}
 
 public NewsReader(int categoryId, String date){
   this.categoryId=categoryId;
@@ -112,13 +99,6 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
   this.showAll=false;
   this.categoryId=categoryId;
   this.date = timestamp.toSQLString();
-}
-
-public NewsReader(boolean isAdmin, int categoryId, idegaTimestamp timestamp){
-  this.categoryId=categoryId;
-  this.showAll = false;
-  this.date = timestamp.toSQLString();
-
 }
 
 public void setConnectionAttributes(String attributeName, int attributeId) {
@@ -139,7 +119,7 @@ public void setNumberOfDays( int daysIn ){
 
 }
 
-public String getDatastoreType(GenericEntity entity){
+private String getDatastoreType(GenericEntity entity){
   return DatastoreInterface.getDatastoreType(entity.getDatasource());
 }
 
@@ -228,6 +208,7 @@ public void main(ModuleInfo modinfo)throws Exception{
       String categoryString = null;
 
       if ( categoryId == 0) {//show the whole collection
+        setLayout(SINGLE_FILE_LAYOUT);
         showAll = true;
         attribs = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("attribute_name",attributeName,"attribute_id",""+attributeId);
         categoryString = getColumnString(attribs);
@@ -253,7 +234,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           if( categoryString!=null ) categoryString = " where " + categoryString;
           else categoryString = "";
 
-          news = (News[]) (new News()).findAll("select * from news "+categoryString+" order by news_date");
+          news = (News[]) (new News()).findAll("select * from news "+categoryString+orderBy);
         }
         else news = (News[]) (new News()).findAllByColumn("news_category_id",categoryId);
       }
@@ -264,24 +245,24 @@ public void main(ModuleInfo modinfo)throws Exception{
         byDate=true;
         if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString = " OR " + categoryString;
         if( (showAll) && !(DatastoreType.equals("oracle"))  ){
-          String statementstring = "select * from news where news_date >= '"+date+"'  "+categoryString+" order by news_date";
+          String statementstring = selectFrom+"news_date >= '"+date+"'  "+categoryString+orderBy;
           //debug eiki
         //  System.err.println(statementstring);
           news = (News[]) (new News()).findAll(statementstring);
          // if (news != null) System.err.println("fann "+ news.length +"fréttir");
 
         }
-        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (new News()).findAll("select * from news where news_date >= "+date+" "+categoryString+" order by news_date");
+        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (new News()).findAll(selectFrom+"news_date >= "+date+" "+categoryString+orderBy);
         else {
           if ( !(DatastoreType.equals("oracle")) ){
 
-          String statementstring = "select * from news where news_category_id ='"+categoryId+"' and news_date >= '"+date+"' order by news_date";
+          String statementstring = selectFrom+sNewsCategoryId+categoryId+"' and news_date >= '"+date+"'"+orderBy;
 //System.err.println(statementstring);
 
            news = (News[]) (new News()).findAll(statementstring);
 
           }
-          else news = (News[]) (new News()).findAll("select * from news where news_category_id ='"+categoryId+"' and news_date >= "+date+" order by news_date");
+          else news = (News[]) (new News()).findAll(selectFrom+sNewsCategoryId+categoryId+"' and news_date >= "+date+orderBy);
         }
       }
 
@@ -290,7 +271,7 @@ public void main(ModuleInfo modinfo)throws Exception{
         if( byDate ){
           date=null;
           categoryString = TextSoap.findAndCut(categoryString,"OR");
-          String statementstring = "select * from news where "+categoryString+" order by news_date";
+          String statementstring = selectFrom+categoryString+orderBy;
           //debug eiki 24.dec
           System.err.println("OUT OF RANGE"+statementstring);
           news = (News[]) (new News()).findAll(statementstring);
@@ -328,97 +309,69 @@ public void main(ModuleInfo modinfo)throws Exception{
 }
 
 
-public Table drawNewsTable(News[] news)throws IOException,SQLException
-{
+private Table drawNewsTable(News[] news)throws IOException,SQLException{
+  idegaCalendar funcDate = new idegaCalendar();
+  int news_category_id;
+  NewsCategory newscat;
+  String news_category;
+  String headline;
+  String newstext;
+  String includeImage;
+  String timestamp;
+  String author;
+  String source;
+  int daysshown;
+  Text information;
+  int image_id;
+  int newsLength = news.length;
 
 
-	//outerTable.setWidth(400);
-	outerTable.setAlignment("center");
+  if( (!limitNumberOfNews) || (numberOfDisplayedNews>newsLength) ){
+     numberOfDisplayedNews = newsLength;
+  }
+
+  outerTable = createContainerTable();
+
+  for ( int i=0; i<numberOfDisplayedNews; i++){
+    news_category_id = news[i].getNewsCategoryId();
+    newscat = new NewsCategory(news_category_id);
+    news_category = newscat.getName();
+
+    headline = news[i].getHeadline();
+    includeImage = news[i].getIncludeImage();
+    timestamp = (news[i].getDate()).toString();
+    author = news[i].getAuthor();
+    source = news[i].getSource();
+    daysshown = news[i].getDaysShown();
 
 
+    if ( (i-numberOfExpandedNews)>0 ){
+      includeImage = "N";
+      newstext = "";
+    }
+    else {
+      newstext = news[i].getText();
+      newstext=formatNews(newstext);
+    }
 
-	idegaCalendar funcDate = new idegaCalendar();
-	int news_category_id;
-	NewsCategory newscat;
-	String news_category;
-	String headline;
-	String newstext;
-	String includeImage;
-	String timestamp;
-	String author;
-	String source;
-	int daysshown;
-	Text information;
-	int image_id;
-        int newsLength = news.length;
-	int i = newsLength-1;
+    information = getInfoText(author, source, news_category, timestamp);
+    if(includeImage.equals("Y")){
+      image_id = news[i].getImageId();
+      addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
+    }
+    else{
+      image_id=-1;
+      addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
+    }
 
+  }
 
-		if( !limitNumberOfNews ) numberOfDisplayedNews = newsLength;
-
-		while ( (i >= 0) && ( numberOfDisplayedNews >= (newsLength-i))){
-
-
-                  news_category_id = news[i].getNewsCategoryId();
-                  newscat = new NewsCategory(news_category_id);
-                  news_category = newscat.getName();
-
-                  headline = news[i].getHeadline();
-                  includeImage = news[i].getIncludeImage();
-                  timestamp = (news[i].getDate()).toString();
-                  author = news[i].getAuthor();
-                  source = news[i].getSource();
-                  daysshown = news[i].getDaysShown();
-
-
-                  if (i < (newsLength-numberOfNews)){
-                          includeImage = "N";
-                          newstext = "";
-                  }
-                  else {
-                          newstext = news[i].getText();
-                          newstext=formatNews(newstext);
-                  }
-
-                  //newstext = formatNews(newstext);
-
-                  information = getInfoText(author, source, news_category, timestamp);
-
-
-                  if(includeImage.equals("Y")){
-                          image_id = news[i].getImageId();
-                          outerTable.add(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id), 1, 1);
-                  }
-                  else{
-                          image_id=-1;
-                          outerTable.add(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id), 1, 1);
-                  }
-
-
-                  if(isAdmin) {
-
-                          Form newsEdit = new Form("/news/editor.jsp?news_id="+news[i].getID());
-                          newsEdit.add(new SubmitButton(change));
-                          Form newsEdit2 = new Form("/news/editor.jsp?news_id="+news[i].getID()+"&mode=delete");
-                          newsEdit2.add(new SubmitButton(delete));
-                          Table editTable = new Table(2,1);
-                          editTable.add(newsEdit,1,1);
-                          editTable.add(newsEdit2,2,1);
-
-                          outerTable.add(editTable, 1, 1);
-
-                  }
-
-
-		 i--;
-		}
-
-	return outerTable;
+  return outerTable;
 }
 
 
 
-public Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int news_id,int image_id) throws SQLException
+private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int news_id,int image_id) throws SQLException
 {
   String btnBackUrl = "/pics/jmodules/news/"+language+"/back.gif";
   String btnNanarUrl = "/pics/jmodules/news/"+language+"/more.gif";
@@ -472,15 +425,24 @@ public Table insertTable(String TimeStamp, String Headline, String NewsText, Tex
 
 
   if (image_id!=-1){
-  Table imageTable = new Table(1, 2);
-  Image newsImage = new Image(image_id);
-  imageTable.setAlignment("right");
-  imageTable.setVerticalAlignment("top");
-  imageTable.add(newsImage, 1, 1);
+    //debug
+    if ( showImages ) {
 
-  if ( showImages ) {
-    newsTable.add(imageTable, 1, 3);
-  }
+      Table imageTable = new Table(1, 2);
+      Image newsImage = new Image(image_id);
+      imageTable.setAlignment("right");
+      imageTable.setVerticalAlignment("top");
+      imageTable.add(newsImage, 1, 1);
+
+      if( (LAYOUT!=NEWS_SITE_LAYOUT) ){
+        newsTable.add(imageTable, 1, 3);
+      }
+      else{
+       if(currentRowPosition==1){
+        newsTable.add(imageTable, 1, 3);
+       }
+      }
+    }
 
   }
 
@@ -488,22 +450,40 @@ public Table insertTable(String TimeStamp, String Headline, String NewsText, Tex
   newsTable.setRowVerticalAlignment(3, "Top");
 
   if( backbutton ) {
-          newsTable.addText("<br>",1,3);
+          newsTable.add(Text.getBreak(),1,3);
           newsTable.add(new BackButton(new Image(btnBackUrl)), 1, 3);
   }
   else {
     if(more && !headlineAsLink) {
-     if ( !NewsText.equals("") ) newsTable.addText("<br>",1,3);
-        newsTable.add(insertHyperlink(btnNanarUrl, "news_id", ""+news_id, getNewsReaderURL() ), 1, 3);
+     if ( !NewsText.equals("") ) newsTable.add(Text.getBreak(),1,3);
+        newsTable.add(insertHyperlink(btnNanarUrl, "news_id", Integer.toString(news_id), getNewsReaderURL() ), 1, 3);
       }
     }
 
+
+  if(isAdmin) {
+    Table links = new Table(2,1);
+    Link newsEdit = new Link(change,"/news/editor.jsp");
+    newsEdit.addParameter("news_id",news_id);
+
+    Link newsDelete = new Link(delete,"/news/editor.jsp");
+    newsDelete.addParameter("news_id",news_id);
+    newsDelete.addParameter("mode","delete");
+
+    links.setAlignment(1,1,"left");
+    links.setAlignment(2,1,"right");
+    links.add(newsEdit,2,1);
+    links.add(newsDelete,1,1);
+
+    newsTable.add(links,1,3);
+
+  }
 
   return newsTable;
 }
 
 
-public String formatDateWithTime(String date ,String DatastoreType)
+private String formatDateWithTime(String date ,String DatastoreType)
 {
   StringBuffer ReturnString = new StringBuffer("");
 
@@ -625,6 +605,83 @@ private Link insertHyperlink(String imageUrl, String name, String value, String 
   return myLink;
 }
 
+private void addNext(Table table){
+ switch (LAYOUT) {
+   case SINGLE_FILE_LAYOUT:
+    outerTable.add(table, 1, 1);
+     break;
+   case  NEWS_SITE_LAYOUT:
+    //debug NEWS_SITE_LAYOUT shows only one image for now...code in insertTable
+    setNumberOfExpandedNews(3);
+    //teljari með staðsetningu
+      if( (currentColumnPosition==1) && (currentRowPosition==1) && (numberOfDisplayedNews>0)) {
+        outerTable.add(table, 1, 1);
+        outerTable.setVerticalAlignment(1, 1,"top");
+        currentRowPosition++;
+      }
+      else{
+        if( (currentColumnPosition==1) && (currentRowPosition!=2) ){
+           outerTable.add(table, 1, currentRowPosition);
+           outerTable.setVerticalAlignment(1,currentRowPosition,"top");
+           currentColumnPosition=2;
+        }
+        else if(currentColumnPosition==2){
+          outerTable.add(table, 2, currentRowPosition);
+          outerTable.setVerticalAlignment(2, currentRowPosition,"top");
+          currentColumnPosition=1;
+          currentRowPosition++;
+        }
+        else {
+          outerTable.add(table, 1, currentRowPosition);
+          outerTable.setVerticalAlignment(1, currentRowPosition,"top");
+          currentColumnPosition=2;
+        }
+      }
+     break;
+   case NEWS_PAPER_LAYOUT:
+       //flowtable
+
+    break;
+ }
+
+}
+
+private Table createContainerTable(){
+  Table temp;
+
+   switch (LAYOUT) {
+   case SINGLE_FILE_LAYOUT:
+    System.out.println("SINGLE_FILE_LAYOUT");
+    temp = new Table(1,1);
+    outerTable.setAlignment("center");
+     break;
+   case  NEWS_SITE_LAYOUT:
+    int rows = ((numberOfDisplayedNews/2) + (numberOfDisplayedNews%2));
+     System.out.println("NEWS_SITE_LAYOUT! rows : "+rows);
+    temp = new Table(2,rows);
+    temp.setWidth(1,"50%");
+    temp.setWidth(2,"50%");
+    temp.mergeCells(1,1,2,1);
+     break;
+   case NEWS_PAPER_LAYOUT:
+         System.out.println("NEWS_PAPER_LAYOUT ");
+    temp = new Table(3,1);
+    break;
+   default: temp = new Table(1,1);
+  }
+
+  return temp;
+}
+
+/*
+** This method uses static layouts from this class
+**
+*/
+public void setLayout(int LAYOUT){
+  this.LAYOUT = LAYOUT;
+}
+
+
 /**
 *
 * return a proxy for the main text. Use the standard
@@ -695,7 +752,7 @@ public void setNumberOfLetters(int numberOfLetters){
 public void setNumberOfDisplayedNews(int numberOfDisplayedNews){
   this.limitNumberOfNews = true;
   if( numberOfDisplayedNews<0 ) numberOfDisplayedNews = (-1)*numberOfDisplayedNews;
-  this.numberOfDisplayedNews = numberOfDisplayedNews+1;
+  this.numberOfDisplayedNews = numberOfDisplayedNews;
 }
 
 
@@ -760,18 +817,9 @@ public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
 }
 
 
-
-/**
-* Depricated method use setNumberOfExpandedNews instead.
-*/
-public void setNumberOfNews(int numberOfNews){
-  if( numberOfNews<0 ) numberOfNews = (-1)*numberOfNews;
-  this.numberOfNews=numberOfNews;
-}
-
-public void setNumberOfExpandedNews(int numberOfNews){
-  if( numberOfNews<0 ) numberOfNews = (-1)*numberOfNews;
-  this.numberOfNews=numberOfNews;
+public void setNumberOfExpandedNews(int numberOfExpandedNews){
+  if( numberOfExpandedNews<0 ) numberOfExpandedNews = (-1)*numberOfExpandedNews;
+  this.numberOfExpandedNews=numberOfExpandedNews;
 }
 
 public void setShowImages(boolean showImages) {
@@ -786,7 +834,7 @@ public void setShowOnlyDates(boolean showOnlyDates) {
   this.showOnlyDates=showOnlyDates;
 }
 
-public String formatNews(String newsString)
+private String formatNews(String newsString)
 {
 
   Vector tableVector = createTextTable(newsString);
@@ -844,14 +892,14 @@ public String formatNews(String newsString)
 
 }
 
-public Vector createTextTable(String newsString) {
+private Vector createTextTable(String newsString) {
 
   Vector tableVector = TextSoap.FindAllBetween(newsString,"|","|\r\n");
 
 return tableVector;
 }
 
-public Vector createTextLink(String newsString) {
+private Vector createTextLink(String newsString) {
 
   Vector linkVector = TextSoap.FindAllBetween(newsString,"Link(",")");
 
