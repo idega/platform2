@@ -161,4 +161,5 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public boolean hasGroupPlacement(int userID, int groupID) throws java.rmi.RemoteException;
  public java.util.Collection findSubGroupPlacements(int studentID, int schoolID, int seasonID) throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getSchoolTypesForCategory(com.idega.block.school.data.SchoolCategory category, boolean showFreetimeTypes) throws java.rmi.RemoteException;
+ public java.util.Collection findSubGroupPlacements(com.idega.block.school.data.SchoolClass group) throws java.rmi.RemoteException;
 }

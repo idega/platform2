@@ -1,5 +1,9 @@
 package com.idega.block.school.data;
 
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+
 
 public interface SchoolClassMember extends com.idega.data.IDOEntity
 {
@@ -59,4 +63,8 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setSpeciallyPlaced(boolean p0);
  public void setStudyPathId(int p0);
  public void setStudyPathToNull();
+
+	public java.util.Collection getSubGroups() throws IDORelationshipException;
+	public void addToGroup(SchoolClass group) throws IDOAddRelationshipException;
+	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException;
 }
