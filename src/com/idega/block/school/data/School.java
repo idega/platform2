@@ -42,7 +42,7 @@ public interface School extends com.idega.data.IDOEntity
  public void setHeadmasterUserId(int p0);
  public void setImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void setImages(java.util.Collection p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
- public void setLocalizedText(com.idega.block.text.data.LocalizedText p0)throws com.idega.data.IDORelationshipException;
+ public void setLocalizedText(String text, int localeId)throws com.idega.data.IDORelationshipException;
  public void setMapUrl(java.lang.String p0);
  public void setSchoolAddress(java.lang.String p0);
  public void setSchoolAreaId(int p0);

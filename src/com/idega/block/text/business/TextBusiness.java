@@ -1,12 +1,16 @@
 package com.idega.block.text.business;
 
+import java.rmi.RemoteException;
 import java.sql.*;
+
 import com.idega.presentation.IWContext;
 import com.idega.block.text.data.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.IWTimestamp;
 import java.util.List;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
 
 public class TextBusiness{
 
@@ -114,5 +118,21 @@ public class TextBusiness{
     }
     return null;
   }
+  
+  public static boolean addLocalizedTextToTxText(LocalizedText lText, TxText text) throws RemoteException {
+  	int contentId = text.getContentId();
+  	try {
+			Content cont = ((ContentHome) com.idega.data.IDOLookup.getHome(Content.class)).findByPrimaryKey(contentId);
+			cont.addTo(lText);
+			return true;
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+			return false;
+		} catch (SQLException e) {
+			e.printStackTrace(System.err);
+			return true;
+		}
+  	
+	}
 }
 

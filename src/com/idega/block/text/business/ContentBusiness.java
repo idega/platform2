@@ -99,9 +99,9 @@ public class ContentBusiness{
                                   String sTitle,
                                   List listOfFiles){
 
-    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+//    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
-      t.begin();
+//      t.begin();
       boolean ctUpdate = false;
       boolean locUpdate = false;
       Content eContent = null;
@@ -125,6 +125,8 @@ public class ContentBusiness{
         eContent.setCreated(IWTimestamp.getTimestampRightNow());
         locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       }
+			System.out.println("[ContentBusiness] : locUpdate = "+locUpdate);
+			System.out.println("[ContentBusiness] : ctUpdate  = "+ctUpdate);
 
       locText.setHeadline(sHeadline);
       locText.setBody(sBody);
@@ -146,7 +148,6 @@ public class ContentBusiness{
         else if(!locUpdate){
           locText.setCreated(IWTimestamp.getTimestampRightNow());
           locText.insert();
-          locText.addTo(eContent);
         }
       }
       else if(!ctUpdate){
@@ -156,32 +157,51 @@ public class ContentBusiness{
         eContent.insert();
         locText.setCreated(IWTimestamp.getTimestampRightNow());
         locText.insert();
-        locText.addTo(eContent);
       }
 
-      if(listOfFiles != null){
-        Iterator I = listOfFiles.iterator();
-        while(I.hasNext()){
-          ICFile file = (ICFile) I.next();
-          try {
-            file.addTo(eContent);
-          }
-          catch (SQLException ex) {
-
-          }
-        }
+//      t.commit();
+      
+			System.out.println("[ContentBusiness] : contentbusiness begins 6");
+			/*try {
+				locText.addTo(eContent);
+			}catch (Exception sql) {
+				sql.printStackTrace(System.err);
+			}*/
+      if (ctUpdate) {
+      	if (!locUpdate){
+      		System.out.println("[ContentBusiness] : adding locText to content 0");
+					locText.addTo(eContent);
+      	}
+      }else if(!ctUpdate){
+				System.out.println("[ContentBusiness] : adding locText to content 1");
+				locText.addTo(eContent);
       }
-      t.commit();
+
+			if(listOfFiles != null){
+				Iterator I = listOfFiles.iterator();
+				while(I.hasNext()){
+					ICFile file = (ICFile) I.next();
+					try {
+						file.addTo(eContent);
+					}
+					catch (SQLException ex) {
+
+					}
+				}
+			}
+
+      
       return eContent;
     }
     catch(Exception e) {
-      try {
+/*      try {
         t.rollback();
       }
       catch(javax.transaction.SystemException ex) {
         ex.printStackTrace();
       }
-      e.printStackTrace();
+*/
+      e.     printStackTrace();
     }
 
     return null;

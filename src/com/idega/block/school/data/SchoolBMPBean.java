@@ -336,9 +336,9 @@ public class SchoolBMPBean extends GenericEntity implements School {
 			}
 			LocalizedText lText = TextFinder.getContentHelper(text.getID(), localeId).getLocalizedText();
 			if (lText == null) {
-				debug("[SchoolBMPBean] : lText == NULL");
+				System.out.println("[SchoolBMPBean] : lText == NULL");
 			}else {
-				debug("[SchoolBMPBean] : lText.getID() = "+lText.getID());
+				System.out.println("[SchoolBMPBean] : lText.getID() = "+lText.getID());
 			}
 			return lText;
 		}else {
@@ -372,21 +372,27 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		this.idoAddTo(text);	
 	}
 
-	public void setLocalizedText(LocalizedText text) throws IDORelationshipException {
+	public void setLocalizedText(String text, int localeId) throws IDORelationshipException {
 		Collection coll= getText();
 		if (coll != null && !coll.isEmpty()) {
 			try {
 				Iterator iter = coll.iterator();
 				TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
 				TxText txText = textHome.findByPrimaryKey(iter.next());
-				TextBusiness.saveText(txText.getID(), text.getID(), text.getLocaleId(), -1, -1, null, null, text.getHeadline(), text.getTitle(), text.getBody(), null, null);
-				debug("[SchoolBMPBean] trying to set txText_id = "+txText.getID()+", locTxtId = "+text.getID());
+				LocalizedText lText = TextFinder.getContentHelper(txText.getID(), localeId).getLocalizedText();
+				int lTextId = -1;
+				if (lText != null) {
+					lTextId = lText.getID();	
+				}
+//				boolean added = com.idega.block.text.business.TextBusiness.addLocalizedTextToTxText(text, txText);
+				TextBusiness.saveText(txText.getID(), lTextId, localeId, -1, -1, null, null, null, null, text, null, null);
+				System.out.println("[SchoolBMPBean] trying to set txText_id = "+txText.getID()+", locTxtId = "+lTextId+", localeID = "+localeId);//+", added to content = "+added);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}else {
 			System.out.println("[SchoolBMPBean] : setLocalizedText : backwards compatability");
-			TxText txText = TextBusiness.saveText(-1, text.getID(), text.getLocaleId(), -1, -1, null, null, text.getHeadline(), text.getTitle(), text.getBody(), null, null);
+			TxText txText = TextBusiness.saveText(-1, -1, localeId, -1, -1, null, null, null, null, text, null, null);
 			idoAddTo(txText);
 			this.idoRemoveFrom(LocalizedText.class);
 		}

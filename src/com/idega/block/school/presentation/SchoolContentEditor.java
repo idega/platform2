@@ -325,7 +325,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 						_school.setImage( file );
 					}
 				}
-				
+				/*
 				String ltId = iwc.getParameter(PARAMETER_LOCALIZED_TEXT_ID);
 				LocalizedText text = null;
 				if (ltId != null) {
@@ -336,9 +336,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}
 				text.setBody(information);
 				text.store();
-
+*/
 				// ATHUGA HONDLAR BARA 1 Locale
-				_school.setLocalizedText( text );
+				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
 
 				if (!school_name.equals("")) {
 					_school.setSchoolName(school_name);	
@@ -381,9 +381,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 				e.printStackTrace(System.err);
 			} catch (FinderException e) {
 				e.printStackTrace(System.err);
-			} catch (CreateException e) {
+			} /*catch (CreateException e) {
 				e.printStackTrace(System.err);
-			}
+			}*/
 			
 		}
 		return false;
