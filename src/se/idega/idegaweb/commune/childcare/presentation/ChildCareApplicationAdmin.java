@@ -294,7 +294,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	
 		if (ids != null) {
 			try {
-				return getChildCareBusiness(iwc).assignContractToApplication(ids,iwc.getCurrentUser());
+				return getChildCareBusiness(iwc).assignContractToApplication(ids,iwc.getCurrentUser(), iwc.getCurrentLocale());
 			}
 			catch (RemoteException e) {
 			}

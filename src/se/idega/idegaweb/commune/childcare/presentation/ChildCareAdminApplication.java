@@ -213,21 +213,35 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			boolean hasPriority = application.getHasPriority();
 			char status = application.getApplicationStatus();
 
-			GenericButton offer = getButton("offer", localize("child_care.offer_placing","Offer placing"), ChildCareAdminWindow.METHOD_OFFER);
-			GenericButton priority = getButton("priority", localize("child_care.grant_priority","Grant priority"), ChildCareAdminWindow.METHOD_GRANT_PRIORITY);
-			GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 
 			if (status == getBusiness().getStatusSentIn()) {
 				if (numberInQueue == 1 || hasPriority) {
+					GenericButton offer = getButton("offer", localize("child_care.offer_placing","Offer placing"), ChildCareAdminWindow.METHOD_OFFER);
 					table.add(offer, 3, 1);
+					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
 					table.add(changeDate, 5, 1);
 				}
-				else
+				else {
+					GenericButton priority = getButton("priority", localize("child_care.grant_priority","Grant priority"), ChildCareAdminWindow.METHOD_GRANT_PRIORITY);
 					table.add(priority, 3, 1);
+				}
 			}
 			else if (status == getBusiness().getStatusAccepted()) {
+				GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
+				parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
+				table.add(parentsAgree, 3, 1);
 			}
-			
+			else if (status == getBusiness().getStatusParentsAccept()) {
+				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), ChildCareAdminWindow.METHOD_CREATE_CONTRACT);
+				table.add(createContract, 3, 1);
+			}
+			else if (status == getBusiness().getStatusContract()) {
+				GenericButton viewContract = (GenericButton) getStyledInterface(new GenericButton("view_contract", localize("child_care.view_contract","View contract")));
+				viewContract.setFileToOpen(application.getContractFileId());
+				table.add(viewContract, 3, 1);
+				GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract","Recreate contract"), ChildCareAdminWindow.METHOD_CREATE_CONTRACT);
+				table.add(recreateContract, 5, 1);
+			}
 		}
 		
 		return table;

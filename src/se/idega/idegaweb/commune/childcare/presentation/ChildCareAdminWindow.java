@@ -14,6 +14,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -32,6 +33,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_OFFER_MESSAGE = "cc_offer_message";
 	public static final String PARAMETER_PRIORITY_MESSAGE = "cc_priority_message";
 	public static final String PARAMETER_CHANGE_DATE = "cc_change_date";
+	public static final String PARAMETER_CHILDCARE_TIME = "cc_childcare_time";
 
 	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
@@ -39,11 +41,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_GRANT_PRIORITY = 2;
 	public static final int METHOD_OFFER = 3;
 	public static final int METHOD_CHANGE_DATE = 4;
+	public static final int METHOD_CREATE_CONTRACT = 5;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
 	public static final int ACTION_OFFER = 2;
 	public static final int ACTION_CHANGE_DATE = 3;
+	public static final int ACTION_PARENTS_AGREE = 4;
+	public static final int ACTION_CREATE_CONTRACT = 5;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -72,6 +77,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_CHANGE_DATE :
 				changeDate(iwc);
+				break;
+			case ACTION_PARENTS_AGREE :
+				parentsAgree(iwc);
+				break;
+			case ACTION_CREATE_CONTRACT :
+				createContract(iwc);
 				break;
 		}
 
@@ -125,6 +136,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")));
 				contentTable.add(getChangeDateForm(iwc));
+				break;
+			case METHOD_CREATE_CONTRACT :
+				headerTable.add(getHeader(localize("child_care.create_contract", "Create contract")));
+				contentTable.add(getCreateContractForm(iwc));
 				break;
 		}
 		
@@ -213,6 +228,32 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return null;
 	}
 
+	private Table getCreateContractForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+		textInput.setLength(2);
+		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+
+		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
+		table.add(getSmallText(localize("child_care.child_care_time", "Time")), 1, row);
+		table.add(textInput, 1, row++);
+
+		SubmitButton createContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.create_contract", "Create contract"), PARAMETER_ACTION, String.valueOf(ACTION_CREATE_CONTRACT)));
+		table.add(createContract, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_METHOD))
 			_method = Integer.parseInt(iwc.getParameter(PARAMETER_METHOD));
@@ -250,6 +291,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String messageHeader = localize("child_care.priority_subject", "Child care application priority.");
 		String messageBody = iwc.getParameter(PARAMETER_PRIORITY_MESSAGE);
 		getBusiness().setAsPriorityApplication(_applicationID, messageHeader, messageBody);
+
+		close(iwc);
+	}
+	
+	private void parentsAgree(IWContext iwc) throws RemoteException {
+		String subject = localize("child_care.parents_agree_subject", "Parents accept placing offer.");
+		String message = localize("child_care.parents_agree_body", "The parents of {0} accept your offer for a placing in {1} from {2}.");
+		
+		getBusiness().parentsAgree(_applicationID, iwc.getCurrentUser(), subject, message);
+
+		close(iwc);
+	}
+	
+	private void createContract(IWContext iwc) throws RemoteException {
+		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		getBusiness().assignContractToApplication(_applicationID, childCareTime, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		close(iwc);
 	}

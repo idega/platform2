@@ -13,9 +13,11 @@ import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -36,20 +38,30 @@ import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.contract.business.ContractBusiness;
+import com.idega.block.contract.business.ContractFinder;
 import com.idega.block.contract.business.ContractWriter;
+import com.idega.block.contract.data.Contract;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.core.data.Address;
+import com.idega.core.data.Phone;
+import com.idega.core.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.io.PDFTemplateWriter;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
+import com.lowagie.text.ElementTags;
 import com.lowagie.text.Font;
+import com.lowagie.text.xml.XmlPeer;
 
 /**
  * This class does something very clever.....
@@ -186,21 +198,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	private void sendMessageToProvider(Integer providerId, String subject, String message) throws RemoteException, CreateException {
-		SchoolBusiness schoolBiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
-		School prov = schoolBiz.getSchool(providerId);
-		UserBusiness userBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
-		Collection users = userBiz.getUsersInGroup(prov.getHeadmasterGroupId());
-
+	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
+		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
+		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
+		
 		if (users != null) {
-			MessageBusiness messageBiz = (MessageBusiness) getServiceInstance(MessageBusiness.class);
+			MessageBusiness messageBiz = getMessageBusiness();
 			Iterator it = users.iterator();
 			while (it.hasNext()) {
 				User providerUser = (User) it.next();
-				messageBiz.createUserMessage(providerUser, subject, message);
+				messageBiz.createUserMessage(application,providerUser, subject, MessageFormat.format(message, arguments), false);
 			}
-		} else
-			System.out.println("Got no users for group " + prov.getHeadmasterGroupId());
+		}
+		else
+			System.out.println("Got no users for provider " + application.getProviderId());
 	}
 
 	private void sendMessageToParents(ChildCareApplication application, String subject, String body) {
@@ -577,53 +588,60 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean assignContractToApplication(int id, User user) {
-		UserTransaction t = getSessionContext().getUserTransaction();
+	public void parentsAgree(int applicationID, User user, String subject, String message) throws RemoteException {
 		try {
-			t.begin();
-			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
-			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setApplicationStatus(this.getStatusParentsAccept());
+			changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
+			sendMessageToProvider(application, subject, message);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean assignContractToApplication(int applicationID, int childCareTime, User user, Locale locale) {
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+		try {
+			transaction.begin();
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setCareTime(childCareTime);
 
 			/**
 			 * @todo Fix hardcoding of category and add the other parameters to the contract.
 			 */
-			int contractId = ContractBusiness.createContract(2, IWTimestamp.RightNow(), IWTimestamp.RightNow(), "C", null);
+			int contractID = ContractBusiness.createContract(2, IWTimestamp.RightNow(), IWTimestamp.RightNow(), "C", null);
 
-			Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-			Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-			Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
-			Font tagFont = new Font(Font.HELVETICA, 9, Font.BOLDITALIC);
-			Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
+			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
+			int file_id = pdfWriter.writeToDatabase(getTagMap(application, locale), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 
-			int file_id = ContractWriter.writePDF(contractId, 2, Integer.toString(id), titleFont, paraFont, tagFont, textFont);
+			application.setContractFileId(file_id);
+			application.setContractId(contractID);
+			application.setApplicationStatus(getStatusContract());
+			changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
 
-			appl.setContractFileId(file_id);
-			appl.setContractId(contractId);
-			//			appl.setCaseStatus(getCaseStatusContract());
-			caseBiz.changeCaseStatus(appl, getCaseStatusContract().getStatus(), user);
-			//			appl.store();
-
-			t.commit();
-		} catch (Exception e) {
+			transaction.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 			try {
-				t.rollback();
-			} catch (SystemException ex) {
+				transaction.rollback();
+			}
+			catch (SystemException ex) {
 				ex.printStackTrace();
 			}
-
 			return false;
 		}
-
 		return true;
 	}
 
-	public boolean assignContractToApplication(String ids[], User user) {
+	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
 		boolean done = false;
 
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id), user);
+				done = assignContractToApplication(Integer.parseInt(id), -1, user, locale);
 				if (!done)
 					return done;
 			}
@@ -806,7 +824,110 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
 	}
+	
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale) throws RemoteException {
+		HashMap map = new HashMap();
+		User child = application.getChild();
+		User parent1 = application.getOwner();
+		Address address = getUserBusiness().getUsersMainAddress(parent1);
+		Phone phone = getUserBusiness().getHomePhone(parent1);
+		
+		School provider = application.getProvider();
+		User parent2 = null;
+		Collection parents = getUserBusiness().getParentsForChild(child);
+		if (parents != null) {
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				User parent = (User) iter.next();
+				if (((Integer)parent.getPrimaryKey()).intValue() != ((Integer)parent1.getPrimaryKey()).intValue())
+					parent2 = parent;
+			}
+		}
+		
+		String parent1Name = parent1.getName();
+		String parent1PersonalID = PersonalIDFormatter.format(parent1.getPersonalID(), locale);
+		String parent2Name = "-";
+		String parent2PersonalID = "-";
+		if (parent2 != null) {
+			parent2Name = parent2.getName();
+			parent2PersonalID = PersonalIDFormatter.format(parent2.getPersonalID(), locale);
+		}
+		
+		String addressString = "-";
+		if (address != null) {
+			addressString = address.getStreetAddress();
+			try {
+				PostalCode code = address.getPostalCode();
+				if (code != null) {
+					addressString += ", " + code.getPostalAddress();
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+			
+		String phoneString = "-";
+		if (phone != null)
+			phoneString = phone.getNumber();
 
+		IWTimestamp stamp = new IWTimestamp();
+		XmlPeer peer = new XmlPeer(ElementTags.CHUNK, "created");
+	  peer.setContent(stamp.getLocaleDate(locale, IWTimestamp.SHORT));
+		map.put(peer.getAlias(), peer);
+     
+		stamp = new IWTimestamp(application.getFromDate());
+		peer = new XmlPeer(ElementTags.CHUNK, "dateFrom");
+		peer.setContent(stamp.getLocaleDate(locale, IWTimestamp.SHORT));
+		map.put(peer.getAlias(), peer);
+     
+		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
+		peer.setContent(String.valueOf(application.getCareTime()));
+		map.put(peer.getAlias(), peer);
+     
+		peer = new XmlPeer(ElementTags.CHUNK, "childName");
+		peer.setContent(child.getName());
+		map.put(peer.getAlias(), peer);
+     
+		peer = new XmlPeer(ElementTags.CHUNK, "personalID");
+		peer.setContent(PersonalIDFormatter.format(child.getPersonalID(), locale));
+		map.put(peer.getAlias(), peer);
+     
+		peer = new XmlPeer(ElementTags.CHUNK, "provider");
+		peer.setContent(provider.getSchoolName());
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "parent1");
+		peer.setContent(parent1Name);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "parent2");
+		peer.setContent(parent2Name);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "personalID1");
+		peer.setContent(parent1PersonalID);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "personalID2");
+		peer.setContent(parent2PersonalID);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "address");
+		peer.setContent(addressString);
+		map.put(peer.getAlias(), peer);
+		
+		peer = new XmlPeer(ElementTags.CHUNK, "phone");
+		peer.setContent(phoneString);
+		map.put(peer.getAlias(), peer);
+		
+   return map;          
+	}
+
+	public String getXMLContractURL(IWBundle iwb, Locale locale){
+		return "file://"+ iwb.getResourcesRealPath(locale)+"/childcare_contract.xml";
+	}
+	
 	/*public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
 	}*/
