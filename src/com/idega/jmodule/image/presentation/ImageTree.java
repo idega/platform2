@@ -15,7 +15,7 @@ import com.idega.util.text.*;
 public class ImageTree extends JModuleObject{
 
 private String width = "100%";
-private boolean showAll = true;
+private boolean showAll = false;
 private boolean refresh = false;
 
 public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
