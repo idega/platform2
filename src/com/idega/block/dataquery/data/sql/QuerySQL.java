@@ -192,8 +192,7 @@ public class QuerySQL {
       	// mark used entities
       	String fieldName = condition.getField();
       	String path = condition.getPath();
-      	String entityName = getEntityForField(path, fieldName);
-      	entitiesUsedByCriterion.add(entityName);
+      	entitiesUsedByCriterion.add(path);
         query.addWhereClause(criterion);
       }
     }
