@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/09 15:46:51 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/10 07:42:04 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.138 $
+ * @version $Revision: 1.139 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -452,12 +452,13 @@ public class InvoiceChildcareThread extends BillingThread{
 								highestOrderNr = postingDetail.getOrderID();
 								subventionToReduce = invoiceRecord;
 							}
-							if (0.0f != regulation.getDiscount ()) {
-								totalSum += AccountingUtil.roundAmount(postingDetail.getAmount());
-							} else {
-								totalSum += AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
-							}
-//							errorRelated.append("Total sum so far: "+totalSum);
+							// if this is a discounted subvention, then amount is allready
+							// divided by the number of days
+							final float amount = postingDetail.getAmount()
+									* ((0.0f != regulation.getDiscount ()
+											|| 0.0f != regulation.getMaxAmountDiscount())
+										 ? 1.0f : placementTimes.getMonths ());
+							totalSum += AccountingUtil.roundAmount(amount);
 						}
 						catch (BruttoIncomeException e) {
 							//Who cares!!!
