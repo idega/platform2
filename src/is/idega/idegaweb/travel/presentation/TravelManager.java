@@ -11,20 +11,25 @@ import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.presentation.*;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
+import com.idega.core.accesscontrol.business.AccessControl;
 
 public class TravelManager extends JModuleObject {
 
     public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
     private IWBundle bundle;
     private IWResourceBundle iwrb;
-    Table table = new Table(1,2);
+    Table table = new Table(2,2);
 
     private Supplier supplier;
+    private Reseller reseller;
 
     protected Text theText = new Text();
     protected Text theBoldText = new Text();
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
+
+
+    private static String sAction = "travelManagerAction";
 
 
     public TravelManager(){
@@ -45,6 +50,9 @@ public class TravelManager extends JModuleObject {
     }
 
 
+    public Reseller getReseller() {
+      return reseller;
+    }
 
     public Supplier getSupplier() {
         return supplier;
@@ -63,53 +71,67 @@ public class TravelManager extends JModuleObject {
           table.setAlignment(1,1,"left");
           table.setAlignment(1,2,"center");
           table.setAlignment("center");
+          table.mergeCells(1,2,2,2);
+          table.setAlignment(2,1,"right");
           table.setHeight(1,2,"100%");
           table.setWidth("850");
 
-        Image iDesign = iwrb.getImage("buttons/design_trip.gif");
-        Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
-        Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
-        Image iBooking = iwrb.getImage("buttons/booking.gif");
-        Image iStatistics = iwrb.getImage("buttons/statistics.gif");
-        Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
-        Image iContracts = iwrb.getImage("buttons/contracts.gif");
-        Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
+        if ( AccessControl.isAdmin(modinfo)){
+
+            Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
+            Link lInitialData = new Link(iInitialData,InitialData.class);
+              lInitialData.addParameter(this.sAction,"lInitialData");
+            table.add(lInitialData,1,1);
+
+        }else if (supplier != null) {
+
+            Image iDesign = iwrb.getImage("buttons/design_trip.gif");
+            Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
+            Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
+            Image iBooking = iwrb.getImage("buttons/booking.gif");
+            Image iStatistics = iwrb.getImage("buttons/statistics.gif");
+            Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
+            Image iContracts = iwrb.getImage("buttons/contracts.gif");
+            Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
 
 
-        Link lDesign = new Link(iDesign,ServiceDesigner.class);
-          lDesign.addParameter("manager_action","lDesign");
-        Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
-          lMyTrip.addParameter("manager_action","lMyTrip");
-        Link lOverview = new Link(iOverview,BookingOverview.class);
-          lOverview.addParameter("manager_action","lOverview");
-        Link lBooking = new Link(iBooking,Booking.class);
-          lBooking.addParameter("manager_action","lBooking");
-        Link lStatistics = new Link(iStatistics,Statistics.class);
-          lStatistics.addParameter("manager_action","lStatistics");
-        Link lDailyReport = new Link(iDailyReport,DailyReport.class);
-          lDailyReport.addParameter("manager_action","lDailyReport");
-        Link lContracts = new Link(iContracts,"/contracts.jsp");
-          lContracts.addParameter("manager_action","lContracts");
-        Link lInitialData = new Link(iInitialData,InitialData.class);
-          lInitialData.addParameter("manager_action","lInitialData");
-//        Link lInitialData = new Link(iInitialData,"initial_data.jsp");
-//          lInitialData.addParameter("manager_action","lInitialData");
+            Link lDesign = new Link(iDesign,ServiceDesigner.class);
+              lDesign.addParameter(this.sAction,"lDesign");
+            Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
+              lMyTrip.addParameter(this.sAction,"lMyTrip");
+            Link lOverview = new Link(iOverview,BookingOverview.class);
+              lOverview.addParameter(this.sAction,"lOverview");
+            Link lBooking = new Link(iBooking,Booking.class);
+              lBooking.addParameter(this.sAction,"lBooking");
+            Link lStatistics = new Link(iStatistics,Statistics.class);
+              lStatistics.addParameter(this.sAction,"lStatistics");
+            Link lDailyReport = new Link(iDailyReport,DailyReport.class);
+              lDailyReport.addParameter(this.sAction,"lDailyReport");
+            Link lContracts = new Link(iContracts,Contracts.class);
+              lContracts.addParameter(this.sAction,"lContracts");
+            Link lInitialData = new Link(iInitialData,InitialData.class);
+              lInitialData.addParameter(this.sAction,"lInitialData");
 
-        table.add(lDesign,1,1);
-        table.add(lMyTrip,1,1);
-        table.add(lOverview,1,1);
-        table.add(lBooking,1,1);
-        table.add(lStatistics,1,1);
-        table.add(lDailyReport,1,1);
-        table.add(lContracts,1,1);
-        table.add(lInitialData,1,1);
+            table.add(lDesign,1,1);
+            table.add(lMyTrip,1,1);
+            table.add(lOverview,1,1);
+            table.add(lBooking,1,1);
+            table.add(lStatistics,1,1);
+            table.add(lDailyReport,1,1);
+            table.add(lContracts,1,1);
+            table.add(lInitialData,1,1);
 
-
-        String action = modinfo.getParameter("action");
-        if (action != null) {
-          if (action.equals("lDesign")) {
-          }
         }
+        else if (reseller!= null) {
+
+            Image iBooking = iwrb.getImage("buttons/booking.gif");
+            Link lBooking = new Link(iBooking,Booking.class);
+              lBooking.addParameter(this.sAction,"lBooking");
+            table.add(lBooking,1,1);
+
+        }
+        Link lHome = new Link("heim","/index.jsp");
+        table.add(lHome,2,1);
 
         super.add(table);
     }
@@ -124,8 +146,15 @@ public class TravelManager extends JModuleObject {
             supplier = new Supplier(supplierId);
         }
         catch (Exception e) {
-
         }
+
+        try {
+            int resellerId = TravelStockroomBusiness.getUserResellerId(modinfo);
+            reseller = new Reseller(resellerId);
+        }
+        catch (Exception e) {
+        }
+
 
         theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
         theText.setFontFace(Text.FONT_FACE_VERDANA);

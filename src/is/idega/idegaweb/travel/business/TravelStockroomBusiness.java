@@ -702,10 +702,14 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public Booking[] getBookings(int serviceId, idegaTimestamp stamp) {
-    return getBookings(serviceId,stamp,-1);
+    return getBookings(serviceId,stamp,new int[]{});
   }
 
   public Booking[] getBookings(int serviceId, idegaTimestamp stamp, int bookingTypeId) {
+    return getBookings(serviceId,stamp,new int[]{bookingTypeId});
+  }
+
+  public Booking[] getBookings(int serviceId, idegaTimestamp stamp, int[] bookingTypeIds) {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();
     try {
@@ -714,18 +718,88 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
         sql.append(" and ");
         sql.append(Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
-        if (bookingTypeId != -1) {
-          sql.append(" and ");
-          sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingTypeId);
+        if (bookingTypeIds != null) {
+          if (bookingTypeIds.length > 0 ) {
+            sql.append(" and (");
+            for (int i = 0; i < bookingTypeIds.length; i++) {
+              if (bookingTypeIds[i] != -1) {
+                if (i > 0) sql.append(" OR ");
+                sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
+              }
+            }
+            sql.append(") ");
+          }
         }
 
         returner = (Booking[]) (new Booking()).findAll(sql.toString());
     }catch (Exception e) {
-        System.err.println(sql.toString());
         e.printStackTrace(System.err);
     }
 
     return returner;
   }
+
+  public Product[] getProductsForDrowdown(int supplierId) throws SQLException {
+    return (Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
+  }
+
+  public float getBookingPrice(Booking booking) {
+      float total = 0;
+
+      try {
+
+        BookingEntry[] entries = booking.getBookingEntries();
+
+        float price;
+        ProductPrice pPrice;
+
+        for (int i = 0; i < entries.length; i++) {
+          pPrice = entries[i].getProductPrice();
+          price = this.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+          total += price * entries[i].getCount();
+        }
+
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+
+      return total;
+  }
+
+  public Reseller[] getResellers(int supplierId) {
+    return getResellers(supplierId,"");
+  }
+
+  public Reseller[] getResellers(int supplierId, String orderBy) {
+    Reseller[] resellers = {};
+    try {
+        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+        Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+
+        StringBuffer sql = new StringBuffer();
+          sql.append("Select r.* from "+Reseller.getResellerTableName()+" r, "+Supplier.getSupplierTableName()+" s, ");
+          sql.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Reseller.class, Supplier.class)+" rs");
+          sql.append(" WHERE ");
+          sql.append(" s."+supplier.getIDColumnName()+" = "+supplierId);
+          sql.append(" AND ");
+          sql.append(" s."+supplier.getIDColumnName()+" = rs."+supplier.getIDColumnName());
+          sql.append(" AND ");
+          sql.append(" r."+reseller.getIDColumnName()+" = rs."+reseller.getIDColumnName());
+          sql.append(" AND ");
+          sql.append("r."+Reseller.getColumnNameIsValid()+" = 'Y'");
+          if (!orderBy.equals("")) {
+            sql.append(" ORDER BY r."+orderBy);
+          }
+
+        resellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAll(sql.toString());
+
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return resellers;
+  }
+
 
 }

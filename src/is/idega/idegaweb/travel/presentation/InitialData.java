@@ -33,6 +33,7 @@ public class InitialData extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
+  private Supplier supplier;
   String tableBackgroundColor = "#FFFFFF";
 
   public InitialData() {
@@ -65,8 +66,8 @@ public class InitialData extends TravelManager {
   public void initialize(ModuleInfo modinfo) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
-      //bundle = getBundle(modinfo);
-      //iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+
+      supplier = super.getSupplier();
   }
 
   public void displayForm(ModuleInfo modinfo) throws SQLException {
@@ -81,9 +82,6 @@ public class InitialData extends TravelManager {
         sb.setAlignment("center");
 
 
-//      AccessControl.hasAdminPermission();
-
-        Supplier supplier = super.getSupplier();
 
         if (supplier != null) {
             sb.add(getSupplierCreation(supplier.getID()));
@@ -332,63 +330,65 @@ public class InitialData extends TravelManager {
           String passOne = modinfo.getParameter("supplier_password_one");
           String passTwo = modinfo.getParameter("supplier_password_one");
 
-          if (passOne.equals(passTwo)) {
+
               boolean isUpdate = false;
-              if (supplier_id != null) {
+              if (supplier != null) {
                 isUpdate = true;
               }
+
 
               if (isUpdate) {
                   add("TEMP - Unimplemented");
               }
               else {
 //                  tm.begin();
+                  if (passOne.equals(passTwo)) {
 
-                  Vector phoneIDS = new Vector();
-                  if (phone.length() > 0) {
-                    Phone phonePhone = new Phone();
-                      phonePhone.setNumber(phone);
-                      phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
-                    phonePhone.insert();
-                    phoneIDS.add(new Integer(phonePhone.getID()));
+                      Vector phoneIDS = new Vector();
+                      if (phone.length() > 0) {
+                        Phone phonePhone = new Phone();
+                          phonePhone.setNumber(phone);
+                          phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
+                        phonePhone.insert();
+                        phoneIDS.add(new Integer(phonePhone.getID()));
+                      }
+                      if (fax.length() > 0) {
+                        Phone faxPhone = new Phone();
+                          faxPhone.setNumber(fax);
+                          faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
+                        faxPhone.insert();
+                        phoneIDS.add(new Integer(faxPhone.getID()));
+                      }
+
+
+                      int[] phoneIds = new int[phoneIDS.size()];
+                      for (int i = 0; i < phoneIDS.size(); i++) {
+                          phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
+                      }
+
+                      int[] addressIds = new int[1];
+                      Address addressAddress = new Address();
+                          addressAddress.setStreetName(address);
+                          addressAddress.insert();
+                      addressIds[0] = addressAddress.getID();
+
+                      int[] emailIds = new int[1];
+                      Email eEmail = new Email();
+                        eEmail.setEmailAddress(email);
+                        eEmail.insert();
+                      emailIds[0] = eEmail.getID();
+
+                      SupplierManager suppMan = new SupplierManager();
+                      Supplier supplier = suppMan.createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
+
+
+      //                  tm.commit();
+                      add(iwrb.getLocalizedString("travel.supplier_created","Supplier was created"));
+                  }else {
+                      add("TEMP - PASSWORD not the same");
+
                   }
-                  if (fax.length() > 0) {
-                    Phone faxPhone = new Phone();
-                      faxPhone.setNumber(fax);
-                      faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
-                    faxPhone.insert();
-                    phoneIDS.add(new Integer(faxPhone.getID()));
-                  }
-
-
-                  int[] phoneIds = new int[phoneIDS.size()];
-                  for (int i = 0; i < phoneIDS.size(); i++) {
-                      phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
-                  }
-
-                  int[] addressIds = new int[1];
-                  Address addressAddress = new Address();
-                      addressAddress.setStreetName(address);
-                      addressAddress.insert();
-                  addressIds[0] = addressAddress.getID();
-
-                  int[] emailIds = new int[1];
-                  Email eEmail = new Email();
-                    eEmail.setEmailAddress(email);
-                    eEmail.insert();
-                  emailIds[0] = eEmail.getID();
-
-                  SupplierManager suppMan = new SupplierManager();
-                  Supplier supplier = suppMan.createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
-
-
-//                  tm.commit();
-                  add(iwrb.getLocalizedString("travel.supplier_created","Supplier was created"));
               }
-          }else {
-              add("TEMP - PASSWORD not the same");
-
-          }
 
       }
       catch (Exception sql) {

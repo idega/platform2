@@ -184,7 +184,7 @@ public class BookingOverview extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
@@ -562,7 +562,7 @@ public class BookingOverview extends TravelManager {
           Text Thotel = (Text) super.theSmallBoldText.clone();
           Text Tbooked;
 
-          is.idega.travel.data.Booking[] bookings = tsb.getBookings(this.service.getID(), currentStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+          is.idega.travel.data.Booking[] bookings = tsb.getBookings(this.service.getID(), currentStamp);
           for (int i = 0; i < bookings.length; i++) {
               ++row;
               if (tour.getHotelPickup()) {

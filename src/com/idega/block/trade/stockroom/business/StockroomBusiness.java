@@ -76,7 +76,6 @@ public class StockroomBusiness /* implements SupplyManager */ {
     }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
       List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT+" order by "+ProductPrice.getColumnNamePriceDate());
-      System.err.println("SQL : select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT+" order by "+ProductPrice.getColumnNamePriceDate());
       float disc = 0;
       if(result != null && result.size() > 0){
         disc = ((ProductPrice)result.get(0)).getPrice();
@@ -181,6 +180,40 @@ public class StockroomBusiness /* implements SupplyManager */ {
         throw new NotLoggedOnException();
       }
     }
+  }
+
+  public static int getUserResellerId(ModuleInfo modinfo) throws RuntimeException, SQLException {
+    String resellerLoginAttributeString = "sr_reseller_id";
+
+    Object obj = LoginBusiness.getLoginAttribute(resellerLoginAttributeString,modinfo);
+
+    if(obj != null){
+      return ((Integer)obj).intValue();
+    }else{
+      User us = LoginBusiness.getUser(modinfo);
+      if(us != null){
+        int resellerId = getUserResellerId(us);
+        LoginBusiness.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), modinfo);
+        return resellerId;
+      } else{
+        throw new NotLoggedOnException();
+      }
+    }
+  }
+  public static int getUserResellerId(User user) throws RuntimeException, SQLException{
+    com.idega.core.data.GenericGroup gGroup = new GenericGroup();
+    GenericGroup[] gr = gGroup.getAllGroupsContainingUser(user);
+    if(gr != null){
+      for (int i = 0; i < gr.length; i++) {
+        if(gr[i].getGroupType().equals(((ResellerStaffGroup)ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
+          GenericEntity[] reseller = ((Reseller)Reseller.getStaticInstance(Reseller.class)).findAllByColumn(Reseller.getColumnNameGroupID(),gr[i].getID());
+          if(reseller != null && reseller.length > 0){
+            return reseller[0].getID();
+          }
+        }
+      }
+    }
+    throw new RuntimeException("Does not belong to any reseller");
   }
 
 

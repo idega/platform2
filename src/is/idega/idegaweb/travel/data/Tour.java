@@ -28,12 +28,17 @@ public class Tour extends GenericEntity {
     addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
     addAttribute(getHotelPickupTimeColumnName(), "Hotel pick-up time", true, true, Timestamp.class);
     addAttribute(getTotalSeatsColumnName(), "Total seats", true, true, Integer.class);
-
+    addAttribute(getLengthColumnName(), "Lengd", true, true, Float.class);
   }
   public String getEntityName() {
     return getTripTableName();
   }
 
+
+  public void setDefaultValues() {
+      this.setLength(0);
+      this.setTotalSeats(0);
+  }
 
   public boolean getIsHotelPickup() {
     return getHotelPickup();
@@ -67,10 +72,18 @@ public class Tour extends GenericEntity {
     setColumn(getTotalSeatsColumnName(), totalSeats);
   }
 
+  public void setLength(float length) {
+    setColumn(getLengthColumnName(), length);
+  }
+
+  public float getLength() {
+    return getFloatColumnValue(getLengthColumnName());
+  }
+
   public static String getTripTableName() {return "TB_TOUR";}
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
   public static String getTotalSeatsColumnName() {return "TOTAL_SEATS";}
-  //  public static String getColumnName() {return "";}
+  public static String getLengthColumnName() {return "TOUR_LENGTH";}
 
 }

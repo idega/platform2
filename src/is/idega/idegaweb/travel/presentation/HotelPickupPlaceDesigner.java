@@ -36,6 +36,7 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
   private String parameterClose = "closeWindow";
 
   public HotelPickupPlaceDesigner() {
+    super.setTitle("idegaWeb Travel");
   }
 
   public void main(ModuleInfo modinfo) {

@@ -115,17 +115,12 @@ public class Booking extends TravelManager {
         sb.setWidth("90%");
         sb.setAlignment("center");
 
-      System.err.println("C : "+stamp.toSQLDateString());
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
-      System.err.println("D : "+stamp.toSQLDateString());
               contentTable.add(getContentHeader(modinfo));
-      System.err.println("E : "+stamp.toSQLDateString());
               contentTable.add(getTotalTable(modinfo));
-      System.err.println("F : "+stamp.toSQLDateString());
               contentTable.add(getContentTable(modinfo));
-      System.err.println("G : "+stamp.toSQLDateString());
               contentTable.setWidth("95%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -155,7 +150,7 @@ public class Booking extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID() ));
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
@@ -750,6 +745,8 @@ public class Booking extends TravelManager {
                   table.add(pPriceCatNameText, 1,row);
                   table.add(pPriceMany,2,row);
                   table.add(pPriceText, 2,row);
+
+                  table.add(Integer.toString(price),2,row);
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
               }
@@ -784,7 +781,6 @@ public class Booking extends TravelManager {
       String day = modinfo.getParameter("day");
 
       if (stamp == null)
-      System.err.println("A : NULL");
 
       try {
           if ( (day != null) && (month != null) && (year != null)) {
@@ -804,7 +800,6 @@ public class Booking extends TravelManager {
           stamp = idegaTimestamp.RightNow();
       }
 
-      System.err.println("B : "+stamp.toSQLDateString());
       return stamp;
 
   }
@@ -851,11 +846,13 @@ public class Booking extends TravelManager {
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {
-          bEntry = new BookingEntry();
-            bEntry.setProductPriceId(pPrices[i].getID());
-            bEntry.setBookingId(bookingId);
-            bEntry.setCount(manys[i]);
-          bEntry.insert();
+          if (manys[i] != 0) {
+            bEntry = new BookingEntry();
+              bEntry.setProductPriceId(pPrices[i].getID());
+              bEntry.setBookingId(bookingId);
+              bEntry.setCount(manys[i]);
+            bEntry.insert();
+          }
         }
 
 

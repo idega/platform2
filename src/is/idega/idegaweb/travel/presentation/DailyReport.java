@@ -40,6 +40,8 @@ public class DailyReport extends TravelManager {
 
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
+  private String sAction = "dailyReportAction";
+  private String parameterUpdate = "dailyReportUpdate";
 
 
   public DailyReport() {
@@ -53,12 +55,13 @@ public class DailyReport extends TravelManager {
       super.main(modinfo);
       initialize(modinfo);
 
-      String action = modinfo.getParameter("action");
+      String action = modinfo.getParameter(sAction);
       if (action == null) {action = "";}
 
-      if (action.equals("")) {
-          displayForm(modinfo);
+      if (action.equals(this.parameterUpdate)) {
+          update(modinfo);
       }
+      displayForm(modinfo);
 
       super.addBreak();
   }
@@ -154,14 +157,18 @@ public class DailyReport extends TravelManager {
           tframeText.addToText(":");
 
 
-      DropdownMenu trip = new DropdownMenu("trip");
-          trip.addMenuElement("1","Dropdown af ferðum sem eru til :)");
-          trip.addMenuElement("2","Annað dropdown hér ;)");
+      DropdownMenu trip = null;
+      try {
+        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+        trip = new DropdownMenu(Product.getProductEntityName());
+      }
 
-          String parTrip = modinfo.getParameter("trip");
-          if (parTrip != null) {
-              trip.setSelectedElement(parTrip);
+          if (product != null) {
+              trip.setSelectedElement(Integer.toString(product.getID()));
           }
+
 
 
       DateInput active_from = new DateInput("active_from");
@@ -226,6 +233,11 @@ public class DailyReport extends TravelManager {
   }
 
   public Table getContentTable(ModuleInfo modinfo) {
+
+      int totalBookings = 0;
+      int totalAttendance = 0;
+      int totalAmount = 0;
+
       Table theTable = new Table();
           theTable.setBorder(0);
           theTable.setWidth("95%");
@@ -265,7 +277,7 @@ public class DailyReport extends TravelManager {
       Text totalHText = (Text) theSmallBoldText.clone();
           totalHText.setText(iwrb.getLocalizedString("travel.total","Total"));
 
-      TextInput textBoxToClone = new TextInput();
+      TextInput textBoxToClone = new TextInput("attendance");
           textBoxToClone.setSize(3);
           textBoxToClone.setAttribute("style","font-size: 8pt");
       TextInput attTextBox = new TextInput();
@@ -293,25 +305,49 @@ public class DailyReport extends TravelManager {
 
       table.setBorderColor(NatBusiness.textColor);
 
-      is.idega.travel.data.Booking[] bookings = tsb.getBookings(product.getID(),stamp);
+      int attendance;
+      int ibookings;
+      float amount;
+
+      int[] bookingTypeIds = {is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
+
+
+      is.idega.travel.data.Booking[] bookings = tsb.getBookings(product.getID(),stamp,bookingTypeIds);
       for (int i = 0; i < bookings.length; i++) {
           row++;
+          attendance = 0;
+          ibookings = 0;
+          amount = 0;
+
+          ibookings = bookings[i].getTotalCount();
+          attendance = bookings[i].getAttendance();
+          amount = tsb.getBookingPrice(bookings[i]);
+
+          totalBookings += ibookings;
+          totalAttendance += attendance;
+          totalAmount += amount;
+
           table.setRowColor(row,NatBusiness.backgroundColor);
           nameText = (Text) smallText.clone();
             nameText.setText(bookings[i].getName());
+
           bookedText = (Text) smallText.clone();
-            bookedText.setText(Integer.toString(bookings[i].getTotalCount()));
+            bookedText.setText(Integer.toString(ibookings));
 
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
-          if (bookings[i].getAttendance() != 0) {
-            attTextBox.setContent(Integer.toString(bookings[i].getAttendance()));
+          if (attendance != 0) {
+            attTextBox.setContent(Integer.toString(attendance));
           }
+          amountText = (Text) smallText.clone();
+            amountText.setText(Integer.toString((int) amount));
 
+          table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
           table.add(nameText,1,row);
 
           table.add(bookedText,3,row);
           table.add(attTextBox,4,row);
+          table.add(amountText,5,row);
 
       }
 
@@ -324,6 +360,7 @@ public class DailyReport extends TravelManager {
 
 
       Table addTable = new Table();
+        int addRow = 0;
           addTable.setWidth("100%");
           addTable.setBorder(1);
           addTable.setCellspacing(0);
@@ -332,11 +369,46 @@ public class DailyReport extends TravelManager {
           addTable.setWidth(3,threeWidth);
           addTable.setWidth(4,fourWidth);
           addTable.setWidth(5,fiveWidth);
-          addTable.setColumnAlignment(1,"left");
-          addTable.setColumnAlignment(2,"center");
-          addTable.setColumnAlignment(3,"center");
-          addTable.setColumnAlignment(4,"center");
-          addTable.setColumnAlignment(5,"center");
+
+      bookings = tsb.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+      for (int i = 0; i < bookings.length; i++) {
+          ++addRow;
+          ibookings = bookings[i].getTotalCount();
+          attendance = bookings[i].getAttendance();
+          amount = tsb.getBookingPrice(bookings[i]);
+
+          totalBookings += ibookings;
+          totalAttendance += attendance;
+          totalAmount += amount;
+
+          nameText = (Text) smallText.clone();
+            nameText.setText(bookings[i].getName());
+
+          bookedText = (Text) smallText.clone();
+            bookedText.setText(Integer.toString(ibookings));
+
+          attTextBox = (TextInput) textBoxToClone.clone();
+            attTextBox.setSize(3);
+          if (attendance != 0) {
+            attTextBox.setContent(Integer.toString(attendance));
+          }
+          amountText = (Text) smallText.clone();
+            amountText.setText(Integer.toString((int) amount));
+
+          addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
+          addTable.add(nameText,1,addRow);
+
+          addTable.add(bookedText,3,addRow);
+          addTable.add(attTextBox,4,addRow);
+          addTable.add(amountText,5,addRow);
+      }
+      addTable.setColumnAlignment(1,"left");
+      addTable.setColumnAlignment(2,"center");
+      addTable.setColumnAlignment(3,"center");
+      addTable.setColumnAlignment(4,"center");
+      addTable.setColumnAlignment(5,"center");
+
+
 
       Table totalTable = new Table();
           totalTable.setWidth("100%");
@@ -353,19 +425,59 @@ public class DailyReport extends TravelManager {
           totalTable.setColumnAlignment(4,"center");
           totalTable.setColumnAlignment(5,"center");
 
+
+          bookedText = (Text) smallText.clone();
+            bookedText.setText(Integer.toString(totalBookings));
+          attTextBox = (TextInput) textBoxToClone.clone();
+            attTextBox.setSize(3);
+            attTextBox.setContent(Integer.toString(totalAttendance));
+          amountText = (Text) smallText.clone();
+            amountText.setText(Integer.toString((int) totalAmount));
+
           totalTable.add(totalHText,1,1);
+          totalTable.add(bookedText,3,1);
+          totalTable.add(attTextBox,4,1);
+          totalTable.add(amountText,5,1);
 
 
+      Link link = new Link();
+        link.setText(" t - add new");
+        link.addParameter(AdditionalBooking.parameterServiceId,service.getID());
+        link.addParameter(AdditionalBooking.parameterDate, stamp.toSQLDateString());
+        link.setWindowToOpen(AdditionalBooking.class);
 
       theTable.add(table);
       theTable.add(additionHText,1,2);
+      theTable.add(link,1,2);
       theTable.setAlignment(1,2,"left");
       theTable.add(addTable,1,3);
       theTable.add(totalTable,1,5);
 
+      SubmitButton submit = new SubmitButton("T update",this.sAction, this.parameterUpdate);
 
+      theTable.setAlignment(1,6,"right");
+      theTable.add(submit,1,6);
 
       return theTable;
+
+  }
+
+  private void update(ModuleInfo modinfo) {
+    String[] booking_ids = (String[]) modinfo.getParameterValues("booking_id");
+    String[] attendance  = (String[]) modinfo.getParameterValues("attendance");
+
+    is.idega.travel.data.Booking booking;
+    for (int i = 0; i < booking_ids.length; i++) {
+      try {
+        booking = new is.idega.travel.data.Booking(Integer.parseInt(booking_ids[i]));
+        booking.setAttendance(Integer.parseInt(attendance[i]));
+        booking.update();
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }catch (NumberFormatException n) {
+      }
+    }
+
 
   }
 

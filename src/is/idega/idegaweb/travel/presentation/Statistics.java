@@ -174,7 +174,7 @@ public class Statistics extends TravelManager {
 
       DropdownMenu trip = null;
       try {
-        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+        trip = new DropdownMenu(tsb.getProductsForDrowdown(supplier.getID()));
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());

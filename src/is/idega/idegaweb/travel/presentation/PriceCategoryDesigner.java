@@ -53,6 +53,7 @@ public class PriceCategoryDesigner extends TravelWindow {
   public PriceCategoryDesigner() {
     super.setHeight(400);
     super.setWidth(650);
+    super.setTitle("idegaWeb Travel");
   }
 
   public void main(ModuleInfo modinfo) {

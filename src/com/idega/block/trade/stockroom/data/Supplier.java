@@ -37,6 +37,8 @@ public class Supplier extends GenericEntity{
     this.addManyToManyRelationShip(Email.class,"SR_SUPPLIER_IC_EMAIL");
 //    this.addManyToManyRelationShip(PriceCategory.class, "SR_SUPPLIER_PRICE_CATEGORY");
     this.addManyToManyRelationShip(ProductCategory.class, "SR_SUPPLIER_PRODUCT_CATEGORY" );
+    this.addManyToManyRelationShip(Reseller.class);
+
   }
 
   public void insertStartData()throws Exception{

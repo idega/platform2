@@ -90,7 +90,6 @@ public class SupplierManager {
     pCategory.insert();
 
     return supp;
-
   }
 
   public static void invalidateSupplier(Supplier supplier) throws SQLException {
