@@ -29,6 +29,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 	protected final static String COLUMN_AMOUNT = "amount";
 	protected final static String COLUMN_PERIOD_FROM = "period_from";
 	protected final static String COLUMN_PERIOD_TO = "period_to";
+	protected final static String COLUMN_DELETED = "deleted";
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -49,6 +50,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		addAttribute(COLUMN_AMOUNT,"Amount",true,true,Float.class);
 		addAttribute(COLUMN_PERIOD_FROM,"Period from",true,true,Date.class);
 		addAttribute(COLUMN_PERIOD_TO,"Period to",true,true,Date.class);
+		addAttribute(COLUMN_DELETED,"Deleted",true,true,Boolean.class);
 	}
 
 	public void setClubID(int id) {
@@ -131,10 +133,27 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		return getDateColumnValue(COLUMN_PERIOD_TO);
 	}
 	
+	public void setDeleted(boolean deleted) {
+		setColumn(COLUMN_DELETED,deleted);
+	}
+	
+	public boolean getDeleted() {
+		return getBooleanColumnValue(COLUMN_DELETED);
+	}
+	
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED,false);
+		sql.appendOr();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendRightParenthesis();
+		
+		System.out.println("sql =" + sql.toString());
 		
 		return idoFindPKsByQuery(sql);
 	}

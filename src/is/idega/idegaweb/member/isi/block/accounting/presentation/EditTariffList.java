@@ -21,6 +21,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
@@ -44,6 +45,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String LABEL_AMOUNT = "etl_amount";
 	protected static final String LABEL_FROM = "etl_from";
 	protected static final String LABEL_TO = "etl_to";
+	
+	protected static final String LABEL_DELETE = "etl_delete";
 
 	/**
 	 *  
@@ -123,6 +126,9 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariff tariff = (ClubTariff) it.next();
+				CheckBox delete = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
+				t.add(delete, 1, row);
+				
 				Group group = tariff.getGroup();
 				if (group != null)
 					t.add(group.getName(), 2, row);

@@ -17,7 +17,7 @@ import com.idega.user.data.User;
  * @author palli
  */
 public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentRound {
-	protected final static String ENTITY_NAME = "isi_ass_round"; //Hehe, just had to keep that one in here :)
+	protected final static String ENTITY_NAME = "isi_ass_round";
 	
 	protected final static String COLUMN_NAME = "name";
 	protected final static String COLUMN_EXECUTION_DATE = "executed_date";

@@ -34,6 +34,10 @@ import com.idega.util.IWTimestamp;
  */
 public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
 	public boolean doAssessment(Group club, Group division, Group group, IWTimestamp date) {
+//		Thread assRoundThread = new AssessmentRoundThread();
+//		
+//		assRoundThread.start();
+		
 		return true;
 	}
 	
