@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
@@ -29,8 +30,8 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
-		addAttribute(COLUMN_START, "", true, true, java.sql.Date.class);
-		addAttribute(COLUMN_STOP, "", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_START, "", true, true, java.sql.Timestamp.class);
+		addAttribute(COLUMN_STOP, "", true, true, java.sql.Timestamp.class);
 		
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 	}
@@ -40,11 +41,11 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
 	}
-	public Date getStart() {
-		return getDateColumnValue(COLUMN_START);
+	public Timestamp getStart() {
+		return getTimestampColumnValue(COLUMN_START);
 	}
-	public Date getEnd() {
-		return getDateColumnValue(COLUMN_STOP);
+	public Timestamp getEnd() {
+		return getTimestampColumnValue(COLUMN_STOP);
 	}
 	
 	public void setSchoolCategoryID(String i) {
@@ -56,10 +57,10 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	public void setPeriod(Date d) {
 		setColumn(COLUMN_PERIOD, d);
 	}
-	public void setStart(Date d) {
+	public void setStart(Timestamp d) {
 		setColumn(COLUMN_START, d);
 	}
-	public void setEnd(Date d) {
+	public void setEnd(Timestamp d) {
 		setColumn(COLUMN_STOP, d);
 	}
 	
