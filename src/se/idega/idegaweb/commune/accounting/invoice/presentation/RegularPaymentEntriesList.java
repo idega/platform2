@@ -393,10 +393,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		Map errorMessages = new HashMap();
 		checkNotNull(iwc, RegulationSearchPanel.PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
 				
-		if (iwc.getCurrentUser() == null){
+		if (iwc.isLoggedOn()){
 			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
+			return;
 		}
 
+		User loggedOnUser=iwc.getCurrentUser();
+		
 		RegularPaymentEntry entry = null;
 		if (iwc.getParameter(PAR_PK) != null){
 			entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
@@ -408,7 +411,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				try{
 					entry = getRegularPaymentEntryHome().create();
 					entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-					entry.setCreatedSign(iwc.getCurrentUser().getName());
+					entry.setCreatedSign(loggedOnUser.getName());
 					entry.setEditSign(" ");								
 				
 				}catch(CreateException ex2){
@@ -417,7 +420,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				}			
 			} else{
 				entry.setEditDate(new Date(new java.util.Date().getTime()));
-				entry.setEditSign(iwc.getCurrentUser().getName());
+				entry.setEditSign(loggedOnUser.getName());
 			}			
 	
 			long amountMonth = 0;

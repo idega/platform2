@@ -175,7 +175,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	
 	public void init(final IWContext iwc) {
 		
-		if (iwc.getCurrentUser() == null){
+		if (!iwc.isLoggedOn()){
 			add(getLocalizedText("not_logged_in", "No user logged in"));
 			return;	
 		}
@@ -349,15 +349,17 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		Map errorMessages = new HashMap();
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
 		
-		if (iwc.getCurrentUser() == null){
+		if (!iwc.isLoggedOn()){
 			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
+			return;
 		}
+		User loggedOnUser = iwc.getCurrentUser();
 		
 		if (entry == null){
 			try{
 				entry = getRegularInvoiceEntryHome().create();
 				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-				entry.setCreatedSign(iwc.getCurrentUser().getName());	
+				entry.setCreatedSign(loggedOnUser.getName());	
 				entry.setEditSign(" ");	
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
@@ -365,7 +367,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}			
 		}else{
 			entry.setEditDate(new Date(new java.util.Date().getTime()));
-			entry.setEditSign(iwc.getCurrentUser().getName());
+			entry.setEditSign(loggedOnUser.getName());
 		}
 		
 		long amount = 0;
