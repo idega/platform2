@@ -83,8 +83,10 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     if (action == null || action.equals("")) {
       String delImg = iwc.getParameter(PAR_DEL_FILE);
-      if (delImg != null) {
-        _business.removeImage(_product, Integer.parseInt(delImg));
+      if (delImg != null && !delImg.equals("")) {
+        try {
+          _business.removeImage(_product, Integer.parseInt(delImg));
+        }catch (NumberFormatException nfe) {}
       }
 
       displayForm(iwc);
