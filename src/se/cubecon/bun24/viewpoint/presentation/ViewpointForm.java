@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/15 00:12:12 $ by $Author: gimmi $
+ * Last modified: $Date: 2002/11/15 08:32:52 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -389,10 +389,16 @@ public class ViewpointForm extends CommuneBlock {
 		add(form);
 	}
 
-	private Link getUserHomePageLink(final IWContext iwc) throws RemoteException {
-		final Text userHomePageText = new Text(getLocalizedString(GOBACKTOMYPAGE_KEY, GOBACKTOMYPAGE_DEFAULT));
-		final Link link = new Link(userHomePageText);
-		link.setPage(iwc.getCurrentUser().getHomePageID());
+	private Link getUserHomePageLink (final IWContext iwc)
+        throws RemoteException {
+		final Text userHomePageText
+                = new Text (getLocalizedString (GOBACKTOMYPAGE_KEY,
+                                                GOBACKTOMYPAGE_DEFAULT));
+ 		final UserBusiness userBusiness = (UserBusiness)
+                IBOLookup.getServiceInstance (iwc, UserBusiness.class);
+        final User user = iwc.getCurrentUser ();
+		final Link link = new Link (userHomePageText);
+        link.setPage (userBusiness.getHomePageIDForUser (user));
 		return (link);
 	}
 
