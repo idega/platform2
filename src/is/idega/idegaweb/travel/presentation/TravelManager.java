@@ -226,10 +226,15 @@ public class TravelManager extends Block {
               lReports.addParameter(this.sAction, this.parameterDailyReport);
             table.add(lReports, 1, 1);
 
+						List links = getServiceHandler(iwc).getServiceLinks(tsm.getIWResourceBundle());
+						for (int i = 0; i < links.size(); i++) {
+							table.add( (Link) links.get(i), 1, 1);
+						}
+						
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
-
+            
         }else if (tsm.getSupplier() != null) {
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
               lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
