@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
@@ -140,7 +141,7 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			ProductItemPrice price = new ProductItemPrice(product);
 			price.setShowCurrency(true);
 			price.setShowLocalized(true);
-			Hashtable metadata = product.getMetaDataAttributes();
+			Map metadata = product.getMetaDataAttributes();
 			if (metadata == null)
 				metadata = new Hashtable();
 			

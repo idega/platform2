@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
@@ -229,7 +230,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 					newGroup.setAlias(playerGroup);
 
 					//Copy the metadata
-					java.util.Hashtable t = playerGroup.getMetaDataAttributes();
+					java.util.Map t = playerGroup.getMetaDataAttributes();
 					if (t != null)
 						newGroup.setMetaDataAttributes(t);
 
@@ -374,7 +375,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		try {
 			connected =((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 			if (connected != null) {
-				Hashtable metadata = parent.getMetaDataAttributes();
+				Map metadata = parent.getMetaDataAttributes();
 				int parent_id = ((Integer)parent.getPrimaryKey()).intValue();
 				Iterator it = connected.iterator();
 				while (it.hasNext()) {

@@ -6,6 +6,7 @@ package com.idega.block.presentation;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
@@ -66,10 +67,10 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	}
 	
 	private void control(IWContext iwc) throws RemoteException {
-		Hashtable superMetaData = getCategoryService(iwc).getInheritedMetaData(_category);
-		Hashtable superMetaDataTypes = getCategoryService(iwc).getInheritedMetaDataTypes(_category);
-		Hashtable metaData = _category.getMetaDataAttributes();
-		Hashtable metaDataTypes = _category.getMetaDataTypes();
+		Map superMetaData = getCategoryService(iwc).getInheritedMetaData(_category);
+		Map superMetaDataTypes = getCategoryService(iwc).getInheritedMetaDataTypes(_category);
+		Map metaData = _category.getMetaDataAttributes();
+		Map metaDataTypes = _category.getMetaDataTypes();
 		
 		Table padder = new Table(1, 1);
 		padder.setCellpadding(0);
