@@ -101,14 +101,17 @@ public class InvoiceBatchResult extends AccountingBlock{
 				while(errorIter.hasNext()){
 					BatchRunError batchRunError = (BatchRunError)errorIter.next();
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
-					if(batchRunError.getRelated().indexOf('.')!=-1){
-						errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
-					}else{
+					if(batchRunError.getRelated().indexOf("invoice.")!=-1){
 						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
+						System.out.println("Error "+batchRunError.getRelated());
+					}else{
+						errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
+						System.out.println("Error Plain text "+batchRunError.getRelated());
 					}
 					errorTable.add(new Text(batchRunError.getDescription()),3,row+1);
 					row++;
 				}
+				System.out.println("Found errors: "+row);
 				add(errorTable);
 			}
 			
