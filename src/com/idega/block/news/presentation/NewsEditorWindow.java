@@ -14,7 +14,7 @@ import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.core.user.data.User;
-import com.idega.block.category.business.*;
+import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICCategory;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;

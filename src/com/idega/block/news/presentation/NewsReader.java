@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.78 2002/03/12 11:18:33 aron Exp $
+ * $Id: NewsReader.java,v 1.79 2002/03/14 13:01:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.block.news.business.*;
 import com.idega.core.user.data.User;
 import com.idega.core.data.ICCategory;
-import com.idega.block.category.business.*;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.business.CategoryBusiness;
 import java.sql.*;
 import java.util.*;
 import java.io.*;

@@ -1,6 +1,7 @@
 package com.idega.block.news.business;
 
-import com.idega.block.category.business.*;
+import com.idega.core.business.CategoryBusiness;
+import com.idega.core.business.CategoryFinder;
 import com.idega.data.EntityFinder;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.*;

@@ -17,7 +17,8 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
 import com.idega.core.data.ICCategory;
-import com.idega.block.category.business.*;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.business.CategoryBusiness;
 import com.idega.io.ObjectSerializer;
 
 /**

@@ -5,8 +5,8 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.core.data.ICCategory;
-import com.idega.block.category.business.CategoryFinder;
-import com.idega.block.category.business.CategoryBusiness;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.business.CategoryBusiness;
 import java.util.Collection;
 
 /**

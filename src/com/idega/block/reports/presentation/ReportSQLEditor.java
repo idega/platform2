@@ -66,7 +66,6 @@ public class ReportSQLEditor extends Block implements Reports{
   }
 
   protected void control(IWContext iwc){
-    debugParameters(iwc);
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -77,12 +76,13 @@ public class ReportSQLEditor extends Block implements Reports{
           iCategoryId = Integer.parseInt(iwc.getParameter(PRM_CATEGORYID ));
         }
 
+        if(iwc.isParameterSet(PRM_REPORTID))
+          iReportId = Integer.parseInt(iwc.getParameter(PRM_REPORTID));
         String sActPrm = "0";
 
         if(iwc.getParameter(sAction) != null)
           sActPrm = iwc.getParameter(sAction);
         else if(iwc.isParameterSet(PRM_REPORTID)){
-          iReportId = Integer.parseInt(iwc.getParameter(PRM_REPORTID));
           sActPrm = "2";
         }
         else if(useCheckBoxes ){

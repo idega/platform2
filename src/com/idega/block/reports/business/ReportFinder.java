@@ -6,7 +6,7 @@ import com.idega.block.reports.data.*;
 import com.idega.core.data.ICObjectInstance;
 import java.sql.SQLException;
 import com.idega.core.data.ICObject;
-import com.idega.block.category.business.*;
+import com.idega.core.business.*;
 import com.idega.core.data.ICCategory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
