@@ -65,7 +65,10 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 	configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
       table.add(configCategory, 1,row);
     }
-    table.add(productCatalog.getCategoryText(pCat.getName()), 1,row++);
+    if ( productCatalog._showCategoryName )
+      table.add(productCatalog.getCategoryText(pCat.getName()), 1,row++);
+    else
+      row++;
 
     for (int i = 0; i < products.size(); i++) {
       productTable = new Table();
@@ -92,8 +95,13 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 	productTable.add(nameLink, 1,1);
       }
       else {
-	nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
-	nameText.setBold();
+	if ( productCatalog._showCategoryName ) {
+	  nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	  nameText.setBold();
+	}
+	else {
+	  nameText = productCatalog.getCategoryText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	}
 	productTable.add(nameText, 1,1);
       }
       row = expand(product, table, productTable, row);
@@ -130,7 +138,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     }
 
     table.add(productTable,1,row++);
-    table.setHeight(1,row++,"16");
+    table.setHeight(1,row++,"20");
 
     return row;
   }
