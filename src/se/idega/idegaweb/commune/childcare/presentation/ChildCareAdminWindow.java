@@ -18,12 +18,14 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.contract.data.Contract;
+import com.idega.block.contract.data.ContractHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -1113,8 +1115,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		Contract contract = null;		
 		try {
 			contractId = Integer.parseInt(iwc.getParameter(PARAMETER_CONTRACT_ID));
-			contract = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHome(Contract.class))
-					.findByPrimaryKey(contractId);	
+			contract = ((ContractHome) IDOLookup.getHome(Contract.class))
+					.findByPrimaryKey(new Integer(contractId));	
 		}catch(NumberFormatException ex){
 			ex.printStackTrace();			
 		} catch(FinderException ex){
@@ -1305,18 +1307,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		getBusiness().sendMessageToParents(
 			application, 
-			localize("ccecw_encon_par1", "Begäran om uppsägning av kontrakt gjord"), 
-			localize("ccecw_encon_par2", "Du har skickat en begäran om uppsägning av kontrakt för") + " " +
+			localize("ccecw_encon_par1", "Begï¿½ran om uppsï¿½gning av kontrakt gjord"), 
+			localize("ccecw_encon_par2", "Du har skickat en begï¿½ran om uppsï¿½gning av kontrakt fï¿½r") + " " +
 			child.getName() + " " +  child.getPersonalID() + " " +
 			localize("ccecw_encon_par3", "fr.o.m.")+ " " + iwc.getParameter(PARAMETER_CHANGE_DATE) + ".");
 		
 		
 		getBusiness().sendMessageToProvider(
 			application,
-			localize("ccecw_encon_prov1", "Uppsägning av kontrakt"),
-			owner.getName() + " " + localize("ccecw_encon_prov2", "har begärt uppsägning av kontrakt för") + " " +
+			localize("ccecw_encon_prov1", "Uppsï¿½gning av kontrakt"),
+			owner.getName() + " " + localize("ccecw_encon_prov2", "har begï¿½rt uppsï¿½gning av kontrakt fï¿½r") + " " +
 			child.getName() + " " +  child.getPersonalID() + ". " + 
-			localize("ccecw_encon_prov3", "Kontraktet ska upphöra fr.o.m.") + " " + iwc.getParameter(PARAMETER_CHANGE_DATE) + ".",
+			localize("ccecw_encon_prov3", "Kontraktet ska upphï¿½ra fr.o.m.") + " " + iwc.getParameter(PARAMETER_CHANGE_DATE) + ".",
 			application.getOwner());	
 			
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
@@ -1332,10 +1334,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_parents_subject",
-				"Begäran om ändrad omsorgstid gjord"),
+				"Begï¿½ran om ï¿½ndrad omsorgstid gjord"),
 			localize(
 				"ccnctw_new_caretime_msg_parents_message",
-				"Du har skickat en begäran om ändrad omsorgstid för ")
+				"Du har skickat en begï¿½ran om ï¿½ndrad omsorgstid fï¿½r ")
 				+ child.getName()
 				+ " "
 				+ child.getPersonalID());
@@ -1344,18 +1346,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			application,
 			localize(
 				"ccnctw_new_caretime_msg_provider_subject",
-				"Begäran om ändrad omsorgstid"),
+				"Begï¿½ran om ï¿½ndrad omsorgstid"),
 			owner.getName()
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message1",
-					"har begärt ändrad omsorgstid till")
+					"har begï¿½rt ï¿½ndrad omsorgstid till")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHILDCARE_TIME)
 				+ " "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message2",
-					"tim/vecka för")
+					"tim/vecka fï¿½r")
 				+ " "
 				+ child.getName()
 				+ " "
@@ -1363,7 +1365,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				+ ". "
 				+ localize(
 					"ccnctw_new_caretime_msg_provider_message3",
-					"Den nya omsorgstiden skall gälla fr.o.m.")
+					"Den nya omsorgstiden skall gï¿½lla fr.o.m.")
 				+ " "
 				+ iwc.getParameter(PARAMETER_CHANGE_DATE)
 				+ ".",

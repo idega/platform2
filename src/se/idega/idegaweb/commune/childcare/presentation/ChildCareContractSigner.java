@@ -12,11 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 
 
-import com.idega.block.contract.business.ContractBusiness;
-import com.idega.block.contract.business.ContractFinder;
+
+import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
+import com.idega.block.contract.data.ContractCategoryHome;
+import com.idega.block.contract.data.ContractHome;
 import com.idega.builder.data.IBPage;
+import com.idega.business.IBOLookup;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -59,21 +62,23 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 	}	
 		
 	public void main(IWContext iwc) {
-		add(makeTableOfContracts(iwc));			
-//		try{
+				
+		try{
+		add(makeTableOfContracts(iwc));	
 //			control(iwc);
-//		}catch(Exception ex){
-//			ex.printStackTrace();
-//		}
+	}catch(Exception ex){
+		ex.printStackTrace();
+		}
 	}	
 
 
-	private Form makeTableOfContracts(IWContext iwc) {
+	private Form makeTableOfContracts(IWContext iwc) throws Exception{
 		System.out.println("makeTableOfContracts()");			
+		ContractService service = (ContractService) IBOLookup.getServiceInstance(iwc,ContractService.class);
+		ContractHome home = service.getContractHome();
+		ContractCategoryHome catHome = service.getContractCategoryHome();
 		
-		Collection contracts = ContractFinder.findContractsByUserId(iwc.getCurrentUser().getID());
-		
-		
+		Collection contracts = home.findAllByUser(iwc.getCurrentUser().getID());
 		if (contracts == null){
 			return new Form();
 		}
@@ -95,14 +100,14 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		while (i.hasNext()){
 			Contract contract = (Contract) i.next();
 
-			System.out.println("Contract.id: " + contract.getID());
+			System.out.println("Contract.id: " +contract.getPrimaryKey().toString());
 			
 			String text = contract.getText();
 			if (text == null){
 				text = " ";
 			}
 			
-			ContractCategory cat = ContractBusiness.findCategory(contract.getCategoryId().intValue());
+			ContractCategory cat = catHome.findByPrimaryKey(contract.getCategoryId());
 			t.add(getContractIcon(iwc/*, contract*/), 1, row);
 			t.add(new Text(cat.getName()), 2, row);
 						
@@ -113,7 +118,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 				Link signBtn = new Link(iwrb.getLocalizedString("ccconsign_signcon","Sign Contract"));
 				signBtn.setWindowToOpen(ChildCareWindow.class);
 				signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
-				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, ""+contract.getID());
+				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
 				signBtn.setAsImageButton(true);
 				
 //				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
@@ -207,44 +212,44 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 			 case '>': sb.append("&gt;"); break;
 			 case '&': sb.append("&amp;"); break;
 			 case '"': sb.append("&quot;"); break;
-			 case 'à': sb.append("&agrave;");break;
-			 case 'À': sb.append("&Agrave;");break;
-			 case 'â': sb.append("&acirc;");break;
-			 case 'Â': sb.append("&Acirc;");break;
-			 case 'ä': sb.append("&auml;");break;
-			 case 'Ä': sb.append("&Auml;");break;
-			 case 'å': sb.append("&aring;");break;
-			 case 'Å': sb.append("&Aring;");break;
-			 case 'æ': sb.append("&aelig;");break;
-			 case 'Æ': sb.append("&AElig;");break;
-			 case 'ç': sb.append("&ccedil;");break;
-			 case 'Ç': sb.append("&Ccedil;");break;
-			 case 'é': sb.append("&eacute;");break;
-			 case 'É': sb.append("&Eacute;");break;
-			 case 'è': sb.append("&egrave;");break;
-			 case 'È': sb.append("&Egrave;");break;
-			 case 'ê': sb.append("&ecirc;");break;
-			 case 'Ê': sb.append("&Ecirc;");break;
-			 case 'ë': sb.append("&euml;");break;
-			 case 'Ë': sb.append("&Euml;");break;
-			 case 'ï': sb.append("&iuml;");break;
-			 case 'Ï': sb.append("&Iuml;");break;
-			 case 'ô': sb.append("&ocirc;");break;
-			 case 'Ô': sb.append("&Ocirc;");break;
-			 case 'ö': sb.append("&ouml;");break;
-			 case 'Ö': sb.append("&Ouml;");break;
-			 case 'ø': sb.append("&oslash;");break;
-			 case 'Ø': sb.append("&Oslash;");break;
-			 case 'ß': sb.append("&szlig;");break;
-			 case 'ù': sb.append("&ugrave;");break;
-			 case 'Ù': sb.append("&Ugrave;");break;         
-			 case 'û': sb.append("&ucirc;");break;         
-			 case 'Û': sb.append("&Ucirc;");break;
-			 case 'ü': sb.append("&uuml;");break;
-			 case 'Ü': sb.append("&Uuml;");break;
-			 case '®': sb.append("&reg;");break;         
-			 case '©': sb.append("&copy;");break;   
-			 case '€': sb.append("&euro;"); break;
+			 case 'ï¿½': sb.append("&agrave;");break;
+			 case 'ï¿½': sb.append("&Agrave;");break;
+			 case 'ï¿½': sb.append("&acirc;");break;
+			 case 'ï¿½': sb.append("&Acirc;");break;
+			 case 'ï¿½': sb.append("&auml;");break;
+			 case 'ï¿½': sb.append("&Auml;");break;
+			 case 'ï¿½': sb.append("&aring;");break;
+			 case 'ï¿½': sb.append("&Aring;");break;
+			 case 'ï¿½': sb.append("&aelig;");break;
+			 case 'ï¿½': sb.append("&AElig;");break;
+			 case 'ï¿½': sb.append("&ccedil;");break;
+			 case 'ï¿½': sb.append("&Ccedil;");break;
+			 case 'ï¿½': sb.append("&eacute;");break;
+			 case 'ï¿½': sb.append("&Eacute;");break;
+			 case 'ï¿½': sb.append("&egrave;");break;
+			 case 'ï¿½': sb.append("&Egrave;");break;
+			 case 'ï¿½': sb.append("&ecirc;");break;
+			 case 'ï¿½': sb.append("&Ecirc;");break;
+			 case 'ï¿½': sb.append("&euml;");break;
+			 case 'ï¿½': sb.append("&Euml;");break;
+			 case 'ï¿½': sb.append("&iuml;");break;
+			 case 'ï¿½': sb.append("&Iuml;");break;
+			 case 'ï¿½': sb.append("&ocirc;");break;
+			 case 'ï¿½': sb.append("&Ocirc;");break;
+			 case 'ï¿½': sb.append("&ouml;");break;
+			 case 'ï¿½': sb.append("&Ouml;");break;
+			 case 'ï¿½': sb.append("&oslash;");break;
+			 case 'ï¿½': sb.append("&Oslash;");break;
+			 case 'ï¿½': sb.append("&szlig;");break;
+			 case 'ï¿½': sb.append("&ugrave;");break;
+			 case 'ï¿½': sb.append("&Ugrave;");break;         
+			 case 'ï¿½': sb.append("&ucirc;");break;         
+			 case 'ï¿½': sb.append("&Ucirc;");break;
+			 case 'ï¿½': sb.append("&uuml;");break;
+			 case 'ï¿½': sb.append("&Uuml;");break;
+			 case 'ï¿½': sb.append("&reg;");break;         
+			 case 'ï¿½': sb.append("&copy;");break;   
+			 case 'ï¿½': sb.append("&euro;"); break;
 			 // be carefull with this one (non-breaking whitee space)
 			 case ' ': sb.append("&nbsp;");break;         
          
