@@ -723,6 +723,19 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		stats.add(b12_5_5,2,10);
 		
 		
+		stats.addBreak(2,10);
+		
+		LinkContainer b12_6_1 = new LinkContainer();
+		b12_6_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_1_reportname", "Regional union, age statistics"), false));
+		b12_6_1.addParameter(ACTION, ACTION_STATISTICS);
+		b12_6_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.1.xml");
+		//b12_6_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.1.xml");
+		b12_6_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_1_reportname");
+		b12_6_1.setStyleClass(styledLink);
+
+		stats.add(b12_6_1,2,10);
+		
+		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.misc", "Misc")),1,11);
 
 		//B.13
