@@ -8,7 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import javax.naming.*;
-import javax.sql.*;
+//import javax.sql.*;
 import com.idega.servlet.IWCoreServlet;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.image.data.ImageEntity;
