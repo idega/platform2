@@ -385,7 +385,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Age age = null;
    
         WorkReportMember member = getWorkReportMemberHome().create();
-    
+        
      
 		if (user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
@@ -2414,8 +2414,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     return true;
   }
       
-  private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) {
-    Collection idExistingMember = new ArrayList();
+  private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) throws RemoteException {
+    Map idExistingMember = new HashMap();
     // find all existing work report members
     Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
     // create a collection with user ids
@@ -2423,35 +2423,72 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     while (existingWorkReportMembersIterator.hasNext())   {
       WorkReportMember workReportMember = (WorkReportMember) existingWorkReportMembersIterator.next();
       Integer userId = new Integer(workReportMember.getUserId());
-      idExistingMember.add(userId);
+      idExistingMember.put(userId, workReportMember);
     }
+    // get the year of the work report
+    int year = getWorkReportById(workReportId).getYearOfReport().intValue();
+    // get the ADA work report group 
+    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year); 
+    // get an array with the user representive group as the only element
+    
+    String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
+    ArrayList groupTypes = new ArrayList();
+    groupTypes.add(userGroupRepresentive);
+
+    // get the first level under the club
     Collection childGroups;
     try {
-      String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
-      ArrayList groupTypes = new ArrayList();
-      groupTypes.add(userGroupRepresentive);
-      childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId, groupTypes , false);
+      childGroups = groupBusiness.getChildGroups(groupId);
     }
-    catch (RemoteException ex) {
+    catch (FinderException ex) {
       System.err.println(
         "[WorkReportBoardBusiness]: Can't get child groups. Message is: "
           + ex.getMessage());
       ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
+      childGroups = new ArrayList(0);
     }
-    Iterator childGroupsIterator = childGroups.iterator();
-    while (childGroupsIterator.hasNext()) {
-      Group child = (Group) childGroupsIterator.next();
-      Integer primaryKey = (Integer) child.getPrimaryKey();
-      if (! idExistingMember.contains(primaryKey))  {
+    // iterate over the first level
+    Iterator childGroupsFirstLevelIterator = childGroups.iterator();
+    while (childGroupsFirstLevelIterator.hasNext()) {
+      Group childGroup = (Group) childGroupsFirstLevelIterator.next();
+      Integer childGroupId = (Integer) childGroup.getPrimaryKey();
+      WorkReportGroup workReportGroup = null;
+      String groupType = childGroup.getGroupType();
+      if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
         try {
-          createWorkReportMember(workReportId, primaryKey);
-          idExistingMember.add(primaryKey);
+          workReportGroup = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(childGroupId.intValue(),year);
         }
-        catch (CreateException ex)  {
-          System.err.println("[WorkReportBusiness]: Can't create member. Message is: " +
-            ex.getMessage());
+        catch (FinderException ex) {
+          String message =
+            "[WorkReportBusiness]: Can't find WorkReportGroup.";
+          System.err.println(message + " Message is: " + ex.getMessage());
           ex.printStackTrace(System.err);
+          workReportGroup = null;
+        }
+      }
+      // iterate over all children
+      childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(childGroup, groupTypes , false);
+      Iterator childGroupsIterator = childGroups.iterator();
+      while (childGroupsIterator.hasNext()) {
+        Group child = (Group) childGroupsIterator.next();
+        Integer userPrimaryKey = (Integer) child.getPrimaryKey();
+        WorkReportMember existingMember = (WorkReportMember) idExistingMember.get(userPrimaryKey);
+        if (existingMember == null)  {
+          try {
+            existingMember = createWorkReportMember(workReportId, userPrimaryKey);
+            // add ADA league to member
+            addWorkReportGroupToEntity(workReportId, adaGroup, existingMember);
+            idExistingMember.put(userPrimaryKey, existingMember);
+          }
+          catch (CreateException ex)  {
+            System.err.println("[WorkReportBusiness]: Can't create member. Message is: " +
+              ex.getMessage());
+            ex.printStackTrace(System.err);
+          }
+        }
+        // add league to member 
+        if (workReportGroup != null)  {
+          addWorkReportGroupToEntity(workReportId, workReportGroup, existingMember);
         }
       }
     }
