@@ -135,8 +135,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 				try {
 					Table imageTable = new Table(1, 1);
 					imageTable.setCellpaddingAndCellspacing(0);
-					imageTable.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 					imageTable.add(new Image(imageId), 1, 1);
+					productTable.setAlignment(column, 2, Table.HORIZONTAL_ALIGN_RIGHT);
 					productTable.add(imageTable, column, 2);
 				}
 				catch (SQLException sql) {

@@ -82,7 +82,6 @@ public class ConfirmDeleteWindow extends IWAdminWindow{
     //t.setHeight("100");
     t.setHeight(1,"70");
     t.setHeight(2,"20");
-    t.setAlignment(IWConstants.CENTER_ALIGNMENT);
 
     Text confirmText = new Text(iwrb.getLocalizedString("confirm_delete","Are you sure you want to delete this calendar entry?"));
     this.formatText(confirmText,true);
@@ -92,13 +91,13 @@ public class ConfirmDeleteWindow extends IWAdminWindow{
     CloseButton closebutton = new CloseButton(iwrb.getLocalizedImageButton("cancel", "CANCEL"));
 
     Table innerTable = new Table(3,1);
-    innerTable.setAlignment(IWConstants.CENTER_ALIGNMENT);
     innerTable.add(button,1,1);
     innerTable.add(closebutton,3,1);
     innerTable.setHeight(20);
     innerTable.setWidth(2,"5");
     innerTable.setCellpadding(0);
     innerTable.setCellspacing(0);
+    t.setAlignment(1, 2, IWConstants.CENTER_ALIGNMENT);
     t.add(innerTable,1,2);
 
 //    t.setBorder(1);

@@ -75,7 +75,6 @@ public class CurrencyCalculator extends PresentationObjectContainer {
     Form form = new Form();
     Table table = new Table();
       form.add(table);
-      table.setAlignment("center");
 			if (extraParameters != null) {
 				Iterator iter = extraParameters.iterator();
 				while (iter.hasNext()) {

@@ -306,12 +306,17 @@ public void setSpecialAttributes(String name,List attributes){
 
       Text appartmentText = getBoldText(iwrb_.getLocalizedString("other_apartments","Other apartments in building")+": ");
 
+      Table table = new Table(1,1);
+      table.setCellpaddingAndCellspacing(0);
+      table.setWidth(Table.HUNDRED_PERCENT);
+      table.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
+      
       Table formTable = new Table(1,1);
         formTable.setCellpadding(0);
         formTable.setCellspacing(0);
         formTable.setWidth("90%");
-        formTable.setAlignment("center");
         formTable.setAlignment(1,1,"right");
+      table.add(formTable, 1, 1);
 
       DropdownMenu roomTypes = new DropdownMenu("type_id");
         roomTypes.setToSubmit();
@@ -324,7 +329,7 @@ public void setSpecialAttributes(String name,List attributes){
 
       formTable.add(appartmentText,1,1);
       formTable.add(roomTypes,1,1);
-      roomForm.add(formTable);
+      roomForm.add(table);
 
       return roomForm;
 
@@ -338,12 +343,17 @@ public void setSpecialAttributes(String name,List attributes){
 
       Text appartmentText = getBoldText(iwrb_.getLocalizedString("category_apartments","Other apartments in category")+": ");
 
+      Table table = new Table(1,1);
+      table.setCellpaddingAndCellspacing(0);
+      table.setWidth(Table.HUNDRED_PERCENT);
+      table.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
+      
       Table formTable = new Table(1,1);
         formTable.setCellpadding(0);
         formTable.setCellspacing(0);
         formTable.setWidth("90%");
-        formTable.setAlignment("center");
         formTable.setAlignment(1,1,"right");
+      table.add(formTable, 1, 1);
 
       DropdownMenu roomTypes = new DropdownMenu("type_id");
         roomTypes.setToSubmit();
@@ -356,7 +366,7 @@ public void setSpecialAttributes(String name,List attributes){
 
       formTable.add(appartmentText,1,1);
       formTable.add(roomTypes,1,1);
-      roomForm.add(formTable);
+      roomForm.add(table);
 
       return roomForm;
 

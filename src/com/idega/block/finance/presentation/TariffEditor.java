@@ -791,10 +791,10 @@ public class TariffEditor extends Finance {
 			new SubmitButton("savetariffs", iwrb.getLocalizedString("save", "Save"));
 		Edit.setStyle(save);
 		Table T4 = new Table();
-		T4.setAlignment("right");
 		T4.add(save);
 		T2.add(T3, 1, 1);
 		T2.add(T, 1, 2);
+		T2.setAlignment(1,3,"right");
 		T2.add(T4, 1, 3);
 		BorderTable.add(T2);
 		myForm.add(new HiddenInput(prmGroup, String.valueOf(group.getID())));
