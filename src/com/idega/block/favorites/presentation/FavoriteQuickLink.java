@@ -14,6 +14,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.favorites.data.Favorite;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
@@ -30,6 +31,9 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	
 	private int iSpaceBetween = -1;
 	private int iMaxLength = -1;
+	private String iWidth = Table.HUNDRED_PERCENT;
+	
+	private Image iButtonImage;
 
 	private User user;
 
@@ -57,11 +61,18 @@ public class FavoriteQuickLink extends FavoriteBlock {
     Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
+		table.setWidth(iWidth);
 		form.add(table);
 		int column = 1;
 
 		DropdownMenu quickLinks = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_QUICK_LINK));
-		Link go = getLink(getResourceBundle().getLocalizedString("go", "Go!"));
+		Link go = null;
+		if (iButtonImage != null) {
+			go = new Link(iButtonImage);
+		}
+		else {
+			go = getLink(getResourceBundle().getLocalizedString("go", "Go!"));
+		}
 		go.setURL("javascript:" + getScriptCaller(PARAMETER_QUICK_LINK));
 
 		Iterator iter = quickLinkList.iterator();
@@ -90,6 +101,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 		if (iSpaceBetween > 0) {
 			table.setWidth(column++, iSpaceBetween);
 		}
+		table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(go, column, 1);
 
 		return form;
@@ -126,5 +138,13 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	 */
 	public void setMaximumLength(int maxLength) {
 		iMaxLength = maxLength;
+	}
+	
+	public void setButtonImage(Image buttonImage) {
+		iButtonImage = buttonImage;
+	}
+	
+	public void setWidth(String width) {
+		iWidth = width;
 	}
 }
