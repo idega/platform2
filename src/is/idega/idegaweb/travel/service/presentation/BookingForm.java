@@ -1383,7 +1383,15 @@ public abstract class BookingForm extends TravelManager{
 			
 			for (int i = 0; i < prices.length; i++) {
 				++fRow;
-				price = prices[i].getPrice();
+				try {
+					price = getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[i].getPriceCategoryID() , prices[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, addressId );
+				}
+				catch (SQLException e) {
+					System.err.println("Exception caught");
+					e.printStackTrace();
+					price = -1;
+				}
+//				price = prices[i].getPrice();
 				pPriceText = new ResultOutput("thePrice"+prices[i].getID(),"0");
 				pPriceText.setSize(8);
 				
@@ -1417,7 +1425,7 @@ public abstract class BookingForm extends TravelManager{
 					TotalPassTextInput.add(pPriceMany);
 				}
 				
-				table.setCellpaddingTop(1, fRow, 3);
+        table.setCellpaddingTop(1, fRow, 3);
 				table.setCellpaddingBottom(1, fRow, 3);
 				table.setCellpaddingLeft(1, fRow, 10);
 				table.add(getSmallText(prices[i].getPriceCategory().getName()), 1, fRow);
@@ -1488,7 +1496,7 @@ public abstract class BookingForm extends TravelManager{
 		headerTable.setCellpaddingBottom(headerColumn, hRow, 3);
 		headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 		headerTable.add(getSmallText(iwrb.getLocalizedString("travel.supplier", "Supplier") + " : "), headerColumn, hRow);
-		Text txt = getOrangeText(supplier.getOrganizationID());
+		Text txt = getOrangeText(supplier.getName());
 		try {
 			Address a = supplier.getAddress();
 			if (a != null) {
