@@ -125,18 +125,18 @@ public class PKIServlet extends HttpServlet
 				{
 					// Send the message to the Client.
 					NBSMessageHttp mpMsg = (NBSMessageHttp) result.getMessage();
-					sendMessage(req, res, mpMsg.toHttpMessage());
+					sendMessage(res, mpMsg.toHttpMessage());
 				}
 				else
 				{
 					// Else just show the main page again.
-					printPage(req, res, null);
+					printPage(res, null);
 				}
 			}
 			else
 			{
 				// If no action is specified, show the main page.
-				printPage(req, res, null);
+				printPage(res, null);
 			}
 
 			setServer(req, server);
@@ -185,12 +185,12 @@ public class PKIServlet extends HttpServlet
 				{
 					// Send the message to the Client.
 					NBSMessageHttp mpMsg = (NBSMessageHttp) ((NBSMessageResult) result).getMessage();
-					sendMessage(req, res, mpMsg.toHttpMessage());
+					sendMessage(res, mpMsg.toHttpMessage());
 				}
 				else
 				{
 					// Else just show the main page again.
-					printPage(req, res, null);
+					printPage(res, null);
 				}
 			}
 			else
@@ -210,12 +210,12 @@ public class PKIServlet extends HttpServlet
 						info = getCertInfoString((NBSAuthResult) result);
 						//info += "<br>"+getXmlInfoString((NBSAuthResult)result);
 						info += postAuthentication(req, res, result);
-						printPage(req, res, "NBSAuthentication successful<br>" + info);
+						printPage(res, "NBSAuthentication successful<br>" + info);
 						break;
 					case (NBSResult.TYPE_SIGN) :
 						info = getCertInfoString((NBSAuthResult) result);
 						info += "<br>" + getXmlInfoString((NBSAuthResult) result);
-						printPage(req, res, "Signature successful<br>" + info);
+						printPage(res, "Signature successful<br>" + info);
 						break;
 					case (NBSResult.TYPE_MESSAGE) :
 						// If a new message was created, send it to
@@ -223,7 +223,7 @@ public class PKIServlet extends HttpServlet
 
 						NBSMessageResult msgResult = (NBSMessageResult) result;
 						NBSMessageHttp mpMsg = (NBSMessageHttp) msgResult.getMessage();
-						sendMessage(req, res, mpMsg.toHttpMessage());
+						sendMessage(res, mpMsg.toHttpMessage());
 						break;
 					default :
 						throw new ServletException("Unknown result");
@@ -244,9 +244,9 @@ public class PKIServlet extends HttpServlet
 	/**
 	 * Writes a message from a request.
 	 */
-	void sendMessage(HttpServletRequest req, HttpServletResponse res, HttpMessage msg)
+	void sendMessage(HttpServletResponse res, HttpMessage msg)
 	{
-		// Set cache directives
+		// Set cache directives+
 		res.setDateHeader("Expires", 0l);
 		res.setHeader("Cache-Control", "private, no-store, no-transform");
 		res.setHeader("Pragma", "no-cache");
@@ -326,7 +326,7 @@ public class PKIServlet extends HttpServlet
 	/**
 	 * Prints the main page together with an eventual status.
 	 */
-	protected void printPage(HttpServletRequest req, HttpServletResponse res, String status) throws IOException
+	protected void printPage(HttpServletResponse res, String status) throws IOException
 	{
 
 		// Add some cache-prevention headers.
@@ -424,13 +424,13 @@ public class PKIServlet extends HttpServlet
 		//printPage(req, res, "Authentication successful<br>" + info);
 		//break;
 		String personalIDKey = "serialNumber";
-		String nameKey = "CN";
-		String organizationKey = "O";
-		String countryKey = "C";
+		//String nameKey = "CN";
+		//String organizationKey = "O";
+		//String countryKey = "C";
 		String personalID = authResult.getSubjectAttributeValue(personalIDKey);
-		String commonName = authResult.getSubjectAttributeValue(nameKey);
-		String country = authResult.getSubjectAttributeValue(countryKey);
-		String organization = authResult.getSubjectAttributeValue(organizationKey);
+		//String commonName = authResult.getSubjectAttributeValue(nameKey);
+		//String country = authResult.getSubjectAttributeValue(countryKey);
+		//String organization = authResult.getSubjectAttributeValue(organizationKey);
 		try
 		{
 
