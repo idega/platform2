@@ -36,16 +36,16 @@ import com.idega.user.data.User;
  */
 public class GroupMemberList extends Block {
 	
-	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
 	
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
+		_iwrb = getResourceBundle(iwc);
 		Group group = getGroupToShowMembersFor(iwc);
 		Group division = getDivision(iwc);
 		String name = group==null?"":group.getName();
-		System.out.println("Showing member list for group " + name);
 		Text title = new Text(name + ": ");
 		title.setBold();
 		add(title);
@@ -62,7 +62,8 @@ public class GroupMemberList extends Block {
 		String type = group.getGroupType();
 		if(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(type)) {
 			showStatus = true;
-		} else if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type)) {
+		} 
+		if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type)) {
 			showGroup = true;
 		}
 		
@@ -87,24 +88,26 @@ public class GroupMemberList extends Block {
 				String color = getColor();
 				
 				String name = user.getName();
-				System.out.println("Listing user " + name);
 				table.add(name, column, row);
 				table.setColor(column++, row, color);
 				nameAdded = true;
 				if(showStatus) {
-					String status = null;
+					String statusKey = null;
 					try {
 						int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
 						if(status_id != -1) {
 							Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
-							status = st.getStatusKey();
+							statusKey = st.getStatusKey();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					status = _iwrb.getLocalizedString("member_status_" + status, "Undefined");
-					table.add(status, column, row);
-					table.setColor(column++, row, color);
+					if(statusKey!=null) {
+						String key = "usr_stat_" + statusKey;
+						String status = _iwrb.getLocalizedString(key, statusKey);
+						table.add(status, column, row);
+						table.setColor(column++, row, color);
+					}
 				}
 				if(showGroup) {
 					String groupNames = getGroupNamesForTrainer(user, division);
@@ -218,6 +221,10 @@ public class GroupMemberList extends Block {
 	
 	private void resetColor() {
 		_currentColor = null;
+	}
+	
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
 	private String _currentColor = null;
