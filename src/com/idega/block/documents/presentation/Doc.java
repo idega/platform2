@@ -4,6 +4,8 @@ import com.idega.block.IWBlock;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.business.DocFinder;
 import com.idega.block.documents.data.DocLink;
+import com.idega.core.business.InformationCategory;
+import com.idega.core.business.InformationFolder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -17,9 +19,6 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
-import com.idega.block.media.business.MediaBusiness;
-import com.idega.core.business.InformationCategory;
-import com.idega.core.business.InformationFolder;
 
 /**
  *  Description of the Class

@@ -2,19 +2,14 @@ package com.idega.block.documents.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
-
-import com.idega.core.user.data.User;
-
-import com.idega.core.data.ICFile;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import com.idega.builder.data.IBPage;
-
 import com.idega.core.data.GenericGroup;
-
+import com.idega.core.data.ICFile;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
 
 
 

@@ -2,21 +2,27 @@ package com.idega.block.email.business;
 
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.mail.Address;
+import javax.mail.FetchProfile;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import com.idega.core.business.EmailDataView;
-
-import java.io.*;
-
-
-
-import java.util.*;
-
-import javax.activation.*;
-
-
-
-import javax.mail.*;
-
-import javax.mail.internet.*;
 
 
 

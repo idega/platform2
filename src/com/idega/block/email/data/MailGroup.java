@@ -1,6 +1,5 @@
 package com.idega.block.email.data;
 
-import javax.ejb.*;
 
 public interface MailGroup extends com.idega.data.CategoryEntity,com.idega.block.email.business.EmailGroup
 {

@@ -1,6 +1,5 @@
 package com.idega.block.documents.data;
 
-import javax.ejb.*;
 
 public interface DocLink extends com.idega.data.IDOLegacyEntity
 {

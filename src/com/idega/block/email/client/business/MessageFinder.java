@@ -1,10 +1,18 @@
 package com.idega.block.email.client.business;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.search.FlagTerm;
+
 import com.idega.presentation.Block;
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.mail.search.*;
 
 /**
  * Title:

@@ -1,7 +1,5 @@
 package com.idega.block.employment.data;
 
-import com.idega.core.data.GenericGroup;
-import java.sql.SQLException;
 
 /**
  * Title:        IW Travel Booking

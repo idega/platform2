@@ -2,59 +2,33 @@ package com.idega.block.documents.presentation;
 
 
 
-import com.idega.block.IWBlock;
-
-import com.idega.block.documents.business.DocBusiness;
-
-import com.idega.block.documents.business.DocFinder;
-
-import com.idega.block.login.business.LoginBusiness;
-
-import com.idega.block.media.presentation.SimpleFileChooser;
-
-import com.idega.block.text.business.TextFinder;
-
-import com.idega.builder.data.IBPage;
-
-import com.idega.builder.presentation.IBPageChooser;
-
-import com.idega.core.data.ICLocale;
-
-import com.idega.core.localisation.business.ICLocaleBusiness;
-
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.block.business.FolderBlockBusiness;
-
-import com.idega.idegaweb.presentation.IWAdminWindow;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.Image;
-
-import com.idega.presentation.text.Link;
-
-import com.idega.presentation.ui.CloseButton;
-
-import com.idega.presentation.ui.DropdownMenu;
-
-import com.idega.presentation.ui.HiddenInput;
-
-import com.idega.presentation.ui.SubmitButton;
-
-import com.idega.presentation.ui.TextInput;
-
 import java.util.List;
-
 import java.util.Locale;
 
+import com.idega.block.IWBlock;
+import com.idega.block.documents.business.DocBusiness;
+import com.idega.block.documents.business.DocFinder;
+import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.media.presentation.SimpleFileChooser;
+import com.idega.builder.data.IBPage;
+import com.idega.builder.presentation.IBPageChooser;
 import com.idega.core.business.InformationCategory;
-
 import com.idega.core.business.InformationFolder;
+import com.idega.core.data.ICLocale;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.business.FolderBlockBusiness;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 

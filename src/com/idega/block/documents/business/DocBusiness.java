@@ -1,15 +1,10 @@
 package com.idega.block.documents.business;
 
-import com.idega.block.documents.data.DocLink;
-import com.idega.block.text.business.TextFinder;
-import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICInformationCategory;
-import com.idega.core.data.ICInformationFolder;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
+
+import com.idega.block.documents.data.DocLink;
+import com.idega.core.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

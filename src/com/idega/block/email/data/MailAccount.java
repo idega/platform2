@@ -1,6 +1,5 @@
 package com.idega.block.email.data;
 
-import javax.ejb.*;
 
 public interface MailAccount extends com.idega.data.IDOLegacyEntity,com.idega.block.email.business.EmailAccount
 {

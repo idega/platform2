@@ -1,7 +1,5 @@
 package com.idega.block.email.data;
 
-import com.idega.block.email.business.EmailGroup;
-import com.idega.data.CategoryEntity;
 import java.sql.Timestamp;
 
 /**

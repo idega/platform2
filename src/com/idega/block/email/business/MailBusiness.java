@@ -1,17 +1,22 @@
 package com.idega.block.email.business;
 
-import com.idega.block.email.data.*;
-import com.idega.core.data.Email;
-import com.idega.data.IDOLookup;
-import com.idega.util.IWTimestamp;
-
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
+
+import com.idega.block.email.data.MailAccount;
+import com.idega.block.email.data.MailGroup;
+import com.idega.block.email.data.MailLetter;
+import com.idega.block.email.data.MailLetterHome;
+import com.idega.block.email.data.MailList;
+import com.idega.block.email.data.MailListHome;
+import com.idega.block.email.data.MailTopic;
+import com.idega.block.email.data.MailTopicHome;
+import com.idega.core.data.Email;
+import com.idega.data.IDOLookup;
+import com.idega.util.IWTimestamp;
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *

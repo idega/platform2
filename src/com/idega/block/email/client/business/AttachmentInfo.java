@@ -1,12 +1,8 @@
 package com.idega.block.email.client.business;
 
-import java.io.*;
-import java.util.*;
-
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.mail.MessagingException;
+import javax.mail.Part;
+import javax.mail.internet.ParseException;
 
 /**
  * Used to store attachment information.
