@@ -358,6 +358,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.add(getSmallHeader(localize("group_name", "Name") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
+		name.setAsNotEmpty(localize("must_supply_group_name", "You must enter a group name."));
 		if (_group != null && _group.getSchoolClassName() != null)
 			name.setContent(_group.getSchoolClassName());
 		if (useStyleNames) {
