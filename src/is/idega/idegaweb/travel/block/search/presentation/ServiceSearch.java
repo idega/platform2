@@ -51,6 +51,7 @@ public class ServiceSearch extends Block {
 	protected String formInputStyle;
 	
 	private Image headerImage;
+	private Image windowHeaderImage;
 	
 	IWResourceBundle iwrb;
 	public static List searchForms; // Laga eitthvad, kannski grillad ad hafa public static....
@@ -118,6 +119,7 @@ public class ServiceSearch extends Block {
 			ss.setHeaderImage(headerImage);
 			ss.setWidth(width);
 			ss.setFormInputStyle(formInputStyle);
+			ss.setWindowHeaderImage(windowHeaderImage);
 			return ss;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -163,6 +165,10 @@ public class ServiceSearch extends Block {
 
 	public void setWidth(String width) {
 		this.width = width;
+	}
+	
+	public void setWindowHeaderImage(Image image) {
+		this.windowHeaderImage = image;
 	}
 	
 	protected TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
