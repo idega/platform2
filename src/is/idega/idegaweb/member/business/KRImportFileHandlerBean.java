@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
 
 import com.idega.block.importer.business.ImportFileHandler;
@@ -20,6 +21,7 @@ import com.idega.core.data.AddressType;
 import com.idega.core.data.Country;
 import com.idega.core.data.CountryHome;
 import com.idega.core.data.PostalCode;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -46,6 +48,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 
 
   private UserBusiness biz;
+  private GroupBusiness groupBiz;
   private UserHome home;
   private AddressBusiness addressBiz;
   private MemberFamilyLogic relationBiz;
@@ -66,6 +69,9 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
   private final int COLUMN_POSTAL_CODE = 3;
   private final int COLUMN_PHONE_NUMBER = 4;
   private final int COLUMN_EMAIL = 5;
+  private final int COLUMN_FAMILY= 6;
+  private final int COLUMN_GROUP = 7;
+  
   
   private Gender male;
   private Gender female;
@@ -85,6 +91,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
       relationBiz = (MemberFamilyLogic) this.getServiceInstance(MemberFamilyLogic.class);
       home = biz.getUserHome();
       addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
+      groupBiz = biz.getGroupBusiness();
 
       //if the transaction failes all the users and their relations are removed
       //transaction.begin();
@@ -184,6 +191,11 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 
     Gender gender = guessGenderFromName(name);
     IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
+    
+    String familyInfo = getUserProperty(this.COLUMN_FAMILY);
+    String groupId = getUserProperty(this.COLUMN_GROUP);
+	if(groupId==null && rootGroup==null) return false;
+	
 
     /**
     * basic user info
@@ -229,7 +241,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
         address.setCountry(iceland);
         address.setPostalCode(code);
         //address.setProvince("Nacka");
-        address.setCity("Reykjavik");
+        //address.setCity("Reykjavik");
         address.setStreetName(streetName);
         address.setStreetNumber(streetNumber);
 
@@ -261,6 +273,26 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     /**
      * Save the user to the database
      */
+    if( familyInfo !=null ){
+    	user.setDescription(familyInfo);	
+		user.store();
+    }
+    
+    
+    if( groupId!=null ){
+	    int group = Integer.parseInt(groupId);
+	
+	    Group memberGroup;
+		try {
+			memberGroup = groupBiz.getGroupByGroupID(group);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	    
+	    memberGroup.addGroup(user);
+    }
+    
     //user.store();
 
     /**
