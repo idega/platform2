@@ -65,7 +65,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.TimestampInput;
-import com.idega.util.IWTimestamp;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLException;
 
@@ -106,8 +105,12 @@ public class ReportGenerator extends Block {
 	
 	private String _prmLablePrefix = "label_";
 	
-	private String _reportName = "Report";
+	private String _reportName = "Generated Report";
+	private boolean _canChangeReportName = true;
 	private String PRM_REPORT_NAME = "report_name";
+	
+
+	
 	
 	private Map _extraHeaderParameters = null;
 	
@@ -156,7 +159,7 @@ public class ReportGenerator extends Block {
 	
 	private int calculateTextFieldWidthForString(String str){
 		int fontSize = 9;
-		return (int) (str.length()*fontSize*0.6);
+		return (int)( 5+(str.length()*fontSize*0.58));
 	}
 	
 	private void generateLayout(IWContext iwc) throws IOException, JRException{
@@ -497,7 +500,10 @@ public class ReportGenerator extends Block {
 		
 		row++;
 		_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","Report name"))+":",1,row);
-		_fieldTable.add(getFieldInputObject(PRM_REPORT_NAME,null,String.class),2,row);
+		InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME,null,String.class);
+		nameInput.setDisabled(!_canChangeReportName);
+		nameInput.setValue(_reportName);
+		_fieldTable.add(nameInput,2,row);
 
 		//TODO Let Reportable field and ClassDescription impliment the same interface (IDODynamicReportableField) to decrease code duplications
 		if(_queryPK != null){
@@ -590,7 +596,7 @@ public class ReportGenerator extends Block {
 		
 	}
 	
-	private PresentationObject getFieldInputObject(String key, String value, Class dataType) {
+	private InterfaceObject getFieldInputObject(String key, String value, Class dataType) {
 			
 //		if(dataType == Integer.class){
 //			IntegerInput fieldInput = new IntegerInput(getParameterName(key));
@@ -641,6 +647,13 @@ public class ReportGenerator extends Block {
 		clone._fieldTable = null;
 		
 		return clone;
+	}
+	
+	public void setReportName(String name){
+		if(name != null && !"".equals(name)){
+			_canChangeReportName = false;
+			_reportName = name;
+		}
 	}
 
 }

@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import com.idega.data.IDOReportableEntity;
 import com.idega.data.IDOReportableField;
+import com.idega.util.datastructures.QueueMap;
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
@@ -39,7 +40,7 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	private List _fields = new ArrayList();
 	private Object _defaultFieldValue = null;
 	
-	private Map _extraHeaderParameters = new TreeMap();
+	private Map _extraHeaderParameters = new QueueMap();
 	
 	
 	/**
@@ -122,8 +123,8 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	}
 	
 	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
-		_extraHeaderParameters.put(valueKey,valueValue);
 		_extraHeaderParameters.put(labelKey,LabelValue);
+		_extraHeaderParameters.put(valueKey,valueValue);
 	}
 
 }
