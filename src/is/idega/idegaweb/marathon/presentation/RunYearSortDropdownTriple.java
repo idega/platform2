@@ -25,9 +25,9 @@ public class RunYearSortDropdownTriple extends InterfaceObject{
         
         DropdownMenu sortDD = new DropdownMenu(IWMarathonConstants.PARAMETER_SORT_BY);
         
-        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_TOTAL,"Total result list"));
-        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS,"Groups"));
-        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS_COMP,"Group competition"));
+        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL,iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_TOTAL,"Total result list"));
+        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS,iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS,"Groups"));
+        sortDD.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION,iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION,"Group competition"));
         Table t = new Table();
         t.setCellpadding(0);
         t.setCellspacing(0);
