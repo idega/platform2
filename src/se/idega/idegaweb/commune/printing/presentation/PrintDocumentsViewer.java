@@ -356,7 +356,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		}
 	}
 	
-	private void reprintSelected(IWContext iwc) throws Exception {
+	/*private void reprintSelected(IWContext iwc) throws Exception {
 		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		//boolean bulk = iwc.isParameterSet("prv_bulk");
 		// show bulk list when printing to bulk files
@@ -374,7 +374,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				false,
 				false);
 		}
-	}
+	}*/
 
 	private void deleteSelected(IWContext iwc) throws Exception {
 		String[] ids = iwc.getParameterValues(PRM_U_CHK);
