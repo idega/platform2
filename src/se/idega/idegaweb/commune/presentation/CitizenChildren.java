@@ -106,7 +106,7 @@ public class CitizenChildren extends CommuneBlock {
 		buttonLabel.setLocalizedText(localeString, text);
 	}
 
-	private PresentationObject getChildrenForm(IWContext iwc) throws java.rmi.RemoteException {
+	private PresentationObject getChildrenForm(IWContext iwc) {
 		Form f = new Form();
 		Table T = new Table();
 		T.setCellpadding(0);
@@ -180,7 +180,7 @@ public class CitizenChildren extends CommuneBlock {
 		}
 	}
 
-	private Link getChildLink(User child) throws java.rmi.RemoteException {
+	private Link getChildLink(User child) {
 		Link L = new Link(child.getName());
 		if (getResponsePage() != null)
 			L.setPage(getResponsePage());
@@ -214,7 +214,7 @@ public class CitizenChildren extends CommuneBlock {
 	
 	}
 
-	private Collection getChilds(IWContext iwc, User user) throws RemoteException {
+	private Collection getChilds(IWContext iwc, User user) {
 		/** @todo familymethods from usersystem */
 		try {
 			return getFamilyLogic(iwc).getChildrenInCustodyOf(user);
