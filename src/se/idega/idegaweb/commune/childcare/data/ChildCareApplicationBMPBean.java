@@ -885,8 +885,23 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		return idoGetNumberOfRecords(sql);
-		
+		return idoGetNumberOfRecords(sql);		
+	}
+	
+	public int ejbHomeGetQueueSizeNotInStatus(int providerID, String caseStatus[], Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		return idoGetNumberOfRecords(sql);		
 	}
 
 	public int ejbHomeGetQueueSizeInStatus(int providerID, String caseStatus) throws IDOException {
@@ -896,6 +911,22 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
 		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetQueueSizeInStatus(int providerID, String caseStatus, Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
 		return idoGetNumberOfRecords(sql);
 	}
 
