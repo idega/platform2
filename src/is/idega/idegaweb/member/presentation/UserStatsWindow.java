@@ -2,7 +2,7 @@
  * Created on Jan 3, 2005
  *
  */
-package com.idega.user.presentation;
+package is.idega.idegaweb.member.presentation;
 
 import com.idega.block.datareport.presentation.ReportGenerator;
 
@@ -29,7 +29,7 @@ public class UserStatsWindow extends StyledIWAdminWindow {
     public static final String STATS_LAYOUT_NAME_FROM_BUNDLE = "STATS_LAYOUT_NAME_FROM_BUNDLE";
     
     public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
-    public static final String IW_BUNDLE_IDENTIFIER = "com.idega.user";
+    public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
       
     public UserStatsWindow() {
         super();
