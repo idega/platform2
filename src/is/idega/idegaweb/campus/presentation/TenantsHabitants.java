@@ -241,8 +241,7 @@ private String darkRed = "#932A2D";
       if ( _isAdmin ) {
         adminLink = new Link(formatText(collected.getName()));
           adminLink.addParameter(TenantsProfile.getUserParameter(collected.getUserID()));
-          adminLink.addParameter(TabAction.sAction,20);
-          adminLink.addParameter("cam_fact_view",10);
+          adminLink.addParameter(CampusFactory.getParameter(CampusFactory.TEN_PROFILE));
         table.add(adminLink,column++,row);
       }
       else
