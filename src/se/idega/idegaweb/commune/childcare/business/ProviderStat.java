@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderStat.java,v 1.1 2004/09/09 13:25:20 aron Exp $
+ * $Id: ProviderStat.java,v 1.2 2005/02/01 21:27:34 malin Exp $
  * Created on 8.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import java.util.Date;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/09 13:25:20 $ by $Author: aron $
+ *  Last modified: $Date: 2005/02/01 21:27:34 $ by $Author: malin $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderStat{
     
@@ -30,7 +30,7 @@ public class ProviderStat{
     private Integer oneYearPriority;
     private Integer providerCapacity;
     private Integer queueTotal;
-    
+    private Integer vacancies;
    
 
     /**
@@ -156,5 +156,19 @@ public class ProviderStat{
      */
     public void setQueueTotal(Integer queueTotal) {
         this.queueTotal = queueTotal;
+    }
+    
+    /**
+     * @return Returns the vacancies.
+     */
+    public Integer getVacancies() {
+    	return vacancies;
+    }
+    
+    /**
+     * @param vacancies The vacancies to set.
+     */
+    public void setVacancies(Integer vacancies) {
+    	this.vacancies = vacancies;
     }
 }
