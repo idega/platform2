@@ -18,6 +18,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -25,6 +26,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
@@ -292,18 +294,20 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
     // get my resource bundle for all the messages
     IWResourceBundle iwrb = getResourceBundle();
-    // check if the source and the target are the same
-    int parentGroupId = ((Integer) sourceGroup.getPrimaryKey()).intValue();
     int targetGroupId = ((Integer) targetGroup.getPrimaryKey()).intValue();
-    // target and source are the same do nothing
-    if (parentGroupId == targetGroupId) {
-      return iwrb.getLocalizedString("age_gender_source_and_target_are_the_same", "Source group and target group are the same");
+    // check if the source and the target are the same
+    if (sourceGroup != null) { 
+      int parentGroupId = ((Integer) sourceGroup.getPrimaryKey()).intValue();
+      // target and source are the same do nothing
+      if (parentGroupId == targetGroupId) {
+        return iwrb.getLocalizedString("age_gender_source_and_target_are_the_same", "Source group and target group are the same");
+      }
     }   
     // is the user already a member of the target group?
-    UserBusiness userBusiness = getUserBusiness();
+    GroupBusiness groupBusiness = getGroupBusiness();
     Collection coll = null;
     try {
-      coll = userBusiness.getUserGroups(user);
+      coll = groupBusiness.getParentGroups(user);
     }
     catch (RemoteException ex)  {
       throw new RuntimeException(ex.getMessage());
@@ -427,5 +431,14 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
       throw new RuntimeException(rme.getMessage());
     }
   } 
+  
+  private GroupBusiness getGroupBusiness() {
+    try {
+      return (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(),GroupBusiness.class);
+    }
+    catch (Exception ex)  {
+      throw new RuntimeException(ex.getMessage());
+    }
+  }  
   
 }
