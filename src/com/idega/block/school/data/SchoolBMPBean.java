@@ -46,7 +46,7 @@ import com.idega.user.data.User;
 public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEntity, MetaDataCapable {
 
 	public final static String SCHOOL = "sch_school";
-	public final static String NAME = "school_name";
+	public final static String NAME = "SCHOOL_NAME";
 	public final static String ADDRESS = "school_address";
 	public final static String INFO = "school_info";
 	public final static String HEADMASTER = "headmaster_group_id";
