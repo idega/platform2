@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.23 2004/02/03 08:30:27 staffan Exp $
+ * $Id: RegulationListEditor.java,v 1.24 2004/03/22 20:55:50 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.23 2004/02/03 08:30:27 staffan Exp $
+ * $Id: RegulationListEditor.java,v 1.24 2004/03/22 20:55:50 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -307,7 +307,7 @@ public class RegulationListEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setWidth("80%");
 		int row;
-		User user = iwc.getCurrentUser();
+		
 		String userName = "";
 		String mainOpPK = "";
 		try {
@@ -336,7 +336,8 @@ public class RegulationListEditor extends AccountingBlock {
 					r.getRegSpecType().getPrimaryKey().toString() : 
 					(String)_pMap.get(PARAM_SELECTOR_REG_SPEC_TYPE));
 		}
-		if (user != null) {
+		if (iwc.isLoggedOn()) {
+			User user = iwc.getCurrentUser();
 			userName = user.getFirstName();
 		}
 		
