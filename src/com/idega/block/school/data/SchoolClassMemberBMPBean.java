@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/12/17 12:49:45 $ by $Author: goranb $
- * @version $Revision: 1.80 $
+ * Last modified: $Date: 2003/12/17 18:25:31 $ by $Author: laddi $
+ * @version $Revision: 1.81 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -254,6 +254,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(this.SCHOOLCLASS, schoolClassID);
         sql.appendAndIsNull(REMOVED_DATE);
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindBySchoolClasses(Collection schoolClasses) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(getEntityName()).appendWhere().append(this.SCHOOLCLASS).appendInCollection(schoolClasses);
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}
