@@ -16,6 +16,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -32,7 +33,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
-import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
+import se.idega.idegaweb.commune.accounting.business.InvoiceComparator;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
@@ -75,6 +76,9 @@ public class IFSFileCreationThread extends Thread {
 	protected User _user = null;
 	protected Locale _currentLocale = null;
 	protected IWApplicationContext _iwac = null;
+	protected NumberFormat numberFormat = null;
+	
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
 
 	private float EXTRA_PAYMENT_PERCENTAGE = 0.06f;
 	
@@ -101,6 +105,7 @@ public class IFSFileCreationThread extends Thread {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
+		createNumberFormat();
 		IWTimestamp now = IWTimestamp.RightNow();
 		JournalLog log;
 		try {
@@ -273,6 +278,7 @@ public class IFSFileCreationThread extends Thread {
 	}
 
 	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale) throws IOException {
+		String localizedSchoolCategoryName = _iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category."+_schoolCategory);
 		Collection phInCommune = null;
 		try {
 			phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');
@@ -294,26 +300,21 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e1) {
 			e1.printStackTrace();
 		}
-
-		try {
-			createPaymentSchoolFilesExcel(phInCommune, fileName2 + ".xls");
-		}
-		catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		catch (FinderException e2) {
-			e2.printStackTrace();
-		}
-
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = null;
 			try {
 				rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
 			}
-			catch (IDOLookupException e3) {
-				e3.printStackTrace();
+			catch (IDOLookupException e2) {
+				e2.printStackTrace();
 			}
-			catch (FinderException e3) {
+			catch (FinderException e2) {
+				e2.printStackTrace();
+			}						
+			try {		
+				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"));
+			}
+			catch (IOException e3) {
 				e3.printStackTrace();
 			}
 			Iterator it = rec.iterator();
@@ -328,12 +329,7 @@ public class IFSFileCreationThread extends Thread {
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
-			try {
-				createPaymentFilesExcel(rec, fileName1 + ".xls");
-			}
-			catch (IOException e5) {
-				e5.printStackTrace();
-			}
+
 			while (it.hasNext()) {
 				PaymentRecord pRec = (PaymentRecord) it.next();
 				if (pRec.getTotalAmount() != 0.0f) {
@@ -487,12 +483,27 @@ public class IFSFileCreationThread extends Thread {
 		}
 
 		if (phOutsideCommune != null && !phOutsideCommune.isEmpty()) {
-			NumberFormat format = NumberFormat.getInstance(currentLocale);
-			format.setMaximumFractionDigits(2);
-			format.setMinimumFractionDigits(2);
-			format.setMinimumIntegerDigits(1);
-			format.setGroupingUsed(false);
-			//			format.
+		
+			Collection recOutside = null;
+			try {
+				recOutside = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phOutsideCommune);
+			}
+			catch (IDOLookupException e2) {
+				e2.printStackTrace();
+			}
+			catch (FinderException e2) {
+				e2.printStackTrace();
+			}			
+			try {							
+				createPaymentFilesExcel(recOutside, fileName2 + ".xls","Checkutbetalning "+localizedSchoolCategoryName+", övriga anordnare, "+executionDate.getDateString("yyyy-MM-dd"));				
+			}
+			catch (IOException e3) {
+				e3.printStackTrace();
+			}
+			catch (Exception e3) {
+				e3.printStackTrace();
+			}
+
 			FileWriter writer = new FileWriter(fileName2.toString());
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
@@ -580,9 +591,9 @@ public class IFSFileCreationThread extends Thread {
 					//VAT code, changed L6 to 11...
 					bWriter.write("11");
 					bWriter.write(";");
-					bWriter.write(format.format(sum));
+					bWriter.write(getNumberFormat().format(sum));
 					bWriter.write(";");
-					bWriter.write(format.format(sum));
+					bWriter.write(getNumberFormat().format(sum));
 					bWriter.write(";");
 					bWriter.write("0,00");
 					bWriter.write(";");
@@ -666,9 +677,9 @@ public class IFSFileCreationThread extends Thread {
 							//empty
 							bWriter.write("-");
 							bWriter.write(";");
-							bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
+							bWriter.write(getNumberFormat().format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
 							bWriter.write(";");
-							bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
+							bWriter.write(getNumberFormat().format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
 							bWriter.write(";");
 							//empty
 							bWriter.write("-");
@@ -705,6 +716,16 @@ public class IFSFileCreationThread extends Thread {
 		}
 		catch (FinderException e2) {
 			e2.printStackTrace();
+		}
+		try {		
+			
+			createInvoiceFilesExcel(iHeaders, fileName + ".xls", "");
+		}
+		catch (IOException e3) {
+			e3.printStackTrace();
+		}
+		catch (FinderException e3) {
+			e3.printStackTrace();
 		}
 		StringBuffer empty = new StringBuffer("");
 		for (int i = 0; i < 25; i++) {
@@ -1193,24 +1214,17 @@ public class IFSFileCreationThread extends Thread {
 	}
 	
 
-	public void createPaymentFilesExcel(Collection data, String fileName) throws IOException {
+	public void createPaymentFilesExcel(Collection data, String fileName, String headerText) throws IOException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
 			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text" };
-			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames);
+			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
 			short cellNumber;
 			HSSFRow row = null;
 			//			HSSFHeader header = sheet.getHeader();
-			//			Calendar now = Calendar.getInstance();
-			//			Date date = new Date(now.getTimeInMillis());
-			//			String[] MONTH_NAMES = {"januari","februari","mars",
-			// "april","maj","juni","juli","augusti","september","oktober","november",
-			// "december"};
-			//		    header.setLeft("Bokföringsorder framställd "+date.toString()+". Skolor
-			// checkutbetalning "+MONTH_NAMES[now.get(Calendar.MONTH)]+"
-			// "+now.get(Calendar.YEAR));
+			//		    header.setLeft(headerText);
 			//			header.setRight("Sida "+HSSFHeader.page());
 			//			sheet.getPrintSetup().setLandscape(true);
 			float totalAmount = 0;
@@ -1229,63 +1243,74 @@ public class IFSFileCreationThread extends Thread {
 				for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 					row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
 				style = wb.createCellStyle();
-				//				style.setDataFormat(wb.createDataFormat().getFormat("#,##0.00"));
 				cell = row.createCell(cellNumber++);
 				cell.setCellStyle(style);
-				amount = pRec.getTotalAmount();
+				amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
 				totalAmount = totalAmount + amount;
 				cell.setCellValue(amount);
 				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
 				numberOfRecords++;
 			}
-			sheet.createRow(rowNumber++).createCell((short) (row.getLastCellNum() - 1)).setCellValue(totalAmount);
-			sheet.createRow((short) (rowNumber + 1)).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords + " bokföringsposter.  Bökfört belop: 0,00   Kreditbelopp:  - " + totalAmount + "   Debetbelopp: " + totalAmount);
+			//sheet.createRow(rowNumber++).createCell((short) (row.getLastCellNum() - 1)).setCellValue(totalAmount);
+			sheet.createRow((short) (rowNumber + 1)).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords + " bokföringsposter,   Kreditbelopp totalt:  - " + getNumberFormat().format(totalAmount) + ",   Debetbelopp totalt: " + getNumberFormat().format(totalAmount));
 			saveExcelWorkBook(fileName, wb);
 		}
 	}
 	
-	private void createPaymentSchoolFilesExcel(Collection data, String fileName) throws IOException, FinderException {
+	private void createInvoiceFilesExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 30, 35, 20 };
 			String[] columnNames = { "Anordnare", "Barnomsorgscheck", "Belopp" };
-			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames);
+			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
 			short cellNumber;
 			HSSFRow row;
-			ArrayList paymentHeaders = new ArrayList(data);
-			Collections.sort(paymentHeaders, new PaymentComparator());
-			Iterator it = paymentHeaders.iterator();
+			ArrayList invoiceHeaders = new ArrayList(data);
+			//Collections.sort(invoiceHeaders, new InvoiceComparator());
+			Iterator it = invoiceHeaders.iterator();
 			boolean firstRecord;
 			float recordAmount;
-			double totalHeaderAmount = 0;
-			double totalAmount = 0;
+			float discountAmount;
+			float totalHeaderAmount = 0;
+			float totalAmount = 0;
 			HSSFCellStyle styleUnderline = wb.createCellStyle();
 			styleUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-
+			HashMap SchoolMap = new HashMap();
+			School school = null;
+			String providerId = null;
 			while (it.hasNext()) {
-				PaymentHeader pHead = (PaymentHeader) it.next();
-				ArrayList pRecs = new ArrayList(((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead));
-				Collections.sort(pRecs, new PaymentComparator());
-				if (!pRecs.isEmpty()) {
-					School school = pHead.getSchool();
+				InvoiceHeader iHead = (InvoiceHeader) it.next();
+				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
+				Collections.sort(iRecs, new InvoiceComparator());
+				if (!iRecs.isEmpty()) {					
 					row = sheet.createRow(rowNumber++);
-					cellNumber = 0;
-					row.createCell(cellNumber++).setCellValue(school.getSchoolName());
-					Iterator prIt = pRecs.iterator();
-					firstRecord = true;
-					while (prIt.hasNext()) {
-						PaymentRecord pRec = (PaymentRecord) prIt.next();
-						if (firstRecord == false)
+					cellNumber = 0; 
+					Iterator irIt = iRecs.iterator();
+					firstRecord = true;					
+					while (irIt.hasNext()) {
+						InvoiceRecord iRec = (InvoiceRecord) irIt.next();						
+						providerId = String.valueOf(iRec.getProviderId());
+						if (!SchoolMap.containsKey(providerId)) {			
+							school = iRec.getProvider();
+							SchoolMap.put(providerId, school);
+						}
+						else 				
+							school = (School) SchoolMap.get(providerId);			
+						
+						if (firstRecord == true)
+							row.createCell(cellNumber++).setCellValue(school.getName());						
+						else
 							row = sheet.createRow(rowNumber++);
-						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-						recordAmount = pRec.getTotalAmount();
+						row.createCell(cellNumber++).setCellValue(iRec.getInvoiceText());
+						recordAmount = AccountingUtil.roundAmount(iRec.getAmount());
+						discountAmount = AccountingUtil.roundAmount(recordAmount * EXTRA_PAYMENT_PERCENTAGE);
+						totalHeaderAmount = totalHeaderAmount + recordAmount + discountAmount;
 						row.createCell(cellNumber--).setCellValue(recordAmount);
 						row = sheet.createRow(rowNumber++);
 						row.createCell(cellNumber++).setCellValue("Extraersättning 6% på totalt utbetalt checkbelopp");
-						row.createCell(cellNumber--).setCellValue(recordAmount * EXTRA_PAYMENT_PERCENTAGE);
-						totalHeaderAmount = totalHeaderAmount + (recordAmount * (1 + EXTRA_PAYMENT_PERCENTAGE));
-						if (!prIt.hasNext()) {
+						row.createCell(cellNumber--).setCellValue(discountAmount);						
+						if (!irIt.hasNext()) {
 							row = sheet.createRow(rowNumber++);
 							cellNumber--;
 							row.createCell(cellNumber++).setCellValue("");
@@ -1306,16 +1331,13 @@ public class IFSFileCreationThread extends Thread {
 			HSSFCellStyle styleBold = wb.createCellStyle();
 			styleBold.setFont(font);
 			HSSFCell cell = row.createCell((short) 0);
-			double divide = 100;
-			double roundedTotalAmount = (Math.round(totalAmount * 100)) / divide;
-			//double difference = totalAmount-roundedTotalAmount;
-			cell.setCellValue("Totalt barnomsorgscheck att utbetala " + roundedTotalAmount);
+			cell.setCellValue("Totalt barnomsorgscheck att utbetala " + getNumberFormat().format(totalAmount));
 			cell.setCellStyle(styleBold);
 			saveExcelWorkBook(fileName, wb);
 		}
 	}
 	
-	private HSSFWorkbook createExcelWorkBook(int[] columnWidths, String[] columnNames) {
+	private HSSFWorkbook createExcelWorkBook(int[] columnWidths, String[] columnNames, String headerText)  {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Excel");
 		for (short i = 0; i < columnWidths.length; i++)
@@ -1331,6 +1353,11 @@ public class IFSFileCreationThread extends Thread {
 		styleRightAlign.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
 		short rowNumber = 0;
 		HSSFRow row = sheet.createRow(rowNumber++);
+		if (!headerText.equals("")) {			
+			row.createCell((short)0).setCellValue(headerText);		
+			rowNumber++;		
+			row = sheet.createRow(rowNumber++);
+		}
 		HSSFCell cell = null;
 		for (short i = 0; i < columnNames.length; i++) {
 			cell = row.createCell(i);
@@ -1368,5 +1395,16 @@ public class IFSFileCreationThread extends Thread {
 		}
 
 		return null;
+	}
+	private void createNumberFormat() {
+		numberFormat = NumberFormat.getInstance(_currentLocale);
+		numberFormat.setMaximumFractionDigits(2);
+		numberFormat.setMinimumFractionDigits(2);
+		numberFormat.setMinimumIntegerDigits(1);
+		numberFormat.setGroupingUsed(false);
+	}
+	
+	private NumberFormat getNumberFormat() {
+		return numberFormat;
 	}
 }
