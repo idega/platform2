@@ -69,7 +69,7 @@ public class ContractEditWindow extends Window{
   }
 
   protected void control(IWContext iwc){
-    //debugParameters(iwc);
+//    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 

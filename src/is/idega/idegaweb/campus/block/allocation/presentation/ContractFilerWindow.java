@@ -46,7 +46,7 @@ import com.idega.block.media.servlet.MediaServlet;
 
 		//IWContext iwc = getIWContext();
     //IWMainApplication iwma = iwc.getApplication()
-    String identifier = "is.idega.idegaweb.campus.block.contract";
+    String identifier = "is.idega.idegaweb.campus";
     IWResourceBundle iwrb = iwc.getApplication().getBundle(identifier).getResourceBundle(iwc);
     Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
     Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
