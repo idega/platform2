@@ -660,7 +660,10 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				categoryTable.setWidth(String.valueOf(boxWidth));
 				categoryTable.setHeight(1,1,String.valueOf(topBoxHeight));
 				categoryTable.setHeight(String.valueOf(boxHeight));
-				categoryTable.setBackgroundImage(new Image(categories[a].getIssueCategoryImage()));
+                                //debug eiki
+				int categoryImageId = categories[a].getIssueCategoryImage();
+                                Image back = new Image(categoryImageId);
+                                if( back!= null ) categoryTable.setBackgroundImage(back);
 			}
 
 			if ( showCategoryHeadline ) {
