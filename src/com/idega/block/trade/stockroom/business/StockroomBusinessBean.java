@@ -1,6 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -81,14 +82,14 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           pPrice.update();
     }
 
-    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, maxUsage);
+    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, maxUsage, null);
   }
 
   public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
-    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1);
+    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1, null);
   }
 
-  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage) throws SQLException {
+  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage, Date exactDate) throws SQLException {
        ProductPrice prPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
@@ -97,6 +98,9 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
          prPrice.setPrice(price);
          prPrice.setPriceType(priceType);
          prPrice.setMaxUsage(maxUsage);
+         if(exactDate != null) {
+         	prPrice.setExactDate(exactDate);
+         }
        prPrice.insert();
        if (timeframeId != -1) {
          prPrice.addTo(Timeframe.class, timeframeId);

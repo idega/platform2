@@ -1,6 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.Product;
@@ -66,8 +67,8 @@ public interface StockroomBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.StockroomBusinessBean#setPrice
 	 */
 	public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price,
-			int priceType, int timeframeId, int addressId, int maxUsage) throws SQLException, java.rmi.RemoteException;
-
+			int priceType, int timeframeId, int addressId, int maxUsage, Date exactDate) throws SQLException, java.rmi.RemoteException;
+	
 	/**
 	 * @see com.idega.block.trade.stockroom.business.StockroomBusinessBean#getPrice
 	 */
