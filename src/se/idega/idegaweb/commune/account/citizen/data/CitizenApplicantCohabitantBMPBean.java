@@ -1,13 +1,12 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.GenericEntity;
-import com.idega.user.data.Gender;
 
 /**
- * Last modified: $Date: 2002/11/19 13:29:37 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     implements CitizenApplicantCohabitant {
@@ -19,7 +18,6 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     private final static String COLUMN_SSN = "ssn";
     private final static String COLUMN_CIVIL_STATUS = "civil_status";
     private final static String COLUMN_PHONE_WORK = "phone_work";
-    private final static String COLUMN_GENDER_ID = "gender_id";
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
@@ -34,8 +32,6 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
                       String.class, 20);
 		addAttribute (COLUMN_PHONE_WORK, "Phone Work", true, true, String.class,
                       20);
-       	addAttribute (COLUMN_GENDER_ID, "Gender", true, true, Integer.class,
-                      "many-to-one", Gender.class);
 	}
 
 	public String getEntityName() {
@@ -72,17 +68,6 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     public String getPhoneWork () {
         return getStringColumnValue (COLUMN_PHONE_WORK);
     }
-
-    public Integer getGenderId () {
-        Integer genderId = null;
-        try {
-            genderId = getIntegerColumnValue (COLUMN_GENDER_ID);
-        } catch (Exception e) {
-            // nothing
-        }
-
-        return genderId;
-    }
     
 
     public void setApplicationId (final int applicationId) {
@@ -107,9 +92,5 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     
     public void setPhoneWork (final String phoneWork) {
         setColumn (COLUMN_PHONE_WORK, phoneWork);
-    }
-    
-    public void setGenderId (final int genderId) {
-        setColumn (COLUMN_GENDER_ID, genderId);
     }
 }

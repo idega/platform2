@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.28 2002/11/15 14:05:44 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.29 2002/11/20 11:50:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import se.idega.idegaweb.commune.account.business.*;
 import se.idega.idegaweb.commune.account.citizen.data.*;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.util.PIDChecker;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -94,11 +95,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
     public Integer insertApplication
         (final String name, final String ssn, final String email,
-         final String phoneHome, final String phoneWork, final Date date,
+         final String phoneHome, final String phoneWork,
          final String street, final String zipCode, final String city,
-         final int genderId, final String civilStatus,
-         final boolean hasCohabitant, final int childrenCount,
-         final String applicationReason) throws RemoteException {
+         final String civilStatus, final boolean hasCohabitant,
+         final int childrenCount, final String applicationReason)
+        throws RemoteException {
 		CitizenAccount application = null;
         try {
             final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
@@ -109,11 +110,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
             application.setEmail (email != null ? email : "");
 			application.setPhoneHome (phoneHome != null ? phoneHome : "");
             application.setPhoneWork (phoneWork != null ? phoneWork : "");
-            application.setBirthDate (date);
             application.setStreet (street != null ? street : "");
             application.setZipCode (zipCode != null ? zipCode : "");
             application.setCity (city != null ? city : "");
-			application.setGenderId (genderId);
             application.setCivilStatus (civilStatus != null ? civilStatus : "");
             application.setHasCohabitant (hasCohabitant);
             application.setChildrenCount (childrenCount);
@@ -230,19 +229,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                           : putChildren.getPrimaryKey());
     }
 
-    public Gender [] getGenders () throws RemoteException {
-        final GenderHome home = (GenderHome) IDOLookup.getHome (Gender.class);
-        try {
-            final Collection genderCollection = home.findAllGenders ();
-            final Gender [] genders
-                    = (Gender []) genderCollection.toArray (new Gender [0]);
-            return genders;
-        } catch (Exception e) {
-            e.printStackTrace ();
-            throw new RemoteException (e.getMessage ());
-        }
-    }
-
 	public User getUser(String ssn) {
 		User user = null;
 		try {
@@ -353,19 +339,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		final String lastName = spaceIndex != -1
                 ? name.substring(spaceIndex + 1, name.length ())
                 : (name != null ? name : "");
+        final String ssn = applicant.getSsn ();
         final GenderHome genderHome
                 = (GenderHome) IDOLookup.getHome(Gender.class);
-        final Integer genderId = applicant.getGenderId ();
-        final Gender gender = (Gender)
-                (genderId != null
-                 ? genderHome.findByPrimaryKeyIDO (genderId) : null);
-        final Date birthDate = applicant.getBirthDate ();
+        final PIDChecker pidChecker = PIDChecker.getInstance ();
+        final Gender gender = pidChecker.isFemale (ssn)
+                ? genderHome.getFemaleGender () : genderHome.getMaleGender ();
+        final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
         final IWTimestamp timestamp = birthDate != null
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, applicant.getSsn (), gender,
-                 timestamp);
+                (firstName, "", lastName, ssn, gender, timestamp);
 
                  
 	try {
@@ -460,24 +445,23 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		final String lastName = spaceIndex != -1
                 ? name.substring(spaceIndex + 1, name.length ())
                 : (name != null ? name : "");
+        final String ssn = applicant.getSsn ();
         final GenderHome genderHome
                 = (GenderHome) IDOLookup.getHome(Gender.class);
-        final Integer genderId = applicant.getGenderId ();
+        final PIDChecker pidChecker = PIDChecker.getInstance ();
         Gender gender = null;
         try {
-            gender = (Gender) (genderId != null
-                               ? genderHome.findByPrimaryKeyIDO (genderId)
-                               : null);
-        } catch (FinderException e) {
-            e.printStackTrace ();
+            gender = pidChecker.isFemale (ssn) ? genderHome.getFemaleGender ()
+                    : genderHome.getMaleGender ();
+        } catch (final FinderException e) {
+            throw new CreateException (e.getMessage ());
         }
-        final Date birthDate = applicant.getBirthDate ();
+        final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
         final IWTimestamp timestamp = birthDate != null
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, applicant.getSsn (), gender,
-                 timestamp);
+                (firstName, "", lastName, ssn, gender, timestamp);
         return user;        
 	}
 	

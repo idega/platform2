@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.10 2002/11/14 19:17:16 laddi Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.11 2002/11/20 11:50:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 19:17:16 $ by $Author: laddi $
+ * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -190,17 +190,6 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), 1, row);
 				table.add(getSmallText(address), 3, row++);
 			}
-
-			table.add(getSmallHeader(localize(CitizenAccountApplication.GENDER_KEY, CitizenAccountApplication.GENDER_DEFAULT)), 1, row);
-			final Gender[] genders = business.getGenders();
-			for (int i = 0; i < genders.length; i++) {
-				if (genders[i].getPrimaryKey().equals(applicant.getGenderId())) {
-					final String nameInDb = genders[i].getName();
-					final String genderName = localize("caa_" + nameInDb, nameInDb);
-					table.add(getSmallText(genderName), 3, row);
-				}
-			}
-			row++;
 
 			if (applicant.getCivilStatus() != null) {
 				table.add(getSmallHeader(localize(CitizenAccountApplication.CIVIL_STATUS_KEY, CitizenAccountApplication.CIVIL_STATUS_DEFAULT)), 1, row);

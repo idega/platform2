@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.11 2002/11/14 12:32:39 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.12 2002/11/20 11:50:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.user.data.Gender;
 import com.idega.block.process.data.*;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -33,11 +32,9 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	private final static String EMAIL = "email";
 	private final static String PHONE_HOME = "phone_home";
 	private final static String PHONE_WORK = "phone_work";
-    private final static String BIRTH_DATE = "birth_date";
     private final static String STREET = "street";
     private final static String ZIP_CODE = "zip_code";
     private final static String CITY = "city";
-    private final static String GENDER_ID = "gender_id";
     private final static String CIVIL_STATUS = "civil_status";
     private final static String HAS_COHABITANT = "has_cohabitant";
     private final static String CHILDREN_COUNT = "children_count";
@@ -50,12 +47,9 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
-        addAttribute (BIRTH_DATE, "Date of birth", Timestamp.class);
         addAttribute (STREET, "street", true, true, String.class, 40);
         addAttribute (ZIP_CODE, "zipCode", true, true, String.class, 40);
         addAttribute (CITY, "city", true, true, String.class, 40);
-       	addAttribute (GENDER_ID, "Gender", true, true, Integer.class,
-                      "many-to-one", Gender.class);
         addAttribute (CIVIL_STATUS, "Civil Status", true, true, String.class,
                       40);
         addAttribute (HAS_COHABITANT, "Has Cohabitant", true, true,
@@ -101,10 +95,6 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		return getStringColumnValue (PHONE_WORK);
 	}
 
-	public Date getBirthDate () {
-        return (Timestamp) getColumnValue (BIRTH_DATE);
-	}
-
     public String getStreet () {
         return getStringColumnValue (STREET);
     }
@@ -115,17 +105,6 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 
     public String getCity () {
         return getStringColumnValue (CITY);
-    }
-
-    public Integer getGenderId () {
-        Integer genderId = null;
-        try {
-            genderId = getIntegerColumnValue (GENDER_ID);
-        } catch (Exception e) {
-            // nothing
-        }
-
-        return genderId;
     }
 
     public String getCivilStatus () {
@@ -180,10 +159,6 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		setColumn (PHONE_WORK, phone);
 	}
 
-	public void setBirthDate (final Date birthDate) {
-        setColumn (BIRTH_DATE, new Timestamp (birthDate.getTime ()));
-	}
-
     public void setStreet (final String street) throws RemoteException {
         setColumn (STREET, street);
     }
@@ -194,10 +169,6 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
     
     public void setCity (final String city) throws RemoteException {
         setColumn (CITY, city);
-    }
-    
-    public void setGenderId (final int genderId) throws RemoteException {
-        setColumn (GENDER_ID, genderId);
     }
     
     public void setCivilStatus (final String civilStatus) {

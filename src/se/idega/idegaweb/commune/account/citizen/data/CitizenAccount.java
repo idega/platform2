@@ -16,11 +16,9 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     String getEmail () throws RemoteException;
     String getPhoneHome () throws RemoteException;
     String getPhoneWork () throws RemoteException;
-    Date getBirthDate () throws RemoteException;
     String getStreet () throws RemoteException;
     String getZipCode () throws RemoteException;
     String getCity () throws RemoteException;
-    Integer getGenderId () throws RemoteException;
     String getCivilStatus () throws RemoteException;
     boolean hasCohabitant () throws RemoteException;
     int getChildrenCount () throws RemoteException;
@@ -31,11 +29,9 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     void setEmail (String email) throws RemoteException;
     void setPhoneHome (String phoneHome) throws RemoteException;
     void setPhoneWork (String phoneWork) throws RemoteException;
-    void setBirthDate (Date date) throws RemoteException;
     void setStreet (String street) throws RemoteException;
     void setZipCode (String zipCode) throws RemoteException;
     void setCity (String city) throws RemoteException;
-    void setGenderId (int id) throws RemoteException;
     void setCivilStatus (String civilStatus) throws RemoteException;
     void setHasCohabitant (boolean hasCohabitant) throws RemoteException;
     void setChildrenCount (int childrenCount) throws RemoteException;

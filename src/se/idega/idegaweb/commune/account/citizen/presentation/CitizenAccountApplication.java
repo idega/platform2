@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.36 2002/11/19 13:55:06 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.37 2002/11/20 11:50:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/19 13:55:06 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -60,8 +60,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String EMAIL_KEY = "caa_email";
 	private final static String FIRST_NAME_DEFAULT = "Förnamn";
 	private final static String FIRST_NAME_KEY = "caa_first_name";
-	final static String GENDER_DEFAULT = "Kön";
-	final static String GENDER_KEY = "caa_gender";
 	private final static String HAS_COHABITANT_DEFAULT = "Är du sammanboende?";
 	private final static String HAS_COHABITANT_KEY = "caa_has_cohabitant";
 	private final static String HOUSING_TYPE_KEY = "caa_housing_type";
@@ -223,9 +221,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getHeader(CITY_KEY, CITY_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, CITY_KEY, 40, true), 3, row++);
 
-		table.add(getHeader(GENDER_KEY, GENDER_DEFAULT), 1, row);
-		table.add(getGenderDropdownInput(iwc), 3, row++);
-
 		table.add(getHeader(CIVIL_STATUS_KEY, CIVIL_STATUS_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, CIVIL_STATUS_KEY, 20, false), 3, row++);
 
@@ -258,10 +253,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitUnknownCitizenForm1(final IWContext iwc) {
-		final Collection mandatoryParameterNames = Arrays.asList(new String[] { SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, GENDER_KEY, CHILDREN_COUNT_KEY });
-		final Collection stringParameterNames = Arrays.asList(new String[] { EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY });
+		final Collection mandatoryParameterNames = Arrays.asList(new String[] {
+            SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY,
+            STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, CHILDREN_COUNT_KEY });
+		final Collection stringParameterNames = Arrays.asList(new String[] {
+            EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
+            LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY });
 		final Collection ssnParameterNames = Collections.singleton(SSN_KEY);
-		final Collection integerParameters = Arrays.asList(new String[] { GENDER_KEY, CHILDREN_COUNT_KEY });
+		final Collection integerParameters = Arrays.asList(new String[] {
+            CHILDREN_COUNT_KEY });
 
 		try {
 			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
@@ -288,7 +290,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		form.maintainParameter(STREET_KEY);
 		form.maintainParameter(ZIP_CODE_KEY);
 		form.maintainParameter(CITY_KEY);
-		form.maintainParameter(GENDER_KEY);
 		form.maintainParameter(HAS_COHABITANT_KEY);
 		form.maintainParameter(CHILDREN_COUNT_KEY);
 		form.maintainParameter(APPLICATION_REASON_KEY);
@@ -310,8 +311,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(getSingleInput(iwc, SSN_KEY + COHABITANT_KEY, 12, true), 3, row++);
 			table.add(getHeader(CIVIL_STATUS_KEY, CIVIL_STATUS_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, CIVIL_STATUS_KEY + COHABITANT_KEY, 20, false), 3, row++);
-            table.add (getHeader (GENDER_KEY, GENDER_DEFAULT), 1, row);
-            table.add (getGenderDropdownInput (iwc, COHABITANT_KEY), 3, row++);
 			table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, PHONE_WORK_KEY + COHABITANT_KEY, 20, false), 3, row++);
 		}
@@ -336,9 +335,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 				table.add (getHeader (SSN_KEY, SSN_DEFAULT), 1, row);
 				table.add (getSingleInput (iwc, SSN_KEY + CHILDREN_KEY + i, 12,
                                            true), 3, row++);
-                table.add (getHeader (GENDER_KEY, GENDER_DEFAULT), 1, row);
-                table.add (getGenderDropdownInput (iwc, CHILDREN_KEY + i), 3,
-                           row++);
 			}
 		}
 
@@ -379,13 +375,20 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 	private void submitUnknownCitizenForm2(final IWContext iwc) {
 		final Collection mandatoryParameterNames = new ArrayList();
-		mandatoryParameterNames.addAll(Arrays.asList(new String[] { SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, GENDER_KEY, CHILDREN_COUNT_KEY }));
+		mandatoryParameterNames.addAll(Arrays.asList(new String[] {
+            SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY,
+            STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, CHILDREN_COUNT_KEY }));
 		final Collection stringParameterNames = new ArrayList();
-		stringParameterNames.addAll(Arrays.asList(new String[] { EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY }));
+		stringParameterNames.addAll(Arrays.asList(new String[] {
+            EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
+            LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY }));
 		final Collection ssnParameterNames = new ArrayList();
 		ssnParameterNames.add(SSN_KEY);
 		final Collection integerParameters = new ArrayList();
-		integerParameters.addAll(Arrays.asList(new String[] { GENDER_KEY, CHILDREN_COUNT_KEY }));
+		integerParameters.addAll(Arrays.asList(new String[]
+            { CHILDREN_COUNT_KEY }));
 		try {
 			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
 		}
@@ -433,7 +436,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
 			final String name = parameters.get(FIRST_NAME_KEY) + " "
                     + parameters.get(LAST_NAME_KEY);
-			final int genderId = getIntParameter(iwc, GENDER_KEY);
 			final String street = parameters.get(STREET_KEY).toString();
 			final String zipCode = parameters.get(ZIP_CODE_KEY).toString();
 			final String city = parameters.get(CITY_KEY).toString();
@@ -448,13 +450,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 				viewSimpleApplicationForm(iwc);
 				return;
 			}
-			final Calendar birth = Calendar.getInstance();
-			birth.set(new Integer(ssn.substring(0, 4)).intValue(),
-                      new Integer(ssn.substring(4, 6)).intValue() - 1,
-                      new Integer(ssn.substring(6, 8)).intValue());
+
 			applicationId = business.insertApplication
-                    (name, ssn, email, phoneHome, phoneWork, birth.getTime(),
-                     street, zipCode, city, genderId, civilStatus,
+                    (name, ssn, email, phoneHome, phoneWork,
+                     street, zipCode, city, civilStatus,
                      hasCohabitant, childrenCount, applicationReason);
 
             if (null != applicationId && hasCohabitant) {
@@ -556,6 +555,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getSingleInput(iwc, PHONE_WORK_KEY, 20, true), 3, 4);
 	}
 
+    /*
 	private DropdownMenu getGenderDropdownInput(final IWContext iwc) {
         return getGenderDropdownInput (iwc, "");
 	}
@@ -586,6 +586,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 		return dropdown;
 	}
+    */
 
 	private Table getRadioButton(final String name, final String value, String defaultValue, boolean selected) {
 		Table table = new Table(3, 1);

@@ -18,8 +18,6 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
 
     List getListOfUnapprovedApplications () throws RemoteException;
 
-    Gender [] getGenders () throws RemoteException;
-
     User getUser (String p0) throws RemoteException;
 
 	/**
@@ -38,9 +36,9 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     
     Integer insertApplication
         (String name, String ssn, String email, String phoneHome,
-         String phoneWork, Date birthDate, String street, String zipCode,
-         String city, int genderId, String civilStatus, boolean hasCohabitant,
-         int childrenCount, String applicationReason)
+         String phoneWork, String street, String zipCode, String city,
+         String civilStatus, boolean hasCohabitant, int childrenCount,
+         String applicationReason)
         throws RemoteException;
 
     void rejectApplication (int p0, User p1, String p2 )
