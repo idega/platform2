@@ -49,7 +49,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String KEY_VALID_DATE = "valid_date";	
 	private static final String KEY_SEARCH = "search";		
 	
-	private static String PAR_PROVIDER = KEY_PROVIDER; 
+	public static String PAR_PROVIDER = KEY_PROVIDER; 
 	public static final String PAR_PLACING = KEY_PLACING;	
 	public static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";

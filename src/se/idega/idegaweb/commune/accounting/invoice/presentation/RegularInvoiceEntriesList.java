@@ -563,6 +563,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 		
 		Form form = new Form();			
+		form.maintainParameter(RegulationSearchPanel.PAR_PROVIDER);
 		Table t2 = new Table();
 		int row = 1;
 		UserSearcher searcher = _userSearcher;
