@@ -2,49 +2,30 @@ package com.idega.block.reports.presentation;
 
 
 
-import com.idega.block.reports.data.Report;
-
-import com.idega.block.reports.business.ReportFinder;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import com.idega.block.reports.business.ReportBusiness;
-
-import com.idega.block.reports.business.StickerReport;
-
-import com.idega.block.reports.business.ReportWriter;
-
+import com.idega.block.reports.business.ReportFinder;
+import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
-
-import com.idega.block.reports.data.ReportColumnInfo;
-
-import com.idega.presentation.Block;
-
 import com.idega.idegaweb.IWBundle;
-
 import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWMainApplication;
-
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.presentation.Table;
-
 import com.idega.presentation.Image;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.text.*;
-
-import com.lowagie.text.Font;
-
-import com.lowagie.text.PageSize;
-
-import com.lowagie.text.Rectangle;
-
-import java.util.*;
-
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.text.Edit;
+import com.lowagie.text.Font;
 
 
 

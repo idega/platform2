@@ -1,6 +1,5 @@
 package com.idega.block.reports.data;
 
-import javax.ejb.*;
 
 public interface ReportEntity extends com.idega.data.IDOLegacyEntity
 {

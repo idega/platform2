@@ -2,22 +2,18 @@ package com.idega.block.reports.business;
 
 
 
-import com.idega.block.reports.data.*;
-
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.Vector;
 
-import java.util.Collection;
-
-import java.util.TreeMap;
-
-import java.util.List;
-
-import java.util.Iterator;
-
-import java.util.StringTokenizer;
-
-import java.sql.*;
-
+import com.idega.block.reports.data.ReportItem;
 import com.idega.util.database.ConnectionBroker;
 
 

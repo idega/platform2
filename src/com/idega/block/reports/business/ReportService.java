@@ -2,13 +2,8 @@ package com.idega.block.reports.business;
 
 
 
-import java.io.*;
-
-import java.util.*;
-
-import com.idega.presentation.IWContext;
-
 import com.idega.block.reports.data.Report;
+import com.idega.presentation.IWContext;
 
 
 

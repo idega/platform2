@@ -4,8 +4,6 @@ package com.idega.block.reports.business ;
 
 
 
-import com.idega.util.IsCollator;
-
 import java.util.Comparator;
 
 

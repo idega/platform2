@@ -1,30 +1,32 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObjectContainer;
 import java.sql.SQLException;
-import java.util.Vector;
-import java.util.Collections;
 import java.util.List;
-import com.idega.data.EntityFinder;
-import com.idega.presentation.Editor;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
+
 import com.idega.block.IWBlock;
-import com.idega.core.data.ICCategory;
 import com.idega.block.presentation.CategoryBlock;
-import com.idega.block.category.business.*;
-import com.idega.util.text.Edit;
+import com.idega.block.reports.business.ReportBusiness;
+import com.idega.block.reports.business.ReportEntityHandler;
+import com.idega.block.reports.business.ReportFinder;
+import com.idega.block.reports.business.ReportWriter;
+import com.idega.block.reports.data.Report;
+import com.idega.block.reports.data.ReportInfo;
+import com.idega.core.data.ICCategory;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
+import com.idega.util.text.Edit;
 
 
 /**

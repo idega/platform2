@@ -1,18 +1,20 @@
 package com.idega.block.reports.business;
 
-import com.idega.block.reports.data.*;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Font;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.pdf.PdfWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.List;
+
 import com.idega.block.reports.data.Report;
-import com.idega.util.database.ConnectionBroker;
+import com.idega.block.reports.data.ReportColumnInfo;
+import com.idega.block.reports.data.ReportInfo;
 import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.util.database.ConnectionBroker;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
 
 
 /**

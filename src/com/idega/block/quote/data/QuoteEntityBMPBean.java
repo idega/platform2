@@ -4,13 +4,14 @@ package com.idega.block.quote.data;
 
 
 
-import java.sql.*;
-import java.util.Locale;
 import java.util.Collection;
-import javax.ejb.*;
-import com.idega.data.*;
+
+import javax.ejb.FinderException;
+
 import com.idega.core.data.ICLocale;
-import com.idega.block.text.business.TextFinder;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 
 
 public class QuoteEntityBMPBean extends GenericEntity implements QuoteEntity {

@@ -1,15 +1,13 @@
 package com.idega.block.quote.business;
 
-import com.idega.presentation.IWContext;
-import java.sql.SQLException;
-
 import javax.ejb.FinderException;
 
-import com.idega.util.IWTimestamp;
 import com.idega.block.quote.data.QuoteEntity;
 import com.idega.block.quote.data.QuoteEntityHome;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 public class QuoteBusiness {
 

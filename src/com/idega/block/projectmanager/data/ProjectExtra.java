@@ -1,6 +1,5 @@
 package com.idega.block.projectmanager.data;
 
-import javax.ejb.*;
 
 public interface ProjectExtra extends com.idega.data.IDOLegacyEntity
 {

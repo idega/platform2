@@ -8,9 +8,7 @@ package com.idega.block.projectmanager.data;
 
 //import java.util.*;
 
-import java.sql.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
 
 
 

@@ -1,15 +1,14 @@
 package com.idega.block.reports.business;
 
-import java.util.Vector;
-import java.util.List;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Rectangle;
+
 import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPCell;
 /**
  * Title:
  * Description:

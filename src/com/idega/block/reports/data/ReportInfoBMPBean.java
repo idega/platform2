@@ -1,6 +1,5 @@
 package com.idega.block.reports.data;
 
-import com.idega.data.CategoryEntity;
 import java.sql.SQLException;
 /**
  *

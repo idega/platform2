@@ -1,12 +1,10 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.block.finance.data.*;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.*;
-import java.sql.SQLException;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.InterfaceObject;
 
 /**
  * Title:

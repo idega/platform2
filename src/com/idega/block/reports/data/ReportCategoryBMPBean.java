@@ -1,7 +1,6 @@
 package com.idega.block.reports.data;
 
 import java.sql.SQLException;
-import com.idega.core.data.ICCategory;
 
 /**
  * Title:

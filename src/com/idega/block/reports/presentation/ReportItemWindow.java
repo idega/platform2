@@ -1,29 +1,32 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.ReportFinder;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObjectContainer;
 import java.sql.SQLException;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
-import com.idega.presentation.Editor;
-import com.idega.block.reports.presentation.ReportObjectHandler;
-import com.idega.block.reports.business.ReportEntityHandler;
-import com.idega.presentation.PresentationObject;
-import com.idega.util.text.Edit;
-import com.idega.core.data.ICObject;
-
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityFinder;
 import java.util.List;
+
+import com.idega.block.reports.business.ReportEntityHandler;
+import com.idega.block.reports.business.ReportFinder;
+import com.idega.block.reports.data.ReportCategory;
+import com.idega.block.reports.data.ReportEntity;
+import com.idega.block.reports.data.ReportItem;
+import com.idega.core.data.ICObject;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.Edit;
 
 
 public class ReportItemWindow extends IWAdminWindow{

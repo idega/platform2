@@ -1,11 +1,15 @@
 package com.idega.block.reports.business;
 
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
-import java.io.File;
-import java.util.Iterator;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Title:

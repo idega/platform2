@@ -1,7 +1,6 @@
 package com.idega.block.questions.business;
 
 import java.rmi.RemoteException;
-import javax.ejb.*;
 
 public interface QuestionsService extends com.idega.business.IBOService
 {

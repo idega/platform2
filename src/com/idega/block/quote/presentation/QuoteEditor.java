@@ -1,18 +1,17 @@
 package com.idega.block.quote.presentation;
 
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.quote.business.QuoteBusiness;
 import com.idega.block.quote.business.QuoteHolder;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 public class QuoteEditor extends IWAdminWindow{
 

@@ -1,6 +1,5 @@
 package com.idega.block.quote.data;
 
-import javax.ejb.*;
 
 public interface QuoteEntity extends com.idega.data.IDOEntity
 {

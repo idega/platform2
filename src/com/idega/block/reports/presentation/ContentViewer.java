@@ -1,20 +1,19 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+
+import com.idega.block.reports.business.Content;
+import com.idega.block.reports.business.ContentComparator;
+import com.idega.block.reports.business.ReportService;
+import com.idega.block.reports.data.Report;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import java.sql.SQLException;
-import java.util.Vector;
-import java.util.List;
-import java.util.Collections;
-import com.idega.presentation.Editor;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 
 public class ContentViewer extends Block{

@@ -1,22 +1,12 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.presentation.BlockMenu;
-import com.idega.presentation.AbstractMenuBlock;
-import com.idega.presentation.MenuBlock;
-
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Collection;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.AbstractMenuBlock;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.MenuBlock;
+import com.idega.presentation.ui.Parameter;
 
 /**
  * Title:

@@ -2,19 +2,17 @@ package com.idega.block.reports.presentation;
 
 
 
-import com.idega.block.reports.data.*;
-
-import com.idega.presentation.Block;
-
-import com.idega.presentation.IWContext;
-
 import java.sql.SQLException;
 
+import com.idega.block.reports.data.ReportCategory;
+import com.idega.block.reports.data.ReportCategoryAttribute;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.Script;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 

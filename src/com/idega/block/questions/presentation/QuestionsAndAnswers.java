@@ -1,7 +1,5 @@
 package com.idega.block.questions.presentation;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,12 +14,9 @@ import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.questions.business.QuestionsService;
 import com.idega.block.questions.data.Question;
 import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.presentation.TextChooser;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
-import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICCategory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -37,7 +32,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HelpButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.text.TextFormat;
 /**
  * 
  * <p>Company: idegaweb </p>

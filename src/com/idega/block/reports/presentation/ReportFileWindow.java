@@ -1,19 +1,10 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import java.io.File;
-import java.sql.SQLException;
-import com.idega.block.reports.data.Report;
-import com.idega.block.reports.business.ReportWriter;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.io.*;
-import javax.servlet.RequestDispatcher;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Window;
 
 
 

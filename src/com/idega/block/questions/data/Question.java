@@ -1,7 +1,6 @@
 package com.idega.block.questions.data;
 
 import java.rmi.RemoteException;
-import javax.ejb.*;
 
 import com.idega.data.CategoryEntity;
 

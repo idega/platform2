@@ -1,6 +1,5 @@
 package com.idega.block.reports.data;
 
-import javax.ejb.*;
 
 public interface Report extends com.idega.data.CategoryEntity
 {

@@ -1,26 +1,31 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.data.EntityFinder;
 import java.sql.SQLException;
-import java.util.Vector;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Collections;
-import com.idega.presentation.Editor;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.util.text.Edit;
+import java.util.Vector;
+
+import com.idega.block.reports.business.ReportCondition;
+import com.idega.block.reports.business.ReportEntityHandler;
+import com.idega.block.reports.business.ReportMaker;
+import com.idega.block.reports.business.ReportService;
+import com.idega.block.reports.data.Report;
+import com.idega.block.reports.data.ReportItem;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.Edit;
 
 
 public class ReportEditor extends Block implements Reports{

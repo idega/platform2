@@ -2,9 +2,7 @@ package com.idega.block.reports.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
 
 
 

@@ -2,25 +2,15 @@ package com.idega.block.reports.presentation;
 
 
 
-import com.idega.block.reports.data.*;
-
-import com.idega.block.reports.business.*;
-
-import com.idega.presentation.Block;
-
-import com.idega.presentation.IWContext;
-
 import java.sql.SQLException;
 
-import com.idega.presentation.Table;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.Script;
-
-import com.idega.presentation.PresentationObject;
-
+import com.idega.block.reports.business.ReportCondition;
+import com.idega.block.reports.data.ReportCategory;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.presentation.Block;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.TextInput;
 
 
 

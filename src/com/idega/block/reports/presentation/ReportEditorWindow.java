@@ -1,26 +1,21 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.block.reports.data.*;
-import com.idega.block.reports.business.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Script;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.data.EntityFinder;
-import java.sql.SQLException;
-import java.util.Vector;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.StringTokenizer;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
+
+import com.idega.block.reports.business.ReportBusiness;
+import com.idega.block.reports.business.ReportFinder;
 import com.idega.core.data.ICCategory;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:
