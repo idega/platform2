@@ -9,7 +9,11 @@ package is.idega.idegaweb.member.isi.block.members.presentation;
 import is.idega.idegaweb.member.isi.block.members.data.MemberGroupData;
 
 import java.sql.SQLException;
+import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,30 +43,65 @@ public class MemberOverview extends Block {
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
+		_collator = Collator.getInstance(iwc.getLocale());
+		
 		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
 		_data = new MemberGroupData(user);
+		Table table = new Table();
 		add(getMemberInfo(user));
 		addBreak();
 		addBreak();
+		
+		int row = 1;
 		Text regText = new Text(_iwrb.getLocalizedString("member_overview_registration", "Membership status"));
-		add(regText);
-		add(getMemberRegistrationStatus());
-		addBreak();
+		regText.setBold();
+		table.mergeCells(1, row, 3, row);
+		table.add(regText, 1, row++);
+		row = getMemberRegistrationStatus(table, row);
+		row += 2;
+		table.mergeCells(1, row, 3, row);
 		Text histText = new Text(_iwrb.getLocalizedString("member_overview_history", "Membership history"));
-		add(histText);
-		add(getMemberHistory(user));
+		histText.setBold();
+		table.add(histText, 1, row++);
+		row = getMemberHistory(user, table, row);
+		
+		add(table);
 	}
 	
 	private PresentationObject getMemberInfo(User user) {
 		String name = emptyIfNull(user.getName());
-		String nameLabel = _iwrb.getLocalizedString("member_overview_name", "Name: ");
+		Text nameLabel = new Text(_iwrb.getLocalizedString("member_overview_name", "Name: "));
+		nameLabel.setBold();
 		String pNum = emptyIfNull(user.getPersonalID());
-		String pNumLabel = _iwrb.getLocalizedString("member_overview_pn", "Person number: ");
+		Text pNumLabel = new Text(_iwrb.getLocalizedString("member_overview_pn", "Person number: "));
+		pNumLabel.setBold();
 		String address = getInfoFromCollection(user.getAddresses());
-		String addressLabel = _iwrb.getLocalizedString("member_overview_address", "Address: ");
+		Text addressLabel = new Text(_iwrb.getLocalizedString("member_overview_address", "Address: "));
+		addressLabel.setBold();
 		String phone = getInfoFromCollection(user.getPhones());
-		String phoneLabel = _iwrb.getLocalizedString("member_overview_phone", "Phone: ");
+		Text phoneLabel = new Text(_iwrb.getLocalizedString("member_overview_phone", "Phone: "));
+		phoneLabel.setBold();
+		
+		String clubs = null;
+		Text clubsLabel = new Text(_iwrb.getLocalizedString("member_overview_clubs", "Clubs: "));
+		clubsLabel.setBold();
+		List clubList = _data.getClubList();
+		int clCount = clubList.size();
+		if(clubList != null && clCount>0) {
+			StringBuffer clubListBuf = new StringBuffer();
+			boolean first = true;
+			for(int i = 0; i<clCount; i++) {
+				if(!first) {
+					clubListBuf.append(", ");
+				} else {
+					first = false;
+				}
+				clubListBuf.append(clubList.get(i));
+			}
+			
+			clubs = clubListBuf.toString();
+		}
 		
 		user.getSystemImageID();
 		
@@ -82,14 +121,20 @@ public class MemberOverview extends Block {
 		table.setCellpadding(1);
 		table.setCellspacing(2);
 		int row = 1;
-		table.add(nameLabel + name, 1, row++);
-		table.add(pNumLabel + pNum, 1, row++);
-		table.add(addressLabel + address, 1, row++);
-		table.add(phoneLabel + phone, 1, row++);
+		table.add(nameLabel, 1, row);
+		table.add(name, 2, row++);
+		table.add(pNumLabel, 1, row);
+		table.add(pNum, 2, row++);
+		table.add(addressLabel, 1, row);
+		table.add(address, 2, row++);
+		table.add(phoneLabel, 1, row);
+		table.add(phone, 2, row++);
+		table.add(clubsLabel, 1, row);
+		table.add(clubs, 2, row++);
 		if(image!=null) {
-			table.mergeCells(2, 1, 2, row-1);
-			table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_MIDDLE);
-			table.add(image, 2, 1);
+			table.mergeCells(3, 1, 3, row-1);
+			table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_MIDDLE);
+			table.add(image, 3, 1);
 		}
 		return table;
 	}
@@ -111,25 +156,78 @@ public class MemberOverview extends Block {
 		return buf.length()==0?_iwrb.getLocalizedString("member_overview_no_info", "N/A"):buf.toString();
 	}
 	
-	private PresentationObject getMemberHistory(User user) {
+	private int getMemberRegistrationStatus(Table table, int row) {
+		try {
+			List memberInfo = _data.getMemberInfo();
+			Collections.sort(memberInfo, new Comparator() {
+
+				public int compare(Object arg0, Object arg1) {
+					String[] sa0 = (String[]) arg0;
+					String[] sa1 = (String[]) arg1;
+					int result = _collator.compare(sa0[0], sa1[0]);
+					if(result==0) {
+						result = _collator.compare(sa0[1], sa1[1]);
+						if(result==0) {
+							result = _collator.compare(sa0[2], sa1[2]);
+						}
+					}
+					return result;
+				}
+				
+			});
+			Iterator miIter = memberInfo.iterator();
+			resetColor();
+			while(miIter.hasNext()) {
+				try {
+					String color = getColor();
+					table.setColor(1, row, color);
+					table.setColor(2, row, color);
+					table.setColor(3, row, color);
+					String[] mi = (String[]) miIter.next();
+					table.add(mi[0], 1, row);
+					table.add(mi[1], 2, row);
+					table.add(mi[2], 3, row++);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return row;
+	}
+	
+	private int getMemberHistory(User user, Table table, int row) {
 		Collection history = null;
-		int rows = 0;
 		try {
 			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(user.getID(),"GROUP_PARENT");
-			rows = history.size();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(rows>0) {
-			Table table = new Table(3, rows+1);
-			table.setCellpadding(2);
-			table.setBorder(2);
-			int row = 1;
+		List historyList = new ArrayList(history);
+		Collections.sort(historyList, new Comparator() {
+
+			public int compare(Object arg0, Object arg1) {
+				Group gr0 = ((GroupRelation) arg0).getGroup();
+				Group gr1 = ((GroupRelation) arg1).getGroup();
+				String st0 = _data.getStringByGroup(gr0);
+				String st1 =  _data.getStringByGroup(gr1);
+				if(st0==null) {
+					return 1;
+				} else if(st1==null) {
+					return -1;
+				}
+				return _collator.compare(st0, st1);
+			}
+		
+		});
+		if(historyList.size()>0) {
 			table.add(_iwrb.getLocalizedString("member_overview_group", "Group"), 1, row);
 			table.add(_iwrb.getLocalizedString("member_overview_begin_date", "Started"), 2, row);
 			table.add(_iwrb.getLocalizedString("member_overview_end_date", "Quit"), 3, row++);
 			
-			Iterator historyIter = history.iterator();
+			Iterator historyIter = historyList.iterator();
+			resetColor();
 			while(historyIter.hasNext()) {
 				GroupRelation rel = (GroupRelation) historyIter.next();
 				
@@ -144,6 +242,10 @@ public class MemberOverview extends Block {
 				if(info == null) {
 					info = group.getName();
 				}
+				String color = getColor();
+				table.setColor(1, row, color);
+				table.setColor(2, row, color);
+				table.setColor(3, row, color);
 				table.add(info, 1, row);
 				table.add(from.getDateString("dd-MM-yyyy"), 2, row);
 				if (to != null) {
@@ -151,31 +253,8 @@ public class MemberOverview extends Block {
 				}
 				row++;
 			}
-			
-			return table;
-		} else {
-			return null;
 		}
-	}
-	
-	private PresentationObject getMemberRegistrationStatus() {
-		try {
-			List memberInfo = _data.getMemberInfo();
-			Table table = new Table(1, memberInfo.size());
-			//table.setBorder(2);
-			table.setCellpadding(2);
-			table.setBorder(2);
-			Iterator miIter = memberInfo.iterator();
-			int row = 1;
-			while(miIter.hasNext()) {
-				String mi = (String) miIter.next();
-				table.add(mi, 1, row++);
-			}
-			return table;
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return row;
 	}
 	
 	public String emptyIfNull(String str) {
@@ -185,8 +264,27 @@ public class MemberOverview extends Block {
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
+	
+	private String getColor() {
+		if(_currentColor == _color1) {
+			_currentColor = _color2;
+		} else {
+			_currentColor = _color1;
+		}
+		return _currentColor;
+	}
+	
+	private void resetColor() {
+		_currentColor = null;
+	}
+	
+	private String _currentColor = null;
+	private String _color1 = "lightgray";
+	private String _color2 = "white";
 		
 	//private Integer _userId = new Integer(338609);
 	//private User _user = null;
 	private MemberGroupData _data = null;
+	
+	private Collator _collator = null;
 }

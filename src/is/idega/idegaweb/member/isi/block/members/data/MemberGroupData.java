@@ -26,9 +26,6 @@ import com.idega.user.data.User;
  */
 public class MemberGroupData {
 	
-	/* A list of Strings with membership info */
-	private List _memberInfo = new ArrayList();
-	
 	public MemberGroupData(User user) {
 		_user = user;
 		Collection parentGroups = user.getParentGroups();
@@ -42,7 +39,7 @@ public class MemberGroupData {
 			}
 			String memberInfo = processGroup(group);
 			if(memberInfo!=null && memberInfo.length()>0) {
-				_memberInfo.add(memberInfo);
+				_memberInfo.add(memberInfo.split(" - "));
 			}
 			buf.setLength(0);
 		}
@@ -75,9 +72,23 @@ public class MemberGroupData {
 	 */
 	private boolean processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
 		if(group == null) return false;
+		
 		String type = group.getGroupType();
 		
 		System.out.println("Checking group " + group.getName() + "-" + group.getPrimaryKey());
+		
+		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
+		if(!isFlock && isFirstGroup) {
+			return false;
+		}
+		
+		boolean isClub = IWMemberConstants.GROUP_TYPE_CLUB.equals(type);
+		if(isClub) {
+			String clubName = group.getName();
+			if(!_clubList.contains(clubName)) {
+				_clubList.add(clubName);
+			}
+		}
 		
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type) ||
@@ -120,6 +131,14 @@ public class MemberGroupData {
 		return (String) _stringByFinalGroup.get(group);
 	}
 	
+	public List getMemberInfo() {
+		return _memberInfo;
+	}
+	
+	public List getClubList() {
+		return _clubList;
+	}
+	
 	/**
 	 * gets the user that the groups in this ISIMemberGroups instance apply to
 	 * @return the user
@@ -128,10 +147,10 @@ public class MemberGroupData {
 		return _user;
 	}
 	
-	public List getMemberInfo() {
-		return _memberInfo;
-	}
-	
+	/* A list of Strings with membership info */
+	private List _memberInfo = new ArrayList();
+	/* A list of Strings with names of clubs user is in */
+	private List _clubList = new ArrayList();
 	private Map _stringByFinalGroup = new HashMap();
 	private User _user;
 	
