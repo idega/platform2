@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleReportBusinessBean.java,v 1.1 2004/10/07 14:54:11 gummi Exp $
+ * $Id: SimpleReportBusinessBean.java,v 1.2 2004/10/13 10:47:40 gummi Exp $
  * Created on 21.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.business.IBOServiceBean;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 14:54:11 $ by $Author: gummi $
+ *  Last modified: $Date: 2004/10/13 10:47:40 $ by $Author: gummi $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleReportBusiness {
 
@@ -45,6 +45,9 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 	
 	
 	public void writeSimpleExcelFile(JRDataSource reportData, String nameOfReport, String filePathAndName, ReportDescription description) throws IOException{
+		if(nameOfReport==null || "".equals(nameOfReport)){
+			nameOfReport = "Report";
+		}
 		HSSFWorkbook wb = new HSSFWorkbook();
 	    HSSFSheet sheet = wb.createSheet(nameOfReport);
 	    int rowIndex = 0;
