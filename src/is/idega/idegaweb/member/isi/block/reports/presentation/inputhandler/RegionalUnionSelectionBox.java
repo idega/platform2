@@ -2,6 +2,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -12,6 +13,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.Group;
  
 /**
  * A presentation object for dynamic reports to choose Leagues from a selectionbox
@@ -51,6 +53,30 @@ public class RegionalUnionSelectionBox extends GroupSelectionBox implements Inpu
 				e.printStackTrace();
 			}
 			return group;
+		}
+		else if(groupID!=null && WorkReportConstants.WR_USER_TYPE_UNION.equals(getUserType())){
+			
+			List groups = new Vector();
+			//only get the connected clubs
+			try {
+				Collection clubGroups = getGroupBusiness(iwc).getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI,"true");
+				
+				if(clubGroups!=null && !clubGroups.isEmpty()){
+					Iterator iter = clubGroups.iterator();
+					while (iter.hasNext()) {
+						Group group = (Group) iter.next();
+						if(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(group.getGroupType())){
+							groups.add(group);
+						}
+					}
+				}
+			}
+			catch (FinderException e) {
+				//nothing found, don't care
+			}
+			
+			return groups;
+			
 		}
 		else{
 			return super.getGroups(iwc);

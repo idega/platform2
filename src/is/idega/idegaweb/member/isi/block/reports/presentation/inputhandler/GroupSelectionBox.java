@@ -7,6 +7,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,10 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.GroupComparator;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.ListUtil;
 /**
  * A presentation object for dynamic reports to choose groups. By default it
  * creates a selectionbox with all groups but subclassing it or using the
@@ -90,9 +93,17 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		try {
 			groupBiz = getGroupBusiness(iwc);
 
-			Collection groups = getGroups(iwc);
+			Collection groupCollection = getGroups(iwc);
+		
 
-			if (groups != null) {
+
+			if (groupCollection != null && !groupCollection.isEmpty()) {
+				//stupid but neccesary
+				List groups = ListUtil.convertCollectionToList(groupCollection);
+				GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
+				groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
+				Collections.sort(groups, groupComparator);//sort alphabetically
+				
 				Iterator iter = groups.iterator();
 				int size = groups.size();
 				while (iter.hasNext()) {
