@@ -1,3 +1,12 @@
 //change all iwme_club_member to general groups
 update ic_group set GROUP_TYPE = 'general' , NAME='Almennir h用ar',DESCRIPTION='' where GROUP_TYPE = 'iwme_club_member'
 update ic_group set GROUP_TYPE = 'general' , NAME='T知abundnir h用ar',DESCRIPTION='' where GROUP_TYPE = 'iwme_club_player'
+
+//change all temporary groups to type iwme_temporary
+update ic_group set group_type='iwme_temporary' where name like 'T知abundinn%'
+
+//change ownership to ISI from super user
+select * from ic_group where group_type like 'iwme_league%'
+select * from ic_permission where ic_group_id=2 and permission_string = 'owner'
+update ic_permission set group_id=4 where group_id=2 and permission_string = 'owner' 
+and permission_context_value not in ('4','5','1795','127','1797','123','125','1800','1798','121','110','1799','122','124','1801')
