@@ -28,6 +28,8 @@ private Table outerTable = new Table(1,3);
 private boolean isAdmin = false;
 private String outerTableWidth = "100%";
 private String outerTableHeight = "100%";
+private String headerFooterColor = "#CCCCCC";
+private String textColor = "#000000";
 
 
 private Text textProxy = new Text();
@@ -135,16 +137,17 @@ public void main(ModuleInfo modinfo)throws Exception{
 
         Text categoryName = new Text(category.getName());
         categoryName.setBold();
+        categoryName.setFontColor(textColor);
         categoryName.setFontSize(3);
         outerTable.add(categoryName,1,1);
-        outerTable.setColor(1,1,"#CCCCCC");
-        outerTable.setColor(1,3,"#CCCCCC");
+        outerTable.setColor(1,1,headerFooterColor);
+        outerTable.setColor(1,3,headerFooterColor);
         outerTable.setAlignment(1,1,"left");
         outerTable.setAlignment(1,2,"center");
         outerTable.setAlignment(1,3,"center");
         outerTable.setWidth(outerTableWidth);
         outerTable.setHeight(outerTableHeight);
-        outerTable.setCellpadding(0);
+        outerTable.setCellpadding(2);
         outerTable.setCellspacing(0);
         outerTable.setBorder(1);
 
@@ -155,16 +158,27 @@ public void main(ModuleInfo modinfo)throws Exception{
 
         outerTable.add(displayCatagory(imageEntity),1,2);
         if( limitNumberOfImages ) {
-          String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages+1)+" af "+imageEntity.length;
+          String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
           Text middleText = new Text(middle);
+          middleText.setBold();
+          middleText.setFontColor(textColor);
 
-          Link back = new Link("Fyrri myndir <<");
+          Text leftText = new Text("Fyrri myndir <<");
+          leftText.setBold();
+
+          Link back = new Link(leftText);
+          back.setFontColor(textColor);
           ifirst = ifirst-numberOfDisplayedImages;
           if( ifirst<0 ) ifirst = 0;
           back.addParameter("iv_first",ifirst);
           back.addParameter("image_catagory_id",category.getID());
 
-          Link forward = new Link(">> Næstu myndir");
+          Text rightText = new Text(">> Næstu myndir");
+          rightText.setBold();
+
+          Link forward = new Link(rightText);
+          forward.setFontColor(textColor);
+
           int inext = ifirst+numberOfDisplayedImages;
           if( inext > imageEntity.length) inext = imageEntity.length-numberOfDisplayedImages;
           forward.addParameter("iv_first",inext);
@@ -234,27 +248,17 @@ private Table displayImage( ImageEntity image ) throws SQLException
 
   if(isAdmin) {
     Table editTable = new Table(5,1);
-    Form imageEdit = new Form("/image/imageadmin.jsp?image_id="+imageId);
-    imageEdit.add(new SubmitButton(view));
-
-    Form imageEdit2 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
-    imageEdit2.add(new SubmitButton(delete));
-
-    Form imageEdit3 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=use");
-    imageEdit3.add(new SubmitButton(use));
-
-    Form imageEdit4 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=copy");
-    imageEdit4.add(new SubmitButton(copy));
-
-    Form imageEdit5 = new Form("/image/imageadmin.jsp?image_id="+imageId+"&action=cut");
-    imageEdit5.add(new SubmitButton(cut));
-
+    Link imageEdit = new Link(delete,"/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
+    Link imageEdit2 = new Link(cut,"/image/imageadmin.jsp?image_id="+imageId+"&action=cut");
+    Link imageEdit3 = new Link(copy,"/image/imageadmin.jsp?image_id="+imageId+"&action=copy");
+    Link imageEdit4 = new Link(view,"/image/imageadmin.jsp?image_id="+imageId);
+    Link imageEdit5 = new Link(use,"/image/imageadmin.jsp?image_id="+imageId+"&action=use");
 
     editTable.add(imageEdit,1,1);
     editTable.add(imageEdit2,2,1);
-    editTable.add(imageEdit3,1,1);
-    editTable.add(imageEdit4,2,1);
-    editTable.add(imageEdit5,1,1);
+    editTable.add(imageEdit3,3,1);
+    editTable.add(imageEdit4,4,1);
+    editTable.add(imageEdit5,5,1);
 
     imageTable.add(editTable, 1, 2);
   }
@@ -333,6 +337,14 @@ public void setNumberInRow(int NumberOfImagesInOneRow){
   this.iNumberInRow = NumberOfImagesInOneRow;
 }
 
+public void setHeaderFooterColor(String headerFooterColor){
+  this.headerFooterColor=headerFooterColor;
+}
+
+public void setTextColor(String textColor){
+  this.textColor=textColor;
+}
+
 public void setMaxImageWidth(int maxImageWidth){
   this.limitImageWidth=true;
   this.maxImageWidth = maxImageWidth;
@@ -341,7 +353,6 @@ public void setMaxImageWidth(int maxImageWidth){
 public void limitImageWidth( boolean limitImageWidth ){
   this.limitImageWidth=true;
 }
-
 
 public void setTableWidth(int width){
   setTableWidth(Integer.toString(width));
