@@ -23,10 +23,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(SCHOOL,"School",true,true,Integer.class,MANY_TO_ONE,School.class);
-    addAttribute(SCHOOLYEAR,"Schoolyear",true,true,String.class,MANY_TO_ONE,SchoolYear.class);
+    addManyToOneRelationship(SCHOOL,"School",School.class);
+    addManyToOneRelationship(SCHOOLYEAR,"Schoolyear",SchoolYear.class);
     addAttribute(TEACHER,"Teacher",true,true,Integer.class);
-    addAttribute(SEASON,"Season",true,true,Integer.class,MANY_TO_ONE,SchoolSeason.class);
+    addManyToOneRelationship(SEASON,"Season",SchoolSeason.class);
     addAttribute(NAME,"Name",true,true,String.class);
   }
   public String getEntityName() {
