@@ -87,7 +87,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			SchoolUser sUser;
 			Iterator iter = coll.iterator();
 			while (iter.hasNext()) {
-				sUser = getSchoolUserHome().findByPrimaryKey(iter.next());	
+				sUser = (SchoolUser)iter.next();	
 				sUser.remove();
 			}
 		}

@@ -182,7 +182,6 @@ public class SchoolUserEditor extends Block {
 		Table contTable = new Table();
 		try {
 			
-			UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 			int cRow = 0;
 			Collection suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
 			if (suTypes != null && !suTypes.isEmpty()) {
@@ -199,7 +198,7 @@ public class SchoolUserEditor extends Block {
 						Table table = new Table();
 						int row = 1;
 						while (userIter.hasNext()) {
-							User hm = uHome.findByPrimaryKey(userIter.next());
+							User hm = (User) userIter.next();
 						
 							int userId = ((Integer) hm.getPrimaryKey()).intValue();
 							if (userId == userToEdit) {
@@ -412,17 +411,12 @@ public class SchoolUserEditor extends Block {
 							table.add(pName, 1, row);
 							if (emails != null) {
 								Email email;
-								EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
 								Iterator iEm = emails.iterator();
 								while (iEm.hasNext()) {
-									try {
-										email = eHome.findByPrimaryKey(iEm.next());
-										TextInput pEmail = new TextInput(semail+"_"+hmId+"_"+email.getPrimaryKey() , email.getEmailAddress() );
-										this.setTextInputStyle(pEmail);
-										table.add(pEmail, 3, row);
-									} catch (FinderException e) {
-										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 3, row);
-									}
+									email = (Email) iEm.next();
+									TextInput pEmail = new TextInput(semail+"_"+hmId+"_"+email.getPrimaryKey() , email.getEmailAddress() );
+									this.setTextInputStyle(pEmail);
+									table.add(pEmail, 3, row);
 									++row;
 								}
 							}
@@ -435,17 +429,12 @@ public class SchoolUserEditor extends Block {
 							row = uRow;
 							if (phones != null) {
 								Phone phone;
-								PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 								Iterator iPh = phones.iterator();
 								while (iPh.hasNext()) {
-									try {
-										phone = pHome.findByPrimaryKey(iPh.next());
-										TextInput pPhone = new TextInput(sphone+"_"+hmId+"_"+phone.getPrimaryKey(), phone.getNumber());
-										this.setTextInputStyle(pPhone);
-										table.add(pPhone, 5, row);
-									} catch (FinderException e) {
-										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 5, row);
-									}
+									phone = (Phone) iPh.next();
+									TextInput pPhone = new TextInput(sphone+"_"+hmId+"_"+phone.getPrimaryKey(), phone.getNumber());
+									this.setTextInputStyle(pPhone);
+									table.add(pPhone, 5, row);
 									++row;
 								}
 							}
@@ -491,6 +480,7 @@ public class SchoolUserEditor extends Block {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace(System.err);
 		}
 //			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_HEADMASTER , _iwrb.getLocalizedString("headmaster","Headmaster"));
 //			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER , _iwrb.getLocalizedString("assistant_headmaster","Assistant headmaster"));
@@ -600,7 +590,6 @@ public class SchoolUserEditor extends Block {
 						Collection phones =	user.getPhones();
 						
 						if (emails != null) {
-							EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
 							user.removeAllEmails();
 							Email email;
 							Iterator iter = emails.iterator();
@@ -608,7 +597,7 @@ public class SchoolUserEditor extends Block {
 								Object prK = iter.next();
 								String sEmail = iwc.getParameter(semail+"_"+hId+"_"+prK);
 								if (sEmail != null && !sEmail.equals("")) {
-									email = eHome.findByPrimaryKey(prK);
+									email = (Email) prK;
 									email.setEmailAddress(sEmail);
 									email.store();	
 									user.addEmail(email);
@@ -617,7 +606,6 @@ public class SchoolUserEditor extends Block {
 						}
 			
 						if (phones != null) {
-							PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 							user.removeAllPhones();
 							Phone phone;
 							Iterator iter = phones.iterator();
@@ -625,7 +613,7 @@ public class SchoolUserEditor extends Block {
 								Object prK = iter.next();
 								String sPhone = iwc.getParameter(sphone+"_"+hId+"_"+prK);
 								if (sPhone != null && !sPhone.equals("")) {
-									phone = pHome.findByPrimaryKey(prK);
+									phone = (Phone) prK;
 									phone.setNumber(sPhone);
 									phone.store();	
 									user.addPhone(phone);
@@ -698,21 +686,21 @@ public class SchoolUserEditor extends Block {
 	}
 
 	/** 
-	 * Owerride me please.
+	 * Override me please.
 	 * @param school School
 	 * @param user User
 	 */
 	protected void postSaveNew(School school, User user, int userType) throws RemoteException{
-		
+
 	}
 
 	/** 
-	 * Owerride me please.
+	 * Override me please.
 	 * @param school School
 	 * @param user User
 	 */
 	protected void postSaveUpdate(School school, User user, int userType) throws RemoteException{
-		
+
 	}
 	
 	private Table mainForm(IWContext iwc) throws RemoteException {
