@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import java.rmi.RemoteException;
@@ -14,6 +15,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -30,6 +33,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	private GroupBusiness groupBiz;
 	private UserBusiness userBiz;
 	private String userType = null;
+	private WorkReportBusiness workBiz = null;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -70,14 +74,19 @@ public class WorkReportWindow extends IWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		iwrb = getResourceBundle(iwc);
-		memBiz = getMemberUserBusiness(iwc);
+		workBiz = getWorkReportBusiness(iwc);
 
 		//sets the type of user making or viewing the reports. union staff, regional union staff, league staff, federation staff or club staff
 		//and then gets the primary key of the correct group
 		Integer groupId = setUserTypeAndReturnGroupId(iwc);
 
 		int year = new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear();
-		String paramWorkReportYear = (String) iwc.getSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+		String paramWorkReportYear = (String) iwc.getParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+		
+		if(paramWorkReportYear==null) {
+			paramWorkReportYear = (String) iwc.getSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
+		}
+		
 		if(paramWorkReportYear!=null) {
 			year  = Integer.parseInt(paramWorkReportYear);
 		}
@@ -143,6 +152,9 @@ public class WorkReportWindow extends IWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
 			}
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
+				Form yearForm = getYearSelectionForm(iwc,year);
+				yearForm.maintainParameter(ACTION);
+				table.add(yearForm,2,1);
 				WorkReportOverView overView = new WorkReportOverView();
 				overView.setYear(year);
 				table.add(overView,2,1);	//not a selector
@@ -152,6 +164,10 @@ public class WorkReportWindow extends IWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW_CLOSE_VIEW)) {
+				Form yearForm = getYearSelectionForm(iwc,year);
+				yearForm.maintainParameter(ACTION);
+				yearForm.maintainParameter(WorkReportOverViewCloseView.CLOSE_VIEW_WORK_REPORT_ID);
+				table.add(yearForm,2,1);
 				WorkReportOverViewCloseView closeView = new WorkReportOverViewCloseView();
 				closeView.setYear(year);
 				table.add(closeView,2,1);	//not a selector
@@ -186,37 +202,58 @@ public class WorkReportWindow extends IWAdminWindow {
 		}
 	}
 
+	private Form getYearSelectionForm(IWContext iwc, int year) throws RemoteException {
+		Form form = new Form();
+		Table table = new Table(2,1);
+		table.setColor(this.COLOR_MIDDLE);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setAlignment(1,1,Table.HORIZONTAL_ALIGN_LEFT);
+		table.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		
+		Text yearText = new Text(Integer.toString(year),true,false,false);
+		table.add(yearText,1,1);
+		
+		DropdownMenu yearSelector = getWorkReportBusiness(iwc).getYearDropdownMenu(year);
+		yearSelector.setToSubmit();
+		table.add(yearSelector,2,1);
+		
+		form.add(table);
+		
+	
+		return form;
+	}
+
 	//searches the current users top nodes to figure out who he is. 
 	//TODO Eiki CHANGE TO ROLES and optimize?
 	private Integer setUserTypeAndReturnGroupId(IWContext iwc) {
 		User user = iwc.getCurrentUser();
 
 		try {
-			List union = getMemberUserBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
+			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!union.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_UNION;
 				return null;
 			}
 
-			List federation = getMemberUserBusiness(iwc).getFederationListForUserFromTopNodes(user, iwc); //should only be one
+			List federation = getWorkReportBusiness(iwc).getFederationListForUserFromTopNodes(user, iwc); //should only be one
 			if (!federation.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
 				return null;
 			}
 
-			List club = getMemberUserBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
+			List club = getWorkReportBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
 			if (!club.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
 				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
 			}
 
-			List regional = getMemberUserBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
+			List regional = getWorkReportBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
 			if (!regional.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
 				return ((Integer) ((Group)regional.iterator().next()).getPrimaryKey());
 			}
 
-			List leagues = getMemberUserBusiness(iwc).getLeaguesListForUserFromTopNodes(user, iwc); //should only be one
+			List leagues = getWorkReportBusiness(iwc).getLeaguesListForUserFromTopNodes(user, iwc); //should only be one
 			if (!leagues.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
 				return ((Integer) ((Group)leagues.iterator().next()).getPrimaryKey());
@@ -380,17 +417,19 @@ public class WorkReportWindow extends IWAdminWindow {
 		return menu;
 	}
 
-	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
-		if (memBiz == null) {
+
+	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
+		if (workBiz == null) {
 			try {
-				memBiz = (MemberUserBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc, MemberUserBusiness.class);
+				workBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
 			}
 			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return memBiz;
+		return workBiz;
 	}
+
 
 	public String getBundleIdentifier() {
 		return this.IW_BUNDLE_IDENTIFIER;
