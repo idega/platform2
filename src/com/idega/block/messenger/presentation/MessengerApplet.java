@@ -94,14 +94,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
 
     try {
-        //faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-        Image face = getImage(getCodeBase(),"face_in.gif");
-        prepareImage(face, this);
-        faceLabel = new ImageLabel(face);
+
+        faceLabel = new ImageLabel(getCodeBase(),"face_in.gif");
         System.out.println("CODEBASE = "+getCodeBase());
-        Image logo = getImage(getCodeBase(),"idegalogo.gif");
-        logoLabel = new ImageLabel(logo);
-        prepareImage(logo, this);
+        logoLabel = new ImageLabel(getCodeBase(),"idegalogo.gif");
         //alertSound = getAudioClip(getCodeBase(),"notify.wav");
 
       }
@@ -383,6 +379,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       item.repaint();
       add(item);
+      doLayout();
 
       repaint();
 
