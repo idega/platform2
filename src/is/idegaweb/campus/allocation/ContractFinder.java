@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.8 2001/08/19 16:45:41 aron Exp $
+ * $Id: ContractFinder.java,v 1.9 2001/08/20 22:09:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,8 @@ import java.util.List;
 import com.idega.data.EntityFinder;
 import java.util.Vector;
 import java.util.Hashtable;
+import com.idega.core.user.data.User;
+import com.idega.block.application.data.Applicant;
 
 /**
  *
@@ -211,6 +213,42 @@ public abstract class ContractFinder {
     if(count < 0)
       count = 0;
     return count;
+  }
+
+  public static Applicant findApplicant(User eUser){
+    Applicant eApplicant = null;
+    StringBuffer sql = new StringBuffer("select a.* from app_applicant a,cam_contract c");
+    sql.append(" where c.app_applicant_id = a.app_applicant_id ");
+    sql.append(" and c.ic_user_id =  ");
+    sql.append(eUser.getID());
+    try {
+      List L = EntityFinder.findAll(new Applicant(),sql.toString());
+      if(L!= null)
+        eApplicant = (Applicant) L.get(0);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      eApplicant = null;
+    }
+    return eApplicant;
+  }
+
+  public static User findApplicant(Applicant eApplicant){
+    User eUser = null;
+    StringBuffer sql = new StringBuffer("select u.* from ic_user a,cam_contract c");
+    sql.append(" where c.app_applicant_id = a.app_applicant_id ");
+    sql.append(" and c.app_applicant_id =  ");
+    sql.append(eApplicant.getID());
+    try {
+      List L = EntityFinder.findAll(new User(),sql.toString());
+      if(L!= null)
+        eUser = (User) L.get(0);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      eUser = null;
+    }
+    return eUser;
   }
 }
 

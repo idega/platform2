@@ -722,7 +722,7 @@ public class CampusAllocator extends ModuleObjectContainer{
 
   private User makeNewUser(Applicant eApplicant){
     User U = new User();
-    U.setDisplayName(eApplicant.getFullName());
+    //U.setDisplayName(eApplicant.getFullName());
     U.setFirstName(eApplicant.getFirstName());
     U.setMiddleName(eApplicant.getMiddleName());
     U.setLastName(eApplicant.getLastName());
