@@ -59,13 +59,13 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
             final Group rootGroup = getRootCitizenGroup();
             final UserBusiness business = getUserBusiness();
 
-            System.out.println ("firstname='" + firstname + "'\n" +
+           /* System.out.println ("firstname='" + firstname + "'\n" +
                                 "middlename='" + middlename + "'\n" +
                                 "lastname='" + lastname + "'\n" +
                                 "personalID='" + personalID + "'\n" +
                                 "gender='" + gender + "'\n" +
                                 "dateOfBirth='" + dateOfBirth + "'\n" +
-                                "rootGroup='" + rootGroup + "'\n");
+                                "rootGroup='" + rootGroup + "'\n");*/
 
 			newUser = business.createUser (firstname, middlename, lastname,
                                            personalID, gender, dateOfBirth,
@@ -87,9 +87,9 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	}
 
 	public User createCitizenByPersonalIDIfDoesNotExist
-        (final String firstName, final String middleName, final String lastName,
-         final String personalID, final Gender gender,
-         final IWTimestamp dateOfBirth)
+        (String firstName, String middleName, String lastName,
+         String personalID, Gender gender,
+         IWTimestamp dateOfBirth)
 		throws CreateException, RemoteException {
 
 		User user = null;
@@ -97,14 +97,32 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
             final UserBusiness business = getUserBusiness();
             final UserHome home = business.getUserHome();
 			user = home.findByPersonalID (personalID);
+		
+			//update if found
+			
+			StringBuffer fullName = new StringBuffer();
+
+	  		firstName = (firstName==null) ? "" : firstName;
+	  		middleName = (middleName==null) ? "" : middleName;
+	  		lastName = (lastName==null) ? "" : lastName;
+	
+	  		fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
+
+			user.setFullName(fullName.toString());
+      		user.setGender( (Integer)gender.getPrimaryKey() );
+      		user.setDateOfBirth(dateOfBirth.getDate());
+      		user.store();
+			
+			
+			
         } catch (final FinderException e) {
-            // nothing, since the case of "not find" is in finally clause
-        } finally {
-            if (user == null) {
-                user = createCitizen (firstName, middleName, lastName,
-                                      personalID, gender, dateOfBirth);
+        	//create a new user
+          	if (user == null) {
+            	user = createCitizen (firstName, middleName, lastName,personalID, gender, dateOfBirth);
             }
-        }
+        } 
+        
+        
 		return user;
 	}
 
