@@ -16,7 +16,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -265,7 +264,9 @@ public class Medication extends EHealthBlock {
 		table.setHeight(1, 1, "25");
 			
 		DropdownMenu dropShow = (DropdownMenu) getStyledInterface(new DropdownMenu(prmShow));
-		dropShow.addMenuElementFirst("1", "Visa");
+		dropShow.addMenuElementFirst("1", "Visa alla");
+		dropShow.addMenuElement("2", "Visa aktuella");
+		dropShow.addMenuElement("3", "Visa utgångna");
 
 		table.add(dropShow, 1, 1);
 		table.add(new Break(2), 1, 1);
@@ -309,15 +310,17 @@ public class Medication extends EHealthBlock {
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		
 		table.setWidth(2, 1, "20");
-				
 		
 		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass >")));
+		fass.setPageToOpen(1865);
 		
-		Link fassLink = new Link("linkFass", localize(prmLinkFass, "Link to Fass >"));
+		/*Link fassLink = new Link("linkFass", localize(prmLinkFass, "Link to Fass >"));
 		fassLink.setURL("http://www.fass.se");
 		fassLink.setTarget("_new");
 		fassLink.setAsImageButton(true);
+		fassLink.setCSSClass("lul_form");
 		table.add(fassLink, 1, 1);
+		*/
 		table.add(fass, 2, 1);
 		
 		

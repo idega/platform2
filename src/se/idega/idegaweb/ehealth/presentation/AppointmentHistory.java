@@ -46,7 +46,8 @@ public class AppointmentHistory extends EHealthBlock {
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
 	
-	
+	private String keyFrom = prefix + "from";
+	private String keyTo = prefix + "to";
 	
 	IWContext _iwc = null;
 
@@ -231,7 +232,7 @@ public class AppointmentHistory extends EHealthBlock {
 	
 	private Table getSearchSortTable(){
 		
-		Table table = new Table(3, 3);
+		Table table = new Table(3, 4);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setBorder(0);
@@ -240,10 +241,12 @@ public class AppointmentHistory extends EHealthBlock {
 		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
 		
 		table.setHeight(1, 1, "25");
 		table.setHeight(1, 2, "25");
 		table.setHeight(1, 3, "25");
+		table.setHeight(1, 4, "25");
 		table.setWidth(2, 1, "20");
 	
 		IWTimestamp stamp = new IWTimestamp();
@@ -255,7 +258,7 @@ public class AppointmentHistory extends EHealthBlock {
 		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 			
 		DropdownMenu dropHCentre = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
-		dropHCentre.addMenuElementFirst("-1", "Alla");
+		dropHCentre.addMenuElementFirst("-1", "Alla vårdenheter");
 		dropHCentre.addMenuElement("1", "Gimo VC");
 		dropHCentre.addMenuElement("2", "Östhammar VC");
 		dropHCentre.addMenuElement("3", "Alunda VC");
@@ -269,10 +272,14 @@ public class AppointmentHistory extends EHealthBlock {
 	
 		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
 		
-		table.add(from, 1, 1);
-		table.add(to, 3, 1);
-		table.add(dropHCentre, 1, 2);
-		table.add(search, 1, 3);
+		
+		table.add(getSmallHeader(localize(keyFrom, "From")+": "), 1, 1);
+		table.add(from, 1, 2);
+		table.add(getSmallHeader(localize(keyTo, "To")+": "), 3, 1);
+		table.add(to, 3, 2);
+	
+		table.add(dropHCentre, 1, 3);
+		table.add(search, 1, 4);
 		
 		return table;
 	}

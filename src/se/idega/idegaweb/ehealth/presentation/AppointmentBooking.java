@@ -80,7 +80,7 @@ public class AppointmentBooking extends EHealthBlock {
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		
-		Table table = new Table(1, 12);
+		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setBorder(0);

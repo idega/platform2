@@ -262,11 +262,11 @@ public class Referrals extends EHealthBlock {
 		
 		
 		DropdownMenu dropType = (DropdownMenu) getStyledInterface(new DropdownMenu(prmType));
-		dropType.addMenuElementFirst("1", "Alla");
+		dropType.addMenuElementFirst("1", "Alla typer av remisser");
 		dropType.addMenuElement("2", "Konsultation");
-		dropType.addMenuElement("3", "Klinisk kemi - laboratorieprov");
+		dropType.addMenuElement("3", "Klinisk kemi");
 		dropType.addMenuElement("4", "Röntgen");
-		dropType.addMenuElement("5", "Bakt/Pat/Cyt");
+		dropType.addMenuElement("5", "Övriga lab");
 			
 		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
 		
