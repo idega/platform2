@@ -604,7 +604,9 @@ private int _layout = RADIO_BUTTON_VIEW;
     if( returnString == null ) returnString = "";
     else {
       returnString+= iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION);
+      setCacheable(false);
       invalidateCache(iwc);
+
     }
     return  cacheStatePrefix+String.valueOf(PollBusiness.canVote(iwc,_pollID))+returnString;
   }
