@@ -70,7 +70,7 @@ public class ChildCareAdmin extends ChildCareBlock {
         table.setWidth(getWidth());
         table.setHeight(2, 12);
         //table.setHeight(4, 3);
-        //table.setHeight(6, 6);
+        table.setHeight(6, 6);
         table.setHeight(4, 6);
         table.setCellpadding(0);
         table.setCellspacing(0);
@@ -79,9 +79,9 @@ public class ChildCareAdmin extends ChildCareBlock {
         table.add(getSortTable(), 1, 1);
         //table.add(getNavigator(iwc), 1, 3);
         //table.add(getApplicationTable(iwc), 1, 5);
-        //table.add(getLegendTable(true), 1, 7);
-        table.add(getApplicationTable(iwc), 1, 3);
-        table.add(getLegendTable(true), 1, 5);
+        table.add(getLegendTable(true), 1, 3);
+        table.add(getApplicationTable(iwc), 1, 5);
+        table.add(getLegendTable(true), 1, 7);
     }
 
 	
