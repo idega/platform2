@@ -54,6 +54,9 @@ public class Quote extends Block implements Builderaware {
 	protected IWBundle _iwb;
 	
 	private boolean _alwaysFetchFromDatabase = false;
+	private boolean _showAuthor = true;
+	private boolean _showOrigin = true;
+	private boolean _showQuotes = true;
 
 	public Quote() {
 		setDefaultValues();
@@ -108,7 +111,13 @@ public class Quote extends Block implements Builderaware {
 			if ( this.originStyle_ != null )
 				quoteOrigin.setStyleAttribute(originStyle_);
 			
-			Text quoteText = getStyleText("\"" + TextSoap.formatText(textString) + "\"", QUOTE_STYLE_NAME);
+			Text quoteText = null;
+			if (_showQuotes) {
+				quoteText = getStyleText("\"" + TextSoap.formatText(textString) + "\"", QUOTE_STYLE_NAME);
+			}
+			else {
+				quoteText = getStyleText(TextSoap.formatText(textString), QUOTE_STYLE_NAME);
+			}
 			quoteText.setHorizontalAlignment(alignment_);
 			if ( this.quoteStyle_ != null )
 				quoteText.setStyleAttribute(quoteStyle_);
@@ -117,7 +126,7 @@ public class Quote extends Block implements Builderaware {
 			if ( this.authorStyle_ != null )
 				quoteAuthor.setStyleAttribute(authorStyle_);
 
-			if (originString != null && originString.length() > 0) {
+			if (_showOrigin && originString != null && originString.length() > 0) {
 				table.add(quoteOrigin, 1, 1);
 				table.add(quoteText, 1, 2);
 				table.add(quoteAuthor, 1, 3);
@@ -129,7 +138,9 @@ public class Quote extends Block implements Builderaware {
 				table.setVerticalAlignment(1, 1, "middle");
 
 				table.add(quoteText, 1, 1);
-				table.add(quoteAuthor, 1, 3);
+				if (_showAuthor) {
+					table.add(quoteAuthor, 1, 3);
+				}
 			}
 		}
 		else {
@@ -340,4 +351,24 @@ public class Quote extends Block implements Builderaware {
 		_alwaysFetchFromDatabase = fetchFromDatabase;
 	}
 
+	/**
+	 * @param author The _showAuthor to set.
+	 */
+	public void setShowAuthor(boolean author) {
+		_showAuthor = author;
+	}
+	
+	/**
+	 * @param origin The _showOrigin to set.
+	 */
+	public void setShowOrigin(boolean origin) {
+		_showOrigin = origin;
+	}
+	
+	/**
+	 * @param quotes The _showQuotes to set.
+	 */
+	public void setShowQuotes(boolean quotes) {
+		_showQuotes = quotes;
+	}
 }
