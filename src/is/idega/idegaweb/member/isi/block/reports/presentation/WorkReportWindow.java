@@ -119,7 +119,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		Table table = new Table(2, 1);
 		table.setWidthAndHeightToHundredPercent();
 		table.setColumnColor(1, COLOR_LIGHTEST);
-		table.setColumnWidth(1, "220");
+		table.setColumnWidth(1, "240");
 		table.setRowHeight(1, Table.HUNDRED_PERCENT);
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
