@@ -250,7 +250,7 @@ public class InvoiceBusinessBean implements Runnable{
 	}
 	
 	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String header) throws CreateException, PostingParametersException, RemoteException{
-		String ownPosting, doublePosting, providerOwnPosting, providerDoublePosting;
+		String ownPosting, doublePosting;
 
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
