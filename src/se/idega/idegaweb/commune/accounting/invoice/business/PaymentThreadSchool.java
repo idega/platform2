@@ -57,11 +57,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/10 14:52:23 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/11 07:40:07 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -137,7 +137,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							try{
                                 SchoolClassMember schoolClassMember = null;
                                 schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
-                                billSchoolClassMember(regBus, provider, schoolClassMember);
+                                craetePaymentForSchoolClassMember(regBus, provider, schoolClassMember);
 							} catch(NullPointerException e){
 								e.printStackTrace();
 								createNewErrorMessage("invoice.PaymentSchool","invoice.nullpointer");
@@ -240,7 +240,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 	
-	private void billSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember) throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
+	private void craetePaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember) throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
 		ArrayList conditions;
 		PostingDetail postingDetail;
 		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
