@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.45 2003/11/26 16:21:06 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.46 2003/12/03 18:02:09 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -273,6 +273,52 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			);
 			if (pp == null) {			
 				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Sökt parameter hittades ej");
+			}
+			
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+		return pp;
+	}	
+
+	/**
+	 * Slight mutation of the function above, to reflect what I think the function is supposed to do
+	 * (JJ)
+	 * @param date
+	 * @param act_id
+	 * @param reg_id
+	 * @param com_id
+	 * @param com_bel_id
+	 * @param schoolYear1_id
+	 * @return
+	 * @throws PostingParametersException
+	 */
+	public PostingParameters getPostingParameter(Date date, int act_id, 
+			int reg_id, String com_id, int com_bel_id, int schoolYear1_id) throws PostingParametersException {
+		logDebug("date: " + date);				
+		logDebug("act_id: " + act_id);				
+		logDebug("reg_id: " + reg_id);				
+		logDebug("com_id: " + com_id);				
+		logDebug("com_bel_id: " + com_bel_id);				
+		logDebug("schoolYear1_id: " + schoolYear1_id);
+		
+		PostingParameters pp = null;
+		
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			
+			pp = home.findPostingParameter(
+					date, 
+					act_id,
+					reg_id, 
+					com_id, 
+					com_bel_id, 
+					schoolYear1_id
+			);
+			if (pp == null) {
+				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
 			}
 			
 		} catch (RemoteException e) {
@@ -732,6 +778,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return the Posting strings as String[]
 	 */
 	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date) throws PostingException{
+		return getPostingStrings(category, type, regSpecType, provider, date, null);
+	}
+
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, String schoolYear) throws PostingException{
 		
 		if (type == null){
 			throw new PostingException("postingException.missing_school_tpe", "No school type found");
@@ -752,15 +802,19 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			//Set the posting strings
 	
 			PostingParameters parameters;
-			parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue());
-			System.out.println("Parameters:"+parameters.getPostingString()+"+"+parameters.getDoublePostingString()+".");
-			System.out.println("Parameters:"+provider.getOwnPosting()+"+"+provider.getDoublePosting()+".");
-			System.out.println("Parameters:"+categoryPosting.getAccount()+"+"+categoryPosting.getCounterAccount()+".");
+			int year = 0;
+			if(schoolYear!=null){
+				year = parseYear(schoolYear);
+			}
+			parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), year);
+//			System.out.println("Parameters:"+parameters.getPostingString()+"+"+parameters.getDoublePostingString()+".");
+//			System.out.println("Parameters:"+provider.getOwnPosting()+"+"+provider.getDoublePosting()+".");
+//			System.out.println("Parameters:"+categoryPosting.getAccount()+"+"+categoryPosting.getCounterAccount()+".");
 	
 			ownPosting = parameters.getPostingString();
-			logDebug("ownPosting1: " + ownPosting);
+//			logDebug("ownPosting1: " + ownPosting);
 			ownPosting = generateString(ownPosting, provider.getOwnPosting(), date);
-			logDebug("ownPosting2: " + ownPosting);			
+//			logDebug("ownPosting2: " + ownPosting);			
 			ownPosting = generateString(ownPosting, categoryPosting.getAccount(), date);
 			logDebug("ownPosting3: " + ownPosting);				
 			validateString(ownPosting,date);
@@ -791,7 +845,21 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		return new String[] {ownPosting, doublePosting};
 	}	
 
-	
+	private int parseYear(String year){
+		int ret = 0;
+		
+		for(int i=0;i<year.length();i++){
+			char c = year.charAt(i);
+			try{
+				int t = Integer.parseInt(""+c);
+				ret *= 10;
+				ret+=t;
+			}catch(NumberFormatException e){
+				//Don't worry, be happy
+			}
+		}
+		return ret;
+	}
 
 	protected PostingParametersHome getPostingParametersHome() throws RemoteException {
 		return (PostingParametersHome) com.idega.data.IDOLookup.getHome(PostingParameters.class);

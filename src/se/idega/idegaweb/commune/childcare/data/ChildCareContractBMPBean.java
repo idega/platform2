@@ -330,7 +330,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 
 	public Collection ejbFindByDateRange(Date startDate, Date endDate) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
+		sql.appendSelect().append(" distinct a.* from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
 		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
 		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
 		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);

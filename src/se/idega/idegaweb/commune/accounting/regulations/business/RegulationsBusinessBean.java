@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.81 2003/12/02 19:45:47 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.82 2003/12/03 18:02:10 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1724,7 +1724,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 			}
 			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
-
+				ret = new PostingDetail();
+				ret.setAmount(reg.getAmount().floatValue());
+				ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+				ret.setTerm("Palli will fix this...");
+				ret.setVat(32.0f);
+				ret.setVatRegulationID(1);
 			}
 		}
 		else {

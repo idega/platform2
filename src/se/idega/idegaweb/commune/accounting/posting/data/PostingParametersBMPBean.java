@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.21 2003/12/03 13:16:16 laddi Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.22 2003/12/03 18:02:10 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.21 2003/12/03 13:16:16 laddi Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.22 2003/12/03 18:02:10 joakim Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -323,6 +323,67 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		if (school_year_id2 > 0) {
 			sql.appendAndEquals(COLUMN_SCHOOL_YEAR2_ID, school_year_id2);
 		}
+		return idoFindOnePKByQuery(sql);
+	}
+
+	/**
+	 * Small mutation of the function above, to reflect what I think that it really is supposed to do.
+	 * (JJ)
+	 * @param date
+	 * @param act_id
+	 * @param reg_id
+	 * @param com_id
+	 * @param com_bel_id
+	 * @param school_year_id
+	 * @return
+	 * @throws FinderException
+	 */
+	public Object ejbFindPostingParameter(
+			Date date, 
+			int act_id, 
+			int reg_id, 
+			String com_id, 
+			int com_bel_id,
+			int school_year
+		 ) throws FinderException {
+		IDOQuery sql = idoQuery();
+
+		sql.appendSelectAllFrom(this);
+
+		if (date != null) {
+			sql.appendWhere(COLUMN_PERIODE_FROM);
+			sql.appendLessThanOrEqualsSign().append("'"+date+"'");
+			sql.appendAnd().append(COLUMN_PERIODE_TO);
+			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		} else {
+			return null;
+		}
+
+		if (act_id > 0) {
+			sql.appendAndEquals(COLUMN_ACTIVITY_ID, act_id);
+		}
+
+		if (reg_id > 0) {
+			sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID, reg_id);
+		}
+
+		if (com_id != null) {
+			if (com_id.length() != 0) {
+				sql.appendAndEqualsQuoted(COLUMN_COMPANY_TYPE, com_id);
+			}
+		}
+
+		if (com_bel_id > 0) {
+			sql.appendAndEquals(COLUMN_COMMUNE_BELONGING_ID, com_bel_id);
+		}
+
+		if (school_year > 0) {
+			sql.appendWhere(COLUMN_SCHOOL_YEAR1_ID);
+			sql.appendLessThanOrEqualsSign().append("'"+school_year+"'");
+			sql.appendAnd().append(COLUMN_SCHOOL_YEAR2_ID);
+			sql.appendGreaterThanOrEqualsSign().append("'"+school_year+"'");
+		}
+
 		return idoFindOnePKByQuery(sql);
 	}
 

@@ -133,6 +133,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				custodian = contract.getApplication().getOwner();
 				//**Fetch the reference at the provider
 				school = contract.getApplication().getProvider();
+				log.info("School = "+school);
 				// **Get or create the invoice header
 				InvoiceHeader invoiceHeader;
 				try{
@@ -186,29 +187,22 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
 						employment = employmentType.getLocalizationKey();
 					}
-
 					log.info("\n School type: "+childcareType+
 						"\n Hours "+hours+
 						"\n Years "+age.getYears()+
 						"\n Emplyment "+employment);
-//					conditions.add(new ConditionParameter(IntervalConstant.ACTIVITY,childcareType));
-//					conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
-//					conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
-	
 					//Select a specific row from the regulation, given the following restrictions
-					// TODO Auto-generated catch block
 					log.info("Getting posting detail for:\n" +
-					"  Category:"+category.getCategory()+"\n"+
-					"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
-					"  currentDate:"+currentDate+"\n"+
-					"  RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"\n"+
-					"  RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"\n"+
-					"  conditions:"+conditions.size()+"\n"+
-					"  totalSum:"+totalSum+"\n"+
-					"  contract:"+contract.getPrimaryKey()+"\n"
+						"  Category:"+category.getCategory()+"\n"+
+						"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
+						"  currentDate:"+currentDate+"\n"+
+						"  RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"\n"+
+						"  RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"\n"+
+						"  conditions:"+conditions.size()+"\n"+
+						"  totalSum:"+totalSum+"\n"+
+						"  contract:"+contract.getPrimaryKey()+"\n"
 						);
-					postingDetail = regBus.
-					getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 						category.getCategory(),//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.OUT, 	//The payment flow is out
 						currentDate,					//Current date to select the correct date range
@@ -220,13 +214,15 @@ public class InvoiceChildcareThread extends BillingThread{
 					if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
-					System.out.println("RuleSpecType: "+postingDetail.getTerm());
+					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
-					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
-							findByRegulationSpecType(RegSpecConstant.CHECK);
-					String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
+					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
+					String[] postings = getPostingBusiness().getPostingStrings(
+						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
+					log.info("About to create payment record check");
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1]);			//MUST create payment record first, since it is used in invoice record
+					log.info("created payment record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, postings[0], postings[1]);
@@ -247,48 +243,51 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions								//The conditions that need to fulfilled
 						);
 
+					log.info("Found "+regulationArray.size()+" regulations that apply.");
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
 						try {
-						Regulation regulation = (Regulation)regulationIter.next();
-						log.info("regulation "+regulation.getName());
-						postingDetail = regBus.getPostingDetailForContract(
-							totalSum,
-							contract,
-							regulation,
-							startPeriod.getDate(),
-							conditions);
-							
-						if(postingDetail==null){
-							log.warning("Posting detail is null!"+
-							"\n tot sum "+totalSum+
-							"\n contract "+contract.getPrimaryKey()+
-							"\n regulation "+regulation.getName()+
-							"\n start period "+startPeriod.toString()+
-							"\n # of conditions"+conditions.size());
-							throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
+							Regulation regulation = (Regulation)regulationIter.next();
+							log.info("regulation "+regulation.getName());
+							postingDetail = regBus.getPostingDetailForContract(
+								totalSum,
+								contract,
+								regulation,
+								startPeriod.getDate(),
+								conditions);
+								
+							if(postingDetail==null){
+								log.warning("Posting detail is null!"+
+								"\n tot sum "+totalSum+
+								"\n contract "+contract.getPrimaryKey()+
+								"\n regulation "+regulation.getName()+
+								"\n start period "+startPeriod.toString()+
+								"\n # of conditions"+conditions.size());
+								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
+							}
+	
+							// **Create the invoice record
+							//TODO (JJ) get these strings from the postingDetail instead.
+							System.out.println("Regspectyp: "+postingDetail.getRuleSpecType());
+							System.out.println("Regspectyp: "+regulation.getRegSpecType().getLocalizationKey());
+							System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
+	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
+							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
+	
+							//Need to store the subvention row, so that it can be adjusted later if needed					
+							if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
+								subvention = invoiceRecord;
+							}
+							totalSum += postingDetail.getAmount()*months;
+							}
+							catch (BruttoIncomeException e) {
+								//Who cares!!!
+							}catch (RegulationException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingRegulation");
 						}
-
-						// **Create the invoice record
-						//TODO (JJ) get these strings from the postingDetail instead.
-						System.out.println("Regspectyp: "+postingDetail.getRuleSpecType());
-						System.out.println("Regspectyp: "+regulation.getRegSpecType().getLocalizationKey());
-						System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
-//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-						postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
-						invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
-
-						//Need to store the subvention row, so that it can be adjusted later if needed					
-						if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
-							subvention = invoiceRecord;
-						}
-						totalSum += postingDetail.getAmount()*months;
-						}
-						catch (BruttoIncomeException e) {
-							//Who cares!!!
-						}
-						
 					}
 					//Make sure that the sum is not less than 0
 					if(totalSum<0){
@@ -566,7 +565,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//If sibling don't have a childcare contract we just ignore it
 					} catch (NullPointerException e) {
 						//If sibling doesn't have an address or contract, it won't be counted in the sibling order
-						e.printStackTrace();
+						createNewErrorMessage(contract.getChild().getName(),"invoice.ChildHasNoAddress");
 					}
 				}
 			} catch (RemoteException e2) {
