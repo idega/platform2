@@ -642,12 +642,12 @@ public class PublicBooking extends Block  {
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
 
-/*      ++row;
+      ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.comment","Comment")),1,row);
       table.add(getBoldTextWhite(comment),2,row);
-*/
+
       ++row;
 
       float price = 0;
