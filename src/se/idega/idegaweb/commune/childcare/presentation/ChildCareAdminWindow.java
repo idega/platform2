@@ -617,8 +617,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dateInput, 1, row++);
 		if (oldPlacementTerminated) {
 			table.add(getSmallHeader(localize("child_care.old_placement_terminated", "Old placement terminated") + ":"), 1, row);
-			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(getSmallErrorText(terminationDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(getSmallErrorText(terminationDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 1, row);
+			table.add(new Break(2), 1, row);
 		}
 
 		if (isAlteration) {
@@ -668,6 +669,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 		
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		
 		boolean hasBankId = false;
 
 		hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
