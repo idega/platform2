@@ -11,6 +11,7 @@ import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.block.poll.data.*;
+import com.idega.core.data.ICObjectInstance;
 import com.idega.block.poll.business.*;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.LocalizedText;
@@ -40,10 +41,12 @@ private boolean _newObjInst = false;
 private boolean _newWithAttribute = false;
 private String _parameterString;
 private String _styleAttribute;
+private String _questionStyleAttribute;
 
 private String _pollWidth;
 private int _numberOfShownPolls;
 private boolean _showVotes;
+private boolean _showCollection;
 
   public Poll(){
     setDefaultValues();
@@ -76,7 +79,7 @@ private boolean _showVotes;
       _myTable.setBorder(0);
       _myTable.setWidth(_pollWidth);
 
-    if(_pollID < 0){
+    if(_pollID <= 0){
       String sPollID = modinfo.getParameter(_prmPollID);
       if(sPollID != null)
         _pollID = Integer.parseInt(sPollID);
@@ -84,8 +87,13 @@ private boolean _showVotes;
         _pollID = PollFinder.getObjectInstanceID(getICObjectInstance());
         if(_pollID <= 0 ){
           _newObjInst = true;
+          PollBusiness.savePoll(_pollID,-1,getICObjectInstanceID(),null);
         }
       }
+    }
+
+    if ( _newObjInst ) {
+      _pollID = PollFinder.getObjectInstanceID(new ICObjectInstance(getICObjectInstanceID()));
     }
 
     if(_pollID > 0) {
@@ -125,7 +133,7 @@ private boolean _showVotes;
     LocalizedText locText = null;
     PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
     Image submitImage = _iwrb.getImage("vote.gif");
-    Image formerPollsImage = _iwrb.getImage("former_polls.gif");
+    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
 
     if(pollQuestion != null){
       locText = TextFinder.getLocalizedText(pollQuestion,_iLocaleID);
@@ -135,17 +143,19 @@ private boolean _showVotes;
 			Form form = new Form();
         form.setWindowToOpen(PollResult.class);
 
-      Table pollTable = new Table(1,3);
+      Table pollTable = new Table(2,3);
 				pollTable.setCellpadding(5);
 				pollTable.setCellspacing(0);
+        pollTable.mergeCells(1,1,2,1);
+        pollTable.mergeCells(1,2,2,2);
 				pollTable.setWidth(_pollWidth);
 				pollTable.setAlignment(1,1,"center");
-				pollTable.setAlignment(1,3,"right");
+				pollTable.setAlignment(2,3,"right");
 			form.add(pollTable);
 
       Text question = new Text(locText.getHeadline());
-        question.setBold();
-        question.setFontSize(2);
+        question.setFontStyle(_questionStyleAttribute);
+
       pollTable.add(question,1,1);
 
       RadioGroup radioGroup = new RadioGroup(PollBusiness._PARAMETER_POLL_ANSWER);
@@ -158,7 +168,7 @@ private boolean _showVotes;
           LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
           if ( locAnswerText != null ) {
             hasAnswers = true;
-            radioGroup.addRadioButton(answers[a].getID(),new Text(locAnswerText.getHeadline()),false);
+            radioGroup.addRadioButton(answers[a].getID(),new Text(locAnswerText.getHeadline()),false,_styleAttribute,_styleAttribute);
           }
         }
       }
@@ -171,9 +181,30 @@ private boolean _showVotes;
         pollTable.add(radioGroup,1,2);
       }
 
-      pollTable.add(new SubmitButton(submitImage),1,3);
+      Link collectionLink = new Link(olderPollsImage);
+        collectionLink.setWindowToOpen(PollResult.class);
+        collectionLink.addParameter(Poll._prmPollID,_pollID);
+        collectionLink.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
+        collectionLink.addParameter(Poll._prmNumberOfPolls,_numberOfShownPolls);
+        if ( _showVotes ) {
+          collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
+        }
+        else {
+          collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
+        }
+
+      if ( _showCollection ) {
+        pollTable.add(collectionLink,1,3);
+      }
+      pollTable.add(new SubmitButton(submitImage),2,3);
       pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE));
       pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestion.getID())));
+      if ( _showVotes ) {
+        pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE));
+      }
+      else {
+        pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE));
+      }
 
       return form;
     }
@@ -185,8 +216,11 @@ private boolean _showVotes;
   private void setDefaultValues() {
     _pollWidth = "150";
     _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt";
+    _questionStyleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold";
     _numberOfShownPolls = 3;
     _showVotes = true;
+    _showCollection = true;
+    _pollID = -1;
   }
 
   public String getBundleIdentifier(){
@@ -205,11 +239,19 @@ private boolean _showVotes;
     _styleAttribute = style;
   }
 
+  public void setQuestionStyle(String style) {
+    _questionStyleAttribute = style;
+  }
+
   public void setNumberOfShownPolls(int numberOfShownPolls) {
     _numberOfShownPolls = numberOfShownPolls;
   }
 
   public void showVotes(boolean showVotes) {
     _showVotes = showVotes;
+  }
+
+  public void showCollection(boolean collection) {
+    _showCollection = collection;
   }
 }

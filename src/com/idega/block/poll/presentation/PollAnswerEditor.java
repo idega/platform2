@@ -43,7 +43,7 @@ public PollAnswerEditor(){
     isAdmin = AccessControl.hasEditPermission(this,modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
-    addTitle(iwrb.getLocalizedString("poll_admin","Poll Answer Editor"));
+    addTitle(iwrb.getLocalizedString("poll_answer_editor","Poll Answer Editor"));
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
 
     String sLocaleId = modinfo.getParameter(PollAdminWindow.prmLocale);

@@ -4,6 +4,7 @@ import java.sql.*;
 import javax.servlet.http.Cookie;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.poll.data.*;
+import com.idega.data.EntityFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.business.TextFinder;
 import com.idega.core.data.ICObjectInstance;
@@ -19,6 +20,7 @@ public static final String _PARAMETER_POLL_ANSWER = "poll_answer_id";
 public static final String _PARAMETER_POLL_QUESTION = "poll_question_id";
 public static final String _PARAMETER_MODE = "mode";
 public static final String _PARAMETER_TRUE = "true";
+public static final String _PARAMETER_FALSE = "false";
 public static final String _PARAMETER_VOTE = "vote";
 public static final String _PARAMETER_DELETE = "delete";
 public static final String _PARAMETER_SAVE = "save";
@@ -194,9 +196,6 @@ public static final String _PARAMETER_CLOSE = "close";
         answer = null;
       }
     }
-    else {
-      System.out.println("PollAnswerID == null");
-    }
 
     if ( answer != null && canVote(modinfo, pollQuestionID) ) {
       increaseHits(answer);
@@ -263,9 +262,63 @@ public static final String _PARAMETER_CLOSE = "close";
     return drp;
   }
 
-  public static void savePollQuestion(int pollQuestionID,String pollQuestionString,int iLocaleID) {
+  public static List getPollQuestions(int pollID) {
+    try {
+      return getPollQuestions(new PollEntity(pollID));
+    }
+    catch (SQLException e) {
+      return null;
+    }
+  }
+
+  public static List getPollQuestions(PollEntity poll) {
+    try {
+      return com.idega.data.EntityFinder.findRelated(poll,PollQuestion.getStaticInstance(PollQuestion.class));
+    }
+    catch (SQLException e) {
+      return null;
+    }
+  }
+
+  public static DropdownMenu getQuestions(String name, int pollID, int iLocaleId) {
+    DropdownMenu drp = new DropdownMenu(name);
+      drp.addMenuElementFirst("-1","");
+    PollEntity poll = null;
+    PollQuestion[] pollQuestion = null;
+
+    try {
+      poll = new PollEntity(pollID);
+    }
+    catch (SQLException e) {
+      poll = null;
+    }
+
+    if ( poll != null ) {
+      try {
+        pollQuestion = (PollQuestion[]) poll.findRelated(PollQuestion.getStaticInstance(PollQuestion.class));
+      }
+      catch (SQLException e) {
+        pollQuestion = null;
+      }
+    }
+
+    if( pollQuestion != null ) {
+      for ( int a = 0; a < pollQuestion.length; a++) {
+        LocalizedText locText = TextFinder.getLocalizedText(pollQuestion[a],iLocaleId);
+        String locString = "No question in this language";
+        if ( locText != null ) {
+          locString = locText.getHeadline();
+        }
+        drp.addMenuElement(pollQuestion[a].getID(),locString);
+      }
+    }
+    return drp;
+  }
+
+  public static int savePollQuestion(int pollID,int pollQuestionID,String pollQuestionString,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
+    int _pollQuestionID = -1;
 
     if ( pollQuestionID != -1 ) {
       update = true;
@@ -285,6 +338,8 @@ public static final String _PARAMETER_CLOSE = "close";
     if ( !update ) {
       try {
         pollQuestion.insert();
+        pollQuestion.addTo(new PollEntity(pollID));
+        _pollQuestionID = pollQuestion.getID();
       }
       catch (SQLException e) {
         e.printStackTrace(System.err);
@@ -293,11 +348,13 @@ public static final String _PARAMETER_CLOSE = "close";
     else {
       try {
         pollQuestion.update();
+        _pollQuestionID = pollQuestion.getID();
       }
       catch (SQLException e) {
         e.printStackTrace(System.err);
       }
     }
+
 
     LocalizedText locText = TextFinder.getLocalizedText(pollQuestion,iLocaleID);
     if ( locText == null ) {
@@ -326,11 +383,14 @@ public static final String _PARAMETER_CLOSE = "close";
       }
     }
 
+    return _pollQuestionID;
+
   }
 
-  public static void savePollAnswer(int pollQuestionID,int pollAnswerID,String pollAnswerString,int iLocaleID) {
+  public static int savePollAnswer(int pollQuestionID,int pollAnswerID,String pollAnswerString,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
+    int _pollAnswerID = -1;
 
     if ( pollAnswerID != -1 ) {
       update = true;
@@ -353,6 +413,7 @@ public static final String _PARAMETER_CLOSE = "close";
       pollAnswer.setHits(0);
       try {
         pollAnswer.insert();
+        _pollAnswerID = pollAnswer.getID();
       }
       catch (SQLException e) {
         e.printStackTrace(System.err);
@@ -361,6 +422,7 @@ public static final String _PARAMETER_CLOSE = "close";
     else {
       try {
         pollAnswer.update();
+        _pollAnswerID = pollAnswer.getID();
       }
       catch (SQLException e) {
         e.printStackTrace(System.err);
@@ -395,11 +457,13 @@ public static final String _PARAMETER_CLOSE = "close";
       }
     }
 
+    return _pollAnswerID;
   }
 
   public static void deletePollQuestion(int pollQuestionID) {
     try {
       Connection Conn = null;
+      PollQuestion pollQuestion = new PollQuestion(pollQuestionID);
       try {
         Conn = ConnectionBroker.getConnection();
         Conn.createStatement().executeUpdate("update "+PollEntity.getEntityTableName()+" set "+PollQuestion.getColumnNameID()+" = null where "+PollQuestion.getColumnNameID()+" = "+Integer.toString(pollQuestionID));
@@ -416,7 +480,8 @@ public static final String _PARAMETER_CLOSE = "close";
           pollAnswers[a].delete();
         }
       }
-      new PollQuestion(pollQuestionID).delete();
+      pollQuestion.removeFrom(PollEntity.getStaticInstance(PollEntity.class));
+      pollQuestion.delete();
     }
     catch (SQLException e) {
       e.printStackTrace(System.err);
@@ -474,7 +539,7 @@ public static final String _PARAMETER_CLOSE = "close";
         if(InstanceId > 0){
           System.err.println("instance er til");
           ICObjectInstance objIns = new ICObjectInstance(InstanceId);
-          System.err.println(" object instance "+objIns.getID() + objIns.getName());
+          System.err.println(" object instance "+objIns.getID() +", "+ objIns.getName());
           poll.addTo(objIns);
         }
       }
@@ -482,7 +547,24 @@ public static final String _PARAMETER_CLOSE = "close";
     catch(Exception e) {
       e.printStackTrace();
     }
-
-
   }
+
+  public static int getNumberOfAnswers(int pollQuestionID) {
+    try {
+      return getNumberOfAnswers(new PollQuestion(pollQuestionID));
+    }
+    catch (SQLException e) {
+      return -1;
+    }
+  }
+
+  public static int getNumberOfAnswers(PollQuestion pollQuestion) {
+    try {
+      return pollQuestion.getNumberOfRecords("select count(*) from po_poll_answer where "+pollQuestion.getIDColumnName()+"="+Integer.toString(pollQuestion.getID()));
+    }
+    catch (SQLException e) {
+      return -1;
+    }
+  }
+
 }

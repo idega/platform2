@@ -106,8 +106,6 @@ public PollResult() {
     }
 
     if ( _showCollection ) {
-      System.out.println("ShowCollection");
-      System.out.println("PollID: "+_pollID);
       showCollection(modinfo);
     }
     else {
@@ -329,7 +327,6 @@ public PollResult() {
       height += 26;
     }
 
-    System.out.println("numberOfAnswers: "+numberOfAnswers);
     int windowHeight = (numberOfAnswers * answerHeight) + (numberOfQuestions * questionHeight) + height;
 
     setOnLoad("window.resizeTo("+Integer.toString(292)+","+windowHeight+");");

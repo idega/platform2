@@ -23,6 +23,7 @@ public class PollEntity extends GenericEntity{
 		addAttribute(getColumnNameAttribute(), "Attribute", true, true, String.class);
 		addAttribute(PollQuestion.getColumnNameID(), "Question", true, true, Integer.class,"many-to-one",PollQuestion.class);
     addManyToManyRelationShip(ICObjectInstance.class,"PO_POLL_IC_OBJECT_INSTANCE");
+    addManyToManyRelationShip(PollQuestion.class,"PO_POLL_POLL_QUESTION");
 	}
 
   public static String getEntityTableName(){ return "PO_POLL";}
@@ -53,4 +54,9 @@ public class PollEntity extends GenericEntity{
     setColumn(PollQuestion.getColumnNameID(),pollQuestionID);
   }
 
+  public void delete() throws SQLException {
+    removeFrom(ICObjectInstance.getStaticInstance(ICObjectInstance.class));
+    removeFrom(PollQuestion.getStaticInstance(PollQuestion.class));
+    super.delete();
+  }
 }

@@ -132,8 +132,6 @@ public PollAdminWindow(){
       _newWithAttribute = (String) modinfo.getApplicationAttribute(prmAttribute);
     }
 
-    System.out.println("PollID: "+_pollID);
-
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleId));
@@ -143,7 +141,7 @@ public PollAdminWindow(){
       pollTable.setCellpadding(0);
       pollTable.setCellspacing(0);
 
-    Text choosePollText = formatText(iwrb.getLocalizedString("choose_poll","Choose poll")+":&nbsp;",true);
+    Text choosePollText = formatText(iwrb.getLocalizedString("choose_poll_question","Choose Question")+":&nbsp;",true);
     Link choosePollLink = new Link(iwrb.getImage("choose.gif"));
       choosePollLink.setWindowToOpen(PollQuestionChooser.class);
       choosePollLink.addParameter(Poll._prmPollID,_pollID);

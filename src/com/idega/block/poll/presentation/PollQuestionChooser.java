@@ -40,7 +40,7 @@ public PollQuestionChooser(){
     isAdmin = AccessControl.hasEditPermission(this,modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
-    addTitle(iwrb.getLocalizedString("poll_admin","Poll Question Chooser"));
+    addTitle(iwrb.getLocalizedString("poll_question_chooser","Poll Question Chooser"));
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
 
     String sLocaleId = modinfo.getParameter(PollAdminWindow.prmLocale);
