@@ -139,15 +139,21 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 	
 	public void save(IWContext iwc) {
 		String description = iwc.getParameter(PARAMETER_DESCRIPTION);
+		String date = iwc.getParameter(PARAMETER_DATE);
+		String name = iwc.getParameter(PARAMETER_NAME);
 		
-		ICCategory category = CategoryFinder.getInstance().getCategory(_topicID);
-		category.setInvalidationDate(new IWTimestamp(iwc.getParameter(PARAMETER_DATE)).getTimestamp());
-		if (description != null)
-			category.setDescription(description);
-		category.setName(iwc.getParameter(PARAMETER_NAME));
-		category.store();
-		getParentPage().setParentToReload();
-		getParentPage().close();
+		if (date != null && name != null) {
+			ICCategory category = CategoryFinder.getInstance().getCategory(_topicID);
+			category.setInvalidationDate(new IWTimestamp(date).getTimestamp());
+			if (description != null)
+				category.setDescription(description);
+			category.setName(name);
+			category.store();
+			getParentPage().setParentToReload();
+			getParentPage().close();
+		}
+		else
+			action = ACTION_EDIT;
 	}
 	
 	public void parse(IWContext iwc) {
@@ -157,6 +163,6 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 		if (iwc.isParameterSet(PARAMETER_ACTION))
 			action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		else
-			action = ACTION_SAVE;
+			action = ACTION_EDIT;
 	}
 }
