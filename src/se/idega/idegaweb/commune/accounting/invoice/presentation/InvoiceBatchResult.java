@@ -68,16 +68,23 @@ public class InvoiceBatchResult extends AccountingBlock{
 			table.add(""+invoiceBusiness.getNoProviders(batchRun),2,4);
 			table.add(""+invoiceBusiness.getNoPlacements(batchRun),2,5);
 			table.add(""+invoiceBusiness.getTotAmountWithoutVAT(batchRun),2,6);
-			
 		
 			form.add(table);
 			
-			//Middle section with the error list
-			Table errorTable = new Table();
+			GenericButton cancelButton = this.getCancelButton();
+			form.add(cancelButton);
 			
 			int row = 1;
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
 			Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun);
+
+			//Bottom section (Moved up according to Lottas directives
+			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
+			add(new Text(new Integer(errorColl.size()).toString()));
+
+			//Middle section with the error list
+			Table errorTable = new Table();
+
 //			System.out.println("Size of table BatchRunError: "+errorColl.size());
 			Iterator errorIter = errorColl.iterator();
 			if(errorIter.hasNext()){
@@ -99,13 +106,6 @@ public class InvoiceBatchResult extends AccountingBlock{
 				}
 				add(errorTable);
 			}
-			
-			//Bottom section
-			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
-			add(new Text(new Integer(row-1).toString()));
-
-			GenericButton cancelButton = this.getCancelButton();
-			form.add(cancelButton);
 			
 		} catch (FinderException e) {
 			add(getLocalizedSmallHeader("invbr.no_batchrun_available","No batchrun available"));

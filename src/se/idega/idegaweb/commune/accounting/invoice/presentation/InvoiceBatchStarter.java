@@ -2,14 +2,14 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DateInput;
@@ -28,25 +28,27 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private static String PARAM_MONTH=PREFIX+"month";
 	private static String PARAM_READ_DATE=PREFIX+"read_date";
 	DateInput monthInput;
+	DateInput dateInput;
 	DateInput readDateInput;	
 
 	public void init(IWContext iwc){
+	
 		String schoolCategory=null;
 		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
 		try {
 			schoolCategory = getSession().getOperationalField();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			add(new ExceptionWrapper(e, this));
 			e.printStackTrace();
 		}
 
 		handleAction(iwc,schoolCategory);
 		
+		add(opFields);
+
 		Form form = new Form();
 		add(form);
 		
-		add(opFields);
-
 		monthInput = new DateInput(PARAM_MONTH,true);
 		monthInput.setToCurrentDate();
 		monthInput.setToShowDay(false);
@@ -57,7 +59,21 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		readDateInput = new DateInput(PARAM_READ_DATE,true);	
 
 		InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
-		form.add(readDate);
+		try {
+			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+			if(invoiceBusiness.isHighShool(schoolCategory)){
+				form.add(readDate);
+			}
+		} catch (IDOLookupException e) {
+			add(new ExceptionWrapper(e, this));
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			add(new ExceptionWrapper(e, this));
+			e.printStackTrace();
+		} catch (FinderException e) {
+			add(new ExceptionWrapper(e, this));
+			e.printStackTrace();
+		}
 		
 		GenericButton saveButton = this.getSaveButton();
 		GenericButton cancelButton = this.getCancelButton();
@@ -84,9 +100,5 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
-	}
-
-	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
-		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
 	}
 }

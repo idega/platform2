@@ -159,7 +159,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-		sql.appendAndEquals(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		
 		return idoFindPKsByQuery(sql);
 	}
 	
