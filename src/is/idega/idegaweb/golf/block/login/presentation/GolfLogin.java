@@ -33,6 +33,7 @@ public class GolfLogin extends GolfBlock {
 	private Boolean _showFormWhenLoggedOn;
 	private boolean _enterSubmit = false;
 	private int _inputLength = 8;
+	private int _indent = 8;
 
 	public GolfLogin() {
 		super();
@@ -58,8 +59,8 @@ public class GolfLogin extends GolfBlock {
 			myTable.setRowStyleClass(1, getLoginRowClass());
 			myTable.setWidth(5, Table.HUNDRED_PERCENT);
 			myTable.setAlignment(5, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-			myTable.setCellpaddingLeft(1, 1, 3);
-			myTable.setCellpaddingRight(5, 1, 3);
+			myTable.setCellpaddingLeft(1, 1, _indent);
+			myTable.setCellpaddingRight(5, 1, _indent);
 	
 			Text loginTexti = getSmallText(userText);
 			Text passwordTexti = getSmallText(passwordText);
@@ -278,5 +279,12 @@ public class GolfLogin extends GolfBlock {
 	 */
 	public void setInputLength(int length) {
 		this._inputLength = length;
+	}
+	
+	/**
+	 * @param _indent The _indent to set.
+	 */
+	public void setIndent(int indent) {
+		this._indent = indent;
 	}
 }
