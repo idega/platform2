@@ -110,7 +110,8 @@ public class FieldLinks extends GolfBlock {
 			admin.addParameter("redir", getResourceBundle().getLocalizedString("field.field_editor", "Field editor"));
 			linksTable.add(admin, column, 1);
 		}
-
+		
+		add(linksTable);
 	}
 
 	/**
