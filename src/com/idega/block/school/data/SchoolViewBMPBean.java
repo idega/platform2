@@ -84,9 +84,7 @@ public class SchoolViewBMPBean extends GenericEntity implements SchoolView{
     return this.getStringColumnValue(CATEGORY);
   }
 
-  public Collection ejbFindAllBySchoolCategory(String Category ) throws javax.ejb.FinderException{
-    return super.idoFindAllIDsByColumnBySQL(CATEGORY,Category);
+  public java.util.List findAllBySchoolType(int type_id)throws com.idega.data.IDOFinderException{
+    return com.idega.data.EntityFinder.getInstance().findAllByColumn(SchoolView.class,TYPEID,type_id);
   }
-
-
 }

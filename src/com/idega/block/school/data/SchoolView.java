@@ -4,6 +4,7 @@ import javax.ejb.*;
 
 public interface SchoolView extends com.idega.data.IDOEntity
 {
+ public java.util.List findAllBySchoolType(int p0)throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
  public int getSchoolTypeId() throws java.rmi.RemoteException;
  public java.lang.String getSchoolName() throws java.rmi.RemoteException;
  public java.lang.String getSchoolTypeName() throws java.rmi.RemoteException;
