@@ -357,7 +357,7 @@ public class ReportLayoutChooser extends Block {
     if (queryId != null && queryFolder != null) {
       Integer queryFolderId = (Integer) queryFolder.getPrimaryKey();
       queryBuilderLink.addParameter(QueryBuilder.PARAM_QUERY_ID, queryId.toString());
-      queryBuilderLink.addParameter(QueryBuilder.PARAM_FOLDER_ID, queryFolderId.toString());
+      queryBuilderLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, queryFolderId.toString());
     }
     return queryBuilderLink;
   }

@@ -36,6 +36,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -56,14 +57,15 @@ import dori.jasper.engine.design.JasperDesign;
 public class ReportOverview extends Block {
 	
   // special init parameters
-  public static final String SET_ID_OF_QUERY_FOLDER_KEY = "id_query_fold";
-  public static final String SET_ID_OF_DESIGN_FOLDER_KEY = "id_design_fold";
+  // replaced by parameters in class QueryBuilder
+  public static final String SET_ID_OF_QUERY_FOLDER_KEY = QueryBuilder.PARAM_QUERY_FOLDER_ID;
+	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = QueryBuilder.PARAM_LAYOUT_FOLDER_ID;
   
   public static final String DELETE_KEY = "delete_key";
   public static final String PDF_KEY = "pdf_key";
   public static final String EXCEL_KEY = "excel_key";
   public static final String HTML_KEY = "html_key";
-  public static final String EDIT_QUERY_KEY = "execute_key";
+  public static final String EDIT_QUERY_KEY = "edit_key";
 
   public static final String DELETE_ITEMS_KEY = "delete_items_key";
   
@@ -82,8 +84,12 @@ public class ReportOverview extends Block {
   
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	
+	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
+	
 	private ICFile queryFolder;
 	private ICFile designFolder;
+	
+	private int showOnlyOneQueryWithId = -1;
 	
 	private Map parameterMap = new HashMap();
 	
@@ -91,6 +97,10 @@ public class ReportOverview extends Block {
 	private static final String CURRENT_QUERY_ID = "current_query_id";
 	private static final String CURRENT_LAYOUT_ID = "current_layout_id";
 	private static final String CURRENT_OUTPUT_FORMAT = "current_output_format";
+	
+	public void setShowOnlyOneQueryWithId(int showOnlyOneQueryWithId)	{
+		this.showOnlyOneQueryWithId = showOnlyOneQueryWithId;
+	}
 	
   public void main(IWContext iwc) throws Exception {
   	IWBundle bundle = getBundle(iwc);
@@ -193,13 +203,23 @@ public class ReportOverview extends Block {
   		ICTreeNode node = (ICTreeNode) iterator.next();
   		String name = node.getNodeName();
   		int id = node.getNodeID();
-  		QueryRepresentation representation = new QueryRepresentation(id, name);
-  		queryRepresentations.add(representation);
+  		if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+  			QueryRepresentation representation = new QueryRepresentation(id, name);
+  			queryRepresentations.add(representation);
+  		}
   	}
   	Form form = new Form();
   	EntityBrowser browser = getBrowser(queryRepresentations, bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
+  	if (showOnlyOneQueryWithId != -1)	{
+  		String newQueryWasCreatedOrModfied = 
+  			resourceBundle.getLocalizedString("ro_query_was_created_or_modified", "Following query was created or modifed");
+  		Text text = new Text(newQueryWasCreatedOrModfied);
+  		text.setBold();
+  		text.setFontColor("#FF0000");
+  		add(text);
+  	} 
   	Table table = new Table(1,2);
   	table.add(browser, 1,1);
   	table.add(getButtonBar(resourceBundle), 1,2);
@@ -208,12 +228,14 @@ public class ReportOverview extends Block {
   }
   	
 	private PresentationObject getButtonBar(IWResourceBundle resourceBundle )	{
-		Table table = new Table(3,1);
+		Table table = new Table(4,1);
 		// new button
 		String newText = resourceBundle.getLocalizedString("ro_create", "New");
 		Link newLink = new Link(newText);
-		newLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
-		newLink.addParameter(QueryBuilder.PARAM_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		//newLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+		newLink.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
+		newLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		newLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		newLink.setAsImageButton(true);
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
@@ -230,6 +252,11 @@ public class ReportOverview extends Block {
   	table.add(newLink,1,1);
   	table.add(delete,2,1);
   	table.add(close, 3,1);
+  	// special button if only one query was shown
+  	if (showOnlyOneQueryWithId != -1)	{
+  		PresentationObject goBack = getGoBackButton(resourceBundle);
+  		table.add(goBack, 4,1);
+  	}
   	return table;
 	}
 
@@ -327,7 +354,7 @@ public class ReportOverview extends Block {
     return IW_BUNDLE_IDENTIFIER;
   }
   
-  // some business methods
+
 	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
 		QueryService queryService = getQueryService();
 		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
@@ -351,14 +378,21 @@ public class ReportOverview extends Block {
     	}
     }
     else {
-    	executeQuery(query, bridge);
+    	if (! executeQuery(query, bridge))	{
+    		String errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
+    		Text text = new Text(errorMessage);
+    		text.setBold();
+    		text.setFontColor("#FF0000");
+    		add(text);
+    	}	
     	getListOfQueries(bundle, resourceBundle);	
     }
 	}
 	
 	private void showInputFields(QuerySQL query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
     Map identifierDescriptionMap = query.getIdentifierDescriptionValueMap();
-    PresentationObject presentationObject = getInputFields(identifierValueMap, identifierDescriptionMap, resourceBundle);
+    String name = query.getName();
+    PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierDescriptionMap, resourceBundle);
     Form form = new Form();
     addParametersToForm(form);
     form.add(presentationObject);
@@ -366,9 +400,11 @@ public class ReportOverview extends Block {
 	}
 
 	
-	private void executeQuery(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
+	private boolean executeQuery(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
     // get the sql statement
     String sqlStatement = query.getSQLStatement();
+    //TODO: thi remove that command
+    // add(new Text(sqlStatement));
     // get the desired display names
     List displayNames = query.getDisplayNames();
     // get the result of the query
@@ -381,6 +417,12 @@ public class ReportOverview extends Block {
 				"[ReportOverview]: Can't execute SQl statement: " + sqlStatement;
 			System.err.println(message + " Message is: " + ex.getMessage());
 			ex.printStackTrace(System.err);
+			return false;
+		}
+		// check if everything is fine
+		if (queryResult == null || queryResult.isEmpty())	{
+			// nothing to do
+			return false;
 		}
     // get the design of the report 
     JasperReportBusiness reportBusiness = getReportBusiness();
@@ -388,7 +430,7 @@ public class ReportOverview extends Block {
     JasperDesign design = reportBusiness.getDesign(designId);
     // synchronize design and result
     Map designParameters = new HashMap();
-    //  designParameters.put(REPORT_HEADLINE_KEY, parameterMap.get(REPORT_HEADLINE_KEY));
+    designParameters.put(REPORT_HEADLINE_KEY, query.getName());
     JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, design);
     // create html report
     String uri;
@@ -402,7 +444,9 @@ public class ReportOverview extends Block {
     else {
     	uri = reportBusiness.getHtmlReport(print, "report");
     }
-    getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=400, height=400')");
+    // open an extra window with scrollbars
+    getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
+    return true;
 	}
     
     
@@ -418,6 +462,9 @@ public class ReportOverview extends Block {
 				String value = (String) iwc.getParameter(key);
 				result.put(key, value);
 			}
+			else {
+				result.put(key, "");
+			}
 		}
 		return result;
 	}
@@ -425,7 +472,16 @@ public class ReportOverview extends Block {
 					    	
     	
     	
-  private PresentationObject getInputFields(Map identifierValueMap, Map identifierDescriptionMap, IWResourceBundle resourceBundle)	{
+  private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierDescriptionMap, IWResourceBundle resourceBundle)	{
+
+  	// create a nice headline for the confused user
+  	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query");
+  	StringBuffer buffer = new StringBuffer(currentQuery);
+  	buffer.append(": ").append(queryName);
+  	Text text = new Text(buffer.toString());
+  	text.setBold();
+  	add(text);
+
   	Table table = new Table (2, identifierValueMap.size() + 1);
   	Iterator iterator = identifierValueMap.entrySet().iterator();
   	int i = 1;
@@ -441,15 +497,22 @@ public class ReportOverview extends Block {
   	String okayText = resourceBundle.getLocalizedString("ro_okay", "Okay");
   	SubmitButton okayButton = new SubmitButton(okayText, VALUES_COMMITTED_KEY, "default_value");
   	okayButton.setAsImageButton(true);
+  	PresentationObject goBack = getGoBackButton(resourceBundle);
+   	table.add(goBack, 1, i);
+  	table.add(okayButton, 1, i);
+  	return table;
+  }
+ 
+	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
   	Link goBack = new Link(goBackText);
   	goBack.addParameter(SHOW_LIST_KEY, SHOW_LIST_KEY);
   	addParametersToLink(goBack);
   	goBack.setAsImageButton(true);
-   	table.add(goBack, 1, i);
-  	table.add(okayButton, 1, i);
-  	return table;
-  }
+  	return goBack;
+	}
+ 
+ 
   		
 	private void addParametersToForm(Form form)	{
 		Iterator iterator = parameterMap.entrySet().iterator();
@@ -481,6 +544,7 @@ public class ReportOverview extends Block {
 		}
 	}
 
+	// some get service methods
 
   public QueryService getQueryService() {
     try {
@@ -535,6 +599,7 @@ public class ReportOverview extends Block {
  		}
   }
   
+  // link to query builder converter
   class  EditQueryConverter implements EntityToPresentationObjectConverter	{
   	
   	private String display;
@@ -561,9 +626,10 @@ public class ReportOverview extends Block {
 			String shortKeyPath = path.getShortKey();
 			EntityRepresentation idoEntity = (EntityRepresentation) value;
 			Link link = new Link(display);
-			link.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+			link.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
 			link.addParameter(QueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
-			link.addParameter(QueryBuilder.PARAM_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			link.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			link.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
 			link.setAsImageButton(true);
 			return link;
 		}
