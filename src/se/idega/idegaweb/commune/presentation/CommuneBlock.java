@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.builder.data.IBPage;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.RadioButton;
 
 /**
  * Title:
@@ -34,6 +40,8 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
 	public final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
 	public final static String STYLENAME_INTERFACE = "Interface";
+	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
+	public final static String STYLENAME_CHECKBOX = "CheckBox";
 	private final static String STYLENAME_TEMPLATE_LINK = "TemplateLink";
 	private final static String STYLENAME_TEMPLATE_LINK2 = "TemplateLink2";
 	private final static String STYLENAME_TEMPLATE_LINK3 = "TemplateLink3";
@@ -44,7 +52,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String STYLENAME_TEMPLATE_HEADER_LINK = "TemplateHeaderLink";
 	private final static String STYLENAME_TEMPLATE_SMALL_HEADER = "TemplateSmallHeader";
 
-	private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
+	private final static String DEFAULT_BACKGROUND_COLOR = "#ffffff";
+	private final static String DEFAULT_HEADER_COLOR = "#d0daea";
+	private final static String DEFAULT_ZEBRA_COLOR_1 = "#ffffff";
+	private final static String DEFAULT_ZEBRA_COLOR_2 = "#f4f4f4";
 	private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
 	private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
 	private final static String DEFAULT_HEADER_FONT_STYLE = "font-weight:bold;";
@@ -58,6 +69,8 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String DEFAULT_ERROR_TEXT_FONT_STYLE = "font-weight:plain;color:#ff0000;";
 	private final static String DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE = "font-style:normal;color:#ff0000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
 	private final static String DEFAULT_INTERFACE_STYLE = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+	private final static String DEFAULT_CHECKBOX_STYLE = "margin:0px;padding:0px;height:12px;width:12px;";
+	private final static String DEFAULT_INTERFACE_BUTTON_STYLE = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 
 	private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 	private String textFontStyle = DEFAULT_TEXT_FONT_STYLE;
@@ -70,8 +83,15 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private String listLinkFontStyle = DEFAULT_LIST_LINK_FONT_STYLE;
 	private String errorTextFontStyle = DEFAULT_ERROR_TEXT_FONT_STYLE;
 	private String smallErrorTextFontStyle = DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE;
+	
+	private final static String HEADER_COLOR_PROPERTY = "header_color";
+	private final static String ZEBRA_COLOR1_PROPERTY = "zebra_color_1";
+	private final static String ZEBRA_COLOR2_PROPERTY = "zebra_color_2";
+	private final static String CELLPADDING_PROPERTY = "cellpadding";
+	private final static String CELLSPACING_PROPERTY = "cellspacing";
 
 	private IWResourceBundle iwrb = null;
+	private IWBundle iwb = null;
 	private IBPage formResponsePage;
 
 	private String _width = "600";
@@ -86,11 +106,16 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	public void _main(IWContext iwc)throws Exception{
 		this.setResourceBundle(getResourceBundle(iwc));
+		iwb = getBundle(iwc);
 		super._main(iwc);
 	}
 	
 	public IWResourceBundle getResourceBundle() {
 		return this.iwrb;
+	}
+
+	public IWBundle getBundle() {
+		return this.iwb;
 	}
 
 	public String getBackgroundColor() {
@@ -243,7 +268,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public InterfaceObject getStyledInterface(InterfaceObject obj) {
 		return (InterfaceObject) setStyle(obj, this.STYLENAME_INTERFACE);
 	}
-
+	
 	public IBPage getResponsePage() {
 		return this.formResponsePage;
 	}
@@ -251,14 +276,90 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public void setResponsePage(IBPage page) {
 		this.formResponsePage = page;
 	}
+	
+	protected String getHeaderColor() {
+		return getProperty(HEADER_COLOR_PROPERTY,DEFAULT_HEADER_COLOR);
+	}
+	
+	protected String getZebraColor1() {
+		return getProperty(ZEBRA_COLOR1_PROPERTY,DEFAULT_ZEBRA_COLOR_1);
+	}
+	
+	protected String getZebraColor2() {
+		return getProperty(ZEBRA_COLOR1_PROPERTY,DEFAULT_ZEBRA_COLOR_2);
+	}
+	
+	protected int getCellpadding() {
+		return Integer.parseInt(getProperty(CELLPADDING_PROPERTY,"2"));	
+	}
+	
+	protected int getCellspacing() {
+		return Integer.parseInt(getProperty(CELLSPACING_PROPERTY,"2"));	
+	}
+	
+	private String getProperty(String propertyName, String nullValue) {
+		IWPropertyList property = getIWApplicationContext().getSystemProperties().getProperties("layout_settings");	
+		if (property != null) {
+			String propertyValue = property.getProperty(propertyName);
+			if (propertyValue != null)
+				return propertyValue;
+		}
+		return nullValue;
+	}
+	
+	protected CheckBox getCheckBox(String name, String value) {
+		return (CheckBox) setStyle(new CheckBox(name,value),STYLENAME_CHECKBOX);
+	}
+	
+	protected RadioButton getRadioButton(String name, String value) {
+		return (RadioButton) setStyle(new RadioButton(name,value),STYLENAME_CHECKBOX);
+	}
+	
+	protected GenericButton getButton(GenericButton button) {
+		//temporary, will be moved to IWStyleManager for handling...
+		button.setHeight("20");
+		return (GenericButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
+	}
+	
+	/**
+	 * Returns the default edit icon with the tooltip specified.
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The edit icon.
+	 */
+	protected Image getEditIcon(String toolTip) {
+		Image editImage = iwb.getImage("shared/edit.gif", 12, 12);
+		editImage.setToolTip(toolTip);
+		return editImage;
+	}
+
+	/**
+	 * Returns the default delete icon with the tooltip specified.
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The delete icon.
+	 */
+	protected Image getDeleteIcon(String toolTip) {
+		Image deleteImage = iwb.getImage("shared/delete.gif", 12, 12);
+		deleteImage.setToolTip(toolTip);
+		return deleteImage;
+	}
+
+	/**
+	 * Returns the default various icon with the tooltip specified.  May be used for various
+	 * purposes (handle, go, whatever...)
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The various icon.
+	 */
+	protected Image getVariousIcon(String toolTip) {
+		return getEditIcon(toolTip);
+	}
 
 	/**
 	 * @see com.idega.presentation.Block#getStyleNames()
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover" };
-		String[] styleValues = { DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+		String[] styleNames = { STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover", STYLENAME_CHECKBOX, STYLENAME_INTERFACE_BUTTON };
+		String[] styleValues = { DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", DEFAULT_CHECKBOX_STYLE, DEFAULT_INTERFACE_BUTTON_STYLE };
 
 		for (int a = 0; a < styleNames.length; a++) {
 			map.put(styleNames[a], styleValues[a]);
