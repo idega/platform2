@@ -535,12 +535,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public Group getNewSchoolGroup(String name, String info) throws RemoteException {
 		try {
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-
 			Group rootGroup = this.getRootSchoolGroup();
-			Group schoolGroup = getUserBusiness().getGroupBusiness().createGroup(name, info, type.getGeneralGroupTypeString());
-			rootGroup.addGroup(schoolGroup);
+			Group schoolGroup = getUserBusiness().getGroupBusiness().createGroupUnder(name, info,rootGroup);
 			return schoolGroup;
 		}
 		catch (CreateException ce) {
@@ -564,11 +560,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			else {
 				try {
 					System.err.println("trying to store School Root group");
-					/**@todo this seems a wrong way to do things**/
-					GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-					GroupType type = typeHome.create();
 
-					rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group", "The School Root Group.", type.getGeneralGroupTypeString());
+					rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group", "The School Root Group.");
 					bundle.setProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER, rootGroup.getPrimaryKey().toString());
 				}
 				catch (CreateException ce) {
@@ -813,10 +806,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		else {
 			System.err.println("trying to store Commune Root school administrators group");
-			/**@todo this seems a wrong way to do things**/
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-			rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Administrators", "The Commune Root School Administrators Group.", type.getGeneralGroupTypeString());
+
+			rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Administrators", "The Commune Root School Administrators Group.");
 			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
@@ -841,10 +832,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		else {
 			System.err.println("trying to store Commune Root school administrators group");
-			/**@todo this seems a wrong way to do things**/
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-			rootGroup = getUserBusiness().getGroupBusiness().createGroup("Provider Administrators", "The Commune Root Provider Administrators Group.", type.getGeneralGroupTypeString());
+			rootGroup = getUserBusiness().getGroupBusiness().createGroup("Provider Administrators", "The Commune Root Provider Administrators Group.");
 			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
