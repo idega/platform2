@@ -47,14 +47,11 @@ public class ClubInformationTab extends UserGroupTab {
 	private TextInput _shortNameField;
 	private TextInput _nameField;
 	private DateInput _foundedField;
-//	private TextInput _typeField;
 	private DropdownMenu _typeField;
 	private CheckBox _memberUMFIField;
-//	private TextInput _makeField;
 	private DropdownMenu _makeField;
 	private TextInput _connectionToSpecialField;
-	private TextInput _regionalUnionField;
-//	private TextInput _statusField;
+	private Text _regionalUnionField;
 	private DropdownMenu _statusField;
 	private CheckBox _premierLeagueField;
 	private CheckBox _inOperationField;
@@ -78,7 +75,7 @@ public class ClubInformationTab extends UserGroupTab {
 
 	private String _numberFieldName;
 	private String _ssnFieldName;
-	private String _abrvFieldName; //:)
+	private String _abrvFieldName;
 	private String _shortNameFieldName;
 	private String _nameFieldName;
 	private String _foundedFieldName;
@@ -98,8 +95,6 @@ public class ClubInformationTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
-
-		//		setName(DEFAULT_TAB_NAME);
 	}
 
 	public ClubInformationTab(Group group) {
@@ -165,14 +160,18 @@ public class ClubInformationTab extends UserGroupTab {
 		_shortNameField.setContent((String) fieldValues.get(_shortNameFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
-//		_typeField.setContent((String) fieldValues.get(_typeFieldName));
 		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
-//		_makeField.setContent((String) fieldValues.get(_makeFieldName));
-		_makeField.setSelectedElement((String) fieldValues.get(_makeFieldName));
+		String make = (String) fieldValues.get(_makeFieldName);
+		_makeField.setSelectedElement(make);
+		_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName,"2");
+		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"0");
+		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
+		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
+		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
+		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"5");
 		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
-		_regionalUnionField.setContent((String) fieldValues.get(_regionalUnionFieldName));
-//		_statusField.setContent((String) fieldValues.get(_statusFieldName));
+		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
 		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
 		_inOperationField.setChecked(((Boolean) fieldValues.get(_inOperationFieldName)).booleanValue());
@@ -190,14 +189,11 @@ public class ClubInformationTab extends UserGroupTab {
 		_nameField = new TextInput(_nameFieldName);
 		_foundedField = new DateInput(_foundedFieldName);
 		_foundedField.setYearRange(1900, GregorianCalendar.getInstance().get(GregorianCalendar.YEAR));
-//		_typeField = new TextInput(_typeFieldName);
 		_typeField = new DropdownMenu(_typeFieldName);
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
-//		_makeField = new TextInput(_makeFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new TextInput(_connectionToSpecialFieldName);
-		_regionalUnionField = new TextInput(_regionalUnionFieldName);
-//		_statusField = new TextInput(_statusFieldName);
+		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
@@ -306,7 +302,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String member = iwc.getParameter(_memberUMFIFieldName);
 			String make = iwc.getParameter(_makeFieldName);
 			String connection = iwc.getParameter(_connectionToSpecialFieldName);
-			String regional = iwc.getParameter(_regionalUnionFieldName);
+//			String regional = iwc.getParameter(_regionalUnionFieldName);
 			String status = iwc.getParameter(_statusFieldName);
 			String premier = iwc.getParameter(_premierLeagueFieldName);
 			String inOperation = iwc.getParameter(_inOperationFieldName);
@@ -349,10 +345,10 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_connectionToSpecialFieldName, connection);
 			else
 				fieldValues.put(_connectionToSpecialFieldName, "");
-			if (regional != null)
-				fieldValues.put(_regionalUnionFieldName, regional);
-			else
-				fieldValues.put(_regionalUnionFieldName, "");
+//			if (regional != null)
+//				fieldValues.put(_regionalUnionFieldName, regional);
+//			else
+//				fieldValues.put(_regionalUnionFieldName, "");
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
 			else
@@ -371,6 +367,7 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
+		System.out.println("Entering store");
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
@@ -387,7 +384,7 @@ public class ClubInformationTab extends UserGroupTab {
 			Boolean memberUMFI = (Boolean) fieldValues.get(_memberUMFIFieldName);
 			String make = (String) fieldValues.get(_makeFieldName);
 			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-			String regional = (String) fieldValues.get(_regionalUnionFieldName);
+//			String regional = (String) fieldValues.get(_regionalUnionFieldName);
 			String status = (String) fieldValues.get(_statusFieldName);
 			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
 			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
@@ -403,8 +400,11 @@ public class ClubInformationTab extends UserGroupTab {
 			if (memberUMFI != null)
 				group.setMetaData("CLUBINFO_MEMBER", memberUMFI.toString());
 			group.setMetaData("CLUBINFO_MAKE", make);
-			group.setMetaData("CLUBINFO_CONN", connection);
-			group.setMetaData("CLUBINFO_REGIONAL", regional);
+			if (make.equals("2"))
+				group.setMetaData("CLUBINFO_CONN", connection);
+			else
+				group.setMetaData("CLUBINFO_CONN", "");
+//			group.setMetaData("CLUBINFO_REGIONAL", regional);
 			group.setMetaData("CLUBINFO_STATUS", status);
 			if (premier != null)
 				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
@@ -433,6 +433,8 @@ public class ClubInformationTab extends UserGroupTab {
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+		
+//			group.getParentGroups()
 
 			String number = group.getMetaData("CLUBINFO_NUMBER");
 			String ssn = group.getMetaData("CLUBINFO_SSN");
@@ -444,7 +446,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String member = group.getMetaData("CLUBINFO_MEMBER");
 			String make = group.getMetaData("CLUBINFO_MAKE");
 			String connection = group.getMetaData("CLUBINFO_CONN");
-			String regional = group.getMetaData("CLUBINFO_REGIONAL");
+//			String regional = group.getMetaData("CLUBINFO_REGIONAL");
 			String status = group.getMetaData("CLUBINFO_STATUS");
 			String premier = group.getMetaData("CLUBINFO_PREMIER");
 			String inOperation = group.getMetaData("CLUBINFO_OPERATION");
@@ -469,8 +471,8 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_makeFieldName, make);
 			if (connection != null)
 				fieldValues.put(_connectionToSpecialFieldName, connection);
-			if (regional != null)
-				fieldValues.put(_regionalUnionFieldName, regional);
+//			if (regional != null)
+//				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
 			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
