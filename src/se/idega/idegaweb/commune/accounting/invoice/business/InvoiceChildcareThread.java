@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/19 11:53:18 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/02/19 13:01:30 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.130 $
+ * @version $Revision: 1.131 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -781,7 +781,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				ErrorLogger errorRelated = new ErrorLogger("RegularPaymentEntry ID: "+regularPaymentEntry.getPrimaryKey());
 				errorRelated.append("Placing: "+regularPaymentEntry.getPlacing());
 				errorRelated.append("Amount: "+regularPaymentEntry.getAmount());
-				errorRelated.append("School: "+regularPaymentEntry.getSchool());
+//				errorRelated.append("School: "+regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
