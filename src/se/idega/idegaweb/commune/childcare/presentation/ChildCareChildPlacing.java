@@ -28,6 +28,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -242,7 +243,8 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
 			
 			table.add(getLocalizedSmallHeader("child_care.child","Child"), 1, row);
-			table.add(getSmallText(child.getNameLastFirst(true)), 3, row);
+			Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+			table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, row);
 			table.add(getSmallText(" - "), 3, row);
 			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 			
@@ -268,7 +270,8 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 					email = getBusiness().getUserBusiness().getEmail(parent);
 					phone = getBusiness().getUserBusiness().getHomePhone(parent);
 
-					table.add(getSmallText(parent.getNameLastFirst(true)), 3, row);
+					name = new Name(parent.getFirstName(), parent.getMiddleName(), parent.getLastName());
+					table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, row);
 					table.add(getSmallText(" - "), 3, row);
 					table.add(getSmallText(PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 			

@@ -55,6 +55,7 @@ import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
 /**
  * Title:        se.idega.idegaweb.commune.business.CommuneUserBusinessBean
@@ -1242,14 +1243,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	public String getNameLastFirst(User user, boolean comma){
-		String lastFirstName = null;
-		if (comma == true){
-			lastFirstName = user.getLastName() + ", " + user.getFirstName();
-		} else {
-			lastFirstName = user.getLastName() + " " + user.getFirstName();
-		}
-		
-		return lastFirstName;
-		
+		Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+		return name.getName(this.getIWMainApplication().getSettings().getDefaultLocale(), comma);
 	}
 }

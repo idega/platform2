@@ -18,6 +18,7 @@ import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -177,8 +178,10 @@ public class ChildCareContracts extends ChildCareBlock {
 							archive.setPage(getResponsePage());
 							table.add(archive, column++, row);
 						}
-						else
-							table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+						else {
+							Name userName = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+							table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
+						}
 						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 						table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 						if (validFrom != null)
@@ -216,7 +219,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						
 					}
 					else {
-						table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+						Name userName = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+						table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
 						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 						row++;
 					}
