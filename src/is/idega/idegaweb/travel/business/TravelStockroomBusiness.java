@@ -206,6 +206,20 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
   }
 
+  public Product[] getProducts(Reseller reseller) {
+    Product[] returner = {};
+    try {
+      Reseller parent = (Reseller) reseller.getParent();
+      if (parent != null) {
+
+      }
+    }catch (Exception sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return returner;
+  }
+
   public Product[] getProducts(int supplierId) {
       Product[] products ={};
 

@@ -592,7 +592,7 @@ public class Booking extends TravelManager {
               countTextBold.setText(Integer.toString(iCount));
             }
 
-            iBooked = Booker.getNumberOfBookings(resellerId, service.getID(), this.stamp);
+            iBooked = Booker.getNumberOfBookingsByReseller(resellerId, service.getID(), this.stamp);
             bookedTextBold.setText(Integer.toString(iBooked));
 
             iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, reseller.getID(), true);

@@ -713,7 +713,7 @@ public class TourBookingForm extends TravelManager {
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
             TextInput ccNumber = new TextInput(this.parameterCCNumber);
-              ccNumber.setMaxlength(16);
+              ccNumber.setMaxlength(19);
               ccNumber.setLength(20);
               //ccNumber.setAsNotEmpty("T - vantar cc númer");
               //ccNumber.setAsIntegers("T - cc númer rangt");

@@ -112,8 +112,9 @@ public class Contracts extends TravelManager {
       //if (supplier != null)
       resellers = getResellers();
 
-      if (reseller != null)
+      if (reseller != null) {
         suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), Supplier.getColumnNameName() );
+      }
 
   }
 
@@ -171,7 +172,7 @@ public class Contracts extends TravelManager {
 
       resName = (Text) theText.clone();
         resName.setBold();
-        resName.setText(iwrb.getLocalizedString("travel.name","Name"));
+        resName.setText(iwrb.getLocalizedString("travel.reseller","Reseller"));
       refNum = (Text) theText.clone();
         refNum.setBold();
         refNum.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
@@ -179,7 +180,6 @@ public class Contracts extends TravelManager {
       table.add(refNum,2,row);
       table.add(Text.NON_BREAKING_SPACE,3,row);
       table.setRowColor(row, super.backgroundColor);
-
 
 
       String theColor = super.GRAY;
@@ -208,7 +208,15 @@ public class Contracts extends TravelManager {
             table.setAlignment(3,row,"right");
 
         }
-      /*}else if (reseller != null) {
+      //}else
+       if (reseller != null) {
+        ++row;
+        table.setRowColor(row, super.backgroundColor);
+        Text suppName = (Text) theText.clone();
+          suppName.setBold();
+          suppName.setText(iwrb.getLocalizedString("travel.supplier","Supplier"));
+        table.add(suppName, 1,row);
+
         for (int i = 0; i < suppliers.length; i++) {
             ++row;
             resName = (Text) theText.clone();
@@ -224,7 +232,7 @@ public class Contracts extends TravelManager {
             table.setAlignment(3,row,"right");
 
         }
-      }*/
+      }
 
       add(form);
   }
@@ -588,10 +596,15 @@ public class Contracts extends TravelManager {
       if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
       tReseller = new Reseller(Integer.parseInt(sResellerId));
     }else if (reseller != null) {
-      resellerId = reseller.getID();
+      if (sResellerId != null) {
+        resellerId = Integer.parseInt(sResellerId);
+      }else {
+        resellerId = reseller.getID();
+      }
+      tReseller = new Reseller(resellerId);
     }
 
-    if (reseller != null) tReseller = reseller;
+//    if (reseller != null) tReseller = reseller;
 
     Form form = new Form();
     Table table = new Table();
@@ -610,9 +623,19 @@ public class Contracts extends TravelManager {
       products = tsb.getProducts(supplier.getID());
     }else if (reseller != null) {
       supplier_id = iwc.getParameter(this.parameterSupplierId);
-      products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), Product.getColumnNameProductName());
+      if (supplier_id == null) {
+        supplier_id = "-1";
+      }/*
+      Reseller res = (Reseller) reseller.getParent();
+      if (res == null) {
+        products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), Product.getColumnNameProductName());
+      }else {
+        products = ResellerManager.getProductsWithContracts(res, reseller.getID(), Product.getColumnNameProductName());
+      }*/
+      products = ResellerManager.getProductsWithContracts(reseller, Product.getColumnNameProductName());
       //products = tsb.getProducts(Integer.parseInt(supplier_id));
     }
+    System.err.println("products.length = "+products.length);
 
     int[] serviceDays;
     int row = 1;
@@ -830,12 +853,17 @@ public class Contracts extends TravelManager {
 
     try {
       Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
-      Iterator myResellers = this.getResellers();
-/*      int[] resellerIds = new int[myResellers.length];
-      for (int i = 0; i < resellerIds.length; i++) {
-        resellerIds[i] = myResellers[i].getID();
+      Iterator itResellers = this.getResellers();
+      List myResellers = new Vector();
+      while (itResellers.hasNext()) {
+        myResellers.add((Reseller) itResellers.next());
       }
-*/
+
+      /*int[] resellerIds = new int[myResellers.size()];
+      for (int i = 0; i < resellerIds.length; i++) {
+        resellerIds[i] = ((Reseller) myResellers.get(i)).getID();
+      }*/
+
 
       int row = 1;
       CheckBox box;
@@ -859,9 +887,11 @@ public class Contracts extends TravelManager {
           nameText.setText(tResellers[i].getName());
         box = new CheckBox(this.parameterCheckBox+"_"+resId);
 
-        while (myResellers.hasNext()) {
-          tempReseller = (Reseller) myResellers.next();
-          if (resId == tempReseller.getID()) box.setChecked(true);
+        for (int j = 0 ; j < myResellers.size() ; j++) {
+          tempReseller = (Reseller) myResellers.get(j);
+          if (resId == tempReseller.getID()) {
+            box.setChecked(true);
+          }
         }/*
         for (int j = 0; j < resellerIds.length; j++) {
           if (resId == resellerIds[j]) box.setChecked(true);
@@ -901,15 +931,26 @@ public class Contracts extends TravelManager {
     if (ids == null) ids = new String[0];
     String box;
 
-    Reseller reseller;
+    Reseller tReseller;
     for (int i = 0; i < ids.length; i++) {
       box = iwc.getParameter(this.parameterCheckBox+"_"+ids[i]);
       try {
         if (box != null) {
-          supplier.addTo(Reseller.class, Integer.parseInt(ids[i]));
+          if (supplier != null) {
+            supplier.addTo(Reseller.class, Integer.parseInt(ids[i]));
+          }
+          if (reseller != null) {
+            tReseller = new Reseller(Integer.parseInt(ids[i]));
+            reseller.addChild(tReseller);
+          }
         }else {
-          reseller = new Reseller(Integer.parseInt(ids[i]));
-          supplier.removeFrom(reseller);
+          tReseller = new Reseller(Integer.parseInt(ids[i]));
+          if (supplier != null) {
+            supplier.removeFrom(tReseller);
+          }
+          if (reseller != null) {
+            reseller.removeChild(tReseller);
+          }
         }
       }catch (SQLException sql) {
       }

@@ -120,7 +120,7 @@ public class SupplierManager {
         pCategory.setSupplierId(supp.getID());
         pCategory.setType(PriceCategory.PRICETYPE_PRICE);
         pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
-        pCategory.setName("Full price");
+        pCategory.setName("Price");
         pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
       pCategory.insert();
 

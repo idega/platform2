@@ -1,7 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
 import com.idega.presentation.ui.*;
-import java.sql.SQLException;
+import java.sql.*;
 import com.idega.data.EntityControl;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
@@ -10,7 +10,7 @@ import com.idega.block.trade.stockroom.data.ProductPrice;
 import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import com.idega.util.database.ConnectionBroker;
-import java.sql.Connection;
+import java.util.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.*;
@@ -107,9 +107,65 @@ public class Booker {
     return getNumberOfBookings(resellerId, serviceId, stamp);
   }
 
-  public static int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
+  private static int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
+    if (resellerId != -1) {
+      try {
+        Reseller reseller = new Reseller(resellerId);
+        Iterator iter = reseller.getChildren();
+        List items = new Vector();
+        if (iter.hasNext()) {
+          /**
+           * @todo gera recusive fall sem skilar int[] af resellerId-um
+           */
+          while (iter.hasNext()) {
+            items.add(iter.next());
+          }
+          int[] tempInts = new int[items.size()];
+          for (int i = 0; i < tempInts.length; i++) {
+            tempInts[i] = ((Reseller) items.get(i)).getID();
+          }
+          return getNumberOfBookings( tempInts , serviceId, stamp);
+        }else {
+          int[] tempInts = {reseller.getID()};
+          return getNumberOfBookings( tempInts , serviceId, stamp);
+        }
+      }catch (SQLException sql) {
+        return 0;
+      }
+    }else {
+      return getNumberOfBookings(null, serviceId, stamp);
+    }
+  }
+
+/*
+  private int[] getResellerIds(Reseller reseller) {
+    List ids = new Vector();
+    return getResellerIds(reseller, ids);
+  }
+
+  private int[] getResellerIds(Reseller reseller, List ids) {
+    int[] returner = {};
+    ids.add(reseller);
+
+    Reseller tempReseller;
+    Iterator iter = reseller.getChildren();
+    while (iter.hasNext()) {
+      tempReseller = (Reseller) iter.next();
+      getResellerIds(tempReseller, ids);
+    }
+
+    return returner;
+  }
+*/
+
+  public static int getNumberOfBookings(int[] resellerIds, int serviceId, idegaTimestamp stamp) {
     int returner = 0;
     try {
+        if (resellerIds == null) {
+          resellerIds = new int[0];
+        }
+        //if (reseller != null) {resellerId = reseller.getID();}
+
         GeneralBooking booking = (GeneralBooking) (GeneralBooking.getStaticInstance(GeneralBooking.class));
         Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
 
@@ -117,9 +173,14 @@ public class Booker {
           StringBuffer sql = new StringBuffer();
             sql.append("Select sum(b."+GeneralBooking.getTotalCountColumnName()+") from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
             sql.append(" where ");
-            if (resellerId != -1) {
-              sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
-              sql.append(" and ");
+            if (resellerIds.length > 0 ) {
+              sql.append(" br."+reseller.getIDColumnName()+" in (");
+              for (int i = 0; i < resellerIds.length; i++) {
+                if (i != 0) sql.append(", ");
+                sql.append(resellerIds[i]);
+              }
+
+              sql.append(") and ");
             }
             sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
             sql.append(" and ");

@@ -46,7 +46,7 @@ public class ResellerManager {
   }
 
   public static Reseller createReseller(Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    return createReseller(-1, null, name, userName, password, description, addressIds, phoneIds, emailIds);
+    return createReseller(-1, parentReseller, name, userName, password, description, addressIds, phoneIds, emailIds);
   }
 
   private static Reseller createReseller(int resellerId, Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
@@ -55,7 +55,6 @@ public class ResellerManager {
 
     if (description == null) description = "";
 
-    System.err.println("ResellerManager : isUpdate "+isUpdate);
 
     if (isUpdate) {
       Reseller res = new Reseller(resellerId);
@@ -102,10 +101,7 @@ public class ResellerManager {
       reseller.insert();
 
       if (parentReseller != null) {
-        System.err.println("ResellerManager : Zippeddi");
         parentReseller.addChild(reseller);
-      }else {
-        System.err.println("ResellerManager : Not zippeddi");
       }
 
       UserBusiness uBus = new UserBusiness();
@@ -357,26 +353,65 @@ public class ResellerManager {
     return suppliers;
   }
 
+  public static Product[] getProductsWithContracts(Reseller reseller) {
+    return getProductsWithContracts(reseller, null);
+  }
+
+  public static Product[] getProductsWithContracts(Reseller reseller, String orderBy) {
+    Reseller parent = (Reseller) reseller.getParent();
+    if (parent == null) {
+      System.err.println("parent == null : "+reseller.getID());
+      return getProductsWithContracts(-1, reseller.getID(),-1, orderBy);
+    }else {
+      System.err.println("parent != null : "+reseller.getID());
+      return getProductsWithContracts(parent, orderBy);
+    }
+  }
+/*
+  public static Product[] getProductsWithContracts(Reseller ownerReseller, int contractedResellerId) {
+    return getProductsWithContracts(ownerReseller, contractedResellerId,  null);
+  }
+
+  public static Product[] getProductsWithContracts(Reseller ownerReseller, int contractedResellerId, String orderBy) {
+    return getProductsWithContracts(ownerReseller.getID(), contractedResellerId, -1, orderBy);
+  }
+*/
   public static Product[] getProductsWithContracts(int resellerId, int supplierId) {
     return getProductsWithContracts(resellerId, supplierId, null);
   }
 
   public static Product[] getProductsWithContracts(int resellerId, int supplierId, String orderBy) {
+    return getProductsWithContracts(-1, resellerId ,supplierId, orderBy);
+  }
+
+  private static Product[] getProductsWithContracts(int ownerResellerId, int contractedResellerId, int supplierId, String orderBy) {
     Product[] products =  {};
     try {
       Product product = (Product) Product.getStaticInstance(Product.class);
       Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
+      Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(p.*) FROM  "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append("SELECT distinct(p.*) FROM  "+contract.getContractTableName() +" c");
+        buffer.append(", "+product.getEntityName()+" p");
+        if (ownerResellerId != -1) {
+          buffer.append(", "+reseller.getTreeRelationshipTableName(reseller)+" r");
+        }
         buffer.append(" WHERE ");
-        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append("c."+contract.getColumnNameResellerId()+" = "+contractedResellerId);
         buffer.append(" AND ");
         buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
-        buffer.append(" AND ");
-        buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+        if (supplierId != -1) {
+          buffer.append(" AND ");
+          buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+        }else if (ownerResellerId != -1) {
+          buffer.append(" AND ");
+          buffer.append("r."+reseller.getTreeRelationshipChildColumnName(reseller)+"="+contractedResellerId);
+          buffer.append(" AND ");
+          buffer.append("r."+reseller.getIDColumnName()+"="+ownerResellerId);
+        }
         if (orderBy != null && !orderBy.equals("")) {
-        buffer.append(" ORDER BY p."+orderBy);
+          buffer.append(" ORDER BY p."+orderBy);
         }
 
       products = (Product[]) product.findAll(buffer.toString());
