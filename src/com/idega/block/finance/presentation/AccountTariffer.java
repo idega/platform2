@@ -19,6 +19,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 
 
@@ -50,7 +52,9 @@ public class AccountTariffer extends Finance {
   private AccountBusiness accBuiz;
   private String prmNewTariff = "fin_ati_nwta";
 
-  private String prmTariffs = "fin_trf_ids";
+  private String prmQuantity = "fin_trf_qty";
+  private String prmTariffIds = "fin_trf_ids";
+  private String prmTariffCheck = "fin_trf_chk";
   private String prmTariffName = "fin_trf_nme";
   private String prmTariffInfo = "fin_trf_ifo";
   private String prmAccountKey = "fin_acc_kid";
@@ -116,16 +120,32 @@ public class AccountTariffer extends Finance {
 
   private void parse(IWContext iwc)throws java.rmi.RemoteException{
     if(iwc.isParameterSet(prmConfirm)&& iwc.getParameter(prmConfirm).equals("true")){
-      System.err.println("confirmation");
+      //System.err.println("confirmation");
       String paydate = iwc.getParameter(prmPayDate);
       IWTimestamp Pd = new IWTimestamp(paydate);
       String SDiscount = iwc.getParameter(prmDiscount);
       int discount = SDiscount!=null && !SDiscount.equals("")?Integer.parseInt(SDiscount):-1;
 
       AssessmentBusiness assBuiz = (AssessmentBusiness) IBOLookup.getServiceInstance(iwc,AssessmentBusiness.class);
-      if(iwc.isParameterSet(prmTariffs)){
-        System.err.println("using tariffs");
-        String[] tariff_ids = iwc.getParameterValues(prmTariffs);
+      String[] qtys = iwc.getParameterValues(prmQuantity);
+      String[] ids = iwc.getParameterValues(prmTariffIds);
+      if(qtys!=null && qtys.length>0 && ids!=null && qtys.length==ids.length){
+		Vector t_ids = new Vector();
+      	for (int i = 0; i < qtys.length; i++) {
+			Integer qty = Integer.valueOf(qtys[i]);
+			for (int j = 0; j <qty.intValue(); j++) {
+				t_ids.add(qty.toString());
+			}
+		}
+		if(t_ids.size()>0){
+			String[] tariffIds = (String[]) t_ids.toArray(new String[0]);
+			assBuiz.assessTariffsToAccount(tariffIds,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
+		}
+		
+	  }
+      else if(iwc.isParameterSet(prmTariffCheck)){
+        //System.err.println("using tariffs");
+        String[] tariff_ids = iwc.getParameterValues(prmTariffCheck);
         assBuiz.assessTariffsToAccount(tariff_ids,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
       }
       else{
@@ -133,7 +153,7 @@ public class AccountTariffer extends Finance {
         int price = iwc.isParameterSet(prmAmount)?Integer.parseInt(iwc.getParameter(prmAmount)):0;
         if(keyId>0 && price !=0){
           int TariffGroupId = iwc.isParameterSet(prmTariffGroupId)?Integer.parseInt(iwc.getParameter(prmTariffGroupId)):-1;
-          System.err.println("using new tariff");
+          //System.err.println("using new tariff");
           String name = iwc.getParameter(prmTariffName);
           String info = iwc.getParameter(prmTariffInfo);
           boolean saveTariff = iwc.isParameterSet(prmSaveTariff);
@@ -225,6 +245,7 @@ public class AccountTariffer extends Finance {
       T.add(textFormat.format(iwrb.getLocalizedString("attribute","Attribute")),col++,row);
     T.add(textFormat.format(iwrb.getLocalizedString("name","Name")),col++,row);
     T.add(textFormat.format(iwrb.getLocalizedString("price","Price")),col++,row);
+	T.add(textFormat.format(iwrb.getLocalizedString("quantity","Qty.")),col++,row);
     row++;
     if(listOfTariffs!=null){
       java.util.Iterator I = listOfTariffs.iterator();
@@ -232,12 +253,15 @@ public class AccountTariffer extends Finance {
       while(I.hasNext()){
         col = 1;
         tariff = (Tariff) I.next();
-        CheckBox chk = new CheckBox(prmTariffs,tariff.getPrimaryKey().toString());
+        CheckBox chk = new CheckBox(prmTariffCheck,tariff.getPrimaryKey().toString());
         T.add(chk,col++,row);
         if(hasMap)
           T.add(textFormat.format((String) map.get(tariff.getTariffAttribute())),col++,row);
         T.add(textFormat.format(tariff.getName()),col++,row);
         T.add(textFormat.format(Float.toString(tariff.getPrice())),col,row);
+        IntegerInput QtyInput= new IntegerInput(prmQuantity);
+        T.add(QtyInput,col,row);
+        T.add(new HiddenInput(prmTariffIds,tariff.getPrimaryKey().toString()));
         row++;
       }
       T.getContentTable().setColumnAlignment(col,"right");
