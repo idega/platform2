@@ -65,14 +65,14 @@ public class GolfCacher {
     return mydropdown;
   }
 
-  public Union getCachedUnion(int union_id){
+  public static Union getCachedUnion(int union_id){
     if(UnionsHashtable == null){
       initializeUnions();
     }
     return (Union)UnionsHashtable.get(Integer.toString(union_id));
   }
 
-  public Union getCachedUnion(String union_id){
+  public static Union getCachedUnion(String union_id){
     if(UnionsHashtable == null){
       initializeUnions();
     }
