@@ -1,5 +1,7 @@
 package com.idega.block.contract.data;
 
+import com.idega.data.IDOQuery;
+
 
 public class ContractTagHomeImpl extends com.idega.data.IDOFactory implements ContractTagHome
 {
@@ -20,7 +22,7 @@ public class ContractTagHomeImpl extends com.idega.data.IDOFactory implements Co
 	}
 
  }
-
+ 
  public ContractTag findByPrimaryKey(int id) throws javax.ejb.FinderException{
   return (ContractTag) super.idoFindByPrimaryKey(id);
  }
@@ -42,6 +44,13 @@ public class ContractTagHomeImpl extends com.idega.data.IDOFactory implements Co
  public java.util.Collection findAllByCategory(int p0) throws javax.ejb.FinderException{
 	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	 java.util.Collection ids = ((ContractTagBMPBean)entity).ejbFindAllByCategory(p0);
+	 this.idoCheckInPooledEntity(entity);
+	 return this.getEntityCollectionForPrimaryKeys(ids);
+ }
+ 
+ public java.util.Collection findAllByNameAndCategory(String name, int categoryId) throws javax.ejb.FinderException{
+	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	 java.util.Collection ids = ((ContractTagBMPBean)entity).ejbFindAllByNameAndCategory(name, categoryId);
 	 this.idoCheckInPooledEntity(entity);
 	 return this.getEntityCollectionForPrimaryKeys(ids);
  }
