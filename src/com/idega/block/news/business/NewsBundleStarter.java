@@ -196,7 +196,10 @@ public class NewsBundleStarter implements IWBundleStartable{
     new NewsBundleStarter().start();
   }
 
-
-
-
+	/**
+	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
+	 */
+	public void stop(IWBundle starterBundle) {
+		//does nothing...
+	}
 }

@@ -55,5 +55,10 @@ public class WebSearchBundleStarter implements IWBundleStartable {
 	  return IW_BUNDLE_IDENTIFIER;
   }
 
-
+	/**
+	 * @see com.idega.idegaweb.IWBundleStartable#stop(IWBundle)
+	 */
+	public void stop(IWBundle starterBundle) {
+		//does nothing...
+	}
 }
