@@ -357,8 +357,15 @@ public class ReportOverview extends Block {
     		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
     		query.setIdentifierValueMap(modifiedValues);
     		// show result of query
-    		executeQuery(query, bridge);
-    		// show again the input fields
+    	if (! executeQuery(query, bridge))	{
+    		String errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
+    		Text text = new Text(errorMessage);
+    		text.setBold();
+    		text.setFontColor("#FF0000");
+    		add(text);
+    		add(Text.getBreak());
+    	}	
+     		// show again the input fields
     		showInputFields(query, modifiedValues, resourceBundle);	
     	}
     }
@@ -369,6 +376,7 @@ public class ReportOverview extends Block {
     		text.setBold();
     		text.setFontColor("#FF0000");
     		add(text);
+    		add(Text.getBreak());
     	}	
     	getListOfQueries(bundle, resourceBundle);	
     }
