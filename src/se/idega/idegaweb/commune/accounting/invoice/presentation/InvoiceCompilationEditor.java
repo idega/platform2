@@ -66,10 +66,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/26 14:43:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 09:16:47 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.58 $
+ * @version $Revision: 1.59 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -640,6 +640,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
+            final String operationalField
+                    = getSession ().getOperationalField ();
             final User userFound = searcher.getUser ();
             final Date fromPeriod = getPeriodParameter (context,
                                                         START_PERIOD_KEY);
@@ -647,9 +649,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final InvoiceBusiness business = (InvoiceBusiness)
                     IBOLookup.getServiceInstance (context,
                                                   InvoiceBusiness.class);
-            final InvoiceHeader [] headers = business
-                    .getInvoiceHeadersByCustodianOrChild (userFound, fromPeriod,
-                                                          toPeriod);
+            final InvoiceHeader [] headers
+                    = business.getInvoiceHeadersByCustodianOrChild
+                    (operationalField, userFound, fromPeriod, toPeriod);
             table.mergeCells (1, row, table.getColumns (), row);            
             if (0 < headers.length) {
                 table.add (getInvoiceCompilationListTable (context, headers), 1,

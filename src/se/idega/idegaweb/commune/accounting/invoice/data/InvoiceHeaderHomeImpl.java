@@ -20,9 +20,9 @@ public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ej
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findByCustodianOrChild(com.idega.user.data.User p0,java.util.Date p1,java.util.Date p2)throws javax.ejb.FinderException{
+public java.util.Collection findByCustodianOrChild(String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodianOrChild(p0,p1,p2);
+	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodianOrChild(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

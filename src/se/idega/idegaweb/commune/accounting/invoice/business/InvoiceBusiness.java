@@ -12,7 +12,7 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.user.data.User getChildByInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader[] getInvoiceHeadersByCustodianOrChild(com.idega.user.data.User p0,java.util.Date p1,java.util.Date p2) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader[] getInvoiceHeadersByCustodianOrChild(String schoolCategory,com.idega.user.data.User p0,java.util.Date p1,java.util.Date p2) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome getInvoiceRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome getPaymentRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome getPaymentHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;

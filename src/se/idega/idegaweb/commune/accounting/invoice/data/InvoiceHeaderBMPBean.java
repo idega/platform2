@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMemberBMPBean;
+import com.idega.block.school.data.SchoolTypeBMPBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
@@ -10,6 +11,7 @@ import com.idega.util.IWTimestamp;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.ejb.FinderException;
 
 /**
@@ -174,14 +176,15 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
      * @return collection of invoice headers
      */
     public Collection ejbFindByCustodianOrChild
-        (final User user, final java.util.Date fromDate, java.util.Date toDate)
-        throws FinderException {
+        (final String schoolCategory, final User user,
+         final Collection custodians, final java.util.Date fromDate,
+         java.util.Date toDate) throws FinderException {
 		final IDOQuery sql = idoQuery ();
         final String H_ = "h."; // sql alias for invoice header
         final String U_ = "u."; // sql alias for user
         final String R_ = "r."; // sql alias for invoice record
         final String M_ = "m."; // sql alias for school class member
-        final String userId = user.getPrimaryKey ().toString ();
+        final String T_ = "t."; // sql alias for school type
         final Date fromPeriod = getPeriod (fromDate, 0);
         final Date toPeriod = getPeriod (toDate, 1);
         final String [] outerTableNames =
@@ -189,8 +192,9 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String [] outerTableAliases = { "h", "u" };
         final String [] innerTableNames =
                 { InvoiceRecordBMPBean.ENTITY_NAME,
-                  SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
-        final String [] innerTableAliases = { "r", "m" };
+                  SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER,
+                  SchoolTypeBMPBean.SCHOOLTYPE };
+        final String [] innerTableAliases = { "r", "m", "t" };
 
         sql.appendSelect()
                 .append (H_)
@@ -198,8 +202,10 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
                 .appendFrom (outerTableNames, outerTableAliases)
                 .appendWhere ()
                 .appendLeftParenthesis ()
-                .appendEquals (H_ + COLUMN_CUSTODIAN_ID, userId)
-                .appendOr ()
+                .appendEquals (H_ + COLUMN_CUSTODIAN_ID, user);
+
+        // << inner 'exists' selection starts here
+        sql.appendOr ()
                 .append (" exists ")
                 .appendLeftParenthesis ()
                 .appendSelect()
@@ -212,11 +218,22 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
                 .appendAndEquals
                 (R_ + InvoiceRecordBMPBean.COLUMN_SCHOOL_CLASS_MEMBER_ID,
                  M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID)
-                .appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER,
-                                  userId)
-                .appendRightParenthesis ()
-                .appendRightParenthesis ()
-                .appendAndEquals (userId, U_ + User.FIELD_USER_ID);
+                .appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER, user)
+                .appendAndEquals (M_ + SchoolClassMemberBMPBean.SCHOOL_TYPE,
+                                  T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
+        if (null != schoolCategory && 0 < schoolCategory.length ()) {
+            sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
+                                       schoolCategory);
+        }
+        sql.appendRightParenthesis ();
+        // inner 'exists' selection ends here >>
+
+        for (Iterator i = custodians.iterator (); i.hasNext ();) {
+            final User custodian = (User) i.next ();
+            sql.appendOrEquals (H_ + COLUMN_CUSTODIAN_ID, custodian);
+        }
+        sql.appendRightParenthesis ()
+                .appendAndEquals (U_ + User.FIELD_USER_ID, user);
         if (null != fromPeriod) {
             sql.appendAnd ()
                     .append (H_ + COLUMN_PERIOD)
@@ -226,7 +243,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         if (null != toPeriod) {
             sql.appendAnd ()
                     .append (toPeriod)
-                    .appendGreaterThanOrEqualsSign ()
+                    .appendGreaterThanSign ()
                     .append (H_ + COLUMN_PERIOD);
         }
         sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);

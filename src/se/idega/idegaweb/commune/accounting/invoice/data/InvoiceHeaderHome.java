@@ -6,7 +6,7 @@ public interface InvoiceHeaderHome extends com.idega.data.IDOHome
  public InvoiceHeader create() throws javax.ejb.CreateException;
  public InvoiceHeader findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ejb.FinderException;
- public java.util.Collection findByCustodianOrChild(com.idega.user.data.User p0,java.util.Date p1,java.util.Date p2)throws javax.ejb.FinderException;
+ public java.util.Collection findByCustodianOrChild(String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException;
  public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException;
  public java.util.Collection findByMonthAndSchoolCategory(java.sql.Date p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
 

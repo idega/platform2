@@ -1,10 +1,13 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+
 import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -37,6 +40,7 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -59,10 +63,10 @@ import com.lowagie.text.pdf.PdfWriter;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/26 22:57:06 $ by $Author: palli $
+ * Last modified: $Date: 2003/11/27 09:16:47 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -121,10 +125,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			document.open ();
 
             // add content to document
-			final PdfPTable table = new PdfPTable (columnNames.length);
+			final PdfPTable table = new PdfPTable
+                    (new float [] { 1.0f, 1.0f, 1.2f, 0.8f, 0.8f, 1.2f });
 			table.setWidthPercentage (100f);
             table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-            table.getDefaultCell ().setNoWrap (true);
             table.getDefaultCell ().setBorder (0);
             for (int i = 0; i < columnNames.length; i++) {
                 table.addCell (columnNames [i]);
@@ -318,19 +322,40 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param toDate last month in search span
 	 * @return array of invoice headers
 	 */
-	public InvoiceHeader[] getInvoiceHeadersByCustodianOrChild(
-		final User user,
-		final java.util.Date fromPeriod,
-		java.util.Date toPeriod) {
-		Collection collection = null;
+	public InvoiceHeader[] getInvoiceHeadersByCustodianOrChild
+        (final String schoolCategory, final User user,
+         final java.util.Date fromPeriod, java.util.Date toPeriod) {
+		final Collection headers = new ArrayList ();
+        final Collection custodians = new ArrayList ();
+
+        // find custodians for user
+        try {
+            final Collection temp
+                    = getMemberFamilyLogic ().getCustodiansFor (user);
+            if (null != temp) {
+                custodians.addAll (temp);
+            }
+		} catch (RemoteException exception) {
+			exception.printStackTrace();
+        } catch (Exception e) {
+            // no problem, no custodians found
+        }
+
+        // find invoice headers related to custodian or user
 		try {
-			collection = getInvoiceHeaderHome().findByCustodianOrChild(user, fromPeriod, toPeriod);
+			final Collection temp
+                    = getInvoiceHeaderHome ().findByCustodianOrChild
+                    (schoolCategory, user, custodians, fromPeriod, toPeriod);
+            if (null != temp) {
+                headers.addAll (temp);
+            }
 		} catch (RemoteException exception) {
 			exception.printStackTrace();
 		} catch (FinderException exception) {
 			// no problem, return empty array
 		}
-		return null == collection ? new InvoiceHeader[0] : (InvoiceHeader[]) collection.toArray(new InvoiceHeader[0]);
+
+		return (InvoiceHeader []) headers.toArray (new InvoiceHeader [0]);
 	}
 
 	/**
@@ -544,6 +569,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
         throws RemoteException {
 		return (RegulationSpecTypeHome)
                 IDOLookup.getHome(RegulationSpecType.class);
+	}
+
+	public MemberFamilyLogic getMemberFamilyLogic () throws RemoteException {
+		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);	
 	}
 
 	protected VATRuleHome getVatRuleHome () throws RemoteException {
