@@ -1286,6 +1286,132 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//finished return the collection
 		return reportCollection;
 	}
+	
+	/*
+	 * Report B12.2.6 of the ISI Specs
+	 */
+	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesAndRegionalUnionsFiltering(final Integer year,Collection regionalUnionsFilter,Collection leaguesFilter)throws RemoteException {
+
+		//initialize stuff
+		int age = 16;
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+	
+		//PARAMETES
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+	
+		//PARAMETERS that are also FIELDS
+		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
+		//The name you give the field/parameter must not contain spaces or special characters
+	
+		//fake columns (data gotten by business methods)
+		
+		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionFiffName);
+				
+		ReportableField leagueString = new ReportableField("league_info", String.class);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		reportCollection.addField(leagueString);
+	
+		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenUnderAgeLimit);
+	
+		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenOverOrEqualAgeLimit);
+	
+		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		reportCollection.addField(menUnderAgeLimit);
+	
+		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		reportCollection.addField(menOverOrEqualAgeLimit);
+		
+		//Real data stuff
+		//Gathering data
+		//Get all the workreports (actually more than needed)
+		//then for each get its leagues and the count for
+		//each age and create a row and insert into an ordered map by league
+		//then insert into the final report collection.
+		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Map leagueStatsMap = new TreeMap();
+		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+	
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			
+			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
+			
+			try {
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					Integer leagueKey = (Integer) league.getPrimaryKey();
+				
+					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+						continue; //don't process this one, go to next
+					}
+				
+					String leagueIdentifier = getLeagueIdentifier(league);
+					//fetch the stats or initialize
+					ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
+					if(leagueStatsData==null){//initialize
+						leagueStatsData = new ReportableData();
+						leagueStatsData.addData(regionalUnionFiffName, regionalUnionIdentifier);
+						leagueStatsData.addData(leagueString, leagueIdentifier);
+						leagueStatsData.addData(womenUnderAgeLimit, new Integer(0));
+						leagueStatsData.addData(womenOverOrEqualAgeLimit, new Integer(0));
+						leagueStatsData.addData(menUnderAgeLimit,new Integer(0));
+						leagueStatsData.addData(menOverOrEqualAgeLimit, new Integer(0));
+					}
+				
+					//add to counts
+					int womenUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					leagueStatsData = addToIntegerCount(womenUnderAgeLimit, leagueStatsData, womenUnder);
+				
+					int womenOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					leagueStatsData = addToIntegerCount(womenOverOrEqualAgeLimit, leagueStatsData, womenOver);
+				
+					int menUnder = getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);				
+					leagueStatsData = addToIntegerCount(menUnderAgeLimit, leagueStatsData, menUnder);
+				
+					int menOver = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
+					leagueStatsData = addToIntegerCount(menOverOrEqualAgeLimit, leagueStatsData, menOver);
+				
+					//put it back again
+					leagueStatsMap.put(leagueKey,leagueStatsData);
+				
+				}
+			
+			}
+			catch (IDOException e) {
+				e.printStackTrace();
+			}
+		
+		}
+	
+
+		//add the data to the collection
+		reportCollection.addAll(leagueStatsMap.values());
+	
+		//finished return the collection
+		return reportCollection;
+
+	}
+
 
 private List getGroupIdListFromWorkReportGroupCollection(Collection leaguesFilter) {
 	List leagueGroupIdList = null;

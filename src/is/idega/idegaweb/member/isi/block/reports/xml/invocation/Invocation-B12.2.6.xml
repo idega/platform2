@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE invoke >
+<invoke>
+<method_description name="getStatisticsForLeaguesByYearAndLeaguesAndRegionalUnionsFiltering">
+<class_description class="is.idega.idegaweb.member.isi.block.reports.business.WorkReportStatsBusiness" default_display_name="WorkReportStatsBusiness" type="IBOSessionBean">
+</class_description>
+<input>
+<class_description class="java.lang.Integer" default_display_name="Work report year" name="workReportYear">
+<localized_name name="Ar" locale="is_IS"/>
+<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportYearDropDownMenu" />
+</class_description>
+<class_description class="java.util.Collection" default_display_name="Regional unions" name="regUnions">
+<localized_name name="Heradssambond" locale="is_IS"/>
+<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.RegionalUnionSelectionBox" />
+</class_description>
+<class_description class="java.util.Collection" default_display_name="Leagues" name="league">
+<localized_name name="Sersambond" locale="is_IS"/>
+<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.LeagueSelectionBox" />
+</class_description>
+</input>
+<output>
+<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="">
+</class_description>
+</output>
+</method_description>
+</invoke>
