@@ -136,6 +136,7 @@ public class CareLinkSearchPatient extends EHealthBlock {
 		searcher.setShowMiddleNameInSearch(false);
 		searcher.setSkipResultsForOneFound(false);
 		searcher.setLegalNonDigitPIDLetters("TFtf");
+		searcher.setStyleClass(STYLENAME_SMALL_HEADER);
 		table.add(searcher,1,1);
 		add(table);
 	}
