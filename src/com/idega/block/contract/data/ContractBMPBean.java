@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.16 2003/07/01 18:10:08 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.17 2003/07/01 20:23:06 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,8 @@ import java.util.Set;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
+import org.jdom.Text;
 
 import com.idega.core.data.ICFile;
 import com.idega.data.IDOAddRelationshipException;
@@ -280,10 +282,12 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 					merged.append(value != null ? value : "<" + name + "/>");
 				}
 				//				else if (obj instanceof XMLCDATA) { ignore	}
-				else if (obj instanceof String) {
-					//TODO: (roar) remove dbg code:
-					System.out.println("### setUnsetFields:obj instanceof String: " + (String)obj);				
-					merged.append((String)obj);
+				else if (obj instanceof Text) {
+					String text = ((Text)obj).getText();				
+//				else if (obj instanceof String) {
+//					//TODO: (roar) remove dbg code:
+					System.out.println("### setUnsetFields:obj instanceof String: " + text);				
+					merged.append(text);
 				}
 				//TODO: (roar) remove dbg code:
 				System.out.println("### setUnsetFields:merged: " + merged.toString());					
