@@ -33,9 +33,9 @@ public class ChildCareContracts extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		if (allowAlter)
-			table.setColumns(7);
+			table.setColumns(8);
 		else
-			table.setColumns(6);
+			table.setColumns(7);
 		table.setRowColor(1, getHeaderColor());
 		int column = 1;
 		int row = 1;
@@ -44,6 +44,7 @@ public class ChildCareContracts extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row++);
 
 		Collection contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
@@ -83,12 +84,17 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 				table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				if (application.getApplicationStatus() == getBusiness().getStatusReady())
+					table.add(getSmallText(localize("child_care.status_ready","Active")), column, row);
+				else if (application.getApplicationStatus() == getBusiness().getStatusCancelled())
+					table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
+				column++;
 				table.add(getSmallText(String.valueOf(application.getCareTime())), column++, row);
 				
 				table.setWidth(column, row, 12);
 				table.add(viewContract, column++, row);
 
-				if (allowAlter) {
+				if (allowAlter && application.getApplicationStatus() == getBusiness().getStatusReady()) {
 					table.setWidth(column, row, 12);
 					table.add(alterCareTime, column++, row);
 				}
@@ -98,8 +104,16 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+			table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 
 		add(table);		
 	}
+	/**
+	 * @param b
+	 */
+	public void setAllowAlter(boolean b) {
+		allowAlter = b;
+	}
+
 }

@@ -36,8 +36,6 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
-			handleAction(iwc);
-			
 			Table table = new Table(1,5);
 			table.setWidth(getWidth());
 			table.setCellpadding(0);
@@ -66,16 +64,13 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		}
 	}
 
-	protected Form getChildrenTable(IWContext iwc) throws RemoteException {
-		Form form = new Form();
-		
+	protected Table getChildrenTable(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(6);
 		table.setRowColor(1, getHeaderColor());
-		form.add(table);
 		int row = 1;
 		int column = 1;
 			
@@ -89,7 +84,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Address address;
 		Phone phone;
 		Link move;
-		SubmitButton delete;
+		Link delete;
 		
 		IWTimestamp stamp = new IWTimestamp();
 		//stamp.addDays(1);
@@ -110,8 +105,11 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			move.addParameter(ChildCareAdminWindow.PARAMETER_OLD_GROUP, student.getSchoolClassId());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			
-			delete = new SubmitButton(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")), PARAMETER_CHILD_ID, String.valueOf(student.getClassMemberId()));
-			delete.setSubmitConfirm(localize("child_care.confirm_deletion","Are you sure you want to remove this student from the childcare and cancel its contract?"));
+			delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+			delete.setWindowToOpen(ChildCareWindow.class);
+			delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+			delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+			delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());
@@ -133,7 +131,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.add(delete, column++, row++);
 		}
 		
-		return form;
+		return table;
 	}
 
 	protected Form getNavigationTable() throws RemoteException {
@@ -158,17 +156,5 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		menu.setToSubmit();
 		
 		return menu;	
-	}
-
-	private void handleAction(IWContext iwc) throws RemoteException {
-		if (iwc.isParameterSet(PARAMETER_CHILD_ID)) {
-			ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(Integer.parseInt(iwc.getParameter(PARAMETER_CHILD_ID)), getSession().getChildCareID());
-			if (application != null) {
-				String subject = localize("child_care.cancel_contract_subject","Your child care contract has been terminated.");
-				String body = localize("child_care.cancel_contract_body","Your contract for {0} at {1} has been terminated.");
-			
-				getBusiness().cancelContract(application, subject, body, iwc.getCurrentUser());
-			}
-		}
 	}
 }

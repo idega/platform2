@@ -12,10 +12,12 @@ import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
@@ -44,6 +46,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_THREE_MONTHS_PROGNOSIS = "cc_three_months";
 	public static final String PARAMETER_ONE_YEAR_PROGNOSIS = "cc_one_year";
 	public static final String PARAMETER_OFFER_VALID_UNTIL = "cc_offer_valid_until";
+	public static final String PARAMETER_CANCEL_REASON = "cc_cancel_reason";
+	public static final String PARAMETER_CANCEL_MESSAGE = "cc_cancel_message";
+	public static final String PARAMETER_CANCEL_DATE = "cc_cancel_date";
+	
 
 	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
@@ -57,6 +63,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_MOVE_TO_GROUP = 8;
 	public static final int METHOD_UPDATE_PROGNOSIS = 9;
 	public static final int METHOD_ALTER_CARE_TIME = 10;
+	public static final int METHOD_CANCEL_CONTRACT = 11;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -198,6 +205,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_ALTER_CARE_TIME :
 				headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
 				contentTable.add(getAlterCareTimeForm(iwc));
+				break;
+			case METHOD_CANCEL_CONTRACT :
+				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract")));
+				contentTable.add(getCancelContractForm(iwc));
 				break;
 		}
 		
@@ -351,6 +362,56 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dateInput, 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
+		table.add(placeInGroup, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getCancelContractForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
+		parentalLeave.keepStatusOnAction(true);
+		RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
+		other.keepStatusOnAction(true);
+		if (!iwc.isParameterSet(PARAMETER_CANCEL_REASON))
+			other.setSelected(true);
+		
+		table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
+		table.add(parentalLeave, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
+		table.add(new Break(), 1, row);
+		table.add(other, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+		
+		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_CANCEL_MESSAGE));
+		textArea.setWidth(Table.HUNDRED_PERCENT);
+		textArea.setHeight(4);
+		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+		textArea.keepStatusOnAction(true);
+
+		table.add(getSmallHeader(localize("child_care.cancel_reason_message", "Reason for cancel")+":"), 1, row++);
+		table.add(textArea, 1, row++);
+
+		IWTimestamp stamp = new IWTimestamp();
+		stamp.addMonths(2);
+		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
+		dateInput.setDate(stamp.getDate());
+		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+		dateInput.keepStatusOnAction(true);
+
+		table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date")+":"), 1, row++);
+		table.add(dateInput, 1, row++);
+
+		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 		table.add(placeInGroup, 1, row);
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(close, 1, row);
@@ -549,10 +610,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if (application != null) {
-			String subject = localize("child_care.cancel_contract_subject","Your child care contract has been terminated.");
-			String body = localize("child_care.cancel_contract_body","Your contract for {0} at {1} has been terminated.");
+			boolean reason = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
+			String message = iwc.getParameter(PARAMETER_CANCEL_MESSAGE);
+			IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
 			
-			getBusiness().cancelContract(application, subject, body, iwc.getCurrentUser());
+			String reasonMessage = "";
+			if (reason)
+				reasonMessage = localize("child_care.parental_leave", "Parental leave");
+			else
+				reasonMessage = message;
+			
+			Object[] arguments = { "{0}", "{1}", reasonMessage, date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) };
+			
+			String subject = localize("child_care.cancel_contract_subject","Your child care contract has been terminated.");
+			String body = localize("child_care.cancel_contract_body","Your contract for {0} at {1} has been terminated because of {2}. The termination will be active on {3}.");
+			
+			getBusiness().cancelContract(application, reason, date, message, subject, MessageFormat.format(body, arguments), iwc.getCurrentUser());
 		}
 		
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
