@@ -147,7 +147,7 @@ public class QueryResult implements JRDataSource {
   	return cells.sizeOfFirstKeySet();
   }
   
-  /** @see dori.jasper.engine.JRDataSource#next()
+  /** @see net.sf.jasperreports.engine.JRDataSource#next()
    * 
    */
   public boolean next() throws JRException  {
@@ -173,7 +173,7 @@ public class QueryResult implements JRDataSource {
    }
 
   /**
-   *  @see dori.jasper.engine.JRDataSource#next()
+   *  @see net.sf.jasperreports.engine.JRDataSource#next()
    * 
    */
   public Object getFieldValue(JRField jrField) throws JRException {
