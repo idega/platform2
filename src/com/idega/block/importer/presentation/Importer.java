@@ -4,9 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.ejb.FinderException;
-
+import javax.ejb.CreateException;
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
@@ -16,8 +14,6 @@ import com.idega.block.media.presentation.MediaChooserWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileBMPBean;
-import com.idega.core.file.data.ICFileHome;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.help.presentation.Help;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
@@ -422,30 +418,7 @@ public class Importer extends StyledIWAdminWindow {
 						else {
 							fileTable.add(new Text(iwrb.getLocalizedString("importer.not.imported", "Not imported")), 5, row);
 						}
-						String reportFilename = file.getName();
-						int i = reportFilename.indexOf('_');
-						if(i>0)
-						{
-							reportFilename = reportFilename.substring(i+1);
-						}
-						i = reportFilename.lastIndexOf('.');
-						if(i>0)
-						{
-							reportFilename = reportFilename.substring(0,i);
-						}
-						reportFilename = reportFilename+".report";
-
-						ICFile reportFile = null;
-						ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-						try {
-							reportFile = fileHome.findByFileName(reportFilename);
-							System.out.println("Reports folder found");
-							//Todo need to get the path to the cached file instead
-//							fileTable.add(new Link("report",reportFile.getName()),6,row);
-							fileTable.add(new Text(reportFile.getName() + " available"),6,row);
-						} catch (FinderException e) {
-//							fileTable.add(new Text("-"),6,row);
-						}
+						addReportInfo(iwc, file.getName(), fileTable, 6, row);
 
 						fileTable.add(new CheckBox(IMPORT_FILE_IDS, ((Integer)file.getPrimaryKey()).toString() ),7,row);
 					}
@@ -484,7 +457,7 @@ public class Importer extends StyledIWAdminWindow {
 		Table fileTable = getFrameTable();
 		if (folder.isDirectory()) {
 			File[] files = folder.listFiles();
-			fileTable.resize(2, files.length + 4);
+			fileTable.resize(3, files.length + 4);
 			Form form = new Form();
 			form.add(fileTable);
 			Text headline = new Text(iwrb.getLocalizedString("importer.select_files", "Select files to import."));
@@ -495,6 +468,7 @@ public class Importer extends StyledIWAdminWindow {
 				if (!files[i].isDirectory()) {
 					fileTable.add(files[i].getName(), 1, i + 2);
 					fileTable.add(new CheckBox(this.IMPORT_FILE_PATHS, files[i].getAbsolutePath()), 2, i + 2);
+					addReportInfo(iwc, files[i].getName(), fileTable, 3, i + 2);
 				}
 				else {
 					fileTable.add(files[i].getName(), 1, i + 2);
@@ -515,6 +489,29 @@ public class Importer extends StyledIWAdminWindow {
 			fileTable.add(iwrb.getLocalizedString("importer.nosuchfolder", "No such folder."), 1, 2);
 			fileTable.add(new BackButton(iwrb.getLocalizedString("importer.try.again", "Try again")), 7, 3);
 			add(fileTable);
+		}
+	}
+
+	private void addReportInfo(IWContext iwc, String fileName, Table fileTable, int column, int row) throws RemoteException, CreateException {
+		ICFile reportFile = getImportBusiness(iwc).getReportFolder(fileName, false);
+		if (reportFile != null) {
+			Iterator reports = reportFile.getChildrenIterator();
+			ICFile report;
+			if (reports.hasNext()) {
+				while (reports != null && reports.hasNext()) {
+					report = (ICFile) reports.next();
+					Link link = new Link( ((Integer) report.getPrimaryKey()).intValue());
+					link.setText(report.getName());
+					link.setOutgoing(true);
+					
+					fileTable.add(link,column,row);
+				}
+			} else {
+				// Backwards thingy
+				if (reportFile != null) {
+					fileTable.add(new Text(reportFile.getName() + " available"),column,row);
+				}
+			}
 		}
 	}
 
