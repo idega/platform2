@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.52 2003/10/28 10:06:43 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.53 2003/10/29 09:30:39 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1119,7 +1119,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				);
 			}
 			
-			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,"Employment",
+			arr.add(new ConditionHolder(RuleTypeConstant.CONDITION_ID_EMPLOYMENT, "Arbetssituation",
 			                            LP + "employment",
 			                            "se.idega.idegaweb.commune.childcare.business.ChildCareBusiness",
 			                            "findAllEmploymentTypes",
