@@ -23,6 +23,7 @@ public interface CitizenAccountBusiness extends com.idega.business.IBOService, A
  public int getNumberOfApplications()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getRejectMessageSubject() throws java.rmi.RemoteException;
  public com.idega.user.data.User getUser(java.lang.String p0) throws java.rmi.RemoteException;
+ public com.idega.user.data.User getUser(java.lang.String p0, java.util.Locale locale) throws java.rmi.RemoteException;
  public com.idega.user.data.User getUserIcelandic(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.Integer insertApplication(com.idega.presentation.IWContext p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5)throws com.idega.core.accesscontrol.business.UserHasLoginException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.Integer insertApplication(com.idega.presentation.IWContext p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5, boolean p6)throws com.idega.core.accesscontrol.business.UserHasLoginException,java.rmi.RemoteException, java.rmi.RemoteException;

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.67 2004/05/18 13:54:11 malin Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.68 2004/05/24 19:09:37 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -69,13 +70,14 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/05/18 13:54:11 $ by $Author: malin $
+ * Last modified: $Date: 2004/05/24 19:09:37 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -319,16 +321,21 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
 	public User getUser(String ssn) {
+		return getUser(ssn, LocaleUtil.getSwedishLocale());
+	}
+	
+	public User getUser(String ssn, Locale locale) {
 		User user = null;
 		try {
 			StringBuffer userSsn = new StringBuffer(ssn);
 			int i = ssn.indexOf('-');
 			if (i != -1) {
 				userSsn.deleteCharAt(i);
-				ssn = userSsn.toString();
 			}
-			if (userSsn.length() == 10) {
-				userSsn.insert(0, "19");
+			if (locale.equals(LocaleUtil.getSwedishLocale())) {
+				if (userSsn.length() == 10) {
+					userSsn.insert(0, "19");
+				}
 			}
 			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userSsn.toString());
 		}

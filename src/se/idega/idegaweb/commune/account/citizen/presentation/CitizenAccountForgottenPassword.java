@@ -97,6 +97,9 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 
 	/** Contains the page where the user can apply for a new account. */
   private ICPage citizenAccountApplicationPage;
+  
+  /** Used when an e-mail should always be sent and never a letter (unless user has no e-mail) */
+  private boolean alwaysSendEmail = false;
 
   /** Sets the page where a user can apply for a new account.
    * @param citizenAccountApplicationPage the page where the user can apply for a new account.
@@ -134,7 +137,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     }
     try  {
       final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-      final User user = business.getUser(ssn);
+      final User user = business.getUser(ssn, iwc.getApplicationSettings().getDefaultLocale());
       if (user == null)
         // user unknown show link to "Citizen account application"
         viewCitizienAccountApplication();
@@ -191,6 +194,9 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     catch (FinderException ex) {
       // last login record was not found  
       lastLoginRecordWasFound = false;
+    }
+    if (alwaysSendEmail) {
+    		lastLoginRecordWasFound = true;
     }
     String message;
     // different messages are returned depending on the result 
@@ -429,10 +435,10 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     return LoginDBHandler.getGeneratedPasswordForUser();
   }
    
+	/**
+	 * @param alwaysSendEmail The alwaysSendEmail to set.
+	 */
+	public void setAlwaysSendEmail(boolean alwaysSendEmail) {
+		this.alwaysSendEmail = alwaysSendEmail;
+	}
 }
-
-
-
-
-
-
