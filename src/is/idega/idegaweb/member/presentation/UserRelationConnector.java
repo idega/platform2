@@ -60,6 +60,17 @@ public class UserRelationConnector extends Window {
 		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 	protected String interfaceStyle =
 		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+		
+	/**
+		 * 
+		 */
+		public UserRelationConnector() {
+			this.setWidth(550);
+			this.setHeight(300);
+			this.setScrollbar(true);
+			this.setResizable(true);
+		    this.setAllMargins(0);
+		}
 
 	protected User getUser(IWContext iwc) throws RemoteException {
 		userID = Integer.valueOf(iwc.getParameter(PARAM_USER_ID));
@@ -418,5 +429,7 @@ public GroupRelationTypeHome getRelationTypeHome() throws RemoteException {
 public UserHome getUserHome() throws RemoteException {
 	return (UserHome) IDOLookup.getHome(User.class);
 }
+
+	
 
 }
