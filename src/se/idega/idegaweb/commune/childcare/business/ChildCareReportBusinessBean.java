@@ -113,9 +113,11 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 					School provider = application.getProvider();
 					IWTimestamp queue = new IWTimestamp(application.getQueueDate());
 					IWTimestamp placement = new IWTimestamp(application.getFromDate());
+					boolean addRejected = false;
 
 					ReportableData data = new ReportableData();
 					if (!childrenList.contains(new Integer(application.getChildId()))) {
+						addRejected = true;
 						User user = application.getChild();
 						Address homeAddress = getUserBusiness().getUsersMainAddress(user);
 						Phone homePhone = getUserBusiness().getChildHomePhone(user);
@@ -146,6 +148,7 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 						childrenList.add(new Integer(application.getChildId()));
 					}
 					else {
+						addRejected = false;
 						data.addData(personalID, "");
 						data.addData(name, "");
 						data.addData(address, "");
@@ -160,6 +163,29 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 					data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
 					data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
 					reportCollection.add(data);
+					
+					if (addRejected) {
+						try {
+							Collection rejected = getChildCareBusiness().findRejectedApplicationsByChild(application.getChildId());
+							Iterator iterator = rejected.iterator();
+							while (iterator.hasNext()) {
+								ChildCareApplication rejectedApplication = (ChildCareApplication) iterator.next();
+								provider = rejectedApplication.getProvider();
+								queue = new IWTimestamp(rejectedApplication.getQueueDate());
+								placement = new IWTimestamp(rejectedApplication.getFromDate());
+
+								data = new ReportableData();
+								data.addData(providers, provider.getSchoolName());
+								data.addData(status, getChildCareBusiness().getStatusString(rejectedApplication.getApplicationStatus()));
+								data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+								data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+								reportCollection.add(data);
+							}
+						}
+						catch (FinderException fex) {
+							//Nothing found...
+						}
+					}
 				}
 			}
 		}

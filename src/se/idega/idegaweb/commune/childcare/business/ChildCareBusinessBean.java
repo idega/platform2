@@ -3686,6 +3686,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String applicationStatus[] = {String.valueOf(getStatusSentIn())/*, String.valueOf(getStatusRejected())*/};
 		return getChildCareApplicationHome().findAllByAreaAndApplicationStatus(area, applicationStatus, caseCode, months.getDate(), weeks.getDate(), firstHandOnly);
 	}
+	
+	public Collection findRejectedApplicationsByChild(int childID) throws FinderException {
+		String applicationStatus[] = {String.valueOf(getStatusRejected())};
+		return getChildCareApplicationHome().findApplicationsByChildAndApplicationStatus(childID, applicationStatus);
+	}
 
 	public String getStatusString(char status) {
 		if (status == getStatusCancelled()) {

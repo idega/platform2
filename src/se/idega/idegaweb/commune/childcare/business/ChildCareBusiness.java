@@ -43,6 +43,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection findAllApplicationsWithChecksToRedeem() throws java.rmi.RemoteException;
  public java.util.Collection findAllEmploymentTypes() throws java.rmi.RemoteException;
  public java.util.Collection findAllGrantedApplications() throws java.rmi.RemoteException;
+ public Collection findRejectedApplicationsByChild(int childID) throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findSentInAndRejectedApplicationsByArea(Object area, int monthsInQueue, int weeksToPlacementDate, boolean firstHandOnly, String caseCode) throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findUnhandledApplicationsNotInCommune() throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getAcceptedApplicationsByChild(int p0) throws java.rmi.RemoteException;
