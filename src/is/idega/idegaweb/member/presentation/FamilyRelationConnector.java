@@ -80,13 +80,20 @@ public class FamilyRelationConnector extends UserRelationConnector {
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.GroupRelationConnector#createRelation(com.idega.presentation.IWContext, java.lang.Integer, java.lang.Integer, java.lang.String)
 	 */
-	public void createRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType)
+	public void createRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType,String reverseRelationType)
 		throws RemoteException {
+			System.out.println("adding relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc);
 			UserHome userHome  = getUserHome();
 			User user = userHome.findByPrimaryKey(userID);
 			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
+			if(relationType==null && reverseRelationType!=null){
+				relationType = reverseRelationType;
+				User temp = relatedUser;
+				relatedUser = user;
+				user = temp;
+			}
 			if (relationType.equals(logic.getChildRelationType())) {
 				logic.setAsChildFor(user,relatedUser);
 			}
@@ -107,7 +114,7 @@ public class FamilyRelationConnector extends UserRelationConnector {
 				logic.setAsCustodianFor(user,relatedUser);
 			}
 			else
-				super.createRelation(iwc, userID, relatedUserID, relationType);
+				super.createRelation(iwc, userID, relatedUserID, relationType,reverseRelationType);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -122,13 +129,20 @@ public class FamilyRelationConnector extends UserRelationConnector {
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.GroupRelationConnector#deleteRelation(com.idega.presentation.IWContext, java.lang.Integer, java.lang.Integer, java.lang.String)
 	 */
-	public void removeRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType)
+	public void removeRelation(IWContext iwc, Integer userID, Integer relatedUserID, String relationType,String reverseRelationType)
 		throws RemoteException {
+			System.out.println("removing relations to "+userID+" with "+relatedUserID+" type "+relationType+" reverse-type "+reverseRelationType);
 		try {
 			MemberFamilyLogic logic = getMemberFamilyLogic(iwc); 
 			UserHome userHome = getUserHome();
 			User user = userHome.findByPrimaryKey(userID);
 			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
+			if(relationType==null && reverseRelationType!=null){
+				relationType = reverseRelationType;
+				User temp = relatedUser;
+				relatedUser = user;
+				user = temp;
+			}
 			if (relationType.equals(logic.getChildRelationType())) {
 				logic.removeAsChildFor(user,relatedUser);
 			}
@@ -147,6 +161,9 @@ public class FamilyRelationConnector extends UserRelationConnector {
 			else if (relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)) {
 				logic.removeAsParentFor(user,relatedUser);
 				logic.removeAsCustodianFor(user,relatedUser);
+			}
+			else{
+				super.removeRelation(iwc,userID,relatedUserID,relationType,reverseRelationType);
 			}
 		}
 		catch (FinderException e) {

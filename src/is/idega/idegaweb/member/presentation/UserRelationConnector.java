@@ -13,6 +13,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.ibm.icu.text.SearchIterator;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -46,9 +47,10 @@ public class UserRelationConnector extends Window {
 	protected IWBundle iwb;
 	protected IWResourceBundle iwrb;
 	public static final String PARAM_USER_ID = "ic_user_id";
-	public static final String PARAM_RELATED_USER_ID = UserSearcher.PRM_USER_ID;
+	//public static final String PARAM_RELATED_USER_ID = UserSearcher.PRM_USER_ID;
 	public static final String PARAM_ACTION = "action";
 	public static final String PARAM_TYPE = "type";
+	public static final String PARAM_REVERSE_TYPE = "rtype";
 	public static final int ACTION_ATTACH = 1;
 	public static final int ACTION_DETACH = 2;
 	public static final int ACTION_SAVE = 3;
@@ -56,7 +58,10 @@ public class UserRelationConnector extends Window {
 	protected Integer userID = null;
 	protected User user = null;
 	protected User relatedUser = null;
-	protected String type = null;
+	protected String type = null,rtype = null;
+	private static String searchIdentifer = "fmrels";
+	protected String buttonStyle = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+	protected String interfaceStyle = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 
 	protected User getUser(IWContext iwc) throws RemoteException {
 		userID = Integer.valueOf(iwc.getParameter(PARAM_USER_ID));
@@ -115,6 +120,8 @@ public class UserRelationConnector extends Window {
 		searcher.setShowMiddleNameInSearch(false);
 		searcher.maintainParameter(new Parameter(PARAM_USER_ID, userID.toString()));
 		searcher.maintainParameter(new Parameter(PARAM_TYPE, type));
+		searcher.setUniqueIdentifier(searchIdentifer);
+		searcher.setOwnFormContainer(false);
 
 		if (relatedUser != null) {
 			searcher.setUser(relatedUser);
@@ -167,54 +174,61 @@ public class UserRelationConnector extends Window {
 			mainTable.add(getRelationMenu(iwc),1,row);
 			row++;
 			
-			// if we have a relation we offer a remove action
-			if(user.hasRelationTo(  ( (Integer) relatedUser.getUserGroup().getPrimaryKey()).intValue() ,type) ){
-				SubmitButton detach = new SubmitButton(iwrb.getLocalizedImageButton("detach","Detach"),PARAM_ACTION,Integer.toString(ACTION_DETACH));
-				String detachWarning = iwrb.getLocalizedString("warning_detach_relation","Are you shure you want to remove this relation ?");
-				detach.setOnClickConfirm(detachWarning);
-				//attach.setAttributeMultivalued("onmousedown","return confirm('"+attachWarning+"');");
-				//attach.setOnClick("return confirm('"+attachWarning+"');");
-				mainTable.add(Text.getNonBrakingSpace(),1,row);
-				mainTable.add(detach,1,row);
-			}else{
+			mainTable.add(Text.getNonBrakingSpace(),1,row);
+			mainTable.add(getActionButton(relatedUser,user,type),1,row);
 			
-				SubmitButton attach = new SubmitButton(iwrb.getLocalizedImageButton("attach","Attach"),PARAM_ACTION,Integer.toString(ACTION_ATTACH));
-				String attachWarning = iwrb.getLocalizedString("warning_attach_relation","Are you shure you want to relate these two people ?");
-				attach.setOnClickConfirm(attachWarning);
-				//attach.setAttributeMultivalued("onmousedown","return confirm('"+attachWarning+"');");
-				//attach.setOnClick("return confirm('"+attachWarning+"');");
-				mainTable.add(Text.getNonBrakingSpace(),1,row);
-				mainTable.add(attach,1,row);
-			}
-			
-			mainTable.add(new HiddenInput(PARAM_RELATED_USER_ID,relatedUser.getPrimaryKey().toString()));
+			mainTable.add(searcher.getUniqueUserParameter((Integer)relatedUser.getPrimaryKey()));
 		}
 
 		Form form = new Form();
 		//if (user != null)
 		//form.addParameter(PARAM_USER_ID, user.getPrimaryKey().toString());
 		form.maintainParameter(PARAM_USER_ID);
-		form.maintainParameter(PARAM_RELATED_USER_ID);
+		form.maintainParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer));
 		form.maintainParameter(PARAM_TYPE);
 		form.add(mainTable);
 		add(form);
 
 	}
 
+	private PresentationObject getActionButton(User roleUser,User victimUser,String type) {
+		// if we have a relation we offer a remove action
+		if(victimUser.hasRelationTo(  ( (Integer) roleUser.getUserGroup().getPrimaryKey()).intValue() ,type) ){
+			String detachWarning = iwrb.getLocalizedString("warning_detach_relation","Are you shure you want to remove this relation ?");
+			SubmitButton detach = getActionButton(iwrb.getLocalizedString("detach","Detach"),ACTION_DETACH,detachWarning);
+			return detach;
+		}else{
+			String attachWarning = iwrb.getLocalizedString("warning_attach_relation","Are you shure you want to relate these two people ?");
+			SubmitButton attach = getActionButton(iwrb.getLocalizedString("attach","Attach"),ACTION_ATTACH,attachWarning);
+			return attach;
+		}
+	}
+	
+	protected SubmitButton getActionButton(String display,int action,String warningMsg){
+		SubmitButton btnAction = new SubmitButton(display,PARAM_ACTION,Integer.toString(action));
+		btnAction.setOnClickConfirm(warningMsg);
+		return btnAction;
+	}
+	
+	public static String getRelatedUserParameterName(){
+		return UserSearcher.getUniqueUserParameterName(searchIdentifer);
+	}
+
 	public void process(IWContext iwc) throws RemoteException {
 		user = getUser(iwc);
 		type = iwc.getParameter(PARAM_TYPE);
+		rtype = iwc.getParameter(PARAM_REVERSE_TYPE);
 		if(iwc.isParameterSet(PARAM_ACTION)){
 			int action = Integer.parseInt(iwc.getParameter(PARAM_ACTION));
-			Integer relatedUserID = Integer.valueOf(iwc.getParameter(PARAM_RELATED_USER_ID));
+			Integer relatedUserID = Integer.valueOf(iwc.getParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer)));
 			switch (action) {
 				case ACTION_ATTACH :
 					System.out.println("createrelation: "+user.getPrimaryKey().toString()+","+relatedUserID.toString()+","+type);
-					createRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type);
+					createRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type,rtype);
 				break;
 
 				case ACTION_DETACH:
-					removeRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type);
+					removeRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type,rtype);
 				break;
 			}
 			setParentToReload();
@@ -273,7 +287,7 @@ public class UserRelationConnector extends Window {
 	 * @param relationType
 	 * @throws RemoteException
 	 */
-	public void removeRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType) throws RemoteException{
+	public void removeRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType,String reverseRelationType) throws RemoteException{
 		try {
 			UserHome userHome = getUserHome();
 			User currentUser = userHome.findByPrimaryKey(userID);
@@ -297,7 +311,7 @@ public class UserRelationConnector extends Window {
 	 * @param relationType
 	 * @throws RemoteException
 	 */
-	public void createRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType) throws RemoteException {
+	public void createRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType,String reverseRelationType) throws RemoteException {
 		
 		try {
 			UserHome userHome = getUserHome();

@@ -4,8 +4,8 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +32,7 @@ import com.idega.core.data.PhoneHome;
 import com.idega.core.data.PhoneType;
 import com.idega.core.data.PhoneTypeBMPBean;
 import com.idega.core.data.PhoneTypeHome;
+import com.idega.core.data.PostalCode;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -39,9 +40,11 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CountryDropdownMenu;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -49,6 +52,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PostalCodeDropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserStatusBusiness;
@@ -73,34 +77,42 @@ import com.idega.util.IWTimestamp;
  */
 public class UserEditor extends Block {
 
+	private static final String prm_coaddress_country_id = "co_country_id";
+	private static final String prm_coaddress_postal_id = "co_postal_id";
+	private static final String prm_primaddress_country_id = "prim_country_id";
+	private static final String prm_primaddress_postal_id = "prim_postal_id";
 	private static final String prm_deceased_date = "deceased_date";
 	private static final String prm_email_address = "email_address";
 	private static final String prm_main_phone = "phone_number";
 	private static final String prm_mainaddress_street = "addr_prim_str";
-	private static final String prm_mainaddress_postal = "addr_prim_pst";
+	private static final String prm_mainaddress_postal_code = "addr_prim_pst_code";
+	private static final String prm_mainaddress_postal_name = "addr_prim_pst_name";
+	private static final String prm_mainaddress_country ="addr_prim_country";
 	private static final String prm_coaddress_street = "addr_co_str";
-	private static final String prm_coaddress_postal = "addr_co_pst";
+	private static final String prm_coaddress_postal_code = "addr_co_pst_code";
+	private static final String prm_coaddress_postal_name = "addr_co_pst_name";
+	private static final String prm_coaddress_country ="addr_co_country";
 	private static final String prm_old_value_suffix = "_old";
 	/** Parameter for user id */
-	public static final String PRM_USER_ID = UserSearcher.PRM_USER_ID; //"ic_user_id";
-	private static final String PRM_SAVE = "mbe_save";
+	//public static final String PRM_USER_ID = UserSearcher.PRM_USER_ID; //"ic_user_id";
+	protected static final String PRM_SAVE = "mbe_save";
 	/** The userID is the handled users ID. */
-	private Integer userID = null;
+	protected Integer userID = null;
 	/** The user currently handled */
-	private User user = null;
+	protected User user = null;
 	/** The dynamic bundle identifier*/
 	private String bundleIdentifer = null;
 	/** The  static bundle identifier used in this package */
 	private static String BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	/** The Bundle */
-	private IWBundle iwb;
+	protected IWBundle iwb;
 	/** The resource bundle */
-	private IWResourceBundle iwrb;
+	protected IWResourceBundle iwrb;
 	/** The list of relationstyped handle by the editor */
 	private List relationTypes = new Vector();
 
 	/** Determines if we show the users relations */
-	private boolean showUserRelations = true;
+	protected boolean showUserRelations = true;
 	/** The main layout table */
 	private Table mainTable = null;
 	/** the current layout table row */
@@ -111,21 +123,44 @@ public class UserEditor extends Block {
 	/** Header style class */
 	private String headerStyleClass = "";
 	/** flag for family relation types */
-	boolean showAllRelationTypes = true;
+	protected boolean showAllRelationTypes = true;
 	/** Class of relation connector window */
 	protected Class connectorWindowClass = FamilyRelationConnector.class;
 
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_DECEASED = "Deceased";
+	public final static String STYLENAME_BUTTON = "Button";
+	public final static String STYLENAME_INTERFACE = "Interface";
 
-	private String textFontStyle = "font-weight:plain;";
-	private String headerFontStyle = "font-weight:bold;";
-	private String deceasedFontStyle = "font-weight:bold;font-color:red";
-	
+	protected String textFontStyle = "font-weight:plain;";
+	protected String headerFontStyle = "font-weight:bold;";
+	protected String deceasedFontStyle = "font-weight:bold;font-color:red";
+	protected String buttonStyle =
+		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+	protected String interfaceStyle =
+		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+
+	protected String textFontStyleName = null;
+	protected String headerFontStyleName = null;
+	protected String deceasedFontStyleName = null;
+	protected String buttonStyleName = null;
+	protected String interfaceStyleName = null;
+
 	private UserSearcher searcher = null;
-	
-	
+
+	private void initStyleNames() {
+		if (textFontStyleName == null)
+			textFontStyleName = getStyleName(STYLENAME_TEXT);
+		if (headerFontStyleName == null)
+			headerFontStyleName = getStyleName(STYLENAME_HEADER);
+		if (buttonStyleName == null)
+			buttonStyleName = getStyleName(STYLENAME_BUTTON);
+		if (interfaceStyleName == null)
+			interfaceStyleName = getStyleName(STYLENAME_INTERFACE);
+		if (deceasedFontStyleName == null)
+			deceasedFontStyleName = getStyleName(STYLENAME_DECEASED);
+	}
 
 	/**
 	 * Constructs a new UserEditor with an empty list of relationtypes
@@ -137,6 +172,7 @@ public class UserEditor extends Block {
 	public UserEditor(List relationTypes) {
 		this.relationTypes = relationTypes;
 		searcher = new UserSearcher();
+		searcher.setUniqueIdentifier("edt");
 	}
 
 	/* (non-Javadoc)
@@ -145,6 +181,7 @@ public class UserEditor extends Block {
 	public void main(IWContext iwc) {
 		//debugParameters(iwc);
 		// get bundles
+		initStyleNames();
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		//iwc.getApplication().getLog().info("Who is your daddy ?");
@@ -212,9 +249,9 @@ public class UserEditor extends Block {
 	 */
 	public void presentate(IWContext iwc) throws RemoteException {
 		mainTable = new Table();
-		
-		
+
 		mainTable.add((searcher), 1, mainRow++);
+		searcher.setOwnFormContainer(false);
 		if (user != null) {
 			searcher.setUser(user);
 		}
@@ -229,7 +266,7 @@ public class UserEditor extends Block {
 			catch (FinderException e1) {
 				e1.printStackTrace();
 			}
-		
+
 		}
 
 		if (user != null) {
@@ -243,7 +280,6 @@ public class UserEditor extends Block {
 				}
 			presentateButtons(iwc);
 		}
-		
 
 		Form form = new Form();
 
@@ -255,88 +291,125 @@ public class UserEditor extends Block {
 	 * Presentates the users relations
 	 * @param iwc the context
 	 */
-	private void presentateUserRelations(IWContext iwc) throws RemoteException, FinderException {
+	protected void presentateUserRelations(IWContext iwc) throws RemoteException {
 		Table relationsTable = new Table();
 		relationsTable.setCellspacing(4);
 		int row = 1;
-		Map relations = getRelations();
-		UserBusiness userService = getUserService(iwc);
-		User relatedUser;
-		if (relationTypes != null && !relationTypes.isEmpty()) {
-			for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
-				String type = (String) iter.next();
-				Text tTypeName = new Text(iwrb.getLocalizedString("is_"+type+"_of", "Is "+type.toLowerCase()+" of"));
-				relationsTable.add(tTypeName, 1, row);
-				if (relations.containsKey(type)) {
-					List list = (List) relations.get(type);
-					for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-						GroupRelation relation = (GroupRelation) iterator.next();
-						relatedUser = userService.getUser(relation.getRelatedGroupPK());
-						Link relatedLink = new Link(relatedUser.getName());
-						relatedLink.addParameter(PRM_USER_ID, relatedUser.getPrimaryKey().toString());
-						relationsTable.add(relatedUser.getPersonalID(), 2, row);
-						relationsTable.add(relatedLink, 3, row);
-						Link disconnectLink = getDisConnectorLink(type,(Integer)relatedUser.getPrimaryKey());
-						relationsTable.add(disconnectLink,4,row);
-						row++;
+		try {
+			Map relations = getRelations(user);
+			UserBusiness userService = getUserService(iwc);
+			User relatedUser;
+			if (relationTypes != null && !relationTypes.isEmpty()) {
+				for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
+					String type = (String) iter.next();
+					Text tTypeName =
+						new Text(iwrb.getLocalizedString("is_" + type + "_of", "Is " + type.toLowerCase() + " of"));
+					relationsTable.add(tTypeName, 1, row);
+					if (relations.containsKey(type)) {
+						List list = (List) relations.get(type);
+						for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+							GroupRelation relation = (GroupRelation) iterator.next();
+							relatedUser = userService.getUser(relation.getRelatedGroupPK());
+							relationsTable.add(relatedUser.getPersonalID(), 2, row);
+							relationsTable.add(getRelatedUserLink(relatedUser), 3, row);
+							Link disconnectLink =
+								getDisConnectorLink(
+									type,
+									(Integer) user.getPrimaryKey(),
+									(Integer) relatedUser.getPrimaryKey(),
+									iwb.getImageButton(
+										iwrb.getLocalizedString("mbe.remove_" + type, "Remove " + type)));
+							relationsTable.add(disconnectLink, 4, row);
+							row++;
+						}
 					}
+					row++;
 				}
-				row++;
-			}
 
+			}
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
 		}
 
-		mainTable.add(relationsTable, 1, mainRow++);
+		addToMainPart(relationsTable);
 
+	}
+
+	protected Link getRelatedUserLink(User relatedUser) {
+		Link relatedLink = new Link(relatedUser.getName());
+		relatedLink.addParameter(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
+		return relatedLink;
 	}
 
 	public void presentateButtons(IWContext iwc) {
 		Table buttonTable = new Table();
 		int row = 1, col = 1;
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("mbe.save", "Save"),PRM_SAVE,user.getPrimaryKey().toString());
+		SubmitButton save =
+			new SubmitButton(
+				iwrb.getLocalizedImageButton("mbe.save", "Save"),
+				PRM_SAVE,
+				user.getPrimaryKey().toString());
 		SubmitButton clear = new SubmitButton(iwrb.getLocalizedImageButton("mbe.clear", "Clear"));
-		
+
 		buttonTable.add(save, col++, row);
-		buttonTable.add(clear,col++,row);
+		buttonTable.add(clear, col++, row);
 		if (showUserRelations) {
 			for (Iterator iter = relationTypes.iterator(); iter.hasNext();) {
 				String type = (String) iter.next();
-				Link registerLink = getConnectorLink(type);
+				Link registerLink =
+					getConnectorLink(
+						(Integer) user.getPrimaryKey(),
+						type,
+						iwb.getImageButton(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)));
 				buttonTable.add(registerLink, col++, row);
 			}
 		}
-		mainTable.add(buttonTable, 1, mainRow++);
+		add(buttonTable);
 	}
 
-	private Link getConnectorLink(String type) {
-		Link registerLink =
-			new Link(
-				iwb.getImageButton(
-					iwrb.getLocalizedString("mbe.register_as_"+type, "Register as "+type) ));
+	protected Link getConnectorLink(Integer roleUserID, String type, PresentationObject object) {
+		Link registerLink = new Link(object);
+
 		registerLink.setWindowToOpen(connectorWindowClass);
-		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, user.getPrimaryKey().toString());
+		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, roleUserID.toString());
 		registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
 		return registerLink;
 	}
 	
-	private Link getDisConnectorLink(String type,Integer relatedUserID) {
-			Link registerLink =
-				new Link(
-					iwb.getImageButton(
-						iwrb.getLocalizedString("mbe.remove_"+type, "Remove "+type) ));
-			registerLink.setWindowToOpen(connectorWindowClass);
-			registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, user.getPrimaryKey().toString());
-			registerLink.addParameter(UserRelationConnector.PARAM_RELATED_USER_ID,relatedUserID.toString());
-			registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
-			//registerLink.addParameter(GroupRelationConnector.PARAM_ACTION,GroupRelationConnector.ACTION_DETACH);
-			return registerLink;
-		}
+	protected SubmitButton getConnectorButton(IWContext iwc,String display,Integer roleUserID, String type){
+		SubmitButton button = new SubmitButton(display);
+		String URL = Window.getWindowURL(connectorWindowClass, iwc) ;
+		URL+="&"+UserRelationConnector.PARAM_USER_ID+"="+roleUserID.toString();
+		URL+="&"+UserRelationConnector.PARAM_TYPE+"="+type;
+		button.setOnClick("javascript:" + Window.getCallingScriptString(connectorWindowClass, URL, true, iwc)+";return false;");
+		button.setStyleClass(buttonStyleName);
+		return button;		
+	}
+
+	protected Link getDisConnectorLink(
+		String type,
+		Integer roleUserID,
+		Integer victimUserID,
+		PresentationObject object) {
+		Link registerLink = new Link(object);
+		//new Link(	iwb.getImageButton(	iwrb.getLocalizedString("mbe.remove_"+type, "Remove "+type) ));
+		registerLink.setWindowToOpen(connectorWindowClass);
+		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, roleUserID.toString());
+		registerLink.addParameter(UserRelationConnector.getRelatedUserParameterName(), victimUserID.toString());
+		registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
+		//registerLink.addParameter(GroupRelationConnector.PARAM_ACTION,GroupRelationConnector.ACTION_DETACH);
+		return registerLink;
+	}
 
 	/**
 	 * Presentates the users found by search
 	 * @param iwc the context
 	*/
-	private void presentateUserInfo(IWContext iwc) throws RemoteException {
+	protected void presentateUserInfo(IWContext iwc) throws RemoteException {
 		UserBusiness userService = getUserService(iwc);
 		Table infoTable = new Table();
 		Table addressTable = new Table();
@@ -344,55 +417,61 @@ public class UserEditor extends Block {
 		addressTable.setCellspacing(4);
 		Address primaryAddress = userService.getUsersMainAddress(user);
 		Address coAddress = userService.getUsersCoAddress(user);
-		
+
 		//		deceased layout section
 		// TODO check for deceased date
 		Text tDeceased = new Text(iwrb.getLocalizedString("mbe.deceased", "Deceased"));
-		setStyle(tDeceased,STYLENAME_HEADER);
+		tDeceased.setStyleClass(deceasedFontStyleName);
 		addressTable.add(tDeceased, 1, row);
-		UserStatus deceasedStatus = getUserStatusService(iwc).getDeceasedUserStatus((Integer)user.getPrimaryKey());
-		if(deceasedStatus!=null){
-			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+		UserStatus deceasedStatus = getUserStatusService(iwc).getDeceasedUserStatus((Integer) user.getPrimaryKey());
+		if (deceasedStatus != null) {
+			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 			Text tDeceasedDate = new Text(df.format(deceasedStatus.getDateFrom()));
-			setStyle(tDeceasedDate,STYLENAME_DECEASED);
-			addressTable.add(tDeceasedDate,2,row);
+			setStyle(tDeceasedDate, STYLENAME_DECEASED);
+			addressTable.add(tDeceasedDate, 2, row);
 		}
-		else{
-			DateInput deceasedInput = new DateInput(prm_deceased_date);
+		else {
+			DateInput deceasedInput = new DateInput(prm_deceased_date, true);
+			deceasedInput.setToDisplayDayLast(true);
+			deceasedInput.setLatestPossibleDate(IWTimestamp.RightNow().getDate(),iwrb.getLocalizedString("mbe.deceased_date_warning","Please do not register deceased date in the future"));
+			deceasedInput.setStyleClass(interfaceStyleName);
 			addressTable.add(deceasedInput, 2, row);
 		}
 
 		row++;
-		mainTable.add(addressTable, 1, mainRow++);
-		mainTable.add(Text.getBreak(),1,mainRow++);
+		addToMainPart(addressTable);
+		addToMainPart(Text.getBreak());
 
 		// address layout section
 		Text tAddress = new Text(iwrb.getLocalizedString("mbe.address", "Address"));
 		Text tPrimary = new Text(iwrb.getLocalizedString("mbe.address.main", "Main"));
 		Text tCO = new Text(iwrb.getLocalizedString("mbe.address.co", "C/O"));
 		Text tStreetAddress = new Text(iwrb.getLocalizedString("mbe.address.street", "Street"));
-		Text tPostalAddress = new Text(iwrb.getLocalizedString("mbe.address.postal", "Postal"));
-		
-		setStyle(tAddress,STYLENAME_HEADER);
-		setStyle(tPrimary,STYLENAME_HEADER);
-		setStyle(tCO,STYLENAME_HEADER);
-		setStyle(tStreetAddress,STYLENAME_HEADER);
-		setStyle(tPostalAddress,STYLENAME_HEADER);
+		Text tPostalName = new Text(iwrb.getLocalizedString("mbe.address.postal.name", "Postal name"));
+		Text tPostalCode = new Text(iwrb.getLocalizedString("mbe.address.postal.code","Postal code"));
+		Text tCountry = new Text(iwrb.getLocalizedString("mbe.address.country","Country"));
 
+		tAddress.setStyleClass(headerFontStyleName);
+		tPrimary.setStyleClass(headerFontStyleName);
+		tCO.setStyleClass(headerFontStyleName);
+		tStreetAddress.setStyleClass(headerFontStyleName);
+		tPostalName.setStyleClass(headerFontStyleName);
+		tPostalCode.setStyleClass(headerFontStyleName);
+		tCountry.setStyleClass(headerFontStyleName);
+
+		
 		addressTable.add(tAddress, 1, row++);
-		addressTable.add(tStreetAddress, 1, row);
-		addressTable.add(Text.getNonBrakingSpace(),1,row);
-		addressTable.add(Text.getNonBrakingSpace(),1,row++);
-		addressTable.add(tPostalAddress, 1, row);
-		addressTable.add(Text.getNonBrakingSpace(),1,row);
-		addressTable.add(Text.getNonBrakingSpace(),1,row++);
+		int startRow = row;
+		addressTable.add(tStreetAddress, 1, row++);
+		addressTable.add(tPostalCode, 1, row++);
+		addressTable.add(tPostalName, 1, row++);
+		addressTable.add(tCountry, 1, row++);
 		
-		
-		
-		
+
 		Country defaultCountry = null;
 		try {
-			defaultCountry = getCountryHome().findByIsoAbbreviation( iwc.getApplicationSettings().getDefaultLocale().getCountry());
+			defaultCountry =
+				getCountryHome().findByIsoAbbreviation(iwc.getApplicationSettings().getDefaultLocale().getCountry());
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();
@@ -405,71 +484,157 @@ public class UserEditor extends Block {
 		}
 
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
-		PostalCodeDropdownMenu primaryPostalAddressInput = new PostalCodeDropdownMenu();//new TextInput(prm_mainaddress_postal);
-		primaryPostalAddressInput.setName(prm_mainaddress_postal);
+		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
 		
+		TextInput primaryPostalCodeInput = new TextInput(prm_mainaddress_postal_code);
+		primaryPostalCodeInput.setStyleClass(interfaceStyleName);
+		
+		TextInput primaryPostalNameInput = new TextInput(prm_mainaddress_postal_name);
+		primaryPostalNameInput.setStyleClass(interfaceStyleName);
+		
+		CountryDropdownMenu primaryCountryInput = new CountryDropdownMenu(prm_mainaddress_country);
+		primaryCountryInput.setStyleClass(interfaceStyleName);
+
 		TextInput coStreetAddressInput = new TextInput(prm_coaddress_street);
+		coStreetAddressInput.setStyleClass(interfaceStyleName);
+		
+		TextInput coPostalCodeInput = new TextInput(prm_coaddress_postal_code);
+		coPostalCodeInput.setStyleClass(interfaceStyleName);
+		
+		TextInput coPostalNameInput = new TextInput(prm_coaddress_postal_name);
+		coPostalNameInput.setStyleClass(interfaceStyleName);
+		
+		CountryDropdownMenu coCountryInput = new CountryDropdownMenu(prm_coaddress_country);
+		coCountryInput.setStyleClass(interfaceStyleName);
+		
+		/*
 		PostalCodeDropdownMenu coPostalAddressInput = new PostalCodeDropdownMenu();
 		coPostalAddressInput.setName(prm_coaddress_postal);
-		
-		if(defaultCountry!=null){
-			primaryPostalAddressInput.setCountry(defaultCountry);
-			coPostalAddressInput.setCountry(defaultCountry);
+		coPostalAddressInput.setStyleClass(interfaceStyleName);
+		coPostalAddressInput.setShowCountry(true);
+		*/
+		if (defaultCountry != null) {
+			primaryCountryInput.setSelectedCountry(defaultCountry);
+			coCountryInput.setSelectedCountry(defaultCountry);
+			//primaryPostalAddressInput.setCountry(defaultCountry);
+			//coPostalAddressInput.setCountry(defaultCountry);
 		}
 
-		addressTable.add(tPrimary, 2, 2);
-		addressTable.add(primaryStreetAddressInput, 2, 3);
-		addressTable.add(primaryPostalAddressInput, 2, 4);
+		//addressTable.add(tPrimary, 2, 2);
+		row  =  startRow ; 
+		addressTable.add(primaryStreetAddressInput, 2, row++);
+		addressTable.add(primaryPostalCodeInput,2,row++);
+		addressTable.add(primaryPostalNameInput,2,row++);
+		addressTable.add(primaryCountryInput,2,row++);
+		
+		row  =  startRow ; 
+		addressTable.add(coStreetAddressInput, 3, row++);
+		addressTable.add(coPostalCodeInput,3, row++);
+		addressTable.add(coPostalNameInput,3, row++);
+		addressTable.add(coCountryInput,3, row++);
+		
 		if (primaryAddress != null) {
 			primaryStreetAddressInput.setContent(primaryAddress.getStreetAddress());
-			addressTable.add(getOldParameter(prm_mainaddress_street,primaryAddress.getStreetAddress()));
+			addressTable.add(getOldParameter(prm_mainaddress_street, primaryAddress.getStreetAddress()));
+			try {
+				PostalCode postalCode = primaryAddress.getPostalCode();
+				if(postalCode!=null){
+					primaryPostalCodeInput.setContent(postalCode.getPostalCode());
+					primaryPostalNameInput.setContent(postalCode.getName());
+					addressTable.add(new Parameter(prm_primaddress_postal_id,postalCode.getPrimaryKey().toString()));
+					addressTable.add(getOldParameter(prm_mainaddress_postal_code, postalCode.getPostalCode()));
+					addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
+					try {
+						Country country = postalCode.getCountry();
+						if(country!=null){
+							primaryCountryInput.setSelectedCountry(country);
+							addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
+						}
+					}
+					catch (RemoteException e3) {
+						
+					}
+					catch (EJBException e3) {
+						
+					}
+				}
+			}
+			catch (SQLException e2) {
+				
+			}
+			//primaryPostalAddressInput.setSelectedElement(primaryAddress.getPostalCodeID());
 			
-			primaryPostalAddressInput.setSelectedElement(primaryAddress.getPostalCodeID());
-			addressTable.add(getOldParameter(prm_mainaddress_postal,String.valueOf(primaryAddress.getPostalCodeID())));
 		}
-		addressTable.add(tCO, 3,2);
-		addressTable.add(coStreetAddressInput, 3,3);
-		addressTable.add(coPostalAddressInput, 3, 4);
+		
+		
+
 
 		if (coAddress != null) {
 			coStreetAddressInput.setContent(coAddress.getStreetAddress());
-			addressTable.add(getOldParameter(prm_coaddress_street,coAddress.getStreetAddress()));
-			
-			coPostalAddressInput.setSelectedElement(coAddress.getPostalCodeID());
-			addressTable.add(getOldParameter(prm_coaddress_postal,String.valueOf(coAddress.getPostalCodeID())));
+			addressTable.add(getOldParameter(prm_coaddress_street, coAddress.getStreetAddress()));
+
+			try {
+				PostalCode postalCode = coAddress.getPostalCode();
+				if(postalCode!=null){
+					coPostalCodeInput.setContent(postalCode.getPostalCode());
+					coPostalNameInput.setContent(postalCode.getName());
+					addressTable.add(new Parameter(prm_coaddress_postal_id,postalCode.getPrimaryKey().toString()));
+					addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
+					addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
+					try {
+						Country country = postalCode.getCountry();
+						if(country!=null){
+							coCountryInput.setSelectedCountry(country);
+							addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
+						}
+					}
+					catch (RemoteException e3) {
+						
+					}
+					catch (EJBException e3) {
+						
+					}
+				}
+			}
+			catch (SQLException e2) {
+				
+			}
 		}
+		
+		row++;
 
 		// phone layout section
 		Text tPhone = new Text(iwrb.getLocalizedString("mbe.phone", "Phone"));
-		setStyle(tPhone,STYLENAME_HEADER);
+		tPhone.setStyleClass(headerFontStyleName);
 		TextInput phoneInput = new TextInput(prm_main_phone);
-		addressTable.add(tPhone, 1, 6);
-		addressTable.add(phoneInput, 2, 6);
+		phoneInput.setStyleClass(interfaceStyleName);
+		addressTable.add(tPhone, 1, row);
+		addressTable.add(phoneInput, 2, row++);
 		try {
 			Phone phone = userService.getUsersHomePhone(user);
 			if (phone != null) {
 				phoneInput.setContent(phone.getNumber());
-				addressTable.add(getOldParameter(prm_main_phone,phone.getNumber()));
+				addressTable.add(getOldParameter(prm_main_phone, phone.getNumber()));
 			}
 		}
 		catch (NoPhoneFoundException e) {
 
 		}
-
+		row++;
 		// email layout section
 		Text tEmail = new Text(iwrb.getLocalizedString("mbe.email", "Email"));
-		setStyle(tEmail,STYLENAME_HEADER);
+		tEmail.setStyleClass(headerFontStyleName);
 		TextInput emailInput = new TextInput(prm_email_address);
+		emailInput.setStyleClass(interfaceStyleName);
 		emailInput.setAsEmail();
-		addressTable.add(tEmail, 1, 8);
-		addressTable.add(emailInput, 2, 8);
+		addressTable.add(tEmail, 1, row);
+		addressTable.add(emailInput, 2, row++);
 		Email email = userService.getUserMail(user);
 		if (email != null) {
 			emailInput.setContent(email.getEmailAddress());
-			addressTable.add(getOldParameter(prm_email_address,email.getEmailAddress()));
+			addressTable.add(getOldParameter(prm_email_address, email.getEmailAddress()));
 		}
 
-		
 	}
 
 	/**
@@ -479,50 +644,124 @@ public class UserEditor extends Block {
 	public void process(IWContext iwc) throws IDOLookupException, FinderException, RemoteException {
 		initUser(iwc);
 		initRelationTypes(iwc);
-		if(iwc.isParameterSet(PRM_SAVE))
-			saveUser( iwc);
+		if (iwc.isParameterSet(PRM_SAVE))
+			saveUser(iwc);
 
 	}
-	
-	private void saveUser(IWContext iwc)throws RemoteException{
+
+	private void saveUser(IWContext iwc) throws RemoteException {
 		UserBusiness userService = getUserService(iwc);
 		Integer userID = Integer.valueOf(iwc.getParameter(PRM_SAVE));
 		user = userService.getUser(userID);
 		try {
 			// main address part
-			if(isNewValue(iwc,prm_mainaddress_street) || isNewValue(iwc,prm_mainaddress_postal)){
+			if (isNewValue(iwc, prm_mainaddress_street) 
+				|| isNewValue(iwc, prm_mainaddress_postal_code)
+				|| isNewValue(iwc,prm_mainaddress_postal_name)
+				|| isNewValue(iwc,prm_mainaddress_country)) {
 				String street = iwc.getParameter(prm_mainaddress_street);
-				if(!"".equals(street)){
-					Integer postal = Integer.valueOf( iwc.getParameter(prm_mainaddress_postal));
-					userService.updateUsersMainAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+				if (!"".equals(street)) {
+					Integer postalID = null;
+					Country country = null;
+					if(iwc.isParameterSet(prm_mainaddress_country)){
+						Integer countryID = Integer.valueOf(iwc.getParameter(prm_mainaddress_country));
+						try {
+							country = userService.getAddressBusiness().getCountryHome().findByPrimaryKey(countryID);	
+						}
+						catch (RemoteException e1) {
+							e1.printStackTrace();
+						}
+						catch (FinderException e1) {
+							e1.printStackTrace();
+						}
+					}
+					if(iwc.isParameterSet(prm_primaddress_postal_id)){
+						postalID = Integer.valueOf(iwc.getParameter(prm_primaddress_postal_id));
+					}
+					else if(country!=null){
+						String code = iwc.getParameter(prm_mainaddress_postal_code);
+						String name = iwc.getParameter(prm_mainaddress_postal_name);
+						try {
+							PostalCode pcode = userService.getAddressBusiness().getPostalCodeAndCreateIfDoesNotExist(code,name,country);
+							postalID = (Integer) pcode.getPrimaryKey();
+						}
+						catch (RemoteException e1) {
+							e1.printStackTrace();
+						}
+					}
+					userService.updateUsersMainAddressOrCreateIfDoesNotExist(
+						userID,
+						street,
+						postalID,
+						null,
+						null,
+						null,
+						null);
 				}
 			}
-			
+
 			// co address part
-			if(isNewValue(iwc,prm_coaddress_street) || isNewValue(iwc,prm_coaddress_postal)){
-				String street = iwc.getParameter(prm_coaddress_street);
-				if(!"".equals(street)){
-					Integer postal = Integer.valueOf( iwc.getParameter(prm_coaddress_postal));
-					userService.updateUsersCoAddressOrCreateIfDoesNotExist(userID,street,postal,null,null,null,null);
+			if (isNewValue(iwc, prm_coaddress_street) 
+				|| isNewValue(iwc,prm_coaddress_postal_code) 
+				|| isNewValue(iwc,prm_coaddress_postal_name)
+				|| isNewValue(iwc,prm_coaddress_country)) {
+					String street = iwc.getParameter(prm_coaddress_street);
+					if (!"".equals(street)) {
+						Integer postalID = null;
+						Country country = null;
+						if(iwc.isParameterSet(prm_coaddress_country)){
+							Integer countryID = Integer.valueOf(iwc.getParameter(prm_coaddress_country));
+							try {
+								country = userService.getAddressBusiness().getCountryHome().findByPrimaryKey(countryID);	
+							}
+							catch (RemoteException e1) {
+								e1.printStackTrace();
+							}
+							catch (FinderException e1) {
+								e1.printStackTrace();
+							}
+						}
+						if(iwc.isParameterSet(prm_coaddress_postal_id)){
+							postalID = Integer.valueOf(iwc.getParameter(prm_coaddress_postal_id));
+						}
+						else if(country!=null){
+							String code = iwc.getParameter(prm_coaddress_postal_code);
+							String name = iwc.getParameter(prm_coaddress_postal_name);
+							try {
+								PostalCode pcode = userService.getAddressBusiness().getPostalCodeAndCreateIfDoesNotExist(code,name,country);
+								postalID = (Integer) pcode.getPrimaryKey();
+							}
+							catch (RemoteException e1) {
+								e1.printStackTrace();
+							}
+						}
+						userService.updateUsersMainAddressOrCreateIfDoesNotExist(
+							userID,
+							street,
+							postalID,
+							null,
+							null,
+							null,
+							null);
+					}
 				}
-			}
-			
+
 			// phone part
-			if(isNewValue(iwc,prm_main_phone)){
+			if (isNewValue(iwc, prm_main_phone)) {
 				String number = iwc.getParameter(prm_main_phone);
-				userService.updateUserPhone(userID.intValue(),PhoneTypeBMPBean.HOME_PHONE_ID,number);
+				userService.updateUserPhone(userID.intValue(), PhoneTypeBMPBean.HOME_PHONE_ID, number);
 			}
-			
+
 			// email part
-			if(isNewValue(iwc,prm_email_address)){
+			if (isNewValue(iwc, prm_email_address)) {
 				String email = iwc.getParameter(prm_email_address);
-				userService.updateUserMail(userID.intValue(),email);
+				userService.updateUserMail(userID.intValue(), email);
 			}
-			
+
 			// deceased part
-			if(iwc.isParameterSet(prm_deceased_date)){
+			if (iwc.isParameterSet(prm_deceased_date)) {
 				IWTimestamp deceased = new IWTimestamp(iwc.getParameter(prm_deceased_date));
-				getUserStatusService(iwc).setUserAsDeceased(userID,deceased.getDate());
+				getUserStatusService(iwc).setUserAsDeceased(userID, deceased.getDate());
 				//TODO use some userbusiness to inform any services that want to know about a deceased user
 			}
 		}
@@ -560,9 +799,7 @@ public class UserEditor extends Block {
 
 	}
 
-	
-
-	public Map getRelations() throws FinderException, RemoteException {
+	protected Map getRelations(User user) throws FinderException, RemoteException {
 		Map map = new Hashtable();
 		if (relationTypes == null)
 			relationTypes = new Vector();
@@ -572,7 +809,7 @@ public class UserEditor extends Block {
 			GroupRelation relation = (GroupRelation) iter.next();
 			type = relation.getRelationshipType();
 			//only show nonpassive relations
-			if(!relation.isPassive()){
+			if (!relation.isPassive()) {
 				if (showAllRelationTypes && !relationTypes.contains(type)) {
 					relationTypes.add(type);
 				}
@@ -600,45 +837,46 @@ public class UserEditor extends Block {
 		HashMap map = new HashMap();
 		map.put(STYLENAME_HEADER, headerFontStyle);
 		map.put(STYLENAME_TEXT, textFontStyle);
-		map.put(STYLENAME_DECEASED,deceasedFontStyle);
+		map.put(STYLENAME_DECEASED, deceasedFontStyle);
+		map.put(STYLENAME_BUTTON, buttonStyle);
+		map.put(STYLENAME_INTERFACE, interfaceStyle);
 		return map;
 	}
-	
-	private Parameter getOldParameter(String pName,String pValue){
-		return new Parameter(pName+prm_old_value_suffix,pValue);
+
+	private Parameter getOldParameter(String pName, String pValue) {
+		return new Parameter(pName + prm_old_value_suffix, pValue);
 	}
-	
-	private boolean isNewValue(IWContext iwc,String pName){
-		if(iwc.isParameterSet(pName+prm_old_value_suffix) && iwc.isParameterSet(pName)){
-			return iwc.getParameter(pName+prm_old_value_suffix).equals(iwc.getParameter(pName));
+
+	private boolean isNewValue(IWContext iwc, String pName) {
+		if (iwc.isParameterSet(pName + prm_old_value_suffix) && iwc.isParameterSet(pName)) {
+			return !iwc.getParameter(pName + prm_old_value_suffix).equals(iwc.getParameter(pName));
 		}
 		return iwc.isParameterSet(pName);
 	}
-	
+
 	/**
 	 * Sets the relations connector window class, that must be a subclass of GroupRelationConnector
 	 * @param windowClass
 	 */
-	public void setGroupRelationConnectorWindow(Class windowClass){
+	public void setGroupRelationConnectorWindow(Class windowClass) {
 		connectorWindowClass = windowClass;
 	}
-	
+
 	public UserBusiness getUserService(IWApplicationContext iwac) throws RemoteException {
-		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);	
+		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
-	
+
 	public UserStatusBusiness getUserStatusService(IWApplicationContext iwac) throws RemoteException {
-		return (UserStatusBusiness) IBOLookup.getServiceInstance(iwac, UserStatusBusiness.class);	
+		return (UserStatusBusiness) IBOLookup.getServiceInstance(iwac, UserStatusBusiness.class);
 	}
-	
-	public PhoneTypeHome getPhoneHome() throws RemoteException{
+
+	public PhoneTypeHome getPhoneHome() throws RemoteException {
 		return (PhoneTypeHome) IDOLookup.getHome(PhoneType.class);
 	}
-	
-	public CountryHome getCountryHome() throws RemoteException{
+
+	public CountryHome getCountryHome() throws RemoteException {
 		return (CountryHome) IDOLookup.getHome(Country.class);
 	}
-	
 
 	/**
 	 * @return
@@ -737,10 +975,10 @@ public class UserEditor extends Block {
 	public void setTextFontStyle(String string) {
 		textFontStyle = string;
 	}
-	
+
 	public synchronized Object clone() {
-		UserEditor obj = (UserEditor)super.clone();
-		obj.searcher = (UserSearcher)searcher.clone();
+		UserEditor obj = (UserEditor) super.clone();
+		obj.searcher = (UserSearcher) searcher.clone();
 		return obj;
 	}
 
@@ -756,6 +994,134 @@ public class UserEditor extends Block {
 	 */
 	public void setDeceasedFontStyle(String string) {
 		deceasedFontStyle = string;
+	}
+
+	public static String getUserIDParameterName() {
+		return UserSearcher.getUniqueUserParameterName("edt");
+	}
+
+	/**
+	 * @param length
+	 */
+	public void setFirstNameLength(int length) {
+		searcher.setFirstNameLength(length);
+	}
+
+	/**
+	 * @param length
+	 */
+	public void setLastNameLength(int length) {
+		searcher.setLastNameLength(length);
+	}
+
+	/**
+	 * @param cols
+	 */
+	public void setMaxFoundUserCols(int cols) {
+		searcher.setMaxFoundUserCols(cols);
+	}
+
+	/**
+	 * @param rows
+	 */
+	public void setMaxFoundUserRows(int rows) {
+		searcher.setMaxFoundUserRows(rows);
+	}
+
+	/**
+	 * @param length
+	 */
+	public void setMiddleNameLength(int length) {
+		searcher.setMiddleNameLength(length);
+	}
+
+	/**
+	 * @param length
+	 */
+	public void setPersonalIDLength(int length) {
+		searcher.setPersonalIDLength(length);
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowFirstNameInSearch(boolean b) {
+		searcher.setShowFirstNameInSearch(b);
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowLastNameInSearch(boolean b) {
+		searcher.setShowLastNameInSearch(b);
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowMiddleNameInSearch(boolean b) {
+		searcher.setShowMiddleNameInSearch(b);
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowPersonalIDInSearch(boolean b) {
+		searcher.setShowPersonalIDInSearch(b);
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setSkipResultsForOneFound(boolean)
+	 */
+	public void setSkipResultsForOneFound(boolean flag) {
+		searcher.setSkipResultsForOneFound(flag);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObjectContainer#add(com.idega.presentation.PresentationObject)
+	 */
+	public void addToMainPart(PresentationObject modObject) {
+		mainTable.add(modObject, 1, mainRow++);
+	}
+
+	public Text getHeader(String text) {
+		Text t = new Text(text);
+		setStyle(t, STYLENAME_HEADER);
+		return t;
+	}
+
+	public Text getText(String text) {
+		Text t = new Text(text);
+		setStyle(t, STYLENAME_TEXT);
+		return t;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getButtonStyle() {
+		return buttonStyle;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getInterfaceStyle() {
+		return interfaceStyle;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setButtonStyle(String string) {
+		buttonStyle = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setInterfaceStyle(String string) {
+		interfaceStyle = string;
 	}
 
 }
