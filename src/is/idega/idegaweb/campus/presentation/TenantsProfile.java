@@ -33,7 +33,7 @@ import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.block.request.data.Request;
 import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.AccountManager;
+import com.idega.block.finance.business.AccountBusiness;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.text.TextSoap;
@@ -108,7 +108,7 @@ public class TenantsProfile extends Block {
   /**
    *
    */
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws java.rmi.RemoteException{
     //debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
@@ -206,7 +206,7 @@ public class TenantsProfile extends Block {
       myTable.setColumnVerticalAlignment(2,"top");
       myTable.add(getProfile(),1,1);
       myTable.add(getApartment(),2,1);
-      myTable.add(getAccount(),2,2);
+      myTable.add(getAccount(iwc),2,2);
       myTable.add(getRequests(),2,3);
       myTable.setCellspacing(6);
 
@@ -348,7 +348,7 @@ public class TenantsProfile extends Block {
     return table;
   }
 
-  private Table getAccount() {
+  private Table getAccount(IWContext iwc)throws java.rmi.RemoteException {
     Table table = new Table();
       table.setCellspacing(1);
       table.setCellpadding(3);
@@ -360,22 +360,27 @@ public class TenantsProfile extends Block {
     table.add(formatText(_iwrb.getLocalizedString("lastentry","Last Entry")),2,2);
     table.add(formatText(_iwrb.getLocalizedString("balance","Balance")),3,2);
 
-    Account[] account = AccountManager.findAccounts(_userID);
+    //Account[] account = AccountManager.findAccounts(_userID);
+    List accounts = FinanceFinder.getInstance().listOfAccountInfoByUserId(_userID);
     int row = 3;
 
-    for ( int a = 0; a < account.length; a++ ) {
-      table.add(formatText(account[a].getName()),1,row);
-      table.add(formatText(new idegaTimestamp(account[a].getLastUpdated()).getISLDate(".",true)),2,row);
+    if(accounts!=null && !accounts.isEmpty()){
+      java.util.Iterator iter = accounts.iterator();
+      while(iter.hasNext()){
+        Account account = (Account) iter.next();
+        table.add(formatText(account.getName()),1,row);
+        table.add(formatText(new idegaTimestamp(account.getLastUpdated()).getISLDate(".",true)),2,row);
 
-      float balance = account[a].getBalance();
-      boolean debet = balance >= 0 ? true : false ;
-      String color = "";
-        if ( debet ) color = "#0000FF";
-        else color = "#FF0000";
+        float balance = account.getBalance();
+        boolean debet = balance >= 0 ? true : false ;
+        String color = "";
+          if ( debet ) color = "#0000FF";
+          else color = "#FF0000";
 
-      table.add(formatText(Float.toString(balance),color),3,row);
-      table.setAlignment(3,row,"right");
-      row++;
+        table.add(formatText(Float.toString(balance),color),3,row);
+        table.setAlignment(3,row,"right");
+        row++;
+      }
     }
 
     table.setHorizontalZebraColored(white,lightGray);

@@ -113,7 +113,7 @@ public class PhoneFileHandler {
   }
 
 
-  public void process(File PhoneFile){
+  public void process(File PhoneFile)throws java.rmi.RemoteException{
 
     Map M = PhoneFinder.mapOfAccountsByPhoneNumber();
     // If we can assess something
@@ -190,11 +190,11 @@ public class PhoneFileHandler {
                 if(M!=null && M.containsKey(number)){
                   //iAccountId = (Integer) M.get(number);
                   eAccount = (Account) M.get(number);
-                  ape.setAccountId(eAccount.getID());
+                  ape.setAccountId(((Integer)eAccount.getPrimaryKey()).intValue());
                   ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead);
                   eAccount.addAmount(new Float(ape.getPrice()));
                   ape.insert();
-                  eAccount.update();
+                  eAccount.store();
                   totPrice += ape.getPrice();
                 }
                 // account for phonenumber doesn´t exist
@@ -273,7 +273,7 @@ public class PhoneFileHandler {
     }
   }
 
-  public void process3(File PhoneFile){
+  public void process3(File PhoneFile)throws java.rmi.RemoteException{
 
     //Map M = PhoneFinder.mapOfAccountsByPhoneNumber();
     Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
@@ -419,7 +419,7 @@ public class PhoneFileHandler {
           Iterator It = M2.values().iterator();
           while(It.hasNext()){
             eAccount = (Account) It.next();
-            eAccount.update();
+            eAccount.store();
           }
 
           PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();

@@ -22,7 +22,7 @@ import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
-import com.idega.block.finance.business.AccountManager;
+import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.Account;
 import com.idega.block.login.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -67,7 +67,7 @@ public class ContractSignWindow extends Window{
     setResizable(true);
   }
 
-  protected void control(IWContext iwc){
+  protected void control(IWContext iwc)throws java.rmi.RemoteException{
 
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
@@ -98,7 +98,7 @@ public class ContractSignWindow extends Window{
     return LinkTable;
   }
 
-  private PresentationObject getSignatureTable(IWContext iwc){
+  private PresentationObject getSignatureTable(IWContext iwc)throws java.rmi.RemoteException{
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
@@ -108,8 +108,8 @@ public class ContractSignWindow extends Window{
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
-      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
-      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
+      List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
+      List lPhoneAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
       if(SysProps != null){
         int groupId = SysProps.getDefaultGroup();
@@ -312,7 +312,7 @@ public class ContractSignWindow extends Window{
     return S.toString();
   }
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc)throws java.rmi.RemoteException{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.isParameterSet(prmAdmin);
     control(iwc);

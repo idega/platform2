@@ -48,7 +48,7 @@ import com.idega.core.data.Email;
 
 import com.idega.core.user.business.UserBusiness;
 
-import com.idega.block.finance.business.AccountManager;
+import com.idega.block.finance.business.FinanceFinder;
 
 import com.idega.block.finance.data.Account;
 
@@ -132,7 +132,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
 
 
-  protected void control(IWContext iwc){
+  protected void control(IWContext iwc)throws java.rmi.RemoteException{
 
     iwrb = getResourceBundle(iwc);
 
@@ -192,7 +192,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
 
 
-  private PresentationObject getSignatureTable(IWContext iwc){
+  private PresentationObject getSignatureTable(IWContext iwc)throws java.rmi.RemoteException{
 
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
 
@@ -210,9 +210,9 @@ public class ContractSigner extends PresentationObjectContainer{
 
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
 
-      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
+      List lFinanceAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 
-      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
+      List lPhoneAccounts = FinanceFinder.getInstance().listOfAccountInfoByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
 
 
@@ -556,7 +556,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
 
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc)throws java.rmi.RemoteException{
 
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
 

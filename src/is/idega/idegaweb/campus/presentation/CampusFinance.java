@@ -25,9 +25,9 @@ public class CampusFinance extends Block {
   }
 
   public void main(IWContext iwc){
-    Finance fin = new Finance(1);
-    fin.addFinanceObject(new PhoneFiles());
-    add(fin);
+    //Finance fin = new Finance(1);
+    //fin.addFinanceObject(new PhoneFiles());
+    //add(fin);
   }
 
 }

@@ -259,27 +259,46 @@ public class ReportObjectHandler extends Block{
   private static DropdownMenu drpEntity(String Name,String Entity,String field ,String selected,boolean withID) {
 
     IDOLegacyEntity[] entities = new IDOLegacyEntity[1];
-
+    java.util.List L  = null;
     try{
 
-      IDOLegacyEntity ge = (IDOLegacyEntity)java.lang.Class.forName(Entity).newInstance();
+      com.idega.data.IDOLegacyEntity leg =  com.idega.data.IDOLookup.instanciateEntity(java.lang.Class.forName(Entity));
+     // java.lang.Class.forName(Entity)
+      //com.idega.data.IDOHome home = (com.idega.data.IDOHome) com.idega.data.IDOLookup.getHomeLegacy(java.lang.Class.forName(Entity));
+      //com.idega.data.IDOEntity ge = home.createIDO();
+      L = com.idega.data.EntityFinder.findAll(leg);
 
-      entities = ge.findAll();
+      //IDOLegacyEntity ge = (IDOLegacyEntity)java.lang.Class.forName(Entity).newInstance();
+
+      //entities = ge.findAll();
 
     }
 
-    catch(SQLException e){}
+    //catch(SQLException e){e.printStackTrace();}
 
-    catch(Exception e){}
+    catch(Exception e){e.printStackTrace();}
 
     DropdownMenu drp = new DropdownMenu(Name);
 
     drp.addDisabledMenuElement("0","--");
 
-    for(int i = 0; i < entities.length ; i++){
+    if(L!=null){
+      java.util.Iterator iter = L.iterator();
+      while(iter.hasNext()){
+        com.idega.data.IDOLegacyEntity leg = (com.idega.data.IDOLegacyEntity) iter.next();
+        String sField = leg.getStringColumnValue(field);
+        drp.addMenuElement(sField);
 
-      drp.addMenuElement(entities[i].getStringColumnValue(field));
-
+      }
+      /*
+      for(int i = 0; i < entities.length ; i++){
+        if(entities[i]!=null){
+        String sField = entities[i].getStringColumnValue(field);
+        if(sField!=null)
+        drp.addMenuElement(sField);
+        }
+      }
+      */
     }
 
     if(!selected.equalsIgnoreCase("")){

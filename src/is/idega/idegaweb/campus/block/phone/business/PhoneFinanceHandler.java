@@ -401,7 +401,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
 
   private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
-  throws SQLException{
+  throws SQLException,java.rmi.RemoteException{
     AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());

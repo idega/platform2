@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
 import java.util.*;
-import com.idega.data.IDOLookup;
-import com.idega.business.IBOServiceBean;
 /**
  * Title:        AccountManager
  * Description:
@@ -19,7 +17,7 @@ import com.idega.business.IBOServiceBean;
  * @version 1.0
  */
 
-public class AccountManager extends IBOServiceBean {
+public class AccountManager {
 
   private Account eAccount;
   private Member eMember;
@@ -27,50 +25,8 @@ public class AccountManager extends IBOServiceBean {
   public AccountManager() {
 
   }
-/*
-  public static Account[] findAccounts(int iUserId){
-    Account[] A;
-    try{
-       A = (Account[])((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy().findAllByColumn("ic_user_id",iUserId);
-    }
-    catch(Exception e){A=null;}
-    return A;
-  }
-*/
-  public Collection listOfAccounts(int iUserId){
-    Collection A = null;
-    try{
-      AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
-      A = aHome.findAllByUserId(iUserId);
-      // A = EntityFinder.findAllByColumn(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy(),"ic_user_id",iUserId);
-    }
-    catch(Exception e){A=null;}
-    return A;
-  }
 
-  public Collection listOfAccounts(int iUserId,String sType){
-
-    try{
-      AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
-      return aHome.findAllByUserIdAndType(iUserId,sType);
-      //Account a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
-     //  A = EntityFinder.findAllByColumn(a,com.idega.block.finance.data.AccountBMPBean.getUserIdColumnName(),String.valueOf(iUserId),com.idega.block.finance.data.AccountBMPBean.getTypeColumnName(),sType);
-    }
-    catch(Exception e){}
-    return null;
-  }
-
-  public Collection listOfAccounts(){
-    try{
-       AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
-
-       //A = EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy());
-    }
-    catch(Exception e){}
-    return null;
-  }
-
-  public  List listOfAccountEntries( int iAssessmentRoundId){
+  public static List listOfAccountEntries( int iAssessmentRoundId){
     try {
       return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
     }
@@ -80,16 +36,16 @@ public class AccountManager extends IBOServiceBean {
     }
   }
 
-  public  List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+  public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
     return listOfAccEntries(iAccountId,((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(), from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
     return listOfPhoneEntries(iAccountId, from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,idegaTimestamp to,String status){
+  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp to,String status){
     return listOfPhoneEntries(iAccountId,null,to,status);
   }
-  private  List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to,String status){
+  private static List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(entry.getTableName());
     sql.append(" where ");
@@ -130,7 +86,7 @@ public class AccountManager extends IBOServiceBean {
     return A;
   }
 
-  private  List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to,String status){
+  private static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
     sql.append(" where ");
@@ -169,23 +125,23 @@ public class AccountManager extends IBOServiceBean {
 
 
 
-  public  List listOfAccountKeys(){
+  public static List listOfAccountKeys(){
    return FinanceFinder.getInstance().listOfAccountKeys();
   }
 
-  public  List listOfTariffKeys(){
+  public static List listOfTariffKeys(){
     return FinanceFinder.getInstance().listOfTariffKeys();
   }
 
-  public  Map hashOfAccountKeys(){
+  public static Map hashOfAccountKeys(){
     return FinanceFinder.getInstance().mapOfAccountKeys();
   }
 
-  public Map hashOfTariffKeys(){
+  public static Map hashOfTariffKeys(){
     return FinanceFinder.getInstance().mapOfTariffKeys();
   }
 
-  public List listOfKeySortedEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+  public static List listOfKeySortedEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
     Map acckeys = hashOfAccountKeys();
     Map takeys = hashOfTariffKeys();
     if(acckeys != null && takeys != null){
@@ -223,10 +179,8 @@ public class AccountManager extends IBOServiceBean {
       return null;
   }
 
-  public  Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
-    AccountHome aHome = (AccountHome) IDOLookup.getHome(Account.class);
-    Account A = aHome.create();
-    //Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException,java.rmi.RemoteException,javax.ejb.CreateException{
+    Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHome(Account.class)).create();
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
     A.setLastUpdated(idegaTimestamp.getTimestampRightNow()) ;
@@ -245,15 +199,15 @@ public class AccountManager extends IBOServiceBean {
     return A;
   }
 
-  public Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
+  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{
     return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typeFinancial,iCategoryId);
   }
 
-  public Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
+  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{
     return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typePhone,iCategoryId);
   }
 
-  public Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{
    return makeNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
   }
 }
