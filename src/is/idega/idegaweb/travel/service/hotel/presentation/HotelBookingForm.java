@@ -1681,6 +1681,7 @@ public class HotelBookingForm extends BookingForm {
 			}
 		}
 
+		//System.out.println("[HotelBookingForm] tooMany = "+tooMany+", iMany = "+iMany+", bookingTotal = "+bookingTotal+", maxPerRoom = "+maxPerRoom);
 		if (!tooMany) {
 	    int iAvailable;
 //	    if (totalRooms > 0) {
@@ -1704,18 +1705,34 @@ public class HotelBookingForm extends BookingForm {
 						Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
 						if (cont != null) {
 							totalRooms = cont.getAlotment();
+							if (totalRooms < 1) {
+								totalRooms = hotel.getNumberOfUnits();
+								if (totalRooms < 1) {
+									ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+									ServiceDay sDay = sDayHome.create();
+									sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
+				  
+									if (sDay != null) {
+										totalRooms = sDay.getMax();
+									}
+								}
+							}
 						}	
 					}
 
-
-	    		//		    iAvailable = totalRooms - heildarbokanir;
-			    iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
-					//System.out.println("iAvail = totalRooms + bookingTotal - heildarbokanir ....."+iAvailable+" = "+totalRooms+" + " +bookingTotal+ " - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null ));
-			    if (iMany > iAvailable) {
-	//			  if (iAvailable <= 0 ) {
-			    	tooMany = true;
-			    	errorDays.add(new IWTimestamp(fromStamp));
-			    }
+					if (totalRooms > 0) {
+		    		//		    iAvailable = totalRooms - heildarbokanir;
+				    iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
+	
+						//System.out.println("[HotelBookingform] date : "+fromStamp+", totalRooms : "+totalRooms+", iAvailable = "+iAvailable+" ("+totalRooms+" + "+bookingTotal+" - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null )+")");
+	
+						//System.out.println("iAvail = totalRooms + bookingTotal - heildarbokanir ....."+iAvailable+" = "+totalRooms+" + " +bookingTotal+ " - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null ));
+				    if (iMany > iAvailable) {
+		//			  if (iAvailable <= 0 ) {
+				    	tooMany = true;
+				    	errorDays.add(new IWTimestamp(fromStamp));
+				    }
+					}
 	    	}
 		    
 //	    }
