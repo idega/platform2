@@ -418,27 +418,31 @@ import java.util.*;
         int totaladd = (int) Math.floor(totalprice * (Multi));
         totaladd += iCost;
         totalprice += totaladd;
+        if(totaladd > 0){
+          TariffService.makeAccountEntry(this.eAccount.getID() ,-totaladd,"Kostnaður","Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
+        }
+        if(iInst > 0){
+          try{
+            PaymentRound payround = new PaymentRound();
+            payround.setName("Auka");
+            payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
+            payround.setTotals(totalprice);
+            payround.setUnionId(this.un_id);
+            payround.insert();
+            int payRoundId = payround.getID();
+            int tempPrice;
+            for(int k = 0; k < iInst ; k++){
+              tempPrice = totalprice/iInst;
+              if(k == 0)
+                tempPrice += totalprice%iInst;
 
-        TariffService.makeAccountEntry(this.eAccount.getID() ,-totaladd,"Kostnaður","Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
-
-        try{
-          PaymentRound payround = new PaymentRound();
-          payround.setName("Auka");
-          payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
-          payround.setTotals(totalprice);
-          payround.setUnionId(this.un_id);
-          payround.insert();
-          int payRoundId = payround.getID();
-          int tempPrice;
-          for(int k = 0; k < iInst ; k++){
-            tempPrice = totalprice/iInst;
-            if(k == 0)
-              tempPrice += totalprice%iInst;
-
-            TariffService.makePayment(this.eMember.getID() , this.un_id,payRoundId,tempPrice,false,"","",k+1,iInst,iType,new idegaTimestamp(idPayDate.getDay(),idPayDate.getMonth() +k,idPayDate.getYear()).getTimestamp(), idegaTimestamp.getTimestampRightNow(),3);
+              TariffService.makePayment(this.eMember.getID() , this.un_id,payRoundId,tempPrice,false,"","",k+1,iInst,iType,new idegaTimestamp(idPayDate.getDay(),idPayDate.getMonth() +k,idPayDate.getYear()).getTimestamp(), idegaTimestamp.getTimestampRightNow(),3);
+            }
+          }
+          catch(SQLException sql){
+            add("villa");
           }
         }
-        catch(SQLException sql){add("villa");}
       }
 
       this.doTariff(modinfo);
@@ -953,7 +957,8 @@ import java.util.*;
       }
 
       DropdownMenu drdInst = new DropdownMenu(this.getInstPrm());
-      for(int i = 1; i < 13; i++){ drdInst.addMenuElement( String.valueOf(i));  }
+      for(int i = 0; i < 13; i++){ drdInst.addMenuElement( String.valueOf(i));  }
+      drdInst.setSelectedElement("1");
       drdInst.setAttribute("style",this.styleAttribute);
       DropdownMenu drdPaytypes = new DropdownMenu(this.getPTPrm());
       for(int i = 1; i < 5; i++){ drdPaytypes.addMenuElement( String.valueOf(i),this.getPaymentType(i));  }
@@ -1114,7 +1119,7 @@ import java.util.*;
 
     private Table makeMemberTable(){
 
-      Table T = new Table(3,1);
+      Table T = new Table(3,2);
       T.setWidth("100%");
       T.setCellspacing(0);
       T.setCellpadding(2);
@@ -1131,8 +1136,24 @@ import java.util.*;
       Text Kt = new Text("Kt: "+this.eMember.getSocialSecurityNumber());
       Kt.setFontColor(HeaderColor);
 
+      Text AccountStatus = new Text("Staða reiknings:");
+      AccountStatus.setFontColor(HeaderColor);
+
+      Account account = null;
+      int balance = 0;
+      try{
+        account = new Account(this.eAccount.getID());
+        balance = account.getBalance()  ;
+      }
+      catch(SQLException e){balance =  this.eAccount.getBalance();}
+
+      Text Status = new Text(String.valueOf(balance));
+      Status.setFontColor(HeaderColor);
+
       T.add(Name,1,1);
       T.add(Kt,3,1);
+      T.add(AccountStatus,1,2);
+      T.add(Status,3,2);
 
       return T;
     }
@@ -1325,7 +1346,15 @@ import java.util.*;
         T.add(TableTexts[i],i+1,j+2);
       }
     }
-    if(this.eAccount.getBalance() == 0){
+    Account account = null;
+      int balance = 0;
+    try{
+      account = new Account(this.eAccount.getID());
+      balance = account.getBalance()  ;
+    }
+    catch(SQLException e){balance =  this.eAccount.getBalance();}
+
+    if(balance == 0){
     Link L = new Link(new Image("/pics/tarif/small/hreinsa.gif"));
     L.addParameter(this.prmString, "clearaccount");
     T2.setAlignment(1,3,"right");
