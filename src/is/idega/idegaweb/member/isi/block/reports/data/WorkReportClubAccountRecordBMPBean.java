@@ -20,7 +20,7 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 	protected final static String ENTITY_NAME = "ISI_WR_CLUB_ACC_REC";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
 	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "ISI_WR_GROUP_ID";
-	protected final static String COLUMN_NAME_AMOUNT = "AMOUNT";
+	protected final static String COLUMN_NAME_AMOUNT = "ACC_AMOUNT";
 	protected final static String COLUMN_NAME_ACCOUNT_KEY_ID = "ACC_KEY_ID";
 
 	public WorkReportClubAccountRecordBMPBean() {
@@ -31,7 +31,7 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP,"The league id / club",true,true,Integer.class, "many-to-one",WorkReportGroup.class);
-		addAttribute(COLUMN_NAME_AMOUNT,"Amount",true,true,Float.class);	
+		addAttribute(COLUMN_NAME_AMOUNT,"Amount",true,true, Double.class);	
 		addAttribute(COLUMN_NAME_ACCOUNT_KEY_ID, "Account key",true,true,Integer.class,"many-to-one",WorkReportAccountKey.class);
 		
 		this.addManyToOneRelationship(COLUMN_NAME_WORK_REPORT_GROUP,WorkReportGroup.class);		
@@ -65,11 +65,11 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		setColumn(COLUMN_NAME_REPORT_ID,report);
 	}
 	
-	public float getAmount() {
-		return getFloatColumnValue(COLUMN_NAME_AMOUNT);
+	public double getAmount() {
+		return getDoubleColumnValue(COLUMN_NAME_AMOUNT, 0);
 	}
 
-	public void setAmount(float amount) {
+	public void setAmount(double amount) {
 		setColumn(COLUMN_NAME_AMOUNT,amount);
 	}
 	
