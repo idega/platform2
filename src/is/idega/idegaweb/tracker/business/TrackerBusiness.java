@@ -281,7 +281,7 @@ public class TrackerBusiness {
   public static int getCurrentPageId(IWContext iwc){
     int returner = -1;
     String pageId = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
-      if(pageId==null) pageId = String.valueOf(BuilderLogic.getStartPageId(iwc));
+      if(pageId==null) pageId = String.valueOf(BuilderLogic.getInstance().getStartPageId(iwc));
         if(pageId==null) pageId = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 
     try {

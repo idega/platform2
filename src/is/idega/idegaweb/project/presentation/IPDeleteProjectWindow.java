@@ -71,11 +71,11 @@ public class IPDeleteProjectWindow extends IWAdminWindow{
             pageId = Integer.parseInt(page);
           }
           catch (NumberFormatException ex) {
-            pageId = BuilderLogic.getStartPageId(iwc);
+            pageId = BuilderLogic.getInstance().getStartPageId(iwc);
           }
 
         }else{
-          pageId = BuilderLogic.getStartPageId(iwc);
+          pageId = BuilderLogic.getInstance().getStartPageId(iwc);
         }
 
         this.setOnUnLoad("window.opener.location='"+BuilderLogic.getInstance().getIBPageURL(iwc,pageId)+"'");
