@@ -1,9 +1,13 @@
 package com.idega.block.boxoffice.presentation;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
+import com.idega.block.boxoffice.business.BoxComparator;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
@@ -13,6 +17,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -78,6 +83,7 @@ public class Box extends Block implements Builderaware {
 	private String _highlightColor = "#0000FF";
 	private boolean _showOnlyBelongingToUser = false;
 	private boolean _showCollection = false;
+	private boolean iSortAlphabetically = true;
 
 	private String _target;
 
@@ -444,15 +450,22 @@ public class Box extends Block implements Builderaware {
 				else
 					links = BoxFinder.getLinksInBox(box, categories[a]);
 			}
+			
 			if (links != null) {
-				for (int b = 0; b < links.length; b++) {
+				List collection = Arrays.asList(links);
+				if (iSortAlphabetically) {
+					Collections.sort(collection, new BoxComparator(iwc.getCurrentLocale()));
+				}
+				Iterator iter = collection.iterator();
+				while (iter.hasNext()) {
+					BoxLink boxLink = (BoxLink) iter.next();
 					column = 1;
-					Link link = getLink(links[b]);
+					Link link = getLink(boxLink);
 					if (link != null) {
 						table.add(link, column++, linkRow);
 						
 						if (_showFileSize) {
-							ICFile file = links[b].getFile();
+							ICFile file = boxLink.getFile();
 							
 							double size = 0;
 							try {
@@ -497,8 +510,8 @@ public class Box extends Block implements Builderaware {
 
 						if (_isAdmin) {
 							table.setWidth(column++, linkRow, 5);
-							table.add(getEditLink(links[b].getID()), column, linkRow);
-							table.add(getDeleteLink(links[b].getID()), column, linkRow);
+							table.add(getEditLink(boxLink.getID()), column, linkRow);
+							table.add(getDeleteLink(boxLink.getID()), column, linkRow);
 						}
 						linkRow++;
 					}
@@ -781,5 +794,9 @@ public class Box extends Block implements Builderaware {
 
 	public void setShowAllLinksInCategories(boolean showAllLinks) {
 		_showCollection = showAllLinks;
+	}
+	
+	public void setSortAlphabetically(boolean sortAlphabetically) {
+		iSortAlphabetically = sortAlphabetically;
 	}
 }
