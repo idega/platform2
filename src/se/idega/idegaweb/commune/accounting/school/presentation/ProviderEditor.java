@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.30 2004/07/16 12:28:03 roar Exp $
+ * $Id: ProviderEditor.java,v 1.31 2004/08/12 12:38:45 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -62,10 +62,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2004/07/16 12:28:03 $ by $Author: roar $
+ * Last modified: $Date: 2004/08/12 12:38:45 $ by $Author: aron $
  *
  * @author Anders Lindman
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -167,6 +167,7 @@ public class ProviderEditor extends AccountingBlock {
 	
 
 	private boolean _useCancelButton = true;
+	private boolean requireAreaChoiceForDefaultCommune = true;
 	
 	public boolean getUseCancelButton() {
 		return _useCancelButton;
@@ -399,16 +400,17 @@ public class ProviderEditor extends AccountingBlock {
 			String areaId = getParameter(iwc, PARAMETER_SCHOOL_AREA_ID);
 			String subAreaId = getParameter(iwc, PARAMETER_SCHOOL_SUB_AREA_ID);
 			
-			CommuneHome home = (CommuneHome) com.idega.data.IDOLookup.getHome(Commune.class);
-			try{
-				Commune c = home.findByPrimaryKey(communeId);
-				if(c.getIsDefault() && (areaId.equals("-1") || subAreaId.equals("-1"))){
-					throw new ProviderException(KEY_AREA_MISSING, "Area and/or sub area is missing");
+			if(requireAreaChoiceForDefaultCommune){
+				CommuneHome home = (CommuneHome) com.idega.data.IDOLookup.getHome(Commune.class);
+				try{
+					Commune c = home.findByPrimaryKey(communeId);
+					if(c.getIsDefault() && (areaId.equals("-1") || subAreaId.equals("-1"))){
+						throw new ProviderException(KEY_AREA_MISSING, "Area and/or sub area is missing");
+					}
+				}catch(FinderException ex){
+	
 				}
-			}catch(FinderException ex){
-
 			}
-
 			
 			ProviderBusiness pb = getProviderBusiness(iwc);
 			pb.saveProvider(
@@ -1235,4 +1237,17 @@ public class ProviderEditor extends AccountingBlock {
 	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
+    /**
+     * @return Returns the requireAreaChoiceForDefaultCommune.
+     */
+    public boolean isRequireAreaChoiceForDefaultCommune() {
+        return requireAreaChoiceForDefaultCommune;
+    }
+    /**
+     * @param requireAreaChoiceForDefaultCommune The requireAreaChoiceForDefaultCommune to set.
+     */
+    public void setRequireAreaChoiceForDefaultCommune(
+            boolean requireAreaChoiceForDefaultCommune) {
+        this.requireAreaChoiceForDefaultCommune = requireAreaChoiceForDefaultCommune;
+    }
 }
