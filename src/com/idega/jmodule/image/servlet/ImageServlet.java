@@ -18,10 +18,6 @@ import java.io.FileInputStream;
 
 public class ImageServlet extends IWCoreServlet{
 
-//private boolean cacheImagesToFiles = true;
-//private HashTable imageEntityHash = new Hashtable();
-//private Hashtable scorecardHash = new Hashtable();
-
 public void doGet( HttpServletRequest _req, HttpServletResponse _res) throws IOException{
   doPost(_req,_res);
 }
@@ -45,10 +41,6 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
   try{
     if( imageId!=null){
 
-      app = getApplication();
-     // String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",Integer.parseInt(imageId), app ,"image_value");
-
-    //  if( URIString == null ){
         conn = (ImageEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity")).getConnection();
 
         if( conn!=null ){
@@ -91,17 +83,9 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
 
           Stmt.close();
           RS.close();
+
       }
 
-
-   //}
-   // else { //Stream from a file
-
-  //    java.io.File file = new File(app.getApplicationRealPath()+URIString);
-  //    file.getC
-
-
-  //  }
   }
 
 

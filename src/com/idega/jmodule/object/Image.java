@@ -11,7 +11,8 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.image.data.ImageEntity;
-import com.idega.util.caching.BlobCacher;
+import com.idega.idegaweb.IWCacheManager;
+import com.idega.util.caching.Cache;
 
 
 /**
@@ -27,11 +28,13 @@ private String textBgColor = "#CCCCCC";
 private boolean limitImageWidth = false;
 private boolean zoomView = false;
 private boolean linkOnImage = true;
-private boolean useCached = false;
+private boolean useCaching = true;
 private String align;
 
 private int imageId = -1;
+private ImageEntity image;
 private int maxImageWidth = 140;
+
 
 
 public Image(){
@@ -147,23 +150,28 @@ public Image(int image_id, String name, int width, int height) throws SQLExcepti
   setHeight(height);
 }
 
-private String getImageURL(ModuleInfo modinfo){
-  StringBuffer URIBuffer;
-  String URIString = BlobCacher.getCachedUrl("com.idega.jmodule.image.data.ImageEntity",imageId, modinfo.getApplication() ,"image_value");
+private void getImage(ModuleInfo modinfo) throws SQLException{
 
-  if( URIString == null ){
-    useCached = false;
+  if( useCaching ){
+    IWMainApplication iwma = modinfo.getApplication();
+    Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.jmodule.image.data.ImageEntity",imageId,iwma);
+    if( cachedImage != null ){
+      image = (ImageEntity) cachedImage.getEntity();
+      setURL(cachedImage.getVirtualPathToFile());
+    }
+  }
+
+  if(image==null){//if something went wrong or we are not using caching
+    image = new ImageEntity(imageId);
+    StringBuffer URIBuffer;
     URIBuffer = new StringBuffer(IWMainApplication.IMAGE_SERVLET_URL);
     URIBuffer.append(imageId);
     URIBuffer.append("image?image_id=");
     URIBuffer.append(imageId);
-    URIString = URIBuffer.toString();
-  }else useCached = true;
+    setURL(URIBuffer.toString());
+  }
 
-  return URIString;
 }
-
-
 
 
   public void setProperty(String key, String values[]) {
@@ -309,15 +317,8 @@ private String getHTMLString(){
 
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
-    ImageEntity image = null;
 
-    String URIString = getImageURL(modinfo);
-    setURL(URIString);
-
-    if( useCached ){
-        print(getHTMLString());
-    }
-    else image = new ImageEntity(imageId);
+    getImage(modinfo);
 
     if( (image!=null) && (image.getID()!=-1) ){//begin debug
       String texti = image.getText();
