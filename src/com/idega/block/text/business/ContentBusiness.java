@@ -118,8 +118,6 @@ public class ContentBusiness {
 				eContent = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy();
 				if (dateOfContent == null)
 					eContent.setCreated(IWTimestamp.getTimestampRightNow());
-				else
-					eContent.setCreated(dateOfContent);
 				locText = ((com.idega.block.text.data.LocalizedTextHome) com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 			}
 
@@ -136,8 +134,10 @@ public class ContentBusiness {
 			
 			if (dateOfContent == null)
 				eContent.setLastUpdated(IWTimestamp.getTimestampRightNow());
-			else
+			else {
 				eContent.setLastUpdated(dateOfContent);
+				eContent.setCreated(dateOfContent);
+			}
 
 			if (ctUpdate) {
 				eContent.update();
