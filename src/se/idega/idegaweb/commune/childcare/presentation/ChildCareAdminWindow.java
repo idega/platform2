@@ -36,6 +36,7 @@ import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.user.business.UserBusiness;
@@ -59,6 +60,7 @@ import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.URLUtil;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -159,12 +161,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private Form form;
 	private boolean restrictDates = false;
 	boolean onlyAllowFutureCareDate = true; //Changed according to #nacc149
+	
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		parse(iwc);
+		parse(iwc);					
 		switch (_action) {
 			case ACTION_CLOSE :
 				close();
@@ -446,13 +449,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
 		table.add(dateInput, 1, row++);
-
 		
 		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
 		action.setValue(String.valueOf(ACTION_OFFER));
 		table.add(action);
 		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer")));
 		form.setToDisableOnSubmit(offer, true);
+		
 		table.add(offer, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -1579,9 +1582,50 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void makeOffer(IWContext iwc) throws RemoteException {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
+		User child = getBusiness().getUserBusiness().getUser(_userID);
+		
+		int pageID = -1;
+		String theUrl = null;
+		ICPage page = null;
+		URLUtil url = new URLUtil(iwc.getServerURL());
+		String linkName = null;
+		String link = null;
+		
+		//get page to childcareOverview to add to the link in the childcare offer message
+		if (getBusiness().isAfterSchoolApplication(_applicationID)) {
+			page = ChildCareAdminApplication.ascOverviewPage;
+			linkName = localize("after_school_care.overview","after school care overview");
+		}
+		else {
+			page = ChildCareAdminApplication.ccOverviewPage;
+			linkName = localize("child_care.overview","childcare overview");	
+		}
+		
+		
+		if (page != null)
+			pageID =((Integer) page.getPrimaryKey()).intValue();
+		
+		if (pageID != -1)
+			url.setPage(pageID);
+		
+		if (pageID != -1){
+			url.addParameter("comm_child_id",child.getPrimaryKey().toString());
+			theUrl = "javascript:openChildcareParentWindow(''" + url.toString() + "'');window.close();";	
+		}
+		else {
+			theUrl = "#";
+		}
+		//link which is set in makeOffer(iwc), $link$ is replaced by this
+		link = "<a href=" + theUrl + " class=commune_SmallLink>"+ linkName +"</a>";
+		
+		
 		if (messageBody.indexOf("$datum$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$datum$", "{4}");
 		}
+		if (messageBody.indexOf("$link$") != -1) {
+			messageBody = TextSoap.findAndReplace(messageBody, "$link$", link);
+		}
+						
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
 		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
 
@@ -1816,7 +1860,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		User child = getBusiness().getUserBusiness().getUser(_userID);
 		Email mail = getBusiness().getUserBusiness().getUserMail(user);
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
-
+		
 		String email = "";
 		if (mail != null && mail.getEmailAddress() != null)
 			email = mail.getEmailAddress();
@@ -1829,9 +1873,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		catch (NoPhoneFoundException npfe) {
 			workphone = "";
 		}
-
-		//Object[] arguments = { child.getNameLastFirst(true), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()), application.getProvider().getName() };
-		Object[] arguments = { child.getName(), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()), application.getProvider().getName() };
+				
+		Object[] arguments = { child.getName(), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()), application.getProvider().getName()};
 		return arguments;
 	}
 }
