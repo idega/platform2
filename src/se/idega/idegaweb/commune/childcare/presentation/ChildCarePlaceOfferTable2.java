@@ -95,8 +95,8 @@ class ChildCarePlaceOfferTable2 extends Table{
 		add(status, 2, row);
 		add(prognosis, 3, row);
 			
-		RadioButton rb1 = new RadioButton(CCConstants.KEEP_IN_QUEUE + row, CCConstants.YES);
-		RadioButton rb2 = new RadioButton(CCConstants.KEEP_IN_QUEUE + row, CCConstants.NO);
+		RadioButton rb1 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.YES);
+		RadioButton rb2 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.NO);
 			
 		if (offer){
 			rb1.setAttribute("disabled");
