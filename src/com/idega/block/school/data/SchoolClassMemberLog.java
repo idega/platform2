@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLog.java,v 1.2 2005/01/10 14:05:36 laddi Exp $
- * Created on 10.1.2005
+ * $Id: SchoolClassMemberLog.java,v 1.3 2005/02/16 10:36:31 laddi Exp $
+ * Created on 10.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/16 10:36:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface SchoolClassMemberLog extends IDOEntity {
 

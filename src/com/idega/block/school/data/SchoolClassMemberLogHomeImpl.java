@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLogHomeImpl.java,v 1.3 2005/01/19 09:39:51 anders Exp $
- * Created on 10.1.2005
+ * $Id: SchoolClassMemberLogHomeImpl.java,v 1.4 2005/02/16 10:36:31 laddi Exp $
+ * Created on 10.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/01/19 09:39:51 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/16 10:36:31 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolClassMemberLogHome {
 
@@ -71,4 +71,12 @@ public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolCl
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
+
+	public Collection findByPlacementAndDates(SchoolClassMember member, Date fromDate, Date toDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberLogBMPBean) entity).ejbFindByPlacementAndDates(member, fromDate, toDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
 }
