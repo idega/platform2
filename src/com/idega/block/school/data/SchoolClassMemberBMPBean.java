@@ -1,5 +1,6 @@
 package com.idega.block.school.data;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -21,10 +22,18 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.JoinCriteria;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.OR;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
+import com.idega.util.IWTimestamp;
 
 /**
  * <p>
@@ -42,8 +51,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/07/01 07:35:36 $ by $Author: laddi $
- * @version $Revision: 1.118 $
+ *         Last modified: $Date: 2004/07/01 12:16:59 $ by $Author: laddi $
+ * @version $Revision: 1.119 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -318,12 +327,39 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 
 	public Collection ejbFindBySchoolClassAndYear(int schoolClassID, int schoolYearID) throws FinderException {
-		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = new IWTimestamp();
+		
+		Table student = new Table(this);
+		Table group = new Table(SchoolClass.class);
+		Table season = new Table(SchoolSeason.class);
+		Column terminationDate = new Column(student, REMOVED_DATE);
+		Column seasonEndDate = new Column(season, SchoolSeasonBMPBean.END);
+		
+		SelectQuery query = new SelectQuery(student);
+		query.addColumn(new WildCardColumn(student));
+		try {
+			query.addJoin(student, group);
+			query.addJoin(group, season);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException("Table joining failed.");
+		}
+		
+		query.addCriteria(new MatchCriteria(student, SCHOOLCLASS, MatchCriteria.EQUALS, schoolClassID));
+		if (schoolYearID != -1) {
+			query.addCriteria(new MatchCriteria(student, SCHOOL_YEAR, MatchCriteria.EQUALS, schoolYearID));
+		}
+		MatchCriteria nullTermination = new MatchCriteria(terminationDate, true);
+		MatchCriteria termintationAfter = new MatchCriteria(terminationDate, MatchCriteria.GREATEREQUAL, stamp.getDate());
+		JoinCriteria terminationEqualsSeason = new JoinCriteria(terminationDate, seasonEndDate);
+		query.addCriteria(new OR(nullTermination, new OR(termintationAfter, terminationEqualsSeason)));
+		
+		/*IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(SCHOOLCLASS, schoolClassID);
 		if (schoolYearID != -1)
-			sql.appendAndEquals(SCHOOL_YEAR, schoolYearID);
+			sql.appendAndEquals(SCHOOL_YEAR, schoolYearID);*/
 
-		return super.idoFindPKsBySQL(sql.toString());
+		return super.idoFindPKsBySQL(query.toString());
 	}
 
 	public Collection ejbFindBySchoolClassAndYearAndStudyPath(SchoolClass group, SchoolYear schoolYear, SchoolStudyPath studyPath) throws FinderException {
