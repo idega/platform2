@@ -13,10 +13,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/03/31 12:24:15 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 09:39:00 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -40,6 +40,7 @@ public class ReportGenerator implements MediaWritable
                 System.err.println
                         (getClass ().getName () + " (" + REPORT_ID + "="
                          + reportIdString + "). " + e.getMessage ());
+                e.printStackTrace ();
             }
         }
     }
@@ -70,12 +71,13 @@ public class ReportGenerator implements MediaWritable
                                                   final Report reportInfo) {
         final MemoryFileBuffer report = new MemoryFileBuffer ();
         final MemoryOutputStream reportStream = new MemoryOutputStream (report);
-        final int columnCount = data [0].length;
+        final int columnCount = data != null && data.length > 0
+                ? data [0].length : 0;
         reportStream.write (new String (reportInfo.getName ()
                                         + "\n\n").getBytes ());
 
         final String [] headers = reportInfo.getHeaders ();
-        for (int col = 0; col < columnCount; col++) {
+        for (int col = 0; col < headers.length; col++) {
             reportStream.write ((headers [col] + '\t').getBytes());
         }
         reportStream.write ("\n".getBytes());
