@@ -3394,7 +3394,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while (iter.hasNext()) {
 			//the club
 			WorkReport report = (WorkReport) iter.next();
-			String cName = report.getGroupName();
+			String cName = report.getGroupNumber() +" "+ report.getGroupName();
 			
 			if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(report.getGroupType())) {
 				// don't show leagues
