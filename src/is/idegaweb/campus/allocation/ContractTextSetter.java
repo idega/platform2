@@ -35,13 +35,11 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
   private String localesParameter="iw_locales";
   private String bottomThickness = "8";
   private boolean isAdmin;
-   protected int fontSize = 2;
+  protected int fontSize = 2;
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
   private int iBorder = 2;
   private String TextFontColor = "#000000",whiteColor = "#FFFFFF",blackColor = "#000000";
-
-
   private String redColor = "#942829",blueColor = "#27324B",lightBlue ="#ECEEF0";
 
   public ContractTextSetter() {
@@ -93,7 +91,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
 
     }
     else
-      add("Hefur ekki réttindi");
+      add(iwrb.getLocalizedString("access_denied","Access_denied"));
 
 
   }
@@ -150,13 +148,13 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
       T.setRowColor(row,redColor);
       T.setWidth(1,"30");
       T.mergeCells(1,2,2,2);
-      T.mergeCells(1,3,2,3);
+
       T.mergeCells(1,row,8,row);
       T.add(formatText(" "),1,row);
       T.setHeight(row,bottomThickness);
     }
     else{
-      T.add("Enginn samnings texti í grunni",1,2);
+      T.add(iwrb.getLocalizedString("no_texts","No text in database"),1,2);
     }
 
 
@@ -185,6 +183,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     }
     SubmitButton save = new SubmitButton("savetitle","Save");
     text.setLength(80);
+    T.add(formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(save,1,row);
     F.add(T);
@@ -232,7 +231,9 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     SubmitButton save = new SubmitButton("savetext","Save");
     SubmitButton delete = new SubmitButton("delete","Delete");
     name.setLength(80);
+    T.add(formatText(iwrb.getLocalizedString("title","Title")),1,row++);
     T.add(name,1,row++);
+    T.add(formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(intDrop,1,row);
     T.add(CB,1,row);
