@@ -112,7 +112,7 @@ public class QuerySQL {
     while (fieldIterator.hasNext())  {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
       String name = field.getName();
-      String entity = field.getEntity();
+      //String entity = field.getEntity();
       fieldNameQueryField.put(name, field);
       // mark that this entity is used
       fieldOrder.add(field);
