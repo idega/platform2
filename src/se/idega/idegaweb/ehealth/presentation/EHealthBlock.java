@@ -17,11 +17,13 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.user.data.User;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.user.data.User;
 
 /**
  * @author Malin
@@ -38,6 +40,7 @@ public class EHealthBlock extends Block {
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_CHECKBOX = "CheckBox";
 	public final static String STYLENAME_INTERFACE = "Interface";
+	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
 	
 	
 	public String getBundleIdentifier() {
@@ -63,6 +66,13 @@ public class EHealthBlock extends Block {
 		return this.iwrb;
 	}
 
+	protected GenericButton getButton(GenericButton button) {
+		//temporary, will be moved to IWStyleManager for handling...
+		button.setHeight("15");
+		
+		return (GenericButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
+	}
+	
 	public IWBundle getBundle() {
 		return this.iwb;
 	}
@@ -128,6 +138,18 @@ public class EHealthBlock extends Block {
 	}
 	public InterfaceObject getStyledInterface(InterfaceObject obj) {
 		return (InterfaceObject) setStyle(obj, STYLENAME_INTERFACE);
+	}
+	
+	/**
+	 * @param iwc
+	 * @param healthcentre
+	 * @return
+	 */
+	public PresentationObject getHealthCareMap(IWContext iwc/*, HealthCentre healthcentre*/)
+	{
+		//TODO Display a PDF link if possible
+		Image image = getBundle(iwc).getImage("karta1.gif");
+		return image;
 	}
 	
 	public boolean isCommuneAdministrator(IWContext iwc) {

@@ -38,7 +38,7 @@ import com.idega.util.Age;
 public class VisitBooking extends EHealthBlock {
 	
 	private String prefix = "visit_booking_";
-	private String prmForm = prefix + "the_frm";
+	private String prmForm = prefix + "form_visit";
 	private String prmInform = prefix + "info_channel";
 	private String prmReason = prefix + "reason";
 	private String prmClear = prefix + "clear";
@@ -55,7 +55,7 @@ public class VisitBooking extends EHealthBlock {
 	private String prmConfirm = prefix + "confirm";
 	private String prmSend = prefix + "send";
 	
-	private int userID;
+	private int userID = -1;
 	private User user;
 
 	public void main(IWContext iwc) throws Exception {
@@ -74,7 +74,7 @@ public class VisitBooking extends EHealthBlock {
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
 	public PresentationObject getVisitForm(IWContext iwc) throws java.rmi.RemoteException {
 		Form myForm = new Form();
-		myForm.setName("form_visit");
+		myForm.setName(prmForm);
 		
 		Table table = new Table(1, 12);
 		table.setCellpadding(0);
@@ -100,9 +100,9 @@ public class VisitBooking extends EHealthBlock {
 		int row = 1;
 		
 		Age age = null;
-		if (user.getDateOfBirth() != null)
+		if (user != null && user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
-		else if (user.getPersonalID() != null)
+		else if (user != null && user.getPersonalID() != null)
 			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
 	
 		

@@ -31,22 +31,11 @@ import com.idega.util.Age;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class MyDoctor extends EHealthBlock {
+public class MyHealthCentre extends EHealthBlock {
 	
 	private String prefix = "visit_booking_";
 	private String prmForm = prefix + "form_visit";
-	private String prmInform = prefix + "info_channel";
-	private String prmReason = prefix + "reason";
-	private String prmClear = prefix + "clear";
-	private String prmDay = prefix + "day";
-	private String prmMonth = prefix + "month";
-	private String prmTime = prefix + "time";
-	private String prmChoose = prefix + "choose";
-	private String prmCooseWay = prefix + "chooseWay";
-	private String prmEmail = prefix + "email";
-	private String prmSMS = prefix + "sms";
-	private String prmHeadingCase = prefix + "heading_case";
-	private String prmVisitReason = prefix + "visit_reason";
+
 	
 	private String prmMessage = prefix + "message";
 	private String prmVisitBooking = prefix + "visit_booking";
@@ -83,7 +72,8 @@ public class MyDoctor extends EHealthBlock {
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
 			
-		table.setWidth(400);	
+		table.setWidth(400);
+		table.mergeCells(1, 1, 1, 3);
 		table.setWidth(2, 1, 15);
 		table.setWidth(1, 1, 73);
 		
@@ -102,20 +92,10 @@ public class MyDoctor extends EHealthBlock {
 			}
 			
 			PresentationObject picture=null;
-			User doctor = null;
-			int userIDDr = 41047; //45   41047
-			int userImageID = -1;
-			try {
-				doctor = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userIDDr);	
-			}
-			catch (Exception fe){
-				log(fe);
-			}
 			
-			if (doctor != null)
-				userImageID = doctor.getSystemImageID();
+			picture = getHealthCareMap(iwc);
 			
-			if(userImageID==-1){
+			if(picture==null){
 				Table fakeImageTable = new Table(1,1);
 				fakeImageTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
 				fakeImageTable.setBorder(4);
@@ -130,16 +110,10 @@ public class MyDoctor extends EHealthBlock {
 				fakeImageTable.setBorderColor(fakeImageColor);
 				picture = fakeImageTable;
 			}
-			else{
-				Image image = new Image();
-				image.setImageID(userImageID);
-				image.setWidth(73);
-				
-				picture=image;
-			}
+			
 			table.add(picture,1,1);
 			
-			String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
+			String doctorInfo = "<b>Norruddens <br>Husläkarmottagning</b><br>Lorem ipsum dolor sit amet, consecteuter andi elit, sed diam ninummy nibh.<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.norrudden.se' target='_new'>www.norrudden.se</a>";
 			
 			table.add(doctorInfo,3,1);
 			//Link message = new Link(getResourceBundle().getLocalizedImageButton(prmMessage, "Send message"));
@@ -163,5 +137,7 @@ public class MyDoctor extends EHealthBlock {
 		
 		return myForm;
 	}
+	
+	
 	
 	}
