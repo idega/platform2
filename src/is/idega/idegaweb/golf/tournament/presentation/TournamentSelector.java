@@ -23,7 +23,7 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class TournamentSelector extends TournamentBlock {
 
-	private String PARAMETER_TOURNAMENT = "tournament";
+	public static String PARAMETER_TOURNAMENT = "tournament";
 	
 	protected boolean tournamentMustBeSet() {
 		return false;

@@ -38,6 +38,20 @@ public abstract class TournamentBlock extends GolfBlock {
 				e.printStackTrace(System.out);
 			}
 		}
+		else {
+			tId = modinfo.getParameter(TournamentSelector.PARAMETER_TOURNAMENT);
+			if (tId != null) {
+				try {
+					int tournamentID = Integer.parseInt(tId);
+					if (tournamentID > 0) {
+						setTournamentID(modinfo, String.valueOf(tournamentID));
+					}
+					return tournamentID;
+				} catch (Exception e) {
+					//Not a number...
+				}
+			}
+		}
 		return -1;
 	}
 

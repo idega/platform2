@@ -7,7 +7,11 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 
@@ -29,10 +33,20 @@ public class TournamentAdminLink extends GolfBlock {
 		Link link = new Link(getResourceBundle().getLocalizedString("tournament.tournament_admin", "Tournament admin"));
 		link.setStyleClass(_styleName);
 		link.setWindowToOpen(TournamentAdministratorWindow.class);
+		link.addParameter(TournamentSelector.PARAMETER_TOURNAMENT, getTournamentSession(iwc).getTournamentID());
 		add(link);
 	}
 	
 	public void setStyleName(String styleName) {
 		_styleName = styleName;
+	}
+
+	private TournamentSession getTournamentSession(IWContext iwc) {
+		try {
+			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);	
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 }
