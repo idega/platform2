@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +13,6 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMember;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.location.data.Commune;
@@ -33,14 +30,8 @@ import com.idega.presentation.IWContext;
  * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public class PaymentThreadHighSchool extends PaymentThreadSchool {
-//	private final static String DEFAULT_COMMUNE_NAME = "nacka_commune_name";
-//	private final static String STATE_PRICE_COMMUNE_NAME = "state_price_commune_name";
-	
 	PaymentHeader paymentHeader;
 
-//	protected String commune_name = null;
-//	protected String state_price_name = null;
-	
 	public PaymentThreadHighSchool(Date month, IWContext iwc) {
 		super(month, iwc);
 	}
@@ -145,7 +136,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		return detail;
 	}
 	
-	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
+/*	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
 		Collection resourceConditions = new ArrayList();
 		Collection all = new ArrayList();
 		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
@@ -195,5 +186,5 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}
 		
 		return regulationForResourceArray;
-	}	
+	}	*/
 }
