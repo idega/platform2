@@ -14,8 +14,8 @@ import java.sql.Date;
 import com.idega.util.IWTimestamp;
 
 /**
- * A class containing some common functions for working with Swedish social 
- * security numbers.
+ * A class containing some common functions for working with
+ * PersonalIds - Swedish social security numbers (Personnummer)
  * 
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
@@ -137,6 +137,13 @@ public class PIDChecker {
 		return !isFemale(personalID);
 	}
 
+	
+	/**
+	 * The main method to run methods of this class.
+	 * If no parameters are given it returns a random generated PID.
+	 * If a parameter is given it tries to validate it as a personalId if the length is larger than 4.
+	 * If the length of the parameter is 2 or 4 it accepts it as a year and generates a random PID for that year.
+	 */	
 	public static void main(String blabla[]) {
 		PIDChecker checker = PIDChecker.getInstance();
 		if (blabla.length > 0) {
