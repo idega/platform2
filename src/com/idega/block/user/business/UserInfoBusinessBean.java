@@ -99,7 +99,7 @@ public class UserInfoBusinessBean extends IBOServiceBean implements UserInfoBusi
 	 */
 	public List getEmailList(User user) {
 		List emailList = new ArrayList();
-		int row = 1;
+		//int row = 1;
 		try {
 			Iterator emailIter = user.getEmails().iterator();
 			while(emailIter.hasNext()) {
