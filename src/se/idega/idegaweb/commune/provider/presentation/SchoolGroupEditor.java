@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSessionBean;
@@ -144,6 +145,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
+		boolean canDelete = true;
 		
 		table.add(getLocalizedSmallHeader("group_name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("group_type","Type"), column++, row);
@@ -155,7 +157,21 @@ public class SchoolGroupEditor extends ProviderBlock {
 		while (iter.hasNext()) {
 			column = 1;
 			SchoolClass group = (SchoolClass) iter.next();
-			
+			try {
+				if (getSchoolBusiness().getNumberOfStudentsInClass(((Integer)group.getPrimaryKey()).intValue()) > 0) {
+					canDelete = false;
+				}
+				else {
+					canDelete = true;
+				}
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (EJBException e1) {
+				e1.printStackTrace();
+			}
+				
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());
 			else
@@ -225,9 +241,14 @@ public class SchoolGroupEditor extends ProviderBlock {
 			table.add(editLink, column++, row);
 
 			Link deleteLink = new Link(this.getDeleteIcon(localize("delete_group", "Delete group")));
-			deleteLink.addParameter(PARAMETER_ACTION, ACTION_DELETE);
-			deleteLink.addParameter(PARAMETER_GROUP_ID, group.getPrimaryKey().toString());
-			deleteLink.addParameter(getProviderAsParameter());
+			if (canDelete) {
+				deleteLink.addParameter(PARAMETER_ACTION, ACTION_DELETE);
+				deleteLink.addParameter(PARAMETER_GROUP_ID, group.getPrimaryKey().toString());
+				deleteLink.addParameter(getProviderAsParameter());
+			}
+			else {
+				editLink.setToOpenAlert(localize("delete_group.can_not_delete_group", "The group can not be deleted as it contains students."));
+			}
 			table.add(deleteLink, column++, row++);
 		}
 		
