@@ -109,15 +109,11 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
       if(L!=null){
-       ICFile file = new ICFile(((Building)L.get(0)).getImageId());
-        ImageSlideShow slide = new ImageSlideShow();
-        slide.setFileFolder(file);
-        complexTable.add(slide,3,2);
-        /*
+
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
        buildingImage.setMaxImageWidth(imageMaxSize);
        complexTable.add(buildingImage,3,2);
-       */
+
       }
 
       if ( types != null ) {
