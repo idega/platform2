@@ -175,21 +175,26 @@ public class ResultComparator implements Comparator {
         }
       }
       else {
-        if ( r1.getTournamentPosition() < r1.getTournamentPosition() ) {
-          result = -1;
+        if ( r1.getTournamentPosition() != -1 && r1.getTournamentPosition() != -1 ) {
+          if ( r1.getTournamentPosition() < r1.getTournamentPosition() ) {
+            result = -1;
+            System.out.println(r2.getTournamentPosition()+" > "+r1.getTournamentPosition());
+          }
+          else {
+            result = 1;
+            System.out.println(r2.getTournamentPosition()+" > "+r1.getTournamentPosition());
+          }
         }
         else {
-          result = 1;
-        }
-
-        if ( r1.getTournamentPosition() == -1 && r1.getTournamentPosition() != -1 ) {
-          result = 1;
-        }
-        else if ( r1.getTournamentPosition() != -1 && r1.getTournamentPosition() == -1 ) {
-          result = -1;
-        }
-        else if ( r1.getTournamentPosition() == -1 && r1.getTournamentPosition() == -1 ) {
-          result = 0;
+          if ( r1.getTournamentPosition() == -1 && r1.getTournamentPosition() != -1 ) {
+            result = 1;
+          }
+          else if ( r1.getTournamentPosition() != -1 && r1.getTournamentPosition() == -1 ) {
+            result = -1;
+          }
+          else if ( r1.getTournamentPosition() == -1 && r1.getTournamentPosition() == -1 ) {
+            result = 0;
+          }
         }
       }
     }
