@@ -10,9 +10,10 @@ import java.sql.*;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.image.data.ImageEntity;
+import com.idega.block.media.data.ImageEntity;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.util.caching.Cache;
+import com.idega.block.media.servlet.MediaServlet;
 
 
 /**
@@ -78,32 +79,32 @@ public Image(String url,String name,int width,int height){
 *Fetches an image from the database through the imageservlet or blobcache
 */
 
-public Image(int image_id) throws SQLException{
+public Image(int imageId) throws SQLException{
   super();
-  this.imageId = image_id;
+  this.imageId = imageId;
   setBorder(0);
 
 }
 
 
-public Image(int image_id, String name) throws SQLException{
+public Image(int imageId, String name) throws SQLException{
   super();
-  this.imageId = image_id;
+  this.imageId = imageId;
   setBorder(0);
   setName(name);
 }
 
-public Image(int image_id, int width, int height) throws SQLException{
+public Image(int imageId, int width, int height) throws SQLException{
   super();
-  this.imageId = image_id;
+  this.imageId = imageId;
   setBorder(0);
   setWidth(width);
   setHeight(height);
 }
 
-public Image(int image_id, String name, int width, int height) throws SQLException{
+public Image(int imageId, String name, int width, int height) throws SQLException{
   super();
-  this.imageId = image_id;
+  this.imageId = imageId;
   setBorder(0);
   setName(name);
   setWidth(width);
@@ -112,9 +113,14 @@ public Image(int image_id, String name, int width, int height) throws SQLExcepti
 
 private void getImage(ModuleInfo modinfo) throws SQLException{
   IWMainApplication iwma = modinfo.getApplication();
+  String idName = MediaServlet.PARAMETER_NAME;
+
+  //**@todo: remove this when no longer needed
+  String mmProp = iwma.getSettings().getProperty(MediaServlet.USES_OLD_TABLES);
+  if(mmProp!=null) idName = "image_id";
 
   if( useCaching ){
-    Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.jmodule.image.data.ImageEntity",imageId,iwma);
+    Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.block.media.data.ImageEntity",imageId,iwma);
     if( cachedImage != null ){
       image = (ImageEntity) cachedImage.getEntity();
       setURL(cachedImage.getVirtualPathToFile());
@@ -124,9 +130,11 @@ private void getImage(ModuleInfo modinfo) throws SQLException{
   if(image==null){//if something went wrong or we are not using caching
     image = new ImageEntity(imageId);
     StringBuffer URIBuffer;
-    URIBuffer = new StringBuffer(IWMainApplication.IMAGE_SERVLET_URL);
+    URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
     URIBuffer.append(imageId);
-    URIBuffer.append("image?image_id=");
+    URIBuffer.append("image?");
+    URIBuffer.append(idName);
+    URIBuffer.append("=");
     URIBuffer.append(imageId);
     setURL(URIBuffer.toString());
   }
@@ -223,7 +231,7 @@ public String getURL(){
  * Returns true if the image has been set to a source, else false
  */
 public boolean hasSource(){
-  return ((getURL()==null)&&this.imageId!=-1);
+  return ((getURL()!=null)||this.imageId!=-1);
 }
 
 
@@ -303,7 +311,7 @@ private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
     getImage(modinfo);
 
     if( (image!=null) && (image.getID()!=-1) ){//begin debug
-      String texti = image.getText();
+      String texti = image.getDescription();
       String link = image.getLink();
       String name = image.getName();
       if( name != null ) setName(name);
