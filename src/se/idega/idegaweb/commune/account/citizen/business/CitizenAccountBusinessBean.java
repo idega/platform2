@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.44 2003/01/11 08:00:22 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.45 2003/01/11 08:01:10 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/11 08:00:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 08:01:10 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -398,7 +398,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final boolean notNackaResident
                 = applicant.getApplicationReason().equals (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
-        System.err.println ("¤¤¤ notNackaResident=" + notNackaResident);
         final User user = notNackaResident ?
                 userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp)
