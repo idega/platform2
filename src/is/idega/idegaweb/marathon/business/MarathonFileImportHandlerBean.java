@@ -148,13 +148,13 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 				kt = kt.replaceAll("feb", "02");
 				kt = kt.replaceAll("mar", "03");
 				kt = kt.replaceAll("apr", "04");
-				kt = kt.replaceAll("ma’", "05");
-				kt = kt.replaceAll("jœn", "06");
-				kt = kt.replaceAll("jœl", "07");
-				kt = kt.replaceAll("‡gœ", "08");
+				kt = kt.replaceAll("mai", "05");
+				kt = kt.replaceAll("jun", "06");
+				kt = kt.replaceAll("jul", "07");
+				kt = kt.replaceAll("agu", "08");
 				kt = kt.replaceAll("sep", "09");
 				kt = kt.replaceAll("okt", "10");
-				kt = kt.replaceAll("n—v", "11");
+				kt = kt.replaceAll("nov", "11");
 				kt = kt.replaceAll("des", "12");
 				
 				
