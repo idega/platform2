@@ -568,7 +568,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			User appParent = application.getOwner();
 			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-				Message message = getMessageBusiness().createUserMessage(appParent, subject, MessageFormat.format(body, arguments));
+				Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), true);
 				message.setParentCase(application);
 				message.store();
 			}
