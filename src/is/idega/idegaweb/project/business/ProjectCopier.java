@@ -30,10 +30,13 @@ public class ProjectCopier extends IDOCopier {
     instance3.setDatasource(fromDatasource);
     GenericEntity instance4 = new com.idega.core.accesscontrol.data.ICPermission();
     instance4.setDatasource(fromDatasource);
+    GenericEntity instance5 = new com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo();
+    instance5.setDatasource(fromDatasource);
     super.addEntityToCopy(instance1);
     super.addEntityToCopy(instance2);
     super.addEntityToCopy(instance3);
     super.addEntityToCopy(instance4);
+    super.addEntityToCopy(instance5);
   }
 
 
