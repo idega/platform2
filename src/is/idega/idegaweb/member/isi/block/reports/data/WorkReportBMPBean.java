@@ -43,6 +43,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String COLUMN_NAME_BOARD_FILE_ID = "BOARD_PART_FILE_ID";
 	protected final static String COLUMN_NAME_NUMBER_OF_MEMBERS= "TOTAL_MEMBERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS= "TOTAL_PLAYERS";
+	protected final static String COLUMN_NAME_NUMBER_OF_COMPETITORS= "TOTAL_COMPETITORS";
 	
 	public WorkReportBMPBean() {
 		super();
@@ -69,6 +70,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_GROUP_INACTIVE, "Is the group inactive", true, true, Boolean.class);	
 		addAttribute(COLUMN_NAME_NUMBER_OF_MEMBERS,"Total sum of members",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_NUMBER_OF_PLAYERS,"Total sum of players",true,true,Integer.class);
+		addAttribute(COLUMN_NAME_NUMBER_OF_COMPETITORS,"Total sum of players",true,true,Integer.class);
 		
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
     addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
@@ -252,6 +254,21 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport,COLUMN_NAME_GROUP_TYPE);
 	}
 	
+	public int ejbHomeGetCountOfWorkReportsByStatusAndYear(String status, int year){
+		IDOQuery sql = idoQueryGetSelectCount();
+		
+		sql.appendWhereEqualsQuoted(COLUMN_NAME_STATUS,status)
+		.appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR,year);
+		
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	public Collection getLeagues() throws IDOException {
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
@@ -275,6 +292,14 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 
 	public void setNumberOfMembers(int totalMembersCount) {
 		setColumn(COLUMN_NAME_NUMBER_OF_MEMBERS,totalMembersCount);
+	}
+	
+	public int getNumberOfCompetitors() {
+		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_COMPETITORS);
+	}
+
+	public void setNumberOfCompetitors(int totalCompetitorsCount) {
+		setColumn(COLUMN_NAME_NUMBER_OF_COMPETITORS,totalCompetitorsCount);
 	}
 	
 	public int getNumberOfPlayers() {

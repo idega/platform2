@@ -133,8 +133,8 @@ public class WorkReportWindow extends IWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
 			}
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
-				WorkReportMultiEditor editor = new WorkReportMultiEditor();
-				table.add(editor,2,1);	//not a selector
+				WorkReportOverView overView = new WorkReportOverView();
+				table.add(overView,2,1);	//not a selector
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {

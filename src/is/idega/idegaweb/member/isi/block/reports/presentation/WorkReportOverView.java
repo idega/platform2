@@ -15,30 +15,32 @@ import com.idega.util.IWTimestamp;
 
 public class WorkReportOverView extends Block {
 	private WorkReportBusiness reportBiz;
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+
+	public String getBundleIdentifier(){
+		return this.IW_BUNDLE_IDENTIFIER;
+	}
 	
-	public WorkReportOverView(){
+	public WorkReportOverView() {
 		super();
 	}
 
-	public void main(IWContext iwc) throws Exception{
-		Table table = new Table(2,1);
-		
+	public void main(IWContext iwc) throws Exception {
+		Table table = new Table(2, 1);
 
-	//	table.add(new WorkReportMultiEditor(),2,1);
+
+		table.add(new WorkReportMultiEditor(), 1, 1);//this order so multieditor logic is done before the overview
+		table.add(new WorkReportOverViewStats(),2,1);
 		
-		
-		
-		table.add(new WorkReportMultiEditor(),2,1);
 		table.setWidthAndHeightToHundredPercent();
-		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
-		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setCellpaddingAndCellspacing(0);
-		
+
 		add(table);
-		
-		
+
 	}
-	
+
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
 		if (reportBiz == null) {
 			try {
@@ -50,9 +52,9 @@ public class WorkReportOverView extends Block {
 		}
 		return reportBiz;
 	}
-	
+
 	//TODO Make the year choosable
-	protected int getYear(){
+	protected int getYear() {
 		return (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 	}
 }

@@ -2,7 +2,6 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
@@ -27,7 +26,6 @@ import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
-import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -36,9 +34,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
@@ -77,7 +73,13 @@ public class WorkReportMultiEditor extends Block {
 
   
   private boolean editable = true;
-    
+   
+	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+
+	public String getBundleIdentifier(){
+		return this.IW_BUNDLE_IDENTIFIER;
+	}
+	
   public WorkReportMultiEditor() {
     super();
   }  
@@ -365,17 +367,19 @@ public class WorkReportMultiEditor extends Block {
 			
 			WorkReport report = (WorkReport)value;
 			Text text = (Text) browser.getDefaultTextProxy().clone();
+			text.setText("");
 			
 			try {
-				Group regionalUnion = getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(report.getRegionalUnionGroupId().intValue());
+				
+				Integer regionalPrimaryKey = report.getRegionalUnionGroupId();
+				if(regionalPrimaryKey!=null){
+				Group regionalUnion = getWorkReportBusiness(iwc).getGroupBusiness().getGroupByGroupID(regionalPrimaryKey.intValue());
 				String metaDataKey = path.getShortKey();
 				String metaDataValue = regionalUnion.getMetaData(metaDataKey);
 
-				if(metaDataValue!=null){
-					text.setText(metaDataValue);   
-				}
-				else{
-					text.setText("");
+					if(metaDataValue!=null){
+						text.setText(metaDataValue);   
+					}
 				}            
 				
 			}

@@ -113,13 +113,81 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
+	public int getTotalCountOfMembersForWorkReportYear(int year){
+		int count = 0;
+		try {
+			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+			Iterator iter = reports.iterator();
+
+			while (iter.hasNext()) {
+				WorkReport report = (WorkReport) iter.next();
+				int add = report.getNumberOfMembers();
+				count+= (add>0)? add : 0 ;//add to sum if more than 0
+			}
+			
+			
+			
+			
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	public int getTotalCountOfPlayersForWorkReportYear(int year){
+		int count = 0;
+		try {
+			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+			Iterator iter = reports.iterator();
+
+			while (iter.hasNext()) {
+				WorkReport report = (WorkReport) iter.next();
+				int add = report.getNumberOfPlayers();
+				count+= (add>0)? add : 0 ;//add to sum if more than 0
+			}
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	public int getTotalCountOfWorkReportsByStatusAndYear(String status, int year) {
+	
+		return getWorkReportHome().getCountOfWorkReportsByStatusAndYear(status, year);	
+		
+	}
+	
+	public int getTotalCountOfCompetitorsForWorkReportYear(int year){
+		int count = 0;
+		try {
+			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+			Iterator iter = reports.iterator();
+
+			while (iter.hasNext()) {
+				WorkReport report = (WorkReport) iter.next();
+				int add = report.getNumberOfCompetitors();
+				count+= (add>0)? add : 0 ;//add to sum if more than 0
+			}
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return count;
+	}	
+	
+	
+
 	/**
 	 * This method gets you the id of the workreport of the club and year specified. It will create a new report if it does not exist already.
 	 * @param clubId
 	 * @param yearStamp
 	 * @return The id of the WorkReport for this club and year.
 	 */
-	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year) throws RemoteException {
+	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year, boolean updateReport) throws RemoteException {
 		WorkReport report = null;
 
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -176,10 +244,15 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		}
 
-		if (report != null)
+
+		if (report != null) {
+			createWorkReportData(((Integer)report.getPrimaryKey()).intValue());
 			return ((Integer)report.getPrimaryKey()).intValue();
-		else
+		}
+		else {
 			return -1;
+		}
+		
 
 	}
 

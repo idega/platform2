@@ -13,6 +13,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public java.lang.String getGroupType();
  public java.util.Collection getLeagues()throws com.idega.data.IDOException;
  public java.lang.Integer getMemberFileId();
+ public int getNumberOfCompetitors();
  public int getNumberOfMembers();
  public int getNumberOfPlayers();
  public java.lang.Integer getRegionalUnionGroupId();
@@ -42,6 +43,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setGroupType(java.lang.String p0);
  public void setMemberFileId(int p0);
  public void setMembersPartDone(boolean p0);
+ public void setNumberOfCompetitors(int p0);
  public void setNumberOfMembers(int p0);
  public void setNumberOfPlayers(int p0);
  public void setRegionalUnionGroupId(int p0);
