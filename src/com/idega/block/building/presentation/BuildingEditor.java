@@ -199,10 +199,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
     String sInfo = iwc.getParameter("bm_info").trim();
     String sImageId = iwc.getParameter("mapid");
     String sId = iwc.getParameter("dr_id");
-    String sTextId = iwc.getParameter("txt_id");
     int imageid = 1;
     int id = -1;
-    int textId = -1;
     try {  imageid = Integer.parseInt(sImageId); }
     catch (NumberFormatException ex) { imageid = 1;  }
     try { id = Integer.parseInt(sId); }
