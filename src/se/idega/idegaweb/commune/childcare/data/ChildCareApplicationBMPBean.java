@@ -15,7 +15,6 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 
 import com.idega.block.contract.data.Contract;
@@ -253,7 +252,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(CHECK_ID,checkId);	
 	}
 	
-	public void setCheck(Check check) {
+	public void setCheck(GrantedCheck check) {
 		setColumn(CHECK_ID,check);	
 	}	
 

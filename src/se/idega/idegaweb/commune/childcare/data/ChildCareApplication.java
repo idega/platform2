@@ -35,7 +35,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public boolean isCancelledOrRejectedByParent()throws java.rmi.RemoteException;
  public void setApplicationStatus(char p0);
  public void setCareTime(int p0);
- public void setCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0);
+ public void setCheck(se.idega.idegaweb.commune.childcare.check.data.GrantedCheck p0);
  public void setCheckId(int p0);
  public void setChild(com.idega.user.data.User p0);
  public void setChildId(int p0);
