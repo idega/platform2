@@ -20,9 +20,7 @@ import com.idega.user.data.User;
 import com.idega.util.ListUtil;
 import com.idega.util.Validator;
 import com.idega.block.process.data.*;
-import com.idega.block.school.business.SchoolAreaBusiness;
 import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolType;
 /**
@@ -300,32 +298,20 @@ public class ProviderAccountBusinessBean
 	 * Returns a collection of com.idega.block.school.data.SchoolType
 	 */
 	public Collection getAvailableChildCareSchoolTypes() throws java.rmi.RemoteException{
-		return getSchoolTypeBusiness().findAllSchoolTypesForChildCare();
+		return getSchoolBusiness().findAllSchoolTypesForChildCare();
 	}
 	
 	/**
 	 * Returns a collection of com.idega.block.school.data.SchoolArea
 	 */
 	public Collection getAvailableSchoolAreas() throws java.rmi.RemoteException{
-		return getSchoolAreaBusiness().findAllSchoolAreas();
+		return getSchoolBusiness().findAllSchoolAreas();
 	}
 
 
 	protected SchoolBusiness getSchoolBusiness() throws RemoteException
 	{
 		SchoolBusiness bus = (SchoolBusiness)this.getServiceInstance(SchoolBusiness.class);
-		return bus;
-	}
-	
-	protected SchoolTypeBusiness getSchoolTypeBusiness() throws RemoteException
-	{
-		SchoolTypeBusiness bus = (SchoolTypeBusiness)this.getServiceInstance(SchoolTypeBusiness.class);
-		return bus;
-	}
-
-	protected SchoolAreaBusiness getSchoolAreaBusiness() throws RemoteException
-	{
-		SchoolAreaBusiness bus = (SchoolAreaBusiness)this.getServiceInstance(SchoolAreaBusiness.class);
 		return bus;
 	}
 	

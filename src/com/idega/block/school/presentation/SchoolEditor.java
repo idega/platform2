@@ -65,7 +65,7 @@ public class SchoolEditor extends Block {
     else
       F.add(getListTable(null));
 
-     add(F);
+    add(F);
 
   }
 
@@ -329,28 +329,23 @@ public class SchoolEditor extends Block {
   }
 
   private Map getSchoolRelatedSchoolTypes(IWContext iwc,School school)throws java.rmi.RemoteException{
-    SchoolBusiness sbuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
-    return sbuiz.getSchoolRelatedSchoolTypes(school);
+    return sabBean.getSchoolRelatedSchoolTypes(school);
   }
 
   private Map getSchoolRelatedSchoolYears(IWContext iwc,School school)throws java.rmi.RemoteException{
-    SchoolBusiness sbuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
-    return sbuiz.getSchoolRelatedSchoolYears(school);
+    return sabBean.getSchoolRelatedSchoolYears(school);
   }
 
   private Collection getSchoolTypes(IWContext iwc)throws java.rmi.RemoteException{
-    SchoolTypeBusiness sbuiz = (SchoolTypeBusiness)IBOLookup.getServiceInstance(iwc,SchoolTypeBusiness.class);
-    return sbuiz.findAllSchoolTypes();
+    return sabBean.findAllSchoolTypes();
   }
 
    private Collection getSchoolYears(IWContext iwc)throws java.rmi.RemoteException{
-    SchoolYearBusiness sbuiz = (SchoolYearBusiness)IBOLookup.getServiceInstance(iwc,SchoolYearBusiness.class);
-    return sbuiz.findAllSchoolYears();
+     return sabBean.findAllSchoolYears();
   }
 
   private Collection getSchoolAreas(IWContext iwc)throws java.rmi.RemoteException{
-    SchoolAreaBusiness abuiz = (SchoolAreaBusiness)IBOLookup.getServiceInstance(iwc,SchoolAreaBusiness.class);
-    return abuiz.findAllSchoolAreas();
+    return sabBean.findAllSchoolAreas();
   }
 
   public void main(IWContext iwc)throws Exception{

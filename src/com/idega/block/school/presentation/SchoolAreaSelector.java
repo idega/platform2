@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.school.business.SchoolAreaBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
@@ -91,14 +90,13 @@ public class SchoolAreaSelector extends Block {
 	}	
 
 	private void drawList(IWContext iwc) throws RemoteException {
-		SchoolAreaBusiness sab = (SchoolAreaBusiness) IBOLookup.getServiceInstance( iwc, SchoolAreaBusiness.class);
 		SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
 		
 		Collection coll = null;
 		if (_schoolTypeId != -1) {
-			coll = sab.findAllSchoolAreasByType( _schoolTypeId)	;
+			coll = sb.findAllSchoolAreasByType( _schoolTypeId)	;
 		} else {
-			coll = sab.findAllSchoolAreas();	
+			coll = sb.findAllSchoolAreas();	
 		}
 		
 		if (coll != null) {

@@ -31,7 +31,7 @@ public class SchoolYearEditor extends Block {
   IWBundle iwb;
   TextFormat tFormat;
 
-  SchoolYearBusiness sabBean;
+  SchoolBusiness sabBean;
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
   public String getBundleIdentifier(){
@@ -68,7 +68,7 @@ public class SchoolYearEditor extends Block {
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
-    sabBean = (SchoolYearBusiness) IBOLookup.getServiceInstance(iwc,SchoolYearBusiness.class);
+    sabBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
     //sabBean = sabHome.create();
   }
 

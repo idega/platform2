@@ -9,9 +9,8 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.business.SchoolTypeBusiness;
-import com.idega.block.school.business.SchoolTypeBusinessHome;
 import java.util.Collection;
 import com.idega.business.IBOLookup;
 
@@ -30,8 +29,7 @@ public class SchoolTypeEditor extends Block {
   IWResourceBundle iwrb;
   IWBundle iwb;
   TextFormat tFormat;
-  SchoolTypeBusinessHome sabHome;
-  SchoolTypeBusiness sabBean;
+  SchoolBusiness sbBean;
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
   public String getBundleIdentifier(){
@@ -49,7 +47,7 @@ public class SchoolTypeEditor extends Block {
     }
     else if(iwc.isParameterSet("sch_delete_type")){
       int id = Integer.parseInt(iwc.getParameter("sch_delete_type"));
-      sabBean.removeSchoolType(id);
+      sbBean.removeSchoolType(id);
       F.add(getListTable(null));
     }
     else if(iwc.isParameterSet("sch_school_type_id")){
@@ -68,12 +66,12 @@ public class SchoolTypeEditor extends Block {
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
-    sabBean = (SchoolTypeBusiness) IBOLookup.getServiceInstance(iwc,SchoolTypeBusiness.class);
+    sbBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
     //sabBean = sabHome.create();
   }
 
   private PresentationObject getInput(int id)throws java.rmi.RemoteException{
-    return getInputTable(sabBean.getSchoolType(new Integer(id)));
+    return getInputTable(sbBean.getSchoolType(new Integer(id)));
   }
 
   private void saveArea(IWContext iwc)throws java.rmi.RemoteException{
@@ -87,7 +85,7 @@ public class SchoolTypeEditor extends Block {
       if(id!=null)
         aid = Integer.parseInt(id);
 
-      sabBean.storeSchoolType(aid,name,info,cat,locKey);
+      sbBean.storeSchoolType(aid,name,info,cat,locKey);
     }
   }
 
@@ -97,7 +95,7 @@ public class SchoolTypeEditor extends Block {
 
     Collection schoolTypes = new java.util.Vector(0);
     try{
-      schoolTypes = sabBean.findAllSchoolTypes();
+      schoolTypes = sbBean.findAllSchoolTypes();
     }
     catch(java.rmi.RemoteException rex){
 

@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.school.business.SchoolTypeBusiness;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
@@ -55,7 +55,7 @@ public class SchoolTypeSelector extends Block {
 			return IW_BUNDLE_IDENTIFIER;
 	}	
 	private void drawList(IWContext iwc) throws RemoteException {
-		SchoolTypeBusiness stb = (SchoolTypeBusiness) IBOLookup.getServiceInstance( iwc, SchoolTypeBusiness.class);
+		SchoolBusiness stb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
 		Collection coll = stb.findAllSchoolTypes();
 		
 		if (coll != null) {

@@ -10,7 +10,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.business.SchoolAreaBusiness;
+import com.idega.block.school.business.SchoolBusiness;
 
 import java.util.Collection;
 import com.idega.business.IBOLookup;
@@ -31,7 +31,7 @@ public class SchoolAreaEditor extends Block {
   IWBundle iwb;
   TextFormat tFormat;
 
-  SchoolAreaBusiness sabBean;
+  SchoolBusiness sabBean;
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
   public String getBundleIdentifier(){
@@ -68,7 +68,7 @@ public class SchoolAreaEditor extends Block {
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
-    sabBean = (SchoolAreaBusiness) IBOLookup.getServiceInstance(iwc,SchoolAreaBusiness.class);
+    sabBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
     //sabBean = sabHome.create();
   }
 

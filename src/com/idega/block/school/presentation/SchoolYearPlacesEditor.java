@@ -30,7 +30,6 @@ public class SchoolYearPlacesEditor extends Block {
   IWResourceBundle iwrb;
   IWBundle iwb;
   TextFormat tFormat;
-  SchoolYearPlacesBusiness sabBean;
   SchoolBusiness schBean;
   School school = null;
   int schoolId = -1;
@@ -67,12 +66,11 @@ public class SchoolYearPlacesEditor extends Block {
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
-    sabBean = (SchoolYearPlacesBusiness) IBOLookup.getServiceInstance(iwc,SchoolYearPlacesBusiness.class);
     schBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
   }
 
   private PresentationObject getInput(IWContext iwc ,int id)throws java.rmi.RemoteException{
-    return getInputTable(iwc,sabBean.getSchoolYearPlaces(new Integer(id)));
+    return getInputTable(iwc,schBean.getSchoolYearPlaces(new Integer(id)));
   }
 
   private void savePlaces(IWContext iwc)throws java.rmi.RemoteException{
@@ -87,7 +85,7 @@ public class SchoolYearPlacesEditor extends Block {
           int places = 0;
           if(!"".equals(sPlaces)){
             places = Integer.parseInt(sPlaces);
-            sabBean.storeSchoolYearPlaces(id,schoolId,year,places);
+            schBean.storeSchoolYearPlaces(id,schoolId,year,places);
           }
         }
       }
@@ -104,7 +102,7 @@ public class SchoolYearPlacesEditor extends Block {
 
     try{
       if(ent!=null){
-      Collection places = sabBean.findAllSchoolYearPlaces(((Integer)ent.getPrimaryKey()).intValue());
+      Collection places = schBean.findAllSchoolYearPlaces(((Integer)ent.getPrimaryKey()).intValue());
       schoolsYearPlaces = getMapOfYears(places);
       //schoolYears schoolYears = schBean.getSchoolRelatedSchoolYears(ent);
       schoolYears = getSchoolYears(ent);

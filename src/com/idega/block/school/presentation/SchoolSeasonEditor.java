@@ -34,7 +34,7 @@ public class SchoolSeasonEditor extends Block {
   TextFormat tFormat;
   DateFormat dFormat;
 
-  SchoolSeasonBusiness sabBean;
+  SchoolBusiness sbBean;
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
   public String getBundleIdentifier(){
@@ -52,7 +52,7 @@ public class SchoolSeasonEditor extends Block {
     }
     else if(iwc.isParameterSet("sch_delete_season")){
       int id = Integer.parseInt(iwc.getParameter("sch_delete_season"));
-      sabBean.removeSchoolSeason(id);
+      sbBean.removeSchoolSeason(id);
       F.add(getListTable(null));
     }
     else if(iwc.isParameterSet("sch_school_season_id")){
@@ -71,12 +71,12 @@ public class SchoolSeasonEditor extends Block {
   }
 
   private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
-    sabBean = (SchoolSeasonBusiness) IBOLookup.getServiceInstance(iwc,SchoolSeasonBusiness.class);
+    sbBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
     //sabBean = sabHome.create();
   }
 
   private PresentationObject getInput(int id)throws java.rmi.RemoteException{
-    return getInputTable(sabBean.getSchoolSeason(new Integer(id)));
+    return getInputTable(sbBean.getSchoolSeason(new Integer(id)));
   }
 
   private void saveArea(IWContext iwc)throws java.rmi.RemoteException{
@@ -96,7 +96,7 @@ public class SchoolSeasonEditor extends Block {
         endDate = new IWTimestamp(end).getSQLDate();
       if(duedate!=null);
         dueDate = new IWTimestamp(duedate).getSQLDate();
-      sabBean.storeSchoolSeason(aid,name,startDate,endDate,dueDate);
+      sbBean.storeSchoolSeason(aid,name,startDate,endDate,dueDate);
     }
   }
 
@@ -106,7 +106,7 @@ public class SchoolSeasonEditor extends Block {
 
     Collection SchoolSeasons = new java.util.Vector(0);
     try{
-      SchoolSeasons = sabBean.findAllSchoolSeasons();
+      SchoolSeasons = sbBean.findAllSchoolSeasons();
     }
     catch(java.rmi.RemoteException rex){
 
