@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.20 2002/12/01 15:12:09 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.21 2003/06/25 23:44:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -78,7 +78,7 @@ public class CampusApplicationForm extends ApplicationForm {
 	 *
 	 */
 	protected void control(IWContext iwc) {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		_iwb = getBundle(iwc);
 		List wrongParameters = new Vector();
 		String statusString = iwc.getParameter(APP_STATUS);
