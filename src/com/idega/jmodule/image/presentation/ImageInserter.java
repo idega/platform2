@@ -32,6 +32,7 @@ private String nameOfWindow = "Ný Mynd";
 private String sUseBoxString = "Nota mynd: ";
 private int maxImageWidth = 140;
 private boolean hasUseBox = true;
+private boolean selected = false;
 
 public ImageInserter(){
   this.imSessionImageName="image_id";
@@ -82,7 +83,7 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
       HiddenInput hidden = new HiddenInput(sHiddenInputName,imageId+"");
       CheckBox insertImage = new CheckBox("insertImage","Y");
-        insertImage.setChecked(true);
+        insertImage.setChecked(selected);
 
       Text imageText = new Text(sUseBoxString);
         imageText.setFontSize(1);
@@ -101,6 +102,10 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
   public void setHasUseBox(boolean useBox){
     this.hasUseBox = useBox;
+  }
+
+  public void setSelected(boolean selected){
+    this.selected = selected;
   }
 
   public void setUseBoxString(String sUseBoxString){
