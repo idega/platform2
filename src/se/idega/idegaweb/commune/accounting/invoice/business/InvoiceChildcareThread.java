@@ -174,11 +174,11 @@ public class InvoiceChildcareThread extends BillingThread{
 						//Select a specific row from the regulation, given the following restrictions
 						postingDetail = regBus.
 						getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-						category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+							category.getCategory(),//The ID that selects barnomsorg in the regulation
 							PaymentFlowConstant.OUT, 	//The payment flow is out
 							currentDate,					//Current date to select the correct date range
-							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
 							RuleTypeConstant.DERIVED,	//The conditiontype
+							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
 							conditions,						//The conditions that need to fulfilled
 							totalSum,						//Sent in to be used for "Specialutrakning"
 							contract);						//Sent in to be used for "Specialutrakning"
@@ -203,7 +203,7 @@ public class InvoiceChildcareThread extends BillingThread{
 
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-					category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+						category.getCategory(),//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.IN, 			//The payment flow is out
 						currentDate,							//Current date to select the correct date range
 						RuleTypeConstant.DERIVED,			//The conditiontype

@@ -16,6 +16,8 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
@@ -43,7 +45,9 @@ import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.CommuneHome;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -96,14 +100,15 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	}
 
 	protected void contracts(){
-		Collection regulationArray = new ArrayList();
+//		Collection regulationArray = new ArrayList();
 		ArrayList conditions = new ArrayList();
 //		conditions = new ArrayList();
 //		Iterator schoolTypeIter = school.getSchoolTypes().iterator();
 //		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,));
 //		boolean first;
 //		ExportDataMapping categoryPosting;
-		PostingDetail postingDetail;
+		Regulation regulation = null;
+		PostingDetail postingDetail = null;
 
 		try {
 			timerStart();
@@ -112,6 +117,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 			ProviderTypeHome providerTypeHome = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
 			ProviderType providerType = providerTypeHome.findPrivateType();
+			if(getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String)category.getPrimaryKey(),currentDate)>0){
+				throw new NotEmptyException("invoice.must_first_empty_old_data");
+			}
 			
 			int privateType = ((Integer)providerType.getPrimaryKey()).intValue();
 
@@ -175,7 +183,21 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												+"  RuleTypeConstant.DERIVED "+RuleTypeConstant.DERIVED
 												+"  condition "+conditions.size()+"  "+conditions.toString()
 												);
+										//Get the check
+										postingDetail = regBus.
+										getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+											category.getCategory(),//The ID that selects barnomsorg in the regulation
+											PaymentFlowConstant.OUT, 	//The payment flow is out
+											currentDate,					//Current date to select the correct date range
+											RuleTypeConstant.DERIVED,	//The conditiontype
+											RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+											conditions,						//The conditions that need to fulfilled
+											0,									//Sent in to be used for "Specialutrakning"
+											null);						//Sent in to be used for "Specialutrakning"
+
 										//Get all the rules for this contract
+										//We are now not supposed to do this anymore... Orders from Lotta
+/*
 										regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 											category.getCategory(),//The ID that selects barnomsorg in the regulation
 											PaymentFlowConstant.OUT, 		//The payment flow is out
@@ -193,7 +215,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											Regulation regulation = (Regulation)regulationIter.next();
 											//NOTE this should be changed to use ...ByDateRange when changed to date range rathre than day by day calculation
 											
-											
+*/											
 											//**********
 							
 
@@ -231,9 +253,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										}
 										calculateTime(sDate,eDate);
 										//Get the posting details for the contract
-										dispTime("about to get posting detail");
-										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
-										dispTime("Gotten posting detail");
+//										dispTime("about to get posting detail");
+//										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+//										dispTime("Gotten posting detail");
 										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 												findByRegulationSpecType(postingDetail.getRuleSpecType());
 //										dispTime("Gotten regspec type");
@@ -307,6 +329,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											}
 										}catch(NumberFormatException e){
 											//That's OK I only want years 1-6
+										} catch (IDORelationshipException e) {
+											createNewErrorMessage(school.getName(),"invoice.DBRelationshipError");
+											e.printStackTrace();
 										}
 										dispTime("Done with oppen verksamhet + fritidsverksamhet");
 
@@ -338,7 +363,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											}
 											dispTime("Done regulations for resource");
 										}
-									}
+//									}
 /*								}catch(NullPointerException e){
 									e.printStackTrace();
 									if(schoolClassMember != null){
@@ -362,6 +387,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 				} catch (PostingException e) {
 					e.printStackTrace();
 					createNewErrorMessage(school.getName(),"invoice.PostingString");
+				} catch (RegulationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				dispTime("Getting regulations for resource");
 				timerStart();
@@ -378,9 +406,12 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		} catch (CreateException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool","invoice.CouldNotFindHomeCommune");
-		} catch (Exception e) {
+		} catch (IDOException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.PaymentSchool", "invoice.Exception");
+			createNewErrorMessage("invoice.PaymentSchool","invoice.IDOException");
+		} catch (NotEmptyException e) {
+			createNewErrorMessage("invoice.PaymentSchool","invoice.MustFirstEmptyOldData");
+			e.printStackTrace();
 		}
 	}
 	
