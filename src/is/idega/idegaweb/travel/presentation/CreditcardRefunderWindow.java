@@ -1,10 +1,24 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.tpos.business.TPosClient;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 /**
  * Title:        idegaWeb Travel
  * Description:
@@ -32,6 +46,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private String parameterYear   = "ccrYear";
   private String parameterMonth  = "ccrMonth";
   private String parameterAmount = "ccrAmount";
+  private String parameterSupplier = "ccrSupplier";
 
   public CreditcardRefunderWindow() {
     this.setTitle("idegaWeb Travel");
@@ -118,11 +133,13 @@ public class CreditcardRefunderWindow extends TravelWindow {
     table.setCellpadding(2);
 
     Text refund = getText(iwrb.getLocalizedString("travel.refunds","Refunds"));
+    Text merchant = getText(iwrb.getLocalizedString("travel.merchant", "Merchant"));
     Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
     Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
     Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
     Text amount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
 
+    DropdownMenu merchantInp = getSupplierDropdown();
     TextInput ccNumberInp = new TextInput(this.parameterNumber);
       ccNumberInp.setSize(this.ccInputSize);
       ccNumberInp.setMaxlength(this.ccInputSize);
@@ -141,6 +158,10 @@ public class CreditcardRefunderWindow extends TravelWindow {
     table.add(refund, 1, row);
 
     ++row;
+    ++row;
+    table.add(merchant, 1, row);
+    table.add(merchantInp, 2, row);
+    table.mergeCells(2, row, 3, row);
     ++row;
     table.add(ccNumber, 1, row);
     table.add(ccMonth, 2, row);
@@ -192,12 +213,14 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
   private void verify(IWContext iwc) {
     String number = iwc.getParameter(this.parameterNumber);
+    String supplier = iwc.getParameter(this.parameterSupplier);
     String year   = iwc.getParameter(this.parameterYear);
     String month  = iwc.getParameter(this.parameterMonth);
     String amount = iwc.getParameter(this.parameterAmount);
       amount = TextSoap.findAndReplace(amount,',','.');
 
     Text ccNumber = getText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+    Text merchant   = getText(iwrb.getLocalizedString("travel.merchant","Merchant"));
     Text ccYear   = getText(iwrb.getLocalizedString("travel.year","Year"));
     Text ccMonth  = getText(iwrb.getLocalizedString("travel.month","Month"));
     Text ccAmount   = getText(iwrb.getLocalizedString("travel.amount","Amount"));
@@ -215,6 +238,14 @@ public class CreditcardRefunderWindow extends TravelWindow {
     table.add(getText(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
 
     ++row;
+    ++row;
+    table.add(merchant, 2, row);
+    table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+    if (getSupplier(supplier) != null) {
+    	table.add(getText(getSupplier(supplier).getName()), 3, row);
+    } else {
+    	table.add(getText(iwrb.getLocalizedString("travel.default", "Default")), 3, row);
+    }
     ++row;
     table.add(ccNumber,2,row);
     table.add(number,3,row);
@@ -276,6 +307,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
       link.addParameter(this.parameterYear, year);
       link.addParameter(this.parameterMonth, month);
       link.addParameter(this.parameterAmount, amount);
+      link.addParameter(this.parameterSupplier, supplier);
     if (!error)
     table.add(link, 3, row);
 
@@ -289,6 +321,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
     String year   = iwc.getParameter(this.parameterYear);
     String month  = iwc.getParameter(this.parameterMonth);
     String amount = iwc.getParameter(this.parameterAmount);
+    String supplier = iwc.getParameter(this.parameterSupplier);
 
 
     Table table = new Table();
@@ -297,7 +330,12 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
       try{
         System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
-        com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        com.idega.block.tpos.business.TPosClient t;
+        if (getSupplier(supplier) == null) {
+        	t = new TPosClient(iwc);
+        } else {
+    		t = new TPosClient(iwc, getSupplier(supplier).getTPosMerchant());
+        }
         String heimild = t.doRefund(number,month,year,Float.parseFloat(amount),"ISK");
         System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
 
@@ -345,6 +383,15 @@ public class CreditcardRefunderWindow extends TravelWindow {
         table.add(new CloseButton(iwrb.getImage("buttons/close.gif")),2,row);
       }
       catch (Exception e) {
+      	int row = 1;
+				++row;
+				table.add(getText(iwrb.getLocalizedString("travel.unknown_error","Unknown error")),1,row);
+				table.mergeCells(1, row, 2, row);
+				++row;
+				++row;
+				table.setAlignment(2, row, "right");
+				table.add(new BackButton(iwrb.getImage("buttons/back.gif")),1,row);
+				table.add(new CloseButton(iwrb.getImage("buttons/close.gif")),2,row);
         e.printStackTrace(System.err);
       }
 
@@ -352,4 +399,38 @@ public class CreditcardRefunderWindow extends TravelWindow {
       add(table);
   }
 
+  private DropdownMenu getSupplierDropdown() {
+  	DropdownMenu menu = new DropdownMenu(parameterSupplier);
+  	menu.addMenuElement(-1, iwrb.getLocalizedString("travel.default", "Default"));
+  	try {
+  		SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+  		Collection coll = sHome.findWithTPosMerchant();
+  		Supplier supp;
+  		if (coll != null && !coll.isEmpty()) {
+  			Iterator iter = coll.iterator();
+  			while (iter.hasNext()) {
+  				supp = (Supplier) iter.next();
+  				menu.addMenuElement(supp.getID(), supp.getName());
+  			}
+  		}
+  	}catch (Exception e) {
+  		e.printStackTrace();
+  	}
+  	
+  	return menu;
+  }
+  
+  private Supplier getSupplier(String supplierID) {
+  	try {
+  		int suppID = Integer.parseInt(supplierID);
+  		if (suppID > 0) {
+  			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+  			return sHome.findByPrimaryKey(new Integer(supplierID));
+  		}
+  	} catch (Exception e) {
+  		e.printStackTrace();
+  	}
+  	return null;
+  }
+  
 }
