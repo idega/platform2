@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/31 19:48:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/31 20:06:01 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -168,7 +168,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 					throw new Exception(localize(ERROR_EMAILS_DONT_MATCH, ERROR_EMAILS_DONT_MATCH_DEFAULT));
 				}
 			}
-			else if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
+			if (null == business.insertApplication(iwc, user, ssn, email, phoneHome, phoneWork, _sendEmail)) {
 				// known user applied, but couldn't be submitted
 				throw new Exception(localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
 			}
