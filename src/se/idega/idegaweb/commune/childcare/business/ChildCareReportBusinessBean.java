@@ -284,6 +284,9 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 					School provider = application.getProvider();
 					IWTimestamp queue = new IWTimestamp(application.getQueueDate());
 					IWTimestamp placement = new IWTimestamp(application.getFromDate());
+					if (application.getRejectionDate() == null) {
+						continue;
+					}
 					IWTimestamp removed = new IWTimestamp(application.getRejectionDate());
 
 					ReportableData data = new ReportableData();
