@@ -131,6 +131,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	private String iActiveDayStyleClass;
 
 	private String iHeaderTextStyleClass;
+	
+	private String iMonthTextStyleClass;
 
 	public Calendar() {
 		// _stamp = IWTimestamp.getTimestampRightNow();
@@ -580,6 +582,9 @@ public class Calendar extends CategoryBlock implements Builderaware {
 			calendar.setHeaderFontStyleName(iHeaderTextStyleClass);
 		}
 		calendar.setCellpadding(iCellpadding);
+		if (iMonthTextStyleClass != null) {
+			calendar.setMonthTextStyleClass(iMonthTextStyleClass);
+		}
 
 		if (list != null) {
 			Iterator iter = list.iterator();
@@ -886,5 +891,8 @@ public class Calendar extends CategoryBlock implements Builderaware {
 
 	public void setCellpadding(int cellpadding) {
 		iCellpadding = cellpadding;
+	}
+	public void setMonthTextStyleClass(String monthTextStyleClass) {
+		iMonthTextStyleClass = monthTextStyleClass;
 	}
 }

@@ -117,6 +117,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private String _dateWidth = "100";
 	private String iThreadTopicWidth = "100";
 	private String iUpdatedTopicWidth = "100";
+	
+	private boolean iShowForumLinks = true;
 
 	public Forum() {
 		setDefaultValues();
@@ -375,8 +377,10 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			}
 		}
 
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(getForumLinks(), 1, row);
+		if (iShowForumLinks) {
+			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			table.add(getForumLinks(), 1, row);
+		}
 	}
 
 	private void getTopicCollection(IWContext iwc, Table table) {
@@ -1023,5 +1027,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 	public void setPreviousImage(Image previousImage) {
 		iPreviousImage = previousImage;
+	}
+	public void setShowForumLinks(boolean showForumLinks) {
+		iShowForumLinks = showForumLinks;
 	}
 } // Class Forum
