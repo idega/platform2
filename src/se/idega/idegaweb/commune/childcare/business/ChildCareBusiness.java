@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.business;
 
-
 import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
@@ -134,5 +133,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getNumberOfApplicationsForChild(int childID) throws java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildNotInactive(int childID) throws java.rmi.RemoteException;
  public int getNumberOfFirstHandChoicesByProvider(int providerID) throws java.rmi.RemoteException;
- public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin) throws java.rmi.RemoteException;
+ public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin) throws java.rmi.RemoteException, se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 }

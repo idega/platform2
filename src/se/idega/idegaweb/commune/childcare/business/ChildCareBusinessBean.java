@@ -34,6 +34,7 @@ import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
@@ -103,6 +104,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static char STATUS_NEW_CHOICE = 'X';
 	private final static char STATUS_NOT_ANSWERED = 'Y';
 	private final static char STATUS_REJECTED = 'Z';
+	
+	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
 	
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
@@ -1355,7 +1358,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
-							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),2,validFrom,null,"C",contractText);
+							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 							contractFile.addTo(Contract.class,contractID);
 			
@@ -1402,6 +1405,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 		return true;
+	}
+	
+	private int getContractCategory() {
+		IWBundle bundle = getIWApplicationContext().getApplication().getBundle(getBundleIdentifier());
+		return Integer.parseInt(bundle.getProperty(PROPERTY_CONTRACT_CATEGORY, "2"));
 	}
 
 	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
@@ -2430,12 +2438,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) {
+	public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) throws AlreadyCreatedException {
 		UserTransaction t = getSessionContext().getUserTransaction();
+
+		ChildCareApplication application = null;
+		try {
+			String[] status = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady()) };
+			application = getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, status);
+			if (application != null) {
+				throw new AlreadyCreatedException();
+			}
+		}
+		catch (FinderException fe) {
+		}
+		catch (RemoteException re) {
+		}
 
 		try {
 			t.begin();
-			ChildCareApplication application = getChildCareApplicationHome().create();
+
+			application = getChildCareApplicationHome().create();
 			application.setChildId(childID);
 			application.setProviderId(providerID);
 			application.setFromDate(fromDate.getDate());
@@ -2452,7 +2474,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 				ContractService service = (ContractService) getServiceInstance(ContractService.class);
-				Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),2,fromDate,toDate,"C",contractText);
+				Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),fromDate,toDate,"C",contractText);
 				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 				contractFile.addTo(Contract.class,contractID);
 			
