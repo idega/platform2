@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.69 2004/05/24 21:22:33 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.70 2004/05/24 21:43:44 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
 /**
- * Last modified: $Date: 2004/05/24 21:22:33 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/24 21:43:44 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -506,9 +506,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 													postalCode, postalName);
 			createEmail(applicant, user);
 			final Phone homePhone
-					= createPhone(applicant, user, PhoneBMPBean.getHomeNumberID(),
+					= createPhone(user, PhoneBMPBean.getHomeNumberID(),
 												applicant.getPhoneHome());
-			createPhone (applicant, user, PhoneBMPBean.getMobileNumberID(),
+			createPhone (user, PhoneBMPBean.getMobileNumberID(),
 									 applicant.getPhoneWork());
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
@@ -637,7 +637,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 	}
 
-	private Phone createPhone(final CitizenAccount applicant, final User user, int phoneNumberId, String phoneString) throws CreateException, IDOLookupException, IDOAddRelationshipException {
+	private Phone createPhone(final User user, int phoneNumberId, String phoneString) throws CreateException, IDOLookupException, IDOAddRelationshipException {
 		Phone phone = null;
 		if (phoneString != null) {
 			phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
@@ -803,7 +803,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		loginTable.setUserPassword(encryptedPassword, newPassword);
 		loginTable.store();
 		// set content of letter
-		String userName = user.getLastName();
+		String userName = user.getName();
 		String loginName = loginTable.getUserLogin();
 		String messageSubject = getNewPasswordWasCreatedSubject();
 		String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
@@ -838,13 +838,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		//int ownerID = ((Integer) theCase.getOwner().getPrimaryKey()).intValue();
 		String body = this.getLocalizedString("acc.app.acc.body1", "Dear mr./ms./mrs. ");
 		body += userName + "\n";
-		body += this.getLocalizedString("acc.app.acc.fp.body2", "A new password was created for your account.\n");
+		body += this.getLocalizedString("acc.app.acc.fp.body2", "A new password was created for your account.") + "\n\n";
 		body += this.getLocalizedString("acc.app.acc.body3", "You have been given access to the system with username: ");
-		body += "\"" + loginName + "\"";
+		body += " \"" + loginName + "\" ";
 		body += this.getLocalizedString("acc.app.acc.body4", " and password: ");
-		body += "\"" + password + "\"";
+		body += " \"" + password + "\"";
 		body += "\n\n";
-		body += this.getLocalizedString("acc.app.acc.body5", "You can log on via: ");
+		body += this.getLocalizedString("acc.app.acc.body5", "You can log on via:") + " ";
 		body += getApplicationLoginURL();
 		return body;
 	}
