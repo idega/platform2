@@ -104,10 +104,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
   }
 
   public String getSchoolPhone(){
-    return this.getStringColumnValue(ZIPCODE);
+    return this.getStringColumnValue(PHONE);
   }
-  public void setSchoolPhone(String zipcode){
-    this.setColumn(ZIPCODE,zipcode);
+  public void setSchoolPhone(String phone){
+    this.setColumn(PHONE,phone);
   }
 
   public int getHeadmasterGroupId(){
