@@ -29,10 +29,14 @@ public class IWMemberConstants {
 	public static final String META_DATA_CLUB_SSN = "CLUBINFO_SSN";
 	public static final String META_DATA_CLUB_NUMBER = "CLUBINFO_NUMBER";
 	
-	public static final String META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB = "1";
-	public static final String META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB = "2";
-	public static final String META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB = "3";
-	public static final String META_DATA_CLUB_STATUS_INACTIVE_CLUB = "4";
+	public static final String META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB = "MULTI_DIV";
+	public static final String META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB = "SINGLE_DIV";
+	public static final String META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB = "NO_MEMBERS";
+
+
+	public static final String META_DATA_CLUB_STATE_INACTIVE = "INACTIVE";
+	public static final String META_DATA_CLUB_STATE_ACTIVE = "ACTIVE";
+	public static final String META_DATA_CLUB_STATE_COMPETITION_BAN = "COMP_BAN";
 	
 	
 	public static final String META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX = "CLUB_MEMB_NR_";//suffix with club id (group)
