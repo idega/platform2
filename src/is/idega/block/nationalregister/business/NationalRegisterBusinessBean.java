@@ -22,13 +22,14 @@ import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
-public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness {
+public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness, UserGroupPlugInBusiness {
 	
 	private static int icelandCountryPK = -1;
 	private static Gender maleGender = null;
