@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/15 14:10:09 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 10:19:54 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.119 $
+ * @version $Revision: 1.120 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -904,9 +904,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			final String operationalField
 					= getSession ().getOperationalField ();
 			final User userFound = searcher.getUser ();
-			final Date fromPeriod = getPeriodParameter (context,
-																									START_PERIOD_KEY);
-			final Date toPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+			final CalendarMonth fromPeriod = getCalendarMonthParameter
+					(context, START_PERIOD_KEY);
+			final CalendarMonth toPeriod = getCalendarMonthParameter
+					(context, END_PERIOD_KEY);
 			final InvoiceBusiness business = getInvoiceBusiness (context);
 			timer.stop ();
 			log ("Time to find user: " + (((float) timer.getTime()) / 1000.0f) + " seconds");
@@ -2231,6 +2232,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		} catch (final NumberFormatException exception) {
 			return null;
 		}
+	}
+	
+	private static CalendarMonth getCalendarMonthParameter
+		(final IWContext context,	final String key) {
+		final Date date = getPeriodParameter (context, key);
+		final long dateAsLong = date != null ? date.getTime ()
+				: System.currentTimeMillis ();
+		return new CalendarMonth (new java.sql.Date (dateAsLong));
 	}
 	
 	private static Date getDateParameter (final IWContext iwc, final String key) {

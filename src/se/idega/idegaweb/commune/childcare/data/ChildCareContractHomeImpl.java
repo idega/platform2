@@ -41,6 +41,13 @@ public java.util.Collection findByChild(int p0)throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+	public java.util.Collection findByChildAndDateRange (com.idega.user.data.User child, java.sql.Date startDate, java.sql.Date endDate) throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByChildAndDateRange (child, startDate, endDate);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByChildAndProvider(p0,p1);

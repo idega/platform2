@@ -234,110 +234,130 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	}
 	
 
-    /**
-     * Retreives a collection of all InvoiceHeaders where the user given is
-     * either custodian or the child and in the period. If any of the dates
-     * are null, that constraint will be ignored.
-     *
-     * @param user the user to search for
-     * @param fromDate first month in search span
-     * @param toDate last month in search span
-     * @return collection of invoice headers
-     */
-    public Collection ejbFindByCustodianOrChild
-        (final String schoolCategory, final User user,
-         final Collection custodians, final java.util.Date fromDate,
-         java.util.Date toDate) throws FinderException {
+	/**
+	 * Retreives a collection of all InvoiceHeaders where the user given is
+	 * either custodian or the child and in the period. If any of the dates
+	 * are null, that constraint will be ignored.
+	 *
+	 * @param user the user to search for
+	 * @param fromDate first month in search span
+	 * @param toDate last month in search span
+	 * @return collection of invoice headers
+	 */
+	public Collection ejbFindByCustodianOrChild
+		(final String schoolCategory, final User user,
+		 final Collection custodians, final java.util.Date fromDate,
+		 java.util.Date toDate) throws FinderException {
 		final IDOQuery sql = idoQuery ();
-        final String H_ = "h."; // sql alias for invoice header
-        final String U_ = "u."; // sql alias for user
-        final String R_ = "r."; // sql alias for invoice record
-        final String M_ = "m."; // sql alias for schoolclassmember
-        final String T_ = "t."; // sql alias for school type
-        final Date fromPeriod = getPeriod (fromDate, 0);
-        final Date toPeriod = getPeriod (toDate, 1);
-        final String [] outerTableNames =
-                { getTableName (), UserBMPBean.TABLE_NAME };
-        final String [] outerTableAliases = { "h", "u" };
-        final String [] innerTableNames =
-                { InvoiceRecordBMPBean.ENTITY_NAME,
-                  SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER,
-                  SchoolTypeBMPBean.SCHOOLTYPE };
-        final String [] innerTableAliases = { "r", "m", "t" };
-
-        sql.appendSelect()
-                .append (H_)
-                .appendStar ()
-                .appendFrom (outerTableNames, outerTableAliases)
-                .appendWhere ()
-                .appendLeftParenthesis ()
-                .appendEquals (H_ + COLUMN_CUSTODIAN_ID, user);
-
-        // << inner 'exists' selection starts here
-        sql.appendOr ()
-                .append (" exists ")
-                .appendLeftParenthesis ()
-                .appendSelect()
-                .append (H_)
-                .appendStar ()
-                .appendFrom (innerTableNames, innerTableAliases)
-                .appendWhere ()
-                .appendEquals (H_ + ENTITY_NAME + "_id",
-                               R_ + InvoiceRecordBMPBean.COLUMN_INVOICE_HEADER)
-                .appendAndEquals
-                (R_ + InvoiceRecordBMPBean.COLUMN_SCHOOL_CLASS_MEMBER_ID,
-                 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID)
-                .appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER, user)
-                .appendAndEquals (M_ + SchoolClassMemberBMPBean.SCHOOL_TYPE,
-                                  T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
-        if (null != schoolCategory && 0 < schoolCategory.length ()) {
-            sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
-                                       schoolCategory);
-        }
-        sql.appendRightParenthesis ();
-        // inner 'exists' selection ends here >>
-
-        for (Iterator i = custodians.iterator (); i.hasNext ();) {
-            final User custodian = (User) i.next ();
-            sql.appendOrEquals (H_ + COLUMN_CUSTODIAN_ID, custodian);
-        }
-        sql.appendRightParenthesis ()
-                .appendAndEquals (U_ + User.FIELD_USER_ID, user);
-        if (null != fromPeriod) {
-            sql.appendAnd ()
-                    .append (H_ + COLUMN_PERIOD)
-                    .appendGreaterThanOrEqualsSign ()
-                    .append (fromPeriod);
-        }
-        if (null != toPeriod) {
-            sql.appendAnd ()
-                    .append (toPeriod)
-                    .appendGreaterThanSign ()
-                    .append (H_ + COLUMN_PERIOD);
-        }
-        sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
-
-        return idoFindPKsBySQL (sql.toString ());
-    }
-
-    /**
-     * Calculates a new java.sql.Date the 1st of this month and then adds the
-     * given number of moths
-     *
-     * @param date a date any day in amonth
-     * @param monthOffset add this amont of monts to return value
-     * @return date of the 1st day in a month
-     */
-    private static Date getPeriod (final java.util.Date date,
-                                   final int monthOffset) {
-        if (null == date) return null;
-        final Calendar calendar = Calendar.getInstance ();
-        calendar.setTime (date);
-        calendar.set (calendar.get (Calendar.YEAR),
-                      calendar.get (Calendar.MONTH) + monthOffset, 1, 0, 0);
-        return new Date (calendar.getTimeInMillis ());
-
-    }
+		final String H_ = "h."; // sql alias for invoice header
+		final String U_ = "u."; // sql alias for user
+		final String R_ = "r."; // sql alias for invoice record
+		final String M_ = "m."; // sql alias for schoolclassmember
+		final String T_ = "t."; // sql alias for school type
+		final Date fromPeriod = getPeriod (fromDate, 0);
+		final Date toPeriod = getPeriod (toDate, 1);
+		final String [] outerTableNames =
+				{ getTableName (), UserBMPBean.TABLE_NAME };
+		final String [] outerTableAliases = { "h", "u" };
+		final String [] innerTableNames =
+				{ InvoiceRecordBMPBean.ENTITY_NAME,
+					SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER,
+					SchoolTypeBMPBean.SCHOOLTYPE };
+		final String [] innerTableAliases = { "r", "m", "t" };
+		
+		sql.appendSelect()
+				.append (H_)
+				.appendStar ()
+				.appendFrom (outerTableNames, outerTableAliases)
+				.appendWhere ()
+				.appendLeftParenthesis ()
+				.appendEquals (H_ + COLUMN_CUSTODIAN_ID, user);
+		
+		// << inner 'exists' selection starts here
+		sql.appendOr ()
+				.append (" exists ")
+				.appendLeftParenthesis ()
+				.appendSelect()
+				.append (H_)
+				.appendStar ()
+				.appendFrom (innerTableNames, innerTableAliases)
+				.appendWhere ()
+				.appendEquals (H_ + ENTITY_NAME + "_id",
+											 R_ + InvoiceRecordBMPBean.COLUMN_INVOICE_HEADER)
+				.appendAndEquals
+				(R_ + InvoiceRecordBMPBean.COLUMN_SCHOOL_CLASS_MEMBER_ID,
+				 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID)
+				.appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER, user)
+				.appendAndEquals (M_ + SchoolClassMemberBMPBean.SCHOOL_TYPE,
+													T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
+		if (null != schoolCategory && 0 < schoolCategory.length ()) {
+			sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
+																 schoolCategory);
+		}
+		sql.appendRightParenthesis ();
+		// inner 'exists' selection ends here >>
+		
+		for (Iterator i = custodians.iterator (); i.hasNext ();) {
+			final User custodian = (User) i.next ();
+			sql.appendOrEquals (H_ + COLUMN_CUSTODIAN_ID, custodian);
+		}
+		sql.appendRightParenthesis ()
+				.appendAndEquals (U_ + User.FIELD_USER_ID, user);
+		if (null != fromPeriod) {
+			sql.appendAnd ()
+					.append (H_ + COLUMN_PERIOD)
+					.appendGreaterThanOrEqualsSign ()
+					.append (fromPeriod);
+		}
+		if (null != toPeriod) {
+			sql.appendAnd ()
+					.append (toPeriod)
+					.appendGreaterThanSign ()
+					.append (H_ + COLUMN_PERIOD);
+		}
+		sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
+		return idoFindPKsBySQL (sql.toString ());
+	}
+	
+	public Collection ejbFindByCustodianOrChild
+		(final String schoolCategoryName, final Collection custodians,
+		 final CalendarMonth startPeriod, final CalendarMonth endPeriod)
+		throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere (COLUMN_CUSTODIAN_ID);
+		sql.appendIn ();
+		sql.appendLeftParenthesis ();
+		sql.appendCommaDelimited (custodians);
+		sql.appendRightParenthesis ();
+		if (null != schoolCategoryName && 0 < schoolCategoryName.length ()) {
+			sql.appendAndEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryName);
+		}
+		sql.appendAnd ();
+		sql.appendWithinDates (COLUMN_PERIOD, startPeriod.getFirstDateOfMonth (),
+													 endPeriod.getLastDateOfMonth ());
+		sql.appendOrderBy (COLUMN_PERIOD);
+		return idoFindPKsBySQL (sql.toString ());
+	}
+	
+	/**
+	 * Calculates a new java.sql.Date the 1st of this month and then adds the
+	 * given number of moths
+	 *
+	 * @param date a date any day in amonth
+	 * @param monthOffset add this amont of monts to return value
+	 * @return date of the 1st day in a month
+	 */
+	private static Date getPeriod (final java.util.Date date,
+																 final int monthOffset) {
+		if (null == date) return null;
+		final Calendar calendar = Calendar.getInstance ();
+		calendar.setTime (date);
+		calendar.set (calendar.get (Calendar.YEAR),
+									calendar.get (Calendar.MONTH) + monthOffset, 1, 0, 0);
+		return new Date (calendar.getTimeInMillis ());
+		
+	}
 
 	public Collection ejbFindByStatusAndCategory(String status, String schoolCategory) throws FinderException {
 		IDOQuery sql = idoQuery();

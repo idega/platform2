@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/15 14:10:09 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 10:19:53 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.84 $
+ * @version $Revision: 1.85 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -296,18 +296,24 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 */
 	public InvoiceHeader[] getInvoiceHeadersByCustodianOrChild
 		(final String schoolCategory, final User user,
-		 final java.util.Date fromPeriod, java.util.Date toPeriod) {
+		 final CalendarMonth fromPeriod, final CalendarMonth toPeriod) {
 		final Collection headers = new ArrayList ();
 		final Collection custodians = new ArrayList ();
-		
-		final com.idega.util.Timer timer = new com.idega.util.Timer ();
-		timer.start ();
+		custodians.add (user);		
+
 		// find custodians for user
 		try {
-			final Collection temp
-					= getMemberFamilyLogic ().getCustodiansFor (user);
-			if (null != temp) {
-				custodians.addAll (temp);
+			if (null != schoolCategory && schoolCategory.equals ("CHILD_CARE")) {
+				Collection contracts
+						= getChildCareContractHome ().findByChildAndDateRange
+						(user, fromPeriod.getFirstDateOfMonth (),
+						 toPeriod.getLastDateOfMonth ());
+				for (Iterator i = contracts.iterator (); i.hasNext ();) {
+					final ChildCareContract contract = (ChildCareContract) i.next ();
+					custodians.add (contract.getInvoiceReceiver ());
+				}
+			} else {
+				custodians.addAll (getMemberFamilyLogic ().getCustodiansFor (user));
 			}
 		} catch (RemoteException exception) {
 			exception.printStackTrace();
@@ -315,15 +321,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			// no problem, no custodians found
 		}
 		
-		timer.stop ();
-		log ("Time to find custodian: " + (((float) timer.getTime()) / 1000.0f) + " seconds");
-		timer.start ();
-
 		// find invoice headers related to custodian or user
 		try {
 			final Collection temp
 					= getInvoiceHeaderHome ().findByCustodianOrChild
-					(schoolCategory, user, custodians, fromPeriod, toPeriod);
+					(schoolCategory, custodians, fromPeriod, toPeriod);
 			if (null != temp) {
 				headers.addAll (temp);
 			}
@@ -332,8 +334,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		} catch (FinderException exception) {
 			// no problem, return empty array
 		}
-		timer.stop ();
-		log ("Time to find invoices: " + (((float) timer.getTime()) / 1000.0f) + " seconds");
 		
 		return (InvoiceHeader []) headers.toArray (new InvoiceHeader [0]);
 	}

@@ -250,7 +250,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 							
 			while(i.hasNext()){
 				Regulation reg = (Regulation) i.next();
-				if (_outFlowOnly && reg.getPaymentFlowType().getLocalizationKey().equals(PaymentFlowConstant.OUT)) {
+				if (_outFlowOnly && !reg.getPaymentFlowType().getLocalizationKey().equals(PaymentFlowConstant.OUT)) {
 					continue;
 				}else{
 					Link link = new Link(reg.getName() /* + " ("+formatDate(reg.getPeriodFrom(), 4) + "-" + formatDate(reg.getPeriodTo(), 4)+")"*/ );
