@@ -149,8 +149,8 @@ private Form myForm;
         select_holes.keepStatusOnAction();
 
       DropdownMenu select_stats = new DropdownMenu("statistics");
-        select_stats.addMenuElement("0",iwrb.getLocalizedString("handicap.nostatistics","No statistics"));
-        select_stats.addMenuElement("1",iwrb.getLocalizedString("handicap.file_statistics","Register statistics"));
+        select_stats.addMenuElement("0",iwrb.getLocalizedString("handicap.no_statistics","No statistics"));
+        select_stats.addMenuElement("1",iwrb.getLocalizedString("handicap.register_statistics","Register statistics"));
         select_stats.keepStatusOnAction();
 
       DropdownMenu select_month = new DropdownMenu("month");

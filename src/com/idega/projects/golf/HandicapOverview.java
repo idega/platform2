@@ -141,7 +141,7 @@ private String headerTextColor = "#FFFFFF";
 			Text punktar = new Text(iwrb.getLocalizedString("handicap.points","Points"));
 				punktar.setFontColor(headerTextColor);
 				punktar.setFontSize("1");
-			Text mismunur = new Text(iwrb.getLocalizedString("handicap.differnce","Difference"));
+			Text mismunur = new Text(iwrb.getLocalizedString("handicap.difference","Difference"));
 				mismunur.setFontColor(headerTextColor);
 				mismunur.setFontSize("1");
 			Text grunnforgjof = new Text(iwrb.getLocalizedString("handicap.handicap","Handicap"));
