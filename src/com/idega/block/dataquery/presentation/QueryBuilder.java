@@ -103,6 +103,7 @@ public class QueryBuilder extends Block {
 	private boolean closeParentWindow = false;
 	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
+	private String defaultDynamicPattern = "";
 	public void control(IWContext iwc) {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
 			try {
@@ -206,8 +207,11 @@ public class QueryBuilder extends Block {
 			String field = iwc.getParameter(PARAM_COND_FIELD);
 			String equator = iwc.getParameter(PARAM_COND_TYPE);
 			String pattern = iwc.getParameter(PARAM_CONDITION);
-			if (!"".equals(pattern)){
+			if (!"".equals(pattern) || iwc.isParameterSet(PARAM_DYNAMIC)){
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+				if(pattern ==null || "".equals(pattern)){
+					pattern = defaultDynamicPattern;
+				}
 				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(),fieldPart.getName(), equator, pattern);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
@@ -1095,6 +1099,20 @@ public class QueryBuilder extends Block {
 			return new Text(nodeName);
 		}
 
+	}
+
+	/**
+	 * @return
+	 */
+	public String getDefaultDynamicPattern() {
+		return defaultDynamicPattern;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setDefaultDynamicPattern(String string) {
+		defaultDynamicPattern = string;
 	}
 
 }
