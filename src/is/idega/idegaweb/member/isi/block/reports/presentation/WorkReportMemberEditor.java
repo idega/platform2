@@ -473,7 +473,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private void removeLeague(WorkReportBusiness workReportBusiness, String groupToBeRemoved, WorkReportMember member) {
     int year = getYear();
     try {
-      workReportBusiness.removeWorkReportGroupFromEntity(groupToBeRemoved, year, member);
+      workReportBusiness.removeWorkReportGroupFromEntity(getWorkReportId(), groupToBeRemoved, year, member);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -488,7 +488,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private void addLeague(WorkReportBusiness workReportBusiness, String groupToBeAdded, WorkReportMember member) {
     int year = getYear();
     try {
-      workReportBusiness.addWorkReportGroupToEntity(groupToBeAdded, year, member);
+      workReportBusiness.addWorkReportGroupToEntity(getWorkReportId(), groupToBeAdded, year, member);
     }
     catch (RemoteException ex) {
       System.err.println(

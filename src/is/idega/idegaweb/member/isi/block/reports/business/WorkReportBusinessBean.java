@@ -267,12 +267,23 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		member.setAge(age.getYears());
 		member.setDateOfBirth( (new IWTimestamp(user.getDateOfBirth())).getTimestamp() );
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
-		
-		if (true)
-			member.setAsMale();
-		else
-			member.setAsFemale();
-		
+		int gender = user.getGenderID();
+    try {
+      int male = getGenderId("male").intValue();
+		  if (gender == male) {
+			 member.setAsMale();
+      }
+		  else {
+			 member.setAsFemale();
+      }
+    }
+    catch (Exception ex)  {
+      String errorMessage = "[WorkreportBusiness] Gender can not be retrieved. Message is. "+
+        ex.getMessage();
+      System.err.println(errorMessage);
+      ex.printStackTrace(System.err);
+      throw new CreateException(errorMessage);
+    }
 		member.store();
 		return member;
 	
@@ -1098,6 +1109,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * But if one of the groups could not be found nothing happens and false is returned.
    * If both specified names are null, nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
+   * @param workReportID
    * @param nameOldGroup
    * @param yearOldGroup
    * @param nameNewGroup
@@ -1106,7 +1118,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * @return true if successful else false.
    */
   
-  public boolean changeWorkReportGroupOfEntity(String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity)  {
+  public boolean changeWorkReportGroupOfEntity(int workReportID, String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity)  {
     WorkReportGroup oldGroup = null;
     WorkReportGroup newGroup = null;
     // try to find work groups
@@ -1131,7 +1143,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         return false;
       }
     }
-    return changeWorkReportGroupOfEntity(oldGroup, newGroup, entity);
+    return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, entity);
   }
         
   /**
@@ -1146,7 +1158,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * @param entity
    * @return true if successful else false.
    */
-  public boolean changeWorkReportGroupOfEntity(WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity)  {
+  public boolean changeWorkReportGroupOfEntity(int workReportGroupID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity)  {
     TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       manager.begin();
@@ -1178,24 +1190,26 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * Adds the specified WorkReportGroup to the specified entity. 
    * If the secified WorkReportGroup is null nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
+   * @param workReportGroupID
    * @param newGroup
    * @param entity
    * @return true if successful else false.
    */
-  public boolean addWorkReportGroupToEntity(WorkReportGroup newGroup, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(null, newGroup, entity);
+  public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
   }
 
    /**
    * Removes the specified WorkReportGroup from the specified entity. 
    * If the secified WorkReportGroup is null nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
+   * @param workReportGroupID
    * @param newGroup
    * @param entity
    * @return true if successful else false.
    */
-  public boolean removeWorkReportGroupFromEntity(WorkReportGroup oldGroup, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(oldGroup, null, entity);
+  public boolean removeWorkReportGroupFromEntity(int workReportID, WorkReportGroup oldGroup, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(workReportID, oldGroup, null, entity);
   }
 
    /**
@@ -1203,13 +1217,15 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * The entity is specified by the name and the year.
    * If the secified WorkReportGroup is null nothing happens and true is returned.
    * If the complete operation was successful true is returned else false.
+   * @param workReportGRoupID
    * @param newGroup
+   * @param work
    * @param year
    * @param entity
    * @return true if successful else false.
    */
-  public boolean addWorkReportGroupToEntity(String nameNewGroup, int year, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(null, year, nameNewGroup, year, entity);
+  public boolean addWorkReportGroupToEntity(int workReportID, String nameNewGroup, int year, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(workReportID, null, year, nameNewGroup, year, entity);
   }
 
    /**
@@ -1222,8 +1238,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    * @param entity
    * @return true if successful else false.
    */
-  public boolean removeWorkReportGroupFromEntity(String nameOldGroup, int year, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(nameOldGroup, year, null, year, entity);
+  public boolean removeWorkReportGroupFromEntity(int workReportID, String nameOldGroup, int year, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
   }
 
 
@@ -1535,7 +1551,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         // create WorkReportBoardMember
         WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user);
         if (league != null) {
-          addWorkReportGroupToEntity(league, member);
+          addWorkReportGroupToEntity(workReportId, league, member);
         }
         // add the new one to the existing ones
         if (memberLeagues == null)  {

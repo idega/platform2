@@ -615,7 +615,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       }
       int year = getYear();
       try {
-        workReportBusiness.changeWorkReportGroupOfEntity(oldWorkGroupName, year, newWorkGroupName, year, member);
+        workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, member);
       }
       catch (RemoteException ex) {
         System.err.println(
