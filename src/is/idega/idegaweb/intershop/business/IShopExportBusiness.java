@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.2 2002/03/19 09:41:09 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.3 2002/03/19 09:47:40 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.Enumeration;
 
 import com.idega.util.FileUtil;
-import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
+//import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -43,23 +43,23 @@ public class IShopExportBusiness {
   }
 
   public boolean exportPage(IShopTemplate page, Properties dbProps, String html, IWApplicationContext iwac) {
-    try {
-      IShopXMLDesc desc = new IShopXMLDesc(iwac);//.getApplication().getBundle("com.strengur.idegaweb.intershop"));
+//    try {
+//      IShopXMLDesc desc = new IShopXMLDesc(iwac);//.getApplication().getBundle("com.strengur.idegaweb.intershop"));
 //      System.out.println("OS create = " + desc.hasCreatePermissions("OS"));
 //      System.out.println("OS update = " + desc.hasModifyPermissions("OS"));
 //      System.out.println("OS delete = " + desc.hasDeletePermissions("OS"));
 
-      Enumeration e = desc.getAvailableTemplateClasses();
-      while (e.hasMoreElements()) {
-        String key = (String)e.nextElement();
-        System.out.println("key = " + key);
+//      Enumeration e = desc.getAvailableTemplateClasses();
+//      while (e.hasMoreElements()) {
+//        String key = (String)e.nextElement();
+//        System.out.println("key = " + key);
 //        TemplateProps template = (TemplateProps)t.get(key);
 //        System.out.println(key + " = " + template);
-      }
+/*      }
     }
     catch(Exception e) {
       e.printStackTrace();
-    }
+    }*/
 
     return(true);
   }
