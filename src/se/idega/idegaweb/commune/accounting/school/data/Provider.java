@@ -1,5 +1,5 @@
 /*
- * $Id: Provider.java,v 1.4 2003/09/22 12:06:57 anders Exp $
+ * $Id: Provider.java,v 1.5 2003/09/25 10:11:46 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,15 +18,30 @@ import com.idega.block.school.data.SchoolHome;
 /**
  * This class is a holder for a school bean and provider accounting information.
  * <p>
- * Last modified: $Date: 2003/09/22 12:06:57 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/25 10:11:46 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Provider {
 
 	private School school = null;
 	private ProviderAccountingProperties properties = null;
+			
+	/**
+	 * Constructs a new provider object with the specified school
+	 * @param school the school for the provider
+	 */
+	public Provider(School school) {
+		try {
+			this.school = school;
+			if (school != null) {
+				ProviderAccountingPropertiesHome h = (ProviderAccountingPropertiesHome) com.idega.data.IDOLookup.getHome(ProviderAccountingProperties.class);
+				properties = h.findByPrimaryKey(school.getPrimaryKey()); 
+			}
+		} catch (RemoteException e) {
+		} catch (FinderException e) {}
+	}
 			
 	/**
 	 * Constructs a new provider object by retrieving the school
