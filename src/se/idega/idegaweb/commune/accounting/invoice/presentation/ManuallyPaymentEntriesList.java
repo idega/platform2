@@ -47,6 +47,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -61,14 +62,15 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/01 13:44:32 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 10:12:34 $ by $Author: staffan $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -432,7 +434,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 			if (student != null){
 				try{
-					createInvoiceRecord(iwc, student, schoolId, periode, pay);
+					createDetailedPaymentRecord (iwc, student, pay);
 				} catch(Exception ex) {
 					ex.printStackTrace ();
 				}	
@@ -444,15 +446,17 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
-	private InvoiceRecord createInvoiceRecord
-		(final IWContext iwc, final User user, final int schoolId,
-		 final Date period, final PaymentRecord paymentRecord)
+	private InvoiceRecord createDetailedPaymentRecord
+		(final IWContext iwc, final User child, final PaymentRecord paymentRecord)
 		throws IDOLookupException, FinderException, RemoteException,
 					 CreateException {
-		final SchoolClassMemberHome home
+		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
+		final SchoolCategory schoolCategory = paymentHeader.getSchoolCategory ();
+		final SchoolClassMemberHome memberHome
 				= (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
 		final SchoolClassMember member
-				= home.findLatestByUserAndSchool (user.getNodeID(), schoolId);
+				= memberHome.findLatestByUserAndSchCategory (child, schoolCategory);
+		final Date period = paymentRecord.getPeriod ();
 		final PlacementTimes placementTimes
 				= getPlacementTimes (member, new CalendarMonth (period));
 		final Date startDate = null != member	&& null != member.getRegisterDate ()
@@ -462,9 +466,63 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		final InvoiceRecord result = getInvoiceBusiness (iwc).createInvoiceRecord
 				(paymentRecord, member, null, placementTimes, startDate, endDate,
 				 getSignature (iwc.getCurrentUser ()));
-		result.setProviderId (schoolId);
+		final School school = paymentHeader.getSchool ();
+		result.setProvider (school);
+
+		// find regulation and connected values
+		final Regulation regulation
+				= findRegulation (paymentRecord, schoolCategory, period);
+		if (null != regulation) {
+			final String regulationName = regulation.getName ();
+			final RegulationSpecType regSpecType = regulation.getRegSpecType ();
+			final Integer regSpecTypeId	= (Integer) regSpecType.getPrimaryKey ();
+			final RegulationsBusiness regulationsBusiness
+					= getRegulationsBusiness (iwc);
+			final SchoolType schoolType
+					= regulationsBusiness.getSchoolType (regulation);
+			final PostingBusiness postingBusiness = getPostingBusiness (iwc);
+			result.setRuleText (regulationName);
+			result.setInvoiceText (regulationName);
+			result.setInvoiceText2 (" ");
+			final int pieceAmount = null == regulation.getAmount ()
+					? 0 : regulation.getAmount ().intValue ();
+			result.setAmount (pieceAmount * placementTimes.getMonths ());
+			if (null != regulation.getConditionOrder ()) {
+				result.setOrderId (regulation.getConditionOrder ().intValue ());
+			}
+
+			// set postings
+			try {
+				final String [] paymentPostings = postingBusiness.getPostingStrings
+						(schoolCategory, schoolType, regSpecTypeId.intValue (),
+						 new Provider (school), period);
+				result.setOwnPosting (paymentPostings [0]);
+				result.setDoublePosting (paymentPostings [1]);
+			} catch (PostingException e) {
+				e.printStackTrace ();
+			}
+		}
 		result.store ();
 		return result;
+	}
+
+	private Regulation findRegulation
+		(final PaymentRecord paymentRecord, final SchoolCategory schoolCategory,
+		 final Date period) throws IDOLookupException {
+		Regulation matchedRegulation  = null;
+		final RegulationHome regulationHome = getRegulationHome ();
+		try {
+			final Collection regulations =
+					regulationHome.findRegulationsByNameNoCaseDateAndCategory
+					(paymentRecord.getPaymentText (), period,
+					 schoolCategory.getCategory ());
+			if (1 == regulations.size ()) {
+				matchedRegulation = (Regulation) regulations.iterator ().next ();
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		return matchedRegulation;
 	}
 
 	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {
@@ -958,15 +1016,32 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	}		
 	
-	protected RegulationsBusiness getRegulationsBusiness(IWApplicationContext iwc) throws RemoteException {
+	private static RegulationsBusiness getRegulationsBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}	
 	
-	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
+	private static VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
 
-	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
+	private static InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 	}	
+
+	private static RegulationHome getRegulationHome ()
+		throws IDOLookupException {
+		return (RegulationHome) IDOLookup.getHome (Regulation.class);
+	}
+
+	private static PostingBusiness getPostingBusiness
+		(final IWContext context) throws RemoteException {
+		return (PostingBusiness) IBOLookup.getServiceInstance
+				(context, PostingBusiness.class);	
+	}
+	
+	private static RegulationsBusiness getRegulationsBusiness
+		(final IWContext context) throws RemoteException {
+		return (RegulationsBusiness) IBOLookup.getServiceInstance
+				(context, RegulationsBusiness.class);	
+	}
 }
