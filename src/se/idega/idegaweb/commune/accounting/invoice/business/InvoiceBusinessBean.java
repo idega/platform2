@@ -52,11 +52,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/22 13:11:26 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 13:39:45 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -428,10 +428,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		record.setCreatedBy (createdBySignature);
 		final Date now = new Date (new java.util.Date ().getTime());
 		record.setDateCreated (now);
-		if (null != amount) record.setAmount (amount.floatValue ());
-		if (null != vatAmount) record.setAmountVAT (vatAmount.floatValue ());
-		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
-		record.setDoublePosting (doublePosting);
+		record.setAmount (null != amount ? amount.floatValue () : 0.0f);
+
+		record.setAmountVAT (null != vatAmount ? vatAmount.floatValue () : 0.0f);
+		record.setDays (null != numberOfDays ? numberOfDays.intValue () : 0);
+		record.setDoublePosting (doublePosting != null ? doublePosting : "");
 		if (null != invoiceHeaderId) record.setInvoiceHeader
 																		 (invoiceHeaderId.intValue ());
 		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()

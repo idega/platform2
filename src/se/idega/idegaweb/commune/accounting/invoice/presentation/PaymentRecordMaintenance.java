@@ -66,11 +66,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/15 12:27:51 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 13:39:45 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -388,9 +388,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			}
 			table.getDefaultCell ().setHorizontalAlignment
 					(Element.ALIGN_RIGHT);
-			addPhrase (table, ((long)record.getTotalAmount ()) + "");
+			addPhrase (table, roundAmount (record.getTotalAmount ()) + "");
 		}
 		return table;
+	}
+	
+	private long roundAmount (final float f) {
+		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
 	}
 	
 	private PdfPTable getRecordsHeaderPdfTable (final IWContext context) {
@@ -485,7 +489,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		table.getDefaultCell ().setHorizontalAlignment
 				(Element.ALIGN_RIGHT);
 		addPhrase (table, record.getPlacements () + "");
-		addPhrase (table, ((long) record.getTotalAmount ()) + "");
+		addPhrase (table, roundAmount (record.getTotalAmount ()) + "");
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
@@ -621,7 +625,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		map.put (ADJUSTED_SIGNATURE_KEY,
 						 getSmallSignature (record.getChangedBy ()));
 		addSmallText (map, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
-		addSmallText (map, AMOUNT_KEY, (long) record.getTotalAmount ());
+		addSmallText (map, AMOUNT_KEY, roundAmount (record.getTotalAmount ()));
 		map.put (CREATED_SIGNATURE_KEY,
 						 getSmallSignature (record.getCreatedBy ()));
 		addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
@@ -633,11 +637,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 						 getPostingListTable (context, record.getOwnPosting ()));
 		addSmallText (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
 		addSmallPeriodText (map, PERIOD_KEY, record.getPeriod ());
-		addSmallText (map, PIECE_AMOUNT_KEY, (long) record.getPieceAmount ());
+		addSmallText (map, PIECE_AMOUNT_KEY,
+									roundAmount (record.getPieceAmount ()));
 		addSmallText (map, NUMBER_OF_PLACEMENTS_KEY, record.getPlacements ());
 		addSmallText (map, STATUS_KEY, record.getStatus () + "");
 		addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
-		addSmallText (map, VAT_AMOUNT_KEY, (long) record.getTotalAmountVAT ());
+		addSmallText (map, VAT_AMOUNT_KEY,
+									roundAmount (record.getTotalAmountVAT ()));
 		final String ruleSpecType = record.getRuleSpecType ();
 		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
 		if (0 < record.getVATType ()) {
@@ -878,7 +884,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			final User user = placement.getStudent ();
 			placements.add (placementId);
 			individuals.add (user.getPrimaryKey ());
-			totalAmountVatExcluded += (long) invoiceRecord.getAmount ();
+			totalAmountVatExcluded += roundAmount (invoiceRecord.getAmount ());
 		}
 		
 		// render
@@ -909,7 +915,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(record.getPeriodStartCheck ()) + " - "
 				+ getFormattedDate (record.getPeriodEndCheck ());
 		final String days = record.getDays () + "";
-		final String amount = ((long) record.getAmount ()) + "";
+		final String amount = roundAmount (record.getAmount ()) + "";
 		final String placementPeriod
 				= getFormattedDate (record.getPeriodStartPlacement ()) + " - "
 				+ getFormattedDate (record.getPeriodEndPlacement ());
@@ -1075,7 +1081,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 																									showRecordLinkParameters);
 		final Link placementLink = createSmallLink (record.getPlacements() + "",
 																								showDetailsLinkParameters);
-		final long  totalAmount = (long) record.getTotalAmount ();
+		final long  totalAmount = roundAmount (record.getTotalAmount ());
 		final String note = record.getNotes ();
 		final Link editLink = createIconLink (getEditIcon (),
 																					showRecordLinkParameters);
@@ -1655,7 +1661,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void addStyledInput (final java.util.Map map, final String key,
 															 final float number) {
-		addStyledInput (map, key, ((long) number) + "");
+		addStyledInput (map, key, roundAmount (number) + "");
 	}
 	
 	private void addSmallText (final java.util.Map map, final String mapKey,

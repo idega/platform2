@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/22 13:11:26 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 13:39:45 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.92 $
+ * @version $Revision: 1.93 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -688,9 +688,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         inputs.put (ADJUSTED_SIGNATURE_KEY,
                     getSmallSignature (record.getChangedBy ()));
         inputs.put (AMOUNT_KEY, getStyledInput
-                    (AMOUNT_KEY, ((long) record.getAmount ()) +""));
+                    (AMOUNT_KEY, roundAmount (record.getAmount ()) +""));
         inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY,
-                    ((long) record.getAmountVAT ()) + ""));
+                    roundAmount (record.getAmountVAT ()) + ""));
         inputs.put (NOTE_KEY, getStyledInput (NOTE_KEY, record.getNotes ()));
         final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
                 (business.getAllRegulationSpecTypes ());
@@ -738,8 +738,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != placement) {
             addSmallText (details, PLACEMENT_KEY, getProviderName (placement));
         }
-        addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
-        addSmallText (details, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
+        addSmallText (details, AMOUNT_KEY, roundAmount (record.getAmount ()));
+        addSmallText (details, VAT_AMOUNT_KEY,
+											roundAmount (record.getAmountVAT ()));
         details.put (ADJUSTED_SIGNATURE_KEY,
                      getSmallSignature (record.getChangedBy ()));
         details.put (CREATED_SIGNATURE_KEY,
@@ -1412,7 +1413,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 }
                 addPhrase (table, value.toString ());
             }
-            addPhrase (table, ((long)record.getAmount ()) + "");
+            addPhrase (table, roundAmount (record.getAmount ()) + "");
         }
 		return table;
 	}
@@ -1450,7 +1451,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addPhrase (table, record.getInvoiceText ());
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (table, record.getDays () + "");
-		addPhrase (table, ((long) record.getAmount ()) + "");
+		addPhrase (table, roundAmount (record.getAmount ()) + "");
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
@@ -1514,6 +1515,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 + (lastName != null ? lastName : "");
     }
 
+	private long roundAmount (final float f) {
+		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
+	}
+	
     private Table getSearcherResultTable (final Collection users,
                                           int actionId) {
         final Table table = createTable (1);
@@ -1705,7 +1710,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add (getSmallText (record.getDays () + ""), col++, row);
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (getSmallText (((long) record.getAmount ()) + ""), col++,
+		table.add (getSmallText (roundAmount (record.getAmount ()) + ""), col++,
                    row);
         addSmallText (table, record.getNotes (), col++, row);
         final Link editLink = createIconLink (getEditIcon (),
