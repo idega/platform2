@@ -446,7 +446,7 @@ public class JournalTexts extends EHealthBlock {
 		Table table = new Table(5, 1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setBorder(1);
+		table.setBorder(0);
 		table.setHeight(20);
 		
 		
