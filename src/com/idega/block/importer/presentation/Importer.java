@@ -526,4 +526,11 @@ public class Importer extends Block {
   		
   	}
 
+	/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+
 }
