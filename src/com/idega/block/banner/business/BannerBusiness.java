@@ -1,6 +1,8 @@
 package com.idega.block.banner.business;
 
 import com.idega.data.EntityFinder;
+import javax.servlet.http.Cookie;
+import com.idega.presentation.IWContext;
 import com.idega.block.banner.data.*;
 import java.sql.SQLException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -8,7 +10,6 @@ import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICFile;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.ui.DropdownMenu;
@@ -32,6 +33,8 @@ public static final String PARAMETER_BEGIN_DATE = "begin_date";
 public static final String PARAMETER_CLICKED = "clicked";
 public static final String PARAMETER_CLOSE = "close";
 public static final String PARAMETER_DELETE = "delete";
+public static final String PARAMETER_DELETE_FILE = "delete_file";
+public static final String PARAMETER_DETACH_AD = "detach_ad";
 public static final String PARAMETER_END_DATE = "end_date";
 public static final String PARAMETER_FALSE = "false";
 public static final String PARAMETER_FILE_ID = "file_id";
@@ -103,7 +106,7 @@ public static final String PARAMETER_URL = "url";
   public static void addToBanner(BannerEntity banner, AdEntity ad) {
     try {
       if ( ad != null && banner != null ) {
-        AdEntity[] ads = (AdEntity[]) ad.findRelated(banner);
+        AdEntity[] ads = (AdEntity[]) banner.findRelated(ad);
         if ( ads == null || ads.length == 0 ) {
           banner.addTo(ad);
         }
@@ -222,6 +225,34 @@ public static final String PARAMETER_URL = "url";
     }
   }
 
+  public static void removeFileFromAd(int adID,int ICFileID) {
+    try {
+      AdEntity ad = BannerFinder.getAd(adID);
+      ICFile file = BannerFinder.getFile(ICFileID);
+
+      if ( ad != null && file != null ) {
+        file.removeFrom(ad);
+      }
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  public static void removeAdFromBanner(int adID,int bannerID) {
+    try {
+      AdEntity ad = BannerFinder.getAd(adID);
+      BannerEntity banner = BannerFinder.getBanner(bannerID);
+
+      if ( ad != null && banner != null ) {
+        ad.removeFrom(banner);
+      }
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
   public static void deleteAd(int adID) {
     deleteAd(BannerFinder.getAd(adID));
   }
@@ -243,9 +274,11 @@ public static final String PARAMETER_URL = "url";
     try {
       ICFile file = BannerFinder.getFile(ICFileID);
       if ( ad != null ) {
-        ICFile[] files = (ICFile[]) file.findRelated(ad);
-        if ( files == null || files.length == 0 ) {
-          ad.addTo(file);
+        if ( file != null ) {
+          ICFile[] files = (ICFile[]) ad.findRelated(file);
+          if ( files == null || files.length == 0 ) {
+            ad.addTo(file);
+          }
         }
       }
     }
@@ -261,6 +294,7 @@ public static final String PARAMETER_URL = "url";
       idegaTimestamp beginDate;
       idegaTimestamp endDate;
       boolean remove;
+      AdEntity ad;
 
       if ( adList != null ) {
         for ( int a = 0; a < adList.size(); a++ ) {
@@ -268,7 +302,7 @@ public static final String PARAMETER_URL = "url";
           beginDate = null;
           endDate = null;
 
-          AdEntity ad = (AdEntity) adList.get(a);
+          ad = (AdEntity) adList.get(a);
 
           if ( ad.getBeginDate() != null )
             beginDate = new idegaTimestamp(ad.getBeginDate());
@@ -293,6 +327,7 @@ public static final String PARAMETER_URL = "url";
           }
           if ( !remove ) {
             if ( endDate != null ) {
+              endDate.addDays(1);
               if ( date.isLaterThan(endDate) )
                 remove = true;
             }
@@ -305,8 +340,7 @@ public static final String PARAMETER_URL = "url";
 
       if ( adList != null ) {
         if ( adList.size() > 1 ) {
-          Random number = new Random();
-          int random = number.nextInt(adList.size());
+          int random = (int) Math.round(Math.random() * (adList.size() - 1));
           return (AdEntity) adList.get(random);
         }
         return (AdEntity) adList.get(0);
@@ -324,8 +358,7 @@ public static final String PARAMETER_URL = "url";
       if ( ad != null ) {
         ICFile[] files = BannerFinder.getFilesInAd(ad);
         if ( files != null ) {
-          Random number = new Random();
-          int random = number.nextInt(files.length);
+          int random = (int) Math.round(Math.random() * (files.length - 1));
           return files[random].getID();
         }
         return -1;
@@ -346,7 +379,18 @@ public static final String PARAMETER_URL = "url";
     }
   }
 
-  public static void updateImpressions(AdEntity ad) {
+  public static void updateImpressions(IWContext iwc,AdEntity ad) {
+    try {
+      String URI = iwc.getServerName();
+
+      Cookie cookie = new Cookie(URI+"_idega_ad_"+Integer.toString(ad.getID()),"seen");
+      cookie.setMaxAge(394200000);
+      iwc.addCookies(cookie);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+
     try {
       ad.setImpressions(ad.getImpressions()+1);
       ad.update();
@@ -389,6 +433,41 @@ public static final String PARAMETER_URL = "url";
     }
 
     return drp;
+  }
+
+  public static boolean notSeenBefore(IWContext iwc, int adID) {
+    Cookie[] cookies = (Cookie[]) iwc.getCookies();
+    String URI = iwc.getServerName();
+    boolean returner = true;
+
+    if (cookies != null) {
+      if (cookies.length > 0) {
+        for (int i = 0 ; i < cookies.length ; i++) {
+          System.out.println("Cookie: "+cookies[i].getName());
+          if ( cookies[i].getName().equals(URI+"_idega_ad_"+adID) ) {
+            returner = false;
+            continue;
+          }
+        }
+      }
+    }
+
+    return returner;
+  }
+
+  public static boolean isRelated(int bannerID,int adID) {
+    try {
+      AdEntity ad = BannerFinder.getAd(adID);
+      BannerEntity banner = BannerFinder.getBanner(bannerID);
+
+      if ( ad != null && banner != null ) {
+        return isRelated(banner,ad);
+      }
+      return false;
+    }
+    catch (Exception e) {
+      return false;
+    }
   }
 
   public static boolean isRelated(BannerEntity banner,AdEntity ad) {
