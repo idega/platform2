@@ -3,15 +3,12 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
+import com.idega.data.IDOQuery;
 
 /**
  * Description: Financial records for a club for a specified work report<br>
@@ -94,6 +91,20 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 	
 	public Collection ejbFindAllRecordsByWorkReportIdAndWorkReportGroupId(int reportId,int wrGroupId) throws FinderException{
 		return idoFindAllIDsByColumnsBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId);
+	}
+	
+	public Collection ejbFindAllRecordsByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyCollection(int reportId,int wrGroupId, Collection keys) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhere()
+		.appendEquals(COLUMN_NAME_REPORT_ID,reportId)
+		.appendAnd()
+		.appendEquals(COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId)
+		.appendAnd()
+		.append(COLUMN_NAME_ACCOUNT_KEY_ID)
+		.appendInCollection(keys);
+		
+		
+		return idoFindPKsByQuery(sql);
 	}
 	
 }

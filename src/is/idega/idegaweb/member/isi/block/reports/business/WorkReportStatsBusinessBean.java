@@ -402,7 +402,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then iterate the map and insert into the final report collection.
 		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
 		Map workReportsByLeagues = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 		
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -545,7 +545,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then insert into the final report collection.
 		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null);
 		Map leagueStatsMap = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 		
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -706,7 +706,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null);
 		
 		Map leagueStatsMap = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 		
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -820,7 +820,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 * Report B12.1.5 of the ISI Specs
 	 * NOT FINISHED
 	 */
-	public ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFilteringComparedWithLastYear(final Integer year,Integer age,String gender, Collection leaguesFilter)throws RemoteException {
+	public ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFiltering(final Integer year,Integer age,String gender, Collection leaguesFilter)throws RemoteException {
 	
 		//initialize stuff
 		int selectedAge = (age!=null)?age.intValue():-1;
@@ -867,7 +867,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null);
 		
 		Map leagueStatsMap = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 		
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -888,6 +888,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					}
 					
 					String leagueIdentifier = getLeagueIdentifier(league);
+					
 					//fetch the stats or initialize
 					ReportableData leagueStatsData = (ReportableData) leagueStatsMap.get(leagueKey);
 					if(leagueStatsData==null){//initialize
@@ -898,6 +899,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						leagueStatsData.addData(costPerPlayers, new Integer(0));
 						leagueStatsData.addData(totalCost,new Integer(0));	
 					}
+					
+					
 					
 					//add to counts
 					
@@ -910,9 +913,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						
 					//}
 					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, playerCount);
+					int cost = 0;
+					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),leagueKey.intValue());
+					leagueStatsData = addToIntegerCount(totalCost,leagueStatsData,cost);
 					
-					//getWorkReportBusiness().getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(report.getP)
-									  
 					//put it back again
 					leagueStatsMap.put(leagueKey,leagueStatsData);
 					
@@ -925,9 +929,24 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 		}
 		
+		
 
 		//add the data to the collection
 		reportCollection.addAll(leagueStatsMap.values());
+		
+		Iterator data = reportCollection.iterator();
+		while (data.hasNext()) {
+			ReportableData row = (ReportableData) data.next();
+			Integer totalCostForleague = (Integer)row.getFieldValue(totalCost);
+			Integer totalCountOfPlayers = (Integer)row.getFieldValue(totalCountOfPlayersForLeague);
+			if(totalCountOfPlayers.intValue()!=0){
+				Integer costPerPlayer = new Integer(totalCostForleague.intValue()/totalCountOfPlayers.intValue());
+				row.addData(costPerPlayers,costPerPlayer);
+			}
+			
+			
+			
+		}
 		
 		//finished return the collection
 		return reportCollection;
@@ -1625,7 +1644,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then insert into the final report collection.
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map leagueStatsMap = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
 	
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -2677,19 +2696,6 @@ private String getClubTypeString(WorkReport report) {
 	return returnType;
 } 
 
-private List getGroupIdListFromWorkReportGroupCollection(Collection leaguesFilter) {
-	List leagueGroupIdList = null;
-	if (leaguesFilter != null && !leaguesFilter.isEmpty()) {
-		leagueGroupIdList = new Vector();
-		Iterator iter = leaguesFilter.iterator();
-		while (iter.hasNext()) {
-			Group group = (Group) iter.next();
-			leagueGroupIdList.add(group.getPrimaryKey());
-		}
-		
-	}
-	return leagueGroupIdList;
-}
 
 private ReportableData addToIntegerCount(ReportableField reportableField, ReportableData reportableData, int intToAdd) {
 	if(intToAdd>0 && reportableData!=null){//update count

@@ -376,6 +376,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return report;
 		
 	}
+	
+	public int getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId){
+		int count = 0;
+		try {
+			Collection recs = getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,getWorkReportAccountKeyHome().findExpensesAccountKeys());
+			
+			Iterator iter = recs.iterator();
+			while (iter.hasNext()) {
+				WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord) iter.next();
+				count += rec.getAmount();
+				
+			}
+		}
+		catch (FinderException e) {
+			return 0;
+		}
+		
+		return count;
+	}
 
 	public WorkReportHome getWorkReportHome() {
 		if (workReportHome == null) {
