@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/24 06:26:34 $ by $Author: laddi $
- * @version $Revision: 1.116 $
+ *         Last modified: $Date: 2004/05/24 06:46:50 $ by $Author: laddi $
+ * @version $Revision: 1.117 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -867,7 +867,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
 		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(user);
 		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(season);
-		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(school);
+		if (school != null) {
+			sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(school);
+		}
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
