@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.47 2001/09/29 11:25:05 laddi Exp $
+ * $Id: Link.java,v 1.48 2001/10/02 12:50:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,6 +53,7 @@ public class Link extends Text {
   private static final String OBJECT_TYPE_TEXT = "Text";
 
   public static final String TARGET_NEW_WINDOW = "_new";
+  public static final String TARGET_SELF_WINDOW = "_self";
   public static final String TARGET_BLANK_WINDOW = "_blank";
   public static final String TARGET_PARENT_WINDOW = "_parent";
   public static final String TARGET_TOP_WINDOW = "_top";
