@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.19 2003/11/21 19:01:14 tryggvil Exp $
+ * $Id: ReferenceNumber.java,v 1.20 2004/02/05 17:43:37 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,7 +138,6 @@ public class ReferenceNumber extends Block {
         }
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
-        inputTable.setAlignment("center");
         inputTable.mergeCells(1,2,3,2);
         inputTable.addText("",1,2);
         inputTable.setHeight(2,"10");
@@ -156,7 +155,6 @@ public class ReferenceNumber extends Block {
         inputTable.setBorder(0);
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
-        inputTable.setAlignment("center");
         inputTable.addText("",1,2);
         inputTable.setHeight(1,"2");
         if (!(_colour.equals(""))) {
@@ -168,6 +166,7 @@ public class ReferenceNumber extends Block {
         inputTable.add(referenceTexti,1,1);
         inputTable.add(reference,1,2);
 
+        referenceTable.setAlignment(1,1,"center");
         referenceTable.add(inputTable,1,1);
         break;
     }
