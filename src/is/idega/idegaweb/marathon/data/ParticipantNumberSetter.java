@@ -7,6 +7,8 @@
 package is.idega.idegaweb.marathon.data;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.ejb.FinderException;
@@ -70,7 +72,12 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 			while(iter2.hasNext()) {
 				Run r = (Run) iter2.next();
 				if(r.getParticipantNumber() == -1) {
-					getRunBiz(iwc).setParticipantNumber(r);
+					try {
+						getRunBiz(iwc).setParticipantNumber(r);
+					}
+					catch (RemoteException re) {
+						log(re);
+					}
 				}
 			}
 			

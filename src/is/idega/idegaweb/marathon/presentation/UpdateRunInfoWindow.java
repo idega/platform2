@@ -146,11 +146,16 @@ public class UpdateRunInfoWindow extends Window {
 			}
 			runField = new Text(iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()));
 		}
-		Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
-		f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
 		Run run = null;
-		if(userID != null && runGroupID != null) {
-			run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
+		try {
+			Group dis = getRunBiz(iwc).getDistanceByUserID(Integer.parseInt(userID));
+			f.addParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE,dis.getPrimaryKey().toString());
+			if(userID != null && runGroupID != null) {
+				run = getRunBiz(iwc).getRunObjByUserIDandDistanceID(Integer.parseInt(userID),Integer.parseInt(dis.getPrimaryKey().toString()));
+			}
+		}
+		catch (RemoteException re) {
+			log(re);
 		}
 		participantNumberField = new TextInput(IWMarathonConstants.PARAMETER_PARTICIPANT_NUMBER);
 		chipNumberField = new TextInput(IWMarathonConstants.PARAMETER_CHIP_NUMBER);
