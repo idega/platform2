@@ -45,6 +45,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
@@ -105,6 +106,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_PROVIDER = "provider";
 	private static final String KEY_EDIT = "edit";
 	private static final String KEY_DELETE = "delete";	
+	private static final String KEY_SCH_TYPE = "school_type";	
 	
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
@@ -120,6 +122,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
+	private static final String PAR_SCH_TYPE = KEY_SCH_TYPE;	
 //	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
 	
 	private static final String PAR_PK = "pk";	
@@ -155,6 +158,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
 		PAR_OPFIELD_MAINSCREEN = PAR + ACTION_OPFIELD_MAINSCREEN;
+		
 	public static final String PAR_SELECTED_PROVIDER = PAR + ACTION_SELECTED_PROVIDER;
 	
 //	int ijk = 0;
@@ -389,7 +393,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		entry.setFrom(from);
 		entry.setTo(to);
 			
-		entry.setNote(iwc.getParameter(PAR_REMARK));
+		if (iwc.getParameter(PAR_REMARK) != null){
+			entry.setNote(iwc.getParameter(PAR_REMARK));
+		}
+		if (iwc.getParameter(PAR_SCH_TYPE) != null){
+			entry.setSchoolTypeId(Integer.parseInt(iwc.getParameter(PAR_SCH_TYPE)));
+		}
 		entry.setPlacing(iwc.getParameter(PAR_PLACING));
 		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
@@ -569,8 +578,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
-//		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
-//		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
+		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
+		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
 		searcher.setToFormSubmit(true);
 
 		try{
@@ -785,6 +794,15 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		addField(table, PAR_REMARK, KEY_REMARK, entry.getNote(), 1, row++, 300);
+		
+		try{
+			Collection types = getSchoolBusiness(iwc).findAllSchoolTypes();
+			SchoolType current = regSearchPanel.getCurrentSchoolType();
+			int selected = current != null ? ((Integer) current.getPrimaryKey()).intValue() : entry.getSchoolTypeId();
+			addDropDown(table, PAR_SCH_TYPE, KEY_SCH_TYPE, types, selected, "getSchoolTypeName", 1, row++);
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+		}		
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
@@ -973,6 +991,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				return null;
 			}
 			
+			public int getSchoolTypeId(){
+				return getIntValue(PAR_SCH_TYPE);				
+			}
+			
 			String getValue(String parameter){
 				return _iwc == null || _iwc.getParameter(parameter) == null ? "" : _iwc.getParameter(parameter);
 			}				
@@ -1012,6 +1034,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}
+			public void setSchoolTypeId(int id) {}
 			public void delete() throws SQLException {}
 			public void store() throws IDOStoreException {}
 			public IDOEntityDefinition getEntityDefinition() {return null;}
@@ -1138,4 +1161,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
+	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException{
+		return (SchoolBusiness) IDOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+	}	
 }
