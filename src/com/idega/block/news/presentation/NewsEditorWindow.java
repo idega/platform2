@@ -358,7 +358,7 @@ private IWResourceBundle iwrb;
 
 			String sInfo = iwrb.getLocalizedString("info","Info");
 
-			addRight(sInfo,table,true);
+			addRight(sInfo,table,false);
 
     }
 
