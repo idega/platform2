@@ -123,7 +123,7 @@ public class Checkout extends CashierSubWindowTemplate {
                     label.append(entry.getPrimaryKey().toString());
                     
                     String disc = iwc.getParameter(label.toString());
-                    if (disc != null) {
+                    if (disc != null && !"".equals(disc)) {
                         int perc = Integer.parseInt(disc);
                         double discAmount = Math.round(entry.getAmount() * (double) perc / 100.0);
                         

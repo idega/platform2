@@ -149,7 +149,9 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
                     if (entry.getGroup() != null) {
                         paymentTable.add(entry.getGroup().getName(), 3, row);
                     }
-                    paymentTable.add(entry.getInfo(), 4, row);
+                    if (entry.getInfo() != null) {
+                        paymentTable.add(entry.getInfo(), 4, row);
+                    }
                     if (entry.getPaymentType() != null) {
                         paymentTable
                                 .add(iwrb.getLocalizedString(entry
