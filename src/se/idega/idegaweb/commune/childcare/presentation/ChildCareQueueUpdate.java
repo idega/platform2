@@ -333,6 +333,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update","Update"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+		update.setSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
 		buttonTable.add(back, 1, 1);
 		buttonTable.add(update, 2, 1);
 
