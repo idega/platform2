@@ -920,12 +920,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
-			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
 				sendMessageToParents(application, subject, body);
 			}
+			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
