@@ -12,6 +12,7 @@ package com.idega.block.websearch.business;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.FileUtil;
 
 public class WebSearchBundleStarter implements IWBundleStartable {
     
@@ -20,7 +21,7 @@ public class WebSearchBundleStarter implements IWBundleStartable {
   public WebSearchBundleStarter(){}
     
   public void start(IWBundle bundle){
-  	String xmlFile = bundle.getResourcesRealPath()+"websearch.xml";
+  	String xmlFile = bundle.getResourcesRealPath()+FileUtil.getFileSeparator()+"websearch.xml";
   	System.out.println("WebSearch: Starting up...");
   	System.out.println("WebSearch: loading configuration from : "+xmlFile);
   	WebSearchManager.parseConfigXML(xmlFile);

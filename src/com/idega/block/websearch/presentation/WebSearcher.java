@@ -28,6 +28,9 @@ public class WebSearcher extends Block {
   private final static String PUBLISHED_FROM_PARAM="iw_bl_ws_pb_fr";
   private final static String DETAILED_PARAM="iw_bl_ws_de";
   private final static String DIRECTION_PARAM="iw_bl_ws_set_dir";
+  
+  private final static String HITS_ITERATOR_SESSION_PARAM = "iw_bl_ws_hitsiterator";
+  
    
       
   private final static String INDEX_NO_REPORT="0";
@@ -46,15 +49,20 @@ public class WebSearcher extends Block {
   private boolean crawl = false;
   private boolean exact = false;
   private boolean detailed = false;
+  private boolean canEdit = false;
+    
   
   private String queryString = null;
   private String direction = null;
+
   private int hitsPerSet = 10;
   private int publishedFromDays = 0;
-  	
+  private int report = 0;
 	
   private IWBundle iwb = null;
   private IWResourceBundle iwrb = null;
+
+
     
       
   public WebSearcher(){}
@@ -75,6 +83,15 @@ public class WebSearcher extends Block {
 		if( perSet!=null ) hitsPerSet = Integer.parseInt(perSet);
 		direction = iwc.getParameter(DIRECTION_PARAM);
   	}
+  	else if( iwc.isParameterSet(CRAWL_PARAM) ){
+  		crawl = true;
+  		String sReport = iwc.getParameter(CRAWL_REPORT_PARAM);
+  		if( sReport != null ) report = Integer.parseInt(sReport);
+  		
+  		
+  	}
+  	
+  	canEdit =  this.hasEditPermission();
   }
 
 
@@ -92,7 +109,7 @@ public class WebSearcher extends Block {
 		}
 		else if( crawl ){
 			index = WebSearchManager.getIndex("main");//this should not be hard coded
-			int report = Integer.parseInt(iwc.getParameter("report"));
+			
 			
 			if ( report  > 0) {
 				crawler = new Crawler(index, report, iwc.getWriter() );//change so that crawler return an arraylist and then print that or something
@@ -106,7 +123,7 @@ public class WebSearcher extends Block {
 		}
 		else{	
 			Form searchForm = new Form();
-			Table table = new Table(2,1);
+			Table table = new Table(2,2);
 			TextInput search = new TextInput(SEARCH_PARAM);
 			SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search","Search"));
 			
@@ -116,70 +133,103 @@ public class WebSearcher extends Block {
 			searchForm.add(table);
 			
 			add(searchForm);
+			
+			if(canEdit){
+				Link crawl = new Link("Index this site");
+				crawl.addParameter(CRAWL_PARAM,"true");
+				crawl.addParameter(CRAWL_REPORT_PARAM,INDEX_DETAILED_REPORT);
+				table.add(crawl,1,2);				
+			}
+		
+			
 		}
 	}
 
 	private void search(IWContext iwc){
-		com.idega.block.websearch.business.WebSearcher searcher = new com.idega.block.websearch.business.WebSearcher(WebSearchManager.getIndex("main"));
 		
-		//hits per page
-		searcher.setHitsPerSet(hitsPerSet);
-		// exact phrase
-		searcher.setPhraseSearch(exact);	
-		// from days
-		if (publishedFromDays>0) {
-			searcher.setFromDays(publishedFromDays);
-		}
 
-		WebSearchHitIterator hits = searcher.search(queryString);
-		//WebSearchHitIterator hits = (WebSearchHitIterator)session.getAttribute("hits"); 
-
-		// Get Set via direction
-		if (direction.equals(DIRECTION_NEXT)) hits.nextSet();
-		if (direction.equals(DIRECTION_PREV)) hits.previousSet();
+		WebSearchHitIterator hits = (WebSearchHitIterator) iwc.getSessionAttribute(HITS_ITERATOR_SESSION_PARAM+queryString);
+		
+		if( hits==null ){
+			try{
+				com.idega.block.websearch.business.WebSearcher searcher = new com.idega.block.websearch.business.WebSearcher(WebSearchManager.getIndex("main"));
+				//hits per page
+				searcher.setHitsPerSet(hitsPerSet);
+				// exact phrase
+				searcher.setPhraseSearch(exact);	
+				// from days
+				if (publishedFromDays>0) {
+					searcher.setFromDays(publishedFromDays);
+				}
+				hits = searcher.search(queryString);
+				iwc.setSessionAttribute(HITS_ITERATOR_SESSION_PARAM+queryString,hits);
 				
-		if (hits.hasPreviousSet()) { 
-			Link next = new Link("previous");
-			next.addParameter(DIRECTION_PARAM,DIRECTION_PREV);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				add("You need to crawl and index first!");	
+			}
 		}
 		
-		add("&nbsp;&nbsp;"+hits.getSetStartPosition());
-		add(" - ");
-		add(hits.getSetEndPosition()+"&nbsp;&nbsp;");
-
-	    if (hits.hasNextSet()) { 
-	   		Link next = new Link("next");
-			next.addParameter(DIRECTION_PARAM,DIRECTION_NEXT);
+		if(hits!=null){
+			// Get Set via direction
+			if (direction!=null && direction.equals(DIRECTION_NEXT)) hits.nextSet();
+			if (direction!=null && direction.equals(DIRECTION_PREV)) hits.previousSet();
+					
+			if (hits.hasPreviousSet()) { 
+				Link prev = new Link("previous");
+				prev.addParameter(DIRECTION_PARAM,DIRECTION_PREV);
+				prev.addParameter(SEARCH_PARAM,queryString);
+				add(prev);
+			}
+			
+			add("&nbsp;&nbsp;"+hits.getSetStartPosition());
+			add(" - ");
+			add(hits.getSetEndPosition()+"&nbsp;&nbsp;");
+	
+		    if (hits.hasNextSet()) { 
+		   		Link next = new Link("next");
+				next.addParameter(DIRECTION_PARAM,DIRECTION_NEXT);
+				next.addParameter(SEARCH_PARAM,queryString);
+				add(next);
+			}
+			
+			addBreak();
+			add("Query : "+hits.getQuery());
+			addBreak();
+			add("Total hits : "+ hits.getTotalHits());
+			Table results = new Table();
+			results.setWidth(Table.HUNDRED_PERCENT);
+			results.setHeight(Table.HUNDRED_PERCENT);
+			results.setCellpaddingAndCellspacing(0);
+			
+			int row = 1;
+			int row2 = 1;
+			
+			while (hits.hasNextInSet()) {
+				WebSearchHit hit = hits.next();
+				String bgColor = (hit.getRank()%2==0)?"#BBBBBB":"#CDCDCD";
+				Table hitTable = new Table();
+				hitTable.setWidth(Table.HUNDRED_PERCENT);
+				hitTable.setHeight(Table.HUNDRED_PERCENT);
+			
+				hitTable.setColor(bgColor);
+				hitTable.add(new Text("Rank: "+hit.getRank()),1,row++);
+				hitTable.add(new Text("Score: "+hit.getScore()),1,row++);
+				//hitTable.add(new Text("Published: "+ hit.getPublishedFormated()),1,row++);
+				//hitTable.add(new Text("Content Type: "+hit.getContentType()),1,row++);
+				//hitTable.add(new Text("Keywords: "+hit.getKeywords()),1,row++); veit ekki afhverju thetta skilar alltaf null !?
+				//hitTable.add(new Text("Categories: "+hit.getCategories()),1,row++);
+				//hitTable.add(new Text("Description: "+hit.getDescription()),1,row++);
+				hitTable.add(new Text("Title: "+hit.getTitle()),1,row++);
+				hitTable.add(new Text(hit.getContents()),1,row++);
+				hitTable.add(new Link(hit.getURL(),hit.getHREF()),1,row);
+				row = 1;
+				results.add(hitTable,1,row2++);
+			} 
+			
+			add(results);
 		}
-		
-		addBreak();
-		add("Query : "+hits.getQuery());
-		addBreak();
-		add("Total hits : "+ hits.getTotalHits());
-		Table results = new Table();
-		
-		int row = 1;
-		int row2 = 1;
-		
-		while (hits.hasNextInSet()) {
-			WebSearchHit hit = hits.next();
-			String bgColor = (hit.getRank()%2==0)?"#BBBBBB":"#CDCDCD";
-			Table hitTable = new Table();
-			hitTable.setColor(bgColor);
-			hitTable.add(new Text("Rank: "+hit.getRank()),1,row++);
-			hitTable.add(new Text("Score: "+hit.getScore()),1,row++);
-			hitTable.add(new Text("Published: "+ hit.getPublishedFormated()),1,row++);
-			hitTable.add(new Text("Content Type: "+hit.getContentType()),1,row++);
-			hitTable.add(new Text("Keywords: "+hit.getKeywords()),1,row++);
-			hitTable.add(new Text("Categories: "+hit.getCategories()),1,row++);
-			hitTable.add(new Text("Description: "+hit.getDescription()),1,row++);
-			hitTable.add(new Text("Title: "+hit.getTitle()),1,row++);
-			hitTable.add(new Link(hit.getURL(),hit.getHREF()),1,row);
-			row = 1;
-			results.add(hitTable,1,row2++);
-		} 
-		
-		add(results);
 	
 	
 		

@@ -2,12 +2,14 @@ package com.idega.block.websearch.business;
 
 
 
+import java.io.File;
 import java.net.HttpURLConnection;
 
 import com.lucene.index.IndexWriter;
 import com.lucene.document.Field;
 import com.lucene.document.DateField;
 import com.idega.block.websearch.data.*;
+import com.idega.util.FileUtil;
 
 /**
  * <p><code>Crawler</code> Web crawler.</p>
@@ -105,12 +107,19 @@ public final class Crawler {
     public void crawl() {
         try {
             
-            if (reporting > 0) report.println("START CRAWLING");
+            if (reporting > 0) report.println("Websearch: START CRAWLING");
             
-            java.io.File file = new java.io.File(indexPath);
+            
+             
+            
+            File file =  new File(indexPath);
             
             if (!file.exists()) {
-                // need code here to build directory structure if needed.
+				//create directory structure                
+                System.out.print("Websearch: creating index folders...");
+                System.out.print("Websearch: "+indexPath);
+             	FileUtil.createFileAndFolder(indexPath,"segments");
+             
                 if (reporting > 0) report.println("create new index");
                 IndexWriter writer = new IndexWriter(indexPath, new com.lucene.analysis.StopAnalyzer(), true);
                 writer.close();
@@ -131,6 +140,10 @@ public final class Crawler {
                     reader.delete(i);
                 }
                 reader.close();
+                
+                System.out.print("Websearch: creating index folders...");
+                System.out.print("Websearch: "+indexPath);
+             	FileUtil.createFileAndFolder(indexPath,"segments");
             }
             
             
@@ -273,9 +286,13 @@ public final class Crawler {
             mydoc.add(new Field("uid", currentURL.toString().toLowerCase(), false, true, false));
             mydoc.add(Field.Text("url", currentURL.toString()));
             mydoc.add(Field.Text("contentType", contentType));
-            mydoc.add(Field.Keyword("lastModified",
-            DateField.timeToString(lastModified)));
-            mydoc.add(Field.UnStored("contents", handler.getContents()));
+            mydoc.add(Field.Keyword("lastModified",DateField.timeToString(lastModified)));
+            //mydoc.add(Field. UnStored("contents", handler.getContents()));
+            String contents = handler.getContents();
+            if( !"".equals(contents) ) contents+="...";
+            
+            mydoc.add(Field.Text("contents", contents.substring(0,Math.min(contents.length(),140)) ));
+            
             if (handler.getTitle() != null) {
                 mydoc.add(Field.Text("title", handler.getTitle()));
             }
@@ -399,7 +416,7 @@ public final class Crawler {
             currentURLPath = urlString.substring(0, urlString.lastIndexOf("/"));
             HttpURLConnection httpCon = (HttpURLConnection)currentURL.openConnection();
             
-            httpCon.setRequestProperty("User-Agent", "i2a Web Search Engine Crawler");
+            httpCon.setRequestProperty("User-Agent", "idegaWeb Web Search Engine Crawler http://www.idega.com");
             
             if (cookie != null) {
                 httpCon.setRequestProperty("Cookie", this.cookie);

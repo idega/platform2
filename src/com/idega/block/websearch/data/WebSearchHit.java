@@ -91,4 +91,9 @@ public final class WebSearchHit {
     public String getURL() {
         return this.document.get("url");
     }
+    
+    public String getContents() {
+        return this.document.get("contents");
+    }
+    
 }
