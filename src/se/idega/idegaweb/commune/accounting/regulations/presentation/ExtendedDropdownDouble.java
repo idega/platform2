@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.1 2003/09/06 08:46:02 kjell Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.2 2003/09/06 09:01:43 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,7 +25,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * 
  * Thanks Anders for helping me with this :-)
  *  
- * The purpose with this object is to present a double drop down menu that gets populated 
+ * The purpose with this is to present a double drop down menu that gets populated 
  * from many different beans, business collections etc. 
  *
  * Modifications as follows:
