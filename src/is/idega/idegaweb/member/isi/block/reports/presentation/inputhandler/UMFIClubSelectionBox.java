@@ -9,9 +9,12 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import javax.ejb.FinderException;
 import com.idega.presentation.IWContext;
 import com.idega.util.ListUtil;
 
@@ -51,6 +54,21 @@ public class UMFIClubSelectionBox extends GroupSelectionBox {
 		//don't show these groups for users
 		if(groupID!=null && WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
 			return ListUtil.getEmptyList();
+		}
+		else if(groupID!=null && WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(getUserType())){
+				
+				List groups = new ArrayList();
+				//only get the child clubs
+				try {
+					Collection clubGroups = getWorkReportBusiness(iwc).getClubGroupsForRegionUnionGroup(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()));
+					
+					groups.addAll(clubGroups);
+					
+				}
+				catch (FinderException e) {
+					//nothing found, don't care
+				}			
+				return groups;
 		}
 		else{
 			return super.getGroups(iwc);
