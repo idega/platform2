@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/12 15:52:40 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/16 12:57:19 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.142 $
+ * @version $Revision: 1.143 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -638,7 +638,6 @@ public class InvoiceChildcareThread extends BillingThread{
 	 */
 	private void createRegularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, long totalSum){
 		int days = pTimes.getDays();
-		float months = pTimes.getMonths();
 		int childId = ((Number)child.getPrimaryKey()).intValue();
 		RegularInvoiceEntry regularInvoiceEntry=null;
 		boolean hasBeenHandled = haveInvoiceEntriesBeenHandledForChild(child);
@@ -726,8 +725,16 @@ public class InvoiceChildcareThread extends BillingThread{
 							amount = amount-totalSum;
 						}
 						invoiceRecord.setAmount(amount);
-						invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
+						try {
+							final float vatPercent = getVATBusiness ()
+									.getVATPercentForVATRuleRegulation
+									(invoiceRecord.getVATRuleRegulation ()) / 100.0f;
+							invoiceRecord.setAmountVAT (vatPercent * invoiceRecord.getAmount ());
+						} catch (Exception e) {
+							e.printStackTrace ();
+						}
+
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
 						
 						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
