@@ -57,6 +57,7 @@ public class MessageViewer extends CommuneBlock {
 		
 		Table contentTable = new Table(1,1);
 		contentTable.setCellpadding(10);
+		contentTable.setHeight(Table.HUNDRED_PERCENT);
 		table.add(contentTable,2,4);
 		
 		headerTable.add(getHeader(localize("message.message","Message")));
@@ -78,6 +79,7 @@ public class MessageViewer extends CommuneBlock {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 
 		Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID), iwc);
