@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.17 2002/09/01 23:38:08 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.18 2003/07/28 18:32:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -391,6 +391,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 	public static void sendApplicationConfirmationReminderEmail(IWContext iwc) {
 //		select app.app_application_id, email from cam_application cam, app_application app where cam.app_application_id = app.app_application_id and app.status = 'A' 
 		Map map = CampusApplicationFinder.getEmailAndApplicationIdForApprovedApplications();
+		
 		Set keys = map.keySet();
 		Iterator it = keys.iterator();
 		
@@ -400,8 +401,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 		body1.append("Þú átt inni umsókn um vist á Stúdentagörðum á skrifstofu okkar. Með því að nota tilvísunarnúmer getur þú fylgst með því hvar þú ert á biðlistanum. Farið er inná heimasíðuna okkar sem er: www.studentagardar.is og tilvísunarnúmerið slegið inn í viðeigandi reit og ýtt á get. Þá kemur upp staða þín á biðlistanum. Þar er þér einnig gefinn kostur á því að stafðfesta veru þína á biðlistanum með því að ýta á confirm. Staðfesta þarf á milli 1. og 5. hvers mánaðar, ef því er ekki sinnt dettur þú útaf biðlistanum.\n\n");
 		body1.append("Tilvísunarnúmerið þitt er: ");
 
-		StringBuffer tail1 = new StringBuffer("f.h. Skrifstofu Stúdentagarða\n");
-		tail1.append("Vilborg Sverrisdóttir\n\n");
+		StringBuffer tail1 = new StringBuffer("Skrifstofa Stúdentagarða\n");
+		//tail1.append("Vilborg Sverrisdóttir\n\n");
 		tail1.append("Þér er einnig bent á að setja inn netfang á þessari síðu og sjá til þess að það sem og símanúmerið sé alltaf rétt. Þetta er mjög mikilvægt svo hægt sé að ná sambandi við þig þegar þörf krefur.\n");
 
 		StringBuffer body2 = new StringBuffer("To Whom It May Concern:\n\n");
