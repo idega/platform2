@@ -13,6 +13,7 @@ import com.idega.block.process.business.CaseBusiness;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
@@ -22,6 +23,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 import com.idega.user.data.User;
 
+import se.idega.idegaweb.commune.childcare.presentation.ViewChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -50,6 +52,10 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String WANT_FROM = "ccaa_want_from";
 	private final static String CHECK_NUMBER = "ccaa_check_number";
 	private final static String ACCEPT = "ccaa_accept";
+	private final static String SHOW_CONTRACT = "ccaa_show_contract";
+	
+	private final static String ASSIGN_SUBJECT = "ccaa_assign_msg_subject";
+	private final static String ASSIGN_BODY = "ccaa_assign_msg_body";
 
 	private final static String PARAM_PROGNOSIS = "ccaa_prognosis";
 	private final static String PARAM_PRESENTATION = "ccaa_presentation";
@@ -162,6 +168,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			boolean ubeh = false, prel = false, kout = false;
 			while (it.hasNext()) {
 				application = (ChildCareApplication)it.next();
+				String name = null;
 				try {
 					User child = application.getChild();
 					data.add(child.getName(),1,row);
@@ -169,7 +176,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					data.add(application.getQueueDate().toString(),3,row);
 					data.add(Integer.toString(application.getCheckId()),4,row);
 					data.add(application.getFromDate().toString(),6,row);
-					
+					name = child.getName();
 				}
 				catch (RemoteException e) {
 					data.add("Unable to get child",1,row);
@@ -236,17 +243,26 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					careTime.setStyleAttribute(getSmallTextFontStyle());
 					careTime.setLength(3);
 					data.add(careTime,5,row);
-					
-/*					CheckBox check = new CheckBox();
-					check.setName(PARAM_WANT_FROM_OK);
-					data.add(check,7,row);*/
-					
+										
 					CheckBox contract = new CheckBox(PARAM_FORM_CONTRACT_CHECK,id);
+					data.add(contract,9,row);
 				}
 				else if (kout) {
-					
+					Link contract = new Link(localize(SHOW_CONTRACT,"Show"));
+					contract.setWindowToOpen(ViewChildCareContract.class);
+					try {
+						contract.addParameter(ViewChildCareContract.VIEW_CONTRACT_FILE,application.getContractFileId());
+					}
+					catch (RemoteException e) {
+					}
+	
+					data.add(contract,9,row);
+
+					CheckBox assign = new CheckBox(PARAM_FORM_ASSIGN_CHECK,id);
+					data.add(assign,10,row);
 				}
 				
+								
 				row++;
 			}
 			
@@ -284,11 +300,11 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	}
 	
 	private boolean assignContract(IWContext iwc) {
-    String[] ids = iwc.getParameterValues(PARAM_FORM_CONTRACT);
+    String[] ids = iwc.getParameterValues(PARAM_FORM_CONTRACT_CHECK);
 	
 		if (ids != null) {
 			try {
-				return getChildCareBusiness(iwc).assignContractToApplication(ids);
+				return getChildCareBusiness(iwc).assignContractToApplication(ids,iwc.getUserId());
 			}
 			catch (RemoteException e) {
 			}
@@ -298,7 +314,19 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	}
 	
 	private boolean assignPlace(IWContext iwc) {
-		return true;	
+    String[] ids = iwc.getParameterValues(PARAM_FORM_ASSIGN_CHECK);
+	
+		if (ids != null) {
+			String subject = localize(ASSIGN_SUBJECT,"A child has been assigned a spot");
+			String body = localize(ASSIGN_BODY,"Something about the child being allocated a spot...");
+			try {
+				return getChildCareBusiness(iwc).assignApplication(ids,iwc.getUserId(),subject,body);
+			}
+			catch (RemoteException e) {
+			}
+		}
+		
+		return false;	
 	}
 	
 	private boolean changeApplication(IWContext iwc, int action) {

@@ -15,13 +15,10 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.core.data.ICFile;
-import com.idega.data.BlobWrapper;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
@@ -49,6 +46,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String CHOICE_NUMBER = "choice_number";
 	protected final static String CHECK_ID = "check_id";
 	protected final static String CONTRACT_ID = "contract_id";
+	protected final static String CONTRACT_FILE_ID = "contract_file_id";
 	protected final static String REJECTION_DATE = "rejection_date";
 	protected final static String PROGNOSIS = "prognosis";
 	protected final static String PRESENTATION = "presentation";
@@ -92,6 +90,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addManyToOneRelationship(CHILD_ID,User.class);
 		addManyToOneRelationship(CHECK_ID,Check.class);
 		addManyToOneRelationship(CONTRACT_ID,Contract.class);
+		addManyToOneRelationship(CONTRACT_FILE_ID,ICFile.class);
 	}
 	
 	public int getProviderId() {
@@ -148,6 +147,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 	public Contract getContract() {
 		return (Contract)getColumnValue(CONTRACT_ID);	
+	}
+	
+	public int getContractFileId() {
+		return getIntColumnValue(CONTRACT_FILE_ID);	
 	}
 	
 	public String getPrognosis() {
@@ -208,6 +211,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 	public void setContractId(int id) {
 		setColumn(CONTRACT_ID,id);	
+	}
+
+	public void setContractFileId(int id) {
+		setColumn(CONTRACT_FILE_ID,id);	
 	}
 
 	public void setPrognosis(String prognosis) {

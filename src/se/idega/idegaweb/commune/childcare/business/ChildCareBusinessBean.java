@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import com.idega.block.contract.business.ContractBusiness;
+import com.idega.block.contract.business.ContractWriter;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -19,12 +20,14 @@ import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.lowagie.text.Font;
 
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import java.rmi.RemoteException;
@@ -373,36 +376,54 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}	
 	
-	public boolean assignContractToApplication(int id) {
+	public boolean assignContractToApplication(int id, int userId) {
+		TransactionManager t = IdegaTransactionManager.getInstance();
 		try {
+			t.begin();
 			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
 			/**
 			 * @todo Fix hardcoding of category and add the other parameters to the contract.
 			 */
 			int contractId = ContractBusiness.createContract(2,IWTimestamp.RightNow(),IWTimestamp.RightNow(),"C",null);
-			
+						
 			appl.setContractId(contractId);
 			appl.setCaseStatus(getCaseStatusContract());
 			appl.store();
+
+			Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
+			Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+			Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
+			Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
+			Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
+
+			int file_id = ContractWriter.writePDF(contractId, appl.getContract().getCategoryId().intValue(), Integer.toString(id), titleFont, paraFont, tagFont, textFont);
+
+			appl.setContractFileId(file_id);
+			appl.store();
+
+			t.commit();
 		}
-		catch (RemoteException e) {
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			
+			return false;
 		}
-		catch (FinderException e) {
-		}
-		
-		
-//		ContractBusiness
-		
-		return false;	
+				
+		return true;	
 	}
 	
-	public boolean assignContractToApplication(String ids[]) {
-		boolean done = true;
+	public boolean assignContractToApplication(String ids[], int userId) {
+		boolean done = false;
 		
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id));
+				done = assignContractToApplication(Integer.parseInt(id),userId);
 				if (!done)
 					return done;	
 			}
@@ -410,4 +431,49 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 		return done;	
 	}
+
+	public boolean assignApplication(int id, int userId, String subject, String body) {
+		TransactionManager t = IdegaTransactionManager.getInstance();
+		try {
+			t.begin();
+			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
+
+			appl.setCaseStatus(getCaseStatusGranted());
+			appl.store();
+
+/*			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
+			SystemArchivationMessage msg = messageBiz.createPrintArchivationMessage(((Integer)appl.getOwner().getPrimaryKey()).intValue(),userId,subject,body,appl.getContractFileId());
+			msg.setParentCase(appl);*/
+
+			t.commit();
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			
+			return false;	
+		}
+				
+		return true;	
+	}
+	
+	public boolean assignApplication(String ids[], int userId, String subject, String body) {
+		boolean done = false;
+		
+		if (ids != null && ids.length > 0) {
+			for (int i = 0; i < ids.length; i++) {
+				String id = ids[i];
+				done = assignApplication(Integer.parseInt(id),userId,subject,body);
+				if (!done)
+					return done;	
+			}
+		}
+		
+		return done;	
+	}
+	
 }

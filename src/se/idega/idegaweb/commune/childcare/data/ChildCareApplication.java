@@ -19,6 +19,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public se.idega.idegaweb.commune.childcare.check.data.Check getCheck() throws java.rmi.RemoteException;
  public void setContractId(int p0) throws java.rmi.RemoteException;
  public java.lang.String getPresentation() throws java.rmi.RemoteException;
+ public void setContractFileId(int p0) throws java.rmi.RemoteException;
  public int getChildId() throws java.rmi.RemoteException;
  public int getMethod() throws java.rmi.RemoteException;
  public void setRejectionDate(java.sql.Date p0) throws java.rmi.RemoteException;
@@ -38,4 +39,5 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setCareTime(int p0) throws java.rmi.RemoteException;
  public java.sql.Date getRejectionDate() throws java.rmi.RemoteException;
  public java.lang.String getCaseCodeDescription() throws java.rmi.RemoteException;
+ public int getContractFileId() throws java.rmi.RemoteException;
 }
