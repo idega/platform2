@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/04 20:16:13 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/05 10:35:30 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.80 $
+ * @version $Revision: 1.81 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -458,8 +458,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
 				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType(),1);
-				errorRelated.append("RegSpecType from posting detail"+((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
-				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
+				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
+				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase((getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
 //				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
