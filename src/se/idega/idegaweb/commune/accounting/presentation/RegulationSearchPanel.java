@@ -102,11 +102,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 		maintainParameter(PAR_PROVIDER);
 		maintainParameter(PAR_VALID_DATE);
 				
-		add(getSearchForm(iwc));
+		Table t = new Table();
+		t.add(getSearchForm(iwc), 1, 1);
 		
 		if (_searchResult != null){
-			add(getResultList(iwc, _searchResult)); 
+			t.add(getResultList(iwc, _searchResult), 1, 2); 
 		} 
+		add(t);
 	} 
 	
 	private boolean processed = false;
@@ -256,10 +258,6 @@ public class RegulationSearchPanel extends AccountingBlock {
 					maintainParameters(iwc, link);
 					setParameters(link);
 					
-		//THIS doean't work for opera... but it should be neccessary to submit the form anyway...				
-		//			link.setOnClick("getElementById('"+ pkId +"').value='"+ reg.getPrimaryKey() +"'");			
-		//			link.setToFormSubmit(form);
-							
 					if (col >= 3){
 						col = 1;
 						row++;
