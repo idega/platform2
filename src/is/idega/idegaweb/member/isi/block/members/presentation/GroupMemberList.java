@@ -138,19 +138,7 @@ public class GroupMemberList extends Block {
 			Group group = (Group) iter.next();
 			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType());
 			if(isFlock) {
-				boolean isTrainer = false;
-				try {
-					int user_id = Integer.parseInt(trainer.getPrimaryKey().toString());
-					int group_id = Integer.parseInt(group.getPrimaryKey().toString());
-					int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
-					if(status_id != -1) {
-						Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
-						isTrainer = IWMemberConstants.STATUS_COACH.equals(st.getStatusKey()) ||
-						            IWMemberConstants.STATUS_ASSISTANT_COACH.equals(st.getStatusKey());
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				boolean isTrainer = doesTrainerTrainFlock(iwc, trainer, group);
 				String name = group.getName();
 				if(isFlock && isTrainer) {
 					System.out.println("Adding flock " + name + " to list of groups for trainer " + trainer.getName());
@@ -164,6 +152,41 @@ public class GroupMemberList extends Block {
 			}
 		}
 		return buf.toString();
+	}
+	
+	private boolean doesTrainerTrainFlock(IWContext iwc, User trainer, Group flock) {
+		boolean isTrainer = false;
+		try {
+			int user_id = Integer.parseInt(trainer.getPrimaryKey().toString());
+			int group_id = Integer.parseInt(trainer.getPrimaryKey().toString());
+			int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
+			if(status_id != -1) {
+				Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
+				isTrainer = IWMemberConstants.STATUS_COACH.equals(st.getStatusKey()) ||
+				            IWMemberConstants.STATUS_ASSISTANT_COACH.equals(st.getStatusKey());
+			}
+			System.out.println("After checkin status in group, isTrainer=" + isTrainer);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(!isTrainer) {
+			// not trainer by status, try to see if trainer is member of a trainer group in flock
+			Collection trainerParents = trainer.getParentGroups();
+			Iterator childIter = flock.getChildren();
+			while(childIter.hasNext()) {
+				Group child = (Group) childIter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(child.getGroupType())) {
+					if(trainerParents.contains(child)) {
+						isTrainer = true;
+						System.out.println("found trainer group in flock, " + child.getName());
+						break;
+					}
+				}
+			}
+			System.out.println("After checking trainer groups in flock, isTrainer=" + isTrainer);
+		}
+		
+		return isTrainer;
 	}
 	
 	private Group getGroupToShowMembersFor(IWContext iwc) {
