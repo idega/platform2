@@ -145,6 +145,7 @@ public class Survey extends FolderBlock {
 	public Survey() {
 		super();
 		this.useLocalizedFolders(false);
+		this.utiliseCategories(false);
 	}
 	
 	public String getBundleIdentifier() {

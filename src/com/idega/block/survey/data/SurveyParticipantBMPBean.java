@@ -103,11 +103,11 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 				Random rand = new Random();
 				int index = rand.nextInt(pks.size());
 				boolean success = set.add(pks.get(index));
-				int ring = index;
-				boolean coil = false;
+				int startIndex = index;
+				boolean oneRound = false;
 				while(!success){
-					if(ring == ++index){
-						coil = true;
+					if(startIndex == ++index){
+						oneRound = true;
 						break;
 					}
 					if(index == pks.size()){
@@ -115,36 +115,11 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 					}
 					success = set.add(pks.get(index));
 				}
-				if(coil){
+				if(oneRound){
 					break;
 				}
 			}
-			toReturn = set;
-						
-//			int index=0;
-//			int endlessLoopBreaker = 0;
-//			int[] choice = new int[maxNumberOfReturnedParticipants]; 
-//			for(int i=0; i<maxNumberOfReturnedParticipants;i++){
-//				index = (int)(maxNumberOfReturnedParticipants*Math.random());
-//				for(int j = 0; i < j; j++){
-//					if(choice[j]==index){
-//						index++;
-//						j=0;
-//					}
-//					endlessLoopBreaker++;
-//					if(endlessLoopBreaker >= Integer.MAX_VALUE){
-//						System.out.println("[ERROR]: ("+this.getClass().getName()+"): endless loop in random choice");
-//						break;
-//					} else if(endlessLoopBreaker >= Integer.MAX_VALUE/3){
-//						System.out.println("[WARNING]: ("+this.getClass().getName()+"): long loop in random choice");
-//					}
-//				}
-//				endlessLoopBreaker=0;
-//				choice[i]=index;
-//			}
-//			for (int i = 0; i < choice.length; i++) {
-//				toReturn.add(pks.get(choice[i]));
-//			}
+			toReturn.addAll(set);
 		}
 		return toReturn;		
 	}
