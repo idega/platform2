@@ -8,9 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
@@ -30,6 +28,9 @@ import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.MetaData;
 import com.idega.data.MetaDataCapable;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -881,4 +882,16 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 		return getBooleanColumnValue(COLUMN_REFUNDABLE, true);
 	}
 	
+	public Collection ejbFindBySupplyPool(SupplyPool pool) throws IDORelationshipException, FinderException {
+		
+		Table table = new Table(this);
+		Table poolTable = new Table(pool);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+
+		query.addManyToManyJoin(table, poolTable);
+		
+		return idoFindPKsByQuery(query);
+	}
 }
