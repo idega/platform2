@@ -38,7 +38,7 @@ public class ReportFinder {
   }
 
   public static ICCategory getCategory(int iCategoryId){
-    return CategoryFinder.getCategory(iCategoryId);
+    return CategoryFinder.getInstance().getCategory(iCategoryId);
   }
 
    public static Report getReport(int iReportId){
@@ -67,19 +67,19 @@ public class ReportFinder {
 
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
-    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new ReportCategory().getCategoryType());
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new ReportCategory().getCategoryType());
   }
 
   public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
-    return CategoryFinder.getObjectInstanceCategoryId(eObjectInstance);
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(eObjectInstance);
   }
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId){
-    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId);
+    return CategoryFinder.getInstance().getInstance().getObjectInstanceCategoryId(iObjectInstanceId);
   }
 
   public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
-    return CategoryFinder.getObjectInstanceIdFromCategoryId(iCategoryId);
+    return CategoryFinder.getInstance().getObjectInstanceIdFromCategoryId(iCategoryId);
   }
 
   public static List listOfCategories(){
@@ -104,10 +104,10 @@ public class ReportFinder {
   }
 
   public static List listOfEntityForObjectInstanceId(int instanceid){
-    return CategoryFinder.listOfCategoryForObjectInstanceId(instanceid);
+    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(instanceid);
   }
   public static List listOfEntityForObjectInstanceId( ICObjectInstance obj){
-    return CategoryFinder.listOfCategoryForObjectInstanceId(obj);
+    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(obj);
   }
 
    public static List listOfReportItems(int iCatId){

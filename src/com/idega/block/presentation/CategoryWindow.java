@@ -87,7 +87,7 @@ public class CategoryWindow extends IWAdminWindow {
         processCategoryForm(iwc);
       }
       //addCategoryFields(CategoryFinder.getCategory(iCategoryId));
-      getCategoryFields(CategoryFinder.getCategory(iCategoryId));
+      getCategoryFields(CategoryFinder.getInstance().getCategory(iCategoryId));
     }
     else{
       add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -106,7 +106,7 @@ public class CategoryWindow extends IWAdminWindow {
           //System.err.println("saving category :"+iCategoryId+" icoid :"+iObjectInstanceId);
 
           if(iCategoryId <= 0){
-            iCategoryId = CategoryBusiness.saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,sType,multi).getID();
+            iCategoryId = CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,sType,multi).getID();
           }
           else {
             String[] sids= iwc.getParameterValues("id_box");
@@ -117,8 +117,8 @@ public class CategoryWindow extends IWAdminWindow {
               savedids[i] = Integer.parseInt(sids[i]);
               System.err.println("save id "+savedids[i]);
             }
-            CategoryBusiness.updateCategory(iCategoryId,sName,sDesc);
-            CategoryBusiness.saveRelatedCategories(iObjectInstanceId,savedids);
+            CategoryBusiness.getInstance().updateCategory(iCategoryId,sName,sDesc);
+            CategoryBusiness.getInstance().saveRelatedCategories(iObjectInstanceId,savedids);
           }
 				}
 			}
@@ -129,7 +129,7 @@ public class CategoryWindow extends IWAdminWindow {
 			// deleting :
 			else if(iwc.isParameterSet(actDelete) || iwc.isParameterSet(actDelete+".x") ){
         try{
-				  CategoryBusiness.deleteCategory(iCategoryId);
+				  CategoryBusiness.getInstance().deleteCategory(iCategoryId);
         }
         catch(Exception ex){
           ex.printStackTrace();
@@ -151,7 +151,7 @@ public class CategoryWindow extends IWAdminWindow {
 		newLink.addParameter(actForm,"true");
 
     /** @todo  permission handling */
-		List L = CategoryFinder.listOfCategories(sType);
+		List L = CategoryFinder.getInstance().listOfCategories(sType);
     /*
     Collection C = CategoryFinder.collectCategoryIntegerIds(iObjectInstanceId);
     try{
@@ -228,8 +228,8 @@ public class CategoryWindow extends IWAdminWindow {
 		newLink.addParameter(actForm,"true");
 
     /** @todo  permission handling */
-		List L = CategoryFinder.listOfCategories(sType);
-    Collection coll = CategoryFinder.collectCategoryIntegerIds(iObjectInstanceId);
+		List L = CategoryFinder.getInstance().listOfCategories(sType);
+    Collection coll = CategoryFinder.getInstance().collectCategoryIntegerIds(iObjectInstanceId);
 
     int chosenId = eCategory!=null?eCategory.getID():-1;
 
@@ -317,6 +317,17 @@ public class CategoryWindow extends IWAdminWindow {
     addHiddenInput( new HiddenInput (prmObjInstId,String.valueOf(iObjectInstanceId)));
     addHiddenInput( new HiddenInput (actForm,"true"));
 
+  }
+
+  public static Link getWindowLink(int iCategoryId,int iInstanceId,String type,boolean multible){
+    Link L = new Link();
+    L.addParameter(CategoryWindow.prmCategoryId,iCategoryId);
+    L.addParameter(CategoryWindow.prmObjInstId,iInstanceId);
+    L.addParameter(CategoryWindow.prmCategoryType,type);
+    if(multible)
+      L.addParameter(CategoryWindow.prmMulti,"true");
+    L.setWindowToOpen(CategoryWindow.class);
+    return L;
   }
 
   public PresentationObject getNameInput(ICCategory node){

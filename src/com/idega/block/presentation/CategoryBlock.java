@@ -6,6 +6,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.core.data.ICCategory;
 import com.idega.block.category.business.CategoryFinder;
+import com.idega.block.category.business.CategoryBusiness;
 import java.util.Collection;
 
 /**
@@ -65,7 +66,7 @@ public abstract class CategoryBlock extends Block{
    *  specified by default type
    */
   public Collection getCategories(String type){
-    return CategoryFinder.getCategories(icCategoryIds,type);
+    return CategoryFinder.getInstance().getCategories(icCategoryIds,type);
   }
 
 
@@ -73,7 +74,7 @@ public abstract class CategoryBlock extends Block{
    *  Returns a collection of ICCategory objects bound to this instance
    */
   public Collection getCategories(){
-    return CategoryFinder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
+    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
   }
 
   protected void initCategory(IWContext iwc){
@@ -81,10 +82,10 @@ public abstract class CategoryBlock extends Block{
       String sCategoryId = iwc.getParameter(prmCategoryId );
       if(sCategoryId != null){
         icCategoryId = Integer.parseInt(sCategoryId);
-        icCategory = CategoryFinder.getCategory(icCategoryId);
+        icCategory = CategoryFinder.getInstance().getCategory(icCategoryId);
       }
       else if(getICObjectInstanceID() > 0){
-        icCategoryIds = CategoryFinder.getObjectInstanceCategoryIds(getICObjectInstanceID(),autocreate,getCategoryType());
+        icCategoryIds = CategoryFinder.getInstance().getObjectInstanceCategoryIds(getICObjectInstanceID(),autocreate,getCategoryType());
         //icCategoryId = CategoryFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),autocreate,getCategoryType());
       }
     }
@@ -114,11 +115,36 @@ public abstract class CategoryBlock extends Block{
     L.addParameter(CategoryWindow.prmCategoryId,getCategoryId());
     L.addParameter(CategoryWindow.prmObjInstId,getICObjectInstanceID());
     L.addParameter(CategoryWindow.prmCategoryType,type);
+    if(getMultible())
+      L.addParameter(CategoryWindow.prmMulti,"true");
     L.setWindowToOpen(CategoryWindow.class);
     return L;
   }
 
+
+  /**
+   *  Defines the type of categories this block handles
+   */
   public abstract String getCategoryType();
+
+  /**
+   *  Defines if multiple categories can bound to this instance
+   */
   public abstract boolean getMultible();
+
+  /**
+   *  Removes all categories bound to this instance
+   */
+  public final boolean removeInstanceCategories(){
+    return CategoryBusiness.getInstance().removeInstanceCategories(this.getICObjectInstanceID());
+  }
+
+  /**
+   *  Deletes this instance
+   */
+  public boolean deleteBlock(int iObjectInstanceId) {
+    return CategoryBusiness.getInstance().removeInstanceCategories(iObjectInstanceId);
+  }
+
 
 }

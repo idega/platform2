@@ -167,7 +167,7 @@ private IWResourceBundle iwrb;
         iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
         doView = false;
         if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
-          iCategoryId = CategoryFinder.getObjectInstanceCategoryId(iObjInsId );
+          iCategoryId = CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjInsId );
       }
       //add("category id "+iCategoryId);
       //add(" instance id "+iObjInsId);
@@ -180,7 +180,7 @@ private IWResourceBundle iwrb;
         processCategoryForm(iwc,sCategoryId,iObjInsId);
 
       if(iwc.isParameterSet(prmObjInstId)){
-        addCategoryFields(CategoryFinder.getCategory(iCategoryId),iObjInsId  );
+        addCategoryFields(CategoryFinder.getInstance().getCategory(iCategoryId),iObjInsId  );
       }
       //doView = false;
 

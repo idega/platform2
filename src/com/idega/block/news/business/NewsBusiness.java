@@ -36,7 +36,7 @@ public class NewsBusiness{
   }
 
   public static boolean disconnectBlock(int instanceid){
-    return CategoryBusiness.disconnectBlock(instanceid);
+    return CategoryBusiness.getInstance().disconnectBlock(instanceid);
   }
 
   public static boolean disconnectNewsCategory(NewsCategory newsCat,int iObjectInstanceId){
@@ -279,7 +279,7 @@ public class NewsBusiness{
   }
 */
   public static ICCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){
-    return CategoryBusiness.saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,new NewsCategory().getCategoryType());
+    return CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,iObjectInstanceId,new NewsCategory().getCategoryType());
   }
 /*
   public static NewsCategory saveNewsCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId){

@@ -64,6 +64,10 @@ public class Reporter extends CategoryBlock implements IWBlock,Reports{
     return "reports";
   }
 
+  public boolean getMultible(){
+    return true;
+  }
+
   public void setReportCategoryId(int iCategory){
     setCategoryId(iCategory);
   }

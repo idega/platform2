@@ -82,7 +82,7 @@ public class NewsBundleStarter implements IWBundleStartable{
       cat.setDescription(info);
       cat.setType(type);
 
-      CAT = CategoryBusiness.saveCategory(cat,objectinstance_id,false);
+      CAT = CategoryBusiness.getInstance().saveCategory(cat,objectinstance_id,false);
       hash.put(new Integer(id),new Integer(CAT.getID()));
     }
     if(RS!=null)

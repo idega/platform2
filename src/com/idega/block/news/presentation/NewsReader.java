@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.74 2002/02/26 13:56:16 eiki Exp $
+ * $Id: NewsReader.java,v 1.75 2002/03/08 11:26:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -210,7 +210,7 @@ public class NewsReader extends Block implements IWBlock {
       T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
     }
     if(iCategoryId >0){
-      newsCategory = CategoryFinder.getCategory(iCategoryId);
+      newsCategory = CategoryFinder.getInstance().getCategory(iCategoryId);
       if(newsCategory != null){
         if(sNewsId != null){
           int id = Integer.parseInt(sNewsId);

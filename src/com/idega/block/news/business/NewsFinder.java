@@ -35,7 +35,7 @@ public class NewsFinder {
   }
 
   public static NewsCategory getNewsCategory(int iCategoryId){
-    return (NewsCategory) CategoryFinder.getCategory(iCategoryId);
+    return (NewsCategory) CategoryFinder.getInstance().getCategory(iCategoryId);
   }
 
   public static List listOfAllNwNewsInCategory(int newsCategoryId,Locale locale){
@@ -416,38 +416,38 @@ public class NewsFinder {
   }
 
   public static List listOfNewsCategories(){
-    return CategoryFinder.listOfCategories(new NewsCategory().getCategoryType());
+    return CategoryFinder.getInstance().listOfCategories(new NewsCategory().getCategoryType());
   }
 
   public static List listOfValidNewsCategories(){
-    return CategoryFinder.listOfValidCategories(new NewsCategory().getCategoryType());
+    return CategoryFinder.getInstance().listOfValidCategories(new NewsCategory().getCategoryType());
   }
 
   public static List listOfInValidNewsCategories(){
-    return CategoryFinder.listOfInValidCategories(new NewsCategory().getCategoryType());
+    return CategoryFinder.getInstance().listOfInValidCategories(new NewsCategory().getCategoryType());
   }
 
   public static int getObjectInstanceIdFromNewsCategoryId(int iCategoryId){
-    return CategoryFinder.getObjectInstanceIdFromCategoryId(iCategoryId);
+    return CategoryFinder.getInstance().getObjectInstanceIdFromCategoryId(iCategoryId);
   }
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
-    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new NewsCategory().getCategoryType());
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new NewsCategory().getCategoryType());
   }
 
   public static int getObjectInstanceCategoryId(int iObjectInstanceId){
-    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId);
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(iObjectInstanceId);
   }
 
   public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
-    return CategoryFinder.getObjectInstanceCategoryId(eObjectInstance);
+    return CategoryFinder.getInstance().getObjectInstanceCategoryId(eObjectInstance);
   }
 
   public static List listOfNewsCategoryForObjectInstanceId(int instanceid){
-    return CategoryFinder.listOfCategoryForObjectInstanceId(instanceid);
+    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(instanceid);
   }
 
   public static List listOfNewsCategoryForObjectInstanceId( ICObjectInstance obj){
-    return CategoryFinder.listOfCategoryForObjectInstanceId(obj);
+    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(obj);
   }
 }
