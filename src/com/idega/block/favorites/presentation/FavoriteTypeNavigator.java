@@ -1,5 +1,5 @@
 /*
- * $Id: FavoriteTypeNavigator.java,v 1.2 2004/11/26 08:41:56 laddi Exp $
+ * $Id: FavoriteTypeNavigator.java,v 1.3 2005/01/18 10:24:09 laddi Exp $
  * Created on 5.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,12 @@ import com.idega.presentation.text.Text;
  * Last modified: 5.11.2004 09:37:06 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventListener {
 
+	private boolean iShowDocumentFavorites = false;
+	
 	/* (non-Javadoc)
 	 * @see com.idega.block.favorites.presentation.FavoriteBlock#present(com.idega.presentation.IWContext)
 	 */
@@ -37,8 +39,10 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.intranet", "Intranet favorites"), getBusiness(iwc).getFavoriteTypeIntranet()));
 			add(text);
 			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.internet", "Internet favorites"), getBusiness(iwc).getFavoriteTypeInternet()));
-			add(text);
-			add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.documents", "Document favorites"), getBusiness(iwc).getFavoriteTypeDocument()));
+			if (iShowDocumentFavorites) {
+				add(text);
+				add(getObject(iwc, getResourceBundle().getLocalizedString("favorite.documents", "Document favorites"), getBusiness(iwc).getFavoriteTypeDocument()));
+			}
 		}
 		catch (RemoteException re) {
 			log(re);
@@ -71,5 +75,9 @@ public class FavoriteTypeNavigator extends FavoriteBlock implements IWPageEventL
 			log(re);
 		}
 		return false;
+	}
+	
+	public void setShowDocumentFavorites(boolean show) {
+		iShowDocumentFavorites = show;
 	}
 }
