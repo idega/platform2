@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.7 2001/08/29 22:55:57 laddi Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.8 2001/08/29 23:41:38 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,9 @@ import com.idega.block.application.data.Application;
 import is.idegaweb.campus.entity.Applied;
 import is.idegaweb.campus.entity.Contract;
 import is.idegaweb.campus.entity.WaitingList;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import is.idegaweb.campus.application.CampusApplicationFinder;
 import is.idegaweb.campus.application.CampusApplicationHolder;
@@ -114,10 +117,12 @@ public class ReferenceNumberInfo extends ModuleObjectContainer {
         refTable.add(new Text(iwrb_.getLocalizedString("appApplied","You applied for") + ":"),1,row);
         refTable.add(Text.getBreak(),1,row);
         for (int i = 0; i < choices.size(); i++) {
-          refTable.add(new Text("<li>"+iwrb_.getLocalizedString("appChoice","Choice") + " " + i + 1)+": ",1,row);
+          refTable.add(new Text("<li>"+iwrb_.getLocalizedString("appChoice","Choice") + " " + Integer.toString(i + 1))+": ",1,row);
           Applied applied = (Applied)choices.elementAt(i);
           //Sæki nafn á morgun
-          Text appType = new Text(applied.getApartmentTypeId() + "-" + applied.getComplexId());
+          ApartmentType aType = BuildingCacher.getApartmentType(applied.getApartmentTypeId().intValue());
+          Complex complex = BuildingCacher.getComplex(applied.getComplexId().intValue());
+          Text appType = new Text(aType.getName()+" ("+complex.getName()+")");
             appType.setBold();
           refTable.add(appType,1,row);
           if (wl != null) {
