@@ -40,8 +40,8 @@ public class HandicapScore extends GolfBlock {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	private Table outerTable;
 	private Form myForm;
+	private Table myTable;
 	
 	private Member iMember;
 
@@ -102,7 +102,7 @@ public class HandicapScore extends GolfBlock {
 			getForm();
 			drawTable(modinfo);
 
-			myForm.add(outerTable);
+			myForm.add(myTable);
 			add(myForm);
 		}
 	}
@@ -219,70 +219,71 @@ public class HandicapScore extends GolfBlock {
 		Text numberOfHoles = getHeader(iwrb.getLocalizedString("handicap.number_of_holes", "Number of holes") + ":");
 		Text statistics = getHeader(iwrb.getLocalizedString("handicap.statistics", "Statistics") + ":");
 
-		outerTable = new Table(2, 1);
-		outerTable.setCellspacing(6);
-		outerTable.setCellpadding(6);
-		outerTable.setAlignment("center");
-		outerTable.setAlignment(1, 1, "center");
-
-		Table myTable = new Table(2, 7);
+		myTable = new Table();
 		myTable.setBorder(0);
-		myTable.setCellpadding(8);
+		myTable.setCellpadding(0);
 		myTable.setCellspacing(0);
-		myTable.setAlignment("center");
 		myTable.setColumnAlignment(1, "right");
+		int row = 1;
 
-		myTable.add(member, 1, 1);
-		myTable.add(field, 1, 2);
-		myTable.add(tees, 1, 3);
-		myTable.add(date, 1, 4);
-		myTable.add(numberOfHoles, 1, 5);
-		myTable.add(statistics, 1, 6);
+		myTable.add(member, 1, row++);
+		myTable.setHeight(1, row++, 12);
+		myTable.add(field, 1, row++);
+		myTable.setHeight(1, row++, 12);
+		myTable.add(tees, 1, row++);
+		myTable.setHeight(1, row++, 12);
+		myTable.add(date, 1, row++);
+		myTable.setHeight(1, row++, 12);
+		myTable.add(numberOfHoles, 1, row++);
+		myTable.setHeight(1, row++, 12);
+		myTable.add(statistics, 1, row++);
+		myTable.setHeight(1, row++, 12);
 
-		myTable.add(memberText, 2, 1);
+		row = 1;
+		myTable.add(memberText, 2, row);
 		if (isAdmin) {
 			myTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 2, 1);
-			myTable.add(selectMember, 2, 1);
+			myTable.add(selectMember, 2, row);
 		}
-		myTable.add(fieldText, 2, 2);
-		myTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 2, 2);
-		myTable.add(selectField, 2, 2);
-		myTable.add(select_day, 2, 4);
-		myTable.add(select_month, 2, 4);
-		myTable.add(select_year, 2, 4);
-		myTable.add(select_holes, 2, 5);
-		myTable.add(select_stats, 2, 6);
+		row++;
+		myTable.setHeight(2, row++, 12);
+		myTable.add(fieldText, 2, row);
+		myTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 2, row);
+		myTable.add(selectField, 2, row++);
+		myTable.setHeight(1, row++, 12);
+		if (teeID.length > 0) {
+			myTable.add(select_tee, 2, row++);
+		}
+		else {
+			myTable.add(getErrorText(iwrb.getLocalizedString("handicap.no_tees", "No tees registered") + ":"), 2, row++);
+		}
+		myTable.setHeight(2, row++, 12);
+		myTable.add(select_day, 2, row);
+		myTable.add(select_month, 2, row);
+		myTable.add(select_year, 2, row++);
+		myTable.setHeight(2, row++, 12);
+		myTable.add(select_holes, 2, row++);
+		myTable.setHeight(2, row++, 12);
+		myTable.add(select_stats, 2, row++);
+		myTable.setHeight(2, row++, 12);
 
-		myTable.mergeCells(1, 7, 2, 7);
-		myTable.setAlignment(1, 7, "right");
-		myTable.setVerticalAlignment(1, 7, "top");
+		myTable.mergeCells(1, row, 2, row);
+		myTable.setAlignment(1, row, "right");
+		myTable.setVerticalAlignment(1, row, "top");
 
 		GenericButton foreignRound = getButton(new GenericButton("foreign_round", iwrb.getLocalizedString("handicap.foreign_round", "Foreign round")));
 		foreignRound.setWindowToOpen(HandicapRegisterForeign.class);
 		foreignRound.addParameterToWindow("member_id", member_id);
-		myTable.add(foreignRound, 1, 7);
+		myTable.add(foreignRound, 1, row);
 
 		if (teeID.length > 0) {
-			myTable.add(select_tee, 2, 3);
-			myTable.add(Text.getNonBrakingSpace(), 1, 7);
-			myTable.add(Text.getNonBrakingSpace(), 1, 7);
-			myTable.add(writeScore, 1, 7);
+			myTable.add(Text.getNonBrakingSpace(), 1, row);
+			myTable.add(Text.getNonBrakingSpace(), 1, row);
+			myTable.add(writeScore, 1, row);
 		}
-		else {
-			myTable.add(getErrorText(iwrb.getLocalizedString("handicap.no_tees", "No tees registered") + ":"), 2, 3);
-		}
-
-		//Image swingImage = iwb.getImage("shared/swing.gif", "", 161, 300);
-
-		outerTable.add(myTable, 2, 1);
-		outerTable.add(new HandicapMemberInfo(), 1, 1);
-
 	}
 
 	private void getForm() {
-		//GolfWindow skraWindow = new GolfWindow("", 600, 600);
-		//skraWindow.add(new HandicapRegister());
-		//myForm = new Form(skraWindow);
 		myForm = new Form();
 		myForm.setWindowToOpen(HandicapRegisterWindow.class);
 		myForm.add(new HiddenInput("member_id", member_id));

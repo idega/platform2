@@ -39,8 +39,6 @@ public class HandicapInfo extends GolfBlock {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	private Table myTable;
-
 	public HandicapInfo() {
 	}
 
@@ -83,21 +81,9 @@ public class HandicapInfo extends GolfBlock {
 		}
 
 		drawTable(modinfo);
-		add(myTable);
 	}
 
 	private void drawTable(IWContext iwc) throws IOException, SQLException, FinderException {
-		myTable = new Table(3, 1);
-		myTable.setCellpadding(6);
-		myTable.setCellspacing(6);
-		myTable.setWidth(Table.HUNDRED_PERCENT);
-		myTable.setAlignment(1, 1, "center");
-		myTable.setAlignment(2, 1, "center");
-		myTable.setAlignment(3, 1, "right");
-		myTable.setVerticalAlignment(1, 1, "top");
-		myTable.setVerticalAlignment(2, 1, "top");
-		myTable.setVerticalAlignment(3, 1, "top");
-
 		IWTimestamp date = new IWTimestamp();
 		date.setDay(1);
 		date.setMonth(1);
@@ -208,14 +194,7 @@ public class HandicapInfo extends GolfBlock {
 		textTable.add(clubOrderText, 1, 7);
 		textTable.addBreak(1, 7);
 		textTable.add(clubText, 1, 7);
-
-		myTable.add(new HandicapMemberInfo(), 1, 1);
-		myTable.add(textTable, 2, 1);
-
-		HandicapCard hcCard = new HandicapCard(Integer.parseInt(iMemberID));
-		hcCard.setWidth("215");
-		hcCard.addPrintLink(true);
-		myTable.setVerticalAlignment(3, 1, "top");
-		myTable.add(hcCard, 3, 1);
+		
+		add(textTable);
 	}
 }
