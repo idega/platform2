@@ -36,6 +36,8 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
     protected final static String LOC_KEY_DEBITCARD = "isi_payment_type_debitcard";
 
     protected final static String LOC_KEY_CREDITCARD = "isi_payment_type_creditcard";
+    
+    protected final static String LOC_KEY_BANK = "isi_payment_type_bank";
 
     /*
      * (non-Javadoc)
@@ -61,9 +63,9 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
     }
 
     public void insertStartData() throws Exception {
-        String names[] = { "Cash", "Check", "Debitcard", "Creditcard"};
+        String names[] = { "Cash", "Check", "Debitcard", "Creditcard", "Bank"};
         String lockey[] = { LOC_KEY_CASH, LOC_KEY_CHECK, LOC_KEY_DEBITCARD,
-                LOC_KEY_CREDITCARD};
+                LOC_KEY_CREDITCARD, LOC_KEY_BANK};
 
         PaymentTypeHome typeHome = (PaymentTypeHome) IDOLookup
                 .getHome(PaymentType.class);

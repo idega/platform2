@@ -14,7 +14,10 @@ import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.EJBException;
+
 import com.idega.block.basket.business.BasketBusiness;
+import com.idega.block.basket.data.BasketItem;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWConstants;
@@ -51,15 +54,35 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		super();
 	}
 
-	public void main(IWContext iwc) {
+	private void addToBasket(IWContext iwc) {
+		String basketCases[] = iwc.getParameterValues(LABEL_ADD_TO_BASKET);
+		
+		try {
+		    if (basketCases.length != 0) {
+		        for (int i = 0; i < basketCases.length; i++) {
+		            FinanceEntry entry = getAccountingBusiness(iwc).getFinanceEntryByPrimaryKey(new Integer(basketCases[i]));
+					getBasketBusiness(iwc).addItem(entry);		            
+		        }
+		    }
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void main(IWContext iwc) {  
 		Form f = new Form();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		if (iwc.isParameterSet(ACTION_ADD_TO_BASKET)) {
+			addToBasket(iwc);
+		}
+		
 		Table inputTable = new Table();
 		Table paymentTable = new Table();
 		inputTable.setCellpadding(5);
 		paymentTable.setCellpadding(5);
-			
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-		
+					
 		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
 		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
@@ -74,7 +97,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		labelRemaining.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-		SubmitButton addToBasket = new SubmitButton(iwrb.getLocalizedString(ACTION_ADD_TO_BASKET, "Add to basket"), ACTION_ADD_TO_BASKET, "addToBasket");
 		
 		int row = 1;
 		inputTable.add(labelUser, 1, row);
@@ -89,10 +111,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		inputTable.setAlignment(1, 3, "RIGHT");
 
 		Collection entries = null;
-		try {
-		    System.out.println("club = " + getClub());
-		    System.out.println("user = " + getUser());
-		    
+		try {		    
 			if (getClub() != null && getUser() != null) {
 				entries = getAccountingBusiness(iwc).findAllOpenAssessmentEntriesByUserGroupAndDivision(getClub(), getDivision(), getUser());
 			}
@@ -115,8 +134,16 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		    Iterator it = entries.iterator();
 		    while (it.hasNext()) {
 		        FinanceEntry entry = (FinanceEntry) it.next();
-				CheckBox addToBaset = new CheckBox(LABEL_ADD_TO_BASKET, entry.getPrimaryKey().toString());
-				paymentTable.add(addToBaset, 1, row);
+		        try {
+                    if (!getBasketBusiness(iwc).checkForItemInBasket(entry)) {
+                        CheckBox addToBasket = new CheckBox(LABEL_ADD_TO_BASKET, entry.getPrimaryKey().toString());
+                        paymentTable.add(addToBasket, 1, row);
+                    }
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                } catch (EJBException e1) {
+                    e1.printStackTrace();
+                }
 				if (entry.getClub() != null) {
 				    paymentTable.add(entry.getClub().getName(), 2, row);
 				}
@@ -132,7 +159,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
 			
 			SubmitButton moveToBasket = new SubmitButton(iwrb.getLocalizedString(ACTION_ADD_TO_BASKET, "Add to basket"), ACTION_ADD_TO_BASKET, "add_to_basket");
 			moveToBasket.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
-			paymentTable.add(addToBasket, 6, row);
+			paymentTable.add(moveToBasket, 6, row);
 			paymentTable.setAlignment(6, row, "RIGHT");
     
 		    

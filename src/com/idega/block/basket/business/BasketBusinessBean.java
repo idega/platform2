@@ -143,6 +143,10 @@ public class BasketBusinessBean extends IBOSessionBean implements
      *         in the basket. False otherwise.
      */
     public boolean checkForItemInBasket(BasketItem item) {
+        if (basket == null || basket.isEmpty()) {
+            return false;
+        }
+        
         if (basket.containsKey(item.getItemID())) {
             return true;
         } else {
