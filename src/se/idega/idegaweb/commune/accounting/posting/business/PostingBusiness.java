@@ -23,4 +23,5 @@ public interface PostingBusiness extends com.idega.business.IBOService
  public void savePostingParameter(java.lang.String p0,java.sql.Date p1,java.sql.Date p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,java.lang.String p10,java.lang.String p11,java.lang.String p12)throws se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String trim(java.lang.String p0,se.idega.idegaweb.commune.accounting.posting.data.PostingField p1) throws java.rmi.RemoteException;
  public void validateString(java.lang.String p0,java.sql.Date p1)throws se.idega.idegaweb.commune.accounting.posting.business.PostingException, java.rmi.RemoteException;
+ public java.util.Collection findPostingParametersByPeriod(java.sql.Date from, java.sql.Date to,String opID)throws java.rmi.RemoteException ;
 }

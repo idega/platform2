@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.61 2004/01/19 18:53:24 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.62 2004/02/18 17:13:19 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -740,6 +740,24 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 			return home.findPostingParametersByPeriod(from, to);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	/**
+	 Gets posting parameters for a certain period and operational field (school category)
+	 * @param from period (4 digits)
+	 * @param to period (4 digits)
+	 * @param ID field 
+	 * @return collection of posting parameters
+	 * @author Aron
+	 */
+	public Collection findPostingParametersByPeriod(Date from, Date to,String opID) {
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			return home.findPostingParametersByPeriodAndOperationalID(from, to,opID);				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {

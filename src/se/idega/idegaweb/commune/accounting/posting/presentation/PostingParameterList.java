@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.31 2004/01/11 21:24:46 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.32 2004/02/18 17:13:19 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 
@@ -47,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.31 2004/01/11 21:24:46 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.32 2004/02/18 17:13:19 aron Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -78,6 +79,8 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_REMOVE_CONFIRM = "posting_parm_list.remove_confirm";
 	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
 	private final static String KEY_SCHOOL_YEAR = "posting_parm_list.school_year";
+	private final static String KEY_HEADER_OPERATION =  "posting_parm_list.operation_header";
+	private final static String KEY_HEADER_SORT_BY =  "posting_parm_list.sort_by_header"; 
 
 	private final static String BLANK = " ";
 
@@ -95,6 +98,8 @@ public class PostingParameterList extends AccountingBlock {
 	private ICPage _editPage;
 	private Date _currentFromDate;
 	private Date _currentToDate;
+	
+	private String _currentOperation;
 
 	/**
 	 * Handles the property editPage
@@ -202,12 +207,14 @@ public class PostingParameterList extends AccountingBlock {
 		String tod = iwc.isParameterSet(PARAM_TO) ? 
 				iwc.getParameter(PARAM_TO) : iwc.getParameter(PARAM_RETURN_TO_DATE);  
 		String fromd = iwc.isParameterSet(PARAM_FROM) ? 
-				iwc.getParameter(PARAM_FROM) : iwc.getParameter(PARAM_RETURN_FROM_DATE);  
+				iwc.getParameter(PARAM_FROM) : iwc.getParameter(PARAM_RETURN_FROM_DATE);
 
 		try {
 			pBiz = getPostingBusiness(iwc);
 			int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
-			Collection items = pBiz.findPostingParametersByPeriod(_currentFromDate, _currentToDate);
+			//Collection items = pBiz.findPostingParametersByPeriod(_currentFromDate, _currentToDate);
+			// aron 18.02.2004
+			Collection items = pBiz.findPostingParametersByPeriod(_currentFromDate, _currentToDate,_currentOperation);
 			if (items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
@@ -296,10 +303,14 @@ public class PostingParameterList extends AccountingBlock {
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-
-		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
-		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 1);
-		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
+		
+		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
+		table.add(new OperationalFieldsMenu(), 2, 1);
+		table.add(getLocalizedLabel(KEY_HEADER_SORT_BY, "Sortera pa"), 3, 1);
+		
+		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 2);
+		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 2);
+		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 2);
 		table.add(new HiddenInput(PARAM_DELETE_ID, ""));
 
 		return table;
@@ -319,6 +330,13 @@ public class PostingParameterList extends AccountingBlock {
 
 
 	private void setupDefaultDates(IWContext iwc) { 
+		try {
+			_currentOperation = getSession().getOperationalField();
+			_currentOperation = _currentOperation == null ? "" : _currentOperation;
+		} catch (RemoteException e) {}
+		
+		
+		
 		Date sessionFromDate = null;
 		Date sessionToDate = null;
 		try {

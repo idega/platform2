@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.30 2004/01/14 16:05:08 palli Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.31 2004/02/18 17:13:19 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeBMPBean;
 import com.idega.block.school.data.SchoolYear;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
@@ -41,10 +42,10 @@ import com.idega.util.CalendarMonth;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.30 2004/01/14 16:05:08 palli Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.31 2004/02/18 17:13:19 aron Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -239,9 +240,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		//sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		sql.appendGreaterThanOrEqualsSign().append(from);
 		sql.appendAnd().append(COLUMN_PERIOD_TO);
-		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		//sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append(to);
 		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_ACTIVITY_ID);
@@ -250,14 +253,49 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		System.out.println("Simple query: "+sql.toString());
 		return idoFindPKsBySQL(sql.toString());
 	}
+	
+	public Collection ejbFindPostingParametersByPeriodAndOperationalID(Date from, Date to,String opID) throws FinderException {
+		to = getEndOfMonth(to);		
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append("P.*");
+		sql.appendFrom().append(this.getTableName()).append(" P ");
+		if(opID!=null){
+			sql.append(", ");
+			sql.append(SchoolTypeBMPBean.SCHOOLTYPE).append(" T ");
+		}
+		
+		sql.appendWhere().append(" P.").append(COLUMN_PERIOD_FROM);
+		//sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		sql.appendGreaterThanOrEqualsSign().append(from);
+		sql.appendAnd().append(" P.").append(COLUMN_PERIOD_TO);
+		//sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append(to);
+		if(opID!=null){
+		
+			sql.appendAndEquals("P."+COLUMN_ACTIVITY_ID,"T."+SchoolTypeBMPBean.SCHOOLTYPE+"_ID");
+			sql.appendAndEqualsQuoted("T."+SchoolTypeBMPBean.SCHOOLCATEGORY,opID);
+			
+		}
+		
+		sql.appendOrderByDescending(" P."+COLUMN_PERIOD_FROM);
+		sql.append(", ");
+		sql.append("P."+COLUMN_ACTIVITY_ID);
+		sql.append(", ");
+		sql.append("P."+COLUMN_REG_SPEC_TYPE_ID);
+		
+		
+		return idoFindPKsBySQL(sql.toString());
+	}
 
 	public Collection ejbFindPostingParametersByDate(Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+date+"'");
+		//sql.appendLessThanOrEqualsSign().append("'"+date+"'");
+		sql.appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().append(COLUMN_PERIOD_TO);
-		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		//sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		sql.appendGreaterThanOrEqualsSign().append(date);
 		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_ACTIVITY_ID);
