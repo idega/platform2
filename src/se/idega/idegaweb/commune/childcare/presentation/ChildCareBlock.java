@@ -32,8 +32,8 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
-		business = getSchoolCommuneBusiness(iwc);
-		session = getSchoolCommuneSession(iwc);
+		business = getChildCareBusiness(iwc);
+		session = getChildCareSession(iwc);
 		initialize(iwc);
 
 		init(iwc);
@@ -45,11 +45,11 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	
 	public abstract void init(IWContext iwc) throws Exception;
 	
-	private ChildCareBusiness getSchoolCommuneBusiness(IWContext iwc) throws RemoteException {
+	private ChildCareBusiness getChildCareBusiness(IWContext iwc) throws RemoteException {
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
 	}
 	
-	private ChildCareSession getSchoolCommuneSession(IWContext iwc) throws RemoteException {
+	private ChildCareSession getChildCareSession(IWContext iwc) throws RemoteException {
 		return (ChildCareSession) IBOLookup.getSessionInstance(iwc, ChildCareSession.class);	
 	}
 	

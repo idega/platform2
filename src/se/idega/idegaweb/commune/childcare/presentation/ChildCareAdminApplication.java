@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.builder.data.IBPage;
 import com.idega.core.data.Address;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
@@ -31,12 +33,15 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	
 	private User child;
 	private ChildCareApplication application;
+	private boolean isAdministrator;
+	private IBPage contractsPage;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
+		isAdministrator = isAdministrator(iwc);
 		
 		Table table = new Table(1,7);
 		table.setCellpadding(0);
@@ -46,11 +51,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.setHeight(4, 6);
 		table.setHeight(6, 12);
 		
-		if (getSession().getChildID() != -1 && getSession().getApplicationID() != -1) {
+		if (getSession().getChildID() != -1) {
 			table.add(getInformationTable(iwc), 1, 1);
 			table.add(getApplicationTable(iwc), 1, 3);
 			table.add(getLegendTable(), 1, 5);
-			table.add(getButtonTable(true), 1, 7);
+			table.add(getButtonTable(!isAdministrator), 1, 7);
 		}
 		else {
 			table.add(this.getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
@@ -74,7 +79,6 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		int row = 1;
 		
 		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
-		application = getBusiness().getApplication(getSession().getApplicationID());
 		if (child != null) {
 			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 			Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
@@ -130,26 +134,29 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			
-			if (application != null) {
-				if (application.getMessage() != null) {
+			if (getSession().getApplicationID() != -1 && !isAdministrator) {
+				application = getBusiness().getApplication(getSession().getApplicationID());
+				if (application != null) {
+					if (application.getMessage() != null) {
+						table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+						table.add(getLocalizedSmallHeader("child_care.message","Message"), 1, row);
+						table.add(getSmallText(application.getMessage()), 3, row++);
+						table.setHeight(row++, 12);
+					}
+				
 					table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-					table.add(getLocalizedSmallHeader("child_care.message","Message"), 1, row);
-					table.add(getSmallText(application.getMessage()), 3, row++);
-					table.setHeight(row++, 12);
+					table.add(getLocalizedSmallHeader("child_care.comments","Comments"), 1, row);
+				
+					TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
+					comments.setWidth(Table.HUNDRED_PERCENT);
+					comments.setRows(4);
+					if (application.getPresentation() != null)
+						comments.setContent(application.getPresentation());
+					table.add(comments, 3, row++);
+					SubmitButton saveComments = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.save_comments","Save comments")));
+					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					table.add(saveComments, 3, row);
 				}
-				
-				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-				table.add(getLocalizedSmallHeader("child_care.comments","Comments"), 1, row);
-				
-				TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
-				comments.setWidth(Table.HUNDRED_PERCENT);
-				comments.setRows(4);
-				if (application.getPresentation() != null)
-					comments.setContent(application.getPresentation());
-				table.add(comments, 3, row++);
-				SubmitButton saveComments = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.save_comments","Save comments")));
-				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				table.add(saveComments, 3, row);
 			}
 		}
 		
@@ -177,6 +184,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		IWTimestamp queueDate;
 		IWTimestamp placementDate;
 		boolean isCurrentProvider = false;
+		Link archive;
 
 		Collection applications = getBusiness().getApplicationsForChild(child);
 		Iterator iter = applications.iterator();
@@ -207,7 +215,16 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					table.setRowColor(row, getZebraColor2());
 			}
 
-			table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
+			if (contractsPage != null) {
+				archive = getLink(child.getNameLastFirst(true),isCurrentProvider);
+				archive.setEventListener(ChildCareEventListener.class);
+				archive.addParameter(getSession().getParameterUserID(), application.getChildId());
+				archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
+				archive.setPage(getResponsePage());
+				table.add(archive, column++, row);
+			}
+			else
+				table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
 			table.add(getText(getBusiness().getLocalizedCaseStatusDescription(application.getCaseStatus(), iwc.getCurrentLocale()), isCurrentProvider), column++, row);
 			if (phone != null)
 				table.add(getText(phone, isCurrentProvider), column, row);
@@ -294,8 +311,22 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			return getSmallText(text);
 	}
 	
+	protected Link getLink(String text, boolean isCurrentProvider) {
+		if (isCurrentProvider)
+			return this.getSmallHeaderLink(text);
+		else
+			return getSmallLink(text);
+	}
+	
 	private void parse(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_COMMENTS))
 			getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
 	}
+	/**
+	 * @param page
+	 */
+	public void setContractsPage(IBPage page) {
+		contractsPage = page;
+	}
+
 }

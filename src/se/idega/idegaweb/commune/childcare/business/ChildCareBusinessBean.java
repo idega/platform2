@@ -108,6 +108,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public boolean hasApplications(int childID) throws RemoteException {
+		try {
+			int applications = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID);
+			if (applications > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
+	
 	public void updatePrognosis(int providerID, int threeMonthsPrognosis, int oneYearPrognosis) throws RemoteException {
 		try {
 			ChildCarePrognosis prognosis = getPrognosis(providerID);
