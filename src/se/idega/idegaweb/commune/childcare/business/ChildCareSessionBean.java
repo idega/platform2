@@ -56,7 +56,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 		_childcareID = -1;
 		if (user != null) {
 			try {
-				School school = getCommuneUserBusiness().getFirstManagingSchoolForUser(user);
+				School school = getCommuneUserBusiness().getFirstManagingChildCareForUser(user);
 				if (school != null) {
 					_childcareID = ((Integer) school.getPrimaryKey()).intValue();
 				}
