@@ -39,6 +39,8 @@ public ForumThreadEditor(){
   setWidth(380);
   setHeight(280);
   setUnMerged();
+  setResizable(true);
+  setScrollbar(true);
 }
 
   public void main(IWContext iwc) throws Exception {
