@@ -312,7 +312,6 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   	final int columnWidth = 120;
   	final int labelWidth = 95;
   	final int valueWidth = 55;
-  	final int pageMargin = 20;
   	
   	Map parameterMap = new HashMap();
   	
@@ -337,7 +336,6 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		totalWidth = ((columnSpacing + columnWidth) * fields.size())  - columnSpacing;
   	}
   	design.setColumnWidth(totalWidth);
-  	design.setPageWidth(totalWidth + pageMargin + pageMargin);
   	// set fields
   	Iterator fieldIterator = fields.iterator();
   	while (fieldIterator.hasNext()) {

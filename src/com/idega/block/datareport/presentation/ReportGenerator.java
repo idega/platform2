@@ -18,7 +18,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -141,7 +140,7 @@ public class ReportGenerator extends Block {
 
 	private void parseQuery() throws XMLException, Exception {
 		if (_queryParser == null) {
-			Query query = (Query) ((QueryHome) IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
+			Query query = ((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
 			_queryParser = new QueryHelper(query);
 		}
 
@@ -270,7 +269,7 @@ public class ReportGenerator extends Block {
 			int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
 			//TMP
 			//TODO get page Margins (20) and add them to pageWidth;
-			designTemplate.setPageWidth(columnsWidth + 20 + 20);
+			// do not change the width of the page!! prior: designTemplate.setPageWidth(columnsWidth + 20 + 20);
 			designTemplate.setColumnWidth(columnsWidth);
 
 			//
@@ -479,7 +478,7 @@ public class ReportGenerator extends Block {
 
 	}
 
-	private void generateReport(IWContext iwc) throws RemoteException, JRException {
+	private void generateReport() throws RemoteException, JRException {
 		if (_dataSource != null && _design != null) {
 			JasperReportBusiness business = getReportBusiness();
 				
@@ -573,7 +572,7 @@ public class ReportGenerator extends Block {
 					parseQuery();
 					generateDataSource(iwc);
 					getLayoutFromICFileOrGenerate(iwc);
-					generateReport(iwc);
+					generateReport();
 					this.add(getReportLink(iwc));
 				}
 			}
@@ -604,7 +603,7 @@ public class ReportGenerator extends Block {
 						long time4 = System.currentTimeMillis();
 						System.out.println("[ReportGenerator]: took " + (time4 - time3) + "ms, total of " + (time4 - time1) + "ms");
 						System.out.println("[ReportGenerator]: generating report...");
-						generateReport(iwc);
+						generateReport();
 						long time5 = System.currentTimeMillis();
 						System.out.println("[ReportGenerator]: took " + (time5 - time4) + "ms, total of " + (time5 - time1) + "ms");
 						System.out.println("[ReportGenerator]: getting link to the report");
@@ -783,7 +782,7 @@ public class ReportGenerator extends Block {
 		if (_canChangeReportName || (!_canChangeReportName && _showReportNameInputIfCannotChangeIt)) {
 			row++;
 			_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name", "Report name")) + ":", 1, row);
-			InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME, null, String.class);
+			InterfaceObject nameInput = getFieldInputObject(PRM_REPORT_NAME); //null, String.class);
 			nameInput.setDisabled(!_canChangeReportName);
 			nameInput.setValue(_reportName);
 			_fieldTable.add(nameInput, 2, row);
@@ -800,7 +799,7 @@ public class ReportGenerator extends Block {
 					ReportableField element = (ReportableField) iterator.next();
 					row++;
 					_fieldTable.add(getFieldLabel(element.getLocalizedName(iwc.getCurrentLocale())) + ":", 1, row);
-					InterfaceObject input = getFieldInputObject(element.getName(), null, element.getValueClass());
+					InterfaceObject input = getFieldInputObject(element.getName()); //null, element.getValueClass());
 					//_busy.addDisabledObject(input);
 					_fieldTable.add(input, 2, row);
 				}
@@ -827,7 +826,7 @@ public class ReportGenerator extends Block {
 							setStyle(input);
 						}
 						else {
-							input = getFieldInputObject(element.getName(), null, element.getClassObject());
+							input = getFieldInputObject(element.getName()); //null, element.getClassObject());
 							//_busy.addDisabledObject(input);
 						}
 						_fieldTable.add(input, 2, row);
@@ -837,9 +836,6 @@ public class ReportGenerator extends Block {
 						e.printStackTrace();
 					}
 					catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-					catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
 				}
@@ -900,7 +896,7 @@ public class ReportGenerator extends Block {
 			}
 			else
 				if (prmClassType.equals(Time.class)) {
-					DateFormat df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT, locale);
+					DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
 					try {
 						java.util.Date current = df.parse(prmValue);
 						return new Time(current.getTime());
@@ -918,7 +914,7 @@ public class ReportGenerator extends Block {
 				}
 				else
 					if (prmClassType.equals(Date.class)) {
-						DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, locale);
+						DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 						try {
 							java.util.Date current = df.parse(prmValue);
 							return new Date(current.getTime());
@@ -938,7 +934,7 @@ public class ReportGenerator extends Block {
 					else
 						if (prmClassType.equals(Timestamp.class)) {
 							DateFormat df =
-								SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.SHORT, iwc.getCurrentLocale());
+								DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 							try {
 								java.util.Date current = df.parse(prmValue);
 								return new Timestamp(current.getTime());
@@ -961,7 +957,7 @@ public class ReportGenerator extends Block {
 
 	}
 
-	private InterfaceObject getFieldInputObject(String key, String value, Class dataType) {
+	private InterfaceObject getFieldInputObject(String key) { //String value, Class dataType) {
 
 		//		if(dataType == Integer.class){
 		//			IntegerInput fieldInput = new IntegerInput(getParameterName(key));
