@@ -16,6 +16,7 @@ import is.idega.idegaweb.golf.block.image.data.ImageCatagoryAttributes;
 import is.idega.idegaweb.golf.block.image.data.ImageCatagoryHome;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -440,7 +441,7 @@ private Table displayImage( ImageEntity image ) throws SQLException
   imageTable.setVerticalAlignment("top");
   imageTable.setCellpadding(0);
 
-  Image theImage = new Image(imageId);
+  Image theImage = new GolfImage(imageId);
   theImage.setImageLinkZoomView();
 
   if(limitImageWidth) {

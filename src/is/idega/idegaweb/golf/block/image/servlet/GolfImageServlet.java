@@ -19,7 +19,7 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.servlet.IWCoreServlet;
 
-public class ImageServlet extends IWCoreServlet{
+public class GolfImageServlet extends IWCoreServlet{
 
 public void doGet( HttpServletRequest _req, HttpServletResponse _res) throws IOException{
   doPost(_req,_res);

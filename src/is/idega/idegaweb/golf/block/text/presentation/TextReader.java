@@ -1,6 +1,7 @@
 package is.idega.idegaweb.golf.block.text.presentation;
 
 import is.idega.idegaweb.golf.block.text.data.*;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.*;
 import java.util.*;
@@ -154,7 +155,7 @@ public void main(IWContext modinfo) throws Exception {
 
 		if ( text.getIncludeImage().equals("Y") ) {
 
-			body_image = new Image(text.getImageId());
+			body_image = new GolfImage(text.getImageId());
 			body_image.setMarkupAttribute("align","right");
 			body_image.setMarkupAttribute("vspace","6");
 			body_image.setMarkupAttribute("hspace","6");

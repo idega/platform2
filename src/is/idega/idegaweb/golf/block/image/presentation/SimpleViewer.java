@@ -2,6 +2,7 @@ package is.idega.idegaweb.golf.block.image.presentation;
 
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -57,7 +58,7 @@ public class SimpleViewer extends PresentationObjectContainer{
             ImageEntity ieImage = (ImageEntity)((ImageEntityHome)IDOLookup.getHomeLegacy(ImageEntity.class)).findByPrimaryKeyLegacy(id);
             Table T = new Table();
             T.add(ieImage.getName(),1,1);
-            T.add(new Image(id),1,2);
+            T.add(new GolfImage(id),1,2);
             add(T);
           }
           catch (SQLException ex) {

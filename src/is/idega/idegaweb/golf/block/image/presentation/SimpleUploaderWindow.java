@@ -4,6 +4,7 @@ package is.idega.idegaweb.golf.block.image.presentation;
 import is.idega.idegaweb.golf.block.image.business.ImageBusiness;
 import is.idega.idegaweb.golf.block.image.business.ImageProperties;
 import is.idega.idegaweb.golf.block.image.business.SimpleImage;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -121,7 +122,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
         modinfo.setSessionAttribute(sessImageParameter,String.valueOf(i));
         setParentToReload();
         try {
-          add(new Image(i));
+          add(new GolfImage(i));
         }
         catch (SQLException ex) {
 

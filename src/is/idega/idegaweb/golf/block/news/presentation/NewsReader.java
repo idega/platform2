@@ -5,6 +5,7 @@ import is.idega.idegaweb.golf.block.news.data.NewsCategory;
 import is.idega.idegaweb.golf.block.news.data.NewsCategoryAttributes;
 import is.idega.idegaweb.golf.block.news.data.NewsCategoryHome;
 import is.idega.idegaweb.golf.block.news.data.NewsHome;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -490,7 +491,7 @@ public class NewsReader extends Block {
 			if (showImages) {
 
 				Table imageTable = new Table(1, 2);
-				Image newsImage = new Image(image_id);
+				Image newsImage = new GolfImage(image_id);
 				imageTable.setAlignment("right");
 				imageTable.setVerticalAlignment("top");
 				imageTable.add(newsImage, 1, 1);

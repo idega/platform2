@@ -8,6 +8,7 @@ import is.idega.idegaweb.golf.block.boxoffice.data.IssuesIssuesCategory;
 import is.idega.idegaweb.golf.block.boxoffice.data.Subject;
 import is.idega.idegaweb.golf.block.boxoffice.data.SubjectHome;
 import is.idega.idegaweb.golf.block.news.data.NewsBMPBean;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -460,7 +461,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 			categoryTable.setAlignment(1,a+2,"center");
 			categoryTable.setWidth(2,a+2,"100%");
 
-			Image content_image = new Image(subject[a].getContentImage());
+			Image content_image = new GolfImage(subject[a].getContentImage());
 
 			Text content_text = new Text(subject[a].getSubjectName());
 				content_text.setFontSize(categoryTextSize);
@@ -652,7 +653,7 @@ public BoxReader(String issue_id, int numberOfColumns){
                                 //debug eiki
 				int categoryImageId = categories[a].getIssueCategoryImage();
                                 if( (categoryImageId!=-1) && (categoryImageId!=0) ){
-                                  Image back = new Image(categoryImageId);
+                                  Image back = new GolfImage(categoryImageId);
                                   if( back!= null ) categoryTable.setBackgroundImage(back);
                                 }
 			}
@@ -838,7 +839,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 				}
 			}
 
-			Image content_image = new Image(subject[a].getContentImage());
+			Image content_image = new GolfImage(subject[a].getContentImage());
 				content_image.setHeight(16);
 				content_image.setWidth(16);
 				content_image.setAlt(subject[a].getSubjectName());

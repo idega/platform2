@@ -12,6 +12,7 @@ package is.idega.idegaweb.golf.block.image.presentation;
 
 
 import is.idega.idegaweb.golf.block.image.business.ImageBusiness;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -112,7 +113,7 @@ public ImageInserter(Class WindowToOpen) {
             image = iwrb.getImage("picture.gif",iwrb.getLocalizedString("new_image","New image"),138,90);
           }
           else {
-            image = new Image(imageId);
+            image = new GolfImage(imageId);
           }
           if( limitWidth ) image.setMaxImageWidth(this.maxImageWidth);
           image.setNoImageLink();
