@@ -11,12 +11,12 @@ public class PostingDetail {
 	private float amount;
 	private float vat;
 	private int vatRegulationID;
-	private int ruleSpecType;
+	private String ruleSpecType;
 	
 	public PostingDetail(){
 	}
 	
-	public PostingDetail(String t, float a, float v, int vID, int rst){
+	public PostingDetail(String t, float a, float v, int vID, String rst){
 		term = t;
 		amount = a;
 		vat = v;
@@ -56,11 +56,11 @@ public class PostingDetail {
 		vatRegulationID = i;
 	}
 
-	public int getRuleSpecType() {
+	public String getRuleSpecType() {
 		return ruleSpecType;
 	}
 
-	public void setRuleSpecType(int i) {
+	public void setRuleSpecType(String i) {
 		ruleSpecType = i;
 	}
 
