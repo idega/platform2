@@ -158,6 +158,17 @@ public class CurrencyBusiness {
 	}
 
 	public static CurrencyHolder getCurrencyHolder(String currencyName) {
+		if (getCurrencyMap() != null) {
+			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currencyName);
+			if (holder != null) {
+				return holder;
+			}
+			return null;
+		}
+		return null;
+	}
+
+	private static HashMap getCurrencyMap() {
 		if (currencyMap == null) {
 			try {
 				System.out.println("[CurrencyBusiness] currencyMap == null, trying to get a new one...");
@@ -168,14 +179,7 @@ public class CurrencyBusiness {
 				e.printStackTrace(System.err);
 			}
 		}
-		if (currencyMap != null) {
-			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currencyName);
-			if (holder != null) {
-				return holder;
-			}
-			return null;
-		}
-		return null;
+		return currencyMap;
 	}
 
 	public static float convertCurrency(String fromCurrency, String toCurrency, float amount) {
@@ -204,8 +208,8 @@ public class CurrencyBusiness {
 	}
 
 	public static void saveCurrencyValuesToDatabase() throws RemoteException {
-		if (currencyMap != null) {
-			EntityBulkUpdater bulk = new EntityBulkUpdater();
+		if (getCurrencyMap() != null) {
+			//EntityBulkUpdater bulk = new EntityBulkUpdater();
 			IWTimestamp stamp = new IWTimestamp();
 
 			HashMap currencies = saveCurrenciesToDatabase();
@@ -213,34 +217,38 @@ public class CurrencyBusiness {
 			CurrencyHolder holder = null;
 			Currency currency = null;
 			CurrencyValues values = null;
-			boolean update;
+//			boolean update;
 
-			Iterator iter = currencyMap.keySet().iterator();
+			Iterator iter = getCurrencyMap().keySet().iterator();
 			while (iter.hasNext()) {
-				update = true;
-				holder = (CurrencyHolder) currencyMap.get((String) iter.next());
+//				update = true;
+				holder = (CurrencyHolder) getCurrencyMap().get((String) iter.next());
 				currency = (Currency) currencies.get(holder.getCurrencyName());
-				values = CurrencyFinder.getCurrencyValue(currency.getID());
-				if (values == null) {
-					update = false;
-					values = ((com.idega.block.trade.data.CurrencyValuesHome) com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).createLegacy();
-					values.setID(currency.getID());
+				if (currency != null) {
+					values = CurrencyFinder.getCurrencyValue(currency.getID());
+					if (values == null) {
+	//					update = false;
+						values = ((com.idega.block.trade.data.CurrencyValuesHome) com.idega.data.IDOLookup.getHomeLegacy(CurrencyValues.class)).createLegacy();
+						values.setID(currency.getID());
+					}
+					values.setBuyValue(holder.getBuyValue());
+					values.setSellValue(holder.getSellValue());
+					values.setMiddleValue(holder.getMiddleValue());
+					values.setCurrencyDate(stamp.getTimestamp());
+					holder.setCurrencyID(currency.getID());
+					values.store();
+					getCurrencyMap().put(holder.getCurrencyName(), holder);
+				} else {
+					System.out.println("Cannot find currency : " + holder.getCurrencyName());
 				}
-				values.setBuyValue(holder.getBuyValue());
-				values.setSellValue(holder.getSellValue());
-				values.setMiddleValue(holder.getMiddleValue());
-				values.setCurrencyDate(stamp.getTimestamp());
-				holder.setCurrencyID(currency.getID());
-				currencyMap.put(holder.getCurrencyName(), holder);
-
-				if (update)
-					bulk.add(values, EntityBulkUpdater.update);
-				else
-					bulk.add(values, EntityBulkUpdater.insert);
+//				if (update)
+//					bulk.add(values, EntityBulkUpdater.update);
+//				else
+//					bulk.add(values, EntityBulkUpdater.insert);
 			}
 
 			try {
-				bulk.execute();
+//				bulk.execute();
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
@@ -249,19 +257,19 @@ public class CurrencyBusiness {
 	}
 
 	public static HashMap saveCurrenciesToDatabase() throws RemoteException {
-		EntityBulkUpdater bulk = new EntityBulkUpdater();
+//		EntityBulkUpdater bulk = new EntityBulkUpdater();
 		Currency currency = null;
-		boolean execute = false;
+//		boolean execute = false;
 
 		String currAbbr;
 		CurrencyHome home = (CurrencyHome) IDOLookup.getHome(Currency.class);
 		boolean update;
 
-		Iterator iter = currencyMap.keySet().iterator();
+		Iterator iter = getCurrencyMap().keySet().iterator();
 		HashMap map = getValuesFromDB();
 		while (iter.hasNext()) {
 			currAbbr = (String) iter.next();
-			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currAbbr);
+			CurrencyHolder holder = (CurrencyHolder) getCurrencyMap().get(currAbbr);
 			if (holder != null && !map.containsKey(holder.getCurrencyName())) {
 				try {
 					try {
@@ -289,14 +297,17 @@ public class CurrencyBusiness {
 					currency.setCurrencyName(holder.getCurrencyName());
 					if (update) {
 						System.out.println("[CurrencyBusiness] Updating existing currency : " + currency.getCurrencyName() + " (id: " + currency.getID() + ")");
-						bulk.add(currency, bulk.update);
+						
+//						bulk.add(currency, bulk.update);
+						currency.store();
 					}
 					else {
 						System.out.println("[CurrencyBusiness] Creating new currency, name : " + currency.getCurrencyName() + ", abbr : "+currency.getCurrencyAbbreviation());
-						bulk.add(currency, bulk.insert);
+//						bulk.add(currency, bulk.insert);
+						currency.store();
 					}
 
-					execute = true;
+//					execute = true;
 				}
 				catch (CreateException ce) {
 					ce.printStackTrace(System.err);
@@ -304,7 +315,7 @@ public class CurrencyBusiness {
 			}
 		}
 		
-
+/*
 		if (execute) {
 			try {
 				bulk.execute();
@@ -313,7 +324,7 @@ public class CurrencyBusiness {
 				e.printStackTrace(System.err);
 			}
 		}
-
+*/
 		return CurrencyFinder.getCurrenciesMap();
 	}
 
@@ -354,15 +365,16 @@ public class CurrencyBusiness {
 
 	public static List getCurrencyList() {
 		Vector vector = new Vector();
-		if (currencyMap != null) {
-			Iterator iter = currencyMap.keySet().iterator();
+		
+		if (getCurrencyMap() != null) {
+			Iterator iter = getCurrencyMap().keySet().iterator();
 			while (iter.hasNext()) {
-				vector.add((CurrencyHolder) currencyMap.get((String) iter.next()));
+				vector.add((CurrencyHolder) getCurrencyMap().get((String) iter.next()));
 			}
 			Collections.sort(vector, new CurrencyComparator());
 
 			return vector;
-		}
+		} 
 		return null;
 	}
 
