@@ -99,7 +99,7 @@ public class CampusContracts extends Block{
     
 	if(iwc.getParameter(sizePrm)!=null){
 		 this.iGlobalSize= Integer.parseInt(iwc.getParameter(sizePrm));
-		 iwc.setSessionAttribute(sessConPrm,new Integer(iGlobalSize));
+		 iwc.setSessionAttribute(sessSizePrm,new Integer(iGlobalSize));
 	   }
 	   else if(iwc.getSessionAttribute(sessSizePrm)!=null){
 		 this.iGlobalSize = ((Integer)iwc.getSessionAttribute(sessSizePrm)).intValue();
