@@ -393,8 +393,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 					getBusiness().hasFutureLogs(applicationId, earliestPossibleRemoveDate)) {
 				removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
 			} else {
-				removeContracts.setOnSubmit("javascript:alert('" + localize("child_care.only_admin_delete_future_contract", "Earliest possible date to remove contract is") + 
-						new IWTimestamp(earliestPossibleRemoveDate).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " " + "');return false;");
+				removeContracts.setOnSubmitFunction("removeContract", "function removeContract() { alert('" + localize("child_care.only_admin_delete_future_contract", "Earliest possible date to remove contract is") + 
+						" " + new IWTimestamp(earliestPossibleRemoveDate).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + "'); return false; }");
 			}
 		}
 		form.add(removeContracts);
