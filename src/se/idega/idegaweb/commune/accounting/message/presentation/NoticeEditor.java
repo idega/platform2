@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.11 2004/05/11 08:58:29 anders Exp $
+ * $Id: NoticeEditor.java,v 1.12 2004/05/11 09:57:05 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2004/05/11 08:58:29 $ by $Author: anders $
+ * Last modified: $Date: 2004/05/11 09:57:05 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -202,9 +202,9 @@ public class NoticeEditor extends AccountingBlock {
 		row += 2;
 		
 		String body = getParameter(iwc, PARAMETER_BODY);
-		if (body.length() > 1000) {
-			body = body.substring(0, 1000);
-			table.add(getErrorText(localize(KEY_MESSAGE_TOO_LONG, "Message too long (max 1000 characters)")), 1, row++);
+		if (body.length() > 4000) {
+			body = body.substring(0, 4000);
+			table.add(getErrorText(localize(KEY_MESSAGE_TOO_LONG, "Message too long (max 4000 characters)")), 1, row++);
 		}
 		StringTokenizer st = new StringTokenizer(body, "\n");
 		while (st.hasMoreTokens()) {
