@@ -35,5 +35,5 @@ public interface PrintedLetterMessageHome extends PrintMessageHome
  public int getNumberOfPrintedLettersByType(String letterType);
  public String[] getPrintMessageTypes(); 
  public java.util.Collection findLetterByChildcare(int p0, String ssn, String msgid)throws javax.ejb.FinderException;
-
+ public java.util.Collection findLetters(String[] msgId) throws javax.ejb.FinderException;
 }

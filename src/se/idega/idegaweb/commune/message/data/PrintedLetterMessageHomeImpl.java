@@ -132,6 +132,15 @@ public java.util.Collection findLetterByChildcare(int p0, String ssn, String msg
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findLetters(String[] msgId) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindLetters(msgId);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);	
+
+}
+
+
  public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Message) super.findByPrimaryKeyIDO(pk);
  }
