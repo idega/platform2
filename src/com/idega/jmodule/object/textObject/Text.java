@@ -164,6 +164,10 @@ public String toString(){
 	return this.text;
 }
 
+public void setCSSClass(String cStyleSheetReferanceClass){
+  setAttribute("class",cStyleSheetReferanceClass);
+}
+
 /**
  * returns empty string with fontsize = 1
  */
