@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.126 2004/05/24 13:46:47 gummi Exp $
+ * $Id: NewsReader.java,v 1.127 2004/05/27 20:30:41 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -154,6 +154,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   
   private int visibleNewsRangeStart = 0;
   private int visibleNewsRangeEnd = Integer.MAX_VALUE;
+  private boolean setHeadlineLinktToCategoryMainViewerPage = false;
 
   public NewsReader(){
     setCacheable(getCacheKey(), 999999999);//cache indefinately
@@ -633,7 +634,11 @@ public class NewsReader extends CategoryBlock implements Builderaware {
       }
 
       if ( headlineAsLink ) {
-	      T.add(getMoreLink(headLine,news.getID(),iwc), 1,row);
+      	if(setHeadlineLinktToCategoryMainViewerPage) {
+      		T.add(getLinkToCategoryMainViewerPage(headLine,news,iwc),1,row);
+      	} else {
+      		T.add(getMoreLink(headLine,news.getID(),iwc), 1,row);
+      	}
       }
       else {
 	      T.add(headLine, 1, row);
@@ -753,12 +758,11 @@ public class NewsReader extends CategoryBlock implements Builderaware {
       T.add(spacerImage,2,1);
       //T.add(Text.getNonBrakingSpace(2),2,1);
       if ( headlineAsLink ) {
-        Link headlineLink = new Link(headLine);
-        checkFromPage(headlineLink);
-        headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-        if(viewPageId > 0)
-          headlineLink.setPage(viewPageId);
-        T.add(headlineLink, headlineCol, 1);
+      	if(setHeadlineLinktToCategoryMainViewerPage) {
+      		T.add(getLinkToCategoryMainViewerPage(headLine,news,iwc), headlineCol, 1);
+      	} else {
+      		T.add(getMoreLink(headLine,news.getID(),iwc), headlineCol, 1);
+      	}
       }
       else {
 	      T.add(headLine, headlineCol, 1);
@@ -780,7 +784,24 @@ public class NewsReader extends CategoryBlock implements Builderaware {
       moreLink.setPage(viewPageId);
     return moreLink;
   }
-
+  
+  private Text getLinkToCategoryMainViewerPage(Text obj,NwNews news,IWContext iwc){
+    Link categoryPageLink = new Link(obj);
+    checkFromPage(categoryPageLink);
+    String pageKey = news.getMetaData(METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE);
+    if(pageKey != null) {
+    		try {
+			categoryPageLink.setPage(Integer.parseInt(pageKey));
+		} catch (NumberFormatException e) {
+			System.out.println("NewsReader.getLinkToCategoryMainViewerPage - NumberFormatException parsing pageKey");
+			return obj;
+		}
+    } else {
+    		return obj;
+    }
+    return categoryPageLink;
+  }
+  
    private Link getBackLink(PresentationObject obj){
     Link backLink = new Link(obj);
     backLink.setAsBackLink(1);
@@ -1166,6 +1187,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	obj.showInfo = showInfo;
 	obj.showTimeFirst = showTimeFirst;
 	obj.headlineAsLink = headlineAsLink;
+	obj.setHeadlineLinktToCategoryMainViewerPage = setHeadlineLinktToCategoryMainViewerPage;
 	obj.showHeadlineImage = showHeadlineImage;
 	obj.showMoreButton = showMoreButton;
 	obj.alignWithHeadline = alignWithHeadline;
@@ -1300,5 +1322,17 @@ public void setVisibleNewsRangeEnd(int visibleNewsRangeEnd) {
  */
 public void setVisibleNewsRangeStart(int visibleNewsRangeStart) {
 	this.visibleNewsRangeStart = visibleNewsRangeStart;
+}
+/**
+ * @return Returns the setHeadlineLinktToCategoryMainViewerPage.
+ */
+public boolean isHeadlineLinktSetToCategoryMainViewerPage() {
+	return setHeadlineLinktToCategoryMainViewerPage;
+}
+/**
+ * @param value The setHeadlineLinktToCategoryMainViewerPage to set.
+ */
+public void setHeadlineLinktToCategoryMainViewerPage(boolean value) {
+	this.setHeadlineLinktToCategoryMainViewerPage = value;
 }
 }
