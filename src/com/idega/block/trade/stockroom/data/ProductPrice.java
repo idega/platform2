@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.sql.Date;
+
 
 public interface ProductPrice extends com.idega.data.IDOLegacyEntity
 {
@@ -14,6 +16,7 @@ public interface ProductPrice extends com.idega.data.IDOLegacyEntity
  public java.sql.Timestamp getPriceDate();
  public int getPriceType();
  public int getProductId();
+ public Date getExactDate();
  public java.util.Collection getTimeframes()throws com.idega.data.IDORelationshipException;
  public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException;
  public void initializeAttributes();
@@ -27,5 +30,6 @@ public interface ProductPrice extends com.idega.data.IDOLegacyEntity
  public void setPriceDate(java.sql.Timestamp p0);
  public void setPriceType(int p0);
  public void setProductId(int p0);
+ public void setExactDate(Date date);
  public void validate();
 }

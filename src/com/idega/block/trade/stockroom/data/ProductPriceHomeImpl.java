@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.sql.Date;
+
 
 public class ProductPriceHomeImpl extends com.idega.data.IDOFactory implements ProductPriceHome
 {
@@ -43,6 +45,14 @@ public class ProductPriceHomeImpl extends com.idega.data.IDOFactory implements P
 	}
 
  }
+ 
+ public ProductPrice findByData(int productId, int timeframeId, int addressId, int currencyId, int priceCategoryId, Date date) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ProductPriceBMPBean)entity).ejbFindByData(productId,timeframeId,addressId,currencyId,priceCategoryId,date);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+ }
+
 
 
 
