@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Hashtable;
 
 
 /**
@@ -151,16 +153,16 @@ public class AlbumCollectionBusiness {
     return EntityFinder.findAll(AlbumType.getStaticInstance(AlbumType.class));
   }
 
-  public static Vector getAlbumTypeNames() throws SQLException {
+  public static Map getAlbumTypeNames() throws SQLException {
     List types = getAlbumTypes();
     if(types != null){
-      Vector st = new Vector();
+      Map m = new Hashtable();
       Iterator iter = types.iterator();
       while (iter.hasNext()) {
         AlbumType item = (AlbumType)iter.next();
-        st.set(item.getID(),item.getName());
+        m.put(new Integer(item.getID()),item.getName());
       }
-      return st;
+      return m;
     } else{
       return null;
     }
