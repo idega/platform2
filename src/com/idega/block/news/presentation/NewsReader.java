@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.56 2001/12/10 21:18:17 aron Exp $
+ * $Id: NewsReader.java,v 1.57 2001/12/10 22:03:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -81,6 +81,7 @@ public class NewsReader extends Block implements IWBlock {
   private boolean newobjinst = false;
   private boolean showBackText = true;
   private boolean showMoreText = true;
+  private boolean showCollectionText = true;
   private String outerTableWidth = "100%";
   private String sObjectAlign = "center";
   private String headlineImageURL;
@@ -90,6 +91,7 @@ public class NewsReader extends Block implements IWBlock {
   private Image headlineImage = null;
   private Image backImage = null;
   private Image moreImage = null;
+  private Image collectionImage = null;
 
   private Hashtable objectsBetween = null;
   private Text textProxy = new Text();
@@ -188,6 +190,8 @@ public class NewsReader extends Block implements IWBlock {
       moreImage = iwrb.getImage("more.gif");
     if(backImage == null)
       backImage = iwrb.getImage("back.gif");
+    if(collectionImage == null)
+      collectionImage = iwrb.getImage("collection.gif");
 
     Locale locale = iwc.getCurrentLocale();
     String sNewsId = null;
@@ -439,14 +443,33 @@ public class NewsReader extends Block implements IWBlock {
       // news collection
       if(showNewsCollectionButton){
         if(len < count && !collection){
-          Link collectionLink = new Link(iwrb.getImage("collection.gif"));
-          checkFromPage(collectionLink);
-          collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-          collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
-          T.add(collectionLink);
+          Table smallTable = new Table(1,1);
+          smallTable.setCellpadding(0);
+          smallTable.setCellspacing(0);
+          if(collectionImage!=null){
+            smallTable.add(getCollectionLink(collectionImage,newsCategory.getID(),iwc),1,1);
+          }
+          if(showCollectionText){
+            Text collText = new Text(iwrb.getLocalizedString("collection","Collection"));
+            collText = setInformationAttributes(collText);
+            smallTable.add(getCollectionLink(collText,newsCategory.getID(),iwc),1,1);
+          }
+          T.add(smallTable);
         }
-        else if(collection){
-          T.add(new BackButton(iwrb.getImage("back.gif")));
+        else if(collection && isFromCollectionLink(iwc)){
+          Table smallTable = new Table(1,1);
+          smallTable.setCellpadding(0);
+          smallTable.setCellspacing(0);
+          if(backImage!=null){
+            smallTable.add(new BackButton(backImage), 1, 1);
+            smallTable.add(Text.getNonBrakingSpace(), 1, 1);
+          }
+          if(showBackText){
+            Text tBack = new Text(iwrb.getLocalizedString("back","Back"));
+            tBack =  setInformationAttributes(tBack);
+            smallTable.add(tBack, 1, 1);
+          }
+          T.add(smallTable);
         }
       }
       // Finish objectsbetween
@@ -463,6 +486,18 @@ public class NewsReader extends Block implements IWBlock {
       T.add(new Text(iwrb.getLocalizedString("no_news","No News")));
     }
    return(T);
+  }
+
+  private Link getCollectionLink(PresentationObject obj, int iCategoryId,IWContext iwc){
+    Link collectionLink = new Link(obj);
+      checkFromPage(collectionLink);
+      collectionLink.addParameter(prmNewsCategoryId,iCategoryId);
+      collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
+    return collectionLink;
+  }
+
+  private boolean isFromCollectionLink(IWContext iwc){
+    return iwc.isParameterSet(prmCollection+getInstanceIDString(iwc));
   }
 
   // Make a table around each news
@@ -889,6 +924,10 @@ public class NewsReader extends Block implements IWBlock {
   public void setMoreImage(Image image) {
     this.moreImage=image;
   }
+
+  public void setCollectionImage(Image image) {
+    this.collectionImage=image;
+  }
   public void setHeadlineImageURL(String headlineImageURL) {
     this.headlineImageURL=headlineImageURL;
     this.alignWithHeadline=true;
@@ -986,6 +1025,7 @@ public class NewsReader extends Block implements IWBlock {
         obj.headlineImage = headlineImage;
         obj.backImage = backImage;
         obj.moreImage = moreImage;
+        obj.collectionImage = collectionImage;
 
         // Nullable :
         if(firstTableColor !=null)
