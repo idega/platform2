@@ -1,23 +1,10 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.data.BookingEntry;
-import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.data.PickupPlaceHome;
-import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.service.carrental.business.CarRentalBooker;
 import is.idega.idegaweb.travel.service.carrental.business.CarRentalBusiness;
@@ -27,9 +14,16 @@ import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
 import is.idega.idegaweb.travel.service.carrental.data.CarRentalHome;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.block.contract.data.Contract;
-import com.idega.block.tpos.business.TPosException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import com.idega.block.trade.stockroom.business.ResellerManager;
@@ -38,17 +32,14 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
-import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
-import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
@@ -61,7 +52,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
