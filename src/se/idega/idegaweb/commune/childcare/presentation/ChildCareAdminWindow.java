@@ -714,13 +714,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(textInput, 1, row++);
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		
+		IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+		validFrom.addDays(1);
+		dateInput.setDate(validFrom.getDate());
 		if (restrictDates) {
 			IWTimestamp stamp = new IWTimestamp();
 			if (archive != null) {
-				IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
-				validFrom.addDays(1);
-				dateInput.setDate(validFrom.getDate());
+				//IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+				//validFrom.addDays(1);
+				//dateInput.setDate(validFrom.getDate());
 				if (validFrom.isEarlierThan(stamp))
 				{
 					if(onlyAllowFutureCareDate){
