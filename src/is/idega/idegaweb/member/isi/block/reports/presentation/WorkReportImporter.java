@@ -17,7 +17,22 @@ import com.idega.presentation.ui.Form;
 public class WorkReportImporter extends WorkReportSelector {
 	
 	protected static final String PARAM_FILE_ID = "wr_im_f_id";
+	protected int workReportFileId = -1;
 	
+	/**
+	 * @return the ic_file id
+	 */
+	public int getWorkReportFileId() {
+		return workReportFileId;
+	}
+
+	/**
+	 * @param workReportFileId
+	 */
+	public void setWorkReportFileId(int workReportFileId) {
+		this.workReportFileId = workReportFileId;
+	}
+
 	protected WorkReportImporter() {
 		super();
 	}
@@ -27,14 +42,22 @@ public class WorkReportImporter extends WorkReportSelector {
 		super.main(iwc);
 		
 		if(getWorkReportId()!=-1){//do nothing before we have the clubId
-			Form uploadForm = new Form();
-			uploadForm.maintainParameter(WorkReportWindow.ACTION);
-			uploadForm.add(new SimpleFileChooser(uploadForm,PARAM_FILE_ID));
-			
-			add(uploadForm);
-			
-			
-			
+			if(iwc.isParameterSet(PARAM_FILE_ID)){
+				workReportFileId = Integer.parseInt(PARAM_FILE_ID);
+			}
+			else{
+				addUploadForm();
+			}
 		}
+	}
+
+
+	
+	protected void addUploadForm() {
+		Form uploadForm = new Form();
+		uploadForm.maintainParameters(getParamsToMaintain());
+		uploadForm.add(new SimpleFileChooser(uploadForm,PARAM_FILE_ID));
+		
+		add(uploadForm);
 	}
 }

@@ -5,6 +5,7 @@ import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -19,7 +20,8 @@ import com.idega.presentation.ui.SubmitButton;
 
 /**
  * Description: A generic block that forces the user to select a club to work with. Once the club is selected it maintance it's id in memory.<br>
- * If you extend it, you must call this objects main(iwc) method before your own.
+ * If you extend it, you must call this objects main(iwc) method before your own and if you are using a form in your block you should do a <br>
+ * yourForm.maintainParameters(getParamsToMaintain()) and use this.addToParamsToMaintain(string param) in your constructor if you need subclasses of your own class to work correctly.
  * Copyright: Idega Software 2003 <br>
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
@@ -31,13 +33,39 @@ public class ClubSelector extends Block {
 	protected WorkReportBusiness reportBiz;
 	protected IWResourceBundle iwrb;
 	
+	protected List paramsToMaintain = null;
+	
 	protected static final String PARAM_CLUB_ID = "iwme_club_sel_cl_id";
 	protected static final String PARAM_REGION_UNION_ID = "iwme_club_sel_ru_id";	
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
+	/**
+	 * @return
+	 */
+	public List getParamsToMaintain() {
+		return paramsToMaintain;
+	}
+
+	/**
+	 * @param paramsToMaintain
+	 */
+	public void setParamsToMaintain(List paramsToMaintain) {
+		this.paramsToMaintain = paramsToMaintain;
+	}
+	
+	public void addToParamsToMaintainList(String param){
+		if(paramsToMaintain==null) paramsToMaintain = new ArrayList();
+		
+		paramsToMaintain.add(param);
+		
+	}
+
 	public ClubSelector() {
+
 		super();
+		this.setToDebugParameters(true);
+		addToParamsToMaintainList(PARAM_CLUB_ID);
 	}
 
 	/**
@@ -99,7 +127,7 @@ public class ClubSelector extends Block {
 		
 		Form clubSelectorForm = new Form();
 		
-		clubSelectorForm.maintainParameter(WorkReportWindow.ACTION);
+		clubSelectorForm.maintainParameters(getParamsToMaintain());
 		
 		Table table = new Table(2,4);
 		table.mergeCells(1,1,2,1);
@@ -111,7 +139,7 @@ public class ClubSelector extends Block {
 				regionalUnions = new ArrayList();
 				regionalUnions.add(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
 				regMenu = new DropdownMenu(regionalUnions,PARAM_REGION_UNION_ID);
-				regMenu.setDisabled(true);
+				//regMenu.setDisabled(true);
 				clubs = reportBiz.getClubGroupsForRegionUnionGroup(reportBiz.getGroupBusiness().getGroupByGroupID(getRegionalUnionId()));
 				clubMenu = new DropdownMenu(clubs,PARAM_CLUB_ID);
 			}
@@ -154,7 +182,11 @@ public class ClubSelector extends Block {
 		return reportBiz;
 	}
 	
+	
+	
 	public String getBundleIdentifier(){
 		return this.IW_BUNDLE_IDENTIFIER;
 	}
+	
+	
 }
