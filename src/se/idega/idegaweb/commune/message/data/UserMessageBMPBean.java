@@ -23,8 +23,8 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 
   private static final String COLUMN_SUBJECT="SUBJECT";
   private static final String COLUMN_BODY="BODY";
-  private static final String COLUMN_DATE="TEMP_DATE"; //Temp (test) data
-  private static final String COLUMN_SENDER="TEMP_SENDER";//Temp (test) data
+  private static final String COLUMN_SENDER="TEMP_SENDER";
+  private static final String COLUMN_DATE="TEMP_DATE";
 
   private static final String CASE_CODE_KEY="SYMEDAN";
   private static final String CASE_CODE_DESCRIPTION="User Message";
@@ -34,13 +34,14 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
   }
 
   public void initializeAttributes(){
-//    this.addAttribute(this.getIDColumnName());
     addGeneralCaseRelation();
     this.addAttribute(COLUMN_SUBJECT,"Message subject",String.class);
     this.addAttribute(COLUMN_BODY,"Message body",String.class,1000);
-    this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
-    this.addAttribute(COLUMN_SENDER,"Test data column",String.class);//temp
-//    this.addManyToManyRelationShip(SampleEntity.class);
+    //this.addAttribute(COLUMN_SENDER,"Message sender",Integer.class);//temp
+    this.addAttribute(COLUMN_DATE,"Message sender",String.class);//temp
+    this.addAttribute(COLUMN_SENDER,"Message sender",String.class);//temp
+    //this.addManyToOneRelationship(COLUMN_SENDER, User.class);
+    //this.setNullable(COLUMN_SENDER, true);
   }
 
   public String getCaseCodeKey(){
@@ -49,41 +50,6 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 
   public String getCaseCodeDescription(){
     return CASE_CODE_DESCRIPTION;
-  }
-
-  public void insertStartData(){
-    try{
-      super.insertStartData();
-      UserMessageHome home = (UserMessageHome)com.idega.data.IDOLookup.getHome(UserMessage.class);
-      User administrator = (User)com.idega.data.IDOLookup.findByPrimaryKey(User.class,1);
-
-      Message msg = home.create();
-      msg.setSubject("Välkommen till BUN24!");
-      msg.setBody("Ditt medborgarkonto är nu redo.");
-      //msg.setDateX("2002-06-02");
-      //msg.setSenderNameX("BUN24 Administration");
-      msg.setOwner(administrator);
-      msg.store();
-
-      msg = home.create();
-      msg.setSubject("Barnomsorgscheck mottagen");
-      msg.setBody("Barnomsorgschecken för ditt barn Henrik Mickelin har mottagits av anordnare Svanen.");
-      //msg.setDateX("2002-06-03");
-      //msg.setSenderNameX("Sonja Westerberg");
-      msg.setOwner(administrator);
-      msg.store();
-
-      msg = home.create();
-      msg.setSubject("Nyheter från BUN");
-      msg.setBody("Skolorna profilerar sig för att tillgodose dina önskemål och du som förälder kan välja vilken skola du tycker är bäst och vill att ditt barn ska gå i. Mångfalden berikar, men det stora utbudet gör också valet svårare.");
-      //msg.setDateX("2002-06-05");
-      //msg.setSenderNameX("Lars Karlsson");
-      msg.setOwner(administrator);
-      msg.store();
-    }
-    catch(Exception e){
-      e.printStackTrace(System.out);
-    }
   }
 
   public void setSubject(String subject)throws java.rmi.RemoteException{
@@ -102,23 +68,16 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
     return this.getStringColumnValue(COLUMN_BODY);
   }
 
-  public String getDateString()throws java.rmi.RemoteException{
-    return this.getStringColumnValue(COLUMN_DATE);//Replace this later
+  public int getSender()throws java.rmi.RemoteException{
+    return this.getIntColumnValue(COLUMN_SENDER);
   }
 
-  public void setDateX(String date)throws java.rmi.RemoteException{ //Temp (test) method
-    this.setColumn(COLUMN_DATE,date);
+  public void setSender(int userID)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_SENDER,userID);
   }
 
-  public String getSenderName()throws java.rmi.RemoteException{
-    return this.getStringColumnValue(COLUMN_SENDER);//Replace this later
+  public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
+    return super.ejbFindAllCasesByUser(user);
   }
-
-  public void setSenderNameX(String name)throws java.rmi.RemoteException{ //Temp (test) method
-    this.setColumn(COLUMN_SENDER,name);
-  }
-
-  public Collection ejbFindMessages(int userId)throws FinderException{
-    return this.idoFindPKsBySQL("select * from "+this.getEntityName());
-  }
+ 
 }

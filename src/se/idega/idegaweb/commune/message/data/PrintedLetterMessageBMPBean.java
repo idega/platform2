@@ -149,7 +149,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
   }
 
 
-  public Collection ejbFindMessages(int userId)throws FinderException{
-    return this.idoFindPKsBySQL("select * from "+this.getEntityName());
+  public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
+    return super.ejbFindAllCasesByUser(user);
   }
 }

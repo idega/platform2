@@ -13,7 +13,7 @@ public class PrintedLetterMessageHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
-public java.util.Collection findMessages(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindMessages(p0);
 	this.idoCheckInPooledEntity(entity);
