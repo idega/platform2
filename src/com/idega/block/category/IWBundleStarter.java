@@ -3,6 +3,11 @@ package com.idega.block.category;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.category.presentation.CategoryMetaDataWindow;
 import com.idega.block.category.presentation.CategoryWindow;
+import com.idega.block.category.presentation.FolderBlock;
+import com.idega.block.category.presentation.FolderBlockCategoryWindow;
+import com.idega.block.category.presentation.FolderBlockComponent;
+import com.idega.block.category.presentation.FolderBlockComponentIWAdminWindowLegacy;
+import com.idega.block.category.presentation.FolderBlockFolderEditor;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.RefactorClassRegistry;
@@ -25,6 +30,12 @@ public class IWBundleStarter implements IWBundleStartable {
 		registry.registerRefactoredClass("com.idega.block.presentation.CategoryBlock", CategoryBlock.class);
 		registry.registerRefactoredClass("com.idega.block.presentation.CategoryMetaDataWindow", CategoryMetaDataWindow.class);
 		registry.registerRefactoredClass("com.idega.block.presentation.CategoryWindow", CategoryWindow.class);
+		
+		registry.registerRefactoredClass("com.idega.idegaweb.block.presentation.FolderBlock", FolderBlock.class);
+		registry.registerRefactoredClass("com.idega.idegaweb.block.presentation.FolderBlockCategoryWindow", FolderBlockCategoryWindow.class);
+		registry.registerRefactoredClass("com.idega.idegaweb.block.presentation.FolderBlockComponent", FolderBlockComponent.class);
+		registry.registerRefactoredClass("com.idega.idegaweb.block.presentation.FolderBlockComponentIWAdminWindowLegacy", FolderBlockComponentIWAdminWindowLegacy.class);
+		registry.registerRefactoredClass("com.idega.idegaweb.block.presentation.FolderBlockFolderEditor", FolderBlockFolderEditor.class);
 	}
 	
 	public void stop(IWBundle starterBundle) {
