@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.58 2003/11/06 15:06:24 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.59 2003/11/06 15:34:47 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -60,11 +60,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/11/06 15:06:24 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/06 15:34:47 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.58 $
+ * @version $Revision: 1.59 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -725,7 +725,10 @@ private static String getSsn(final IWContext iwc, final String key) {
 		digitOnlyInput.insert(0, century);
 	}
 	final PIDChecker pidChecker = PIDChecker.getInstance();
-	if (digitOnlyInput.length() != 12 || !pidChecker.isValid(digitOnlyInput.toString(), true)) {
+	boolean isTemporary = false;
+	if (digitOnlyInput.toString().indexOf("TF") != -1)
+		isTemporary = true;
+	if (digitOnlyInput.length() != 12 || !pidChecker.isValid(digitOnlyInput.toString(), isTemporary)) {
 		return null;
 	}
 	final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
