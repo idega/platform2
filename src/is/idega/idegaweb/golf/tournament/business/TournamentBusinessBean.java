@@ -1180,6 +1180,7 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 			String member_id = "" + member.getID();
 
 			IWTimestamp stamp;
+			IWTimestamp endStamp;
 			String SQLString;
 			List startingTimes;
 			Startingtime sTime;
@@ -1189,13 +1190,14 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 			TournamentRound[] tRounds = tournament.getTournamentRounds();
 			for (int j = 0; j < tRounds.length; j++) {
 				stamp = new IWTimestamp(tRounds[j].getRoundDate());
+				endStamp = new IWTimestamp(tRounds[j].getRoundEndDate());
 				invalidateStartingTimeCache(modinfo, tournament.getID(), String.valueOf(tRounds[j].getID()));
 
 				if (startingGroupNumber != -10) {
-					SQLString = "SELECT * FROM STARTINGTIME WHERE FIELD_ID =" + tournament.getFieldId() + " AND MEMBER_ID = " + member_id + " AND GRUP_NUM = " + startingGroupNumber + " AND STARTINGTIME_DATE = '" + stamp.toSQLDateString() + "'";
+					SQLString = "SELECT * FROM STARTINGTIME WHERE FIELD_ID =" + tournament.getFieldId() + " AND MEMBER_ID = " + member_id + " AND GRUP_NUM = " + startingGroupNumber + " AND STARTINGTIME_DATE >= '" + stamp.toSQLDateString() + "' AND STARTINGTIME_DATE <= '" + endStamp.toSQLDateString() + "'";
 				}
 				else {
-					SQLString = "SELECT * FROM TOURNAMENT_ROUND_STARTINGTIME, STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.TOURNAMENT_ROUND_ID = " + tRounds[j].getID() + " AND STARTINGTIME.STARTINGTIME_ID = TOURNAMENT_ROUND_STARTINGTIME.STARTINGTIME_ID AND FIELD_ID =" + tournament.getFieldId() + " AND MEMBER_ID = " + member_id + " AND STARTINGTIME_DATE = '" + stamp.toSQLDateString() + "'";
+					SQLString = "SELECT * FROM TOURNAMENT_ROUND_STARTINGTIME, STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.TOURNAMENT_ROUND_ID = " + tRounds[j].getID() + " AND STARTINGTIME.STARTINGTIME_ID = TOURNAMENT_ROUND_STARTINGTIME.STARTINGTIME_ID AND FIELD_ID =" + tournament.getFieldId() + " AND MEMBER_ID = " + member_id;
 				}
 				startingTimes = EntityFinder.findAll((Startingtime) IDOLookup.instanciateEntity(Startingtime.class), SQLString);
 				if (startingTimes != null) {
