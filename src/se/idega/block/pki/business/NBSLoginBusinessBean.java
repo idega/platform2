@@ -153,7 +153,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	}
 
 	public NBSServerFactory getServerGenerator(IWContext iwc) throws NBSException {
-		iwc.getApplicationContext().removeApplicationAttribute(SERVER_FACTORY); //TODO Roar - Temporary
+//		iwc.getApplicationContext().removeApplicationAttribute(SERVER_FACTORY); 
 
 		NBSServerFactory serverGenerator = (NBSServerFactory)iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
 		if (serverGenerator == null) {
@@ -206,10 +206,10 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		try {
 			loginSuccessful = this.logInByPersonalID(iwc, personalID);
 
+			System.out.println("idegaWeb Login " + ((loginSuccessful) ? "successful" : "failed") + " for personalId : '" + personalID + "'");
 			if (!loginSuccessful) {
 				throw new Exception(IWEX_PKI_USR_NOT_REGISTERED + "#" + personalID + "#");
 			}
-			System.out.println("idegaWeb Login " + ((loginSuccessful) ? "successful" : "failed") + " for personalId : '" + personalID + "'");
 		} catch (Exception ex) {
 			this.carryOnException(iwc, ex);
 			//System.out.println("idegaWeb Login failed for personalId : '" + personalID + "'");
