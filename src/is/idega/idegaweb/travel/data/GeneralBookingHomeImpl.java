@@ -1,13 +1,5 @@
 package is.idega.idegaweb.travel.data;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import com.idega.block.trade.stockroom.data.TravelAddress;
-import com.idega.util.IWTimestamp;
-
 
 public class GeneralBookingHomeImpl extends com.idega.data.IDOFactory implements GeneralBookingHome
 {
@@ -28,9 +20,16 @@ public java.util.Collection findAllByCode(java.lang.String p0)throws javax.ejb.F
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public Collection findBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn, String code) throws FinderException, RemoteException {
+public java.util.Collection findAllByReferenceNumber(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(serviceIds,fromStamp,toStamp,bookingTypeIds,columnName,columnValue,address, dateColumn, code);
+	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindAllByReferenceNumber(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.lang.String p3,com.idega.block.trade.stockroom.data.TravelAddress p4)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -42,23 +41,23 @@ public java.util.Collection findBookings(int[] p0,com.idega.util.IWTimestamp p1,
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
+public java.util.Collection findBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,java.lang.String p4,java.lang.String p5,com.idega.block.trade.stockroom.data.TravelAddress p6,java.lang.String p7,java.lang.String p8)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2);
+	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3,p4,p5,p6,p7,p8);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,java.lang.String p3)throws javax.ejb.FinderException{
+public java.util.Collection findBookings(int[] p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBookings(int p0,int p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
+public java.util.Collection findBookings(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2);
+	java.util.Collection ids = ((GeneralBookingBMPBean)entity).ejbFindBookings(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

@@ -25,6 +25,7 @@ import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
@@ -365,25 +366,40 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 	public static String getBookingCodeColumnName() {return "BOOKING_CODE";}
 
 
-  public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimestamp stamp) throws FinderException{
-    return ejbFindBookings(new int[] {resellerId}, serviceId, stamp);
+  public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws FinderException{
+    return ejbFindBookings(new int[] {resellerId}, serviceId, stamp, travelAddress);
   }
 
-  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimestamp stamp) throws FinderException{
-  	return ejbFindBookings(resellerIds, serviceId, stamp, null);
+  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, TravelAddress travelAddress) throws FinderException{
+  	return ejbFindBookings(resellerIds, serviceId, stamp, null, travelAddress);
   }
-  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, String code) throws FinderException{
+  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, String code, TravelAddress travelAddress) throws FinderException{
     Collection returner = null;
 
     if (resellerIds == null) {
       resellerIds = new int[0];
     }
     Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
+    String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
 
     String[] many = {};
       StringBuffer sql = new StringBuffer();
         sql.append("Select b.* from "+getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class,Reseller.class)+" br");
+
+        if (travelAddress != null) {
+          sql.append(", "+addressMiddleTable+" am");
+        }
+
         sql.append(" where ");
+        if (travelAddress != null) {
+          sql.append("am."+getIDColumnName()+" = b."+getIDColumnName());
+          sql.append(" and ");
+          sql.append("am."+TravelAddressBMPBean.getTravelAddressTableName()+"_ID in (");
+          sql.append(travelAddress.getPrimaryKey().toString());
+          sql.append(") and ");
+        }
+        
+        //sql.append(" where ");
         if (resellerIds.length > 0 ) {
           sql.append(" br."+reseller.getIDColumnName()+" in (");
           for (int i = 0; i < resellerIds.length; i++) {
@@ -830,7 +846,15 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public Collection ejbFindAllByCode(String code) throws FinderException {
-  	return this.idoFindAllIDsByColumnsBySQL(getBookingCodeColumnName(), code, getIsValidColumnName(), "'Y'");
+  		return this.idoFindAllIDsByColumnsBySQL(getBookingCodeColumnName(), code, getIsValidColumnName(), "'Y'");
   }
+  
+  public Collection ejbFindAllByReferenceNumber(String refNum) throws FinderException {
+  		IDOQuery query = this.idoQuery();
+  		query.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(getReferenceNumberColumnName(), refNum)
+			.appendAndEquals(getIsValidColumnName(), true);
+		return this.idoFindPKsByQuery(query);
+}
+  
 }
 

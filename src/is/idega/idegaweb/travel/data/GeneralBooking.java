@@ -34,7 +34,6 @@ public interface GeneralBooking extends com.idega.data.IDOEntity,is.idega.idegaw
  public int getTotalCount();
  public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException;
  public int getUserId();
- public void initializeAttributes();
  public void removeAllTravelAddresses()throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromAllResellers()throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDORemoveRelationshipException;
