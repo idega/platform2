@@ -8,6 +8,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -513,27 +514,45 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity imple
     sql.append(id);
     return super.idoFindPKsBySQL(sql.toString());
   }
-  
   public Collection ejbFindBySubjectAndStatus(Integer subjectID,String status,String order)throws FinderException{
+  	return ejbFindBySubjectAndStatus(subjectID,status,order,-1,-1);
+  	
+  }
+  
+  public Collection ejbFindBySubjectAndStatus(Integer subjectID,String status,String order,int numberOfRecords,int startingIndex)throws FinderException{
+	try {
+		return idoFindPKsBySQL(getSQLBySubjectAndStatus(subjectID,status,null,false),numberOfRecords,startingIndex);
+	} catch (IDORelationshipException e) {
+		throw new FinderException(e.getMessage());
+	} 
+	
+  }
+  
+  public int ejbHomeGetCountBySubjectAndStatus(Integer subjectID,String status) throws IDORelationshipException, IDOException{
+  	return super.idoGetNumberOfRecords(getSQLBySubjectAndStatus(subjectID,status,null,true));
+  }
+  
+  private String getSQLBySubjectAndStatus(Integer subjectID,String status,String order,boolean count)throws IDORelationshipException{
+  		
   	Table campusApplication = new Table(this,"c");
 	Table application = new Table(Application.class,"a");
 	
 	
 	SelectQuery query = new SelectQuery(campusApplication);
-	query.setAsDistinct(true);
-	query.addColumn(new WildCardColumn(campusApplication));
-	try {
-		query.addJoin(campusApplication,application);
-	}
-	catch (IDORelationshipException e) {
-		throw new FinderException(e.getMessage());
-	}
+	query.setAsCountQuery(count);
+	//query.setAsDistinct(true);
+	if(!count)
+		query.addColumn(new WildCardColumn(campusApplication));
+	else
+		query.addColumn(new WildCardColumn());
+	
+	query.addJoin(campusApplication,application);
+	
 	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getSubjectIdColumnName()),MatchCriteria.EQUALS,subjectID.intValue() ));
 	query.addCriteria(new MatchCriteria(new Column(application,ApplicationBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,status ));
 	if(order!=null)
 		query.addOrder(application,order,true);
-	return idoFindPKsBySQL(query.toString());
-  
+	return query.toString();
   }
   
   public Collection ejbFindAll() throws FinderException {

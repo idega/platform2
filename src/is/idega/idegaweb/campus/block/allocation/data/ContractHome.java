@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -32,4 +33,5 @@ public interface ContractHome extends com.idega.data.IDOHome
  public Collection findByComplexAndBuildingAndApartmentName(Integer complexID,Integer buildingID,String apartmentName) throws FinderException;
  public Collection findByPersonalID(String ID)throws FinderException;
  public Collection getUnsignedApplicants(String personalID)throws FinderException;
+ public Collection findByStatusAndBeforeDate(String status, Date date)throws FinderException;
 }

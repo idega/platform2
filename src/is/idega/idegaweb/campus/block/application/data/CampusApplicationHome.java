@@ -4,6 +4,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOException;
+import com.idega.data.IDORelationshipException;
+
 
 public interface CampusApplicationHome extends com.idega.data.IDOHome
 {
@@ -13,4 +16,6 @@ public interface CampusApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findAllByApplicationId(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
  public Collection findBySubjectAndStatus(Integer subjectID,String status,String order)throws FinderException;
+ public Collection findBySubjectAndStatus(Integer subjectID,String status,String order,int numberOfRecords,int startingIndex)throws FinderException;
+ public int getCountBySubjectAndStatus(Integer subjectID,String status) throws IDORelationshipException, IDOException;
 }

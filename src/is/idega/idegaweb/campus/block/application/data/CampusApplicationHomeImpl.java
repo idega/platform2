@@ -4,6 +4,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOException;
+import com.idega.data.IDORelationshipException;
+
 
 public class CampusApplicationHomeImpl extends com.idega.data.IDOFactory implements CampusApplicationHome
 {
@@ -53,5 +56,21 @@ public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.Finde
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	
+	public Collection findBySubjectAndStatus(Integer subjectID, String status,String order,int numberOfRecords,int startingIndex)
+	throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindBySubjectAndStatus(subjectID,status,order,numberOfRecords,startingIndex);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public int getCountBySubjectAndStatus(Integer subjectID,String status) throws IDORelationshipException, IDOException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int count  = ((CampusApplicationBMPBean)entity).ejbHomeGetCountBySubjectAndStatus(subjectID,status);
+		this.idoCheckInPooledEntity(entity);
+		return count;
+	}
+	
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.12 2004/06/15 06:53:31 laddi Exp $
+ * $Id: ContractServiceBean.java,v 1.13 2004/06/16 03:15:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -193,15 +193,28 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			}
 		}
 	}
-	public void endContract(Integer contractID, IWTimestamp movingDate, String info, boolean datesync) {
+	
+	public void endContract(Integer contractID,IWTimestamp movingDate,String info, boolean datesync){
 		try {
-			Contract C = getContractHome().findByPrimaryKey(contractID);
-			C.setMovingDate(movingDate.getDate());
+			endContract(getContractHome().findByPrimaryKey(contractID),movingDate,info,datesync);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void endContract(Contract C, IWTimestamp movingDate, String info, boolean datesync) {
+		try {
+			
+			if(movingDate!=null)
+				C.setMovingDate(movingDate.getDate());
 			if (datesync)
 				C.setValidTo(movingDate.getDate());
 			C.setResignInfo(info);
 			C.setStatusEnded();
 			C.store();
+			getMailingListService().processMailEvent(((Integer)C.getPrimaryKey()).intValue(), LetterParser.TERMINATION);
 		}
 		catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -209,9 +222,24 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		catch (FinderException e) {
+	}
+	
+	public void endExpiredContracts(){
+		Collection contracts;
+		try {
+			contracts = getContractHome().findByStatusAndBeforeDate(ContractBMPBean.statusSigned,IWTimestamp.RightNow().getDate());
+		
+			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+				Contract contract = (Contract) iter.next();
+				endContract(contract,null,null,false);
+				
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+	
 	}
 	public void returnKey(IWApplicationContext iwac, Integer contractID) {
 		try {

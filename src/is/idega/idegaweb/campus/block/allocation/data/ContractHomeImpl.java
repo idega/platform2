@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -198,6 +199,17 @@ public java.sql.Date getLastValidToForApartment(java.lang.Integer p0)throws java
 	public Collection getUnsignedApplicants(String personalID) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((ContractBMPBean)entity).ejbHomeGetUnsignedApplicants(personalID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#FindByStatusAndBeforeDate(java.lang.String, java.sql.Date)
+	 */
+	public Collection findByStatusAndBeforeDate(String status, Date date)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatusAndBeforeDate(status,date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

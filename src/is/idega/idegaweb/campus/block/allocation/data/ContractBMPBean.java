@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.10 2004/06/05 07:45:01 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.11 2004/06/16 03:15:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -456,5 +456,9 @@ public Collection ejbHomeGetUnsignedApplicants(String personalID)throws FinderEx
 		throw new FinderException(e.getMessage());
 	}  
 	
+}
+
+public Collection ejbFindByStatusAndBeforeDate(String status, Date date)throws FinderException{
+	return idoFindPKsByQuery( super.idoQueryGetSelect().appendWhereEquals(getValidToColumnName(),status).appendAnd().appendLessThanOrEqualsSign().append(date));
 }
 }
