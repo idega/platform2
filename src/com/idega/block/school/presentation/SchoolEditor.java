@@ -292,44 +292,51 @@ public class SchoolEditor extends Block {
         }
         typeTable.add(tjk,1,row2);
         typeTable.add(type.getSchoolTypeName(),2,row2);
-        row2++;
+        //row2++;
+
+				Table yearTable = new Table();
+				/////////////////
+				Collection years = getSchoolYears(iwc, primaryKey.intValue());
+				if(years!=null && !years.isEmpty()){
+				  java.util.Iterator yearIter = years.iterator();
+				  boolean yearMap = schoolyears!=null;
+				  SchoolYear year;
+				  CheckBox ychk = new CheckBox("sch_year_ids");
+				  CheckBox ytjk;
+				  Integer yprimaryKey;
+				  int col3=1;
+				  int row3 = 1;
+				  while(yearIter.hasNext()){
+						year = (SchoolYear) yearIter.next();
+						yprimaryKey = (Integer) year.getPrimaryKey();
+						ytjk = (CheckBox) ychk.clone();
+						ytjk.setValue(yprimaryKey.intValue());
+						//ytjk.setDisabled(!yearMap);
+						//tjk.setToDisableOnClick(ytjk, false);
+						//ytjk.setOnClick("this.form."+tjk.getID()+".selected = true");
+						if(yearMap && schoolyears.containsKey(yprimaryKey)){
+						  ytjk.setChecked(true);
+						}
+					yearTable.add(ytjk,col3,row3++);
+					yearTable.add(year.getSchoolYearName(),col3++,row3);
+					row3=1;
+		
+				  }
+		
+				}
+		
+				//typeTable.mergeCells(1,row2,2,row2);
+				typeTable.setVerticalAlignment(1, row2, Table.VERTICAL_ALIGN_TOP);
+				typeTable.setVerticalAlignment(2, row2, Table.VERTICAL_ALIGN_TOP);
+				typeTable.setVerticalAlignment(3, row2, Table.VERTICAL_ALIGN_TOP);
+				typeTable.add(yearTable,3,row2);
+				++row2;
+		//////////////////
       }
 
     }
 
     T.add(typeTable,1,13);
-
-    Table yearTable = new Table();
-
-    Collection years = getSchoolYears(iwc);
-    if(years!=null && !years.isEmpty()){
-      java.util.Iterator iter = years.iterator();
-      boolean hasMap = schoolyears!=null;
-      SchoolYear year;
-      CheckBox chk = new CheckBox("sch_year_ids");
-      CheckBox tjk;
-      Integer primaryKey;
-      int col3=1;
-      int row3 = 1;
-      while(iter.hasNext()){
-        year = (SchoolYear) iter.next();
-        primaryKey = (Integer) year.getPrimaryKey();
-        tjk = (CheckBox) chk.clone();
-        tjk.setValue(primaryKey.intValue());
-        if(hasMap && schoolyears.containsKey(primaryKey)){
-          tjk.setChecked(true);
-        }
-        yearTable.add(tjk,col3,row3++);
-        yearTable.add(year.getSchoolYearName(),col3++,row3);
-        row3=1;
-
-      }
-
-    }
-
-    T.mergeCells(1,15,3,15);
-    T.add(yearTable,1,15);
-
 
     T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_school","true"),3,last);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
@@ -355,8 +362,8 @@ public class SchoolEditor extends Block {
     return sabBean.findAllSchoolTypes();
   }
 
-   private Collection getSchoolYears(IWContext iwc)throws java.rmi.RemoteException{
-     return sabBean.findAllSchoolYears();
+   private Collection getSchoolYears(IWContext iwc, int schoolTypeId)throws java.rmi.RemoteException{
+     return sabBean.findAllSchoolYearsBySchoolType(schoolTypeId);
   }
 
   private Collection getSchoolAreas(IWContext iwc)throws java.rmi.RemoteException{

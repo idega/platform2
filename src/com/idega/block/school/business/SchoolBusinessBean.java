@@ -23,6 +23,8 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolCourse;
+import com.idega.block.school.data.SchoolCourseHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -42,6 +44,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWBundle;
@@ -378,10 +381,34 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					map.put(year.getPrimaryKey(), year);
 				}
 				return map;
-			}
+			} 
 		}
 		catch (IDORelationshipException ie) {
 			ie.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Map getSchoolAndSchoolTypeRelatedSchoolCourses(School school, Object schoolTypeId) {
+		try {
+			SchoolCourseHome scHome = (SchoolCourseHome) IDOLookup.getHome(SchoolCourse.class);
+			Collection courses = scHome.findSchoolCourses(school, schoolTypeId); 
+			if (courses != null && !courses.isEmpty()) {
+				HashMap map = new HashMap(courses.size());
+				Iterator iter = courses.iterator();
+				SchoolCourse course;
+				while (iter.hasNext()) {
+					course = scHome.findByPrimaryKey(iter.next());
+					map.put(course.getPrimaryKey(), course);
+				}
+				return map;
+			}
+		} catch (IDOException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -845,6 +872,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findAllSchoolYearsBySchoolType(int schoolTypeId) throws java.rmi.RemoteException {
+		try {
+			SchoolYearHome shome = getSchoolYearHome();
+			return shome.findAllSchoolYearBySchoolType(schoolTypeId);
+			//return shome.findAllSchoolYears();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return new java.util.Vector();
+		}
+	}
+
 	public Collection findAllSchoolYearsByAge(int age) throws java.rmi.RemoteException {
 		try {
 			SchoolYearHome shome = getSchoolYearHome();
@@ -856,7 +895,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public void storeSchoolYear(int pk, String name, String info, int age) throws java.rmi.RemoteException {
+	public void storeSchoolYear(int pk, String name, int schoolTypeId, String info, int age) throws java.rmi.RemoteException {
 
 		SchoolYearHome shome = getSchoolYearHome();
 		SchoolYear newYear;
@@ -879,6 +918,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newYear.setSchoolYearName(name);
 		newYear.setSchoolYearInfo(info);
 		newYear.setSchoolYearAge(age);
+		if (schoolTypeId > 0) {
+			newYear.setSchoolTypeId(schoolTypeId);
+		}
 		newYear.store();
 	}
 
@@ -1134,8 +1176,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
-
-	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) throws RemoteException {
+	
+	public Collection findSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date);
 		}
@@ -1153,6 +1195,22 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) throws RemoteException, RemoteException {
+		try {
+			return getSchoolClassMemberHome().findBySchool(schoolID, schoolClassID, date);
+		}catch(FinderException e) {
+			return new Vector();
+		}
+	}
+	
+	public SchoolClassMember findSchoolClassMember(int userID, int schoolClassID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findByUserAndSchoolClass(userID, schoolClassID);
+		} catch (FinderException e) {
+			return null;
+		}
+	}
+	
 	public Collection findStudentsBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findBySchoolAndSeasonAndYear(schoolID, seasonID, yearID);
@@ -1241,7 +1299,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
-
+	
 	public Collection findSchoolClassesBySchool(int schoolID) throws RemoteException {
 		try {
 			return getSchoolClassHome().findBySchool(schoolID);
@@ -1493,4 +1551,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
+
+
 }

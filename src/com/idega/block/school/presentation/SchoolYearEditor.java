@@ -9,11 +9,14 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.block.school.business.*;
 
 import java.util.Collection;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
 
 
 /**
@@ -80,14 +83,17 @@ public class SchoolYearEditor extends Block {
     if(iwc.isParameterSet("sch_save_year")){
       String id = iwc.getParameter("sch_school_year_id");
       String name = iwc.getParameter("sch_year_name");
+      String type = iwc.getParameter("sch_type");
       String age = iwc.getParameter("sch_year_age");
       String info = iwc.getParameter("sch_year_info");
-      int iAge = -1,sid = -1;
+      int iAge = -1,sid = -1, stid = -1;
       if(id !=null)
         sid = Integer.parseInt(id);
       if(age!=null)
         iAge = Integer.parseInt(age);
-      sabBean.storeSchoolYear(sid,name,info,iAge);
+       if(type!=null)
+       	stid = Integer.parseInt(type);
+      sabBean.storeSchoolYear(sid,name,stid,info,iAge);
     }
   }
 
@@ -108,21 +114,33 @@ public class SchoolYearEditor extends Block {
     T.add(newLink,1,row);
     row++;
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name"),tFormat.HEADER),2,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("info","Info"),tFormat.HEADER),3,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("age","Age"),tFormat.HEADER),4,row);
+    T.add(tFormat.format(iwrb.getLocalizedString("school_type","Type"),tFormat.HEADER),3,row);
+		T.add(tFormat.format(iwrb.getLocalizedString("info","Info"),tFormat.HEADER),4,row);
+    T.add(tFormat.format(iwrb.getLocalizedString("age","Age"),tFormat.HEADER),5,row);
     row++;
 
     java.util.Iterator iter = SchoolYears.iterator();
-    SchoolYear sarea ;
+    SchoolYear sYear ;
+    SchoolType sType;
+    SchoolTypeHome stHome;
     while(iter.hasNext()){
-      sarea = (SchoolYear) iter.next();
+			sYear = (SchoolYear) iter.next();
       try{
-      Link L = new Link(tFormat.format("edit"));
-      L.addParameter("sch_school_year_id",((Integer)sarea.getPrimaryKey()).intValue());
-      T.add(L,1,row);
-      T.add(tFormat.format(sarea.getSchoolYearName()),2,row);
-      T.add(tFormat.format(sarea.getSchoolYearInfo()),3,row);
-      T.add(tFormat.format(sarea.getSchoolYearAge()),4,row);
+      	stHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+      	try {
+      		sType = stHome.findByPrimaryKey(new Integer(sYear.getSchoolTypeId()));
+      	} catch (Exception e) {
+      		sType = null;
+      	}
+      	Link L = new Link(tFormat.format("edit"));
+      	L.addParameter("sch_school_year_id",((Integer)sYear.getPrimaryKey()).intValue());
+      	T.add(L,1,row);
+      	T.add(tFormat.format(sYear.getSchoolYearName()),2,row);
+      	if (sType != null) {
+      		T.add(tFormat.format(iwrb.getLocalizedString(sType.getLocalizationKey(), sType.getName())), 3, row);
+      	}
+      	T.add(tFormat.format(sYear.getSchoolYearInfo()),4,row);
+      	T.add(tFormat.format(sYear.getSchoolYearAge()),5,row);
       }
       catch(Exception ex){}
       row++;
@@ -133,36 +151,53 @@ public class SchoolYearEditor extends Block {
   public PresentationObject getInputTable(SchoolYear entity){
     Table T = new Table(3,6);
     T.mergeCells(1,1,3,1);
-    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolYear"),tFormat.TITLE),1,1);
+    T.add(tFormat.format(iwrb.getLocalizedString("school_year","SchoolYear"),tFormat.TITLE),1,1);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,2);
-    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,3);
-    T.add(tFormat.format(iwrb.getLocalizedString("age","Age")),1,4);
+		T.add(tFormat.format(iwrb.getLocalizedString("school_type","Type"),tFormat.HEADER),1,3);
+    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
+    T.add(tFormat.format(iwrb.getLocalizedString("age","Age")),1,5);
 
     TextInput inputName = new TextInput("sch_year_name");
     TextInput inputAge = new TextInput("sch_year_age");
+    DropdownMenu inputType = new DropdownMenu("sch_type");
     TextArea inputInfo = new TextArea("sch_year_info");
+
+	try {
+			SchoolTypeHome stHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+			Collection coll = stHome.findAllSchoolTypes();
+			if (coll != null && !coll.isEmpty() ) {
+				inputType.addMenuElements(coll);
+			}
+		} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
     int beanId = -1;
     if(entity!=null){
       try{
-      beanId = ((Integer)entity.getPrimaryKey()).intValue();
-      inputName.setContent(entity.getSchoolYearName());
-      inputInfo.setContent(entity.getSchoolYearInfo());
-      inputAge.setContent(String.valueOf(entity.getSchoolYearAge()));
-      T.add(new HiddenInput("sch_school_year_id",String.valueOf(beanId)));
+	      beanId = ((Integer)entity.getPrimaryKey()).intValue();
+      	inputName.setContent(entity.getSchoolYearName());
+      	inputInfo.setContent(entity.getSchoolYearInfo());
+      	inputAge.setContent(String.valueOf(entity.getSchoolYearAge()));
+      	inputType.setSelectedElement(entity.getSchoolTypeId());
+      	T.add(new HiddenInput("sch_school_year_id",String.valueOf(beanId)));
       }
       catch(Exception ex){}
     }
+    
 
     T.add(inputName,3,2);
-    T.add(inputInfo,3,3);
-    T.add(inputAge,3,4);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_year","true"),3,5);
+    T.add(inputType, 3, 3);
+    T.add(inputInfo,3,4);
+    T.add(inputAge,3,5);
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_year","true"),3,6);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,5);
+    T.add(cancel,3,6);
     if(beanId>0){
       Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
       delete.addParameter("sch_delete_year",beanId);
-      T.add(delete,3,5);
+      T.add(delete,3,6);
     }
 
     return T;
@@ -174,4 +209,5 @@ public class SchoolYearEditor extends Block {
     tFormat = tFormat.getInstance();
     control(iwc);
   }
+  
 }
