@@ -16,6 +16,8 @@ import com.idega.core.user.data.User;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.jmodule.image.presentation.SimpleChooserWindow;
+//import com.idega.block.media.presentation.ImageInserter;
 import com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.util.text.TextSoap;

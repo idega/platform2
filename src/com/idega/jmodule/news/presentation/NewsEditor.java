@@ -337,6 +337,7 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
         sideToolTable.addText("<b>Mynd</b>", 1, 9);
 
         ImageInserter imageInsert = new ImageInserter();
+        imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleUploaderWindow.class);
         if ( update ) {
           imageInsert.setImageId(news.getImageId());
         }

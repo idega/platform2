@@ -214,6 +214,7 @@ public class TextEditorWindow extends IWAdminWindow{
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setUseBoxParameterName(prmUseImage);
+    imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
     imageInsert.setSelected(false);
     if ( hasTxText ) {
       if(txText.getImageId() > 0)
