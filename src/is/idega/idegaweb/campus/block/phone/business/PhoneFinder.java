@@ -135,7 +135,7 @@ public abstract class PhoneFinder {
 		}
 	}
 
-	public static Map mapOfAccountIdsByPhoneNumber() {
+	public static Map mapOfAccountIdsByPhoneNumber()throws java.rmi.RemoteException {
 		Hashtable H = null;
 		List L = listOfAccountPhones();
 		if (L != null) {
@@ -170,7 +170,7 @@ public abstract class PhoneFinder {
 		return H;
 	}
 
-	public static Map mapOfAccountPhoneListsByPhoneNumber(IWTimestamp from) {
+	public static Map mapOfAccountPhoneListsByPhoneNumber(IWTimestamp from)throws java.rmi.RemoteException {
 		Hashtable H = null;
 		List L = listOfAccountPhones();
 		if (L != null) {
