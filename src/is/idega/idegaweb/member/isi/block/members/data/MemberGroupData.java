@@ -10,6 +10,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -41,18 +42,20 @@ public class MemberGroupData {
 		_iwrb = iwrb;
 		_user = user;
 		int userId = user.getID();
-		Collection history = java.util.Collections.EMPTY_LIST;
+		Collection history = Collections.EMPTY_LIST;
 		try {
 			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(userId,"GROUP_PARENT");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Collection statuses = java.util.Collections.EMPTY_SET;
+		Collection statuses = Collections.EMPTY_LIST;
 		try {
 			statuses = (Collection) ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(userId);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("Got " + history.size() + " group relations and " + statuses.size() + " statuses");
+		
 		Set statusGroupIdSet = new HashSet();
 		Iterator statusIter = statuses.iterator();
 		while(statusIter.hasNext()) {
