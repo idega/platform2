@@ -85,7 +85,10 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		
 		setNullable(COLUMN_INVOICE_HEADER, true);
 	}
-	public int getInvoiceHeader() {
+	public InvoiceHeader getInvoiceHeader() {
+		return (InvoiceHeader) getColumnValue(COLUMN_INVOICE_HEADER);
+	}
+	public int getInvoiceHeaderId() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);
 	}
 	public int getPaymentRecordId() {

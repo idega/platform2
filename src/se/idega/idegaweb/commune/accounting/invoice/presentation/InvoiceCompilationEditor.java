@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/17 10:11:42 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/19 22:03:38 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.90 $
+ * @version $Revision: 1.91 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -540,7 +540,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         //render
         final String [][] parameters =
                 {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
-                { INVOICE_COMPILATION_KEY, record.getInvoiceHeader () + ""}};
+                { INVOICE_COMPILATION_KEY, record.getInvoiceHeaderId () + ""}};
         final Table table = getConfirmTable
                 (INVOICE_RECORD_UPDATED_KEY,
                  INVOICE_RECORD_UPDATED_DEFAULT, parameters);
@@ -905,7 +905,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         try {
             final InvoiceBusiness business = getInvoiceBusiness (context);
             final InvoiceRecord record = getInvoiceRecord (context);
-            final String headerId = record.getInvoiceHeader () + "";
+            final String headerId = record.getInvoiceHeaderId () + "";
             business.removeInvoiceRecord (record);
             final String [][] parameters = getHeaderLinkParameters
                     (ACTION_SHOW_COMPILATION, headerId);
@@ -1433,7 +1433,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                 INVOICE_COMPILATION_KEY);
         if (null == headerId) {
             final InvoiceRecord record = getInvoiceRecord (context);
-            headerId = new Integer (record.getInvoiceHeader ());
+            headerId = new Integer (record.getInvoiceHeaderId ());
         }
         final InvoiceHeaderHome headerHome = business.getInvoiceHeaderHome ();
         return headerHome.findByPrimaryKey (headerId);

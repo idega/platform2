@@ -57,6 +57,9 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public String getSchoolCategoryID() {
 		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
+	public SchoolCategory getSchoolCategory() {
+		return (SchoolCategory) getColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	}
 	public int getSignatureID() {
 		return getIntColumnValue(COLUMN_SIGNATURE);
 	}
@@ -73,13 +76,13 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public void setSchoolID(int i) {
 		setColumn(COLUMN_SCHOOL_ID, i);
 	}
-	public void setSchoolID(School s) {
+	public void setSchool(School s) {
 		setColumn(COLUMN_SCHOOL_ID, s);
 	}
 	public void setSchoolCategoryID(int i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
 	}
-	public void setSchoolCategoryID(SchoolCategory s) {
+	public void setSchoolCategory(SchoolCategory s) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, s);
 	}
 	public void setSignaturelID(int i) {
@@ -116,6 +119,23 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school.getPrimaryKey());
 		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
+		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Integer ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus(School school, SchoolCategory schoolCategory, Date period, String status) throws FinderException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school);
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school);
+		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
+		sql.appendAndEqualsQuoted(COLUMN_STATUS, status);
 		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
 		return (Integer) idoFindOnePKByQuery(sql);

@@ -11,7 +11,8 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public java.sql.Date getDateCreated();
  public int getDays();
  public java.lang.String getDoublePosting();
- public int getInvoiceHeader();
+ public InvoiceHeader getInvoiceHeader();
+ public int getInvoiceHeaderId();
  public java.lang.String getInvoiceText();
  public java.lang.String getInvoiceText2();
  public java.lang.String getNotes();
@@ -42,13 +43,13 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setDays(int p0);
  public void setDoublePosting(java.lang.String p0);
  public void setInvoiceHeader(int p0);
- public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
+ public void setInvoiceHeader(InvoiceHeader p0);
  public void setInvoiceText(java.lang.String p0);
  public void setInvoiceText2(java.lang.String p0);
  public void setNotes(java.lang.String p0);
  public void setOrderId(int p0);
  public void setOwnPosting(java.lang.String p0);
- public void setPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0);
+ public void setPaymentRecord(PaymentRecord p0);
  public void setPaymentRecordId(int p0);
  public void setPeriodEndCheck(java.sql.Date p0);
  public void setPeriodEndPlacement(java.sql.Date p0);

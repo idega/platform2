@@ -333,12 +333,11 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 						throw new SiblingOrderException (childName + " probably has missing fields in address");
 					}
 				}
+			} catch (NoChildrenFound e) {
+				// no problem, all related adults dont have children, iterate to next
 			} catch (RemoteException e2) {
 				e2.printStackTrace();
 				throw new SiblingOrderException (child.getName() + " invoice.DBError");
-			} catch (NoChildrenFound e) {
-				e.printStackTrace();
-				throw new SiblingOrderException (child.getName() + " invoice.NoChildrenFound");
 			}
 		}
 	

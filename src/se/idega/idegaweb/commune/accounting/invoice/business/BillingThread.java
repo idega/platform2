@@ -107,8 +107,8 @@ public abstract class BillingThread extends Thread{
 		} catch (FinderException e) {
 			//If No header found, create it	
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
-			paymentHeader.setSchoolID(school);
-			paymentHeader.setSchoolCategoryID(category);
+			paymentHeader.setSchool (school);
+			paymentHeader.setSchoolCategory(category);
 			if(categoryPosting.getProviderAuthorization()){
 				paymentHeader.setStatus(ConstantStatus.BASE);
 			} else {
