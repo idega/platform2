@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusinessHomeImpl.java 1.1 9.9.2004 aron Exp $
- * Created on 9.9.2004
+ * $Id: ChildCareBusinessHomeImpl.java 1.1 Oct 19, 2004 thomas Exp $
+ * Created on Oct 19, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,27 +9,23 @@
  */
 package se.idega.idegaweb.commune.childcare.business;
 
-
-
-
-
 import com.idega.business.IBOHomeImpl;
+
 
 /**
  * 
- *  Last modified: $Date: 9.9.2004 12:48:54 $ by $Author: aron $
+ *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: thomas $
  * 
- * @author <a href="mailto:aron@idega.com">aron</a>
+ * @author <a href="mailto:thomas@idega.com">thomas</a>
  * @version $Revision: 1.1 $
  */
-public class ChildCareBusinessHomeImpl extends IBOHomeImpl implements
-        ChildCareBusinessHome {
-    protected Class getBeanInterfaceClass() {
-        return ChildCareBusiness.class;
-    }
+public class ChildCareBusinessHomeImpl extends IBOHomeImpl implements ChildCareBusinessHome {
 
-    public ChildCareBusiness create() throws javax.ejb.CreateException {
-        return (ChildCareBusiness) super.createIBO();
-    }
+	protected Class getBeanInterfaceClass() {
+		return ChildCareBusiness.class;
+	}
 
+	public ChildCareBusiness create() throws javax.ejb.CreateException {
+		return (ChildCareBusiness) super.createIBO();
+	}
 }

@@ -54,7 +54,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
-import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolConstants;
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
@@ -71,6 +70,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
@@ -92,6 +92,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.MemoryFileBuffer;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
@@ -126,8 +127,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT)};
     private static final String PLACEMENT_HELPER = "PlacementHelper";
     
-	private SchoolChoiceBusiness schoolChoiceBusiness = null;
-
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
 	}
@@ -977,9 +976,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getUnhandledApplicationsByProvider(User provider) {
 		try {
-			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness) getServiceInstance(SchoolChoiceBusiness.class);
 			School school;
-			school = schoolBiz.getFirstProviderForUser(provider);
+			school = getFirstProviderForUser(provider);
 
 			return getUnhandledApplicationsByProvider(((Integer) school.getPrimaryKey()).intValue());
 		}
@@ -1021,9 +1019,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getUnsignedApplicationsByProvider(User provider) {
 		try {
-			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness) getServiceInstance(SchoolChoiceBusiness.class);
 			School school;
-			school = schoolBiz.getFirstProviderForUser(provider);
+			school = getFirstProviderForUser(provider);
 
 			return getUnsignedApplicationsByProvider(((Integer) school.getPrimaryKey()).intValue());
 		}
@@ -1850,9 +1847,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getApplicationsByProvider(User provider) {
 		try {
-			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness) getServiceInstance(SchoolChoiceBusiness.class);
 			School school;
-			school = schoolBiz.getFirstProviderForUser(provider);
+			school = getFirstProviderForUser(provider);
 
 			return getApplicationsByProvider(((Integer) school.getPrimaryKey()).intValue());
 		}
@@ -2855,18 +2851,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
-	}
-
-	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
-		if (schoolChoiceBusiness == null) {
-			try {
-				schoolChoiceBusiness = (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
-			}
-			catch (RemoteException e) {
-				throw new IBORuntimeException(e.getMessage());
-			}
-		}
-		return schoolChoiceBusiness;
 	}
 
 	public AfterSchoolBusiness getAfterSchoolBusiness() {
@@ -4250,5 +4234,42 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			catch (FinderException e) {
 				return null;
 			}
+		}
+
+		/**
+		 * Method getFirstProviderForUser. If there is no school that the user then the method throws a FinderException.
+		 * 
+		 * @param user
+		 *          a user
+		 * @return School that is the first school that the user is a manager for.
+		 * @throws javax.ejb.FinderException
+		 *           if ther is no school that the user manages.
+		 */
+		public School getFirstProviderForUser(User user) throws FinderException, RemoteException {
+			SchoolBusiness schoolBusiness = getSchoolBusiness();
+
+			try {
+				Group rootGroup = schoolBusiness.getRootProviderAdministratorGroup();
+				// if user is a SchoolAdministrator
+				if (user.hasRelationTo(rootGroup)) {
+					Collection schools = getSchoolHome().findAllBySchoolGroup(user);
+					if (!schools.isEmpty()) {
+						Iterator iter = schools.iterator();
+						while (iter.hasNext()) {
+							School school = (School) iter.next();
+							return school;
+						}
+					}
+				}
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
+
+			throw new FinderException("No school found that " + user.getName() + " manages");
+		}
+
+		public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
+			return getSchoolBusiness().getSchoolHome();
 		}
 }
