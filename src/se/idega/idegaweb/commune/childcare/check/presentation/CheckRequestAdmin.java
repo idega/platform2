@@ -389,14 +389,12 @@ public class CheckRequestAdmin extends CommuneBlock {
 		String notes = iwc.getParameter(PARAM_NOTES);
 		String userNotes = iwc.getParameter(PARAM_USER_NOTES);
 		//    int managerId = iwc.getUser().getID();
-		int managerId = iwc.getUserId();
-		return getCheckBusiness(iwc).saveCheckRules(checkId, selectedRules, notes, userNotes, managerId);
+		return getCheckBusiness(iwc).saveCheckRules(checkId, selectedRules, notes, userNotes, iwc.getCurrentUser());
 	}
 
 	private void grantCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
 		if (!getCheckBusiness(iwc).allRulesVerified(check)) {
-			getCheckBusiness(iwc).commit(check);
 			//      this.errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
 			//      this.isError = true;
 			viewCheck(iwc, check, true);
@@ -404,7 +402,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		}
 		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted");
 		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
-		getCheckBusiness(iwc).approveCheck(check, subject, body);
+		getCheckBusiness(iwc).approveCheck(check, subject, body, iwc.getCurrentUser());
 
 		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted", "Check granted") + ": " + ((Integer) check.getPrimaryKey()).toString()));
 		add(new Break(2));
@@ -415,7 +413,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		Check check = verifyCheckRules(iwc);
 		String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline", "Check denied");
 		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body", "Your check has been denied");
-		getCheckBusiness(iwc).retrialCheck(check, subject, body);
+		getCheckBusiness(iwc).retrialCheck(check, subject, body, iwc.getCurrentUser());
 
 		viewCheckList(iwc);
 	}
@@ -427,7 +425,6 @@ public class CheckRequestAdmin extends CommuneBlock {
 	 */
 	private void saveCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
-		getCheckBusiness(iwc).saveCheck(check);
 		viewCheckList(iwc);
 	}
 

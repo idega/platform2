@@ -153,14 +153,13 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return userID;
 	}
 	
-	public Check saveCheckRules(int checkID, String[] selectedRules, String notes, String userNotes, int managerId) throws Exception {
+	public Check saveCheckRules(int checkID, String[] selectedRules, String notes, String userNotes, User performer) throws Exception {
 		Check check = getCheck(checkID);
-		return saveCheckRules(check,selectedRules,notes,userNotes,managerId);
+		return saveCheckRules(check,selectedRules,notes,userNotes,performer);
 	}
 	
-	public Check saveCheckRules(Check check, String[] selectedRules, String notes, String userNotes, int managerId) throws Exception {
+	public Check saveCheckRules(Check check, String[] selectedRules, String notes, String userNotes, User performer) throws Exception {
 		boolean rule1 = false,rule2 = false,rule3 = false,rule4 = false,rule5 = false;
-		check.setManagerId(managerId);
 		if ( selectedRules != null ) {
 			for (int i = 0; i < selectedRules.length; i++) {
 				int rule = Integer.parseInt(selectedRules[i]);
@@ -191,6 +190,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.setRule3(rule3);
 		check.setRule4(rule4);
 		check.setRule5(rule5);
+		changeCaseStatus(check, check.getCaseStatus().getPrimaryKey().toString(), performer);
 		return check;
 	}
 
@@ -245,27 +245,16 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 	
-	public void commit(Check check) throws Exception {
-		check.store();
-	}
-
-	public void approveCheck(Check check,String subject,String body) throws Exception {
-		check.setCaseStatus(this.getCaseStatusGranted());
-		commit(check);
+	public void approveCheck(Check check,String subject,String body,User performer) throws Exception {
+		changeCaseStatus(check, this.getCaseStatusGranted().getPrimaryKey().toString(), performer);
 		sendMessageToCitizen(check,getUserID(check),subject,body);
 		sendMessageToArchive(check,getUserID(check),subject,body);
 		sendMessageToPrinter(check,getUserID(check),subject,body);
 	}
 
-	public void retrialCheck(Check check,String subject,String body) throws Exception {
-		check.setCaseStatus(this.getCaseStatusReview());
-		commit(check);
+	public void retrialCheck(Check check,String subject,String body,User performer) throws Exception {
+		changeCaseStatus(check, this.getCaseStatusReview().getPrimaryKey().toString(), performer);
 		sendMessageToCitizen(check,getUserID(check),subject,body+"\n\n"+check.getUserNotes());
-	}
-
-	public void saveCheck(Check check) throws Exception {
-		//check.setCaseStatus(this.getCaseStatusOpen());
-		commit(check);
 	}
 
 	private UserBusiness getUserBusiness() throws RemoteException {

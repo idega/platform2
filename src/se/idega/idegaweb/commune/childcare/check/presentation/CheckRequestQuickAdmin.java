@@ -85,8 +85,7 @@ public class CheckRequestQuickAdmin extends CheckRequestAdmin {
 			String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
 			String notes = iwc.getParameter(PARAM_NOTES);
 			String userNotes = iwc.getParameter(PARAM_USER_NOTES);
-			int managerId = iwc.getUserId();
-			return getCheckBusiness(iwc).saveCheckRules(check, selectedRules, notes, userNotes, managerId);
+			return getCheckBusiness(iwc).saveCheckRules(check, selectedRules, notes, userNotes, iwc.getCurrentUser());
 		}
 
 		return null;
@@ -96,13 +95,12 @@ public class CheckRequestQuickAdmin extends CheckRequestAdmin {
 		Check check = verifyCheckRules(iwc);
 		if ( check != null ) {
 			if (!getCheckBusiness(iwc).allRulesVerified(check)) {
-				getCheckBusiness(iwc).commit(check);
 				viewCheck(iwc, check, true);
 				return;
 			}
 			String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline","Check granted");
 			String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body","Your check has been granted");
-			getCheckBusiness(iwc).approveCheck(check,subject,body);
+			getCheckBusiness(iwc).approveCheck(check,subject,body,iwc.getCurrentUser());
 	
 			if (getResponsePage() != null && !iwc.isInEditMode()) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
@@ -117,7 +115,7 @@ public class CheckRequestQuickAdmin extends CheckRequestAdmin {
 		if ( check != null ) {
 			String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline","Check denied");
 			String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body","Your check has been denied");
-			getCheckBusiness(iwc).retrialCheck(check,subject,body);
+			getCheckBusiness(iwc).retrialCheck(check,subject,body,iwc.getCurrentUser());
 
 			if (getResponsePage() != null && !iwc.isInEditMode()) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
@@ -135,7 +133,6 @@ public class CheckRequestQuickAdmin extends CheckRequestAdmin {
 	private void saveCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
 		if ( check != null ) {
-			getCheckBusiness(iwc).saveCheck(check);
 			viewCheck(iwc,check,false);
 		}
 	}
