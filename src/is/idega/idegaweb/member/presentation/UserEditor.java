@@ -1064,6 +1064,10 @@ public class UserEditor extends Block {
 		return null;
 	}
 	
+	public User findPersonalIDUser(IWContext iwc,String pid)throws FinderException,RemoteException{
+		return getUserService(iwc).getUserHome().findByPersonalID(pid);
+	}
+	
 	public User createUser(
 		IWContext iwc,
 		String personalID,
@@ -1110,7 +1114,21 @@ public class UserEditor extends Block {
 				//e1.printStackTrace();
 			}
 			if(isValidPersonalID(pid) && !"".equals(fname) && !"".equals(lname)){
-				user = createUser(iwc, pid, fname, mname, lname, groupID);
+				try {
+					user = findPersonalIDUser(iwc,pid);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+				if(user==null)
+					user = createUser(iwc, pid, fname, mname, lname, groupID);
+				else{
+					String mainPostalExists =
+						iwrb.getLocalizedString(
+								"mbe.warning.user_with_pid_exists",
+						"There is already a user registered with this personal id");
+					this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+				}
 			}
 			else{
 				String mainPostalExists =
@@ -1136,11 +1154,28 @@ public class UserEditor extends Block {
 					if (isNewValue(iwc, prm_personal_id) ){
 						if(isValidPersonalID(iwc.getParameter(prm_personal_id))) {
 							pid = iwc.getParameter(prm_personal_id);
-							legalState = true;
+							try {
+								User pidUser  =findPersonalIDUser(iwc,pid);
+								if(pidUser!=null && !pidUser.getPrimaryKey().toString().equals(userID.toString()) ){
+									String mainPostalExists =
+										iwrb.getLocalizedString(
+												"mbe.warning.personal_id_in_use",
+										"Personal ID is already in use");
+									this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+								}
+								else{
+									pid= user.getPersonalID();
+									
+								}
+							}
+							catch (FinderException e) {
+								e.printStackTrace();
+							}
+							legalState |= true;
 						}
 						else 
 							if(warnIfPersonalIDIsIllegal){
-							
+							legalState = false;
 							String mainPostalExists =
 							iwrb.getLocalizedString(
 									"mbe.warning.personal_id_illegal",
@@ -1151,21 +1186,21 @@ public class UserEditor extends Block {
 					}
 					if (isNewValue(iwc, prm_first_name)) {
 						first = iwc.getParameter(prm_first_name);
-						legalState = true;
+						legalState |= true;
 					}
 					if (isNewValue(iwc, prm_middle_name)) {
 						middle = iwc.getParameter(prm_middle_name);
-						legalState = true;
+						legalState |= true;
 					}
 					if (isNewValue(iwc, prm_last_name)) {
 						last = iwc.getParameter(prm_last_name);
-						legalState = true;
+						legalState |= true;
 					}
 					if (isNewValue(iwc, prm_primary_group_id)) {
 						groupID = Integer.valueOf(iwc.getParameter(prm_primary_group_id));
 						if (groupID.intValue() <= 0)
 							groupID = null;
-						legalState = true;
+						legalState |= true;
 					}
 					if(legalState )
 						userService.updateUser(user, first, middle, last, null, null, null, pid, null, groupID);
