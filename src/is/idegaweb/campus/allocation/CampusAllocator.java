@@ -38,7 +38,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocator extends KeyEditor{
+public class CampusAllocater extends KeyEditor{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -55,7 +55,7 @@ public class CampusAllocator extends KeyEditor{
   private SystemProperties SysProps = null;
    private String bottomThickness = "8";
 
-  public CampusAllocator(String sHeader) {
+  public CampusAllocater(String sHeader) {
     super(sHeader);
   }
 
