@@ -383,6 +383,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
 
+      //System.err.println("Checking day : "+stamp.toSQLDateString());
       HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
       //Object obj = serviceDayHash.get(key1, key2);
       Object obj = null;
@@ -400,18 +401,23 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             }
           }
 
+          //System.err.println("include past : "+includePast+" .... tooEarly : "+tooEarly);
           if (!tooEarly) {
             boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
             if (isValidWeekDay) {
+              //System.err.println("repps 1");
               if (isDayValid(product, stamp)) {
+              //System.err.println("repps 2");
                 isDay = true;
                 serviceDayHash.put(key1, key2, new Boolean(true) );
               }
               else {
+              //System.err.println("repps 3");
                 serviceDayHash.put(key1, key2, new Boolean(false) );
               }
             }else {
-                serviceDayHash.put(key1, key2, new Boolean(false) );
+              //System.err.println("repps 4");
+              serviceDayHash.put(key1, key2, new Boolean(false) );
             }
           }
       }

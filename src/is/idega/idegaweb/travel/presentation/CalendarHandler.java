@@ -609,20 +609,20 @@ public class CalendarHandler extends TravelManager {
      * @todo skoða betur, er bara tomt rugl
      */
       if (_tour != null) {
-        for (int i = 0; i < _timeframes.length; i++) {
+//        for (int i = 0; i < _timeframes.length; i++) {
           if (_tour.getNumberOfDays() > 1) {
-            if (_timeframes[i].getIfYearly()) {
+/*            if (_timeframes[i].getIfYearly()) {
 debug("reppetan 1");
               depDays.addAll(TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast));
             }else {
-debug("reppetan 2");
-              depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, showPast));
-            }
+*/debug("reppetan 2");
+              depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, _fromStamp, _toStamp, showPast));
+//            }
           }else {
 debug("reppetan 3");
             depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
-        }
+//        }
       }else {
 debug("reppetan 4");
           depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
