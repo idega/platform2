@@ -2,7 +2,6 @@ package com.idega.block.building.presentation;
 
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import com.idega.block.building.business.BuildingService;
@@ -97,7 +96,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
     for (Iterator iter = complexes.iterator(); iter.hasNext();) {
 		Complex complex = (Complex) iter.next();
 		Integer iComplexId =(Integer)complex.getPrimaryKey();
-      Collection types = buildingService.getApartmentTypeHome().findByComplex(iComplexId);
+      //Collection types = buildingService.getApartmentTypeHome().findByComplex(iComplexId);
       //String[] types = BuildingFinder.findDistinctApartmentTypesInComplex(iComplexId);
 
 
