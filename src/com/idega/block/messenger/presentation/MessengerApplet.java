@@ -87,7 +87,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
       msg.setRecipientName("TEST");
-
+      msg.setSenderName("CORNS");
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
