@@ -65,7 +65,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 	
 	public AfterSchoolChoice findChoicesByChildAndChoiceNumberAndSeason(Integer childID, int choiceNumber, Integer seasonID) throws FinderException {
 		try {
-			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+			String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusInactive().getStatus() };
 			return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(childID, new Integer(choiceNumber), seasonID, caseStatus);
 		}
 		catch (RemoteException e) {
@@ -166,9 +166,11 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		stamp.addSeconds((10 - (choiceNumber.intValue() * 10)));
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
+		choice.setApplicationStatus(getStatusSentIn());
 		
-		if (caseStatus.equals(getCaseStatusPreliminary()))
+		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			sendMessageToParents(choice, subject, body);
+		}
 
 		if (parentCase != null)
 			choice.setParentCase(parentCase);
