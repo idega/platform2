@@ -19,7 +19,6 @@ import com.idega.block.text.presentation.TextEditorWindow;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
@@ -66,11 +65,11 @@ public class ProductDetailFrame extends TravelBlock {
 	Table productInfoDetailed = null;
 	List leftAdd = new Vector();
 
-	public ProductDetailFrame(IWContext iwc) throws RemoteException {
-		this(iwc, 3);
+	public ProductDetailFrame(IWContext iwc, Product product) throws RemoteException {
+		this(iwc, 3, product);
 	}
 	
-	public ProductDetailFrame(IWContext iwc, int columns) throws RemoteException {
+	public ProductDetailFrame(IWContext iwc, int columns, Product product) throws RemoteException {
 		String sProductId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		if (sProductId == null) {
 			sProductId = iwc.getParameter(LinkGenerator.parameterProductId);
@@ -80,11 +79,12 @@ public class ProductDetailFrame extends TravelBlock {
 		currencyFormat = new DecimalFormat("0.00");
 
 		this.columns = columns;
-		if (sProductId != null) {
+		if (product != null) {
 			try {
-				ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+//				ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 				SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-				product = pHome.findByPrimaryKey(new Integer(sProductId));
+//				product = pHome.findByPrimaryKey(new Integer(sProductId));
+				this.product = product;
 				supplier = sHome.findByPrimaryKey(product.getSupplierId());
 
 				descriptionText = product.getText();
@@ -96,6 +96,8 @@ public class ProductDetailFrame extends TravelBlock {
 			} catch (Exception e ) {
 				e.printStackTrace();
 			}
+		} else {
+			System.out.println("ProductDefailtFrame product is NULL");
 		}
 
 		contTable = new Table(columns, 10);

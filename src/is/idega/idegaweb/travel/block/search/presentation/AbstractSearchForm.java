@@ -2012,7 +2012,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected ProductDetailFrame getProductDetailFrame(Product product, int columns) throws RemoteException {
 		ProductDetailFrame frame = (ProductDetailFrame) frames.get(columns+""+product);
 		if (frame == null) { 
-			frame = new ProductDetailFrame(iwc);
+			frame = new ProductDetailFrame(iwc, product);
 			frame.setPriceCategoryKey(getPriceCategoryKey());
 			frame.setCount(this.getCount());
 			frame.setProductInfoDetailed(getProductInfoDetailed(product));

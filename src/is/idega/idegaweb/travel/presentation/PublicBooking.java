@@ -621,7 +621,7 @@ public class PublicBooking extends TravelBlock  {
 	protected ProductDetailFrame getProductDetailFrame(Product product, IWContext iwc, int columns) throws RemoteException {
 		ProductDetailFrame frame = (ProductDetailFrame) frames.get(new Integer(columns));
 		if (frame == null) { 
-			frame = new ProductDetailFrame(iwc, columns);
+			frame = new ProductDetailFrame(iwc, columns, product);
 			//frame.setPriceCategoryKey(getPriceCategoryKey());
 			//frame.setCount(this.getCount());
 			//frame.setProductInfoDetailed(getProductInfoDetailed(getProduct()));
