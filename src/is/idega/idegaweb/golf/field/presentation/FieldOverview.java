@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
+import is.idega.idegaweb.golf.block.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -19,7 +20,6 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;

@@ -1,9 +1,10 @@
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.block.news.data.News;
+import is.idega.idegaweb.golf.block.news.data.NewsCategoryAttributes;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 
-import com.idega.block.news.presentation.News;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -43,8 +44,8 @@ public class ClubNewsBox extends Block {
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
     //FIXME Fix so it works with old News data...
-/*
-    HeaderTable headerTable = new HeaderTable();
+
+    /*HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
     headerTable.setBorderColor("#8ab490");
     headerTable.setHeaderText(iwrb.getLocalizedString("clubNews","Club news"));
@@ -58,7 +59,7 @@ public class ClubNewsBox extends Block {
     myTable.setCellspacing(2);
     myTable.setBorder(0);
 
-    NewsCategoryAttribute[] clubNewsAttr = (NewsCategoryAttribute[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttribute.class)).findAll("select * from news_category_attributes where attribute_name ='union_id' and news_category_attributes.news_category_id>3");
+    NewsCategoryAttribute[] clubNewsAttr = (NewsCategoryAttribute[]) ((NewsCategoryAttribute) IDOLookup.instanciateEntity(NewsCategoryAttribute.class)).findAll("select * from news_category_attributes where attribute_name ='union_id' and news_category_attributes.news_category_id>3");
     int union_id = 0;
     Text unionText;
     if (clubNewsAttr.length > 0) {
@@ -97,9 +98,9 @@ public class ClubNewsBox extends Block {
 
     headerTable.add(myTable);
 
-    return headerTable;
+    return headerTable;*/
 
-    News[] news = (News[]) (new News()).findAll("select distinct news_category_id,news_date from news where news_category_id > 3 and news_category_id < 228 and news_category_id != 226 order by news_date desc");
+    News[] news = (News[]) ((News) IDOLookup.instanciateEntity(News.class)).findAll("select distinct news_category_id,news_date from news where news_category_id > 3 and news_category_id < 228 and news_category_id != 226 order by news_date desc");
 
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
@@ -157,7 +158,7 @@ public class ClubNewsBox extends Block {
         headerTable.add(myTable);
 
         add(headerTable);
-*/
+
       }
 
 }

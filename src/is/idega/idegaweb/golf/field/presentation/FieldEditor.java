@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
+import is.idega.idegaweb.golf.block.text.data.TextModule;
+import is.idega.idegaweb.golf.block.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -24,7 +26,6 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -289,9 +290,9 @@ public class FieldEditor extends GolfBlock {
 		Table rightTable = new Table();
 		int text_id = getHoleTextId(modinfo, 0);
 		if (text_id == -1) {
-			//                text_id = updateHoleText(modinfo);
-			//                updateHoleText(modinfo,true);
-			//                rightTable.add(new SubmitButton("crap","BÊta vi texta"),1,1);
+			  //              text_id = updateHoleText(modinfo);
+			  //              updateHoleText(modinfo,true);
+			  //              rightTable.add(new SubmitButton("crap","BÊta vi texta"),1,1);
 		}
 		if (text_id != -1) {
 			TextReader reader = new TextReader(Integer.toString(text_id));
@@ -510,8 +511,7 @@ public class FieldEditor extends GolfBlock {
 
 		if (hole_number != -1) {
 			System.out.println("updateHoleText, hole_number != null");
-			//FIXME Gimmi, hér ﬂarf a› laga ﬂetta eitthva› til ﬂannig a› ﬂa› virki a› vista texta á holu...
-			/*TextModule text = new TextModule();
+			TextModule text = (TextModule) IDOLookup.createLegacy(TextModule.class);
 			text.insert();
 
 			returner = text.getID();
@@ -525,7 +525,7 @@ public class FieldEditor extends GolfBlock {
 			}
 			catch (CreateException ce) {
 				throw new SQLException(ce.getMessage());
-			}*/
+			}
 		}
 
 		return returner;

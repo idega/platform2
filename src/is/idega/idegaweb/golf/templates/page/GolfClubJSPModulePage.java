@@ -1,5 +1,7 @@
 package is.idega.idegaweb.golf.templates.page;
 
+import is.idega.idegaweb.golf.block.text.data.TextModule;
+import is.idega.idegaweb.golf.block.text.data.TextModuleHome;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
@@ -188,7 +190,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
       if ( unionText.length > 0) {
 	for ( int b = 0; b < unionText.length; b++ ) {
-	  /*TextModule text = new TextModule(unionText[b].getTextId());
+	  TextModule text = ((TextModuleHome) IDOLookup.getHomeLegacy(TextModule.class)).findByPrimaryKeyLegacy(unionText[b].getTextId());
 	  Link textHeadline = new Link(text.getTextHeadline(),"/clubs/text.jsp");
 	  textHeadline.addParameter("text_id",String.valueOf(text.getID()));
 	  textHeadline.addParameter("clubpage","true");
@@ -204,7 +206,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 	    myTable.add(spacer,1,b+1);
 	    myTable.add(textHeadline,1,b+1);
 	    myTable.addBreak(1,b+1);
-	  }*/
+	  }
 	}
 	innerTable.add(myTable,1,1);
       }
