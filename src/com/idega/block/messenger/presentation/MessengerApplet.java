@@ -41,6 +41,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private Hashtable dialogs = new Hashtable();
   private ImageLabel faceLabel;
   private ImageLabel logoLabel;
+  private Panel userPanel;
 
   private Thread t;
 
@@ -87,6 +88,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       catch (Exception ex) {
         ex.printStackTrace(System.err);
       }
+
+      userPanel = new Panel();
+      userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      this.add(userPanel);
 
       threadSleep = 1000*checkTimer;
     }
@@ -339,8 +344,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(new Label(name));
       item.setSize(16,100);
 
-      add(item);
-      layout();
+      userPanel.add(item);
+      userPanel.repaint();
       repaint();
   }
 
