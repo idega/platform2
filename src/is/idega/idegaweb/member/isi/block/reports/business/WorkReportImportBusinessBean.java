@@ -1694,6 +1694,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 			e.printStackTrace();
 			throw new WorkReportImportException(
 					"workreportimportexception.could_not_read_file");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new WorkReportImportException(
+					"workreportimportexception.could_not_create_workbook");
 		}
 
 		return excel;
