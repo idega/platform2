@@ -94,6 +94,7 @@ private boolean phones = false;
       data.append("Forgjöf fyrir"); data.append("\t");
       data.append("Forgjöf eftir");data.append("\t");
       data.append("Mismunur"); data.append("\t");
+      data.append("Fjöldi hringja"); data.append("\t");
       data.append("\n");
       out.write(data.toString().toCharArray());
 
@@ -265,6 +266,8 @@ private boolean phones = false;
               s = TextSoap.singleDecimalFormat((double)difference); // Difference
               s = s.replace('.',',');
               data.append(s);
+              data.append("\t");
+              data.append(scorecardAfter.length);
               data.append("\n");
             }
             catch ( Exception e ) {
