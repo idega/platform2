@@ -135,7 +135,7 @@ public class ServiceViewer extends Block {
       idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
       depart.append(stamp.getHour());
       depart.append(":");
-      depart.append(stamp.getMinute());
+      depart.append(TextSoap.addZero(stamp.getMinute()));
 
     }
     catch (Exception ex) {
@@ -162,7 +162,7 @@ public class ServiceViewer extends Block {
         duration = hours+"h";
       }
       else{
-        duration = hours+"h"+minutesleft+"m";
+        duration = hours+"h "+minutesleft+"m";/**@todo lacalize**/
       }
     }
     return duration;
@@ -172,7 +172,7 @@ public class ServiceViewer extends Block {
     List prodlist;
     Table content = new Table();
     content.setCellspacing(0);
-
+    content.setCellpadding(2);
 
     if( (dateFrom!=null) && (dateTo!=null) ){
       prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
@@ -250,6 +250,8 @@ public class ServiceViewer extends Block {
   private Table getServiceInfoTable(IWContext iwc){
     Table content = new Table(1,4);
     content.setCellspacing(0);
+    content.setCellpadding(2);
+
     try {
       int i = 1;
       Product product = new Product(service.getID());
