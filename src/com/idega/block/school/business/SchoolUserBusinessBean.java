@@ -70,17 +70,17 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 	}
 
-	public void removeUser(School school, User user, int userType)  throws FinderException, RemoteException, RemoveException{
+	public void removeUser(School school, User user, int userType, User currentUser)  throws FinderException, RemoteException, RemoveException{
 		Object id = null;
 		id = getSchoolUserHome().getSchoolUserId(school, user, userType);
 		if (id != null) {
 			SchoolUser sUser = getSchoolUserHome().findByPrimaryKey(id);
 			sUser.remove();
 		}
-		getUserBusiness().deleteUser(user.getID());
+		getUserBusiness().deleteUser(user, currentUser);
 	}
 	
-	public void removeUser(School school, User user) throws FinderException, RemoteException, RemoveException {
+	public void removeUser(School school, User user, User currentUser) throws FinderException, RemoteException, RemoveException {
 		Collection coll	= getSchoolUserHome().findBySchoolAndUser(school, user);
 		if (coll != null && coll.size() > 0 ) {
 			SchoolUser sUser;
@@ -90,7 +90,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				sUser.remove();
 			}
 		}
-		getUserBusiness().deleteUser(user.getID());
+		getUserBusiness().deleteUser(user, currentUser);
 	}
 
 	public Collection getTeachers(int schoolID) throws RemoteException, FinderException {

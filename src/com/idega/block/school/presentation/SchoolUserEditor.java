@@ -542,7 +542,9 @@ public class SchoolUserEditor extends Block {
 				if (iwc == null)    System.out.println("[SchoolUserEditor:deleteUser] iwc    == null");
 				if (user == null)   System.out.println("[SchoolUserEditor:deleteUser] user   == null");
 				if (school == null) System.out.println("[SchoolUserEditor:deleteUser] school == null");
-				getSchoolUserBusiness(iwc).removeUser(school, user);
+//      get current user (added by Thomas)
+        User currentUser = iwc.getCurrentUser();      
+				getSchoolUserBusiness(iwc).removeUser(school, user, currentUser);
 //				user.remove();
 			} catch (RemoveException e) {
 				System.out.println("user to delete ERROR");
@@ -578,7 +580,9 @@ public class SchoolUserEditor extends Block {
 					
 					if (name.equals("")) {
 						try {
-							getSchoolUserBusiness(iwc).removeUser(school, user);
+              // get current user (added by Thomas)
+              User currentUser = iwc.getCurrentUser();
+							getSchoolUserBusiness(iwc).removeUser(school, user, currentUser);
 						} catch (RemoveException e) {
 							e.printStackTrace(System.err);
 						}
