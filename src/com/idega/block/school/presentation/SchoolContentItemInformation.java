@@ -15,6 +15,8 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 	private String _width = null;
 	private String _height = null;
 
+	private boolean _showImages = false;
+
 	/**
 	 * @see com.idega.block.school.presentation.SchoolItem#getObject()
 	 */
@@ -30,6 +32,11 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 		table.setCellpaddingAndCellspacing(0);
 		
 		if (lText != null) {
+			if (_showImages) {
+				SchoolContentItemImage image = new SchoolContentItemImage();
+				image.setHorizontalAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+				table.add(image);	
+			}
 			table.add(getText(lText.getBody()));
 		}
 		
@@ -53,6 +60,10 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 	
 	public void setHeigth(String height) {
 		_height = height;	
+	}
+	
+	public void showImages(boolean showImages) {
+		_showImages = showImages;
 	}
 
 }
