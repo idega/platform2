@@ -95,7 +95,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
 			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			if (member.getRemovedDate() != null)
-				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 			else
 				table.add(getSmallText("-"), column++, row++);
 		}
