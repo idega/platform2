@@ -6,14 +6,11 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
-
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
 import javax.ejb.FinderException;
 
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -23,6 +20,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.presentation.GroupChooser;
 import com.idega.user.presentation.UserGroupTab;
 
 /**
@@ -41,7 +39,7 @@ public class ClubPlayerTab extends UserGroupTab {
 	private TextInput _cplayField;
 	private TextInput _nameField;
 	private CheckBox _competitionField;
-	private TextArea _coachesField;
+	private GroupChooser _coachesField;
 
 	private Text _unionText;
 	private Text _cplayText;
@@ -103,7 +101,7 @@ public class ClubPlayerTab extends UserGroupTab {
 		_cplayField.setContent((String) fieldValues.get(_cplayFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_competitionField.setChecked(((Boolean) fieldValues.get(_competitionFieldName)).booleanValue());		
-		_coachesField.setContent((String) fieldValues.get(_coachesFieldName));		
+//		_coachesField.setContent((String) fieldValues.get(_coachesFieldName));		
 	}
 
 	/* (non-Javadoc)
@@ -114,7 +112,7 @@ public class ClubPlayerTab extends UserGroupTab {
 		_nameField = new TextInput(_nameFieldName);
 		_cplayField = new TextInput(_cplayFieldName);
 		_competitionField = new CheckBox(_competitionFieldName);
-		_coachesField = new TextArea(_coachesFieldName);
+		_coachesField = new GroupChooser(_coachesFieldName);
 	}
 
 	/* (non-Javadoc)

@@ -9,6 +9,7 @@ package is.idega.idegaweb.member.presentation;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -51,7 +53,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private DropdownMenu _typeField;
 	private CheckBox _memberUMFIField;
 	private DropdownMenu _makeField;
-	private TextInput _connectionToSpecialField;
+	private DropdownMenu _connectionToSpecialField;
 	private Text _regionalUnionField;
 	private DropdownMenu _statusField;
 //	private CheckBox _premierLeagueField;
@@ -172,7 +174,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
 //		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"5");
-		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
+		_connectionToSpecialField.setSelectedElement((String) fieldValues.get(_connectionToSpecialFieldName));
 		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
 //		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
@@ -194,7 +196,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_typeField = new DropdownMenu(_typeFieldName);
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
-		_connectionToSpecialField = new TextInput(_connectionToSpecialFieldName);
+		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 //		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
@@ -220,6 +222,23 @@ public class ClubInformationTab extends UserGroupTab {
 		_statusField.addMenuElement("1","Virkt");
 		_statusField.addMenuElement("2","Óvirkt");
 		_statusField.addMenuElement("3","Keppnisbann");
+		
+		Collection special = null;
+		try {
+			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType("iwme_league");
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		if (special != null) {
+			Iterator it = special.iterator();
+			while (it.hasNext()) {
+				Group spec = (Group)it.next();
+				_connectionToSpecialField.addMenuElement(((Integer)spec.getPrimaryKey()).intValue(),spec.getName());
+			}
+		}		
 	}
 
 	/* (non-Javadoc)

@@ -6,11 +6,12 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -19,8 +20,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -42,15 +43,18 @@ public class ClubDivisionTab extends UserGroupTab {
 	private TextInput _numberField;
 	private TextInput _ssnField;
 	private DateInput _foundedField;
+	private DropdownMenu _connectionToSpecialField;
 
 	private Text _numberText;
 	private Text _ssnText;
 	private Text _foundedText;
+	private Text _connectionToSpecialText;	
 
 	private String _numberFieldName;
 	private String _ssnFieldName;
 	private String _foundedFieldName;
-
+	private String _connectionToSpecialFieldName;
+	
 	public ClubDivisionTab() {
 		super();
 		IWContext iwc = IWContext.getInstance();
@@ -75,6 +79,7 @@ public class ClubDivisionTab extends UserGroupTab {
 		_numberFieldName = "cdiv_number";
 		_ssnFieldName = "cdiv_ssn";
 		_foundedFieldName = "cdiv_founded";
+		_connectionToSpecialFieldName = "cit_special";
 	}
 
 	/* (non-Javadoc)
@@ -85,6 +90,7 @@ public class ClubDivisionTab extends UserGroupTab {
 		fieldValues.put(_numberFieldName, "");
 		fieldValues.put(_ssnFieldName, "");
 		fieldValues.put(_foundedFieldName, new IWTimestamp().getDate().toString());
+		fieldValues.put(_connectionToSpecialFieldName, "");		
 	}
 
 	/* (non-Javadoc)
@@ -94,6 +100,7 @@ public class ClubDivisionTab extends UserGroupTab {
 		_numberField.setContent((String) fieldValues.get(_numberFieldName));
 		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
+		_connectionToSpecialField.setSelectedElement((String) fieldValues.get(_connectionToSpecialFieldName));		
 	}
 
 	/* (non-Javadoc)
@@ -104,6 +111,25 @@ public class ClubDivisionTab extends UserGroupTab {
 		_ssnField = new TextInput(_ssnFieldName);
 //		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
 		_foundedField = new DateInput(_foundedFieldName);
+		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);	
+		
+		Collection special = null;
+		try {
+			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType("iwme_league");
+
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		if (special != null) {
+			Iterator it = special.iterator();
+			while (it.hasNext()) {
+				Group spec = (Group)it.next();
+				_connectionToSpecialField.addMenuElement(((Integer)spec.getPrimaryKey()).intValue(),spec.getName());
+			}
+		}		
+
 	}
 
 	/* (non-Javadoc)
@@ -117,19 +143,22 @@ public class ClubDivisionTab extends UserGroupTab {
 		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
 		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
 		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
+		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 3);
+		Table t = new Table(2, 4);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
 		t.add(_ssnField, 2, 2);
 		t.add(_foundedText, 1, 3);
 		t.add(_foundedField, 2, 3);
+		t.add(_connectionToSpecialText, 1, 4);
+		t.add(_connectionToSpecialField, 2, 4);
 
 		add(t);
 	}
@@ -142,6 +171,7 @@ public class ClubDivisionTab extends UserGroupTab {
 			String number = iwc.getParameter(_numberFieldName);
 			String ssn = iwc.getParameter(_ssnFieldName);
 			String founded = iwc.getParameter(_foundedFieldName);
+			String connection = iwc.getParameter(_connectionToSpecialFieldName);
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);
@@ -155,6 +185,10 @@ public class ClubDivisionTab extends UserGroupTab {
 				fieldValues.put(_foundedFieldName, founded);
 			else
 				fieldValues.put(_foundedFieldName, "");
+			if (connection != null)
+				fieldValues.put(_connectionToSpecialFieldName, connection);
+			else
+				fieldValues.put(_connectionToSpecialFieldName, "");
 
 			updateFieldsDisplayStatus();
 		}
@@ -175,11 +209,13 @@ public class ClubDivisionTab extends UserGroupTab {
 			String number = (String) fieldValues.get(_numberFieldName);
 			String ssn = (String) fieldValues.get(_ssnFieldName);
 			String founded = (String) fieldValues.get(_foundedFieldName);
-
+			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
+			
 			group.setMetaData("CLUBDIV_NUMBER", number);
 			group.setMetaData("CLUBDIV_SSN", ssn);
 			group.setMetaData("CLUBDIV_FOUNDED", founded);
-
+			group.setMetaData("CLUBDIV_CONN", connection);
+			
 			group.store();
 		}
 		catch (RemoteException e) {
@@ -204,6 +240,7 @@ public class ClubDivisionTab extends UserGroupTab {
 			String number = group.getMetaData("CLUBDIV_NUMBER");
 			String ssn = group.getMetaData("CLUBDIV_SSN");
 			String founded = group.getMetaData("CLUBDIV_FOUNDED");
+			String connection = group.getMetaData("CLUBDIV_CONN");
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);
@@ -211,6 +248,8 @@ public class ClubDivisionTab extends UserGroupTab {
 				fieldValues.put(_ssnFieldName, ssn);
 			if (founded != null)
 				fieldValues.put(_foundedFieldName, founded);
+			if (connection != null)
+				fieldValues.put(_connectionToSpecialFieldName, connection);
 			
 			updateFieldsDisplayStatus();
 		}
