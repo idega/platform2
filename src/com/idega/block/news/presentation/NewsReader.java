@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.88 2002/04/10 03:02:20 tryggvil Exp $
+ * $Id: NewsReader.java,v 1.89 2002/04/11 23:54:54 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -667,8 +667,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 	      }
 	      // first news
 	      if(newsCount==1){
-		if(newsImage.getWidth()==null)
-		  newsImage.setMaxImageWidth(firstImageWidth);
+		//if(newsImage.getWidth()==null)
+		  //newsImage.setMaxImageWidth(firstImageWidth);
 		T.add(newsImage,1,row);
 	      }
 	      // other news
