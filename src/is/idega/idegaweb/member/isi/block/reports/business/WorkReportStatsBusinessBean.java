@@ -3410,6 +3410,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			showPlayers = showMembers = true;
 		}
 		
+		int age1 = ageFrom==null?0:ageFrom.intValue();
+		int age2 = ageTo==null?123:ageTo.intValue();
+		if(age1>age2) {
+			age2 =age1;
+		}
+		
+		boolean filterByAge = (age1==0 && age2==123);
+		
 		//initialize stuff
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -3481,7 +3489,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 			
 			if(showMembers) {
-				int members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+				int members;
+				if(filterByAge) {
+					if(gender==null) {
+						members = getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					} else if(gender.equals("m")) {
+						members = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					} else {
+						members = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					}
+				} else {
+					if (gender==null) {
+						members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+					} else if(gender.equals("m")) {
+						members = getWorkReportBusiness().getCountOfMaleMembersByWorkReport(report);
+					} else {
+						members = getWorkReportBusiness().getCountOfFemaleMembersByWorkReport(report);
+					}
+				}
 				ruMembers = addToIntegerCount(count, ruMembers, members);
 				if(showClubs) {
 					ReportableData rdClubMembers = new ReportableData();
@@ -3493,7 +3521,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				}
 			}
 			if(showPlayers) {
-				int players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+				int players;
+				if(filterByAge) {
+					if(gender==null) {
+						players = getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					} else if(gender.equals("m")) {
+						players = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					} else {
+						players = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					}
+				} else {
+					if (gender==null) {
+						players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+					} else if(gender.equals("m")) {
+						players = getWorkReportBusiness().getCountOfMalePlayersByWorkReport(report);
+					} else {
+						players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
+					}
+				}
 				ruPlayers = addToIntegerCount(count, ruPlayers, players);
 				if(showClubs) {
 					ReportableData rdClubPlayers = new ReportableData();
