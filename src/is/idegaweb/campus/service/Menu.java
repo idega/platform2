@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.8 2001/08/08 10:39:25 aron Exp $
+ * $Id: Menu.java,v 1.9 2001/08/17 11:22:07 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,8 +93,7 @@ public class Menu extends JModuleObject{
 
     int row = 1;
 
-
-    Image menu1 = (iAct != ACT1?iwrb.getImage("/menu/info.gif",iWidth,iHeight):iwrb.getImage("/menu/info1.gif",iWidth,iHeight));
+    Image menu1 = (iAct != ACT1?iwrb.getImage("/menu/info.gif","/menu/info_o.gif","Info",iWidth,iHeight):iwrb.getImage("/menu/info1.gif",iWidth,iHeight));
     //Image menu1 = new Image(iAct != ACT1?"/pics/menu/info.gif":"/pics/menu/info1.gif","Upplýsingar",iWidth,iHeight));
     Link link1 = new Link(menu1);
     link1.setURL(getUrl(ACT1));
@@ -102,7 +101,7 @@ public class Menu extends JModuleObject{
     LinkTable.add(link1,1,row);
     row++;
 
-    Image menu2 = (iAct != ACT2?iwrb.getImage("/menu/office.gif",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
+    Image menu2 = (iAct != ACT2?iwrb.getImage("/menu/office.gif","/menu/office_o.gif","Office",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
     //Image menu2 = new Image(iAct != ACT2?"/pics/menu/office.gif":"/pics/menu/office1.gif","Skrifstofa",iWidth,iHeight));
     Link link2 = new Link(menu2);
     link2.setURL(getUrl(ACT2));
@@ -120,7 +119,7 @@ public class Menu extends JModuleObject{
       LinkTable.add(link2_1,1,row);
       row++;
     }
-    Image menu3 = (iAct != ACT3?iwrb.getImage("/menu/apply.gif",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
+    Image menu3 = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
     //Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif","Umsókn",iWidth,iHeight));
     Link link3 = new Link(menu3);
     link3.setURL(getUrl(ACT3));
@@ -137,7 +136,7 @@ public class Menu extends JModuleObject{
       LinkTable.add(link3_1,1,row);
       row++;
     }
-    Image menu4 = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
+    Image menu4 = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif","/menu/apartment_o.gif","Appartment",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
     //Image menu4 = new Image(iAct != ACT4?"/pics/menu/apartment.gif":"/pics/menu/apartment1.gif","Íbúðir");
     Link link4 = new Link(menu4);
     link4.setURL(getUrl(ACT4));
@@ -169,7 +168,7 @@ public class Menu extends JModuleObject{
       row++;
     }
 
-    Image menu5 = (iAct != ACT5?iwrb.getImage("/menu/links.gif",iWidth,iHeight):iwrb.getImage("/menu/links1.gif",iWidth,iHeight));
+    Image menu5 = (iAct != ACT5?iwrb.getImage("/menu/links.gif","/menu/links_o.gif","Links",iWidth,iHeight):iwrb.getImage("/menu/links1.gif",iWidth,iHeight));
     //Image menu5 = new Image(iAct != ACT5?"/pics/menu/links.gif":"/pics/menu/links1.gif","Tenglar",iWidth,iHeight));
     Link link5 = new Link(menu5);
     link5.setURL(getUrl(ACT5));
@@ -179,7 +178,7 @@ public class Menu extends JModuleObject{
     row++;
 
     Link link6 = new Link();
-    link6 = new Link(iAct != ACT6?iwrb.getImage("/menu/english.gif",iWidth,iHeight):iwrb.getImage("/menu/english1.gif",iWidth,iHeight));
+    link6 = new Link(iAct != ACT6?iwrb.getImage("/menu/english.gif","/menu/english_o.gif","English",iWidth,iHeight):iwrb.getImage("/menu/english1.gif",iWidth,iHeight));
     if(modinfo.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())){
       link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.englishParameterString);
     }
@@ -192,7 +191,7 @@ public class Menu extends JModuleObject{
     LinkTable.add(link6,1,row);
     row++;
 
-    Image menu7 = iwrb.getImage("/menu/home.gif",iWidth,iHeight);
+    Image menu7 = iwrb.getImage("/menu/home.gif","/menu/home_o.gif","Home",iWidth,iHeight);
     Link link7 = new Link(menu7);
     link7.setURL(getUrl(ACT7));
     link7.addParameter(strAction,ACT7);
