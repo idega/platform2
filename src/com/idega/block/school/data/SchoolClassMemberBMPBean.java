@@ -73,9 +73,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
   public Integer ejbFindByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
     IDOQuery sql = new IDOQuery();
-    sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
-    .appendAnd().append(SchoolClassBMPBean.SCHOOLYEAR).appendEqualSign().append(((Integer)season.getPrimaryKey()).intValue())
-    .appendAnd().append(SCHOOLCLASS).appendEqualSign().append(SchoolClassBMPBean.SCHOOLCLASS);
+    sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
+    .appendWhere().append(" mb."+MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
+    .appendAnd().append("cl."+SchoolClassBMPBean.SCHOOLYEAR).appendEqualSign().append(((Integer)season.getPrimaryKey()).intValue())
+    .appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+    System.err.println(sql.toString());
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
 
