@@ -310,7 +310,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					} catch (NullPointerException e) {
 						e.printStackTrace ();
 						String childName = child.getPersonalID() + " " + child.getName () + (child.getPrimaryKey ().equals (sibling.getPrimaryKey ()) ? "" : " or " + sibling.getPersonalID() + " " + sibling.getName ());
-						throw new SiblingOrderException (childName + " probably has missing fields in address");
+						throw new SiblingOrderException (childName + " probably has missing fields in address", e);
 					}
 				}
 			} catch (NoChildrenFound e) {

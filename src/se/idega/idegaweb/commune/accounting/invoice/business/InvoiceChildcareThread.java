@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/25 11:42:10 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/25 13:22:15 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.132 $
+ * @version $Revision: 1.133 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -391,7 +391,8 @@ public class InvoiceChildcareThread extends BillingThread{
 						siblingOrder = getSiblingOrder(contract, siblingOrders);
 					} catch (SiblingOrderException e) {
 						e.printStackTrace();
-						errorRelated.append(e.getMessage ());
+						errorRelated.append(e.getMessage());
+						errorRelated.append(e);
 						createNewErrorMessage(errorRelated,getLocalizedString("invoice.CouldNotGetSiblingOrder","Could not get sibling Order"));
 						siblingOrder = 1;
 					}
