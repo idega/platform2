@@ -273,7 +273,7 @@ public class TeeTimeSearch extends GolfBlock {
 		InterfaceObject dateDropdownMenu = insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo);
 		
 		Label vollur = new Label(getResourceBundle().getLocalizedString("start.search.course", "Course"),fieldDropdownMenu);
-		Label fjoldi = new Label(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"),playerCountInputBox);
+		Label fjoldi = new Label(getResourceBundle().getLocalizedString("start.search.how_many_empty_in_group", "How many?"),playerCountInputBox);
 		Label fKL = new Label(getResourceBundle().getLocalizedString("start.search.from", "From"),firstTimeDropdownMenu);
 		Label tKL = new Label(getResourceBundle().getLocalizedString("start.search.to", "To"),lastTimeDropdownMenu);
 		Label dags = new Label(getResourceBundle().getLocalizedString("start.search.date", "Date"),dateDropdownMenu);
@@ -616,7 +616,7 @@ public class TeeTimeSearch extends GolfBlock {
 		
 		DropdownMenu radio = new DropdownMenu("line");
 
-		if (count != 0) {
+ 		if (count != 0) {
 			String part = modinfo.getParameter("part");
 			List l;
 			if("next".equals(part)){
