@@ -80,6 +80,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	protected static final String HEADING_STYLE = "HeadingStyle";
 	protected static final String INFORMATION_STYLE = "InformationStyle";
 
+	protected static final String LIGHT_ROW_STYLE = "LightRowStyle";
+	protected static final String DARK_ROW_STYLE = "DarkRowStyle";
+	
 	/*private boolean _styles = true;
 	private String _headerStyle;
 	private String _linkStyle;
@@ -112,19 +115,16 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	protected IWBundle _iwcb;
 	protected ForumBusiness forumBusiness;
 
-	private StatefullPresentationImplHandler stateHandler = null;
+	/**
+	 * @todo implement Statehandling for Forum
+	 */
+	private StatefullPresentationImplHandler stateHandler = new ForumTree().getStateHandler();
 
 	private String _authorWidth = "160";
 	private String _replyWidth = "60";
 	private String _dateWidth = "100";
 
 	public Forum() {
-
-		/**
-		 * @todo implement Statehandling for Forum
-		 */
-		stateHandler = new ForumTree().getStateHandler();
-
 		setDefaultValues();
 	}
 
@@ -189,7 +189,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private Table getForum(IWContext iwc) {
 		Table table = new Table();
 		table.setCellspacing(0);
-		table.setCellpadding(2);
+		table.setCellpadding(0);
 		table.setWidth(Table.HUNDRED_PERCENT);
 
 		switch (_state) {
@@ -224,6 +224,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		table.add(topicText, 1, 1);
 		table.add(threadsText, 2, 1);
 		table.add(updatedText, 3, 1);
+		table.setRowColor(1, _headingColor);
 
 		Vector list = new Vector();
 		list.addAll(this.getCategories());
@@ -290,19 +291,21 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		if (topic != null) {
 			if (_showTopicName) {
 				Text topicText = formatText(topic.getName(), HEADER_STYLE);
+				table.setRowColor(row, _headingColor);
 				table.add(topicText, 1, row++);
-				table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
+				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 			}
 			
 			row = addBelowTopic(iwc, topic, table, row);
 
 			if (thread != null && thread.isValid()) {
 				table.add(getThreadHeaderTable(thread, iwc), 1, row++);
-				table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
+				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 				table.add(getThreadBodyTable(thread), 1, row++);
+				table.add(getThreadLinks(iwc, thread), 1, row++);
 			}
 
-			table.setHeight(1, row++, "16");
+			table.setHeight(1, row++, "20");
 			table.add(getForumLinks(), 1, row++);
 
 			updateThreadCount(iwc);
@@ -508,14 +511,17 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		tree.setObjectInstanceID(_objectID);
 		tree.setThreadImage(_threadImage);
 		tree.setResourceBundle(_iwrb);
+		tree.setLightRowStyle(getStyleName(LIGHT_ROW_STYLE));
+		tree.setDarkRowStyle(getStyleName(DARK_ROW_STYLE));
 		return tree;
 	}
 
 	private Table getThreadHeaderTable(ForumData thread, IWContext iwc) {
-		Table table = new Table(1, 3);
+		Table table = new Table(2, 1);
 		table.setWidth("100%");
 		table.setCellpadding(2);
 		table.setCellspacing(0);
+		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		Image image;
 		if (_threadImage == null) {
@@ -538,11 +544,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 		table.add(image, 1, 1);
 		table.add(headline, 1, 1);
-		table.add(getUser(thread), 1, 2);
-		table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, 2);
-		table.add(dateText, 1, 2);
-
-		table.add(getThreadLinks(iwc, thread), 1, 3);
+		table.add(getUser(thread), 2, 1);
+		table.add(formatText("," + Text.NON_BREAKING_SPACE), 2, 1);
+		table.add(dateText, 2, 1);
 
 		return table;
 	}
@@ -796,6 +800,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		map.put(THREAD_LINK_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;");
 		map.put(THREAD_LINK_STYLE+":hover", "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;");
 		
+		map.put(LIGHT_ROW_STYLE, "background-color:#FFFFFF;padding:2px;border-bottom:1px solid #000000");
+		map.put(DARK_ROW_STYLE, "background-color:#CDCDCD;padding:2px;border-bottom:1px solid #000000");
+		
 		return map;
 	}
 
@@ -938,4 +945,15 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return _topicID;
 	}
 
+	public Object clone() {
+		Forum obj = null;
+		try {
+			obj = (Forum) super.clone();
+			obj.stateHandler = stateHandler;
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		return obj;
+	}
 } // Class Forum

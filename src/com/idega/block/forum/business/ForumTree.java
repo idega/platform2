@@ -178,4 +178,12 @@ public class ForumTree extends AbstractTreeViewer {
 	public void setResourceBundle(IWResourceBundle iwrb) {
 		_iwrb = iwrb;
 	}
+	
+	public void setLightRowStyle(String styleName) {
+		lightRowStyle = styleName;
+	}
+
+	public void setDarkRowStyle(String styleName) {
+		darkRowStyle = styleName;
+	}
 }
