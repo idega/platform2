@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.72 2003/11/26 12:05:42 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.73 2003/11/27 16:13:21 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -52,6 +52,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
+import se.idega.idegaweb.commune.accounting.resource.data.Resource;
+import se.idega.idegaweb.commune.accounting.resource.data.ResourceHome;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -469,6 +471,34 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+				String value = (String) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+						int id = regCond.getIntervalID();
+						try {
+							int resourceKey = ((Integer)getResourceHome().findResourceByName(value).getPrimaryKey()).intValue();
+							if (id != resourceKey)
+								match = false;
+						}
+						catch (RemoteException e1) {
+							e1.printStackTrace();
+							return 0;
+						}
+						catch (FinderException e1) {
+							e1.printStackTrace();
+							return 0;
+						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			
 			else if (condition.equals(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
@@ -551,13 +581,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-			else if (condition.equals(RuleTypeConstant.CONDITION_ID_SIBLINGS)) {
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_SIBLING_NR)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
 				boolean match = true;
 				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
-					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SIBLINGS)) {
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SIBLING_NR)) {
 						int id = regCond.getIntervalID();
 						//I'll just use the fact that this is hardcoded.						
 						switch (id) {
@@ -1387,7 +1417,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		arr.add(
 			new ConditionHolder(
-				RuleTypeConstant.CONDITION_ID_SIBLINGS,
+				RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 				"Syskonnr",
 				LP + "syskonnr",
 				"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness",
@@ -1825,6 +1855,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
 		return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
+	}
+
+	protected ResourceHome getResourceHome() throws RemoteException {
+		return (ResourceHome) com.idega.data.IDOLookup.getHome(Resource.class);
 	}
 
 	protected SchoolManagementTypeHome getSchoolManagementTypeHome() throws RemoteException {

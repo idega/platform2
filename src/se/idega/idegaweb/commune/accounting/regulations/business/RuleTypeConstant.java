@@ -15,7 +15,7 @@ public class RuleTypeConstant {
 	public final static String CONDITION_ID_VAT = "3";
 	public final static String CONDITION_ID_SCHOOL_YEAR = "4";
 	public final static String CONDITION_ID_HOURS = "5";
-	public final static String CONDITION_ID_SIBLINGS = "6";	
+	public final static String CONDITION_ID_SIBLING_NR = "6";	
 	public final static String CONDITION_ID_AGE_INTERVAL = "7";
 	public final static String CONDITION_ID_STADSBIDRAG = "8";
 	public final static String CONDITION_ID_STUDY_PATH = "9";

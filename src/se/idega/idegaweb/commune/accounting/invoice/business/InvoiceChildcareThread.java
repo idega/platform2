@@ -27,7 +27,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
@@ -167,42 +166,46 @@ public class InvoiceChildcareThread extends BillingThread{
 					System.out.println("Contract id "+contract.getPrimaryKey());
 					System.out.println("SchoolClassMmeberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
-					String childcareType =schoolType.getName();
+					String childcareType =schoolType.getLocalizationKey();
 					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
 					age = new Age(contract.getChild().getDateOfBirth());
 					ArrayList conditions = new ArrayList();
-					conditions.add(new ConditionParameter(IntervalConstant.ACTIVITY,childcareType));
-					conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
-					conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
+					
+					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
+					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
+					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(age.getYears())));
+
+					log.info("\nSchool type: "+childcareType+
+						"\nHours "+hours+
+						"\nYears "+age.getYears());
+//					conditions.add(new ConditionParameter(IntervalConstant.ACTIVITY,childcareType));
+//					conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
+//					conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
 	
-					try {
-						//Select a specific row from the regulation, given the following restrictions
-						postingDetail = regBus.
-						getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-							category.getCategory(),//The ID that selects barnomsorg in the regulation
-							PaymentFlowConstant.OUT, 	//The payment flow is out
-							currentDate,					//Current date to select the correct date range
-							RuleTypeConstant.DERIVED,	//The conditiontype
-							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-							conditions,						//The conditions that need to fulfilled
-							totalSum,						//Sent in to be used for "Specialutrakning"
-							contract);						//Sent in to be used for "Specialutrakning"
-						System.out.println("RuleSpecType: "+postingDetail.getRuleSpecType());
-					}
-					catch (RegulationException e1) {
-						// TODO Auto-generated catch block
-						log.warning("Could not get posting detail for:\n" +						"  Category:"+category.getCategory()+"\n"+
-						"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
-						"  currentDate:"+currentDate+"\n"+
-						"  RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"\n"+
-						"  RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"\n"+
-						"  conditions:"+conditions.size()+"\n"+
-						"  totalSum:"+totalSum+"\n"+
-						"  contract:"+contract.getPrimaryKey()+"\n"
-							);
-						e1.printStackTrace();
-					}
+					//Select a specific row from the regulation, given the following restrictions
+					// TODO Auto-generated catch block
+					log.warning("Getting posting detail for:\n" +
+					"  Category:"+category.getCategory()+"\n"+
+					"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
+					"  currentDate:"+currentDate+"\n"+
+					"  RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"\n"+
+					"  RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"\n"+
+					"  conditions:"+conditions.size()+"\n"+
+					"  totalSum:"+totalSum+"\n"+
+					"  contract:"+contract.getPrimaryKey()+"\n"
+						);
+					postingDetail = regBus.
+					getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+						category.getCategory(),//The ID that selects barnomsorg in the regulation
+						PaymentFlowConstant.OUT, 	//The payment flow is out
+						currentDate,					//Current date to select the correct date range
+						RuleTypeConstant.DERIVED,	//The conditiontype
+						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+						conditions,						//The conditions that need to fulfilled
+						totalSum,						//Sent in to be used for "Specialutrakning"
+						contract);						//Sent in to be used for "Specialutrakning"
+					System.out.println("RuleSpecType: "+postingDetail.getTerm());
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
@@ -214,7 +217,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, postings[0], postings[1]);
 			
 					totalSum = postingDetail.getAmount()*months;
-					conditions.add(new ConditionParameter(IntervalConstant.SIBLING_NUMBER,
+					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(getSiblingOrder(contract))));
 
 					//Get all the rules for this contract
@@ -254,6 +257,12 @@ public class InvoiceChildcareThread extends BillingThread{
 							createNewErrorMessage(postingDetail.getTerm(),"invoice.noSubventionFound");
 						}
 					}
+				}catch (NullPointerException e1) {
+					e1.printStackTrace();
+					createNewErrorMessage(contract.getChild().getName(),"invoice.ReferenceError");
+				}catch (RegulationException e1) {
+					e1.printStackTrace();
+					createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingRegulation");
 				} catch(MissingMandatoryFieldException e){
 					e.printStackTrace();
 					createNewErrorMessage(contract.getChild().getName(),"invoice.MissingMandatoryFieldInPostingParameter");

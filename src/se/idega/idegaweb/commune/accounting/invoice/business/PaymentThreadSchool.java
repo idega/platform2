@@ -140,15 +140,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 							!provider.getPaymentByInvoice())){
 //						dispTime("looking for regulations");
 						
-						
-						//*****************
-						
-							
-							
-							//*****
-							
-							
-							
 							Iterator schoolClassMemberIter = getSchoolClassMemberHome().findBySchool(((Integer)school.getPrimaryKey()).intValue(),-1,category.getCategory(),currentDate).iterator();
 //							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 //							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(((Integer)school.getPrimaryKey()).intValue(), 
@@ -351,7 +342,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												resourceConditions				//The conditions that need to fulfilled
 												);
 
-											dispTime("Getting regulations for resource");
+											dispTime("Getting regulations for resource of size "+regulationForResourceArray.size());
 											Iterator regulationForResourceIter = regulationForResourceArray.iterator();
 											while(regulationForResourceIter.hasNext())
 											{
@@ -363,7 +354,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											}
 											dispTime("Done regulations for resource");
 										}
-//									}
 /*								}catch(NullPointerException e){
 									e.printStackTrace();
 									if(schoolClassMember != null){

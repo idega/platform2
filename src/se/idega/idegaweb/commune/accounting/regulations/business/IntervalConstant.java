@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
  * @author Joakim
  */
 public class IntervalConstant {
+/*
 	public static final String PREESCHOOL = "interval.forskoleklass";
 	public static final String ELEMENTARY_SCHOOL = "interval.grundskola";
 	public static final String SPECIAL_SCHOOL = "interval.sarskola";
@@ -15,4 +16,5 @@ public class IntervalConstant {
 	public static final String HOURS = "interval.timmar";
 	public static final String SIBLING_NUMBER = "interval.syskonnr";
 	public static final String AGE = "interval.alder";
+*/
 }
