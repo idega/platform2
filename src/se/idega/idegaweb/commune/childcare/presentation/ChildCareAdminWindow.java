@@ -258,12 +258,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	// private boolean restrictDates = false;
 	boolean onlyAllowFutureCareDate = true; // Changed according to #nacc149
 
+	private boolean _addCheckGroupScript = false;
+
 	private boolean _addCareTimeScript = false;
 
 	private User _child = null;
 	
 	private SubmitButton _submitButton = null;
-	
+		
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
@@ -409,6 +411,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 
 		_addCareTimeScript = false;
+		_addCheckGroupScript = false;
 		
 		switch (_method) {
 			case METHOD_GRANT_PRIORITY:
@@ -497,7 +500,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		add(form);
 		
 		if (_addCareTimeScript) {
-			_submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(_child, _method == METHOD_PLACE_IN_GROUP));
+			_submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(iwc, _child, _method == METHOD_PLACE_IN_GROUP, _addCheckGroupScript));
+		} else if (_addCheckGroupScript) {
+			_submitButton.setOnSubmitFunction("checkGroup", getCheckGroupScript(iwc, true));
 		}
 	}
 
@@ -1006,14 +1011,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			// deadline has passed
 
 			if (helper.hasDeadlinePassed()) {
-				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+//				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 				if (rejectionDate != null)
 					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
 			// still within deadline
 			else {
-				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
+//				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
 				if (rejectionDate != null)
 					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
@@ -1022,7 +1027,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		else {
 			dateInput.setDate(stamp.getDate());
-			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+//			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
 			if (rejectionDate != null)
 				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
 		}
@@ -1090,6 +1095,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_submitButton = placeInGroup;
 		_child = helper.getApplication().getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
+		_addCheckGroupScript = true;
 		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -2361,13 +2367,16 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return menu;
 	}
 	
-	private String getSubmitCheckCareTimeScript(User child, boolean useApplication) throws RemoteException {
+	private String getSubmitCheckCareTimeScript(IWContext iwc, User child, boolean useApplication, boolean checkGroupPlacement) throws RemoteException {
 		String childDate = child.getDateOfBirth().toString();
 		String childYear = childDate.substring(0, 4);
 		String emptyCareTimeMessage = localize("child_care.care_time_empty", "Care time must be selected.");
 		String errorMessage = localize("child_care.care_time_not_valid_for_date", "Care time not valid for the selected date.");
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("\nfunction checkCareTime(){\n\t");
+		if (checkGroupPlacement) {
+			buffer.append(getCheckGroupScript(iwc, false));
+		}
 		buffer.append("\n\t var message = '';");
 		buffer.append("\n\t var childYear = " + childYear + ";");
 		if (useApplication) {
@@ -2443,6 +2452,82 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t return true;");
 
 		buffer.append("\n }");
+
+		return buffer.toString();
+	}
+	
+	private String getCheckGroupScript(IWContext iwc, boolean isSeparateFunction) throws RemoteException {
+		StringBuffer buffer = new StringBuffer();
+		if (isSeparateFunction) {
+			buffer.append("\nfunction checkGroup(){\n\t");
+		}
+		PlacementHelper helper = getPlacementHelper();
+//		ChildCareApplication application = helper.getApplication();
+
+		buffer.append("\n\t var careTimeInput = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
+		if (isUsePredefinedCareTimeValues()) {
+			buffer.append("\n\t var careTime = ").append("careTimeInput.options[careTimeInput.selectedIndex].value;");
+		} else {
+			buffer.append("\n\t var careTimeCode = ").append("careTimeInput.value;");
+		}
+		buffer.append("\n\t var schoolTypeInput = ").append("findObj('").append(PARAMETER_SCHOOL_TYPES).append("');");
+		buffer.append("\n\t var schoolType = ").append("schoolTypeInput.options[schoolTypeInput.selectedIndex].value;");
+		buffer.append("\n\t var schoolClassInput = ").append("findObj('").append(PARAMETER_SCHOOL_CLASS).append("');");
+		buffer.append("\n\t var schoolClass = ").append("schoolClassInput.options[schoolClassInput.selectedIndex].value;");
+		buffer.append("\n\t var dayInput = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_day").append("');");
+		buffer.append("\n\t var monthInput = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_month").append("');");
+		buffer.append("\n\t var yearInput = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_year").append("');");
+		buffer.append("\n\t var dDay = ").append("dayInput.options[dayInput.selectedIndex].value.toString();");
+		buffer.append("\n\t var dMonth = ").append("monthInput.options[monthInput.selectedIndex].value.toString();");
+		buffer.append("\n\t var dYear = ").append("yearInput.options[yearInput.selectedIndex].value.toString();");
+		buffer.append("\n\t var d = ").append("parseInt(dYear + dMonth + dDay, 10);");
+
+		buffer.append("\n\t var oldCareTime = '").append(helper.getCurrentCareTimeHours()).append("';");
+		buffer.append("\n\t var oldSchoolType = '").append(helper.getCurrentSchoolTypeID()).append("';");
+		buffer.append("\n\t var oldSchoolClass = '").append(helper.getCurrentClassID()).append("';");
+		IWTimestamp oldD = new IWTimestamp(helper.getApplication().getFromDate());
+		buffer.append("\n\t var oldD = '").append(oldD.getDateString("yyyyMMdd")).append("';");
+
+		buffer.append("\n\t var hasChanged = false;");
+		buffer.append("\n\t hasChanged |= careTime != oldCareTime;");
+		buffer.append("\n\t hasChanged |= schoolType != oldSchoolType;");
+		buffer.append("\n\t hasChanged |= d != oldD;");
+		if (!isAllowChangeGroupFromToday()) {
+			buffer.append("\n\t hasChanged |= schoolClass != oldSchoolClass;");
+		}
+
+		buffer.append("\n\t var dateMessage = '';");
+
+		buffer.append("\n\t if (hasChanged) {");
+
+		TimePeriod deadlinePeriod = helper.getValidPeriod();
+		
+		if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
+			DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
+			buffer.append("\n\t\t if (d < ").append(deadlinePeriod.getFirstTimestamp().getDateString("yyyyMMdd")).append(") {");
+			if (helper.hasDeadlinePassed()) {
+				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate())).append("';");
+			} else {
+				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_still_within", "You can not choose a date back in time.")).append("';");
+			}
+			buffer.append("\n\t\t }");
+		} else {
+			buffer.append("\n\t\t if (d < ").append(IWTimestamp.RightNow().getDateString("yyyyMMdd")).append(") {");
+			buffer.append("\n\t\t\t dateMessage = '").append(localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time.")).append("';");
+			buffer.append("\n\t\t }");
+		}
+
+		buffer.append("\n\t }");
+
+		buffer.append("\n\t if (dateMessage != '') {");
+		buffer.append("\n\t\t alert(dateMessage);");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+
+		if (isSeparateFunction) {
+			buffer.append("\n\t return true;");
+			buffer.append("\n }");
+		}
 
 		return buffer.toString();
 	}
