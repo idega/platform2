@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.27 2003/11/03 09:10:06 anders Exp $
+ * $Id: ProviderEditor.java,v 1.28 2003/12/22 13:52:46 goranb Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -59,10 +59,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/11/03 09:10:06 $ by $Author: anders $
+ * Last modified: $Date: 2003/12/22 13:52:46 $ by $Author: goranb $
  *
  * @author Anders Lindman
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -96,6 +96,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_COMMUNE_ID = PP + "commune_id";
 	private final static String PARAMETER_COUNTRY_ID = PP + "country_id";
 	private final static String PARAMETER_CENTRALIZED_ADMINISTRATION = PP + "centralized_administration";
+	private final static String PARAMETER_INVISIBLE_FOR_CITIZEN = PP + "invisible_for_citizen";
 	private final static String PARAMETER_PAYMENT_BY_INVOICE = PP + "payment_by_invoice";
 	private final static String PARAMETER_STATE_SUBSIDY_GRANT = PP + "state_subsidy_grant";
 	private final static String PARAMETER_POSTGIRO = PP + "postgiro";
@@ -133,6 +134,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_COMMUNE = KP + "commune";
 	private final static String KEY_COUNTRY = KP + "country";
 	private final static String KEY_CENTRALIZED_ADMINISTRATION = KP + "key_centralized_administration";
+	private final static String KEY_INVISIBLE_FOR_CITIZEN = KP + "invisible_for_citizen";
 	private final static String KEY_PAYMENT_BY_INVOICE = KP + "payment_by_invoice";
 	private final static String KEY_STATE_SUBSIDY_GRANT = KP + "state_subsidy_grant";
 	private final static String KEY_POSTGIRO = KP + "postgiro";
@@ -234,7 +236,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", "", "", "", null, null, null, true));
 	}
 
 	/*
@@ -290,6 +292,7 @@ public class ProviderEditor extends AccountingBlock {
 					"" + school.getCommunePK(),
 					"" + school.getCountryId(),
 					school.getCentralizedAdministration() ? "true" : "",
+					school.getInvisibleForCitizen() ? "true" : "",
 					provider.getPaymentByInvoice() ? "true" : "",
 					provider.getStateSubsidyGrant() ? "true" : "",
 					provider.getPostgiro(),
@@ -341,6 +344,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_COMMUNE_ID),
 					getParameter(iwc, PARAMETER_COUNTRY_ID),
 					getParameter(iwc, PARAMETER_CENTRALIZED_ADMINISTRATION),
+					getParameter(iwc, PARAMETER_INVISIBLE_FOR_CITIZEN),
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
 					getParameter(iwc, PARAMETER_STATE_SUBSIDY_GRANT),
 					getParameter(iwc, PARAMETER_POSTGIRO),
@@ -380,6 +384,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_COMMUNE_ID),
 					getParameter(iwc, PARAMETER_COUNTRY_ID),
 					getParameter(iwc, PARAMETER_CENTRALIZED_ADMINISTRATION),
+					getParameter(iwc, PARAMETER_INVISIBLE_FOR_CITIZEN),
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
 					getParameter(iwc, PARAMETER_STATE_SUBSIDY_GRANT),
 					getParameter(iwc, PARAMETER_POSTGIRO),
@@ -587,6 +592,7 @@ public class ProviderEditor extends AccountingBlock {
 			String communeId,
 			String countryId,
 			String centralizedAdministration,
+			String invisibleForCitizen,
 			String paymentByInvoice,
 			String stateSubsidyGrant,
 			String postgiro,
@@ -719,7 +725,9 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(getCheckBoxTable(PARAMETER_PAYMENT_BY_INVOICE, paymentByInvoice, KEY_PAYMENT_BY_INVOICE, "Payment by invoice"), 2, row++);
 		table.mergeCells(2, row, 4, row);
 		table.add(getCheckBoxTable(PARAMETER_CENTRALIZED_ADMINISTRATION, centralizedAdministration, KEY_CENTRALIZED_ADMINISTRATION, "Centralized administration"), 2, row++);
-
+		table.mergeCells(2, row, 4, row);
+		table.add(getCheckBoxTable(PARAMETER_INVISIBLE_FOR_CITIZEN, invisibleForCitizen, KEY_INVISIBLE_FOR_CITIZEN, "Invisible for citizen"), 2, row++);
+		
 		row++;
 		table.mergeCells(2, row, 4, row);
 		table.add(getText("&nbsp;"), 2, row);
