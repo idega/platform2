@@ -155,8 +155,11 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	}
 	
 	protected String getStatusString(ChildCareApplication application) throws RemoteException {
-		char status = application.getApplicationStatus();
-		
+		return getStatusString(application.getApplicationStatus());
+	}
+	
+	protected String getStatusString(char status) throws RemoteException {
+
 		if (status == getBusiness().getStatusCancelled()) {
 			return localize("child_care.status_cancelled","Cancelled");
 		}
