@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentFlowTypeBMPBean.java,v 1.3 2003/08/19 20:37:25 anders Exp $
+ * $Id: PaymentFlowTypeBMPBean.java,v 1.4 2003/08/20 09:02:30 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
-import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -21,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the payment flow type (in, out, e t c).
  * <p>
- * Last modified: $Date: 2003/08/19 20:37:25 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/20 09:02:30 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlowType {
 

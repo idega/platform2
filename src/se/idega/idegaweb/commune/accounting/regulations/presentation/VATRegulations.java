@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.5 2003/08/19 19:11:38 anders Exp $
+ * $Id: VATRegulations.java,v 1.6 2003/08/20 08:53:50 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,9 +9,8 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ExceptionWrapper;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -22,10 +21,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/19 19:11:38 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/20 08:53:50 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VATRegulations extends AccountingBlock {
 
