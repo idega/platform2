@@ -26,6 +26,9 @@ protected boolean teletype;
 protected boolean bold;
 protected boolean italic;
 protected boolean underline;
+
+private boolean addHTMLFontTag = true;
+
 public static String FONT_FACE_ARIAL = "Arial, Helvetica, Sans-serif";
 public static String FONT_FACE_TIMES = "Times New Roman, Times, serif";
 public static String FONT_FACE_COURIER = "Courier New, Courier, mono";
@@ -187,7 +190,8 @@ public static Text emptyString(){
 public static Text getBreak(){
   if (HTMLbreak == null){
     HTMLbreak = new Text("<br>");
-    HTMLbreak.setFontSize("1");
+    HTMLbreak.addHTMLFontTag(false);
+   // HTMLbreak.setFontSize("1");
   }
   return HTMLbreak;
 }
@@ -195,25 +199,29 @@ public static Text getBreak(){
 public static Text getNonBrakingSpace(){
   if (HTMLnbsp == null){
     HTMLnbsp = new Text("&nbsp;");
-    HTMLnbsp.setFontSize("1");
+    HTMLnbsp.addHTMLFontTag(false);
+    //HTMLnbsp.setFontSize("1");
   }
   return HTMLnbsp;
 }
 
+public void addHTMLFontTag(boolean addHTMLFontTag){
+  this.addHTMLFontTag = addHTMLFontTag;
+}
 
 private void setDefaultAttributes(ModuleInfo modinfo){
 
-	if ( ! isAttributeSet("size") ){
+	if ( (! isAttributeSet("size")) && addHTMLFontTag ){
 		setFontSize(modinfo.getDefaultFontSize());
 	}
-	if ( ! isAttributeSet("face") ){
+	if ( ! isAttributeSet("face") && addHTMLFontTag  ){
 		setFontFace(modinfo.getDefaultFontFace() );
 	}
-	if ( ! isAttributeSet("color") ){
+	if ( ! isAttributeSet("color") && addHTMLFontTag  ){
 		setFontColor(modinfo.getDefaultFontColor());
 	}
 
-	if ( ! isAttributeSet("style")){
+	if ( ! isAttributeSet("style") && addHTMLFontTag ){
 		setFontStyle(modinfo.getDefaultFontStyle() );
 	}
 
