@@ -1040,7 +1040,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			if (rejectionDate != null)
 				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " + format.format(rejectionDate.getDate()));
 		}
-
+		dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
