@@ -36,9 +36,17 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	
 	private static final String LOCALIZED_DIVISION_NAME = "AccountingStatsBusiness.division_name";
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
+	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
+	private static final String LOCALIZED_SSN = "AccountingStatsBusiness.ssn";
+	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
+	private static final String LOCALIZED_ENTRY_DATE = "AccountingStatsBusiness.entry_date";
 	
-	private static final String FIELD_DIVISION_NAME = "division_name";
-	private static final String FIELD_GROUP_NAME = "group_name";
+	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
+	private static final String FIELD_NAME_GROUP_NAME = "group_name";
+	private static final String FIELD_NAME_NAME = "name";
+	private static final String FIELD_NAME_SSN = "ssn";
+	private static final String FIELD_NAME_AMOUNT = "amount";
+	private static final String FIELD_NAME_ENTRY_DATE = "entry_date";
 	
 	private AccountingBusiness accountingBiz = null;
 	private IWBundle _iwb = null;
@@ -84,40 +92,39 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		
-		 ReportableField divisionString = new ReportableField(FIELD_DIVISION_NAME, String.class);
-		 divisionString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
-		 reportCollection.addField(divisionString);
+		 ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
+		 divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Deild"), currentLocale);
+		 reportCollection.addField(divisionField);
 		 
 		 //fake columns (data gotten by business methods)
-		 ReportableField groupString = new ReportableField(FIELD_GROUP_NAME, String.class);
-		 groupString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
-		 reportCollection.addField(groupString);
-		 /* 
-		 ReportableField womenUnderAgeLimit = new ReportableField(FIELD_NAME_WOMEN_UNDER_AGE, Integer.class);
-		 womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER, "women -"+age), currentLocale);
-		 reportCollection.addField(womenUnderAgeLimit);
+		 ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
+		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Flokkur"), currentLocale);
+		 reportCollection.addField(groupField);
 		 
-		 ReportableField womenOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_WOMEN_OVER_OR_EQUAL_AGE, Integer.class);
-		 womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL, "women "+age+"+"),currentLocale);
-		 reportCollection.addField(womenOverOrEqualAgeLimit);
+		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, Integer.class);
+		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Nafn"), currentLocale);
+		 reportCollection.addField(nameField);
 		 
-		 ReportableField menUnderAgeLimit = new ReportableField(FIELD_NAME_MEN_UNDER_AGE, Integer.class);
-		 menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER, "men -"+age), currentLocale);
-		 reportCollection.addField(menUnderAgeLimit);
+		 ReportableField ssnField = new ReportableField(FIELD_NAME_SSN, Integer.class);
+		 ssnField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SSN, "Kennitala"),currentLocale);
+		 reportCollection.addField(ssnField);
 		 
-		 ReportableField menOverOrEqualAgeLimit = new ReportableField(FIELD_NAME_MEN_OVER_OR_EQUAL_AGE, Integer.class);
-		 menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL, "men "+age+"+"), currentLocale);
-		 reportCollection.addField(menOverOrEqualAgeLimit);
+		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Integer.class);
+		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Upphæð"), currentLocale);
+		 reportCollection.addField(amountField);
 		 
-		 ReportableField bothGendersUnderAge = new ReportableField(FIELD_NAME_ALL_UNDER_AGE, Integer.class);
+		 ReportableField entryDateField = new ReportableField(FIELD_NAME_ENTRY_DATE, Integer.class);
+		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ENTRY_DATE, "Dags. færslu"), currentLocale);
+		 reportCollection.addField(entryDateField);
+		 /*
+		 ReportableField bothGendersUnderAge = new ReportableField(FIELD_NAME_NAME_ALL_UNDER_AGE, Integer.class);
 		 bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER, "all -"+age), currentLocale);
 		 reportCollection.addField(bothGendersUnderAge);
 		 
-		 ReportableField bothGendersEqualOverAge = new ReportableField(FIELD_NAME_ALL_OVER_OR_EQUAL_AGE, Integer.class);
+		 ReportableField bothGendersEqualOverAge = new ReportableField(FIELD_NAME_NAME_ALL_OVER_OR_EQUAL_AGE, Integer.class);
 		 bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER, "all "+age+"+"), currentLocale);
 		 reportCollection.addField(bothGendersEqualOverAge);
 		 */
-		 
 		 
 		 //Real data stuff
 		 //Gathering data
@@ -138,6 +145,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 String groupIdentifier = financeEntry.getGroup().getName();
 			 String divisionIdentifier = financeEntry.getDivision().getName();
 			 
+			 
 			 try {
 			 	Group division = financeEntry.getDivision();	
 			 		//if (!leagueGroupIdList.contains(league.getGroupId()) ) {
@@ -147,8 +155,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 		ReportableData data = new ReportableData();
 			 		//					add the data to the correct fields/columns
 			 		
-			 		data.addData(divisionString, divisionIdentifier );
-			 		data.addData(groupString, groupIdentifier );
+			 		data.addData(divisionField, divisionIdentifier );
+			 		data.addData(groupField, groupIdentifier );
+			 		data.addData(nameField, financeEntry.getUser().getName() );
+			 		data.addData(ssnField, financeEntry.getUser().getPersonalID() );
+			 		data.addData(amountField, new Double(financeEntry.getAmount()) );
+			 		data.addData(entryDateField, financeEntry.getDateOfEntry() );
+			 		
 			 		//					get the stats
 			 		//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 			 		
@@ -181,7 +194,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 	 reportCollection.addAll(datas);
 		 }
 	
-		 ReportableField[] sortFields = new ReportableField[] {groupString, divisionString};
+		 ReportableField[] sortFields = new ReportableField[] {groupField, divisionField};
 		 Comparator comparator = new FieldsComparator(sortFields);
 		 Collections.sort(reportCollection, comparator);
 		 
