@@ -262,7 +262,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 		if (_product != null) {
 			if (_product.getNumber() != null)
 				number.setContent(_product.getNumber());
-			name.setContent(_product.getProductName(iLocaleID));
+			name.setContent(_product.getProductName(iLocaleID, ""));
 			description.setContent(_product.getProductDescription(iLocaleID));
 			teaser.setContent(_product.getProductTeaser(iLocaleID));
 			ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
