@@ -15,7 +15,7 @@ import com.idega.core.ICTreeNode;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class Union extends GenericEntity implements idegaTreeNode,ICTreeNode{
+public class Union extends TreeableEntity implements idegaTreeNode,ICTreeNode{
 
         public static String sClassName = "is.idega.idegaweb.golf.entity.Union";
 
@@ -712,5 +712,6 @@ public List getTournamentGroupsRecursive(){
     public int getSiblingCount(){
       return 0;
     }
+
 
 }
