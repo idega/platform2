@@ -641,92 +641,88 @@ public abstract class AbstractSearchForm extends Block{
 			//while (iter.hasNext()) {
 				try {
 					product = pHome.findByPrimaryKey(tmp.get(i));
-					supplier = sHome.findByPrimaryKey(product.getSupplierId());
-					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
-					addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true);
-
-					Table table = new Table();
-					table.setWidth("100%");
-					int row = 1;
-					table.add(getText(supplier.getName()), 1, row);
-					table.mergeCells(1, row, 2, row);
-					++row;
-					Boolean boolTest = ((Boolean)availability.get(product.getPrimaryKey()));
-					if (boolTest == null) {
-						System.out.println("[AbstractSearchForm] boolTest == null (product = "+product.getProductName(iwc.getCurrentLocaleId())+")");
-						available = false;
-					} else {
-						available = boolTest.booleanValue();
-					}
-					table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
-					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-					if (available) {
-						table.add(getText(iwrb.getLocalizedString("travel.search.available","Available")), 2, row);
-					} else {
-						table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 2, row);
-					}
-					//description
-					++row;
-					TxText descriptionText = product.getText();
-					if (descriptionText != null) {
-					  TextReader textReader = new TextReader(descriptionText.getID());
-					  if (headerFontStyle != null) {
-						textReader.setHeadlineStyle(headerFontStyle);
-					  }
-					  
-					  if (textFontStyle != null) {
-						textReader.setTextStyle(textFontStyle);
-					  }
-						textReader.setCacheable(false);
-					  table.add(textReader,1,row);
-					  table.mergeCells(1, row, 2, row);
-					} else {
-						System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search");
-					}
-					
-					if (addresses == null || addresses.isEmpty()) {
+					Boolean productAvailability = ((Boolean)availability.get(product.getPrimaryKey()));
+					if (productAvailability != null) {
+						supplier = sHome.findByPrimaryKey(product.getSupplierId());
+						bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
+						addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true);
+	
+						Table table = new Table();
+						table.setWidth("100%");
+						int row = 1;
+						table.add(getText(supplier.getName()), 1, row);
+						table.mergeCells(1, row, 2, row);
 						++row;
-						int addressId = -1;
-						timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
-						int timeframeId = -1;
-						if (timeframe != null) {
-							timeframeId = timeframe.getID();
-						}
-						row = getPrices(iwc, stamp, bus, product, table, row, addressId, timeframeId);
-						link = getBookingLink(product.getID());
-						link.addParameter(PARAMETER_ADDRESS_ID, -1);
-						//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
+						available = productAvailability.booleanValue();
+						table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
+						table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 						if (available) {
-							table.add(link, 1, row);
+							table.add(getText(iwrb.getLocalizedString("travel.search.available","Available")), 2, row);
 						} else {
-							table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
+							table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 2, row);
 						}
-					} else {
-						TravelAddress address;
-						Iterator addressesIter = addresses.iterator();
-						while (addressesIter.hasNext()) {
-							address = (TravelAddress) addressesIter.next();
-							timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getAddressId());
+						//description
+						++row;
+						TxText descriptionText = product.getText();
+						if (descriptionText != null) {
+						  TextReader textReader = new TextReader(descriptionText.getID());
+						  if (headerFontStyle != null) {
+							textReader.setHeadlineStyle(headerFontStyle);
+						  }
+						  
+						  if (textFontStyle != null) {
+							textReader.setTextStyle(textFontStyle);
+						  }
+							textReader.setCacheable(false);
+						  table.add(textReader,1,row);
+						  table.mergeCells(1, row, 2, row);
+						} else {
+							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search");
+						}
+						
+						if (addresses == null || addresses.isEmpty()) {
+							++row;
+							int addressId = -1;
+							timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
 							int timeframeId = -1;
 							if (timeframe != null) {
 								timeframeId = timeframe.getID();
 							}
-							
-							++row;
-							table.add(getText(address.getName()), 1, row);
+							row = getPrices(iwc, stamp, bus, product, table, row, addressId, timeframeId);
 							link = getBookingLink(product.getID());
-							link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
+							link.addParameter(PARAMETER_ADDRESS_ID, -1);
 							//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
 							if (available) {
-								table.add(link, 2, row);
+								table.add(link, 1, row);
+							} else {
+								table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
 							}
-							row =getPrices(iwc, stamp, bus, product, table, row, address.getAddressId(), timeframeId);
+						} else {
+							TravelAddress address;
+							Iterator addressesIter = addresses.iterator();
+							while (addressesIter.hasNext()) {
+								address = (TravelAddress) addressesIter.next();
+								timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getAddressId());
+								int timeframeId = -1;
+								if (timeframe != null) {
+									timeframeId = timeframe.getID();
+								}
+								
+								++row;
+								table.add(getText(address.getName()), 1, row);
+								link = getBookingLink(product.getID());
+								link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
+								//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
+								if (available) {
+									table.add(link, 2, row);
+								}
+								row =getPrices(iwc, stamp, bus, product, table, row, address.getAddressId(), timeframeId);
+							}
+							
 						}
 						
+						add(table);
 					}
-					
-					add(table);
-
 				}catch(Exception e) {
 					e.printStackTrace();
 				} 
