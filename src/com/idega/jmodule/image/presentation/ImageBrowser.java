@@ -206,7 +206,7 @@ private ImageViewer viewer = new ImageViewer();
     StringTokenizer tokens = new StringTokenizer(searchString);
     while ( tokens.hasMoreTokens() ) {
       String token = tokens.nextToken();
-      queryString += "(image_text like '%"+token+"%' or image_name like'%"+token+"%')";
+      queryString += "(image_text like '%"+token+"%' or image_name like'%"+token+"%' or image_link like'%"+token+"%')";
       if ( tokens.hasMoreTokens() ) {
         queryString += " and ";
       }

@@ -20,10 +20,12 @@ public class Image extends ModuleObject{
 
 private Script theAssociatedScript;
 private String overImageUrl;
-private int maxImageWidth = 140;
 private boolean limitImageWidth = false;
+private boolean zoomView = false;
 private int imageId = -1;
+private int maxImageWidth = 140;
 private ModuleObject tableOrImage = null;
+private Link imageLink2 = null;
 
 public Image(){
 	this("");
@@ -186,6 +188,10 @@ public Script getAssociatedScript(){
 	return theAssociatedScript;
 }
 
+public void setImageLinkZoomView(){
+  this.zoomView = true;
+}
+
 private void setTableOrImage(){//optimize by writing in pure html
 Table imageTable = null;
   try{
@@ -198,6 +204,8 @@ Table imageTable = null;
     URIString.append(imageId);
 
     Image theImage = new Image(URIString.toString(),image.getName());
+
+    imageLink2 = new Link(theImage);
 
     String width = image.getWidth();
     String height = image.getHeight();
@@ -213,7 +221,6 @@ Table imageTable = null;
         theImage.setHeight(height);
       }
     }
-
 
 
     if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
@@ -232,18 +239,20 @@ Table imageTable = null;
         imageLink.setTarget("_new");
         imageLink.setFontSize(1);
         imageTable.add(imageLink, 1, 2);
-        Link imageLink2 = new Link(theImage,link);
-        imageTable.add(imageLink2, 1, 1);
+        if( !zoomView ) {
+          imageLink2.setURL(link);
+          imageLink.setTarget("_new");
+        }
       }
       else{
         imageTable.add(imageText, 1, 2);
-        imageTable.add(theImage, 1, 1);
       }
       imageTable.setColor(1,2,"#CCCCCC");
       tableOrImage = imageTable;
     }
     else  tableOrImage = theImage;
 
+    imageTable.add(imageLink2, 1, 1);
 
   }
   catch(Exception e){
@@ -268,7 +277,13 @@ public void print(ModuleInfo modinfo)throws IOException{
 		if (getLanguage().equals("HTML")){
                   if( imageId!=-1 )  setTableOrImage();
 
-                  if(limitImageWidth) setWidth(maxImageWidth);
+                  if(limitImageWidth){
+                     setWidth(maxImageWidth);
+                  }
+
+                  if( zoomView ){
+                    if( imageLink2!=null) imageLink2.addParameter("image_id",imageId);
+                  }
 
 			//if (getInterfaceStyle().equals("something")){
 			//}

@@ -435,6 +435,7 @@ private Table displayImage( ImageEntity image ) throws SQLException
   imageTable.setCellpadding(0);
 
   Image theImage = new Image(imageId);
+  theImage.setImageLinkZoomView();
 
   if(limitImageWidth) {
     theImage.setMaxImageWidth(maxImageWidth);
