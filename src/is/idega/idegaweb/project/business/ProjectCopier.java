@@ -1,5 +1,7 @@
 package is.idega.idegaweb.project.business;
 
+import javax.ejb.CreateException;
+
 import com.idega.data.IDOCopier;
 import com.idega.data.GenericEntity;
 
@@ -26,8 +28,15 @@ public class ProjectCopier extends IDOCopier {
     instance1.setDatasource(fromDatasource);
     GenericEntity instance2 = (GenericEntity)((com.idega.core.accesscontrol.data.LoginTableHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginTable.class)).createLegacy();
     instance2.setDatasource(fromDatasource);
-    GenericEntity instance2b = (GenericEntity)((com.idega.core.accesscontrol.data.LoginInfoHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginInfo.class)).createLegacy();
-    instance2b.setDatasource(fromDatasource);
+    GenericEntity instance2b;
+	try {
+		instance2b = (GenericEntity)((com.idega.core.accesscontrol.data.LoginInfoHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginInfo.class)).create();
+		instance2b.setDatasource(fromDatasource);
+	} catch (CreateException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
     GenericEntity instance3 = (GenericEntity)((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.component.data.ICObjectInstance.class)).createLegacy();
     instance3.setDatasource(fromDatasource);
     GenericEntity instance4 = (GenericEntity)((com.idega.core.accesscontrol.data.ICPermissionHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.ICPermission.class)).createLegacy();
