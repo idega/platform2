@@ -187,7 +187,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, row);
+						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_HEADMASTER, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -205,7 +205,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, row);
+						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -224,7 +224,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, row);
+						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -243,7 +243,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						row = insertEditableUserIntoTable(table, hm, row);
+						row = insertEditableUserIntoTable(table, hm, SchoolUserBusinessBean.USER_TYPE_TEACHER, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -352,7 +352,7 @@ public class SchoolUserEditor extends Block {
 
 
 
-	private int insertEditableUserIntoTable(Table table, User hm, int row) throws RemoteException {
+	private int insertEditableUserIntoTable(Table table, User hm, int userType, int row) throws RemoteException {
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
@@ -366,6 +366,7 @@ public class SchoolUserEditor extends Block {
 							emails = hm.getEmails();
 							phones = hm.getPhones();
 							HiddenInput inp = new HiddenInput(sid, hmId);
+							HiddenInput utInp = new HiddenInput(PARAMETER_SCHOOL_USER_TYPE+"_"+hmId, Integer.toString(userType));
 							TextInput pName = new TextInput(sname+"_"+hmId, hm.getName());
 							this.setTextInputStyle(pName);
 							Link login = new Link(getTextNormal(_iwrb.getLocalizedString("school.login","Login")));
@@ -373,7 +374,9 @@ public class SchoolUserEditor extends Block {
 							login.addParameter(LoginEditor.prmUserId, hmId);
 							
 							
+							
 							table.add(inp, 1, row);
+							table.add(utInp, 1, row);
 							table.add(login, 7, row);
 							
 							table.add(pName, 1, row);
@@ -514,6 +517,8 @@ public class SchoolUserEditor extends Block {
 				user = userHome.findByPrimaryKey(new Integer(hId));
 
 					String name         = iwc.getParameter(sname+"_"+hId);
+					sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE+"_"+hId);
+					iUserType = Integer.parseInt(sUserType);
 					
 					if (name.equals("")) {
 						try {
