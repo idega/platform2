@@ -67,6 +67,8 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		String mapUrl = _school.getMapUrl();
 		String activity = _school.getActivity();
 		String open_hours = _school.getOpenHours();
+		String email = _school.getSchoolEmail();
+		String visitaddress = _school.getSchoolVisitAddress();
 		
 		if ((address != null || zipArea != null || zipCode != null || phone != null || fax != null)) {
 			if (useBreak) {
@@ -74,12 +76,31 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				table.setHeight(row, _spaceBetween);
 				++row;
 			}
+			/*
 			table.add(getHeader(_iwrb.getLocalizedString("school.address","Address")+":"), 1, row);
 			if (address != null) {
 				++row;
 				table.add(getText(address), 1, row);
+			}*/
+			if (visitaddress != null && !visitaddress.equals(" ")) {
+				table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);
+				++row;
+				table.add(getText(visitaddress), 1, row);
+				++row;
+				if (useBreak) {
+					++row;
+					table.setHeight(row, _spaceBetween);
+					++row;
+				}
 			}
-			if (zipCode != null) {
+			
+			table.add(getHeader(_iwrb.getLocalizedString("school.postal_address","Postal address")+":"), 1, row);
+			if (address != null && !address.equals(" ")) {
+				++row;
+				table.add(getText(address), 1, row);
+				++row;
+			}		
+			/*if (zipCode != null) {
 				++row;
 				table.add(getText(zipCode), 1, row);
 				if (zipArea != null) {
@@ -87,6 +108,18 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				}
 			}else {
 				if (zipArea != null) {
+					++row;
+					table.add(getText(zipArea), 1, row);
+				}
+			}*/
+			if (zipCode != null && !zipCode.equals(" ")) {
+				++row;
+				table.add(getText(zipCode), 1, row);
+				if (zipArea != null) {
+					table.add(getText(" "+zipArea), 1, row);
+				}
+			}else {
+				if (zipArea != null && !zipArea.equals(" ")) {
 					++row;
 					table.add(getText(zipArea), 1, row);
 				}
@@ -98,6 +131,15 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			if (fax != null) {
 				++row;
 				table.add(getText(_iwrb.getLocalizedString("school.fax","Fax")+": "+fax), 1, row);
+			}
+			/*if (email != null && !email.equals(" ")) {
+				++row;
+				table.add(getText(_iwrb.getLocalizedString("school.email","Email")+": "+email), 1, row);
+			}*/
+			if (email != null && !email.equals(" ")) {
+				++row;
+				Link linkEmail = new Link(getText(_iwrb.getLocalizedString("school.email","Email")), "mailto:"+email);
+				table.add(linkEmail, 1, row);
 			}
 			if (mapUrl != null) {
 				++row;
@@ -116,11 +158,20 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				table.setHeight(row, _spaceBetween);
 				++row;
 			}
-			Link link = new Link(getText(webPage), webPage);
-			table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);	
+			/*Link link = new Link(getText(webPage), webPage);
+			link.setTarget(Link.TARGET_NEW_WINDOW);
+			table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);
 			++row;
 			table.add(link, 1, row);
 			useBreak = true;
+			*/
+//			Link link = new Link(getText(webPage), webPage);
+		  Link link = new Link(getText(_iwrb.getLocalizedString("school.school_home_page","Home page of the school")), webPage);
+		  //table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);
+		  link.setTarget(Link.TARGET_NEW_WINDOW);	
+		  ++row;
+		  table.add(link, 1, row);
+		  useBreak = true;
 		}
 
 		if (useBreak) {

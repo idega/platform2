@@ -38,7 +38,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public static final int USER_TYPE_TEACHER = SchoolUserBMPBean.USER_TYPE_TEACHER;
 	public static final int USER_TYPE_WEB_ADMIN = SchoolUserBMPBean.USER_TYPE_WEB_ADMIN;
 	public static final int USER_TYPE_IB_COORDINATOR = SchoolUserBMPBean.USER_TYPE_IB_COORDINATOR;
-
+	public static final int USER_TYPE_STUDY_AND_WORK_COUNCEL = SchoolUserBMPBean.USER_TYPE_STUDY_AND_WORK_COUNCEL;
+	
 	public SchoolUser addUser(School school, User user, int userType) throws RemoteException, CreateException, FinderException {
 		return addUser (school, user, userType, true, false);
 	}
@@ -410,6 +411,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
+				userTypes.add(new String[] {"school.study_work_councel", "Study and work councel", Integer.toString(USER_TYPE_STUDY_AND_WORK_COUNCEL) });
 			}
 			
 		}

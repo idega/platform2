@@ -65,7 +65,8 @@ public class SchoolContentEditor extends IWAdminWindow{
   private String PARAMETER_SCHOOL_MAP_URL = "scr_mprl";
   private String PARAMETER_SCHOOL_ACTIVITY = "scr_scac";
   private String PARAMETER_SCHOOL_OPEN_HOURS = "scr_scoa";
-  private String PARAMETER_SCHOOL_EMAIL = "scr_email";  //only implemented for Highschool (Malin)  
+  private String PARAMETER_SCHOOL_EMAIL = "scr_email";
+  private String PARAMETER_SCHOOL_VISIT_ADDRESS = "scr_vis_addr"; 
 
   private String CONTENT_EDITORS_GROUP_PARAMETER_NAME = "school.content_editors_group_id";
   	  
@@ -189,6 +190,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 		TextInput activity = new TextInput(PARAMETER_SCHOOL_ACTIVITY);
 		TextInput openHours = new TextInput(PARAMETER_SCHOOL_OPEN_HOURS);
 		
+		TextInput visitAddress = new TextInput(PARAMETER_SCHOOL_VISIT_ADDRESS);
+		
 		schoolName.setSize(40);
 //		streetName.setSize(40);
 		areaCode.setSize(7);
@@ -199,6 +202,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
+		TextInput email = new TextInput(PARAMETER_SCHOOL_EMAIL);
 		TextInput webPage = new TextInput(PARAMETER_SCHOOL_WEBPAGE);
 		
 		Box box = new Box("Repps");
@@ -238,6 +242,12 @@ public class SchoolContentEditor extends IWAdminWindow{
 			}
 			if ( _school.getSchoolFax() != null) {
 				fax.setContent(_school.getSchoolFax());
+			}
+			if ( _school.getSchoolEmail() != null) {
+				email.setContent(_school.getSchoolEmail());
+			}
+			if ( _school.getSchoolVisitAddress() != null) {
+				visitAddress.setContent(_school.getSchoolVisitAddress());
 			}
 			if ( _school.getSchoolManagementType() != null) {
 				manType.setSelectedElement(_school.getSchoolManagementTypeString());
@@ -283,24 +293,31 @@ public class SchoolContentEditor extends IWAdminWindow{
 		Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip area"));
 		Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));
 		Text sFaxText = new Text(_iwrb.getLocalizedString("school.fax","Fax"));
+		Text sEmailText = new Text(_iwrb.getLocalizedString("school.email","Email"));
 		Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
 		Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
-
+		Text sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
+		
 		formatText(sNameText, true);
 		formatText(sNumberText, true);
 		formatText(sAreaCodeText, true);
 		formatText(sPhoneText, true);
 		formatText(sFaxText, true);
+		formatText(sEmailText, true);
 		formatText(sZipAreaText, true);
 		formatText(sActivityText, true);
 		formatText(sOpenHoursText, true);
+		formatText(sVisitAddress, true);
+		
 		setStyle(streetName);
 		setStyle(areaCode);
 		setStyle(phone);
 		setStyle(fax);
+		setStyle(email);
 		setStyle(zipArea);
 		setStyle(sActivityText);
 		setStyle(sOpenHoursText);
+		setStyle(visitAddress);
 		
 		addressTable.add(sNameText, 1, 1);
 		addressTable.add(streetName, 1, 2);
@@ -314,6 +331,10 @@ public class SchoolContentEditor extends IWAdminWindow{
 		addressTable.add(sFaxText, 3, 5);
 		addressTable.add(phone, 1, 6);
 		addressTable.add(fax, 3, 6);
+		addressTable.add(sEmailText, 3, 7);
+		addressTable.add(email, 3, 8);
+		addressTable.add(sVisitAddress, 3, 9);
+		addressTable.add(visitAddress, 3, 10);
 		addressTable.setWidth(2, 3, "4");
 		
 		
@@ -326,11 +347,13 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 
 		this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
+		this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
 		this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
 		this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
 		this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
 		this.addRight(_iwrb.getLocalizedString("school.phone", "Phone"), phone, true);
 		this.addRight(_iwrb.getLocalizedString("school.fax", "Fax"), fax, true);
+		this.addRight(_iwrb.getLocalizedString("school.email", "Email"), email, true);
 		this.addRight(_iwrb.getLocalizedString("school.management_type", "Management type"), manType, true);
 		this.addRight(_iwrb.getLocalizedString("school.web_page", "Web page"), webPage, true);
 		this.addRight(_iwrb.getLocalizedString("school.map_url", "Map URL"), mapUrl, true);
@@ -364,6 +387,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			TextInput mapUrl = new TextInput(PARAMETER_SCHOOL_MAP_URL);
 			TextInput activity = new TextInput(PARAMETER_SCHOOL_ACTIVITY);
 			TextInput openHours = new TextInput(PARAMETER_SCHOOL_OPEN_HOURS);
+			TextInput visitAddress = new TextInput(PARAMETER_SCHOOL_VISIT_ADDRESS);
 			
 		
 			schoolName.setSize(40);
@@ -372,7 +396,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 //			zipArea.setSize(20);
 		
 			SelectorUtility util = new SelectorUtility();
-			DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedKey", _iwrb);
+			DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedString", _iwrb);
 
 			TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 			TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
@@ -413,6 +437,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}
 				if ( _school.getSchoolEmail() != null) {
 					email.setContent(_school.getSchoolEmail());
+				}
+				if ( _school.getSchoolVisitAddress() != null) {
+					visitAddress.setContent(_school.getSchoolVisitAddress());
 				}
 				if ( _school.getSchoolWebPage() != null) {
 					webPage.setContent(_school.getSchoolWebPage());
@@ -467,7 +494,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 			Text sEmailText = new Text(_iwrb.getLocalizedString("school.email","Email"));
 			Text sActivityText = new Text(_iwrb.getLocalizedString("school.activity","Activity"));
 			Text sOpenHoursText = new Text(_iwrb.getLocalizedString("school.open_hours","Open hours"));
-
+			Text sVisitAddress = new Text(_iwrb.getLocalizedString("school.visiting_address","Visiting address"));
+			
 			formatText(sNameText, true);
 		
 			formatText(sAreaCodeText, true);
@@ -477,6 +505,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 			formatText(sZipAreaText, true);
 			formatText(sActivityText, true);
 			formatText(sOpenHoursText, true);
+			formatText(sVisitAddress, true);
+			
 			setStyle(streetName);
 			setStyle(areaCode);
 			setStyle(phone);
@@ -485,6 +515,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			setStyle(zipArea);
 			setStyle(sActivityText);
 			setStyle(sOpenHoursText);
+			setStyle(visitAddress);
 		
 			addressTable.add(sNameText, 1, 1);
 			addressTable.add(streetName, 1, 2);
@@ -500,9 +531,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 			addressTable.add(fax, 3, 6);
 			addressTable.add(sEmailText, 3, 7);
 			addressTable.add(email, 3, 8);
+			addressTable.add(sVisitAddress, 3, 9);
+			addressTable.add(visitAddress, 3, 10);
 			addressTable.setWidth(2, 3, "4");
 		
-		
+		//addressTable.setBorder(1);
 
 //			this.addLeft(addressTable, false);
 		
@@ -516,6 +549,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			}
 
 			this.addRight(_iwrb.getLocalizedString("school.image","Image"), imageInserter, true);
+			this.addRight(_iwrb.getLocalizedString("school.visiting_address","Visiting address"), visitAddress, true);
 			this.addRight(_iwrb.getLocalizedString("school.address", "Address"), streetName, true);
 			this.addRight(_iwrb.getLocalizedString("school.area_code", "Area code"), areaCode, true);
 			this.addRight(_iwrb.getLocalizedString("school.zip_area", "Zip"), zipArea, true);
@@ -554,6 +588,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			String mapUrl = iwc.getParameter( PARAMETER_SCHOOL_MAP_URL );
 			String activity = iwc.getParameter( PARAMETER_SCHOOL_ACTIVITY );
 			String openHours = iwc.getParameter( PARAMETER_SCHOOL_OPEN_HOURS );
+			String visitAddress = iwc.getParameter( PARAMETER_SCHOOL_VISIT_ADDRESS);
 			
 			try {
 				if (useImage == null) {
@@ -595,6 +630,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 				if (!street.equals("")) {
 					_school.setSchoolAddress(street);	
 				}
+				if (visitAddress != null && !visitAddress.equals("")) {
+					_school.setSchoolVisitAddress(visitAddress);	
+				}				
 				if (!postalCode.equals("")) {
 					_school.setSchoolZipCode(postalCode);
 				}

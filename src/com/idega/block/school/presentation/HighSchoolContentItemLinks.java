@@ -78,45 +78,60 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 		String activity = _school.getActivity();
 		String open_hours = _school.getOpenHours();
 		String email = _school.getSchoolEmail();
+		String visitaddress = _school.getSchoolVisitAddress();
 		
-		if ((address != null || zipArea != null || zipCode != null || phone != null || fax != null || email != null)) {
+		if ((address != null || visitaddress != null || zipArea != null || zipCode != null || phone != null || fax != null || email != null)) {
 			if (useBreak) {
 				++row;
 				table.setHeight(row, _spaceBetween);
 				++row;
 			}
-			table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);
-			if (address != null) {
+			if (visitaddress != null && !visitaddress.equals(" ")) {
+				table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);
+				++row;
+				table.add(getText(visitaddress), 1, row);
+				++row;
+				if (useBreak) {
+					++row;
+					table.setHeight(row, _spaceBetween);
+					++row;
+				}
+			}
+			
+			//table.add(getHeader(_iwrb.getLocalizedString("school.visiting_address","Visiting address")+":"), 1, row);
+			table.add(getHeader(_iwrb.getLocalizedString("school.postal_address","Postal address")+":"), 1, row);
+			if (address != null && !address.equals(" ")) {
 				++row;
 				table.add(getText(address), 1, row);
 				++row;
-			}
-			table.add(getHeader(_iwrb.getLocalizedString("school.postal_address","Postal address")+":"), 1, row);
-			if (zipCode != null) {
+			}			
+			if (zipCode != null && !zipCode.equals(" ")) {
 				++row;
 				table.add(getText(zipCode), 1, row);
 				if (zipArea != null) {
 					table.add(getText(" "+zipArea), 1, row);
 				}
 			}else {
-				if (zipArea != null) {
+				if (zipArea != null && !zipArea.equals(" ")) {
 					++row;
 					table.add(getText(zipArea), 1, row);
 				}
 			}
-			if (phone != null) {
+			if (phone != null && !phone.equals(" ")) {
 				++row;
 				table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+phone), 1, row);
 			}
-			if (fax != null) {
+			if (fax != null && !fax.equals(" ")) {
 				++row;
 				table.add(getText(_iwrb.getLocalizedString("school.fax","Fax")+": "+fax), 1, row);
 			}
-			if (email != null) {
+			if (email != null && !email.equals(" ")) {
 				++row;
-				table.add(getText(_iwrb.getLocalizedString("school.email","Email")+": "+email), 1, row);
+				Link linkEmail = new Link(getText(_iwrb.getLocalizedString("school.email","Email")), "mailto:"+email);
+				table.add(linkEmail, 1, row);
 			}
-			if (mapUrl != null) {
+			
+			if (mapUrl != null && !mapUrl.equals(" ")) {
 				++row;
 				Link link = new Link(getText(_iwrb.getLocalizedString("school.show_map","Show map")), mapUrl);
 				link.setTarget(Link.TARGET_NEW_WINDOW);
@@ -141,7 +156,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 
 		
 		// Added the activity here  (Kelly)
-		if (activity != null) {
+		if (activity != null && !email.equals(" ")) {
 			table.add(getHeader(_iwrb.getLocalizedString("school.activity", "Activity")+":"), 1, row);
 			++row;
 			table.add(getText(activity), 1, row);
@@ -309,8 +324,9 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 				++row;
 			}
 			//Link link = new Link(getText(webPage), webPage);
-			Link link = new Link(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")), webPage);
-			//table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);	
+			Link link = new Link(getText(_iwrb.getLocalizedString("school.school_home_page","The school's home page")), webPage);
+			//table.add(getHeader(_iwrb.getLocalizedString("school.web_page","Web Page")+":"), 1, row);
+			link.setTarget(Link.TARGET_NEW_WINDOW);	
 			++row;
 			table.add(link, 1, row);
 			useBreak = true;

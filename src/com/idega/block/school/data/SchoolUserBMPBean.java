@@ -21,12 +21,14 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	private final String TABLE_NAME = "sch_school_user";
 	private final String COLUMN_NAME_SHOW_IN_CONTACTS = "show_in_contact";
 	private final String COLUMN_NAME_MAIN_HEADMASTER = "main_headmaster";
+	
 
 	public static final int USER_TYPE_HEADMASTER = 0;
 	public static final int USER_TYPE_ASSISTANT_HEADMASTER = 1;
 	public static final int USER_TYPE_TEACHER = 2;
 	public static final int USER_TYPE_WEB_ADMIN = 3;
 	public static final int USER_TYPE_IB_COORDINATOR = 4;
+	public static final int USER_TYPE_STUDY_AND_WORK_COUNCEL = 5;
 
 
 	/**

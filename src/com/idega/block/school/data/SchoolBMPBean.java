@@ -78,7 +78,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
-	
+	/** Malin 10 Dec 2003 **/
+	public final static String VISITADDRESS = "school_visit_address";
 	//MANY TO MANY RELATIONSHIP TABLES
 	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
 	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
@@ -90,6 +91,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(NAME, "Schoolname", true, true, String.class);
 		this.addAttribute(INFO, "Info", true, true, String.class, 4000);
 		this.addAttribute(ADDRESS, "Address", true, true, String.class, 100);
+		this.addAttribute(VISITADDRESS, "Visiting address", true, true, String.class, 400);
 		this.addAttribute(ZIPAREA, "Ziparea", true, true, String.class, 20);
 		this.addAttribute(ZIPCODE, "Zipcode", true, true, String.class, 20);
 		this.addAttribute(PHONE, "phone", true, true, String.class, 60);
@@ -99,7 +101,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(LONGITUDE, "longitude", true, true, String.class, 20);
 		this.addAttribute(HEADMASTER, "Headmaster", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		/** Gimmi 4-5 Nov 2002 */
-		this.addAttribute(FAX, "fax", true, true, String.class, 60);
+		this.addAttribute(FAX, "fax", true, true, String.class, 50);
 		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
 		/** Laddi 3 Sep 2003 */
 		//this.addAttribute(MANAGEMENT_TYPE_ID, "management_type", true, true, Integer.class);
@@ -205,6 +207,12 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 	public void setSchoolAddress(String address) {
 		this.setColumn(ADDRESS, address);
+	}
+	public String getSchoolVisitAddress() {
+		return this.getStringColumnValue(VISITADDRESS);
+	}
+	public void setSchoolVisitAddress(String visitaddress) {
+		this.setColumn(VISITADDRESS, visitaddress);
 	}
 
 	public String getSchoolZipArea() {
