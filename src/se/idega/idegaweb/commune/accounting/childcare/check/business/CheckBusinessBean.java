@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.business;
+package se.idega.idegaweb.commune.accounting.childcare.check.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoCustodianFound;

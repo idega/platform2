@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.business;
+package se.idega.idegaweb.commune.accounting.childcare.check.business;
 
 import javax.ejb.*;
 
