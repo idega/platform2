@@ -227,8 +227,11 @@ public class TariffIndexEditor extends ModuleObjectContainer {
       sType = modinfo.getParameter("ti_typedrp"+i).trim();
       ID = Integer.parseInt(modinfo.getParameter("ti_idinput"+i));
       java.sql.Timestamp stamp = idegaTimestamp.getTimestampRightNow();
-      if(!"".equals(sIndex))
+      if(!"".equals(sIndex)){
+        sIndex = sIndex.replace(',','.');
         findex = Float.parseFloat(sIndex);
+
+      }
 
       try{
         if(ID != -1 ){
