@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.31 2002/11/22 12:58:04 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.32 2002/11/22 15:00:13 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.*;
 import com.idega.util.IWTimestamp;
+import is.idega.idegaweb.member.business.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
@@ -376,6 +377,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                 user.addPhone(phone);
             }
 
+            final MemberFamilyLogic familyLogic = (MemberFamilyLogic)
+                    getServiceInstance (MemberFamilyLogic.class);
             if (applicant.hasCohabitant ()) {
                 final CitizenApplicantCohabitantHome home
                         = (CitizenApplicantCohabitantHome)
@@ -395,6 +398,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                         (cohabitant.getFirstName (), "",
                          cohabitant.getLastName (), cohabitantSsn,
                          cohabitantGender, cohabitantTimestamp);
+                familyLogic.setAsSpouseFor (user, cohabitantUser);
             }
             if (applicant.getChildrenCount () > 0) {
                 final CitizenApplicantChildrenHome home
@@ -416,6 +420,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                             (children [i].getFirstName (), "",
                              children [i].getLastName (), childrenSsn,
                              childrenGender, childrenTimestamp);
+                    familyLogic.setAsParentFor (user, childrenUser);
                 }
             }
         } catch (Exception e) {
