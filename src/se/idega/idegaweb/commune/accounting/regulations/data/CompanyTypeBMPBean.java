@@ -1,5 +1,5 @@
 /*
- * $Id: CompanyTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,10 +25,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: CompanyTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 	
@@ -46,10 +46,10 @@ public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 
 		CompanyTypeHome home
 				= (CompanyTypeHome) IDOLookup.getHome(CompanyType.class);
-		final String [] data = { "Kommun", "Stiftelse", "AB", "Övr företag" };
+		final String [] data = { "kommun", "stiftelse", "ab", "ovr_foretag" };
 		for (int i = 0; i < data.length; i++) {
 			CompanyType ct = home.create();
-			ct.setCompanyType(data[i]);
+			ct.setCompanyType(ENTITY_NAME + "." + data[i]);
 			ct.store();
 		}
 	}

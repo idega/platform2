@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -45,10 +45,10 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 
 		CommuneBelongingTypeHome home
 				= (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
-		final String [] data = { "Nacka", "Ej Nacka" };
+		final String [] data = { "nacka", "ej_nacka" };
 		for (int i = 0; i < data.length; i++) {
 			CommuneBelongingType cbType = home.create();
-			cbType.setCommuneBelongingType(data[i]);
+			cbType.setCommuneBelongingType(ENTITY_NAME + "." + data[i]);
 			cbType.store();
 		}
 	}

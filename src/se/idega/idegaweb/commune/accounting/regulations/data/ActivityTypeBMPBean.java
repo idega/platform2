@@ -1,5 +1,5 @@
 /*
- * $Id: ActivityTypeBMPBean.java,v 1.4 2003/08/19 09:48:42 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.5 2003/08/19 10:17:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: ActivityTypeBMPBean.java,v 1.4 2003/08/19 09:48:42 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.5 2003/08/19 10:17:27 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 	
@@ -45,10 +45,10 @@ public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 
 		ActivityTypeHome home
 				= (ActivityTypeHome) IDOLookup.getHome(ActivityType.class);
-		final String [] data = { "Förskola" };
+		final String [] data = { "pre_school" };
 		for (int i = 0; i < data.length; i++) {
 			ActivityType actType = home.create();
-			actType.setActivityType(data[i]);
+			actType.setActivityType(ENTITY_NAME + "." + data[i]);
 			actType.store();
 		}
 	}
