@@ -66,7 +66,7 @@ public class ProductItem extends Block {
 
   private void initialize(IWContext iwc) throws RemoteException{
     String sProductId = iwc.getParameter(getProductBusiness(iwc).getProductIdParameter());
-    if (sProductId != null) {
+    if (sProductId != null && _product == null) {
       if (!sProductId.equals("-1")) {
         try {
           _productId = Integer.parseInt(sProductId);
