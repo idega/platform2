@@ -171,8 +171,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				accKey = Integer.toString((int)cell.getNumericCellValue());
 			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 				accKey = cell.getStringCellValue();
-			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
-//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+				//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
 				throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
 			}
 			else
@@ -190,8 +190,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			for (int i = 0; i < numberOfLeagues; i++) {
 				HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
 				double val = 0.0;
-				if (c != null)
+				if (c != null) {
+					if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+						//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+						throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+					}
+
 					val = c.getNumericCellValue();
+				}
 
 				System.out.println("val = " + val);
 				System.out.println("celltype == " + c.getCellType());
@@ -231,8 +237,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					accKey = Integer.toString((int)cell.getNumericCellValue());
 				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					accKey = cell.getStringCellValue();
-				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
-//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+					//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
 					throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
 				}
 				else
@@ -250,8 +256,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				for (int i = 0; i < numberOfLeagues; i++) {
 					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
 					double val = 0.0;
-					if (c != null)
+					if (c != null) {
+						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+						}
+
 						val = c.getNumericCellValue();
+					}
 
 					System.out.println("val = " + val);
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
@@ -288,8 +300,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				accKey = Integer.toString((int)cell.getNumericCellValue());
 			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 				accKey = cell.getStringCellValue();
-			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
-//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+			else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+				//				WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
 				throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
 			}
 			else
@@ -307,8 +319,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			for (int i = 0; i < numberOfLeagues; i++) {
 				HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
 				double val = 0.0;
-				if (c != null)
+				if (c != null) {
+					if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+						//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+						throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+					}
+
 					val = c.getNumericCellValue();
+				}
 
 				System.out.println("val = " + val);
 				totalAsset += val;
@@ -347,8 +365,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					accKey = Integer.toString((int)cell.getNumericCellValue());
 				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					accKey = cell.getStringCellValue();
-				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)  {
-//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+					//					WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
 					throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
 				}
 				else
@@ -366,8 +384,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				for (int i = 0; i < numberOfLeagues; i++) {
 					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
 					double val = 0.0;
-					if (c != null)
+					if (c != null) {
+						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+						}
+
 						val = c.getNumericCellValue();
+					}
 
 					System.out.println("val = " + val);
 					totalDept += val;
