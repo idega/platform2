@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.23 2003/07/24 15:11:20 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.24 2003/07/24 15:39:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -160,7 +160,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			status = _iwrb.getLocalizedString("appApproved", "Approved / On waiting list");
 		}
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED))
-			status = _iwrb.getLocalizedString("appContracted", "Contracted / On waiting list");
+			status = _iwrb.getLocalizedString("appContracted", "Contracted");
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED))
 			status = _iwrb.getLocalizedString("appRejected", "Rejected");
 		else
@@ -172,7 +172,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		refTable.add(statusText, 1, row);
 		
 		if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED)) { //F?kk ekki ?thluta?, e?a ekki b?i? a? ?thluta.
-			
+			debug("status approved");
 			Contract c = holder.getContract();
 			Integer allocatedTypeID = new Integer(-1);
 			Integer allocatedComplexID = new Integer(-1);
@@ -275,13 +275,17 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			
 		}
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED)) { //Ekki b?i? a? ?thluta
-				Text notAllocated = new Text("&nbsp;*&nbsp;" + _iwrb.getLocalizedString("appNotYetAssigned", "Apartments have not yet been allocated"));
+			debug("status submitted");
+				Text notAllocated = new Text("&nbsp;*&nbsp;" + _iwrb.getLocalizedString("appSubmitted", "Application not processed yet"));
 					notAllocated.setStyle("required");
 					refTable.add(notAllocated, 1, row);
 					row++;
 		}
 		else if(status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED)) {
-			refTable.add(new Text(_iwrb.getLocalizedString("appAssigned", "You have been assigned to an apartment")), 1, row);
+			debug("status signed");
+			Text signed = new Text("&nbsp;*&nbsp;" +_iwrb.getLocalizedString("appAssigned", "You have been assigned to an apartment"));
+			signed.setStyle("required");
+			refTable.add(signed, 1, row);
 			row++;
 		}
 		
