@@ -1,33 +1,25 @@
 package is.idega.idegaweb.travel.block.search.presentation;
 
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
+import is.idega.idegaweb.travel.business.TravelSessionManager;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
-import is.idega.idegaweb.travel.business.TravelSessionManager;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
-import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.TextInput;
 
 /**
  * @author gimmi
@@ -49,6 +41,7 @@ public class ServiceSearch extends Block {
 	
 	protected String width;
 	protected String formInputStyle;
+	protected int engineID = -1;
 	
 	private Image headerImage;
 	private Image windowHeaderImage;
@@ -62,11 +55,15 @@ public class ServiceSearch extends Block {
 	}
 	
 	public void main(IWContext iwc) throws Exception {
-		init(iwc);
-		if (currentSearchForm == null) {
-			add("cannot get searchform instance");
+		if (engineID > 0) {
+			init(iwc);
+			if (currentSearchForm == null) {
+				add("cannot get searchform instance");
+			} else {
+				add(currentSearchForm);
+			}
 		} else {
-			add(currentSearchForm);
+			add("searchform must be associated with an engine");
 		}
 		//drawForm();
 	}
@@ -104,7 +101,6 @@ public class ServiceSearch extends Block {
 			AbstractSearchForm ss = null;
 			if (currentSF != null) {
 				ss = (AbstractSearchForm) Class.forName(currentSF).newInstance();
-//				ss.main(iwc);
 			} else if (!searchForms.isEmpty()) {
 				ss = (AbstractSearchForm) searchForms.get(0);
 			} else {
@@ -120,6 +116,7 @@ public class ServiceSearch extends Block {
 			ss.setWidth(width);
 			ss.setFormInputStyle(formInputStyle);
 			ss.setWindowHeaderImage(windowHeaderImage);
+			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -169,6 +166,10 @@ public class ServiceSearch extends Block {
 	
 	public void setWindowHeaderImage(Image image) {
 		this.windowHeaderImage = image;
+	}
+	
+	public void setSearchEngine(int engineID) {
+		this.engineID = engineID;
 	}
 	
 	protected TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {

@@ -1,14 +1,16 @@
 package is.idega.idegaweb.travel.business;
 
-import com.idega.core.user.data.User;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+
+import java.util.Locale;
+
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.business.IBOSessionBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import java.util.Locale;
-import com.idega.presentation.IWContext;
+import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.business.IBOSessionBean;
 
 /**
  * Title:        idegaWeb
@@ -29,6 +31,7 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
 
   private Supplier _supplier;
   private Reseller _reseller;
+  private ServiceSearchEngine _engine;
   private User _user;
   private int _userId = -1;
 
@@ -45,6 +48,7 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
     clearLocale();
     _supplier = null;
     _reseller = null;
+    _engine = null;
     _userId = -1;
     _user = null;
   }
@@ -108,6 +112,14 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
 
   public void setReseller(Reseller reseller) {
     _reseller = reseller;
+  }
+  
+  public void setSearchEngine(ServiceSearchEngine engine) {
+  	this._engine = engine;
+  }
+  
+  public ServiceSearchEngine getSearchEngine() {
+  	return _engine;
   }
 
 }
