@@ -22,6 +22,7 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -53,8 +54,10 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
@@ -90,7 +93,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_SAVE = "save";
 	private static final String KEY_SEARCH = "search";
 	private static final String KEY_TO = "to";
-	private static final String KEY_VALID_DATE = "valid_date";
 	private static final String KEY_VAT_PR_MONTH = "vat_pr_month";
 	private static final String KEY_VAT_TYPE = "vattype";
 	private static final String KEY_PROVIDER = "provider";
@@ -110,8 +112,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
-	private static final String PAR_PROVIDER = KEY_PROVIDER; 	
-	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 	
 	private static final String PAR_SELECTED_PROVIDER = "selected_provider";	
 	
 	private static final String PAR_PK = "pk";	
@@ -142,7 +142,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		PAR_EDIT_FROM_DB = PAR + ACTION_EDIT_FROM_DB, 
 		PAR_EDIT_FROM_SCREEN = PAR + ACTION_EDIT_FROM_SCREEN, 
 		PAR_SEARCH_PAYMENTS = PAR + ACTION_SEARCH_PAYMENTS,
-		PAR_SEARCH_REGULATION = PAR + ACTION_SEARCH_REGULATION,
 		PAR_SAVE = PAR + ACTION_SAVE,
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
@@ -154,7 +153,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	public void init(final IWContext iwc) {
 		
-
 		School school = getSchool(iwc);
 
 		String dateFormatErrorMessage = null;	
@@ -257,7 +255,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 	
 	private School getSchool(IWContext iwc){
-		String schoolId = iwc.getParameter(PAR_SELECTED_PROVIDER);
+		return getSchool(iwc.getParameter(PAR_SELECTED_PROVIDER));
+	}
+	
+	private School getSchool(String schoolId){
 		School school = null;
 		try{
 			SchoolHome sh = (SchoolHome) IDOLookup.getHome(School.class);
@@ -267,7 +268,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}catch(FinderException ex){
 			ex.printStackTrace(); 
 		}
-		return school;	
+		return school;		
 	}
 	
 	
@@ -290,6 +291,16 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	 * on the POST parameters in the specified context.
 	 */
 	private int parseAction(IWContext iwc) {
+		String userSearchCommited = iwc.getParameter(UserSearcher.SEARCH_COMMITTED);
+		String userSearchCleared = iwc.getParameter(UserSearcher.SEARCH_CLEARED);
+		if (new Boolean(userSearchCommited).booleanValue() ||
+			new Boolean(userSearchCleared).booleanValue()){
+			return ACTION_EDIT_FROM_SCREEN;
+		}
+		
+		if (iwc.getParameter(RegulationSearchPanel.SEARCH_REGULATION) != null){
+			return ACTION_EDIT_FROM_SCREEN;
+		}
 		
 		int action = ACTION_SHOW;
 		for (int a = 0; a <= 20; a++){ 
@@ -415,6 +426,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 			
 	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, String errorMessage){
+		Table t1 = new Table();
+		
+		t1.setCellpadding(getCellpadding());
+		t1.setCellspacing(getCellspacing());
+
+		t1.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, 1);
+		
 		Collection vatTypes = new ArrayList();
 		try {
 			vatTypes = getVATBusiness(iwc.getApplicationContext()).findAllVATRegulations();				
@@ -424,7 +442,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		Form form = new Form();
 		form.maintainParameter(PAR_PK);		
-//		form.maintainParameter(PAR_USER_SSN);			
+		form.maintainParameter(PAR_USER_SSN);			
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
 		form.maintainParameter(PAR_SELECTED_PROVIDER);
@@ -432,7 +450,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 		form.add(getDetailPanel(iwc, entry, vatTypes, errorMessage));
 		
-		add(form);
+		t1.add(form, 1, 2);
+		add(t1);
 	}
 
 		
@@ -491,13 +510,17 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		inner.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
 		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
+		ofm.setParameter(actionCommand, " ");
+		ofm.maintainParameter(PAR_SEEK_TO);
+		ofm.maintainParameter(PAR_SEEK_FROM);
+		ofm.maintainParameter(PAR_USER_SSN);	
 	
 		inner.add(ofm, 2, 1);
-		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
+//		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
 		return inner;
 	}	
 
-	private int addSearchForm(IWContext iwc, Table table, User user, int row){
+	private UserSearcher getUserSearcher(IWContext iwc, User user){
 		
 		searcher = new UserSearcher();
 		searcher.setPersonalIDLength(15);
@@ -509,18 +532,21 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
-		searcher.maintainParameter(new Parameter(PAR_SELECTED_PROVIDER, iwc.getParameter(PAR_SELECTED_PROVIDER)));		
 		searcher.setToFormSubmit(true);
+
+		try{
+			searcher.process(iwc);	
+			if (searcher.getUser() == null && ! searcher.isHasManyUsers() && ! searcher.isClearedButtonPushed(iwc)){
+				searcher.setUser(user);
+			}			
+		} catch (FinderException ex){
 			
-	
-
-		if (user != null){
-			searcher.setUser(user);
+			ex.printStackTrace();
+		} catch (RemoteException ex){
+			ex.printStackTrace();			
 		}
-
-		table.add(searcher, 1, row++);
 		
-		return row + 1;
+		return searcher;
 	}
 	
 
@@ -631,20 +657,53 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
 		int row = 1;
-		table.mergeCells(1,1,3,1);
-		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
+//		table.mergeCells(1,1,3,1);
+//		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
+//		
+//			
+//		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
-			
-		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-		
-		addField(table, KEY_PROVIDER, getSchool(iwc).getName(), 1, row++);
-		
-		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
 
-		addNoEmptyField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
-		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
+		RegulationSearchPanel regSearchPanel = new RegulationSearchPanel(iwc, PAR_SELECTED_PROVIDER); 	
+		regSearchPanel.setPlacingIfNull(entry.getPlacing());
+		regSearchPanel.setSchoolIfNull(getSchool(iwc));
 		
-		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
+//		School school = regSearchPanel.getSchool();		
+//		
+//		if (school != null){
+//			HiddenInput h = new HiddenInput(PAR_SELECTED_PROVIDER, "" + school.getPrimaryKey());
+//			table.add(h);			
+//		}
+		
+		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
+//		if (errorMessages.get(ERROR_PLACING_EMPTY) != null) {
+//			searchPanel.setError((String) errorMessages.get(ERROR_PLACING_EMPTY));			
+//		}		
+
+		
+		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
+		regSearchPanel.maintainAllParameters();
+		table.mergeCells(1, row, 10, row);
+		table.add(regSearchPanel, 1, row++); 
+
+		Regulation reg = regSearchPanel.getRegulation(); 
+		
+		if (reg != null){
+			entry = getNotStoredEntry(iwc, reg, regSearchPanel.getPosting());
+		}
+		
+
+		
+//		
+//		addField(table, KEY_PROVIDER, getSchool(iwc).getName(), 1, row++);
+//		
+//		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
+//
+//
+//		addNoEmptyField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
+//		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
+		
+//		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
@@ -673,8 +732,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
-		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
+
+		
+//		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
+//		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getDescription", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -694,8 +755,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 
 
-		addSearchForm(iwc, table, user, row++);
-		
+		UserSearcher searcher = getUserSearcher(iwc, user);
+		table.add(searcher, 1, row++);
+//		if (searcher.getUser() != null && ! searcher.isHasManyUsers()){
+//			HiddenInput h = new HiddenInput(PAR_USER_SSN, searcher.getUser().getPersonalID());
+//			table.add(h);
+//		}
+
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
 				
 		ButtonPanel bp = new ButtonPanel(this);
@@ -711,65 +777,90 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 	
 	private RegularPaymentEntry getNotStoredEntry(IWContext iwc) {
+		return getNotStoredEntry(iwc, null, null);
+	}	
+	
+	private RegularPaymentEntry getNotStoredEntry(IWContext iwc, Regulation reg, String[] posting) {
 		final IWContext _iwc = iwc;
+		final Regulation _reg = reg;
+		final String[] _posting = posting;		
 		
 		return new RegularPaymentEntry() {
 		
 			public Date getFrom() {
-				return getDateValue(PAR_FROM);
+				return _reg != null ? _reg.getPeriodFrom() : getDateValue(PAR_FROM);
 			}
 		
 			public Date getTo() {
-				return getDateValue(PAR_TO);
+				return  _reg != null ? _reg.getPeriodTo() : getDateValue(PAR_TO);
 			}
 		
 			public String getPlacing() {
-				return getValue(PAR_PLACING);
+				return  _reg != null ? _reg.getName() : getValue(PAR_PLACING);
 			}
 		
 			public User getUser() {
-				try{
-					return getUserBusiness(_iwc.getApplicationContext()).getUser(getValue(PAR_USER_SSN));
-				}catch(FinderException ex){
-					ex.printStackTrace();
+				String userSsn = getValue(PAR_USER_SSN);
+				if (userSsn != null && userSsn.length() > 0){
+					try{
+						return getUserBusiness(_iwc.getApplicationContext()).getUser(userSsn);
+					}catch(FinderException ex){
+						ex.printStackTrace();
+					}
 				}
 				return null;
 			}
 			
 			public int getUserId() {
-				return -1;
+				User user = getUser();
+				return user != null ? user.getNodeID() : -1;
 			}			
 		
 			public RegulationSpecType getRegSpecType() {
-				return null;
+				return _reg != null ? _reg.getRegSpecType() : null;
 			}
 		
 			public int getRegSpecTypeId() {
-				return getIntValue(PAR_REGULATION_TYPE);
+				return _reg != null ? new Integer(""+_reg.getRegSpecType().getPrimaryKey()).intValue() : getIntValue(PAR_REGULATION_TYPE);
 			}
 		
 			public School getSchool() {
-				return null;
-			}
+				School school = null;
+				try{
+					SchoolHome sh = (SchoolHome) IDOLookup.getHome(School.class);
+					school = sh.findByPrimaryKey(""+getSchoolId());
+				}catch(IDOLookupException ex){
+					ex.printStackTrace(); 
+				}catch(FinderException ex){
+					ex.printStackTrace(); 
+				}				
+				return school;
+			} 
 		
 			public int getSchoolId() {
-				return getIntValue(PAR_PROVIDER);
+				return getIntValue(PAR_SELECTED_PROVIDER);
 			}
 		
 			public String getOwnPosting() {
+				if (_posting != null && _posting.length >= 1){
+					return _posting[0];
+				}
 				return getValue(PAR_OWN_POSTING);
 			}
 		
 			public String getDoublePosting() {
+				if (_posting != null && _posting.length >= 2){
+					return _posting[1];
+				}					
 				return getValue(PAR_DOUBLE_ENTRY_ACCOUNT);
 			}
 		
 			public float getAmount() {
-				return getFloatValue(PAR_AMOUNT_PR_MONTH);
+				return _reg != null ? _reg.getAmount().floatValue() : getFloatValue(PAR_AMOUNT_PR_MONTH);
 			}
 		
 			public float getVAT() {
-				return getFloatValue(PAR_VAT_PR_MONTH);
+				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
 			}
 		
 			public VATRegulation getVatRegulation() {
@@ -801,12 +892,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 			
 			String getValue(String parameter){
-				return _iwc == null ? "" : _iwc.getParameter(parameter);
+				return _iwc == null || _iwc.getParameter(parameter) == null ? "" : _iwc.getParameter(parameter);
 			}				
 			
 			int getIntValue(String parameter){
 				try {
-					return _iwc == null ? 0 : new Integer(_iwc.getParameter(parameter)).intValue();
+					return _iwc == null || _iwc.getParameter(parameter) == null ? 0 : new Integer(_iwc.getParameter(parameter)).intValue();
 				} catch (NullPointerException ex){
 					return 0;					
 				} catch (NumberFormatException ex){
@@ -816,7 +907,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			
 			float getFloatValue(String parameter){
 				try {
-					return _iwc == null ? 0 : new Float(_iwc.getParameter(parameter)).floatValue();
+					return _iwc == null || _iwc.getParameter(parameter) == null ? 0 : new Float(_iwc.getParameter(parameter)).floatValue();
 				} catch (NullPointerException ex){
 					return 0;
 				} catch (NumberFormatException ex){
@@ -824,7 +915,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				}
 			}
 			Date getDateValue(String parameter){
-				return _iwc == null ? null : parseDate(_iwc.getParameter(parameter));
+				return _iwc == null || _iwc.getParameter(parameter) == null ? null : parseDate(_iwc.getParameter(parameter));
 			}
 						
 //dummy implementations - methods not used.
@@ -877,11 +968,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	 * @param row
 	 * @return
 	 */
-	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
-		TextInput input = getTextInput(parameter, value);
-		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + key);
-		return addWidget(table, key, input, col, row);
-	}
+//	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
+//		TextInput input = getTextInput(parameter, value);
+//		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + key);
+//		return addWidget(table, key, input, col, row);
+//	}
 	
 	/**
 	 * Adds a label and a TextInput to a table
@@ -909,7 +1000,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	 */
 	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, "") ); 
+		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2); 
 		return addWidget(table, key, input, col, row);
 	}
 		
@@ -923,9 +1014,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	 * @param row
 	 * @return
 	 */
-	private Table addField(Table table, String key, String value, int col, int row){
-		return addWidget(table, key, getText(value), col, row);
-	}	
+//	private Table addField(Table table, String key, String value, int col, int row){
+//		return addWidget(table, key, getText(value), col, row);
+//	}	
 	
 	/**
 	 * Adds a label and widget to a table
