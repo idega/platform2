@@ -228,7 +228,7 @@ public class MailinglistPresentationAdministrator extends Block {
       System.out.println("LENGD Á emailListArray = "+emailListArray.length);
       emailListArray = (MailAccount[]) EntityFinder.findRelated(chosenMailinglist, emailList).toArray( new MailAccount[0]);
       if (!((emailListArray == null) || (emailListArray.length == 0))) {
-        emailSelectionBox.addMenuElements(emailListArray, emailList.EMAIL);
+        emailSelectionBox.addMenuElements(emailListArray, MailAccount.EMAIL);
       }
     }
     emailSelectionBox.setHeight(3);
