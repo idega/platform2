@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.86 2005/02/04 12:58:15 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.87 2005/02/24 12:41:39 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -64,6 +64,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	
 	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
 
+	private final static String PARAMETER_APPLICATION_ID = "application_id";
+	private final static String PARAMETER_DELETE_OFFER = "delete_offer";
+	
+	private final static int ACTION_DELETE_OFFER = 1111;
+	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
 	private int childID = -1;
 
@@ -74,6 +79,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	
 	private String _caseCode = null;
 	private ICPage _renewQueuePage;
+	
+	private boolean _hasAcceptedApplication = false;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -182,6 +189,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
 				break;
 
+			case ACTION_DELETE_OFFER :
+				deleteOffer(iwc);
+				iwc.removeSessionAttribute(DELETED_APPLICATIONS);
+				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+				break;
+				
 			default :
 				iwc.removeSessionAttribute(DELETED_APPLICATIONS);
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
@@ -203,6 +216,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		}
 		else if (iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
 			return CCConstants.ACTION_REQUEST_INFO;
+		} 
+		else if (iwc.isParameterSet(PARAMETER_DELETE_OFFER)) {
+			return ACTION_DELETE_OFFER;
 		}
 
 		_caseCode = null;
@@ -490,7 +506,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode);
 
-		Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
+		Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication, _hasAcceptedApplication);
 
 		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
@@ -545,13 +561,21 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 
 		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc).getAcceptedApplicationsByChild(childID);
-		if (acceptedApplication != null) {
+		_hasAcceptedApplication = acceptedApplication != null;
+		if (_hasAcceptedApplication) {
 			IWTimestamp fromDate = new IWTimestamp(acceptedApplication.getFromDate());
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallHeader(localize("child_care.in_process", "In process") + ":"), 1, row);
 			layoutTbl.add(getSmallText(acceptedApplication.getProvider().getSchoolName()), 3, row++);
 			layoutTbl.add(getSmallHeader(localize("child_care.placement_date", "Placement date") + ":"), 1, row);
 			layoutTbl.add(getSmallText(fromDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
+
+			Link delete = new Link(getDeleteIcon(localize("child_care.delete_offer", "Delete offer")));
+			delete.setOnClick("return confirm('" + localize("child_care.delete_offer_confirm", "Are you sure you want to delete this offer?") + "')");
+			delete.addParameter(PARAMETER_APPLICATION_ID, String.valueOf(acceptedApplication.getPrimaryKey()));
+			delete.addParameter(PARAMETER_DELETE_OFFER, String.valueOf(true));
+			layoutTbl.add(delete, 5, row - 1);
+			layoutTbl.mergeCells(5, row - 1, 5, row);
 
 			boolean hasBankId = false;
 			hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner());
@@ -681,6 +705,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return "return confirm('" + localize(SUBMIT_ALERT_2) + "')";
 	}
 
+	private void deleteOffer(IWContext iwc) throws RemoteException {
+		int applicationId = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
+		getChildCareBusiness(iwc).deleteOffer(applicationId, iwc.getCurrentUser());
+	}
+	
 	/**
 	 * Method findApplications finds application for a specific child. 
 	 * Removed applications from earlier sessions is not included.
