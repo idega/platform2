@@ -45,6 +45,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
@@ -56,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/29 12:55:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 13:25:49 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.88 $
+ * @version $Revision: 1.89 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -678,14 +679,21 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.setPeriod (period);
 		paymentRecord.setTotalAmount (null != totalAmount ? totalAmount.intValue ()
 																	: 0);
-		// VAT should be evaluated by a method that TL is developing
-		// until that method is developed, set VAT to zero /SN
-		paymentRecord.setTotalAmountVAT (0);
 		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
 																	: 0);
 		if (null != vatType) {
 			paymentRecord.setVATRuleRegulationId(vatType.intValue ());
 		}
+		try {
+			final Regulation vatRegulation = paymentRecord.getVATRuleRegulation ();
+			final float vat
+					= getVATBusiness ().getVATPercentForRegulation (vatRegulation);
+			paymentRecord.setTotalAmountVAT (vat);
+		} catch (Exception e) {
+			e.printStackTrace ();
+			paymentRecord.setTotalAmountVAT (0);
+		}
+
 		paymentRecord.setOwnPosting (ownPosting);
 		paymentRecord.setDoublePosting (doublePosting);
 		paymentRecord.setRuleSpecType (regSpecTypeName);
@@ -818,5 +826,12 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 		
-	
+	protected VATBusiness getVATBusiness() {
+		try {
+			return (VATBusiness) getServiceInstance(VATBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e);
+		}
+	}	
 }
