@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.82 2005/01/08 14:10:26 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.83 2005/01/11 14:18:05 malin Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -38,6 +38,7 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildre
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookupException;
@@ -72,11 +73,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/01/08 14:10:26 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/11 14:18:05 $ by $Author: malin $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.82 $
+ * @version $Revision: 1.83 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -115,13 +116,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
 		NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
-		/*MessageSession messageSession = null;
-		try {
-			messageSession = getMessageSession(iwc);	
-		}catch (Exception e){
-			log(e);
-		}
-		*/
+		MessageSession messageSession = null;
+				
 		try {
 			transaction = getSessionContext().getUserTransaction();
 			transaction.begin();
@@ -135,8 +131,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			}
 			application.setPhoneHome(phoneHome);
 			if (!"".equals(email)){
-				application.setEmail(email);
-				//messageSession.setIfUserPreferesMessageByEmail(true);				
+				application.setEmail(email);				
 			}
 			if (phoneWork != null)
 				application.setPhoneWork(phoneWork);
@@ -198,16 +193,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setApplicantName(name != null ? name : "");
 			application.setSsn(ssn != null ? ssn : "");
 			application.setEmail(email != null ? email : "");
-		/*	MessageSession messageSession = null;
-			try {
-				messageSession = getMessageSession(iwc);	
-			}catch (Exception e){
-				log(e);
-			}
-			if (!"".equals(email)){
-				messageSession.setIfUserPreferesMessageByEmail(true);				
-			}
-			*/
+			
+						
 			application.setPhoneHome(phoneHome != null ? phoneHome : "");
 			application.setPhoneWork(phoneWork != null ? phoneWork : "");
 			application.setCareOf (careOf == null ? "" : careOf);
@@ -850,10 +837,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			throw new CreateException("Email or letter could not be created");
 		}*/
 	}
-	/*private MessageSession getMessageSession(IWContext iwc) throws Exception {
-		return (MessageSession) com.idega.business.IBOLookup.getSessionInstance(iwc, MessageSession.class);
-	}*/
-
+	
 	public int getNumberOfApplications() throws RemoteException {
 		try {
 			return getCitizenAccountHome().getTotalCount();
