@@ -42,6 +42,7 @@ public class QueryHelper {
 	private List orderConditions = null;
 	private QueryBooleanExpressionPart booleanExpression = null;
 	private int step = 0;
+	private boolean selectDistinct = true;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false;
 	private boolean fieldsLock = false;
@@ -102,6 +103,10 @@ public class QueryHelper {
 				List fields = sqlPart.getFields( name);
 				listOfFields.addAll(fields);
 			}
+			// distinct
+			String distinct = root.getTextTrim(QueryXMLConstants.DISTINCT);
+			selectDistinct = Boolean.valueOf(distinct).booleanValue();
+			//source 
 			XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 			if (source != null) {
 				// SOURCE ENTITY PART (STEP 1)
@@ -110,7 +115,7 @@ public class QueryHelper {
 					sourceEntity = new QueryEntityPart(entity);
 				}
 			}
-					// RELATED PART ( STEP 2)
+			// RELATED PART ( STEP 2)
 			//		if (sourceEntity != null) {
 			XMLElement related = root.getChild(QueryXMLConstants.RELATED_ENTITIES);
 			if (related != null) {
@@ -214,7 +219,10 @@ public class QueryHelper {
 		if (sqlPart != null)	{
 			root.addContent(sqlPart.getQueryElement());
 		}
-		
+		// add distinct
+		XMLElement distinct = new XMLElement(QueryXMLConstants.DISTINCT);
+		distinct.addContent(Boolean.toString(selectDistinct));
+		root.addContent(distinct);
 		//	SOURCE ENTITY PART (STEP 1)
 		if (sourceEntity != null) {
 			XMLElement sourceElement = getSourceEntityElement();
@@ -790,6 +798,17 @@ public class QueryHelper {
 	
 	public String getId() {
 		return id;
+	}
+
+	public boolean isSelectDistinct() {
+		return selectDistinct;
+	}
+	
+	/**
+	 * @param selectDistinct The selectDistinct to set.
+	 */
+	public void setSelectDistinct(boolean selectDistinct) {
+		this.selectDistinct = selectDistinct;
 	}
 
 }

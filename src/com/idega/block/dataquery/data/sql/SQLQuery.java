@@ -291,7 +291,8 @@ public class SQLQuery implements DynamicExpression {
   	}
   	// no direct sql !
     
-    SelectStatement query = new SelectStatement();
+    SelectStatement statement = (queryHelper.isSelectDistinct()) ? 
+				SelectStatement.getInstanceWithDistinctFunction() : SelectStatement.getInstance();
     // prepare everything
     setSourceEntity(queryHelper);
     setRelatedEntities(queryHelper);
@@ -313,7 +314,7 @@ public class SQLQuery implements DynamicExpression {
    		if (functionExpression.isValid()) {
    			// mark used entity
    			entitiesUsedByField.add(path);
-    		query.addSelectClause(functionExpression);
+    		statement.addSelectClause(functionExpression);
    		}
     }
     // set conditions (where clause)
@@ -332,7 +333,7 @@ public class SQLQuery implements DynamicExpression {
       	String path = condition.getPath();
       	entitiesUsedByCriterion.add(path);
       	if (! booleanExpressionIsUsed) {
-      		query.addWhereClause(criterion);
+      		statement.addWhereClause(criterion);
       	}
       	else {
       		criteriaExpression.add(criterion);
@@ -340,7 +341,7 @@ public class SQLQuery implements DynamicExpression {
       }
     }
     if (booleanExpressionIsUsed)	{
-    	query.addWhereClause(criteriaExpression);
+    	statement.addWhereClause(criteriaExpression);
     }
     // set order conditions (order by)
     Iterator orderConditionsIterator = orderConditions.iterator();
@@ -350,7 +351,7 @@ public class SQLQuery implements DynamicExpression {
     	if (orderCriterion.isValid()) {
     		String path = orderCriterion.getPath();
     		entitiesUsedByCriterion.add(path);
-    		query.addOrderByClause(orderCriterion); 
+    		statement.addOrderByClause(orderCriterion); 
     	}
     }
     // set tables (from clause)
@@ -369,7 +370,7 @@ public class SQLQuery implements DynamicExpression {
       		innerJoins.addAll(joins);
       		if (pathCriterionExpression.hasCriteria())	{
       			// if the path contains only one entity there are't any criterias 
-	       		query.addWhereClause(pathCriterionExpression);
+	       		statement.addWhereClause(pathCriterionExpression);
       		}
         }
       }
@@ -393,7 +394,7 @@ public class SQLQuery implements DynamicExpression {
 			String table = element.getTable();
 			if (! addedTables.contains(table)) {
 				addedTables.add(table);
-				query.addInnerJoin(element);
+				statement.addInnerJoin(element);
 			}
     }		
     Iterator outer = outerJoins.iterator();
@@ -402,10 +403,10 @@ public class SQLQuery implements DynamicExpression {
 			String table = element.getTable();
 			if (! addedTables.contains(table)) {
 				addedTables.add(table);
-				query.addOuterJoin(element);
+				statement.addOuterJoin(element);
 			}
     }		
-    return query;
+    return statement;
   }
       
 

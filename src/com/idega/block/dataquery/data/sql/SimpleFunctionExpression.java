@@ -19,17 +19,19 @@ import com.idega.util.StringHandler;
 public class SimpleFunctionExpression extends FunctionExpression {
   
   private final static Map FUNCTION_SQL;
+  private final static String FIELD_VALUE = "FIELD_VALUE";
   
   private String sqlFunctionName = null;
   private String fieldValue = null;
   
   static { 
     FUNCTION_SQL = new HashMap();
-    FUNCTION_SQL.put(QueryXMLConstants.FUNC_COUNT, "COUNT");
-    FUNCTION_SQL.put(QueryXMLConstants.FUNC_MAX, "MAX");
-    FUNCTION_SQL.put(QueryXMLConstants.FUNC_MIN, "MIN");
-    FUNCTION_SQL.put(QueryXMLConstants.FUNC_SUM, "MAX");
-    FUNCTION_SQL.put(QueryXMLConstants.FUNC_AVG,   "AVG"); 
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_COUNT, "COUNT("+FIELD_VALUE+")");
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_COUNT_DISTINCT, "COUNT( DISTINCT "+FIELD_VALUE+")");
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_MAX, "MAX("+FIELD_VALUE+")");
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_MIN, "MIN("+FIELD_VALUE+")");
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_SUM, "MAX("+FIELD_VALUE+")");
+    FUNCTION_SQL.put(QueryXMLConstants.FUNC_AVG,   "AVG("+FIELD_VALUE+")"); 
   }
 
   protected void initialize(SQLQuery sqlQuery) {
@@ -45,9 +47,7 @@ public class SimpleFunctionExpression extends FunctionExpression {
     
   
   public String toSQLString() {
-    StringBuffer buffer = new StringBuffer(sqlFunctionName);
-    buffer.append('(').append(fieldValue).append(')');
-    return buffer.toString();
+  	return StringHandler.replace(sqlFunctionName, FIELD_VALUE, fieldValue);
   }
     
   public boolean isValid() {

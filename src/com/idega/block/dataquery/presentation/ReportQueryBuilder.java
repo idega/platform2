@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.dataquery.business.QueryService;
@@ -30,13 +29,13 @@ import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 import com.idega.block.dataquery.data.xml.QueryPart;
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
 import com.idega.block.datareport.presentation.InputHandlerChooser;
+import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
 import com.idega.core.file.data.ICFile;
-import com.idega.core.file.data.ICFileHome;
-import com.idega.data.IDOLookup;
+import com.idega.data.EntityRepresentation;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -56,8 +55,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -102,6 +99,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_CONDITION = "field_pattern";
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
+	private static final String PARAM_DISTINCT = "distinct";
 	//private static final String PARAM_COND_ENTITY = "entity";
 	private static final String PARAM_COND_DESCRIPTION = "description";
 	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
@@ -441,6 +439,8 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	private boolean processStep3(IWContext iwc) {
+		helper.setSelectDistinct(iwc.isParameterSet(PARAM_DISTINCT));
+
 		String[] fields = null;
 		if (iwc.isParameterSet(PARAM_FIELDS)) {
 			fields = iwc.getParameterValues(PARAM_FIELDS);
@@ -768,72 +768,86 @@ public class ReportQueryBuilder extends Block {
 			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
 			select.setWidth("300");
-			//ICTreeNode rootNode;
 
 /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	  	User currentUser = iwc.getCurrentUser();
-	  	GroupBusiness groupBusiness = getGroupBusiness();
-	  	UserBusiness userBusiness = getUserBusiness();
-	  	//TODO: thi solve problems with group types
-	  	String[] groupTypes = 
-				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
-			if (topGroup == null) {
-				List groupType = new ArrayList();
-				groupType.add("general");
-				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+			Collection queries = ReportQueryOverview.getQueries(iwc);
+//	  	User currentUser = iwc.getCurrentUser();
+//	  	GroupBusiness groupBusiness = getGroupBusiness();
+//	  	UserBusiness userBusiness = getUserBusiness();
+//	  	//TODO: thi solve problems with group types
+//	  	String[] groupTypes = 
+//				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+//			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+//			if (topGroup == null) {
+//				List groupType = new ArrayList();
+//				groupType.add("general");
+//				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
+//			}
+//	  	Collection parentGroups = new ArrayList();
+//	  	parentGroups.add(topGroup);
+//	  	try {
+//	  		// brilliant implementation in GroupBusiness!!!!!!
+//	  		// null is returned instead of an empty collection!!!! This is really brilliant.
+//	  		//TODO: implement a better version of that method
+//	  	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
+//	  	if (coll != null) {
+//	  		parentGroups.addAll(coll);
+//	  	}
+//	  	//TODO thi: handle exception in the right way
+//	  	}
+//	  	catch (Exception ex) {
+//	  		parentGroups = new ArrayList();
+//	  	}
+//	  	//List queryRepresentations = new ArrayList();
+//	  	Iterator parentGroupsIterator = parentGroups.iterator();
+//			while (parentGroupsIterator.hasNext()) {
+//	  		Group group = (Group) parentGroupsIterator.next();
+//	  		String groupName = group.getName();
+//	  		String groupId = group.getPrimaryKey().toString();
+//	  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
+//	  		ICFile folderFile = getFile(buffer.toString());
+//	  		if (folderFile != null) {
+//	  			// bad implementation:
+//	  			// if the children list is empty null is returned. 
+//	  			//TODO: thi: change the implementation
+//	  			Iterator iterator = folderFile.getChildren();
+//	  			if (iterator == null) {
+//	  				iterator = (new ArrayList(0)).iterator();
+//	  			}
+//					while (iterator.hasNext())	{
+//	  				ICTreeNode node = (ICTreeNode) iterator.next();
+//	  				int id = node.getNodeID();
+//	  				String name = node.getNodeName();
+//	  				String displayName = new StringBuffer(groupName).append(" - ").append(name).toString();
+//	  				select.addMenuElement(Integer.toString(id), displayName);
+//	//  				// show only the query with a specified id if desired 
+//	//  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+//	//  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
+//	//  					queryRepresentations.add(representation);
+//	  				}
+//					}
+//	  		}
+			Iterator iterator = queries.iterator();
+			while (iterator.hasNext()) {
+				EntityRepresentation representation = (EntityRepresentation) iterator.next();
+				String id = representation.getPrimaryKey().toString();
+				String name = (String) representation.getColumnValue(ReportQueryOverview.NAME_KEY);
+				String groupName = (String) representation.getColumnValue(ReportQueryOverview.GROUP_NAME_KEY);
+				StringBuffer displayName = new StringBuffer(groupName).append(" - ").append(name);
+				String isPrivate = (String) representation.getColumnValue(ReportQueryOverview.IS_PRIVATE_KEY);
+				if (isPrivate.length() != 0) {
+					displayName.append(" - ");
+					displayName.append(iwrb.getLocalizedString("query_builder_private", "private"));
+				}
+				select.addMenuElement(id, displayName.toString());				
 			}
-	  	Collection parentGroups = new ArrayList();
-	  	parentGroups.add(topGroup);
-	  	try {
-	  		// brilliant implementation in GroupBusiness!!!!!!
-	  		// null is returned instead of an empty collection!!!! This is really brilliant.
-	  		//TODO: implement a better version of that method
-	  	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
-	  	if (coll != null) {
-	  		parentGroups.addAll(coll);
-	  	}
-	  	//TODO thi: handle exception in the right way
-	  	}
-	  	catch (Exception ex) {
-	  		parentGroups = new ArrayList();
-	  	}
-	  	//List queryRepresentations = new ArrayList();
-	  	Iterator parentGroupsIterator = parentGroups.iterator();
-			while (parentGroupsIterator.hasNext()) {
-	  		Group group = (Group) parentGroupsIterator.next();
-	  		String groupName = group.getName();
-	  		String groupId = group.getPrimaryKey().toString();
-	  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
-	  		ICFile folderFile = getFile(buffer.toString());
-	  		if (folderFile != null) {
-	  			// bad implementation:
-	  			// if the children list is empty null is returned. 
-	  			//TODO: thi: change the implementation
-	  			Iterator iterator = folderFile.getChildren();
-	  			if (iterator == null) {
-	  				iterator = (new ArrayList(0)).iterator();
-	  			}
-					while (iterator.hasNext())	{
-	  				ICTreeNode node = (ICTreeNode) iterator.next();
-	  				int id = node.getNodeID();
-	  				String name = node.getNodeName();
-	  				String displayName = new StringBuffer(groupName).append(" - ").append(name).toString();
-	  				select.addMenuElement(Integer.toString(id), displayName);
-	//  				// show only the query with a specified id if desired 
-	//  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-	//  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
-	//  					queryRepresentations.add(representation);
-	  				}
-					}
-	  		}
-	  		if (helper.hasPreviousQuery()) {
-	  			String id = helper.previousQuery().getId();
-	  			if (id != null) {
-	  				select.setSelectedElement(id);
-	  			}
-	  		}
-				table.add(select, 1, (row == 1) ? 1 : row - 1 );
+  		if (helper.hasPreviousQuery()) {
+  			String id = helper.previousQuery().getId();
+  			if (id != null) {
+  				select.setSelectedElement(id);
+  			}
+  		}
+			table.add(select, 1, (row == 1) ? 1 : row - 1 );
 		}
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
@@ -999,12 +1013,13 @@ public class ReportQueryBuilder extends Block {
 	
 	
 	private PresentationObject getFunctionTable(){
-		Table table = new Table(8,2);
+		Table table = new Table(9,2);
 		int col = 1;
 		table.mergeCells(1,1,8,1);
 		table.add(getMsgText(iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
 		TextInput display = new TextInput("display");
 		SubmitButton count = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
+		SubmitButton count_distinct = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count_distinct", "Count distinct"), PARAM_FUNCTION, QueryXMLConstants.FUNC_COUNT_DISTINCT);
 		// concat not supported yet
 		//SubmitButton concat = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.concat","Concat"),PARAM_FUNCTION,QueryXMLConstants.FUNC_CONCAT);
 		SubmitButton max = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.max","Max"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MAX);
@@ -1012,14 +1027,23 @@ public class ReportQueryBuilder extends Block {
 		SubmitButton sum = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.sum","Sum"),PARAM_FUNCTION,QueryXMLConstants.FUNC_SUM);
 		SubmitButton avg = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.avg","Avg"),PARAM_FUNCTION,QueryXMLConstants.FUNC_AVG);
 		SubmitButton alias = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.alias","Alias"),PARAM_FUNCTION,QueryXMLConstants.FUNC_ALIAS);
+		//distinct checkbox
+		Table distinctTable = new Table(2,1);
+		CheckBox distinct = new CheckBox(PARAM_DISTINCT);
+		distinct.setChecked(helper.isSelectDistinct());
+		distinctTable.add(iwrb.getLocalizedString("btn_func.distinct","Select distinct"),1,1);
+		distinctTable.add(distinct,2,1);
+
 		table.add(display,col++,2);
 		table.add(count,col++,2);
+		table.add(count_distinct, col++,2);
 //		table.add(concat,col++,2);
 		table.add(max,col++,2);
 		table.add(min,col++,2);
 		table.add(sum, col++,2);
 		table.add(avg,col++,2);
 		table.add(alias,col++,2);
+		table.add(distinctTable, col++,2);
 		return table;
 	}
 	
@@ -1703,24 +1727,8 @@ public class ReportQueryBuilder extends Block {
 	public void setDefaultDynamicPattern(String string) {
 		defaultDynamicPattern = string;
 	}
-
-
  
   
-  private ICFile getFile(String name)	{
-  	try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = home.findByFileName(name);
-      return file;
-    }
-    catch(RemoteException ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
-    }
-    catch (FinderException ex) {
-			return null;
-		}
-  }	
- 
   private InputHandler getInputHandler(QueryFieldPart fieldPart) {
   	InputHandler inputHandler = null;
   	String predefinedClassName = fieldPart.getHandlerClass();

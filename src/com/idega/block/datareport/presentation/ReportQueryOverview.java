@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -230,13 +229,14 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return action;
 	}
 
+	public static Collection getQueries(IWContext iwc) throws RemoteException {
+		return ReportQueryOverview.getQueries(iwc, -1);
+	}
 	
-  private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc ) throws RemoteException {
-  //TODO Implement private queries
-  	
+  private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException {
   	User currentUser = iwc.getCurrentUser();
-  	GroupBusiness groupBusiness = getGroupBusiness();
-  	UserBusiness userBusiness = getUserBusiness();
+  	GroupBusiness groupBusiness = getGroupBusiness(iwc);
+  	UserBusiness userBusiness = getUserBusiness(iwc);
   	//TODO: thi solve problem with the group types
   	String[] groupTypes = 
 			{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
@@ -270,12 +270,12 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
  		String usersPrivateFolderName = getPrivateQueryFolderNameForGroup(topGroup);
  		ICFile usersPrivateFolderFile = getFile(usersPrivateFolderName);
  		if (usersPrivateFolderFile != null) {
- 			getQueriesFromFolder(usersPrivateFolderFile, queryRepresentations, topGroupName, true, true);
+ 			getQueriesFromFolder(usersPrivateFolderFile, queryRepresentations, topGroupName, true, true, showOnlyOneQueryWithId);
  		}
  		String usersPublicFolderName = getPublicQueryFolderNameForGroup(topGroup);
  		ICFile usersPublicFolderFile = getFile(usersPublicFolderName);
  		if (usersPublicFolderFile != null) {
- 			getQueriesFromFolder(usersPublicFolderFile, queryRepresentations, topGroupName, false, true);
+ 			getQueriesFromFolder(usersPublicFolderFile, queryRepresentations, topGroupName, false, true, showOnlyOneQueryWithId);
  		} 		
 		// add public queries
   	Iterator parentGroupsIterator = parentGroups.iterator();
@@ -287,11 +287,16 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   		ICFile folderFile = getFile(publicFolderName);
   		
   		if (folderFile != null) {
-  			getQueriesFromFolder(folderFile, queryRepresentations, groupName, false, false);
+  			getQueriesFromFolder(folderFile, queryRepresentations, groupName, false, false, showOnlyOneQueryWithId);
   		}
   	}
+  	return queryRepresentations.values();
+  }
+  	
+  private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
+  	Collection queries = ReportQueryOverview.getQueries(iwc, showOnlyOneQueryWithId);
   	Form form = new Form();
-  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, resourceBundle, form);
+  	EntityBrowser browser = getBrowser(new  ArrayList(queries), bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
   	if (showOnlyOneQueryWithId != -1)	{
@@ -309,7 +314,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	add(form);
   }
   	
-  	private void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser) { 
+  private static void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) { 
 			// bad implementation:
 			// if the children list is empty null is returned. 
 			//TODO: thi: change the implementation
@@ -321,22 +326,20 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 				ICTreeNode node = (ICTreeNode) iterator.next();
 				int id = node.getNodeID();
 				String name = node.getNodeName();
-			int countOfSameName = 2;
-			
-			boolean alreadyAddedKey = queryRepresentations.containsKey(name);
-			if(alreadyAddedKey){
-				String newName = name;
-				while(alreadyAddedKey){
-					//probably crappy code its 4am and i dead tired - Eiki
-					//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
-					newName = new String(name+countOfSameName);
-					alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
-					countOfSameName++;
-				}
-				name = newName;
-			}
+				int countOfSameName = 2;
 				
-			
+				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+				if(alreadyAddedKey){
+					String newName = name;
+					while(alreadyAddedKey){
+						//probably crappy code its 4am and i dead tired - Eiki
+						//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+						newName = new String(name+countOfSameName);
+						alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+						countOfSameName++;
+					}
+					name = newName;
+				}
 				// show only the query with a specified id if desired 
 				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
 					QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
@@ -345,12 +348,12 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			}  
   	}
 
-	protected String getPrivateQueryFolderNameForGroup(Group group) {
+	private static String getPrivateQueryFolderNameForGroup(Group group) {
 	String privateFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("private").toString();
 	return privateFolderName;
 }
  
-	protected String getPublicQueryFolderNameForGroup(Group group) {
+	private static String getPublicQueryFolderNameForGroup(Group group) {
 	String publicFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("public").toString();
 	return publicFolderName;
 }
@@ -370,7 +373,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(DELETE_ITEMS_KEY, deleteText);
   	// change target
-  	String click = getRemoveTargetScript(ReportOverviewWindow.class);
+  	String click = getRemoveTargetScript();//ReportOverviewWindow.class);
   	delete.setOnClick(click);
   	
   	delete.setAsImageButton(true);
@@ -435,7 +438,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
 		ButtonConverter excelConverter = new ButtonConverter(bundle.getImage("/shared/xls.gif"));
 		// change target
-		String click = getChangeTargetScript(QueryResultViewerWindow.class);
+		String click = getChangeTargetScript(); //QueryResultViewerWindow.class);
 		htmlConverter.setOnClick(click);
 		pdfConverter.setOnClick(click);
 		excelConverter.setOnClick(click);
@@ -489,136 +492,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return optionProvider;
 	}			
 		
-  	
-    
-  
-//	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
-//		String errorMessage = null;
-//		QueryService queryService = getQueryService();
-//		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
-//    QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
-//    QueryToSQLBridge bridge = getQueryToSQLBridge(); 
-//    SQLQuery query = null;
-//    try {
-//    	query = bridge.createQuerySQL(queryHelper, iwc);
-//    }
-//    catch (QueryGenerationException ex) {
-//			String message =
-//				"[ReportOverview]: Can't generate query.";
-//			System.err.println(message + " Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			errorMessage = resourceBundle.getLocalizedString("ro_query_could_not_be_created", "Query could not be created");
-//		}
-//		// execute query if the query was successfully created
-//		if (errorMessage == null) { 
-//			//
-//			// query is dynamic
-//			//
-//	    if (query.isDynamic()) {
-//	    	Map identifierValueMap = query.getIdentifierValueMap();
-//	    	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
-//	    	boolean calculateAccess = false;
-//	    	boolean containsOnlyAccessVariable = 
-//	    		(	(calculateAccess = identifierValueMap.containsKey(USER_ACCESS_VARIABLE))  || 
-//	    			(calculateAccess = identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE))) && 
-//	    			(identifierValueMap.size() == 1);
-//	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
-//	    			! containsOnlyAccessVariable) {
-//	    		// show input fields
-//					showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
-//	    	}
-//	    	else {
-//	    		// get the values of the input fields
-//	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap, iwc);
-//	    		if (calculateAccess) {
-//	    			setAccessCondition(modifiedValues, iwc);
-//	    		}
-//	    		query.setIdentifierValueMap(modifiedValues);
-//	    		// show result of query
-//	    		List executedSQLStatements = new ArrayList();
-//	    		errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
-//	    		
-//	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
-//	    			addExecutedSQLQueries(executedSQLStatements);
-//	    		}
-//	    		
-//	    		//little debugging/logging
-//	    		StringBuffer queryExecuted = new StringBuffer();
-//				if(executedSQLStatements!=null && !executedSQLStatements.isEmpty()){
-//					Iterator iterator = executedSQLStatements.iterator();
-//					while (iterator.hasNext())	{
-//						queryExecuted.append( (String) iterator.next());
-//						queryExecuted.append("\n");
-//					}
-//				}
-//					
-//	    		debug(queryExecuted.toString());
-//	    			    			
-//	     		// show again the input fields
-//	     		if (errorMessage != null)	{
-//	     			addErrorMessage(errorMessage);
-//	     		}
-//	     		if ( ! containsOnlyAccessVariable) {
-//	    			showInputFields(query, modifiedValues,  identifierInputDescriptionMap, resourceBundle, iwc);
-//	     		}
-//	     		else {
-//	     			getListOfQueries(bundle, resourceBundle, iwc);
-//	     		}	
-//	    	}
-//	    	//
-//	    	// good bye - query is dynamic
-//	    	//
-//	    	return;
-//	    }
-//	    //
-//	    // query is not dynamic
-//	    //
-//	    else {
-//	    	List executedSQLStatements = new ArrayList();
-//	    	errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
-//	    	addExecutedSQLQueries(executedSQLStatements);
-//	    }
-//		}
-//		// show list if query is not dynamic and if an error occurred
-//		if (errorMessage != null) {
-//			addErrorMessage(errorMessage);
-//		}
-//		getListOfQueries(bundle, resourceBundle, iwc);
-//	}
-	
-//	private void addErrorMessage(String errorMessage)	{
-//		Text text = new Text(errorMessage);
-//	  text.setBold();
-//	  text.setFontColor("#FF0000");
-//	  add(text);
-//	  add(Text.getBreak());
-//	}
-//	
-//	private void addExecutedSQLQueries(List executedSQLStatements) {
-//		Iterator iterator = executedSQLStatements.iterator();
-//		while (iterator.hasNext())	{
-//			String statement = (String) iterator.next();
-//			Text text = new Text(statement);
-//			text.setBold();
-//	  	text.setFontColor("#FF0000");
-//	  	add(text);
-//	  	add(Text.getBreak());
-//		}
-//	}
-//
 
-	
-
-    
-
-    	
-
-			
-
-
-    	
-    	
- 
 	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
   	Link goBack = new Link(goBackText);
@@ -689,7 +563,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     }
   }     
   
-  private ICFile getFile(String name)	{
+  private static ICFile getFile(String name)	{
   	try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
       ICFile file = home.findByFileName(name);
@@ -762,83 +636,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
  
 
   
-  // a representation of the query
-  class QueryRepresentation implements EntityRepresentation {
-  	
-  	private int id;
-  	private String name;
-  	private String groupName;
-  	private boolean belongsToUser;
-  	private boolean isPrivate;
-  	
-  	public QueryRepresentation(int id, String name, String groupName, boolean isPrivate, boolean belongsToUser)	{
-  		this.id = id;
-  		this.name = name;
-  		this.groupName = groupName;
-  		this.belongsToUser = belongsToUser;
-  		this.isPrivate = isPrivate;
-  	}
-  	
-		public Object getColumnValue(String columnName) {
-			if (NAME_KEY.equals(columnName))	{
-				return name;
-			}
-			else if (GROUP_NAME_KEY.equals(columnName))	{
-				return groupName;
-			} 
-			else if (IS_PRIVATE_KEY.equals(columnName)) {
-				return isPrivate ? "X" : "";
-			}
-			else if (DESIGN_LAYOUT_KEY.equals(columnName)) {
-				//no preselection!
-				return null;
-			}
-			return name;
-		}
-  
- 		public Object getPrimaryKey() {
- 			return new Integer(id);
- 		}
- 		
- 		public boolean belongsToUser() {
- 			return belongsToUser;
- 		}
- 		
-  }
-  
-//  class PrintQueryConverter implements EntityToPresentationObjectConverter {
-//  	
-//  	Image image;
-//  	
-//  	public PrintQueryConverter(Link link) {
-//  		this.image = image;
-//  	}
-//  	
-//		public PresentationObject getHeaderPresentationObject(
-//			EntityPath entityPath,
-//			EntityBrowser browser,
-//			IWContext iwc) {
-//			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
-//		}
-//
-//		/* (non-Javadoc)
-//	 	* @see com.idega.block.entity.business.EntityToPresentationObjectConverter#getPresentationObject(java.lang.Object, com.idega.block.entity.data.EntityPath, com.idega.block.entity.presentation.EntityBrowser, com.idega.presentation.IWContext)
-//	 	*/
-//		public PresentationObject getPresentationObject(
-//			Object entity,
-//			EntityPath path,
-//			EntityBrowser browser,
-//			IWContext iwc) {
-//			Link link = new Link();
-//			link.setImage(image);
-//			EntityRepresentation idoEntity = (EntityRepresentation) entity;
-//			// add id of query
-//			String primaryKey = idoEntity.getPrimaryKey().toString();
-//			link.addParameter(QueryResultViewer.QUERY_ID_KEY, primaryKey);
-//			// add id of cho
-//			link.addParameter(QueryResultViewer.DESIGN_ID_KEY, parameterMap.get(DESIGN_LAYOUT_KEY));
-//			String outputFormat = path.getShortKey();
-//			link.addParameter(QueryResultViewer.OUTPUT_FORMAT_KEY, outputFormat);
 			
   
   // link to query builder converter
@@ -882,29 +679,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
   }
  	
-//  private InputHandler getInputHandler(String className) {
-//  	if (className == null) {
-//  		return null;
-//  	}
-//  	InputHandler inputHandler = null;
-//		try {
-//			inputHandler = (InputHandler) Class.forName(className).newInstance();
-//		}
-//		catch (ClassNotFoundException ex) {
-//			log(ex);
-//			logError("[ReportOverview] Could not retrieve handler class");
-//		}
-//		catch (InstantiationException ex) {
-//			log(ex);
-//			logError("[ReportOverview] Could not instanciate handler class");
-//		}
-//		catch (IllegalAccessException ex) {
-//			log(ex);
-//			logError("[ReportOverview] Could not instanciate handler class");
-//		}
-//		return inputHandler;
-//  }
-
   class DeleteCheckBox extends CheckBoxConverter {
   	
   	public DeleteCheckBox(String name) {
@@ -923,9 +697,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	  	return Text.emptyString();
 	  }
   }
-	public UserBusiness getUserBusiness()	{
+	public static UserBusiness getUserBusiness(IWContext iwc)	{
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+			return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), UserBusiness.class);
 		}
 		catch (RemoteException ex)	{
       System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
@@ -933,9 +707,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
 	}
 
-	public GroupBusiness getGroupBusiness()	{
+	public static GroupBusiness getGroupBusiness(IWContext iwc)	{
 		try {
-			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+			return (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
 		}
 		catch (RemoteException ex)	{
       System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
@@ -943,7 +717,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
 	}
 	
-	private String getChangeTargetScript(Class windowClass) {
+	private String getChangeTargetScript() {//(Class windowClass) {
   //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
   	// note: the name "newTarget" is not important and arbitrary
 //  	StringBuffer buffer = new StringBuffer("findObj('");
@@ -955,7 +729,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return buffer.toString();
 	}
 
-	private String getRemoveTargetScript(Class windowClass) {
+	private String getRemoveTargetScript() {//(Class windowClass) {
   //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
   	// note: the name "newTarget" is not important and arbitrary
 //  	StringBuffer buffer = new StringBuffer("findObj('");
@@ -968,6 +742,51 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	}
 
 	
+	
+	
+	// a representation of the query
+	private static class QueryRepresentation implements EntityRepresentation {
+			
+			private int id;
+			private String name;
+			private String groupName;
+			private boolean belongsToUser;
+			private boolean isPrivate;
+			
+			public QueryRepresentation(int id, String name, String groupName, boolean isPrivate, boolean belongsToUser)	{
+				this.id = id;
+				this.name = name;
+				this.groupName = groupName;
+				this.belongsToUser = belongsToUser;
+				this.isPrivate = isPrivate;
+			}
+			
+			public Object getColumnValue(String columnName) {
+				if (ReportQueryOverview.NAME_KEY.equals(columnName))	{
+					return name;
+				}
+				else if (ReportQueryOverview.GROUP_NAME_KEY.equals(columnName))	{
+					return groupName;
+				} 
+				else if (ReportQueryOverview.IS_PRIVATE_KEY.equals(columnName)) {
+					return isPrivate ? "X" : "";
+				}
+				else if (ReportQueryOverview.DESIGN_LAYOUT_KEY.equals(columnName)) {
+					//no preselection!
+					return null;
+				}
+				return name;
+			}
+		
+			public Object getPrimaryKey() {
+				return new Integer(id);
+			}
+			
+			public boolean belongsToUser() {
+				return belongsToUser;
+			}
+		
+	}
 }
 
 

@@ -18,7 +18,8 @@ import java.util.Map;
 public class SelectStatement implements DynamicExpression {
   
 	//TODO: thi fix that DISTINCT problem
-  private final String SELECT = "SELECT DISTINCT";
+  private final String SELECT = "SELECT";
+  private final String DISTINCT = "DISTINCT";
   private final String FROM = "FROM";
   private final String WHERE = "WHERE";
   private final String AND = "AND";
@@ -32,8 +33,23 @@ public class SelectStatement implements DynamicExpression {
   private List whereClauses = new ArrayList();
   private List orderByClauses = new ArrayList();
   
+  private boolean selectDistinct = true;
+  
   private Map identifierValueMap = new HashMap();
-  private Map identifierInputDescriptionMap = new HashMap(); 
+  private Map identifierInputDescriptionMap = new HashMap();
+  
+  public static SelectStatement getInstanceWithDistinctFunction() {
+  	SelectStatement selectStatement = new SelectStatement();
+  	selectStatement.setSelectDistinct(true);
+  	return selectStatement;
+  }
+  
+  public static SelectStatement getInstance() {
+  	SelectStatement selectStatement = new SelectStatement();
+  	selectStatement.setSelectDistinct(false);
+  	return selectStatement;
+  }
+  	
 
   public void addInnerJoin(Expression join) {
     innerClauses.add(join);
@@ -88,6 +104,9 @@ public class SelectStatement implements DynamicExpression {
       new StringBuffer(WHITE_SPACE).append(COMMA).append(WHITE_SPACE);
     
     StringBuffer spacing = new StringBuffer(SELECT).append(WHITE_SPACE);
+    if (selectDistinct) {
+    	spacing.append(DISTINCT).append(WHITE_SPACE);
+    }
     Iterator select = selectClauses.iterator();
     while (select.hasNext())  {
       Expression clause = (Expression) select.next();
@@ -132,5 +151,19 @@ public class SelectStatement implements DynamicExpression {
     
     return expression.toString();
   }
+	/**
+	 * @return Returns the selectDistinct.
+	 */
+	public boolean isSelectDistinct() {
+		return selectDistinct;
+	}
+
+	/**
+	 * @param selectDistinct The selectDistinct to set.
+	 */
+	public void setSelectDistinct(boolean selectDistinct) {
+		this.selectDistinct = selectDistinct;
+	}
+
 }   
 
