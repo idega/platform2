@@ -252,7 +252,9 @@ public class MarathonFileImportHandlerBean extends IBOServiceBean  implements Ma
 				try {
 					if (validLine) {
 						int userID = business.saveUser(nafn, kt, birth, gender, hfang, pnr, sveitarfelag, countryPK, simi, "", netfang);
-						business.saveRun(userID, "4", Integer.toString(distanceID), "73", thoderni, bolur, chip, sveit, best, goal, locale);
+						if (!business.isRegisteredInRun(runID, userID)) {
+							business.saveRun(userID, Integer.toString(runID), Integer.toString(distanceID), Integer.toString(yearID), thoderni, bolur, chip, sveit, best, goal, locale);
+						}
 						return true;
 					}
 				}
