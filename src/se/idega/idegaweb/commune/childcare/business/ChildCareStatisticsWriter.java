@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.process.data.CaseLog;
@@ -139,6 +140,7 @@ public class ChildCareStatisticsWriter {
 				Phone phone;
 				CaseLog caseLog;
 				ChildCareApplication application;
+				ChildCareContractArchive archive;
 				School provider;
 				String status;
 				
@@ -149,6 +151,9 @@ public class ChildCareStatisticsWriter {
 					
 					caseLog = (CaseLog) iter.next();
 					application = getChildCareBusiness(iwc).getApplication(((Integer)caseLog.getCase().getPrimaryKey()).intValue());
+					archive = getChildCareBusiness(iwc).getContractFile(application.getContractFileId());
+					if (archive == null)
+						continue;
 					child = application.getChild();
 					provider = application.getProvider();
 					address = getCommuneUserBusiness(iwc).getUsersMainAddress(child);
@@ -173,11 +178,11 @@ public class ChildCareStatisticsWriter {
 					else
 						cellColumn++;
 	
-					row.createCell((short)cellColumn++).setCellValue(application.getCareTime());
-					row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(application.getFromDate()).getLocaleDate(locale, IWTimestamp.SHORT));
+					row.createCell((short)cellColumn++).setCellValue(archive.getCareTime());
+					row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(archive.getValidFromDate()).getLocaleDate(locale, IWTimestamp.SHORT));
 		
 					if (application.getRejectionDate() != null) {
-						row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(application.getRejectionDate()).getLocaleDate(locale, IWTimestamp.SHORT));
+						row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(archive.getTerminatedDate()).getLocaleDate(locale, IWTimestamp.SHORT));
 						status = iwrb.getLocalizedString("child_care.status_cancelled","Cancelled");
 					}
 					else {
