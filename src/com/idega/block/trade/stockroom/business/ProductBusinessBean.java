@@ -35,7 +35,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
 /**
- * @todo losa við service;
+ * @todo losa viï¿½ service;
  */
 //import is.idega.idegaweb.travel.data.Service;
 //import is.idega.idegaweb.travel.presentation.ServiceViewer;
@@ -207,7 +207,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     }
 
     if (numberInFront) {
-      if (!number.equals("")) {
+      if (number != null && !number.equals("")) {
 	returnString = number + " " + name;
       }else {
 	returnString = name;
