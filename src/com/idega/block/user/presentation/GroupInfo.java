@@ -245,14 +245,14 @@ public class GroupInfo extends Block {
 		_showEmptyFields = value;
 	}
 	
-	private boolean _showHomePage = true;
-	private boolean _showDescription = true;
-	private boolean _showExtraInfo = true;
-	private boolean _showShortName = true;
-	private boolean _showPhone = true;
-	private boolean _showEmails = true;
-	private boolean _showAddress = true;
-	private boolean _showEmptyFields = false;
+	private boolean _showHomePage = false;
+	private boolean _showDescription = false;
+	private boolean _showExtraInfo = false;
+	private boolean _showShortName = false;
+	private boolean _showPhone = false;
+	private boolean _showEmails = false;
+	private boolean _showAddress = false;
+	private boolean _showEmptyFields = true;
 	private String _textInfoStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
 	private String _textLabelStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
 	
