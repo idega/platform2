@@ -17,6 +17,7 @@ insert into ic_group_type(group_type,description,is_visible) values('alias','An 
 
 insert into ic_group_type_tree values ('iwme_league','iwme_federation')
 insert into ic_group_type_tree values ('iwme_federation_staff','iwme_federation')
+insert into ic_group_type_tree values ('iwme_regional_union','iwme_federation')
 
 insert into ic_group_type_tree values ('iwme_league_staff','iwme_league')
 insert into ic_group_type_tree values ('iwme_club_division','iwme_league')
