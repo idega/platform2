@@ -97,4 +97,18 @@ public class Forum extends GenericEntity {
   public void setNumberOfThreads(Integer num){
     setColumn("number_of_threads", num);
   }
+
+  public void insertStartData() {
+    try {
+        Forum forum = new Forum();
+        forum.setForumName("Default forum");
+        forum.setValid(true);
+        forum.setForumDescription("This is the default forum created by idegaWeb Builder");
+        forum.insert();
+    }
+    catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+  }
+
 }   // class Forum
