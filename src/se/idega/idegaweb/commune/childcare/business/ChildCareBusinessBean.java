@@ -1338,7 +1338,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
-							Contract contract = service.getContractHome().create(application.getChildId(),2,validFrom,null,"C",contractText);
+							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),2,validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 							contractFile.addTo(Contract.class,contractID);
 			
@@ -2434,7 +2434,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 				ContractService service = (ContractService) getServiceInstance(ContractService.class);
-				Contract contract = service.getContractHome().create(application.getChildId(),2,fromDate,toDate,"C",contractText);
+				Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),2,fromDate,toDate,"C",contractText);
 				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 				contractFile.addTo(Contract.class,contractID);
 			
