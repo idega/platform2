@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/13 08:06:00 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.71 $
+ * @version $Revision: 1.72 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -524,7 +524,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			applicationId = insertApplication
 					(iwc, hasCohabitant, childrenCount, applicationReason, parameters,
 					 ssn, business);
-			
+
 			// store info about cohabitant
 			if (null != applicationId && hasCohabitant) {
 				insertCohabitant(applicationId, parameters, business);

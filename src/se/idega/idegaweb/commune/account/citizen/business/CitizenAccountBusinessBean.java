@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.65 2004/04/07 07:35:16 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.66 2004/04/13 08:06:00 staffan Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -40,6 +40,7 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.util.PIDChecker;
 
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -57,6 +58,7 @@ import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -69,11 +71,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/04/07 07:35:16 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/13 08:06:00 $ by $Author: staffan $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -452,101 +454,38 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final String careOf = applicant.getCareOf();
 			final String postalCode = applicant.getZipCode();
 			final String postalName = applicant.getCity();
-			Address address = null;
-			if ((streetName != null || careOf != null) && postalCode != null && postalName != null) {
-				final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
-				final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
-				final PostalCode code = addressBusiness.getPostalCodeAndCreateIfDoesNotExist(postalCode, postalName, sweden);
-				final AddressHome addressHome = addressBusiness.getAddressHome();
-				address = addressHome.create();
-				final AddressType mainAddressType = addressHome.getAddressType1();
-				address.setAddressType(mainAddressType);
-				if (isSweden) {
-					address.setCountry(sweden);
-				}
-				address.setPostalCode(code);
-				address.setProvince(postalName);
-				address.setCity(postalName);
-				address.setStreetName((careOf != null ? "c/o " + careOf + ' ' : "") + (streetName != null ? streetName : ""));
-				if (null != communeId)
-					address.setCommuneID(communeId.intValue());
-				address.store();
-				user.addAddress(address);
-			}
-			final Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
-			email.setEmailAddress(applicant.getEmail());
-			email.store();
-			user.addEmail(email);
-			Phone homePhone = null;
-
-			if (applicant.getPhoneHome() != null) {
-				homePhone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-				homePhone.setNumber(applicant.getPhoneHome());
-				homePhone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
-				homePhone.store();
-				user.addPhone(homePhone);
-			}
-
-			if (applicant.getPhoneWork() != null) {
-				final Phone workPhone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-				workPhone.setNumber(applicant.getPhoneWork());
-				workPhone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-				workPhone.store();
-				user.addPhone(workPhone);
-			}
+			final Address address
+					= createAddress(user, communeId, isSweden, streetName, careOf,
+													postalCode, postalName);
+			createEmail(applicant, user);
+			final Phone homePhone
+					= createPhone(applicant, user, PhoneBMPBean.getHomeNumberID(),
+												applicant.getPhoneHome());
+			createPhone (applicant, user, PhoneBMPBean.getWorkNumberID(),
+									 applicant.getPhoneWork());
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
 			if (applicant.hasCohabitant()) {
-				try {
-					final CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
-					final CitizenApplicantCohabitant cohabitant = home.findByApplicationId(applicationID);
-					final String cohabitantSsn = cohabitant.getSsn();
-					if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
-						final Gender cohabitantGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
-						final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
-						final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
-						final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
-						familyLogic.setAsSpouseFor(user, cohabitantUser);
-						if (null != address)
-							cohabitantUser.addAddress(address);
-						final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-						phone.setNumber(cohabitant.getPhoneWork());
-						phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-						phone.store();
-						cohabitantUser.addPhone(phone);
-						if (homePhone != null) {
-							cohabitantUser.addPhone(homePhone);
-						}
-					}
-				}
-				catch (FinderException fe) {
-					//This is if no cohabitant record is found
-					fe.printStackTrace();
-				}
+				createCohabitant
+						(applicationID, ssn, genderHome, pidChecker, userBusiness,
+						 notNackaResident, user, address, homePhone, familyLogic);
 			}
 			if (applicant.getChildrenCount() > 0) {
-				final CitizenApplicantChildrenHome home = (CitizenApplicantChildrenHome) IDOLookup.getHome(CitizenApplicantChildren.class);
-				final CitizenApplicantChildren[] children = home.findByApplicationId(applicationID);
+				final CitizenApplicantChildrenHome home = (CitizenApplicantChildrenHome)
+						IDOLookup.getHome(CitizenApplicantChildren.class);
+				final CitizenApplicantChildren[] children
+						= home.findByApplicationId(applicationID);
 				for (int i = 0; i < children.length; i++) {
-					final String childrenSsn = children[i].getSsn();
-					if (childrenSsn != null && childrenSsn.trim().length() > 0) {
-						final Gender childrenGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
-						final Date childrenBirth = pidChecker.getDateFromPersonalID(childrenSsn);
-						final IWTimestamp childrenTimestamp = childrenBirth != null ? new IWTimestamp(childrenBirth.getTime()) : null;
-						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
-						familyLogic.setAsParentFor(user, childrenUser);
-						familyLogic.setAsCustodianFor(user, childrenUser);
-						if (null != address)
-							childrenUser.addAddress(address);
-						if (homePhone != null) {
-							childrenUser.addPhone(homePhone);
-						}
-					}
+					final CitizenApplicantChildren child = children [i];
+					createChild (ssn, genderHome, pidChecker, userBusiness,
+											 notNackaResident, user, address,	homePhone, familyLogic,
+											 child);
 				}
 			}
 			applicant.setOwner(user);
 			applicant.store();
-			super.acceptApplication(applicationID, performer, createUserMessage, createPasswordMessage);
+			super.acceptApplication(applicationID, performer, createUserMessage,
+															createPasswordMessage);
 			transaction.commit();
 		}
 		catch (Exception e) {
@@ -567,6 +506,125 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				throw new CreateException(e.getMessage());
 			}
 		}
+	}
+
+	private void createEmail(final CitizenAccount applicant, final User user) throws CreateException, IDOLookupException, IDOAddRelationshipException {
+		final Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+		email.setEmailAddress(applicant.getEmail());
+		email.store();
+		user.addEmail(email);
+	}
+
+	private void createChild
+		(final String ssn, final GenderHome genderHome, final PIDChecker pidChecker,
+		 final CommuneUserBusiness userBusiness, final boolean notNackaResident,
+		 final User user, Address address, Phone homePhone,
+		 final MemberFamilyLogic familyLogic, final CitizenApplicantChildren child)
+		throws RemoteException, FinderException, CreateException,
+					 IDOAddRelationshipException {
+		final String childSsn = child.getSsn();
+		if (childSsn != null && childSsn.trim().length() > 0) {
+			final Gender childGender = pidChecker.isFemale(ssn)
+					? genderHome.getFemaleGender() : genderHome.getMaleGender();
+			final Date childBirth = pidChecker.getDateFromPersonalID(childSsn);
+			final IWTimestamp childTimestamp = childBirth != null
+					? new IWTimestamp(childBirth.getTime()) : null;
+			final User childUser = notNackaResident
+					? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
+					(child.getFirstName(), "", child.getLastName(), childSsn, childGender,
+					 childTimestamp)
+					: userBusiness.createOrUpdateCitizenByPersonalID
+					(child.getFirstName(), "", child.getLastName(), childSsn, childGender,
+					 childTimestamp);
+			familyLogic.setAsParentFor(user, childUser);
+			familyLogic.setAsCustodianFor(user, childUser);
+			if (null != address) childUser.addAddress(address);
+			if (homePhone != null) childUser.addPhone(homePhone);
+		}
+	}
+
+	private void createCohabitant
+		(final int applicationID, final String ssn, final GenderHome genderHome,
+		 final PIDChecker pidChecker, final CommuneUserBusiness userBusiness,
+		 final boolean notNackaResident, final User user, Address address,
+		 Phone homePhone, final MemberFamilyLogic familyLogic)
+		throws IDOLookupException, RemoteException, CreateException,
+					 IDOAddRelationshipException {
+		try {
+			final CitizenApplicantCohabitantHome home
+					= (CitizenApplicantCohabitantHome) IDOLookup.getHome
+					(CitizenApplicantCohabitant.class);
+			final CitizenApplicantCohabitant cohabitant
+					= home.findByApplicationId(applicationID);
+			final String cohabitantSsn = cohabitant.getSsn();
+			if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
+				final Gender cohabitantGender = pidChecker.isFemale(ssn)
+						? genderHome.getFemaleGender() : genderHome.getMaleGender();
+				final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
+				final IWTimestamp cohabitantTimestamp = cohabitantBirth != null
+						? new IWTimestamp(cohabitantBirth.getTime()) : null;
+				final User cohabitantUser = notNackaResident
+						? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
+						(cohabitant.getFirstName(), "", cohabitant.getLastName(),
+						 cohabitantSsn, cohabitantGender, cohabitantTimestamp)
+						: userBusiness.createOrUpdateCitizenByPersonalID
+						(cohabitant.getFirstName(), "", cohabitant.getLastName(),
+						 cohabitantSsn, cohabitantGender, cohabitantTimestamp);
+				familyLogic.setAsSpouseFor(user, cohabitantUser);
+				if (null != address)
+					cohabitantUser.addAddress(address);
+				final Phone phone
+						= ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+				phone.setNumber(cohabitant.getPhoneWork());
+				phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+				phone.store();
+				cohabitantUser.addPhone(phone);
+				if (homePhone != null) {
+					cohabitantUser.addPhone(homePhone);
+				}
+			}
+		}
+		catch (FinderException fe) {
+			//This is if no cohabitant record is found
+			fe.printStackTrace();
+		}
+	}
+
+	private Phone createPhone(final CitizenAccount applicant, final User user, int phoneNumberId, String phoneString) throws CreateException, IDOLookupException, IDOAddRelationshipException {
+		Phone phone = null;
+		if (applicant.getPhoneHome() != null) {
+			phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+			phone.setNumber(phoneString);
+			phone.setPhoneTypeId(phoneNumberId);
+			phone.store();
+			user.addPhone(phone);
+		}
+		return phone;
+	}
+
+	private Address createAddress(final User user, Integer communeId, boolean isSweden, final String streetName, final String careOf, final String postalCode, final String postalName) throws RemoteException, FinderException, IBOLookupException, CreateException, IDOAddRelationshipException {
+		Address address = null;
+		if ((streetName != null || careOf != null) && postalCode != null && postalName != null) {
+			final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
+			final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
+			final PostalCode code = addressBusiness.getPostalCodeAndCreateIfDoesNotExist(postalCode, postalName, sweden);
+			final AddressHome addressHome = addressBusiness.getAddressHome();
+			address = addressHome.create();
+			final AddressType mainAddressType = addressHome.getAddressType1();
+			address.setAddressType(mainAddressType);
+			if (isSweden) {
+				address.setCountry(sweden);
+			}
+			address.setPostalCode(code);
+			address.setProvince(postalName);
+			address.setCity(postalName);
+			address.setStreetName((careOf != null ? "c/o " + careOf + ' ' : "") + (streetName != null ? streetName : ""));
+			if (null != communeId)
+				address.setCommuneID(communeId.intValue());
+			address.store();
+			user.addAddress(address);
+		}
+		return address;
 	}
 
 	public void removeApplication(final int applicationId, final User performer) throws RemoteException, FinderException {
