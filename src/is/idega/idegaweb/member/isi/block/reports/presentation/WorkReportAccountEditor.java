@@ -57,11 +57,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
-  private static final String INCOME_SUM_KEY = "income_sum_key";
-  private static final String EXPONSES_SUM_KEY = "exponses_sum_key";
-  private static final String INCOME_EXPONSES_SUM_KEY = "income_exponses_sum_key";
-  private static final String ASSET_SUM_KEY = "asset_sum_key";
-  private static final String DEBT_SUM_KEY = "debt_sum_key";
+  // do not use -1 (-1 means null or new entity)
+  // dummy keys for primary entries
+  private static final Integer INCOME_SUM_KEY = new Integer(-11);
+  private static final Integer EXPONSES_SUM_KEY = new Integer(-12);
+  private static final Integer INCOME_EXPONSES_SUM_KEY = new Integer(-13);
+  private static final Integer ASSET_SUM_KEY = new Integer(-14);
+  private static final Integer DEBT_SUM_KEY = new Integer(-15);
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
@@ -305,14 +307,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Collections.sort(assetKeys, keyComparator);
     Collections.sort(debtKeys, keyComparator);
     // add sorted keys to the fields
-    fieldList.addAll(incomeKeys);
+    addPrimaryKeys(fieldList, incomeKeys);
     fieldList.add(INCOME_SUM_KEY);
-    fieldList.addAll(exponsesKeys);
+    addPrimaryKeys(fieldList, exponsesKeys);
     fieldList.add(EXPONSES_SUM_KEY);
     fieldList.add(INCOME_EXPONSES_SUM_KEY);
-    fieldList.addAll(assetKeys);
+    addPrimaryKeys(fieldList, assetKeys);
     fieldList.add(ASSET_SUM_KEY);
-    fieldList.addAll(debtKeys);
+    addPrimaryKeys(fieldList, debtKeys);
     fieldList.add(DEBT_SUM_KEY);
 
     // sort league collection
@@ -325,13 +327,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     };
     // sort leagues
     Collections.sort(workReportLeagues, leagueComparator);
+    // add the main board (represented by null)
+    workReportLeagues.add(null);
     // create helper 
     // iterate over leagues
     Collection workReportAccountGroupHelpers = new ArrayList();
     Iterator leagueIterator = workReportLeagues.iterator();
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
-      Integer groupId = group.getGroupId();
+      Integer groupId = (group == null) ? null : group.getGroupId();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId);
       workReportAccountGroupHelpers.add(helper);
     }
@@ -352,6 +356,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     buttonTable.add(cancelButton, 3,1);
     mainTable.add(buttonTable,1,2);
     return mainTable;
+  }
+  
+  private void addPrimaryKeys(List primaryKeys, List entities)  {
+    Iterator iterator = entities.iterator();
+    while (iterator.hasNext())  {
+      Integer primaryKey = (Integer) iterator.next();
+      primaryKeys.add(primaryKey);
+    }
   }
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
