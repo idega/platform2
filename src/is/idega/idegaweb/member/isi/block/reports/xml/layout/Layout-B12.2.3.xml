@@ -25,37 +25,37 @@
 	<parameter name="workreportreport" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="label" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="regional_union_name" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="menUnderAge" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="womenUnderAge" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="menUnderAgeLimit" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="womenUnderAgeLimit" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="womenOverOrEqualAgeLimit" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="menOverOrEqualAgeLimit" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="bothGendersUnderAge" isForPrompting="true" class="java.lang.String"/>
-	<parameter name="bothGendersEqualOrOverAge" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="bothGendersEqualOverAge" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="bothGendersAllAge" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="bothGendersLastYear" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="club_name" isForPrompting="true" class="java.lang.String"/>
 	<field name="regional_union_name" class="java.lang.String"/>
-	<field name="menUnderAge" class="java.lang.Integer"/>
-	<field name="womenUnderAge" class="java.lang.Integer"/>
+	<field name="menUnderAgeLimit" class="java.lang.Integer"/>
+	<field name="womenUnderAgeLimit" class="java.lang.Integer"/>
 	<field name="womenOverOrEqualAgeLimit" class="java.lang.Integer"/>
 	<field name="menOverOrEqualAgeLimit" class="java.lang.Integer"/>
 	<field name="bothGendersUnderAge" class="java.lang.Integer"/>
-	<field name="bothGendersEqualOrOverAge" class="java.lang.Integer"/>
+	<field name="bothGendersEqualOverAge" class="java.lang.Integer"/>
 	<field name="bothGendersAllAge" class="java.lang.Integer"/>
 	<field name="bothGendersLastYear" class="java.lang.Integer"/>
 	<field name="club_name" class="java.lang.String"/>
 	<variable name="womenUnderAgeSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
-		<variableExpression>$F{womenUnderAge}</variableExpression>	</variable>
+		<variableExpression>$F{womenUnderAgeLimit}</variableExpression>	</variable>
 	<variable name="womenOverOrEqualAgeLimitSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
 		<variableExpression>$F{womenOverOrEqualAgeLimit}</variableExpression>	</variable>
 	<variable name="menUnderAgeSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
-		<variableExpression>$F{menUnderAge}</variableExpression>	</variable>
+		<variableExpression>$F{menUnderAgeLimit}</variableExpression>	</variable>
 	<variable name="menOverOrEqualAgeLimitSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
 		<variableExpression>$F{menOverOrEqualAgeLimit}</variableExpression>	</variable>
 	<variable name="bothGendersUnderAgeSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
 		<variableExpression>$F{bothGendersUnderAge}</variableExpression>	</variable>
 	<variable name="bothGendersEqualOrOverAgeSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
-		<variableExpression>$F{bothGendersEqualOrOverAge}</variableExpression>	</variable>
+		<variableExpression>$F{bothGendersEqualOverAge}</variableExpression>	</variable>
 	<variable name="bothGendersAllAgeSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
 		<variableExpression>$F{bothGendersAllAge}</variableExpression>	</variable>
 	<variable name="bothGendersLastYearSum" class="java.lang.Integer" resetType="Group" resetGroup="regionalUnionGroup" calculation="Sum">
@@ -248,7 +248,7 @@
 						mode="Transparent"
 						x="1"
 						y="19"
-						width="81"
+						width="87"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -264,9 +264,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="83"
+						x="91"
 						y="19"
-						width="318"
+						width="310"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -440,7 +440,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String">$P{menUnderAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.String">$P{menUnderAgeLimit}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -458,7 +458,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String">$P{womenUnderAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.String">$P{womenUnderAgeLimit}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -530,7 +530,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String">$P{bothGendersEqualOrOverAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.String">$P{bothGendersEqualOverAge}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -606,7 +606,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer">$F{menUnderAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer">$F{menUnderAgeLimit}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -660,7 +660,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer">$F{bothGendersEqualOrOverAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer">$F{bothGendersEqualOverAge}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -696,7 +696,7 @@
 					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer">$F{womenUnderAge}</textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer">$F{womenUnderAgeLimit}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"

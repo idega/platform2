@@ -262,7 +262,7 @@
 						mode="Transparent"
 						x="1"
 						y="19"
-						width="81"
+						width="87"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -278,9 +278,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="83"
+						x="90"
 						y="19"
-						width="318"
+						width="311"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
