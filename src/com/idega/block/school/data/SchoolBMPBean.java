@@ -8,6 +8,7 @@ import com.idega.core.data.ICFileHome;
 import com.idega.data.*;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -40,10 +41,12 @@ public class SchoolBMPBean extends GenericEntity implements School {
   public final static String KEYCODE = "key_kode";
   public final static String LONGITUDE = "longitude";
   public final static String LATITUDE = "latitude";
-  /** Gimmi 04.11.2002 */
+  /** Gimmi 4-5 Nov 2002 */
   public final static String FAX = "fax_nr";
   public final static String WEB_PAGE = "web_page";
   public final static String MANAGEMENT_TYPE = "managment_type";
+  public final static String HEADMASTER_USER_ID = "headmaster_user_id";
+  public final static String ASSISTANT_HEADMASTER_USER_ID = "assistant_hm_user_id";
 
 
   public void initializeAttributes() {
@@ -60,9 +63,15 @@ public class SchoolBMPBean extends GenericEntity implements School {
     this.addAttribute(LATITUDE,"latitude",true,true,String.class,20);
     this.addAttribute(LONGITUDE,"longitude",true,true,String.class,20);
     this.addAttribute(HEADMASTER,"Headmaster",true,true,Integer.class,this.MANY_TO_ONE,Group.class);
+    /** Gimmi 4-5 Nov 2002 */
     this.addAttribute(FAX,"fax",true,true,String.class,20);
     this.addAttribute(WEB_PAGE,"web_page",true,true,String.class,50);
     this.addAttribute(MANAGEMENT_TYPE,"management_type",true,true,Integer.class);
+    this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
+    this.addAttribute(ASSISTANT_HEADMASTER_USER_ID, "assistant headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
+    
+    
+    
     this.addManyToManyRelationShip(SchoolType.class);
     this.addManyToManyRelationShip(SchoolYear.class);
     // Grimur 16.10.2002
@@ -325,8 +334,23 @@ public class SchoolBMPBean extends GenericEntity implements School {
   }
   
   
-
-   public static void main(String[] args){
+  public int getHeadmasterUserId() {
+  	return getIntColumnValue(HEADMASTER_USER_ID);
+  }
+  
+  public void setHeadmasterUserId(int userId) {
+  	setColumn(HEADMASTER_USER_ID, userId);
+  }
+  
+  public int getAssistantHeadmasterUserId() {
+  	return getIntColumnValue(ASSISTANT_HEADMASTER_USER_ID);
+  }
+  
+  public void setAssistantHeadmasterUserId(int userId) {
+  	setColumn(ASSISTANT_HEADMASTER_USER_ID, userId);	
+  }
+  
+  public static void main(String[] args){
    	System.out.println("hellu there");
    }
 }

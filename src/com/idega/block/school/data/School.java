@@ -1,6 +1,6 @@
 package com.idega.block.school.data;
 
-import com.idega.data.IDOAddRelationshipException;
+import javax.ejb.*;
 
 public interface School extends com.idega.data.IDOEntity
 {
@@ -9,23 +9,28 @@ public interface School extends com.idega.data.IDOEntity
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public void addSchoolYearsRemoveOther(int[] p0) throws java.rmi.RemoteException;
  public void addSchoolTypes(int[] p0) throws java.rmi.RemoteException;
+ public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void setSchoolWebPage(java.lang.String p0) throws java.rmi.RemoteException;
  public void setHeadmasterGroupId(int p0) throws java.rmi.RemoteException;
  public int getSchoolManagermentType() throws java.rmi.RemoteException;
  public java.util.Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public void setSchoolLongitude(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setHeadmasterUserId(int p0) throws java.rmi.RemoteException;
  public java.lang.String getSchoolPhone() throws java.rmi.RemoteException;
  public java.lang.String getSchoolKeyCode() throws java.rmi.RemoteException;
+ public int getHeadmasterUserId() throws java.rmi.RemoteException;
  public java.lang.String getSchoolFax() throws java.rmi.RemoteException;
  public void addImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public void setSchoolZipCode(java.lang.String p0) throws java.rmi.RemoteException;
  public void addSchoolTypesRemoveOther(int[] p0) throws java.rmi.RemoteException;
  public java.lang.String getSchoolZipArea() throws java.rmi.RemoteException;
+ public int getAssistantHeadmasterUserId() throws java.rmi.RemoteException;
  public java.lang.String getSchoolLatitude() throws java.rmi.RemoteException;
  public void setSchoolAddress(java.lang.String p0) throws java.rmi.RemoteException;
  public int getSchoolTypeId() throws java.rmi.RemoteException;
  public void setSchoolName(java.lang.String p0) throws java.rmi.RemoteException;
  public int getHeadmasterGroupId() throws java.rmi.RemoteException;
+ public void setAssistantHeadmasterUserId(int p0) throws java.rmi.RemoteException;
  public int getSchoolAreaId() throws java.rmi.RemoteException;
  public void removeImages()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public com.idega.block.text.data.LocalizedText getLocalizedText(int p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -50,5 +55,4 @@ public interface School extends com.idega.data.IDOEntity
  public void setSchoolPhone(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getSchoolName() throws java.rmi.RemoteException;
  public void addSchoolYears(int[] p0) throws java.rmi.RemoteException;
-public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
 }

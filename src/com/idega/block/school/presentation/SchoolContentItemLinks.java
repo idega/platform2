@@ -19,6 +19,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * @author gimmi
@@ -89,80 +90,41 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 			useBreak = true;
 		}
 		
-		Collection users = null;
 		try {
-			users =	getUserBusiness(_iwc).getGroupBusiness().getUsersContained(_school.getHeadmasterGroupId());
-		} catch (FinderException e) {
-			e.printStackTrace(System.err);
-		}
-		if (users != null && users.size() > 0) {
 			if (useBreak) {
 				++row;
 				table.setHeight(row, spaceBetween);
 				++row;
 			}
 			table.add(getHeader(_iwrb.getLocalizedString("school.headmaster","Headmaster")+":"), 1, row);
-			
-			Iterator iter = users.iterator();
-			User user;
-			while (iter.hasNext()) {
-				user = (User) iter.next();
-				++row;
-				String name = user.getName();
-				Collection emails = user.getEmails();
-				if (emails != null) {
-					Iterator eIter = emails.iterator();
-					EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
-					Email email;
-					Link link;
-					int emSize = emails.size();
-					if (emSize == 1) {
-						try {
-							email = eHome.findByPrimaryKey(eIter.next());
-							link = new Link(getText(name), "mailto:"+email.getEmailAddress());
-							table.add(link, 1, row);
-						} catch (FinderException e) {
-							e.printStackTrace(System.err);
-						}
-					}else if (emSize < 1) {
-						table.add(name, 1, row);
-					}else if (emSize > 1) {
-						table.add(name, 1, row);
-						while (eIter.hasNext()) {
-							try {
-								email = eHome.findByPrimaryKey(eIter.next());
-								link = new Link(getText(email.getEmailAddress()), "mailto:"+email.getEmailAddress());
-								++row;
-								table.add(link, 1, row);
-							} catch (FinderException e) {
-								e.printStackTrace(System.err);
-							}
-						}
-					}
-				}
-				
-				Collection phones = user.getPhones();
-				if (phones != null && phones.size() > 0) {
-					Iterator pIter = phones.iterator();	
-					PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
-					Phone uPhone;
-					while (pIter.hasNext()) {
-						try {
-							uPhone = pHome.findByPrimaryKey(pIter.next());	
-							++row;
-							table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
-						} catch (FinderException e) {
-							e.printStackTrace(System.err);
-						}
-					}
-				}
+			int headmasterId = _school.getHeadmasterUserId();
+			if (headmasterId > 0 ) {
+				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				User user = uHome.findByPrimaryKey(new Integer(headmasterId));
+				row = insertUser(table, row, user);
+				useBreak = true;
 			}
-			
-			
-			useBreak = true;
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
 		}
 		
-
+		try {
+			if (useBreak) {
+				++row;
+				table.setHeight(row, spaceBetween);
+				++row;
+			}
+			table.add(getHeader(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant Headmaster")+":"), 1, row);
+			int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
+			if (assistantHeadmasterId > 0 ) {
+				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				User user = uHome.findByPrimaryKey(new Integer(assistantHeadmasterId));
+				row = insertUser(table, row, user);
+				useBreak = true;
+			}
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
 
 		
 		String webPage = _school.getSchoolWebPage();
@@ -191,6 +153,59 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		
 		
 		return table;
+	}
+
+	protected int insertUser(Table table, int row, User user) throws RemoteException {
+		++row;
+		String name = user.getName();
+		Collection emails = user.getEmails();
+		if (emails != null) {
+			Iterator eIter = emails.iterator();
+			EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
+			Email email;
+			Link link;
+			int emSize = emails.size();
+			if (emSize == 1) {
+				try {
+					email = eHome.findByPrimaryKey(eIter.next());
+					link = new Link(getText(name), "mailto:"+email.getEmailAddress());
+					table.add(link, 1, row);
+				} catch (FinderException e) {
+					e.printStackTrace(System.err);
+				}
+			}else if (emSize < 1) {
+				table.add(name, 1, row);
+			}else if (emSize > 1) {
+				table.add(name, 1, row);
+				while (eIter.hasNext()) {
+					try {
+						email = eHome.findByPrimaryKey(eIter.next());
+						link = new Link(getText(email.getEmailAddress()), "mailto:"+email.getEmailAddress());
+						++row;
+						table.add(link, 1, row);
+					} catch (FinderException e) {
+						e.printStackTrace(System.err);
+					}
+				}
+			}
+		}
+		
+		Collection phones = user.getPhones();
+		if (phones != null && phones.size() > 0) {
+			Iterator pIter = phones.iterator();	
+			PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
+			Phone uPhone;
+			while (pIter.hasNext()) {
+				try {
+					uPhone = pHome.findByPrimaryKey(pIter.next());	
+					++row;
+					table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
+				} catch (FinderException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+		return row;
 	}
 	
 	private Text getHeader(String content) {
