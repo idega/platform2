@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.12 2004/02/20 16:36:50 tryggvil Exp $
+/* $Id: ControlList.java,v 1.13 2004/05/05 09:36:10 sigtryggur Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -46,7 +46,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.12 2004/02/20 16:36:50 tryggvil Exp $ 
+ * $Id: ControlList.java,v 1.13 2004/05/05 09:36:10 sigtryggur Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -66,8 +66,9 @@ public class ControlList extends AccountingBlock {
 	public final static String KEY_SEARCH = KEY_PREFIX + "search";
 	public final static String KEY_PROVIDER = KEY_PREFIX + "provider";
 	public final static String KEY_NUM_INDIVIDUALS_PREL = KEY_PREFIX + "num_individuals_prel";
-	public final static String KEY_LAST_MONTH = KEY_PREFIX + "last_month";
+	public final static String KEY_NUM_INDIVIDUALS_COMPARE_MONTH = KEY_PREFIX + "num_individuals_compare_month";
 	public final static String KEY_TOTAL_AMOUNT_PREL = KEY_PREFIX + "total_amount_prel";
+	public final static String KEY_TOTAL_AMOUNT_COMPARE_MONTH = KEY_PREFIX + "total_amount_compare_month";
 	public final static String KEY_MEDIA_WINDOW_TITLE = KEY_PREFIX + "media_window_title";
 	public final static String PARAMETER_SEARCH_PERIOD_COMPARE = "param_period_from";
 	public final static String PARAMETER_SEARCH_PERIOD_CURRENT = "param_period_to";
@@ -148,9 +149,9 @@ public class ControlList extends AccountingBlock {
 		ListTable list = new ListTable(this, 5);
 		list.setLocalizedHeader(KEY_PROVIDER, "Provider", 1);
 		list.setLocalizedHeader(KEY_NUM_INDIVIDUALS_PREL, "No of individuals Prel.", 2);
-		list.setLocalizedHeader(KEY_LAST_MONTH, "Previous", 3);
+		list.setLocalizedHeader(KEY_NUM_INDIVIDUALS_COMPARE_MONTH, "Previous", 3);
 		list.setLocalizedHeader(KEY_TOTAL_AMOUNT_PREL, "Total amount Prel.", 4);
-		list.setLocalizedHeader(KEY_LAST_MONTH, "Previous", 5);
+		list.setLocalizedHeader(KEY_TOTAL_AMOUNT_COMPARE_MONTH, "Previous", 5);
 
 
 		Collection collection = null;
