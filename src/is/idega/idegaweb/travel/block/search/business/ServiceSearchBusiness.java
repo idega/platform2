@@ -68,7 +68,7 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#storeEngine
 	 */
-	public ServiceSearchEngine storeEngine(Object pk, String name, String code, Group supplierManager) throws java.rmi.RemoteException;
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#addSearchEngineUser

@@ -33,19 +33,20 @@ import com.idega.presentation.ui.TextInput;
  */
 public class ServiceSearchEditor extends TravelManager {
 
-	String ACTION = "sse_a";
-	String ACTION_NEW = "sse_an";
-	String ACTION_SAVE = "sse_as";
-	String ACTION_EDIT = "sse_ed";
-	String ACTION_DELETE = "sse_d";
-	String ACTION_SUPPLIERS = "sse_s";
-	String ACTION_UPDATE_SUPPLIERS = "sse_us";
+	private static final String ACTION = "sse_a";
+	private static final String ACTION_NEW = "sse_an";
+	private static final String ACTION_SAVE = "sse_as";
+	private static final String ACTION_EDIT = "sse_ed";
+	private static final String ACTION_DELETE = "sse_d";
+	private static final String ACTION_SUPPLIERS = "sse_s";
+	private static final String ACTION_UPDATE_SUPPLIERS = "sse_us";
 	
-	String PARAMETER_NAME = "sse_prm_n";
-	String PARAMETER_CODE = "sse_prm_c";
-	String PARAMETER_SSE_ID = "sse_prm_sse_i";
-	String PARAMETER_IN_USE = "sse_prm_iu_";
-	String PARAMETER_SUPPLIER_ID = "sse_prm_sid";
+	private static final String PARAMETER_NAME = "sse_prm_n";
+	private static final String PARAMETER_CODE = "sse_prm_c";
+	private static final String PARAMETER_SSE_ID = "sse_prm_sse_i";
+	private static final String PARAMETER_URL = "sse_prm_url";
+	private static final String PARAMETER_IN_USE = "sse_prm_iu_";
+	private static final String PARAMETER_SUPPLIER_ID = "sse_prm_sid";
 	
 	IWResourceBundle iwrb;
 	ServiceSearchEngine engine;
@@ -110,9 +111,10 @@ public class ServiceSearchEditor extends TravelManager {
 		
 		table.add(super.getHeaderText(iwrb.getLocalizedString("travel.search.name", "Name")), 1,row);
 		table.add(super.getHeaderText(iwrb.getLocalizedString("travel.search.code", "Code")), 2,row);
-		table.add("", 3, row);
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.search.url", "Url")), 3, row);
 		table.add("", 4, row);
 		table.add("", 5, row);
+		table.add("", 6, row);
 		table.setRowColor(row, super.backgroundColor);
 		
 		if (allEngines != null && !allEngines.isEmpty()) {
@@ -122,6 +124,7 @@ public class ServiceSearchEditor extends TravelManager {
 			Link delete;
 			Link supplierLink;
 			Link select;
+			Link engineLink;
 			
 			while (iter.hasNext()) {
 				++row;
@@ -145,9 +148,14 @@ public class ServiceSearchEditor extends TravelManager {
 				
 				table.add(select, 1, row);
 				table.add(getText(engine.getCode()), 2, row);
-				table.add(supplierLink, 3, row);
-				table.add(edit, 4, row);
-				table.add(delete, 5, row);
+				if (engine.getURL() != null) {
+					engineLink = new Link(iwrb.getLocalizedImageButton("travel.search.url", "URL"), engine.getURL());
+					engineLink.setTarget(Link.TARGET_NEW_WINDOW);
+					table.add(engineLink, 3, row);
+				}
+				table.add(supplierLink, 4, row);
+				table.add(edit, 5, row);
+				table.add(delete, 6, row);
 			}
 		} else {
 			table.add("No search engines found", 1, ++row);
@@ -188,8 +196,15 @@ public class ServiceSearchEditor extends TravelManager {
 		table.add(tiCode, 2, row);
 		table.setRowColor(row, GRAY);
 		
+		++row;
+		TextInput tiUrl = new TextInput(PARAMETER_URL);
+		table.add(getText(iwrb.getLocalizedString("travel.url", "URL")), 1,row);
+		table.add(tiUrl, 2, row);
+		table.setRowColor(row, GRAY);
+		
 		String pName = iwc.getParameter(PARAMETER_NAME);
 		String pCode = iwc.getParameter(PARAMETER_CODE);
+		String pUrl = iwc.getParameter(PARAMETER_URL);
 		
 		String pID = iwc.getParameter(PARAMETER_SSE_ID);
 		
@@ -199,6 +214,9 @@ public class ServiceSearchEditor extends TravelManager {
 				table.add(new HiddenInput(PARAMETER_SSE_ID, pID), 1, row);
 				tiName.setContent(engine.getName());
 				tiCode.setContent(engine.getCode());
+				if (engine.getURL() != null) {
+					tiUrl.setContent(engine.getURL());
+				}
 			} catch (Exception e) {
 				System.err.println("[ServiceSearchEditor] Failed to populate fields");
 			}
@@ -207,6 +225,7 @@ public class ServiceSearchEditor extends TravelManager {
 		if (pName != null) {
 			tiName.setContent(pName);
 			tiCode.setContent(pCode);
+			tiUrl.setContent(pUrl);
 		}
 		
 		SubmitButton bSave = new SubmitButton(iwrb.getLocalizedImageButton("travel.save", "Save"), ACTION, ACTION_SAVE);
@@ -345,6 +364,7 @@ public class ServiceSearchEditor extends TravelManager {
 	private void saveEngine(IWContext iwc) {
 		String name = iwc.getParameter(PARAMETER_NAME);
 		String code = iwc.getParameter(PARAMETER_CODE);
+		String url = iwc.getParameter(PARAMETER_URL);
 		String id = iwc.getParameter(PARAMETER_SSE_ID);
 		
 		boolean isValid = true;
@@ -386,7 +406,7 @@ public class ServiceSearchEditor extends TravelManager {
 				}
 				
 				if (proceed) {
-					engine = getBusiness(iwc).storeEngine(iID, name, code, getSupplierManager());
+					engine = getBusiness(iwc).storeEngine(iID, name, code, url, getSupplierManager());
 					displaySearchEngineList(iwc);
 				} else {
 					displayCreation(iwc);

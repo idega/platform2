@@ -287,7 +287,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 		return engine;
 	}
 	
-	public ServiceSearchEngine storeEngine(Object pk, String name, String code, Group supplierManager) {
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, String url, Group supplierManager) {
 		ServiceSearchEngine engine = null;
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
@@ -309,6 +309,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 			if (supplierManager != null) {
 				engine.setSupplierManager(supplierManager);
 			}
+			engine.setURL(url);
 			engine.store();
 			
 			if (getServiceSearchEngineStaffGroup(engine) == null) {
