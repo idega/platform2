@@ -22,6 +22,7 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -378,15 +379,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportBoardMember createWorkReportBoardMember(int reportID, User user, WorkReportGroup workReportGroup) throws CreateException {
-
-		Age age = new Age(user.getDateOfBirth());
+		Date dob = user.getDateOfBirth();
+		Age age = null;
+		if (dob != null)
+				age = new Age(user.getDateOfBirth());
 
 		WorkReportBoardMember member = getWorkReportBoardMemberHome().create();
 		member.setReportId(reportID);
 		member.setName(user.getName());
 		member.setPersonalId(user.getPersonalID());
-		member.setAge(age.getYears());
-		member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
+		if (age != null)
+			member.setAge(age.getYears());
+		if (dob != null)
+			member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		// league
 		if (workReportGroup != null) {
@@ -1087,7 +1092,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
 
   public WorkReportGroup getMainBoardWorkReportGroup(int year)  {
-    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.ISI_MAIN_BOARD_NAME);
+    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME);
     WorkReportGroup group = findWorkReportGroupByNameAndYear(mainBoardName, year);
     return group;
   }

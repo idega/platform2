@@ -74,7 +74,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	private static int SHEET_BOARD_PART = 0;
 	private static int SHEET_ACCOUNT_PART = 1;
 	private static int SHEET_MEMBER_PART = 2;
-	
+
 	private WorkReportGroupHome workReportGroupHome;
 	private WorkReportClubAccountRecordHome workReportClubAccountRecordHome;
 	private WorkReportAccountKeyHome workReportAccountKeyHome;
@@ -102,7 +102,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	private static final short COLUMN_BOARD_MEMBER_POSTAL_CODE = 5;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-
 
 	/**
 	 * A method to import the account part of the ISI workreports. A bit of a hack, since the format 
@@ -398,15 +397,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					throw new WorkReportImportException("workreportimportexception.error_creating_division");
 				}
 			}
-		
+
 			try {
 				board.store();
 			}
-			catch(Exception e) {
-				
+			catch (Exception e) {
+
 			}
 		}
-
 
 		return true;
 	}
@@ -505,7 +503,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			return -1;
 		}
 	}
-	
+
 	public boolean importBoardPart(int workReportFileId, int workReportId) throws WorkReportImportException, RemoteException {
 
 		UserTransaction transaction;
@@ -548,62 +546,56 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				int firstCell = row.getFirstCellNum();
 				int lastCell = row.getLastCellNum();
 
-				HSSFCell nameCell = row.getCell(COLUMN_BOARD_MEMBER_NAME);
-				if (nameCell == null) {
-					break; //stop
+				String league = this.getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_LEAGUE);
+				//Got to division part without finding a delimiter
+				if (league != null && league.equals("Deild")) {
+					throw new WorkReportImportException("workreportimportexception.missing_delimiter");
 				}
 
-				HSSFCell leagueCell = row.getCell(COLUMN_BOARD_MEMBER_LEAGUE);
-				String league = null;
-				WorkReportGroup group = null;
-				if (leagueCell != null) {
-					league = leagueCell.getStringCellValue();
-					if (league != null && !"".equals(league.trim())) {
-						league = league.toUpperCase();
-						try {
-							group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
-						}
-						catch (FinderException e) {
-							e.printStackTrace();
-							System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
+				//Go on to division part?
+				if (league.indexOf("##") != -1) {
+					break;
+				}
 
-							try {
-								group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(league, year);
-							}
-							catch (FinderException e1) {
-								throw new WorkReportImportException("workreportimportexception.league_not_found");
-							}
+				WorkReportGroup group = null;
+				if (league != null && !"".equals(league.trim())) {
+					league = league.toUpperCase();
+					try {
+						group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+						System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
+
+						try {
+							group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(league, year);
+						}
+						catch (FinderException e1) {
+							throw new WorkReportImportException("workreportimportexception.league_not_found");
 						}
 					}
 				}
 
-				String name = nameCell.getStringCellValue();
-				if (name == null || name.indexOf("##") != -1) {
-					break; //stop
-				}
-
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_SSN);
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
-				String streetName = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_STREET_NAME);
+				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
 
 				WorkReportBoardMember member;
 
 				try {
 					//the user must already exist in the database
-					User user = this.getUser(ssn);
+					User user = getUser(ssn);
 					try {
-
 						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
 						member.store();
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-						member = membHome.create(); //createWorkImportReportBoardMember(workReportId, ssn, group); //sets basic data
+						member = getWorkReportBusiness().createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
 						member.setPersonalId(ssn);
 						member.setReportId(workReportId);
-						//Set group??
-
+						
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
 
@@ -617,18 +609,15 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							catch (RemoteException e) {
 								e.printStackTrace();
 							}
-
 						}
 
 						member.store();
-
 					}
 				}
 				catch (EJBException e1) {
 					e1.printStackTrace();
 				}
 				catch (CreateException e2) {
-					//failed to create move on.
 					e2.printStackTrace();
 					System.err.println("Failed to create user for ssn : " + ssn);
 				}
@@ -720,8 +709,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 		return true;
 	}
-	
-	public boolean importMemberPart(int workReportFileId, int workReportId,String mainBoardName) throws WorkReportImportException, RemoteException {
+
+	public boolean importMemberPart(int workReportFileId, int workReportId, String mainBoardName) throws WorkReportImportException, RemoteException {
 		int memberCount = 0;
 		int playerCount = 0;
 		HashMap divPlayerCount = new HashMap();
@@ -836,7 +825,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 											try {
 												mainBoard.addEntity(member);
 											}
-											catch(Exception e) {
+											catch (Exception e) {
 												e.printStackTrace();
 											}
 											playerCount++;
@@ -898,7 +887,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					throw new WorkReportImportException("workreportimportexception.error_creating_division");
 				}
 			}
-			
+
 			board.setReportId(workReportId);
 			board.setWorKReportGroupID(id.intValue());
 			board.setNumberOfPlayers(val.intValue());
@@ -944,7 +933,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		return workReportImportMemberHome;
 	}
 
-
 	public WorkReportImportBoardMemberHome getWorkReportImportBoardMemberHome() {
 		if (workReportImportBoardMemberHome == null) {
 			try {
@@ -956,7 +944,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		}
 		return workReportImportBoardMemberHome;
 	}
-
 
 	public WorkReportImportDivisionBoardHome getWorkReportImportDivisionBoardHome() {
 		if (workReportImportDivisionBoardHome == null) {
@@ -1002,9 +989,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	}
 
 	protected WorkReportBusiness getWorkReportBusiness() throws RemoteException {
-		return (WorkReportBusiness) this.getServiceInstance(WorkReportBusiness.class);
+		return (WorkReportBusiness)this.getServiceInstance(WorkReportBusiness.class);
 	}
-	
+
 	private HSSFWorkbook getExcelWorkBookFromFileId(int fileId) throws WorkReportImportException {
 		HSSFWorkbook excel = null;
 		File file = getFileObjectForFileId(fileId);
@@ -1041,7 +1028,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			home = getWorkReportBusiness().getWorkReportGroupHome();
 		}
 		catch (RemoteException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -1076,13 +1062,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							throw new WorkReportImportException("workreportimportexception.league_not_found");
 						}
 						catch (RemoteException e1) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
 					}
 					catch (RemoteException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 

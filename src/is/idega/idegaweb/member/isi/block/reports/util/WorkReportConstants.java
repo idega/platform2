@@ -32,7 +32,7 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_SESSION_CLEAR = "wr_sess_clear";
 
   // application property name
-  public static final String ISI_MAIN_BOARD_NAME = "ISI_MAIN_BOARD_NAME";
+  public static final String WR_MAIN_BOARD_NAME = "ISI_MAIN_BOARD_NAME";
 	
 
 	public static final String WR_APPLICATION_PARAM_FROM_DATE = "WORK_REPORTS_FROM_DATE";
