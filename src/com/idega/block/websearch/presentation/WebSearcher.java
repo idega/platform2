@@ -9,6 +9,7 @@ package com.idega.block.websearch.presentation;
 * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
