@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.49 2003/04/02 20:47:26 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.50 2003/04/03 12:25:19 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,11 +50,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/04/02 20:47:26 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/03 12:25:19 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -559,9 +559,9 @@ private void addSimpleInputs(final Table table, final IWContext iwc) {
 	table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, 1);
 	table.add(getSingleInput(iwc, SSN_KEY, 12, true), 3, 1);
 	table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
-	table.add(getSingleInput(iwc, EMAIL_KEY, 50, false), 3, 2);
+	table.add(getSingleInput(iwc, EMAIL_KEY, 40, false), 3, 2);
 	table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);
-	table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, false), 3, 3);
+	table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, true), 3, 3);
 	table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, 4);
 	table.add(getSingleInput(iwc, PHONE_WORK_KEY, 20, false), 3, 4);
 }
@@ -583,7 +583,7 @@ private Table getRadioButton(final String name, final String value, String defau
 
 private TextInput getSingleInput(IWContext iwc, final String paramId, final int maxLength, boolean notEmpty) {
 	TextInput textInput = (TextInput) getStyledInterface(new TextInput(paramId));
-	textInput.setMaxlength(maxLength);
+	textInput.setLength(maxLength);
 	if (notEmpty) {
 		final String fieldCanNotBeEmpty = localize(ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY, ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT);
 		String name = localize(paramId, paramId);
