@@ -32,6 +32,7 @@ public class GolfLogin extends GolfBlock {
 
 	private Boolean _showFormWhenLoggedOn;
 	private boolean _enterSubmit = false;
+	private int _inputLength = 8;
 
 	public GolfLogin() {
 		super();
@@ -57,6 +58,8 @@ public class GolfLogin extends GolfBlock {
 			myTable.setRowStyleClass(1, getLoginRowClass());
 			myTable.setWidth(5, Table.HUNDRED_PERCENT);
 			myTable.setAlignment(5, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			myTable.setCellpaddingLeft(1, 1, 3);
+			myTable.setCellpaddingRight(5, 1, 3);
 	
 			Text loginTexti = getSmallText(userText);
 			Text passwordTexti = getSmallText(passwordText);
@@ -64,7 +67,7 @@ public class GolfLogin extends GolfBlock {
 			myTable.add(loginTexti, 1, 1);
 	
 			TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
-			login.setSize(8);
+			login.setSize(_inputLength);
 			if (_enterSubmit) {
 				login.setOnKeyPress("return enterSubmit(this,event)");
 			}
@@ -73,7 +76,7 @@ public class GolfLogin extends GolfBlock {
 			myTable.add(passwordTexti, 3, 1);
 	
 			PasswordInput passw = (PasswordInput) getStyledSmallInterface(new PasswordInput("password"));
-			passw.setSize(8);
+			passw.setSize(_inputLength);
 			if (_enterSubmit) {
 				passw.setOnKeyPress("return enterSubmit(this,event)");
 			}
@@ -86,7 +89,7 @@ public class GolfLogin extends GolfBlock {
 			/*Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
 			myTable.add(spacer, 5, 1);*/
 			
-			Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_LINK);
+			Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_LINK3);
 			loginLink.setToFormSubmit(myForm);
 			myTable.add(loginLink, 5, 1);
 			
@@ -182,8 +185,9 @@ public class GolfLogin extends GolfBlock {
 			Table myTable = new Table();
 			myTable.setCellspacing(0);
 			myTable.setCellpadding(0);
-			myTable.setCellpaddingLeft(1, 1, 5);
+			myTable.setCellpaddingRight(1, 1, 5);
 			myTable.setCellpaddingRight(2, 1, 5);
+			myTable.setCellpaddingRight(3, 1, 5);
 	
 			Member member = (Member) modinfo.getSession().getAttribute("member_login");
 			Text userName = getSmallHeader(member.getName());
@@ -193,7 +197,7 @@ public class GolfLogin extends GolfBlock {
 			Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
 			myTable.add(spacer, 2, 1);
 			
-			Link logout = getStyleLink(localize("login.logout","Log out"), this.STYLENAME_TEMPLATE_LINK);
+			Link logout = getStyleLink(localize("login.logout","Log out"), this.STYLENAME_TEMPLATE_HEADER_LINK);
 			logout.setToFormSubmit(myForm);
 			myTable.add(logout, 3, 1);
 	
@@ -240,9 +244,9 @@ public class GolfLogin extends GolfBlock {
 			myTable.setAlignment(1, 1, "center");
 			
 			/*Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
-			myTable.add(spacer, 2, 1);
+			myTable.add(spacer, 2, 1);*/
 			
-			Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK);
+			Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK3);
 			tryAgain.setToFormSubmit(myForm);
 			myTable.add(tryAgain, 3, 1);
 	
@@ -267,5 +271,12 @@ public class GolfLogin extends GolfBlock {
 	 */
 	public void setShowFormWhenLoggedOn(boolean formWhenLoggedOn) {
 		this._showFormWhenLoggedOn = new Boolean(formWhenLoggedOn);
+	}
+	
+	/**
+	 * @param length The _inputLength to set.
+	 */
+	public void setInputLength(int length) {
+		this._inputLength = length;
 	}
 }
