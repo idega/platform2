@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.75 2004/11/02 21:20:21 aron Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.76 2004/11/04 08:02:52 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -38,8 +38,6 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildre
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.business.MessageSession;
-import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookupException;
@@ -76,11 +74,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2004/11/02 21:20:21 $ by $Author: aron $
+ * Last modified: $Date: 2004/11/04 08:02:52 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -786,7 +784,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		try {
 			trans = this.getSessionContext().getUserTransaction();
 			trans.begin();
-			createAndStoreNewPasswordAndSendLetterOrEmail(iwuc,loginTable, user, newPassword, sendLetter);
+			createAndStoreNewPasswordAndSendLetterOrEmail(loginTable, user, newPassword, sendLetter);
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -804,7 +802,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 	}
 
-	protected void createAndStoreNewPasswordAndSendLetterOrEmail(IWUserContext iwuc,LoginTable loginTable, User user, String newPassword,boolean sendLetter) throws CreateException, RemoteException {
+	protected void createAndStoreNewPasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword,boolean sendLetter) throws CreateException, RemoteException {
 		// encrypte new password
 		String encryptedPassword = Encrypter.encryptOneWay(newPassword);
 		// store new password
@@ -818,14 +816,14 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		// send letter or email to user
 		MessageBusiness messageBusiness = getMessageBusiness();
 		//MessageSession messageSession = messageBusiness.getMessageSession(iwuc);
-		Message messageLetter = null;
-		Message messageEmail = null;
+		//Message messageLetter = null;
+		//Message messageEmail = null;
 		// user has a registered email and wants to receive messages by email
 		//boolean sendEmail = messageSession.getIfUserCanReceiveEmails(user);
 		if (sendLetter)
-			messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
+			messageBusiness.createPasswordMessage(user, loginName, newPassword);
 		else
-			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody, true);
+			messageBusiness.createUserMessage(user, messageSubject, messageBody, true);
 
 		/*
 		if ((messageLetter == null && sendLetter) || (messageEmail == null && sendEmail)) {

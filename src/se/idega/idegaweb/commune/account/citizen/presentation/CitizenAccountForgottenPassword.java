@@ -7,7 +7,6 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
-import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
@@ -442,7 +441,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 		this.alwaysSendEmail = alwaysSendEmail;
 	}
 	
-	private MessageSession getMessageSession(IWContext iwc) throws Exception {
+	/*private MessageSession getMessageSession(IWContext iwc) throws Exception {
 		return (MessageSession) com.idega.business.IBOLookup.getSessionInstance(iwc, MessageSession.class);
-	}
+	}*/
 }
