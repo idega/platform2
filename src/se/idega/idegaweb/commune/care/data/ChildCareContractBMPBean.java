@@ -218,10 +218,14 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	}
 	
 	public Collection ejbFindByChild(int childID) throws FinderException {
+	    return ejbFindByChild(childID,-1,-1);
+	
+	}
+	public Collection ejbFindByChild(int childID,int resultSize,int startIndex) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
-		return idoFindPKsByQuery(sql);
+		return idoFindPKsByQuery(sql,resultSize,startIndex);
 	}
 	
 	public Collection ejbFindByChildAndDateRange (User child, Date startDate, Date endDate) throws FinderException {
@@ -557,7 +561,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		query.appendWhereEquals(COLUMN_INVOICE_RECEIVER,invoiceReceiverID);
 		query.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
 		query.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
-		
+		query.appendOrderBy(COLUMN_VALID_FROM_DATE).appendDescending();
 		return super.idoFindPKsByQuery(query);
 	}
 	
