@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 import is.idega.idegaweb.member.business.GroupApplicationBusiness;
 
@@ -59,6 +60,16 @@ public class GroupApplicationFormHandler extends Block {
 
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
+				
+				Enumeration enum = iwc.getParameterNames();
+				while (enum.hasMoreElements()) {
+					String element = (String) enum.nextElement();
+					addBreak();
+					add(element);
+					add(" = " );
+					add(iwc.getParameter(element));
+				}
+				
 				
 				try {
 					biz.createGroupApplication(applicationGroup,name,pin,gender,email,address,phone,comment,groups);
