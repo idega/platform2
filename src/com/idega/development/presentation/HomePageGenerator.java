@@ -1,7 +1,7 @@
 /*
  * Created on 4.5.2004
  */
-package com.idega.user.block.homepage.presentation;
+package com.idega.development.presentation;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +17,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.development.presentation.IWDeveloper;
+import com.idega.development.business.HomePageBusiness;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -25,7 +25,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.user.block.homepage.business.HomePageBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.GroupType;

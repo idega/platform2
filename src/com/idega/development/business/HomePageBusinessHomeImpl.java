@@ -1,4 +1,4 @@
-package com.idega.user.block.homepage.business;
+package com.idega.development.business;
 
 
 public class HomePageBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements HomePageBusinessHome

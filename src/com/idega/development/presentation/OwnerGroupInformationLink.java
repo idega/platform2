@@ -1,28 +1,28 @@
 /*
  * Created on 5.5.2004
  */
-package com.idega.user.block.homepage.presentation;
+package com.idega.development.presentation;
 
 import javax.ejb.FinderException;
 
+import com.idega.builder.dynamicpagetrigger.presentation.DPTCrawlableLink;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
-import com.idega.presentation.text.Text;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 
 
 /**
- * Title: OwnerGroupInformationText
+ * Title: OwnerGroupInformationLink
  * Description:
  * Copyright: Copyright (c) 2004
  * Company: idega Software
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class OwnerGroupInformationText extends Text {
-	
+public class OwnerGroupInformationLink extends DPTCrawlableLink {
+
 	public final int SHOW_NAME = 0;
 	public final int SHOW_SHROT_NAME = 1;
 	public final int SHOW_ABBREVATION = 3;
@@ -33,33 +33,9 @@ public class OwnerGroupInformationText extends Text {
 	
 	private int informationToShow = SHOW_NAME;
 	
+	private boolean setPageAsDPTRootpage = false;
 	
-	/**
-	 * 
-	 */
-	public OwnerGroupInformationText() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param text
-	 */
-	public OwnerGroupInformationText(String text) {
-		super(text);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param text
-	 * @param bold
-	 * @param italic
-	 * @param underline
-	 */
-	public OwnerGroupInformationText(String text, boolean bold, boolean italic, boolean underline) {
-		super(text, bold, italic, underline);
-		// TODO Auto-generated constructor stub
-	}
+	
 	
 	public void setInformationToShow(int showConstant) {
 		informationToShow = showConstant;
@@ -69,7 +45,7 @@ public class OwnerGroupInformationText extends Text {
 		
 		Page page = this.getParentPage();
 		if(page != null) {
-			int rootPageID = page.getDynamicPageTrigger().getRootPage();;
+			int rootPageID = page.getDynamicPageTrigger().getRootPage();
 			if(rootPageID != -1) {
 				try {
 					Group gr = ((GroupHome)IDOLookup.getHome(Group.class)).findByHomePageID(rootPageID);
@@ -93,6 +69,9 @@ public class OwnerGroupInformationText extends Text {
 					// No Group found
 					System.out.println("["+this.getClassName()+"]: no Group has this page("+rootPageID+") as homepage");
 				}
+				if(setPageAsDPTRootpage) {
+					this.setPage(rootPageID);
+				}
 			} else {
 				this.setText(textBefore+"-"+textAfter);
 			}
@@ -100,6 +79,10 @@ public class OwnerGroupInformationText extends Text {
 		
 		
 		
+	}
+	
+	public void setPageAsDPTRootPage(boolean value) {
+		setPageAsDPTRootpage = value;
 	}
 
 	/**
@@ -116,10 +99,13 @@ public class OwnerGroupInformationText extends Text {
 	}
 	
 	public Object clone() {
-		OwnerGroupInformationText og = (OwnerGroupInformationText)super.clone();
+		OwnerGroupInformationLink og = (OwnerGroupInformationLink)super.clone();
 		og.textAfter=this.textAfter;
 		og.textBefore=this.textBefore;
 		og.informationToShow=this.informationToShow;
+		og.setPageAsDPTRootpage=this.setPageAsDPTRootpage;
 		return og;
 	}
+
+
 }

@@ -1,4 +1,4 @@
-package com.idega.user.block.homepage.business;
+package com.idega.development.business;
 
 
 public interface HomePageBusiness extends com.idega.business.IBOService
