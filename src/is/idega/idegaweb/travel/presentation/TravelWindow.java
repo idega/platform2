@@ -236,4 +236,10 @@ public class TravelWindow extends Window {
 			throw new IBORuntimeException(e);
 		}
   }
+  
+  protected boolean isTestMode(IWContext iwc) throws RemoteException {
+  	String par = getTravelSessionManager(iwc).getIWBundle().getProperty(TravelBlock.TEST_MODE_PARAMETER_NAME);
+  	return (par != null && par.equalsIgnoreCase("yes"));
+  }
+
 }

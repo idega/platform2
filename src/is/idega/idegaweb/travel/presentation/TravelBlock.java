@@ -52,7 +52,7 @@ public class TravelBlock extends Block {
   
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   
-  private static final String TEST_MODE_PARAMETER_NAME = "test_mode";
+  static final String TEST_MODE_PARAMETER_NAME = "test_mode";
 
 	public TravelBlock() {
 		super();
