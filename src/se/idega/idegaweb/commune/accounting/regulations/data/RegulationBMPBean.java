@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.14 2003/11/06 14:29:27 roar Exp $
+ * $Id: RegulationBMPBean.java,v 1.15 2003/11/07 15:33:15 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.14 2003/11/06 14:29:27 roar Exp $
+ * $Id: RegulationBMPBean.java,v 1.15 2003/11/07 15:33:15 joakim Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -351,7 +351,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		//Check if this is the first condition.
 		boolean first = true;
 		if (from != null) {
-			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendWhere(COLUMN_PERIOD_TO);
 			sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
 			first = false;
 		}
@@ -363,7 +363,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 			else {
 				first = false;
 			}
-			sql.append(COLUMN_PERIOD_TO);
+			sql.append(COLUMN_PERIOD_FROM);
 			sql.appendLessThanOrEqualsSign().append("'" + to + "'");
 		}
 		
