@@ -215,6 +215,21 @@ public abstract class ContractFinder {
       return null;
   }
 
+  public static Hashtable mapOfNewContractsByApplicantID(){
+    List L = listOfStatusContracts(ContractBMPBean.statusCreated);
+    if(L!=null){
+      Hashtable H = new Hashtable();
+      int len = L.size();
+      for (int i = 0; i < len; i++) {
+        Contract C = (Contract) L.get(i);
+        H.put((C.getApplicantId()),C);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
   public static List listOfApplicantContracts(int iApplicantId){
     try {
 

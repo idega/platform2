@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.43 2002/09/04 23:00:48 palli Exp $
+ * $Id: CampusAllocator.java,v 1.44 2002/09/30 16:45:45 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
@@ -453,7 +454,8 @@ public class CampusAllocator extends Block implements Campus {
 		java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId, cmplxId);
 		java.util.Collection w_application = CampusApplicationFinder.listOfWaitinglistForTypeApplication(aprtTypeId, cmplxId);
 		java.util.Collection t_application = CampusApplicationFinder.listOfWaitinglistForTypeTransfer(aprtTypeId, cmplxId);
-		Hashtable HT = ContractFinder.hashOfApplicantsContracts();
+		//Hashtable HT = ContractFinder.hashOfApplicantsContracts();
+    Map HT = ContractFinder.mapOfNewContractsByApplicantID();
 		boolean bcontracts = false;
 		Contract C;
 		if (HT != null)
@@ -497,12 +499,11 @@ public class CampusAllocator extends Block implements Campus {
 
 					if (bcontracts && HT.containsKey(new Integer(A.getID()))) {
 						C = (Contract) HT.get(new Integer(A.getID()));
-						if (C.getID() == ContractId) {
+						if (C.getID() == ContractId ) {
 							TempColor = TextFontColor;
 							TextFontColor = "FF0000";
 							redColorSet = true;
 						}
-
 						Frame.add(getChangeLink(C.getID(), C.getApplicantId().intValue()), col++, row);
 						con_id = C.getID();
 					}
@@ -928,11 +929,11 @@ public class CampusAllocator extends Block implements Campus {
 		mustBeFrom.setHour(0);
 		mustBeFrom.setMinute(0);
 		mustBeFrom.setSecond(0);
-		
+
 		if (sDateFrom != null && sDateTo != null) {
 			IWTimestamp from = new IWTimestamp(sDateFrom);
 			IWTimestamp to = new IWTimestamp(sDateTo);
-			
+
 			System.err.println("Saving new contract : Applicant : " + sApplicantId);
 			System.err.println("Must be from : " + mustBeFrom.toString() + " , is from " + from.toString());
 			if (mustBeFrom != null && mustBeFrom.isLaterThan(from)) {

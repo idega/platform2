@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.19 2002/08/22 15:38:25 aron Exp $
+ * $Id: ContractBusiness.java,v 1.20 2002/09/30 16:45:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -317,6 +317,9 @@ public  class ContractBusiness {
   }
 
   public static boolean deleteAllocation(int iContractId){
+    doGarbageContract(iContractId);
+    return true;
+    /*
     try {
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
@@ -329,6 +332,7 @@ public  class ContractBusiness {
       ex.printStackTrace();
       return false;
     }
+    */
   }
 
   public static IWTimestamp[] getContractStampsForApartment(int apartmentId){
