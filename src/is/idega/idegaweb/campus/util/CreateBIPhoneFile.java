@@ -120,11 +120,11 @@ public class CreateBIPhoneFile {
 				bWriter.write('\t');
 
 //				bWriter.write(start_period);
-				bWriter.write("010203");
+				bWriter.write("010303");
 				bWriter.write('\t');
 
 //				bWriter.write(end_period);
-				bWriter.write("280203");
+				bWriter.write("310303");
 				bWriter.write('\t');
 
 				bWriter.write(payment_due);
