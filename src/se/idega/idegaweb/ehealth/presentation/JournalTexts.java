@@ -57,6 +57,7 @@ public class JournalTexts extends EHealthBlock {
 	private String prmSearch = prefix + "search";
 	//private String prmLoglist = prefix + "loglist";
 	
+	private String keyOpenNewWindow = prefix + "open_in_new_window";
 	private String keyFrom = prefix + "from";
 	private String keyTo = prefix + "to";
 	
@@ -442,23 +443,27 @@ public class JournalTexts extends EHealthBlock {
 	
 	
 	private Table getTableButtons() {
-		Table table = new Table(3, 1);
+		Table table = new Table(5, 1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setBorder(0);
+		table.setBorder(1);
 		table.setHeight(20);
 		
 		
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		
-		table.setWidth(2, 1, "20");
+		table.setWidth(2, 1, "15");
+		table.setWidth(4, 1, "15");
 				
 		
 		Image printIcon = (Image) getPrintIcon(_iwc);
 		table.add(printIcon, 1, 1);
 		
 		GenericButton print = getButton(new GenericButton("print", localize(prmPrint, "Print")));
+		GenericButton openinWindow = getButton(new GenericButton("open", localize(keyOpenNewWindow, "Open in new window")));
+		
 		table.add(print, 3, 1);
+		table.add(openinWindow, 5, 1);
 		
 		
 		return table;

@@ -11,6 +11,7 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -49,6 +50,7 @@ public class Medication extends EHealthBlock {
 	
 	
 	IWContext _iwc = null;
+	ICPage _fassPage = null;
 
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
@@ -327,20 +329,22 @@ public class Medication extends EHealthBlock {
 		table.setWidth(2, 1, "20");
 		
 		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass >")));
-		fass.setPageToOpen(1865);
+		if (_fassPage != null)
+			fass.setPageToOpen(_fassPage);
 		
-		/*Link fassLink = new Link("linkFass", localize(prmLinkFass, "Link to Fass >"));
-		fassLink.setURL("http://www.fass.se");
-		fassLink.setTarget("_new");
-		fassLink.setAsImageButton(true);
-		fassLink.setCSSClass("lul_form");
-		table.add(fassLink, 1, 1);
-		*/
+		
 		table.add(fass, 2, 1);
 		
 		
 		return table;
 		
+	}
+	
+	/**
+	 * @param FASSPage The fass Page to set.
+	 */
+	public void setAppointmentPage(ICPage fassPage) {
+		_fassPage = fassPage;
 	}
 	
 	
