@@ -10,58 +10,94 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
+import com.idega.user.data.UserStatus;
+import com.idega.user.data.UserStatusHome;
 import com.idega.util.IWTimestamp;
 
 /**
- * @author jonas
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * A container for all data about a users registration. Containt data needed by {@see is.idega.idegaweb.member.isi.block.members.presentation.MemberOverview}
  */
 public class MemberGroupData {
 	
 	public static final String LOCALIZE_KEY_PREFIX_GROUP_CATEGORY = "group_category_";
+	public static final String LOCALIZE_KEY_PREFIX_STATUS = "status_";
 	
+	/**
+	 * @param user The user to create the MemverGroupData for
+	 * @param iwrb
+	 */
 	public MemberGroupData(User user, IWResourceBundle iwrb) {
+		_iwrb = iwrb;
 		_user = user;
-		Collection history = null;
+		int userId = user.getID();
+		Collection history = java.util.Collections.EMPTY_LIST;
 		try {
-			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(user.getID(),"GROUP_PARENT");
+			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(userId,"GROUP_PARENT");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//Collection parentGroups = user.getParentGroups();
-		//Iterator iter = parentGroups.iterator();
+		Collection statuses = null;
+		try {
+			statuses = (Collection) ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(userId);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		Set statusGroupIdSet = new HashSet();
+		Iterator statusIter = statuses.iterator();
+		while(statusIter.hasNext()) {
+			UserStatus status = (UserStatus) statusIter.next();
+			statusGroupIdSet.add(status.getGroup().getPrimaryKey());
+			processStatus(status);
+		}
+		
 		Iterator iter = history.iterator();
 		StringBuffer buf = new StringBuffer();
 		while(iter.hasNext()) {
 			GroupRelation groupRel = (GroupRelation) iter.next();
-			/*Group group = (Group) iter.next();
-			if(group==null) {
-				System.out.println("a parent group was null!!");
-				continue;
+			boolean isInStatusList = statusGroupIdSet.contains(groupRel.getGroup().getPrimaryKey());
+			if(!isInStatusList) {
+				// only add group to list if it wasn't added by statuses
+				processGroupRelation(groupRel);
 			}
-			processGroup(group);*/
-			processGroupRelation(groupRel, iwrb);
 		}
 	}
 	
 	/**
-	 * Returns a String with info on membership based on a group. Searches all ascendant groups and includes clubs, 
-	 * leagues, regional unions, unions, federations and divisions
-	 * @param group an imediate parent group of the member
+	 * Gets info on users registration status for a group and inserts it into <code>_groupInfoList</code>
+	 * @param status The UserStatus to add
 	 */
-	private void processGroupRelation(GroupRelation groupRel, IWResourceBundle iwrb) {
+	private void processStatus(UserStatus status) {
+		Group group = status.getGroup();
+		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
+		String statusName = getStatusLocalizedName(status.getStatus().getStatusKey());
+		_buf.setLength(0);
+		processGroup(group, _buf, true);
+		if(_buf.length()>0) {
+			IWTimestamp begin = new IWTimestamp(status.getDateFrom());
+			IWTimestamp end = status.getDateTo()==null?null:(new IWTimestamp(status.getDateTo()));
+			addGroupInfo(_buf.toString(), groupTypeName, statusName, begin, end);
+		}
+	}
+	
+	/**
+	 * Gets info on users registration for a group and inserts it into <code>_groupInfoList</code>
+	 * @param groupRel The GroupRelation to add
+	 */
+	private void processGroupRelation(GroupRelation groupRel) {
 		Group group = groupRel.getGroup();
-		String groupTypeName = iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType(), "Unknown");
+		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
 		if(groupTypeName.equals("Unknown")) {
 			groupTypeName="";
 			System.out.println("Name for group type not defined, skipping group (key=\"" + LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType() + "\")");
@@ -70,27 +106,18 @@ public class MemberGroupData {
 		_buf.setLength(0);
 		processGroup(group, _buf, true);
 		if(_buf.length()>0) {
-			String[] result = new String[4];
-			result[0] = _buf.toString();
-			result[1] = groupTypeName;
-			result[2] = (new IWTimestamp(groupRel.getInitiationDate())).getDateString("dd.MM.yyyy");
-			if(groupRel.getTerminationDate()!=null) {
-				result[3] = (new IWTimestamp(groupRel.getTerminationDate())).getDateString("dd.MM.yyyy");
-			} else {
-				result[3] = null;
-			}
-			_groupInfoList.add(result);
+			IWTimestamp begin = new IWTimestamp(groupRel.getInitiationDate());
+			IWTimestamp end = groupRel.getTerminationDate()==null?null:(new IWTimestamp(groupRel.getTerminationDate()));
+			addGroupInfo(_buf.toString(), groupTypeName, "", begin, end);
 		}
 	}
 	
 	/**
-	 * Returns a String with infor on membership based on a group. Searches all ascendant groups and includes clubs, 
-	 * leagues, regional unions, unions, federations and divisions
+	 * Inserts info on membership based on a group into a StringBuffer. Searches all ascendant groups and includes clubs, 
+	 * leagues, regional unions, unions, federations and divisions, if found.
 	 * @param group the group to categorize
 	 * @param buf a StringBuffer to collect the member group info into
 	 * @param isFirstGroup if the group is an imediate parent of the member
-	 * @returns true if a club, league, regional union, union or federation was found among groups ancestors (including
-	 * group itself)
 	 */
 	private void processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
 		
@@ -131,7 +158,7 @@ public class MemberGroupData {
 	}
 	
 	/**
-	 * gets the user that the groups in this ISIMemberGroups instance apply to
+	 * gets the user whos registration data this MemberGroupData holds
 	 * @return the user
 	 */
 	public User getUser() {
@@ -139,12 +166,13 @@ public class MemberGroupData {
 	}
 	
 	/**
-	 * A list of String arrays. Each array contains info on a membership, the Strings in the array are as following
+	 * A List of String arrays containing the registration data. The Strings in the array are as following
 	 * <ul>
 	 *   <li>[0]: The name of the group and it's relevant ancestors</li>
 	 *   <li>[1]: The name of the group type, empty if not known</li>
-	 *   <li>[2]: The time the user was registered in the group</li>
-	 *   <li>[3]: The time the user war unregistered from the group, null if user is still in the group</li>
+	 *   <li>[2]: The status of the user in the group, emtpy if no status</li>
+	 *   <li>[3]: The time the user was registered in the group</li>
+	 *   <li>[4]: The time the user war unregistered from the group, empty if user is still in the group</li>
 	 * </ul>
 	 * @return list of membeship info entries
 	 */
@@ -160,8 +188,40 @@ public class MemberGroupData {
 		return _clubList;
 	}
 	
+	/**
+	 * Adds info on group into <code>_groupInfoList</code>
+	 * @param name Name of group
+	 * @param type Type of group
+	 * @param status Status of user in group
+	 * @param begin Date when user joined group
+	 * @param end Date when user left group
+	 */
+	private void addGroupInfo(String name, String type, String status, IWTimestamp begin, IWTimestamp end) {
+		String[] result = new String[5];
+		result[0] = _buf.toString();
+		result[1] = type;
+		result[2] = "";
+		result[3] = begin.getDateString("dd.MM.yyyy");
+		if(end!=null) {
+			result[4] = end.getDateString("dd.MM.yyyy");
+		} else {
+			result[4] = "";
+		}
+		_groupInfoList.add(result);
+	}
+	
+	private String getStatusLocalizedName(String statusKey) {
+		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_STATUS + statusKey, "Unknown");
+	}
+	
+	private String getGroupTypeLocalizedName(String groupTypeKey) {
+		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, "Unknown");
+	}
+	
+	
 	private List _groupInfoList = new ArrayList();
 	private List _clubList = new ArrayList();
 	private User _user;
 	private StringBuffer _buf = new StringBuffer();
+	private IWResourceBundle _iwrb;
 }

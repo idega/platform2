@@ -266,6 +266,14 @@ public class MemberOverview extends Block {
 		return buf.length()==0?null:buf.toString();
 	}
 	
+	/**
+	 * Insert a header (the names of the group categories)
+	 * @param table table to insert header into
+	 * @param row row in table to insert header
+	 * @param headers values to insert into columns
+	 * @param link a link to insert in first column (the '+' or '-' links)
+	 * @return Index of next empty row in <code>table</code>, <code>row</code>+1
+	 */
 	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers, Link link) {
 		int length = headers.length;
 		if(length<3 && length>0) {
@@ -285,6 +293,20 @@ public class MemberOverview extends Block {
 		return ++row;
 	}
 	
+	/**
+	 * Inserts registration info into table. Each row show registration info for a group and shows the following>
+	 * <ul>
+	 *   <li>Groups name</li>
+	 *   <li>Users status in group</li>
+	 *   <li>Date when user became menber of group (if <code>showHistory</code> is <code>true</code>)</li>
+	 *   <li>Date when user quit group, empty if user is still in group (if <code>showHistory</code> is <code>true</code>)</li>
+	 * </ul>
+	 * @param table The table to insert registration info into
+	 * @param row The row in the table to start inserting info into
+	 * @param showHistory If <code>true</code> then the time when user begun and quit (possibly empty) in the group
+	 *        is shown
+	 * @return Index of next empty row in <code>table</code>
+	 */
 	private int insertRegistrationInfoIntoTable(Table table, int row, boolean showHistory) {
 		List regInfoList = _data.getGroupInfoList();
 		Collections.sort(regInfoList, new Comparator() {
@@ -307,8 +329,9 @@ public class MemberOverview extends Block {
 			String[] ri = (String[]) riIter.next();
 			String name = ri[0];
 			String categoryName = ri[1];
-			String begin = ri[2];
-			String end = ri[3]!=null?ri[3]:"";
+			String status = ri[2];
+			String begin = ri[3];
+			String end = ri[4]!=null?ri[4]:"";
 			if(end.length()>0 && !showHistory) {
 				// only showing current registration and user has unregisterd from this group
 				continue;
@@ -325,15 +348,17 @@ public class MemberOverview extends Block {
 				resetColor();
 			}
 			table.add(name, 2, row);
+			table.add(status, 3, row);
 			String color = getColor();
 			table.setColor(2, row, color);
+			table.setColor(3, row, color);
 			if(showHistory) {
-				table.add(begin, 3, row);
-				table.setColor(3, row, color);
-				table.add(end, 4, row);
+				table.add(begin, 4, row);
 				table.setColor(4, row, color);
+				table.add(end, 5, row);
+				table.setColor(5, row, color);
 			} else {
-				table.mergeCells(2, row, 4, row);
+				table.mergeCells(3, row, 5, row);
 			}
 			
 			row++;
