@@ -9,7 +9,7 @@ import com.idega.data.GenericEntity;
  * Description:  Keeps track of referrer urls
  * Copyright:    Copyright (c) 2002
  * Company:      idega
- * @author <a href="eiki@idega.is">Eirikur S. Hrafnsson</a>Eirikur S. Hrafnsson</a>
+ * @author <a href="eiki@idega.is">Eirikur S. Hrafnsson</a>
  * @version 1.0
  */
 

@@ -2,6 +2,7 @@ package is.idega.idegaweb.tracker.presentation;
 
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
+import is.idega.idegaweb.tracker.business.TrackerBusiness;
 
 /**
  * Title:        is.idega.idegaweb.tracker.presentation.PageCounter
@@ -22,7 +23,7 @@ public class PageCounter extends PresentationObject {
   }
 
   public void main(IWContext iwc) throws Exception{
-
+    TrackerBusiness.runThroughTheStatsMachine(iwc);
 
 
   }

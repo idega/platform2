@@ -1,9 +1,10 @@
 package is.idega.idegaweb.tracker.data;
 
-import com.idega.core.data.ICLanguage;
+import com.idega.core.data.ICLocale;
 import java.sql.Timestamp;
 import java.sql.SQLException;
 import com.idega.data.GenericEntity;
+import com.idega.builder.data.IBDomain;
 
 
 /**
@@ -11,7 +12,7 @@ import com.idega.data.GenericEntity;
  * Description:  Keeps track of domain total hits and sessions
  * Copyright:    Copyright (c) 2002
  * Company:      idega
- * @author <a href="eiki@idega.is">Eirikur S. Hrafnsson</a>Eirikur S. Hrafnsson</a>
+ * @author <a href="eiki@idega.is">Eirikur S. Hrafnsson</a>
  * @version 1.0
  */
 
@@ -27,8 +28,8 @@ public class DomainStatistics extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameDomainId(),"Domain",true,true,Integer.class,"many-to-one",com.idega.builder.data.IBDomain.class);
-    addAttribute(getColumnNameLanguageId(),"Language",true,true, Integer.class,"many-to-one",ICLanguage.class);
+    addAttribute(getColumnNameDomainId(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
+    addAttribute(getColumnNameLocaleId(),"Locale",true,true, Integer.class,"many-to-one",ICLocale.class);
     addAttribute(getColumnNameHits(),"Number of hits on Domain",true,true,Integer.class);
     addAttribute(getColumnNameSessions(),"Number of unique hits",true,true,Integer.class);
     addAttribute(getColumnNameDate(),"Date of record",true,true,Timestamp.class);
@@ -44,14 +45,14 @@ public class DomainStatistics extends GenericEntity {
   public static String getColumnNamePreviousPageId(){return "IB_PREVIOUS_PAGE_ID";}
   public static String getColumnNameSessions(){return "SESSIONS";}
   public static String getColumnNameDate(){return "MODIFICATION_DATE";}
-  public static String getColumnNameLanguageId(){return "IC_LANGUAGE_ID";}
+  public static String getColumnNameLocaleId(){return "IC_LOCALE_ID";}
 
   public int getDomainId(){
     return getIntColumnValue(getColumnNameDomainId());
   }
 
-  public int getLanguage(){
-    return getIntColumnValue(getColumnNameLanguageId());
+  public int getLocale(){
+    return getIntColumnValue(getColumnNameLocaleId());
   }
 
   public int getHits(){
@@ -70,8 +71,8 @@ public class DomainStatistics extends GenericEntity {
     setColumn(getColumnNameDomainId(), domainId);
   }
 
-  public void setLanguage(int language){
-    setColumn(getColumnNameLanguageId(), new Integer(language));
+  public void setLocale(int locale){
+    setColumn(getColumnNameLocaleId(),locale);
   }
 
   public void setHits(int hits){
