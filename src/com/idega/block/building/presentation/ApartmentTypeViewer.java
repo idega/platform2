@@ -39,7 +39,7 @@ private String infoStyle =  "font-family:verdana,arial,sans-serif; font-size:10p
 protected IWResourceBundle iwrb_;
 protected IWBundle iwb_;
 private String specialAttributesName = null;
-private Map specialAttributes = null;
+private PropertyList specialAttributes = null;
 
 public ApartmentTypeViewer(){
 }
@@ -48,7 +48,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
     this.apartmenttypeid=apartmenttypeid;
 }
 
-public void setSpecialAttributes(String name,Map attributes){
+public void setSpecialAttributes(String name,PropertyList attributes){
   specialAttributesName  = name;
   specialAttributes = attributes;
 }
@@ -242,11 +242,11 @@ public void setSpecialAttributes(String name,Map attributes){
         if(specialAttributesName!=null){
           T.add(getBoldText(specialAttributesName),1,row++);
         }
-        Iterator iter = specialAttributes.entrySet().iterator();
+        Iterator iter = specialAttributes.iterator();
         while(iter.hasNext()){
-          Map.Entry me = (Map.Entry) iter.next();
-          T.add(getBoldText((String)me.getKey()),1,row);
-          T.add(getInfoText((String)me.getValue()),3,row);
+          Property me = (Property) iter.next();
+          T.add(getBoldText(me.getKey()),1,row);
+          T.add(getInfoText(me.getValue()),3,row);
           row++;
         }
         T.mergeCells(1,1,3,1);
