@@ -1,7 +1,5 @@
 package com.idega.block.school.data;
 
-import java.rmi.RemoteException;
-
 
 public class SchoolUserHomeImpl extends com.idega.data.IDOFactory implements SchoolUserHome
 {
@@ -20,9 +18,16 @@ public class SchoolUserHomeImpl extends com.idega.data.IDOFactory implements Sch
  }
 
 
-public java.util.Collection findBySchoolAndType(com.idega.block.school.data.School p0,int p1)throws javax.ejb.FinderException, RemoteException{
+public java.util.Collection findBySchoolAndType(com.idega.block.school.data.School p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection theReturn = ((SchoolUserBMPBean)entity).ejbHomeFindBySchoolAndType(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public java.util.Collection findByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((SchoolUserBMPBean)entity).ejbHomeFindByUser(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
