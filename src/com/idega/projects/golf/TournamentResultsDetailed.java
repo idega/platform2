@@ -40,7 +40,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   private Text blackText;
   private Text whiteText;
 
-  private int[] pastTournamentRounds_;
+  private int[] pastTournamentRounds_ = null;
   private int[] allTournamentRounds_;
 
 
@@ -80,7 +80,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   private void getResults() {
     try {
       int size = result.size();
-      int row = 4;
+      int row = 5;
 
       int[] tournamentRounds_ = new int[1];
         tournamentRounds_[0] = tournamentRound_;
@@ -102,8 +102,12 @@ public class TournamentResultsDetailed extends JModuleObject {
 
           r.calculateCompareInfo();
         }
+        myTable.mergeCells(1,row+2,22,row+2);
+        myTable.addText("",1,row+2);
+        //myTable.setColor(1,row+2,"#2C4E3B");
+        myTable.setHeight(1,row+2,"5");
         getMemberScore(r,row);
-        row += 2;
+        row += 3;
       }
 
       for ( int a = 2; a <= myTable.getColumns(); a++ ) {
@@ -114,6 +118,10 @@ public class TournamentResultsDetailed extends JModuleObject {
       myTable.setRowColor(1,"#2C4E3B");
       myTable.setRowColor(2,"#2C4E3B");
       myTable.setRowColor(3,"#DCEFDE");
+      myTable.mergeCells(1,4,22,4);
+      myTable.addText("",1,4);
+      //myTable.setColor(1,4,"#2C4E3B");
+      myTable.setHeight(1,4,"5");
 
       add(myTable);
     }
@@ -132,22 +140,19 @@ public class TournamentResultsDetailed extends JModuleObject {
       int totalStrokes = 0;
       int difference = 0;
 
-      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,pastTournamentRounds_,r.getMemberId());
-      Vector v = handler.getTournamentMembers();
-      if (v != null) {
-        if (v.size() > 0) {
-            System.err.println("v > 0.....SIZE() = "+v.size());
-            ResultsCollector rip = (ResultsCollector) v.get(0);
-            if (rip != null) {
-                rip.calculateCompareInfo();
-                System.err.println("Rip != null.....DIFF = "+rip.getDifference());
-                System.err.println("Rip != null.....TotalStrokes = "+rip.getTotalStrokes());
-                System.err.println("Rip != null.....Holes = "+rip.getHoles());
-                System.err.println("Rip != null.....Calc diff = "+(rip.getTotalStrokes() - rip.getHoles()));
-                difference = rip.getDifference();
-            }else {System.err.println("Rip == null");}
-        }else {System.err.println("V.size = 0");}
-      }else {System.err.println("V == null");}
+      if ( this.pastTournamentRounds_ != null ) {
+        ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,pastTournamentRounds_,r.getMemberId());
+        Vector v = handler.getTournamentMembers();
+        if (v != null) {
+          if (v.size() > 0) {
+              ResultsCollector rip = (ResultsCollector) v.get(0);
+              if (rip != null) {
+                  rip.calculateCompareInfo();
+                  difference = rip.getDifference();
+              }
+          }
+        }
+      }
 
 
       myTable.setHeight(row,"20");
@@ -353,12 +358,28 @@ public class TournamentResultsDetailed extends JModuleObject {
 
       myTable.mergeCells(1,1,myTable.getColumns(),1);
 
-      Text tournamentText = new Text(tournament.getName());
+      Text tournamentText = new Text("&nbsp;&nbsp;"+tournament.getName());
         tournamentText.setBold();
         tournamentText.setFontSize(Text.FONT_SIZE_10_HTML_2);
         tournamentText.setFontFace(Text.FONT_FACE_VERDANA);
         tournamentText.setFontColor("FFFFFF");
-      myTable.add(tournamentText,1,1);
+
+      Text groupAndRound = new Text(new TournamentGroup(this.tournamentGroupId_).getName()+" - "+iwrb.getLocalizedString("tournament.round","Round")+" "+new TournamentRound(this.tournamentRound_).getRoundNumber()+"&nbsp;&nbsp;");
+        groupAndRound.setBold();
+        groupAndRound.setFontSize(Text.FONT_SIZE_10_HTML_2);
+        groupAndRound.setFontFace(Text.FONT_FACE_VERDANA);
+        groupAndRound.setFontColor("FFFFFF");
+
+      Table headerTable = new Table(2,1);
+        headerTable.setWidth("100%");
+        headerTable.setCellpadding(0);
+        headerTable.setCellspacing(0);
+        headerTable.setAlignment(2,1,"right");
+
+        headerTable.add(tournamentText,1,1);
+        headerTable.add(groupAndRound,2,1);
+
+      myTable.add(headerTable,1,1);
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
@@ -375,15 +396,11 @@ public class TournamentResultsDetailed extends JModuleObject {
         }
       }
 
-      if (ids != null) {
-          pastTournamentRounds_ = new int[ids.size()];
-          for (int i = 0; i < ids.size(); i++) {
-              pastTournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
-          }
-      }else {
-          //int[]
-          pastTournamentRounds_ = new int[1];
-            pastTournamentRounds_[0] = tournamentRound_;
+      if (ids.size() > 0) {
+        pastTournamentRounds_ = new int[ids.size()];
+        for (int i = 0; i < ids.size(); i++) {
+            pastTournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
+        }
       }
   }
 

@@ -395,7 +395,7 @@ private Table resultTable;
 
   private void getHoleByHole() {
     try {
-      if ( tournamentGroupID != -1 ) {
+      if ( tournamentGroupID != -1 || showAllGroups) {
         int tournamentRoundID = 0;
         Window scoreWindow = new Window("Gluggi",796,600,"/tournament/holeview.jsp");
           scoreWindow.setMenubar(true);
@@ -403,7 +403,15 @@ private Table resultTable;
         Image scoreImage = iwrb.getImage("buttons/holebyhole.gif",iwrb.getLocalizedString("tournament.hole_by_hole","HOLE BY HOLE"),145,19);
         Link scoreLink = new Link(scoreImage,scoreWindow);
           scoreLink.addParameter("tournamentID",tournamentID);
-          scoreLink.addParameter("tournamentGroupID",tournamentGroupID);
+          if ( tournamentGroupID != -1 ) {
+            scoreLink.addParameter("tournamentGroupID",tournamentGroupID);
+          }
+          else {
+            TournamentGroup[] groups = tournament.getTournamentGroups();
+            for ( int a = 0; a < groups.length; a++ ) {
+              scoreLink.addParameter("tournamentGroupID",groups[a].getID());
+            }
+          }
 
         if ( tournament.getNumberOfRounds() == 1 && sortBy == ResultComparator.TOTALSTROKES ) {
           TournamentRound[] rounds = tournament.getTournamentRounds();
