@@ -44,7 +44,7 @@ public class MemberGroupData {
 		int userId = user.getID();
 		Collection history = Collections.EMPTY_LIST;
 		try {
-			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(userId,"GROUP_PARENT");
+			history = (Collection) ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroupOrderedByInitiationDate(userId,"GROUP_PARENT");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
