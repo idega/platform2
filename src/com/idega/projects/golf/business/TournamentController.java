@@ -648,7 +648,7 @@ public class TournamentController{
 
             while (!done) {
 
-                startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"'  AND field_id="+tournament.getFieldId()+" AND grup_num="+counter);
+                startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME s, TOURNAMENT_ROUND_STARTINGTIME trs WHERE trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = "+tourRound.getID()+" AND s.STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"'  AND s.field_id="+tournament.getFieldId()+" AND s.grup_num="+counter);
 
                 if (useEmptyStartingGroup)  {
                     if (startingtimes.length == 0) {
