@@ -31,6 +31,10 @@ import com.idega.user.presentation.UserGroupTab;
  *@version    1.0
  */
 public class GroupAgeGenderTab extends UserGroupTab {
+	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
+
+	private static final String TAB_NAME = "age_tab_name";
+	private static final String DEFAULT_TAB_NAME = "Age/Gender";
   
   // field
   private CheckBox maleField;
@@ -78,7 +82,13 @@ public class GroupAgeGenderTab extends UserGroupTab {
   private String lowerAgeGreaterThanUpperAgeFieldName;
   
   public GroupAgeGenderTab(){
-    setName("Age/Gender");
+		super();
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+  	  	
+//    setName("Age/Gender");
   }
   
   public GroupAgeGenderTab(Group group) {
@@ -93,15 +103,15 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-    maleFieldName = "male";
-    femaleFieldName = "female";
-    lowerAgeLimitFieldName = "lowerAgeLimitField";
-    upperAgeLimitFieldName = "upperAgeLimitField";
-    ageLimitIsStringentConditionFieldName = "ageLimitIsStringentConditionFieldName";
-    keyDateForAgeFieldName = "keyDateForAgeFieldName";
-    lowerAgeTooSmallFieldName = "lowerAgeTooSmallField";
-    upperAgeTooLargeFieldName = "upperAgeTooLargeField";
-    lowerAgeGreaterThanUpperAgeFieldName = "lowerAgeGreaterThanUpperAgeField";
+    maleFieldName = "age_male";
+    femaleFieldName = "age_female";
+    lowerAgeLimitFieldName = "age_lowerAgeLimitField";
+    upperAgeLimitFieldName = "age_upperAgeLimitField";
+    ageLimitIsStringentConditionFieldName = "age_ageLimitIsStringentConditionFieldName";
+    keyDateForAgeFieldName = "age_keyDateForAgeFieldName";
+    lowerAgeTooSmallFieldName = "age_lowerAgeTooSmallField";
+    upperAgeTooLargeFieldName = "age_upperAgeTooLargeField";
+    lowerAgeGreaterThanUpperAgeFieldName = "age_lowerAgeGreaterThanUpperAgeField";
 	}
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
@@ -156,8 +166,11 @@ public class GroupAgeGenderTab extends UserGroupTab {
     femaleField = new CheckBox(femaleFieldName);
     maleField = new CheckBox(maleFieldName);  
     
-    String integerErrorWarning = "The input must be greater or equal zero";
-    String notEmpty = "Please fill in every field";
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+    
+    String integerErrorWarning = iwrb.getLocalizedString("age_intError","The input must be greater or equal zero");
+    String notEmpty = iwrb.getLocalizedString("age_notEmpty","Please fill in every field");
     
     lowerAgeLimitField = new IntegerInput(lowerAgeLimitFieldName, integerErrorWarning);
     upperAgeLimitField = new IntegerInput(upperAgeLimitFieldName, integerErrorWarning);
@@ -195,17 +208,17 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	public void initializeTexts() {
     IWContext iwc = IWContext.getInstance();
     IWResourceBundle bundle = getResourceBundle(iwc);
-    femaleText = new Text(bundle.getLocalizedString("female_members","female members"));
-    maleText = new Text(bundle.getLocalizedString("male_members","male members"));
-    lowerAgeLimitText = new Text(bundle.getLocalizedString("lower_age_limit","Lower age limit")+":");
-    upperAgeLimitText = new Text(bundle.getLocalizedString("upper_age_limit","Upper age limit")+":");
+    femaleText = new Text(bundle.getLocalizedString(femaleFieldName,"female members"));
+    maleText = new Text(bundle.getLocalizedString(maleFieldName,"male members"));
+    lowerAgeLimitText = new Text(bundle.getLocalizedString(lowerAgeLimitFieldName,"Lower age limit")+":");
+    upperAgeLimitText = new Text(bundle.getLocalizedString(upperAgeLimitFieldName,"Upper age limit")+":");
     ageLimitIsStringentConditionText = 
-      new Text(bundle.getLocalizedString("age_limits_are_stringent_conditions","Age limits are stringent conditions"));
-    keyDateForAgeText = new Text(bundle.getLocalizedString("key_date_for_age","Key date for age")+":");
-    lowerAgeTooSmallError = bundle.getLocalizedString("Lower_age_limit_is_too_mall","Lower age limit is too small");
-    upperAgeTooLargeError = bundle.getLocalizedString("Upper_age_limit_is_too_large","Upper age limit is too large");
+      new Text(bundle.getLocalizedString(ageLimitIsStringentConditionFieldName,"Age limits are stringent conditions"));
+    keyDateForAgeText = new Text(bundle.getLocalizedString(keyDateForAgeFieldName,"Key date for age")+":");
+    lowerAgeTooSmallError = bundle.getLocalizedString(lowerAgeTooSmallFieldName,"Lower age limit is too small");
+    upperAgeTooLargeError = bundle.getLocalizedString(upperAgeTooLargeFieldName,"Upper age limit is too large");
     lowerAgeGreaterThanUpperAgeError = 
-      bundle.getLocalizedString("Lower_age_is_greater_than_upper_age","Lower age is greater than upper age");
+      bundle.getLocalizedString(lowerAgeGreaterThanUpperAgeFieldName,"Lower age is greater than upper age");
 	}
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
@@ -420,5 +433,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
     return business;
   }
 
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }
-
