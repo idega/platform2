@@ -35,7 +35,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		addAttribute(COLUMN_IS_VALID, "is valid", true, true, Boolean.class);
 		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE, SchoolType.class);
-		this.addManyToManyRelationShip(School.class);
+		this.addManyToManyRelationShip(School.class, "sch_school_study_path");
 	}
 
 	public void setDefaultValues() {
