@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.PostalCode;
@@ -40,8 +41,7 @@ import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
  */
 public class HotelSearch extends AbstractSearchForm {
 
-	private String PARAMETER_ROOM_TYPE = "hs_rt";
-	private String PARAMETER_ROOM_TYPE_COUNT = "hs_rtc";
+	protected String PARAMETER_TYPE_COUNT = HotelBookingForm.parameterCountToCheck;
 
 	
 	private IWContext iwc;
@@ -64,12 +64,16 @@ public class HotelSearch extends AbstractSearchForm {
 		return iwrb.getImage("/search/accomodation.png");
 	}
 	
+	protected String getPriceCategoryKey() {
+		return HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY;
+	}
+	
 	protected void getResults() throws RemoteException {
 		String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
 		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 		String sManyDays = iwc.getParameter(PARAMETER_MANY_DAYS);
-		String sRoomType[] = iwc.getParameterValues(PARAMETER_ROOM_TYPE);
-		String sRoomTypeCount[] = iwc.getParameterValues(PARAMETER_ROOM_TYPE_COUNT);
+		String sRoomType[] = iwc.getParameterValues(PARAMETER_TYPE);
+		String sRoomTypeCount[] = iwc.getParameterValues(PARAMETER_TYPE_COUNT);
 		
 		try {
 			Object[] roomTypeIds = null;
@@ -86,15 +90,24 @@ public class HotelSearch extends AbstractSearchForm {
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 			Collection coll = hHome.find(null, null, roomTypeIds, postalCodeIds);
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
-			listResults(iwc, map);
+			
+			String foundString = "";
 			if (coll != null) {
-				add("Found "+coll.size()+" matches !<br>");
+				foundString = "Found "+coll.size()+" matches !<br>";
+			} else {
+				foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
+			}
+			
+			add(foundString);
+			listResults(iwc, map);
+			add(foundString);
+
+			if (coll != null) {
 				if (coll.isEmpty()) {
 					STATE = 0;
 					setupSearchForm();
 				}
 			} else {
-				add(getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>");
 				STATE = 0;
 				setupSearchForm();
 			}
@@ -123,7 +136,7 @@ public class HotelSearch extends AbstractSearchForm {
 		try {
 			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
 			Collection coll = trh.findAll();
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(coll, PARAMETER_ROOM_TYPE), getRoomTypeCountDropdown()});
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(coll, PARAMETER_TYPE), getRoomTypeCountDropdown()});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -131,13 +144,13 @@ public class HotelSearch extends AbstractSearchForm {
 
 	protected Link getBookingLink(int productId) {
 		Link link = super.getBookingLink(productId);
-		link.maintainParameter(PARAMETER_ROOM_TYPE, iwc);
-		link.maintainParameter(PARAMETER_ROOM_TYPE_COUNT, iwc);
+		link.maintainParameter(PARAMETER_TYPE, iwc);
+		link.maintainParameter(PARAMETER_TYPE_COUNT, iwc);
 		return link;
 	}
 
 	private DropdownMenu getRoomTypeCountDropdown() {
-		DropdownMenu menu = new DropdownMenu(PARAMETER_ROOM_TYPE_COUNT);
+		DropdownMenu menu = new DropdownMenu(PARAMETER_TYPE_COUNT);
 		menu.addMenuElement(1, "1");
 		menu.addMenuElement(2, "2");
 		menu.addMenuElement(3, "3");
@@ -147,6 +160,10 @@ public class HotelSearch extends AbstractSearchForm {
 		menu.addMenuElement(7, "7");
 		
 		return menu;
+	}
+	
+	protected String getParameterTypeCountName() {
+		return PARAMETER_TYPE_COUNT;
 	}
 	
 }
