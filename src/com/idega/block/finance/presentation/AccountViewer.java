@@ -65,7 +65,7 @@ public class AccountViewer extends Finance {
 		specialview = iwc.isParameterSet("specview");
 		boolean clean = iwc.isParameterSet(prmClean);
 		if (isAdmin || isLoggedOn) {
-			if (accounts != null && accounts.size() > 0) {
+			if (accounts != null && accounts.size() > 0 && accountID != null) {
 				FinanceAccount eAccount = getAccount(accountID, accounts);
 				setMainPanel(getAccountView(eAccount, accounts, itFromDate, itToDate, isAdmin, clean));
 			} else
