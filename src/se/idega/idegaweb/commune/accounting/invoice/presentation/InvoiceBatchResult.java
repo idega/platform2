@@ -83,13 +83,13 @@ public class InvoiceBatchResult extends AccountingBlock{
 			} else {
 				table.add(getLocalizedSmallText("invbr.not_finished","Not finished"),2,3);
 			}
-			
-			table.add(""+invoiceBusiness.getNoProviders(batchRun),2,4);
-			
+	
 			if (categoryIsChildCare) {
+				table.add(Integer.toString(invoiceBusiness.getNumberOfInvoices(batchRun)),2,4);
 				table.add(Integer.toString(invoiceBusiness.getNumberOfHandledChildren(batchRun)),2,5);
 			}
 			else {
+				table.add(Integer.toString(invoiceBusiness.getNoProviders(batchRun)),2,4);
 				table.add(Integer.toString(invoiceBusiness.getNoPlacements(batchRun)),2,5);
 			}
 			table.add(Integer.toString(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,6);
