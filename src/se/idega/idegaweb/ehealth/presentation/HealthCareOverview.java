@@ -232,7 +232,7 @@ public class HealthCareOverview extends EHealthBlock {
 		layersNav.setWidth("320");
 		layersNav.setHeight("400");
 				
-		layersNav.setMarkupAttribute("class", "ehealth_div_no_border");
+		layersNav.setStyleClass("ehealth_div_no_border");
 		//layersNav.setMarkupAttribute("class", "ehealth_div");
 	
 		layersNav.setBackgroundImage(imageBgVertOut);
@@ -430,7 +430,7 @@ public class HealthCareOverview extends EHealthBlock {
 				cases.add("Vårdplats:");
 				cases.add("Journalanteckningar:");
 				cases.add("Remisser och svar:");
-				cases.add("Läkemedel:");
+				//cases.add("Läkemedel:");
 			}
 			else if (theCase == 2){
 				cases.add("Vårdplats:");
@@ -442,12 +442,12 @@ public class HealthCareOverview extends EHealthBlock {
 			if (theCase == 1){
 				cases.add("Vårdplats:");
 				cases.add("Journalanteckningar:");
-				cases.add("Läkemedel:");
+				//cases.add("Läkemedel:");
 			}
 			else if (theCase == 2){
 				cases.add("Vårdplats:");
 				cases.add("Journalanteckningar:");
-				cases.add("Läkemedel:");
+				//cases.add("Läkemedel:");
 			}
 		}
 		
