@@ -332,6 +332,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 	      Group pGroup = ((GroupHome) IDOLookup.getHome(Group.class)).create();
 	      pGroup.setName(sName+permissionGroupNameExtention);
 	      pGroup.setDescription(SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION);
+	      pGroup.setGroupType("permission");
 	      pGroup.store();
 	      
 //	      pGroup.addGroup(user);
