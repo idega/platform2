@@ -3264,12 +3264,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			if (application.getApplicationStatus() != getStatusContract()) {
 				try {
+					int oldSchoolClassID = -1;
 					SchoolClassMember student = null;
 					if (oldStudent == null && oldArchive != null) {
 						oldStudent = oldArchive.getSchoolClassMember();
 					}
 					if (oldStudent != null) {
-						if (schoolClassId > 0) {
+						oldSchoolClassID = oldStudent.getSchoolClassId();
+						if (schoolClassId > 0 && oldSchoolClassID != schoolClassId) {
 							IWTimestamp endDate = new IWTimestamp(validFrom);
 							endDate.addDays(-1);
 							SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
@@ -3278,6 +3280,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					}
 					if (oldStudent == null) {
 						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
+						oldSchoolClassID = oldStudent.getSchoolClassId();
 					}
 					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId) {
 						// end old placement with the chosen date -1 and create new
@@ -3303,10 +3306,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (schoolClassId != -1) {
 							student.setSchoolClassId(schoolClassId);
 							student.store();
+							if (oldSchoolClassID != -1 && oldSchoolClassID == schoolClassId) {
+								createNewStudent = false;
+							}
 							if (createNewStudent) {
 								try {
 									SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
-									getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
+									getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, application.getRejectionDate(), user);
 								}
 								catch (FinderException fe) {
 									log(fe);
