@@ -39,7 +39,7 @@ public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws com.id
  }
 
 
-public int getProviderCountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetProviderCountForSchoolCategoryAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);

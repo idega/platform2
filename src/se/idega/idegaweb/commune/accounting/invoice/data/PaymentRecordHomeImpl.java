@@ -39,7 +39,7 @@ public PaymentRecord findByPaymentHeaderAndRuleSpecType(se.idega.idegaweb.commun
  }
 
 
-public int getPlacementCountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getPlacementCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -53,7 +53,7 @@ public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1)throws javax
 	return theReturn;
 }
 
-public int getTotAmountForSchoolCategoryAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getTotAmountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetTotAmountForSchoolCategoryAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);

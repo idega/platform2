@@ -12,20 +12,20 @@ public interface InvoiceHeader extends com.idega.data.IDOEntity
  public java.lang.String getDoublePosting();
  public java.lang.String getOwnPosting();
  public java.sql.Date getPeriod();
- public int getSchoolCategoryID();
+ public java.lang.String getSchoolCategoryID();
  public char getStatus();
  public void initializeAttributes();
  public void setChangedBy(java.lang.String p0);
  public void setCreatedBy(java.lang.String p0);
- public void setCustodianId(com.idega.user.data.User p0);
  public void setCustodianId(int p0);
+ public void setCustodianId(com.idega.user.data.User p0);
  public void setDateAdjusted(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);
  public void setDateTransactionEntry(java.sql.Date p0);
  public void setDoublePosting(java.lang.String p0);
  public void setOwnPosting(java.lang.String p0);
  public void setPeriod(java.sql.Date p0);
- public void setSchoolCategoryID(int p0);
  public void setSchoolCategoryID(com.idega.block.school.data.SchoolCategory p0);
+ public void setSchoolCategoryID(java.lang.String p0);
  public void setStatus(char p0);
 }
