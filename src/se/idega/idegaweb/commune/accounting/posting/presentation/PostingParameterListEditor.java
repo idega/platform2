@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.31 2003/10/22 13:19:53 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
 
 
 /**
@@ -47,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.31 2003/10/22 13:19:53 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -69,7 +70,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_COMPANY_TYPE_HEADER_TWO = "posting_parm_edit.company_type_headertwo";
 	private final static String KEY_COM_BEL_HEADER_ONE = "posting_parm_edit.com_bel_headerone";
 	private final static String KEY_COM_BEL_HEADER_TWO = "posting_parm_edit.com_bel_headertwo";
-
+	private final static String KEY_STUDY_PATH_HEADER_ONE = "posting_parm_edit.study_path_headerone";
+	private final static String KEY_STUDY_PATH_HEADER_TWO = "posting_parm_edit.study_path_headertwo";
+	
 	private final static String KEY_HEADER = "posting_parm_edit.header";
 	private final static String KEY_HEADER_OWN_ENTRY = "posting_parm_edit.header_own_entry";
 	private final static String KEY_HEADER_DOUBLE_ENTRY = "posting_parm_edit.header_double_entry";
@@ -89,6 +92,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_ERROR_LENGTH	= "posting_parm_edit.error_length";
 	private final static String KEY_NUMERIC = "posting_parm_edit.numeric_only";
 	private final static String KEY_ALPHA = "posting_parm_edit.alpha_only";
+	private final static String KEY_STUDY_PATH = "posting_parm_edit.study_path";
 	
 	private final static String PARAM_BUTTON_SAVE = "button_save";
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
@@ -108,7 +112,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_COM_BELONGING = "selector_com_belonging";
 	private final static String PARAM_SELECTOR_SCHOOL_YEAR1 = "selector_school_year1";
 	private final static String PARAM_SELECTOR_SCHOOL_YEAR2 = "selector_school_year2";
-	
+	private final static String PARAM_SELECTOR_STUDY_PATH = "selector_study_path";	
 	
 	private ICPage _responsePage;
 	private String _errorText = "";
@@ -163,6 +167,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		_pMap.put(PARAM_SELECTOR_COM_BELONGING, iwc.getParameter(PARAM_SELECTOR_COM_BELONGING));
 		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1));
 		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2));
+		_pMap.put(PARAM_SELECTOR_STUDY_PATH, iwc.getParameter(PARAM_SELECTOR_STUDY_PATH));
 		
 		addTempFieldParameters(iwc, parseDate(iwc.getParameter(PARAM_PERIOD_FROM)));
 		
@@ -185,6 +190,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 					iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
 					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
 					iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
+					iwc.getParameter(PARAM_SELECTOR_STUDY_PATH),
 					_theOwnString,
 					_theDoubleString
 			);
@@ -385,6 +391,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int comBelPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_REGSPEC));
 			int schoolYearPK1 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR1));
 			int schoolYearPK2 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR2));
+			int studyPathPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_STUDY_PATH));
 			
 			if (pp != null) {
 				actPK = Integer.parseInt(pp.getActivity() != null ? 
@@ -399,6 +406,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 						pp.getSchoolYear1().getPrimaryKey().toString() : "0");
 				schoolYearPK2 = Integer.parseInt(pp.getSchoolYear2() != null ? 
 						pp.getSchoolYear2().getPrimaryKey().toString() : "0");				
+				studyPathPK = Integer.parseInt(pp.getStudyPath() != null ? 
+						pp.getStudyPath().getPrimaryKey().toString() : "0");				
 			}
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, actPK), 2, 1);
@@ -416,6 +425,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR1, schoolYearPK1), 2, 5);
 			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR_TO, "t o m"), 3, 5);
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR2, schoolYearPK2), 4, 5);
+
+			selectors.add(getLocalizedLabel(KEY_STUDY_PATH, "Studieväg"), 1, 6);
+			selectors.add(studyPathSelector(iwc, PARAM_SELECTOR_STUDY_PATH, studyPathPK), 2, 6);
 
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
@@ -539,6 +551,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			_pMap.put(PARAM_SELECTOR_COMPANY_TYPE, "0");
 			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, "0");
 			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, "0");
+			_pMap.put(PARAM_SELECTOR_STUDY_PATH, "0");
 		}	
 	}
 
@@ -680,10 +693,36 @@ public class PostingParameterListEditor extends AccountingBlock {
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
+	
+	/*
+	 * Generates a DropDownSelector for StudyPath 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @return the drop down menu
+	 */
+	private DropdownMenu studyPathSelector(IWContext iwc, String name, int refIndex) {
+		
+		DropdownMenu menu = null;
+		try {
+			menu = (DropdownMenu) getStyledInterface(
+				getDropdownMenuLocalized(name, getStudyPathBusiness(iwc).findAllStudyPaths(), 
+				"getCode"));
+			menu.setSelectedElement(refIndex);
+			menu.addMenuElementFirst("0", localize(KEY_STUDY_PATH_HEADER_TWO, "Ingen"));
+			menu.addMenuElementFirst("0", localize(KEY_STUDY_PATH_HEADER_ONE, "Välj studieväg"));
+		} catch (Exception e) {
+			menu = new DropdownMenu();
+			menu.addMenuElement(0, e.getMessage());	
+		}
+		return menu;
+	}
 
 	private boolean hasError() {
 		return _errorText.length() == 0 ? false : true;
 	}
+
 
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
@@ -691,6 +730,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
+
+	private StudyPathBusiness getStudyPathBusiness(IWContext iwc) throws RemoteException {
+		return (StudyPathBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, StudyPathBusiness.class);
+	}	
 
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.17 2003/10/10 00:51:40 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.18 2003/10/24 10:29:37 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
+import com.idega.block.school.data.SchoolStudyPath;
 
 /**
  * PostingParameters Holds information about default posting info.
@@ -39,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.17 2003/10/10 00:51:40 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.18 2003/10/24 10:29:37 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -59,6 +60,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	private static final String COLUMN_COMMUNE_BELONGING_ID = "commune_belonging_id";
 	private static final String COLUMN_SCHOOL_YEAR1_ID = "school_year1_id";
 	private static final String COLUMN_SCHOOL_YEAR2_ID = "school_year2_id";
+	private static final String COLUMN_STUDY_PATH_ID = "study_path_id";
 	
 	private static final String COLUMN_OWN_POSTING_STRING = "own_posting_string";
 	private static final String COLUMN_DOUBLE_POSTING_STRING = "double_posting_string";
@@ -91,6 +93,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 		addAttribute(COLUMN_SCHOOL_YEAR2_ID, "Skolår 2", true, true, 
 						Integer.class, "many-to-one", SchoolYear.class);
+
+		addAttribute(COLUMN_STUDY_PATH_ID, "Study path", true, true, 
+						Integer.class, "many-to-one", SchoolStudyPath.class);
 	
 		addAttribute(COLUMN_OWN_POSTING_STRING, "Egen konteringsstring", true, true, String.class);
 		addAttribute(COLUMN_DOUBLE_POSTING_STRING, "Mot konteringsstring", true, true, String.class);
@@ -101,6 +106,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
 		setNullable (COLUMN_SCHOOL_YEAR1_ID, true);
 		setNullable (COLUMN_SCHOOL_YEAR2_ID, true);
+		setNullable (COLUMN_STUDY_PATH_ID, true);
 	}
 	
 	public String getPostingString() {return getStringColumnValue(COLUMN_OWN_POSTING_STRING);}
@@ -182,6 +188,14 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		}			 
 	}
 
+	public void setStudyPath(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_STUDY_PATH_ID, id);
+		} else {
+			removeFromColumn(COLUMN_STUDY_PATH_ID);
+		}			 
+	}
+
 	public Date getPeriodeFrom() {
 		return (Date) getColumnValue(COLUMN_PERIODE_FROM);
 	}
@@ -208,6 +222,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 	public SchoolYear getSchoolYear2() {
 		return (SchoolYear) getColumnValue(COLUMN_SCHOOL_YEAR2_ID);
+	}
+
+	public SchoolStudyPath getStudyPath() {
+		return (SchoolStudyPath) getColumnValue(COLUMN_STUDY_PATH_ID);
 	}
 
 	public CommuneBelongingType getCommuneBelonging() {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.31 2003/10/10 01:17:09 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -301,6 +301,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				String communeBelongingID,
 				String schoolYear1ID,
 				String schoolYear2ID,
+				String studyPathID,
 				String ownPostingString,
 				String doublePostingString
 			) throws PostingParametersException, RemoteException {
@@ -313,6 +314,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			int parm4 = 0;
 			int parm5 = 0;
 			int parm6 = 0;
+			int parm7 = 0;
 
 			
 			if (	((schoolYear1ID.compareTo("0") != 0) && 
@@ -347,6 +349,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (communeBelongingID == null) communeBelongingID = "0"; 
 				if (schoolYear1ID == null) schoolYear1ID = "0";
 				if (schoolYear2ID == null) schoolYear2ID = "0";
+				if (studyPathID == null) studyPathID = "0";
 				
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
@@ -354,6 +357,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				parm4 = Integer.parseInt(communeBelongingID);
 				parm5 = Integer.parseInt(schoolYear1ID);
 				parm6 = Integer.parseInt(schoolYear2ID);
+				parm7 = Integer.parseInt(studyPathID);
 
 				if (searchPP(
 						periodeFrom, 
@@ -365,7 +369,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						parm3,
 						parm4,
 						parm5,
-						parm6
+						parm6,
+						parm7
 					)) {
 					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SAME_ENTRY, "Denna post finns redan sparad!");			
 				}
@@ -399,6 +404,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setCommuneBelonging(parm4);
 				pp.setSchoolYear1(parm5);
 				pp.setSchoolYear2(parm6);
+				pp.setStudyPath(parm7);
 				pp.store();
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
@@ -410,7 +416,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 */
 	private boolean searchPP(Date from, Date to, String ownPosting, String doublePosting, 
-								int code1, int code2, String code3, int code4, int code5, int code6) {
+								int code1, int code2, String code3, int code4, int code5, int code6, int code7) {
 	
 		try {
 			if (ownPosting == null || doublePosting == null) {
@@ -471,15 +477,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					eq++;
 				}
 				
-				try {
-					if (pp.getCompanyType() == null) {
-						if (code3.compareTo("0") == 0) {
-							eq++;
-						}
-					} else if (pp.getCompanyType().getPrimaryKey().toString().compareTo(code3) == 0) {
+				if (pp.getCompanyType() == null) {
+					if (code3.compareTo("0") == 0) {
 						eq++;
-					}	
-				} catch (FinderException e) {}
+					}
+				} else if (pp.getCompanyType().getPrimaryKey().toString().compareTo(code3) == 0) {
+					eq++;
+				}	
 			
 				if (pp.getCommuneBelonging() == null) {
 					if (code4 == 0) {
@@ -502,16 +506,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						eq++;
 					}
 				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code6) {
-					System.out.println("\n\nCode6 match\n\n");
 					eq++;				
 				}	
-				if (eq == 10) {
+
+				if (pp.getStudyPath() == null) {
+					if (code7 == 0) {
+						eq++;
+					}
+				} else if (Integer.parseInt(pp.getStudyPath().getPrimaryKey().toString()) == code7) {
+					eq++;				
+				}	
+				
+				if (eq == 11) {
 					return true;
 				}
 			}
 		} catch (RemoteException e) {
-			return false;
-		} catch (FinderException e) {
 			return false;
 		}
 		return false;
