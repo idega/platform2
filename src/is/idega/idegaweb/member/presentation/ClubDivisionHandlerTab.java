@@ -6,7 +6,6 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
@@ -19,13 +18,13 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+import com.idega.user.presentation.UserChooserBrowser;
 import com.idega.user.presentation.UserGroupTab;
-import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -42,7 +41,7 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	private TextInput _numberField;
 	private TextInput _nameField;
 	private TextInput _divField;
-	private TextInput _contactField;
+	private UserChooserBrowser _contactField;
 
 	private Text _numberText;
 	private Text _nameText;
@@ -99,7 +98,20 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 		_numberField.setContent((String) fieldValues.get(_numberFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_divField.setContent((String) fieldValues.get(_divFieldName));
-		_contactField.setContent((String) fieldValues.get(_contactFieldName));
+		
+		try {
+			UserHome home = (UserHome) com.idega.data.IDOLookup.getHome(User.class);
+			String userId = (String) fieldValues.get(_contactFieldName);
+
+			if (userId != null && !userId.equals("")) {
+				User user = (User) (home.findByPrimaryKey(new Integer(userId)));
+				_contactField.setSelectedUser(userId,user.getName());
+			}
+
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -110,7 +122,7 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 		_nameField = new TextInput(_nameFieldName);
 //		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
 		_divField = new TextInput(_divFieldName);
-		_contactField = new TextInput(_contactFieldName);
+		_contactField = new UserChooserBrowser(_contactFieldName);
 	}
 
 	/* (non-Javadoc)

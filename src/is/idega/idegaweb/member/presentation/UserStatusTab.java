@@ -8,6 +8,7 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import java.sql.SQLException;
 import java.util.Hashtable;
 
 import com.idega.idegaweb.IWResourceBundle;
@@ -17,7 +18,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
-import com.idega.presentation.ui.SelectPanel;
+import com.idega.user.data.Status;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -32,17 +33,20 @@ public class UserStatusTab extends UserTab {
 	private static final String TAB_NAME = "usr_stat_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Status";
 	
-	private CheckBox _activeField;
-	private SelectPanel _statusField;
+	private CheckBox _inactiveField;
+	private Text _groupField;
+	private SelectDropdown _statusField;
 	private SelectDropdown _parentStatusField;
 	private SelectDropdown _boardStatusField;
 	
-	private Text _activeText;
+	private Text _inactiveText;
+	private Text _groupText;
 	private Text _statusText;
 	private Text _parentStatusText;
 	private Text _boardStatusText;
 	
-	private String _activeFieldName;
+	private String _inactiveFieldName;
+	private String _groupFieldName;
 	private String _statusFieldName;
 	private String _parentStatusFieldName;
 	private String _boardStatusFieldName;
@@ -63,7 +67,8 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_activeFieldName = "usr_stat_active";
+		_inactiveFieldName = "usr_stat_inactive";
+		_groupFieldName = "usr_grp_status";
 		_statusFieldName = "usr_stat_status";
 		_parentStatusFieldName = "usr_stat_parent_status";
 		_boardStatusFieldName = "usr_stat_board_status";
@@ -74,8 +79,9 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void initializeFieldValues() {
 		fieldValues = new Hashtable();
-		fieldValues.put(_activeFieldName, new Boolean(false));
-		fieldValues.put(_statusFieldName, new String[1]);
+		fieldValues.put(_inactiveFieldName, new Boolean(false));
+		fieldValues.put(_groupFieldName, "");
+		fieldValues.put(_statusFieldName, "");
 		fieldValues.put(_parentStatusFieldName, "");	
 		fieldValues.put(_boardStatusFieldName, "");	
 	}
@@ -84,8 +90,9 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
-		_activeField.setChecked(((Boolean) fieldValues.get(_activeFieldName)).booleanValue());		
-		_statusField.setSelectedElements((String[]) fieldValues.get(_statusFieldName));
+		_inactiveField.setChecked(((Boolean) fieldValues.get(_inactiveFieldName)).booleanValue());
+		_groupField.setText((String) fieldValues.get(_groupFieldName));		
+		_statusField.setSelectedOption((String) fieldValues.get(_statusFieldName));
 		_parentStatusField.setSelectedOption((String) fieldValues.get(_parentStatusFieldName));		
 		_boardStatusField.setSelectedOption((String) fieldValues.get(_boardStatusFieldName));		
 	}
@@ -94,29 +101,51 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initializeFields()
 	 */
 	public void initializeFields() {
-		_activeField = new CheckBox(_activeFieldName);
-		_statusField = new SelectPanel(_statusFieldName);
+		_inactiveField = new CheckBox(_inactiveFieldName);
+		_groupField = new Text(Integer.toString(getGroupID()));
 		_parentStatusField = new SelectDropdown(_parentStatusFieldName);
 		_boardStatusField = new SelectDropdown(_boardStatusFieldName);
+		_statusField = new SelectDropdown(_statusFieldName);
 		
-		/**
-		 * @todo Setja í töflu og sækja þaðan.
-		 */		
-		_statusField.addOption(new SelectOption("Félagsmaður","0"));
-		_statusField.addOption(new SelectOption("Iðkandi","1"));
-		_statusField.addOption(new SelectOption("Keppandi","2"));
-		_statusField.addOption(new SelectOption("Stjórnarmaður","3"));
-		_statusField.addOption(new SelectOption("Þjálfari","4"));
-		_statusField.addOption(new SelectOption("Aðstoðarþjálfari","5"));
-		_statusField.addOption(new SelectOption("Dómari","6"));
-		_statusField.addOption(new SelectOption("Foreldri","7"));
-		_statusField.addOption(new SelectOption("Forráðamaður","8"));
-		_statusField.addOption(new SelectOption("Starfsmaður","9"));
-		_statusField.addOption(new SelectOption("Styrktaraðili","10"));
-		_statusField.addOption(new SelectOption("Aukaflokkur","11"));
-		_statusField.addOption(new SelectOption("Iðk. á árinu","12"));
-		_statusField.addOption(new SelectOption("Félagsmaður","13"));
-		_statusField.addOption(new SelectOption("Félagsmaður","14"));
+		Status[] status = null;
+		try {
+			status = (Status[]) com.idega.user.data.StatusBMPBean.getStaticInstance(Status.class).findAll();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		if (status != null) {
+			if (status.length > 0) {
+				IWContext iwc = IWContext.getInstance();
+				IWResourceBundle iwrb = getResourceBundle(iwc);
+				
+				for (int i = 0; i < status.length; i++) {
+					String n = status[i].getStatusKey();
+					if (n != null) {
+						String l = iwrb.getLocalizedString("usr_stat_" + n,n);
+						_statusField.addOption(new SelectOption(l,((Integer)status[i].getPrimaryKey()).intValue()));
+					} 					
+				}
+			}
+		}
+						
+/*			_statusField.addOption(new SelectOption("Félagsmaður","0"));
+			_statusField.addOption(new SelectOption("Iðkandi","1"));
+			_statusField.addOption(new SelectOption("Keppandi","2"));
+			_statusField.addOption(new SelectOption("Stjórnarmaður","3"));
+			_statusField.addOption(new SelectOption("Þjálfari","4"));
+			_statusField.addOption(new SelectOption("Aðstoðarþjálfari","5"));
+			_statusField.addOption(new SelectOption("Dómari","6"));
+			_statusField.addOption(new SelectOption("Foreldri","7"));
+			_statusField.addOption(new SelectOption("Forráðamaður","8"));
+			_statusField.addOption(new SelectOption("Starfsmaður","9"));
+			_statusField.addOption(new SelectOption("Styrktaraðili","10"));
+			_statusField.addOption(new SelectOption("Aukaflokkur","11"));
+			_statusField.addOption(new SelectOption("Iðk. á árinu","12"));
+			_statusField.addOption(new SelectOption("Félagsmaður","13"));
+			_statusField.addOption(new SelectOption("Félagsmaður","14"));
+		}*/
 		
 		_parentStatusField.addOption(new SelectOption("","0"));
 		_parentStatusField.addOption(new SelectOption("Forráðamaður I","1"));
@@ -141,7 +170,7 @@ public class UserStatusTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		_activeText = new Text(iwrb.getLocalizedString(_activeFieldName, "Active") + ":");
+		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active") + ":");
 		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
 		_parentStatusText = new Text(iwrb.getLocalizedString(_parentStatusFieldName, "Parent status") + ":");
 		_boardStatusText = new Text(iwrb.getLocalizedString(_boardStatusFieldName, "Board status") + ":");		
@@ -154,8 +183,8 @@ public class UserStatusTab extends UserTab {
 		empty();
 		
 		Table t = new Table(2, 4);
-		t.add(_activeText, 1, 1);
-		t.add(_activeField, 2, 1);
+		t.add(_inactiveText, 1, 1);
+		t.add(_inactiveField, 2, 1);
 		t.add(_statusText, 1, 2);
 		t.add(_statusField, 2, 2);
 		t.add(_parentStatusText, 1, 3);
@@ -171,7 +200,7 @@ public class UserStatusTab extends UserTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-			String active = iwc.getParameter(_activeFieldName);
+			String inactive = iwc.getParameter(_inactiveFieldName);
 			String status[] = iwc.getParameterValues(_statusFieldName);
 			String parentStatus = iwc.getParameter(_parentStatusFieldName);
 			String boardStatus = iwc.getParameter(_boardStatusFieldName);
@@ -196,7 +225,7 @@ public class UserStatusTab extends UserTab {
 			else {		
 				fieldValues.put(_boardStatusFieldName,"");
 			}
-			fieldValues.put(_activeFieldName, new Boolean(active != null));
+			fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
 		}
 		
 		return true;
