@@ -29,7 +29,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String COLUMN_NAME_GROUP_TYPE = "GROUP_TYPE";
 	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "GROUP_SHORT_NAME";
 	protected final static String COLUMN_NAME_GROUP_NUMBER = "GROUP_NUMBER";
-	protected final static String COLUMN_NAME_GROUP_INACTIVE = "INACTIVE";
+	protected final static String COLUMN_NAME_GROUP_INACTIVE = "INACTIVE_GROUP";
 	protected final static String COLUMN_NAME_WORK_REPORT_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_MEMBERS_DONE = "MEMB_DONE";
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";

@@ -17,6 +17,14 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFileHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportBoardMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportBoardMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportClubAccountRecord;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportClubAccountRecordHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportDivisionBoard;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportDivisionBoardHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportImportMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
@@ -61,11 +69,8 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
-
-import com.idega.data.IDORelationshipException;
-
 import com.idega.data.IDOLookupException;
-
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
@@ -99,6 +104,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	private WorkReportDivisionBoardHome workReportDivisionBoardHome;
 	private WorkReportExportFileHome workReportExportFileHome;
+	
+	//Temporary import tables
+	private WorkReportImportMemberHome workReportImportMemberHome;
+	private WorkReportImportBoardMemberHome workReportImportBoardMemberHome;
+	private WorkReportImportDivisionBoardHome workReportImportDivisionBoardHome;
+	private WorkReportImportClubAccountRecordHome workReportImportClubAccountRecordHome;
 
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
@@ -284,6 +295,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportMemberHome;
 	}
 
+	public WorkReportImportMemberHome getWorkReportImportMemberHome() {
+		if (workReportImportMemberHome == null) {
+			try {
+				workReportImportMemberHome = (WorkReportImportMemberHome)IDOLookup.getHome(WorkReportImportMember.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportImportMemberHome;
+	}
+
+
 	public WorkReportBoardMemberHome getWorkReportBoardMemberHome() {
 		if (workReportBoardMemberHome == null) {
 			try {
@@ -296,6 +320,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportBoardMemberHome;
 	}
 
+	public WorkReportImportBoardMemberHome getWorkReportImportBoardMemberHome() {
+		if (workReportImportBoardMemberHome == null) {
+			try {
+				workReportImportBoardMemberHome = (WorkReportImportBoardMemberHome)IDOLookup.getHome(WorkReportImportBoardMember.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportImportBoardMemberHome;
+	}
+
 	public WorkReportDivisionBoardHome getWorkReportDivisionBoardHome() {
 		if (workReportDivisionBoardHome == null) {
 			try {
@@ -306,6 +342,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		return workReportDivisionBoardHome;
+	}
+
+	public WorkReportImportDivisionBoardHome getWorkReportImportDivisionBoardHome() {
+		if (workReportImportDivisionBoardHome == null) {
+			try {
+				workReportImportDivisionBoardHome = (WorkReportImportDivisionBoardHome)IDOLookup.getHome(WorkReportImportDivisionBoard.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportImportDivisionBoardHome;
 	}
 
 	public WorkReportGroupHome getWorkReportGroupHome() {
@@ -342,6 +390,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		return workReportClubAccountRecordHome;
+	}
+
+	public WorkReportImportClubAccountRecordHome getWorkReportImportClubAccountRecordHome() {
+		if (workReportImportClubAccountRecordHome == null) {
+			try {
+				workReportImportClubAccountRecordHome = (WorkReportImportClubAccountRecordHome)IDOLookup.getHome(WorkReportImportClubAccountRecord.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportImportClubAccountRecordHome;
 	}
 
 	public WorkReportExportFileHome getWorkReportExportFileHome() {
@@ -718,7 +778,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//clear the table first
 		deleteWorkReportMembersForReport(workReportId);
 
-		WorkReportMemberHome membHome = getWorkReportMemberHome();
+		WorkReportImportMemberHome membHome = getWorkReportImportMemberHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 
@@ -900,7 +960,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		deleteWorkReportBoardMembersForReport(workReportId);
 
-		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
+		WorkReportImportBoardMemberHome membHome = getWorkReportImportBoardMemberHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -969,7 +1029,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				String streetName = row.getCell(COLUMN_BOARD_MEMBER_STREET_NAME).getStringCellValue();
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
 
-				WorkReportBoardMember member;
+				WorkReportImportBoardMember member;
 
 				try {
 					//the user must already exist in the database
@@ -981,7 +1041,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-						member = createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
+						member = membHome.create();//createWorkImportReportBoardMember(workReportId, ssn, group); //sets basic data
+						member.setPersonalId(ssn);
+						member.setReportId(workReportId);
+						//Set group??
 
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
@@ -1115,7 +1178,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		deleteWorkReportAccountRecordsForReport(workReportId);
 
 		WorkReportAccountKeyHome accKeyHome = getWorkReportAccountKeyHome();
-		WorkReportClubAccountRecordHome clubRecordHome = getWorkReportClubAccountRecordHome();
+		WorkReportImportClubAccountRecordHome clubRecordHome = getWorkReportImportClubAccountRecordHome();
 		WorkReport report = getWorkReportById(workReportId);
 		int year = report.getYearOfReport().intValue();
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -1428,15 +1491,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				export.store();
 			}
 			catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			catch (CreateException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
