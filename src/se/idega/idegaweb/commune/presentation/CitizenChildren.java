@@ -65,7 +65,7 @@ public class CitizenChildren extends CommuneBlock {
 				}
 				row++;
 			}
-			if(showSSNSearchForm)
+			
 				T.add(getChildrenForm(iwc));
 			add(T);
 		}
@@ -110,14 +110,16 @@ public class CitizenChildren extends CommuneBlock {
 			}
 
 		}
-		TextInput inputSSN = new TextInput(prmChildSSN);
-		String label = buttonLabel.getLocalizedText(iwc);
-
-		SubmitButton submit = new SubmitButton(label, prmSubmitName, "true");
-		T.add(inputSSN, 1, row);
-		row++;
-		T.add(submit, 1, row);
-
+		
+		if(showSSNSearchForm){
+			TextInput inputSSN = new TextInput(prmChildSSN);
+			String label = buttonLabel.getLocalizedText(iwc);
+	
+			SubmitButton submit = new SubmitButton(label, prmSubmitName, "true");
+			T.add(inputSSN, 1, row);
+			row++;
+			T.add(submit, 1, row);
+		}
 		f.add(T);
 		return f;
 	}
