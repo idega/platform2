@@ -83,7 +83,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	//MANY TO MANY RELATIONSHIP TABLES
 	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
 	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
-	public final static String UNVISIBLE_FOR_CITIZEN = "unvisible for citizen";
+	public final static String UNVISIBLE_FOR_CITIZEN = "unvisible_for_citizen";
 	
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());

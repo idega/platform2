@@ -214,9 +214,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				custodian = getInvoiceReceiver(contract);
 				errorRelated.append("Invoice receiver "+custodian.getName());
 				//**Fetch the reference at the provider
-				ChildCareApplication application = contract.getApplication();
-				Integer providerId = new Integer (application.getProviderId());
-				school = ((SchoolHome) IDOLookup.getHome(School.class)).findByPrimaryKey (providerId);
+				school = contract.getApplication ().getProvider ();
 				errorRelated.append("School "+school.getName(),1);
 				// **Get or create the invoice header
 				InvoiceHeader invoiceHeader;
@@ -295,7 +293,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
 		
-					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
+					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
 					errorRelated.append("Regel Spec Typ "+regSpecType);
 					
