@@ -18,7 +18,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -1299,15 +1298,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
-//			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
+			Hashtable subMap = (Hashtable) maxDaysMap.get((Integer) product.getPrimaryKey());
 //			Cacheing disabled for a while // erm re-enabled			
-			HashMap subMap = null;
+//			Hashtable subMap = null;
 			String stmpString = null;
 			if (stamp != null) {
 				stmpString = stamp.toSQLDateString();
 			}
 			if (subMap == null) {
-				subMap = new HashMap();
+				subMap = new Hashtable();
 			}
 			Integer returner = (Integer) subMap.get(stmpString); 
 			if ( returner == null ) {
