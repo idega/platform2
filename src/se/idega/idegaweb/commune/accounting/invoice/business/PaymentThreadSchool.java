@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/04 19:36:28 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/04 20:16:13 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.79 $
+ * @version $Revision: 1.80 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -160,7 +160,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							}
 							catch (TooManyRegulationsException e) {
 								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.ErrorFindingTooManyRegulations");
+								errorRelated.append("Regulations found:"+e.getRegulationNamesString());
+								createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
 							}
 							catch (PostingException e) {
 								e.printStackTrace();
