@@ -16,6 +16,7 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -265,10 +266,14 @@ public class RegulationSearchPanel extends AccountingBlock {
 		try{
 			RegulationHome regHome = (RegulationHome) IDOLookup.getHome(Regulation.class);
 			
+			String catId = getCurrentSchoolCategoryId(iwc);
+			
 			matches = _validDate != null ? 
-				regHome.findRegulationsByNameNoCaseAndDate(wcName, _validDate)
-				: regHome.findRegulationsByNameNoCase(wcName);
+				regHome.findRegulationsByNameNoCaseDateAndCategory(wcName, _validDate, catId)
+				: regHome.findRegulationsByNameNoCaseAndCategory(wcName, catId);
 
+			
+			
 		}catch(RemoteException ex){
 			ex.printStackTrace();
 			
@@ -394,16 +399,23 @@ public class RegulationSearchPanel extends AccountingBlock {
 			row++;
 		}
 		
+
+		
 		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row);		
-		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
+		String date = iwc.getParameter(PAR_VALID_DATE) != null ? iwc.getParameter(PAR_VALID_DATE) :
+			formatDate(new Date(System.currentTimeMillis()), 4); 
+		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, date, 3, row);	
 		table.add(getLocalizedButton(SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 
-
+		table.setColumnWidth(1, "" + _leftColMinWidth);
 		return table;
 	
 	}
 
-	
+	private int _leftColMinWidth = 0;
+	public void setLeftColumnMinWidth(int minWidth){
+		_leftColMinWidth = minWidth;
+	}
 	
 	private Table addDropDown(Table table, String parameter, String key, Collection options, String selected, String method, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenu(parameter, options, method);
@@ -444,6 +456,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 	public School getSchool(){
 		return _currentSchool;
 	}
+	
+	public String getCurrentSchoolCategoryId(IWContext iwc) throws RemoteException, FinderException{
+		SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),	SchoolBusiness.class);
+		String opField = getSession().getOperationalField();
+		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField).getPrimaryKey().toString();					
+	}
+		
 	
 
 }
