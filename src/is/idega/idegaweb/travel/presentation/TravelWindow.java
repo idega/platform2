@@ -36,6 +36,8 @@ public class TravelWindow extends Window {
   protected User user = null;
   protected int userId = -1;
   protected boolean isSuperAdmin = false;
+  
+  protected Image headerImage;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -121,14 +123,16 @@ public class TravelWindow extends Window {
     jPage = super.getPage(iwc);
       jPage.setAllMargins(0);
 
-    table.setColor(1,1,TravelManager.backgroundColor);
-    table.setColor(2,1,TravelManager.backgroundColor);
-    table.setColor(3,1,TravelManager.backgroundColor);
 
-    Image logo = iwb.getImage("buttons/iWTravel.gif");
+		if (headerImage == null) {
+    	headerImage = iwb.getImage("buttons/iWTravel.gif");
+			table.setColor(1,1,TravelManager.backgroundColor);
+			table.setColor(2,1,TravelManager.backgroundColor);
+			table.setColor(3,1,TravelManager.backgroundColor);
+		}
 
     table.mergeCells(1,1,2,1);
-    table.add(logo,1,1);
+    table.add(headerImage,1,1);
 
     text.setFontColor(TravelManager.BLACK);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
@@ -153,6 +157,10 @@ public class TravelWindow extends Window {
     text.setStyle(TravelManager.theBoldTextStyle);
     return text;
   }
+
+	public void setHeaderImage(Image image) {
+		this.headerImage = image;
+	}
 
 
   protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
