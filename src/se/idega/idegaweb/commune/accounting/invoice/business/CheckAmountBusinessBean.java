@@ -49,7 +49,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /**
  * @author gimmi
  */
-public class CheckAmountBusinessBean extends IBOServiceBean {
+public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness {
 	private static final SimpleDateFormat periodFormatter	= new SimpleDateFormat ("yyMM");
 	/*
 	public void main(IWContext iwc) {
