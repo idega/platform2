@@ -63,7 +63,7 @@ public class Emailer extends Block {
     private static String prmEmail = "em_email";
     private ContentParsable contentParsable;
 
-    private Image editImage, deleteImage, mailImage;
+    private Image editImage, deleteImage, mailImage,listImage;
 
 
     /**  Constructor for the Emailer object */
@@ -564,6 +564,7 @@ public class Emailer extends Block {
     public Link getLetterChangeLink(EmailLetter letter) {
         Link L = new Link(editImage);
         L.addParameter(prmLetter, letter.getID());
+        L.setToolTip(iwrb.getLocalizedString("tooltip.edit_letter","Edit letter"));
         return L;
     }
 
@@ -578,6 +579,7 @@ public class Emailer extends Block {
         Link L = new Link(deleteImage);
         L.addParameter(prmLetterDelete, letter.getID());
         L.addParameter(prmLetter, letter.getID());
+        L.setToolTip(iwrb.getLocalizedString("tooltip.delete_letter","Delete letter"));
         return L;
     }
 
@@ -592,6 +594,7 @@ public class Emailer extends Block {
         Link L = new Link(mailImage);
         L.addParameter("mail_letter", "true");
         L.addParameter(prmLetter, letter.getID());
+        L.setToolTip(iwrb.getLocalizedString("tooltip.mail_letter_sample","Mail letter to email list"));
         return L;
     }
 
@@ -603,8 +606,9 @@ public class Emailer extends Block {
      * @return         The letter list link value
      */
     public Link getLetterListLink(EmailLetter letter) {
-        Link L = new Link(mailImage);
+        Link L = new Link(listImage);
         L.addParameter("letter_list", "true");
+        L.setToolTip(iwrb.getLocalizedString("tooltip.view_mail_list","View email list"));
         L.addParameter(prmLetter, letter.getID());
         return L;
     }
@@ -621,6 +625,7 @@ public class Emailer extends Block {
         L.addParameter(prmListDelete, "true");
         L.addParameter(prmListId, list.getID());
         L.addParameter(prmLists, "true");
+        L.setToolTip(iwrb.getLocalizedString("tooltip.delete_list","Delete list"));
         return L;
     }
 
@@ -635,6 +640,7 @@ public class Emailer extends Block {
         Link L = new Link(editImage);
         L.addParameter(prmListId, list.getID());
         L.addParameter(prmLists, "true");
+        L.setToolTip(iwrb.getLocalizedString("tooltip.edit_list","Edit email list"));
         return L;
     }
 
@@ -651,6 +657,7 @@ public class Emailer extends Block {
         L.addParameter(prmEmailDelete, email.getID());
         L.addParameter(prmListId, mlist.getID());
         L.addParameter(prmLists, "true");
+        L.setToolTip(iwrb.getLocalizedString("tooltip.delete_letter","Delete letter"));
         return L;
     }
 
@@ -694,7 +701,8 @@ public class Emailer extends Block {
         core = iwc.getIWMainApplication().getCoreBundle();
         editImage = core.getImage("/shared/edit.gif");
         deleteImage = core.getImage("/shared/delete.gif");
-        mailImage = core.getImage("/shared/empty.gif");
+        mailImage = core.getImage("/shared/mail.gif");
+        listImage = core.getImage("/shared/detach.gif");
         iwrb = getResourceBundle(iwc);
         control(iwc);
     }
