@@ -5,6 +5,8 @@ import com.idega.data.genericentity.Member;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.login.business.*;
+import com.idega.block.finance.presentation.Finance;
+import com.idega.projects.campus.admin.BuildingMaker;
 import java.sql.SQLException;
 import java.io.IOException;
 
@@ -27,7 +29,7 @@ public class Adminer extends CampusObject implements Tabs{
   public static final String strAction = "admin_action";
   private Member eMember;
   private boolean isAdmin;
-  public final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
+  public final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4,ACT5 = 5;
 
   public Adminer(){
     MiddleColor = "#9FA9B3";
@@ -52,36 +54,29 @@ public class Adminer extends CampusObject implements Tabs{
           case ACT2 : doAct2(modinfo);        break;
           case ACT3 : doAct3(modinfo);        break;
           case ACT4 : doAct4(modinfo);        break;
-          default: doAct1(modinfo);           break;
+          case ACT5 : doAct5(modinfo);        break;
+          default : doAct1(modinfo);
         }
-
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
+    catch(Exception s){s.printStackTrace();}
 }
 
     private void doAct1(ModuleInfo modinfo) throws SQLException {
-      Table T = new Table(1,6);
-
-
+      add(new Finance("Fjármál"));
     }
-
     private void doAct2(ModuleInfo modinfo) throws SQLException{
-
     }
-
     private void doAct3(ModuleInfo modinfo) throws SQLException{
-
     }
-
     private void doAct4(ModuleInfo modinfo) throws SQLException{
-
     }
-
+    private void doAct5(ModuleInfo modinfo) throws SQLException{
+    }
     public ModuleObject getTabs(){
       return makeLinkTable();
     }
-
     private Table makeLinkTable(){
       Table LinkTable = new Table(1,1);
       LinkTable.setBorder(0);
