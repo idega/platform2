@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.1 2005/01/12 13:11:54 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.2 2005/01/19 09:42:09 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -12,15 +12,16 @@ package se.idega.idegaweb.commune.childcare.export.business;
 import java.io.ByteArrayInputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.export.data.ChildCareExportTime;
 import se.idega.idegaweb.commune.childcare.export.data.ChildCareExportTimeHome;
 
@@ -45,10 +46,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/01/12 13:11:54 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/19 09:42:09 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -194,12 +195,31 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 			Iterator contracts = getChildCareContractHome().findChangedSinceDate(lastExportDate).iterator();
 			while (contracts.hasNext()) {
 				ChildCareContract contract = (ChildCareContract) contracts.next();
+				ChildCareApplication application = contract.getApplication();
+				char applicationStatus = application.getApplicationStatus();
+				if (!(applicationStatus == getChildCareBusiness().getStatusReady() ||
+						applicationStatus == getChildCareBusiness().getStatusCancelled())) {
+					continue;
+				}				
 				User user = contract.getChild();
 				SchoolClassMember placement = contract.getSchoolClassMember();
 				if (placement == null) {
 					continue;
 				}
 				SchoolClass group = placement.getSchoolClass();
+				Date placementFromDate = new Date(placement.getRegisterDate().getTime());
+				Date contractFromDate = contract.getValidFromDate();
+				if (contractFromDate != null) {
+					SchoolClassMemberLogHome home = getSchoolBusiness().getSchoolClassMemberLogHome();
+					SchoolClassMemberLog log = null;
+					try {
+						log = home. findByPlacementAndDate(placement, contractFromDate);
+					} catch (FinderException e) {}
+					if (log != null) {
+						placementFromDate = log.getStartDate();
+						group = log.getSchoolClass();
+					}
+				}
 				School school = group.getSchool();
 				SchoolType schoolType = group.getSchoolType(); 
 					
@@ -207,7 +227,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				s += getISTSchoolId(school) + SEPARATOR_CHAR;
 				s += getISTGroupId(group) + SEPARATOR_CHAR;
 				s += getISTSchoolTypeId(schoolType) + SEPARATOR_CHAR;
-				s += getISTDate(placement.getRegisterDate()) + SEPARATOR_CHAR;
+				s += getISTDate(placementFromDate) + SEPARATOR_CHAR;
 				s += getISTTaxekat(contract.getCareTime()) + SEPARATOR_CHAR;
 				s += getISTDate(contract.getValidFromDate()) + SEPARATOR_CHAR;
 				s += getISTDate(contract.getTerminatedDate());
@@ -215,8 +235,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				if (contracts.hasNext()) {
 					s += "\r\n";						
 				}				
-			}
-			
+			}			
 		} catch (Exception e) {
 			log(e);
 			throw new ChildCareExportException(KEY_PLACEMENT_SEARCH_ERROR, DEFAULT_PLACEMENT_SEARCH_ERROR);			
@@ -313,20 +332,6 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 		} catch (Exception e) {}
 		return dateString;
 	}
-
-	/*
-	 * Returns a date formatted for the IST Extens system.
-	 */
-	private String getISTDate(Timestamp t) {
-		String dateString = EMPTY_FIELD;
-		try {
-			IWTimestamp ts = new IWTimestamp(t);
-			ts.setAsDate();
-			return getISTDate(ts.getDate());
-		} catch (Exception e) {}
-		return dateString;
-	}
-
 
 	/*
 	 * Returns a taxekategori (child care time) formatted for the IST Extens system.
@@ -495,6 +500,13 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	 */
 	public String getTaxekatExportFileNamePrefix() {
 		return FILE_NAME_PREFIX_TAXEKAT;
+	}
+	
+	/*
+	 * Returns a ChildCareBusiness instance.
+	 */
+	private ChildCareBusiness getChildCareBusiness() throws RemoteException {
+		return (ChildCareBusiness) this.getServiceInstance(ChildCareBusiness.class);
 	}
 	
 	/*
