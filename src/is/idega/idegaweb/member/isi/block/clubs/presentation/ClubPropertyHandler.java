@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -27,16 +27,16 @@ import com.idega.user.data.Group;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ClubPropertyHandler implements PropertyHandler {
+public class ClubPropertyHandler implements ICPropertyHandler {
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getDefaultHandlerTypes()
+	 * @see com.idega.builder.handler.ICPropertyHandler#getDefaultHandlerTypes()
 	 */
 	public List getDefaultHandlerTypes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
+	 * @see com.idega.builder.handler.ICPropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
 		Collection clubs = getGroups(iwc);
@@ -56,7 +56,7 @@ public class ClubPropertyHandler implements PropertyHandler {
 		return clubMenu;
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#onUpdate(java.lang.String[], com.idega.presentation.IWContext)
+	 * @see com.idega.builder.handler.ICPropertyHandler#onUpdate(java.lang.String[], com.idega.presentation.IWContext)
 	 */
 	public void onUpdate(String[] values, IWContext iwc) {
 		System.out.println("updated club selection " + values[0]);

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusTitleIconsHandler.java,v 1.5 2004/05/24 14:21:41 palli Exp $
+ * $Id: CampusTitleIconsHandler.java,v 1.6 2004/06/28 11:11:47 thomas Exp $
 
  *
 
@@ -24,7 +24,7 @@ import is.idega.idegaweb.campus.presentation.TitleIcons;
 
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -39,7 +39,7 @@ import com.idega.presentation.ui.DropdownMenu;
 
  */
 
-public class CampusTitleIconsHandler implements PropertyHandler {
+public class CampusTitleIconsHandler implements ICPropertyHandler {
 
   public final static String MENU = TitleIcons.MAINMENU;
 

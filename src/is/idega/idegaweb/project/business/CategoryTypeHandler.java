@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryTypeHandler.java,v 1.3 2002/04/06 19:11:21 tryggvil Exp $
+ * $Id: CategoryTypeHandler.java,v 1.4 2004/06/28 11:11:47 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.project.business;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
@@ -24,7 +24,7 @@ import java.sql.SQLException;
  * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
  * @version 1.0
  */
-public class CategoryTypeHandler implements PropertyHandler {
+public class CategoryTypeHandler implements ICPropertyHandler {
   /**
    *
    */

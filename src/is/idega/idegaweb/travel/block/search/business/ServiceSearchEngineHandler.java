@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -16,7 +16,7 @@ import com.idega.presentation.ui.DropdownMenu;
 /**
  * @author gimmi
  */
-public class ServiceSearchEngineHandler implements PropertyHandler {
+public class ServiceSearchEngineHandler implements ICPropertyHandler {
 
 	public List getDefaultHandlerTypes() {
 		return null;

@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.business;
 import java.util.List;
 
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -13,7 +13,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="eiki@idega.is">Eirikur Hrafnsson</a>
  * @version 1.0
  */
-public class SupplierHandler implements PropertyHandler {
+public class SupplierHandler implements ICPropertyHandler {
 
   public static final String IW_BUNDLE_IDENTIFIER = "is.idegaweb.travel";
 
