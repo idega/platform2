@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
+import se.idega.idegaweb.commune.printing.business.DocumentService;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
 import com.idega.core.builder.data.ICPage;
@@ -21,6 +22,7 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -39,6 +41,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+ * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
 public class PrintDocumentsViewer extends CommuneBlock {
@@ -216,7 +219,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			isBulkManual = true;
 		}
 
-		isBulkType = getDocumentBusiness(iwc).isBulkLetterType(currentType);
+		//isBulkType = getDocumentBusiness(iwc).isBulkLetterType(currentType);
 
 		if (iwc.isParameterSet(PARAM_MESSAGE_ID)) {
 			msgID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
@@ -287,7 +290,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		getDocumentBusiness(iwc).writeBulkPDF(
 			unPrintedLetters,
 			iwc.getCurrentUser(),
-			"BulkLetterPDF",
+			localize("printdoc.bulkletter_filename","BulkLetterPDF"),
 			iwc.getApplicationSettings().getDefaultLocale(),
 			currentType,
 			false,
@@ -303,13 +306,16 @@ public class PrintDocumentsViewer extends CommuneBlock {
 					.getPrintedLetterMessageHome()
 					.findByPrimaryKey(
 					new Integer(msgID));
-			fileID =
+			/*fileID =
 				getDocumentBusiness(iwc).writePDF(
 					msg,
 					iwc.getCurrentUser(),
 					"LetterPDF",
 					iwc.getApplicationSettings().getDefaultLocale(),
 					true);
+			*/
+			
+			fileID = getDocumentService(iwc).createPDF(iwc,msg,localize("printdoc.letter_filename","LetterPDF"),false).intValue();
 			//System.err.println("file id written :"+fileID);
 			//getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
 		}
@@ -337,7 +343,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			getDocumentBusiness(iwc).writeBulkPDF(
 				ids,
 				iwc.getCurrentUser(),
-				"BulkLetterPDF",
+				localize("printdoc.bulkletter_filename","BulkLetterPDF"),
 				iwc.getApplicationSettings().getDefaultLocale(),
 				currentType,
 				true,
@@ -667,6 +673,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				cursor_p--;
 			}
 		}*/
+		String view = localize("printdoc.view", "View");
 		while (iter.hasNext() && count <= ccp) {
 			PrintDocuments doc = (PrintDocuments) iter.next();
 			printedLetterDocs.add(String.valueOf(count));
@@ -674,11 +681,18 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			//messageList.add("-");
 			printedLetterDocs.add(Integer.toString(doc.getNumberOfSubDocuments()));
 			int fileID = doc.getDocumentFileID();
-			Link viewLink = new Link(localize("printdoc.view", "View"));
-			viewLink.setFile(fileID);
-			printedLetterDocs.add(viewLink);
+		
+			//Link viewLink = new Link(localize("printdoc.view", "View"));
+			//viewLink.setFile(fileID);
+			printedLetterDocs.add(getViewLink(view,fileID));
 			count++;
 		}
+	}
+	
+	private DownloadLink getViewLink(String display, int fileID){
+		DownloadLink viewLink = new DownloadLink();
+		viewLink.setFile(fileID);
+		return viewLink;
 	}
 
 	/* Commented out since it is never used...
@@ -956,9 +970,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			}
 			printedLetterDocs.add(msg.getSubject());
 			int fileID = msg.getMessageDataFileID();
-			Link viewLink = new Link(String.valueOf(fileID));
-			viewLink.setFile(fileID);
-			printedLetterDocs.add(viewLink);
+			//DownloadLink viewLink = new DownloadLink(String.valueOf(fileID));
+			//viewLink.setFile(fileID);
+			//Link viewLink = new Link(String.valueOf(fileID));
+			//viewLink.setFile(fileID);
+			printedLetterDocs.add(getViewLink(String.valueOf(fileID),fileID));
 			/*
 			bulkId = msg.getMessageBulkDataFileID();
 			if (bulkId > 0) {
@@ -1017,6 +1033,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				cursor_p--;
 			}
 		}*/
+		String view = localize("printdoc.view", "View");
 		while (iter.hasNext()){// && count <= ccp) {
 			PrintDocuments doc = (PrintDocuments) iter.next();
 			printedLetterDocs.add(String.valueOf(count));
@@ -1033,9 +1050,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			printedLetterDocs.add(namesLink);
 
 			int fileID = doc.getDocumentFileID();
-			Link viewLink = new Link(localize("printdoc.view", "View"));
-			viewLink.setFile(fileID);
-			printedLetterDocs.add(viewLink);
+			//DownloadLink viewLink = new DownloadLink(localize("printdoc.view", "View"));
+			//viewLink.setFile(fileID);
+			//Link viewLink = new Link(localize("printdoc.view", "View"));
+			//viewLink.setFile(fileID);
+			printedLetterDocs.add(getViewLink(view,fileID));
 			count++;
 		}
 		return T;
@@ -1144,9 +1163,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			int fileID = msg.getMessageDataFileID();
 			if (fileID > 0) {
 				//Link viewLink = new Link(localize("printdoc.view", "View"));
-				Link viewLink = new Link(String.valueOf(fileID));
-				viewLink.setFile(fileID);
-				letterList.add(viewLink);
+			    //DownloadLink viewLink = new DownloadLink(String.valueOf(fileID));
+			    //viewLink.setFile(fileID);
+				//Link viewLink = new Link(String.valueOf(fileID));
+				//viewLink.setFile(fileID);
+				letterList.add(getViewLink(String.valueOf(fileID),fileID));
 			} else {
 				letterList.add("-");
 			}
@@ -1238,9 +1259,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private DocumentBusiness getDocumentBusiness(IWContext iwc) throws RemoteException {
-		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(
-			iwc,
-			DocumentBusiness.class);
+		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentBusiness.class);
+	}
+	
+	private DocumentService getDocumentService(IWContext iwc) throws RemoteException {
+		return (DocumentService) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentService.class);
 	}
 
 
