@@ -5,6 +5,8 @@ import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.*;
 import java.text.DateFormatSymbols;
+import java.util.Hashtable;
+import java.util.Enumeration;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -32,6 +34,9 @@ private String todayColor = headerColor;
 
 private int width = 135;
 
+private Hashtable dayColors = null;
+private Hashtable dayFontColors = null;
+
 
 public Table T = new Table();
 
@@ -46,20 +51,20 @@ public SmallCalendar(idegaTimestamp timestamp) {
 
   public void main(IWContext iwc){
     if (stamp == null) {
-        String month = iwc.getParameter("month");
-        String year = iwc.getParameter("year");
-        if(month != null && year != null){
-          try {
-            int iMonth = Integer.parseInt(month);
-            int iYear = Integer.parseInt(year);
-            stamp = new idegaTimestamp( 1,iMonth,iYear);
-          }
-          catch (Exception ex) {
-            stamp = new idegaTimestamp();
-          }
+      String month = iwc.getParameter("month");
+      String year = iwc.getParameter("year");
+      if(month != null && year != null){
+        try {
+          int iMonth = Integer.parseInt(month);
+          int iYear = Integer.parseInt(year);
+          stamp = new idegaTimestamp( 1,iMonth,iYear);
         }
-        else
+        catch (Exception ex) {
           stamp = new idegaTimestamp();
+        }
+      }
+      else
+        stamp = new idegaTimestamp();
     }
     make(iwc);
   }
@@ -83,12 +88,19 @@ public SmallCalendar(idegaTimestamp timestamp) {
     tMonth.setFontColor(headerTextColor);
     tMonth.setFontSize(2);
     tMonth.setBold();
+    tMonth.setFontStyle("font-face: Verdana, Arial, sans-serif; font-weight: bold; color: #FFFFFF; font-size: 10pt; text-decoration: none;");
     //Link right = new Link(new Image("/pics/calendar/calright.gif"));
     Link right = new Link(">");
+      right.setFontColor(headerTextColor);
+      right.setFontSize(2);
+      right.setBold();
       right.setFontStyle("font-face: Verdana, Arial, sans-serif; font-weight: bold; color: #FFFFFF; font-size: 11pt; text-decoration: none;");
     this.addNextMonthPrm(right,stamp);
     //Link left = new Link(new Image("/pics/calendar/calleft.gif"));
     Link left = new Link("<");
+      left.setFontColor(headerTextColor);
+      left.setFontSize(2);
+      left.setBold();
       left.setFontStyle("font-face: Verdana, Arial, sans-serif; font-weight: bold; color: #FFFFFF; font-size: 11pt; text-decoration: none;");
     this.addLastMonthPrm(left,stamp);
 
@@ -117,9 +129,8 @@ public SmallCalendar(idegaTimestamp timestamp) {
     t.setFontSize(1);
     if (this.showNameOfDays) {
       for( int a = 1; a < 8; a++ ){
-        t = new Text(cal.getShortNameOfDay(a,iwc).substring(0,1).toUpperCase());
-        t.setFontColor(textColor);
-        t.setFontSize(1);
+        t = new Text(cal.getNameOfDay(a,iwc).substring(0,1).toUpperCase());
+        t.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+textColor+"; font-size: 8pt; text-decoration: none;");
         T.setAlignment(a,1,"center");
         T.add(t,a,1);
         T.setRowColor(1,headerColor);
@@ -135,16 +146,34 @@ public SmallCalendar(idegaTimestamp timestamp) {
     int month = stamp.getMonth();
     int year = stamp.getYear();
 
+    if ( dayColors != null ) {
+      Enumeration enum = dayColors.keys();
+      while (enum.hasMoreElements()) {
+        String dayString = (String) enum.nextElement();
+        if ( dayString != null ) {
+          if ( dayString.substring(0,7).equalsIgnoreCase(getDateString(year,month,1).substring(0,7)) ) {
+            idegaTimestamp newStamp = new idegaTimestamp(dayString);
+            int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDate());
+            T.setColor(XY[0],XY[1],getDayColor(dayString));
+          }
+        }
+      }
+    }
+
     for (int i = 1; i < daynr; i++) {
       T.setColor(i,ypos,inactiveCellColor);
     }
 
     Link theLink;
+    String dayColor = null;
 
     while(n <= daycount){
       t = new Text(String.valueOf(n));
-      t.setFontColor(textColor);
-      t.setFontSize(1);
+      dayColor = textColor;
+      if ( getDayFontColor(getDateString(year,month,n)) != null ) {
+        dayColor = getDayFontColor(getDateString(year,month,n));
+      }
+      t.setFontStyle("font-face: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 8pt; text-decoration: none;");
       T.setAlignment(xpos,ypos,"center");
       if ((n == today.getDay() && shadow) && (!todayColor.equals("")))
         T.setColor(xpos,ypos,todayColor);
@@ -177,7 +206,7 @@ public SmallCalendar(idegaTimestamp timestamp) {
 
   public void initialize() {
       today = new idegaTimestamp();
-      T.setCellpadding(1);
+      T.setCellpadding(2);
       T.setCellspacing(0);
   }
 
@@ -215,6 +244,34 @@ public SmallCalendar(idegaTimestamp timestamp) {
       return new idegaTimestamp(1,12,idts.getYear()-1);
     else
       return new idegaTimestamp(1,idts.getMonth()-1,idts.getYear() );
+  }
+
+  public String getDateString(int year,int month,int day) {
+    return Integer.toString(year)+"-"+TextSoap.addZero(month)+"-"+TextSoap.addZero(day);
+  }
+
+  public String getDayColor(String dateString) {
+    if ( dayColors != null ) {
+      if ( dayColors.get(dateString) != null ) {
+        return (String) dayColors.get(dateString);
+      }
+      else {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  public String getDayFontColor(String dateString) {
+    if ( dayFontColors != null ) {
+      if ( dayFontColors.get(dateString) != null ) {
+        return (String) dayFontColors.get(dateString);
+      }
+      else {
+        return null;
+      }
+    }
+    return null;
   }
 
   public void setTextColor(String color) {
@@ -267,22 +324,22 @@ public SmallCalendar(idegaTimestamp timestamp) {
     }
   }
 
+  public void setDayFontColor(int year, int month, int day, String color) {
+    if (dayFontColors ==  null) {
+      dayFontColors = new Hashtable();
+    }
+    dayFontColors.put(getDateString(year,month,day),color);
+  }
+
+  public void setDayFontColor(idegaTimestamp timestamp, String color) {
+    setDayFontColor(timestamp.getYear() ,timestamp.getMonth(),timestamp.getDay() ,color);
+  }
+
   public void setDayColor(int year, int month, int day, String color) {
-      boolean perform = false;
-      if (stamp != null) {
-          if ((stamp.getMonth() == month) && (stamp.getYear() == year)) {
-              perform = true;
-          }
-      }else {
-          perform = true;
-      }
-
-      if (perform) {
-          int[] xy = this.getXYPos(year, month, day);
-
-          T.setColor(xy[0],xy[1],color);
-
-      }
+    if (dayColors ==  null) {
+      dayColors = new Hashtable();
+    }
+    dayColors.put(getDateString(year,month,day),color);
   }
 
   public void setDayColor(idegaTimestamp timestamp, String color) {
@@ -352,6 +409,9 @@ public SmallCalendar(idegaTimestamp timestamp) {
       }
       if (this.T != null) {
         obj.T = (Table)T.clone();
+      }
+      if (this.dayColors != null) {
+        obj.dayColors = (Hashtable)dayColors.clone();
       }
 
       obj.cal = this.cal;
