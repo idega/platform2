@@ -56,7 +56,13 @@ private String gender;
   public void main(ModuleInfo modinfo) throws SQLException {
 
     if ( gender.equalsIgnoreCase("b") ) {
-      gender = "m' and gender = 'f";
+      gender = "";
+    }
+    if ( gender.equalsIgnoreCase("f") ) {
+      gender = "and gender='F' ";
+    }
+    if ( gender.equalsIgnoreCase("m") ) {
+      gender = "and gender='M' ";
     }
 
     tournament = new Tournament(tournament_id);
@@ -203,7 +209,7 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      String queryString = "select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by strokes_with_handicap,first_name,last_name,middle_name";
+      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by strokes_with_handicap,first_name,last_name,middle_name";
       DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
@@ -286,7 +292,8 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll("select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by strokes_without_handicap,first_name,last_name,middle_name");
+      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by strokes_without_handicap,first_name,last_name,middle_name";
+      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
@@ -369,7 +376,8 @@ private String gender;
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll("select * from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id and gender='"+gender+"' order by total_points desc,first_name,last_name,middle_name");
+      String queryString = "select display_scores.* from display_scores,member where tournament_id="+tournament_id+" and display_scores.member_id = member.member_id "+gender+"order by total_points desc,first_name,last_name,middle_name";
+      DisplayScores[] strokesScores = (DisplayScores[]) (new DisplayScores()).findAll(queryString);
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
