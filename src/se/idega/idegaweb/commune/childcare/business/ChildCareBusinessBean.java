@@ -337,9 +337,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						message.store();
 					}
 				}
-			} catch (NoCustodianFound ncf) {
 			}
-		} catch (RemoteException re) {
+			catch (NoCustodianFound ncf) {
+				ncf.printStackTrace();
+			}
+		}
+		catch (RemoteException re) {
+			re.printStackTrace();
 		}
 	}
 
@@ -1493,7 +1497,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public Map getProviderAreaMap(Collection schoolAreas, Locale locale) throws RemoteException {
+	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString) throws RemoteException {
 		Map areaMap = new HashMap();
 		if (schoolAreas != null) {
 			List areas = new ArrayList(schoolAreas);
@@ -1503,6 +1507,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator iter = areas.iterator();
 			while (iter.hasNext()) {
 				Map providerMap = new HashMap();
+				providerMap.put("-1", emptyString);
 				SchoolArea area = (SchoolArea) iter.next();
 				List providers = new ArrayList(getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer)area.getPrimaryKey()).intValue(), schoolTypes));
 				Collections.sort(providers, new SchoolComparator(locale));

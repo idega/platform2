@@ -150,7 +150,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 			String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, getSession().getCheckID(), getSession().getUserID(), subject, message, false);
+			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, getSession().getCheckID(), getSession().getChildID(), subject, message, false);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -186,7 +186,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		int areaID = -1;
 		for (int i = 1; i < 6; i++) {
 			try {
-				application = getBusiness().getApplication(getSession().getUserID(), i);
+				application = getBusiness().getApplication(getSession().getChildID(), i);
 				if (application != null)
 					areaID = application.getProvider().getSchoolAreaId();
 			}
@@ -234,7 +234,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		table.add(getSmallText(child.getNameLastFirst(true)), 3, 1);
 		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
 		table.add(getSmallText(personalID), 3, 2);
-
+		
 		try {
 			Address address = getUserBusiness(iwc).getUsersMainAddress(child);
 			if (address != null)
@@ -307,7 +307,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			if (areas == null)
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
-				providerMap = getBusiness().getProviderAreaMap(areas, locale);
+				providerMap = getBusiness().getProviderAreaMap(areas, locale, localize("child_care.select_provider","Select provider..."));
 				
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();

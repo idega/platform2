@@ -81,7 +81,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void updatePrognosis(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void sendMessageToProvider(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, String subject, String message, com.idega.user.data.User sender) throws java.rmi.RemoteException;
  public java.util.Collection getInactiveApplicationsByProvider(int providerID) throws java.rmi.RemoteException;
- public java.util.Map getProviderAreaMap(java.util.Collection schoolAreas, java.util.Locale locale) throws java.rmi.RemoteException;
+ public java.util.Map getProviderAreaMap(java.util.Collection schoolAreas, java.util.Locale locale, String emptyString) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication(int childID, int choiceNumber) throws java.rmi.RemoteException;
 
 }
