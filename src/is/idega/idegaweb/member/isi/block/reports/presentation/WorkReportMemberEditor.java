@@ -267,7 +267,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     // create map: member as key, leagues as value 
     memberLeaguesMap = new HashMap();
-    leagueCountMap = new HashMap();
     Iterator membersIterator = members.iterator();
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
@@ -344,14 +343,19 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
+    TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
+    String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social securirty number");
+    socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     
     // define path short keys and map corresponding converters
+    // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
-      PERSONAL_ID, textEditorConverter,
+      NAME, null,
+      PERSONAL_ID, socialSecurityNumberEditorConverter,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
     EntityBrowser browser = new EntityBrowser();
@@ -375,7 +379,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       String column = (String) columns[i];
       EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];
       browser.setMandatoryColumn(i, column);
-      browser.setEntityToPresentationConverter(column, converter);
+      if (converter != null) {
+        browser.setEntityToPresentationConverter(column, converter);
+      }
     }
     // add more columns
     Iterator iterator = leagueCountMap.keySet().iterator();
