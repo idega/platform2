@@ -25,6 +25,7 @@ private boolean isSetAsAlphabetical;
 private boolean isSetAsEmail;
 private boolean isSetAsNotEmpty;
 private boolean isSetAsIcelandicSSNumber;
+private boolean isSetAsCreditCardNumber;
 
 
 private String integersErrorMessage;
@@ -33,6 +34,7 @@ private String alphabetErrorMessage;
 private String emailErrorMessage;
 private String notEmptyErrorMessage;
 private String icelandicSSNumberErrorMessage;
+private String notCreditCardErrorMessage;
 
 private static final String untitled="untitled";
 
@@ -105,6 +107,15 @@ public void setAsNotEmpty(){
 public void setAsNotEmpty(String errorMessage){
 	isSetAsNotEmpty=true;
 	notEmptyErrorMessage=errorMessage;
+}
+
+public void setAsCredidCardNumber(){
+	this.setAsCredidCardNumber("Please enter a valid creditcard number in "+this.getName());
+}
+
+public void setAsCredidCardNumber(String errorMessage){
+	isSetAsCreditCardNumber=true;
+	notCreditCardErrorMessage=errorMessage;
 }
 
 public void setAsEmail(String errorMessage){
@@ -191,8 +202,16 @@ public void _main(ModuleInfo modinfo)throws Exception{
 			getParentForm().setOnSubmit("return checkSubmit(this)");
 			setCheckSubmit();
 			getScript().addToFunction("checkSubmit","if (warnIfNotIcelandicSSNumber (inputs."+getName()+",'"+icelandicSSNumberErrorMessage+"') == false ){\nreturn false;\n}\n");
-			getScript().addFunction("warnIfNotIcelandicSSNumber","function warnIfNotIcelandicSSNumber (inputbox,warnMsg) {\n  \n   if (inputbox.value.length == 10){ \n       sum = inputbox.value.charAt(0)*3 + inputbox.value.charAt(1)*2 + inputbox.value.charAt(2)*7 + inputbox.value.charAt(3)*6 + inputbox.value.charAt(4)*5 + inputbox.value.charAt(5)*4 + inputbox.value.charAt(6)*3 + inputbox.value.charAt(7)*2; \n      if ((inputbox.value.charAt(8) == 11 - (sum % 11)) && ((inputbox.value.charAt(9) == 0) || (inputbox.value.charAt(9) == 8) || (inputbox.value.charAt(9) == 9))){	\n        return true; \n     }\n   }   \n     alert ( warnMsg );\n   return false;\n \n }");
+			getScript().addFunction("warnIfNotIcelandicSSNumber","function warnIfNotIcelandicSSNumber (inputbox,warnMsg) {\n  \n   if (inputbox.value.length == 10){ \n       sum = inputbox.value.charAt(0)*3 + inputbox.value.charAt(1)*2 + inputbox.value.charAt(2)*7 + inputbox.value.charAt(3)*6 + inputbox.value.charAt(4)*5 + inputbox.value.charAt(5)*4 + inputbox.value.charAt(6)*3 + inputbox.value.charAt(7)*2; \n      if ((inputbox.value.charAt(8) == 11 - (sum % 11)) && ((inputbox.value.charAt(9) == 0) || (inputbox.value.charAt(9) == 8) || (inputbox.value.charAt(9) == 9))){	\n        return true; \n     }\n   } \n else if (inputbox.value.length == 0){\n return true; \n }   \n     alert ( warnMsg );\n   return false;\n \n }");
 		}
+                if (isSetAsCreditCardNumber){
+                        getParentForm().setOnSubmit("return checkSubmit(this)");
+			setCheckSubmit();
+			getScript().addToFunction("checkSubmit","if (warnIfNotCreditCardNumber (inputs."+getName()+",'"+notCreditCardErrorMessage+"') == false ){\nreturn false;\n}\n");
+			getScript().addFunction("warnIfNotCreditCardNumber","function warnIfNotCreditCardNumber (inputbox,warnMsg) {\n  \n   if (inputbox.value.length == 16){ \n    return true; \n   } \n else if (inputbox.value.length == 0){\n return true; \n }   \n     alert ( warnMsg );\n   return false;\n \n }");
+                        //not fully implemented such as maybe a checksum check could be added??
+
+                }
 		else if(isSetAsFloat){
 			getParentForm().setOnSubmit("return checkSubmit(this)");
 			//Not implemented yet
