@@ -5,6 +5,7 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.Image;
+import com.idega.jmodule.object.textObject.Text;
 
 /**
  * Title: FrameList
@@ -38,7 +39,30 @@ private String style = "";
       listTable.setHeight("100%");
   }
 
-  public void addToMenu(Class classToAdd, Image displayImage, String displayString, String target) {
+  public void addToList(ModuleObject obj, Image displayImage) {
+    int rows = listTable.getRows();
+      if ( !listTable.isEmpty(1,rows) ) {
+        rows++;
+      }
+
+    if ( displayImage != null ) {
+      listTable.add(displayImage,1,rows);
+      listTable.add(obj,2,rows);
+    }
+    else {
+      listTable.add(obj,1,rows);
+    }
+  }
+
+  public void addToList(ModuleObject obj) {
+    addToList(obj,null);
+  }
+
+  public void addToList(String displayString) {
+    addToList(new Text(displayString),null);
+  }
+
+  public void addToList(Class classToAdd, Image displayImage, String displayString, String target) {
     Link link = new Link(displayString,classToAdd);
       link.setTarget(target);
       link.setFontStyle(style);
@@ -57,24 +81,24 @@ private String style = "";
     }
   }
 
-  public void addToMenu(Class classToAdd, Image displayImage, String target) {
-    addToMenu(classToAdd,displayImage,classToAdd.getName(),target);
+  public void addToList(Class classToAdd, Image displayImage, String target) {
+    addToList(classToAdd,displayImage,classToAdd.getName(),target);
   }
 
-  public void addToMenu(Class classToAdd, Image displayImage) {
-    addToMenu(classToAdd,displayImage,classToAdd.getName(),"_self");
+  public void addToList(Class classToAdd, Image displayImage) {
+    addToList(classToAdd,displayImage,classToAdd.getName(),"_self");
   }
 
-  public void addToMenu(Class classToAdd, String displayString, String target) {
-    addToMenu(classToAdd,null,displayString,target);
+  public void addToList(Class classToAdd, String displayString, String target) {
+    addToList(classToAdd,null,displayString,target);
   }
 
-  public void addToMenu(Class classToAdd, String displayString) {
-    addToMenu(classToAdd,displayString,"_self");
+  public void addToList(Class classToAdd, String displayString) {
+    addToList(classToAdd,displayString,"_self");
   }
 
-  public void addToMenu(Class classToAdd) {
-    addToMenu(classToAdd,classToAdd.getName().substring(classToAdd.getName().lastIndexOf(".")+1),"_self");
+  public void addToList(Class classToAdd) {
+    addToList(classToAdd,classToAdd.getName().substring(classToAdd.getName().lastIndexOf(".")+1),"_self");
   }
 
   public void setLinkStyle(String style) {
