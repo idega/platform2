@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.block.family.business.NoChildrenFound;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -226,12 +225,11 @@ public class CitizenChildren extends CommuneBlock {
 	private Collection getChilds(IWContext iwc, User user) {
 		/** @todo familymethods from usersystem */
 		try {
-			return getFamilyLogic(iwc).getChildrenInCustodyOf(user);
+			return getUserBusiness(iwc).getChildrenForUser(user);
 		}
 		catch (RemoteException e) {
 		}
-		catch (NoChildrenFound e) {
-		}
+		
 		return new Vector();
 	}
 	

@@ -3,8 +3,6 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import is.idega.block.family.business.NoChildrenFound;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -42,11 +40,9 @@ public class ChildCareChildren extends ChildCareBlock {
 			
 			Collection children = null;
 			try {
-				children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenFor(iwc.getCurrentUser());
+				children = getUserBusiness(iwc).getChildrenForUser(iwc.getCurrentUser());
 			}
-			catch (NoChildrenFound e) {
-				children = null;
-			}
+			
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
