@@ -14,6 +14,7 @@ import com.idega.jmodule.object.interfaceobject.FloatInput;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.Image;
 import com.idega.projects.golf.GolfField;
+import com.idega.data.GenericEntity;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.entity.TournamentDay;
 import com.idega.projects.golf.entity.Tournament;
@@ -53,6 +54,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   private idegaTimestamp currentDay;
   private String currentField;
   private String currentUnion;
+  private String MemberID;
   private StartingtimeFieldConfig fieldInfo;
   private DecimalFormat hadycapFormat;
 
@@ -501,12 +503,12 @@ public class AdminRegisterTime extends ModuleObjectContainer {
             Member tempMemb = (com.idega.projects.golf.entity.Member)Member.getMember(sentNames[i]);
             if(tempMemb != null){
 //              Member tempMemb = (Member)lMember.get(0);
-              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()), tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), null, null);
+              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()), MemberID, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), null, null);
             }else{
-              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+              business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
             }
           }else{
-            business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
+            business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(), null, null);
           }
         }
       }
@@ -538,7 +540,8 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   public void main(ModuleInfo modinfo) throws Exception {
     String date = modinfo.getParameter("date");
     currentField = modinfo.getParameter("field_id");
-    currentUnion = modinfo.getParameter("union");
+    currentUnion = modinfo.getParameter("union_id");
+    MemberID= modinfo.getParameter("member_id");
 
     if(date == null){
       Object tempObj = modinfo.getSessionAttribute("date");
@@ -570,7 +573,15 @@ public class AdminRegisterTime extends ModuleObjectContainer {
       myForm.maintainParameter("union_id");
     }
 
-
+    if(MemberID == null){
+      Object tempObj = com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo);
+      if(tempObj != null){
+        MemberID = Integer.toString(((GenericEntity)tempObj).getID());
+        myForm.add(new HiddenInput("member_id",MemberID));
+      }
+    }else{
+      myForm.maintainParameter("member_id");
+    }
 
     boolean keepOn = true;
 

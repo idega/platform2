@@ -107,7 +107,8 @@ public class StartService{
     insert.insert();
   }
 
-  public synchronized void setStartingtime(int group_num, idegaTimestamp date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
+
+  public synchronized void setStartingtime(int group_num, idegaTimestamp date, String field_id, String member_id, String owner_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
     Startingtime insert = new Startingtime();
 
     if(card != null){
@@ -141,6 +142,9 @@ public class StartService{
       insert.setMemberID(new Integer(member_id));
     }
 
+    if(member_id != null){
+      insert.setOwnerID(new Integer(owner_id));
+    }
 //    if(date != null){
       insert.setPlayerName(player_name);
 //    }
@@ -151,6 +155,9 @@ public class StartService{
     insert.insert();
   }
 
+  public synchronized void setStartingtime(int group_num, idegaTimestamp date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
+     setStartingtime(group_num, date, field_id, member_id, null, player_name, handicap, union, card, card_no );
+  }
 
   public synchronized void setStartingtime(int group_num, String date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
      setStartingtime(group_num, new idegaTimestamp(date), field_id, member_id, player_name, handicap, union, card, card_no );
@@ -158,36 +165,26 @@ public class StartService{
 
 
 
-  public synchronized int entriesInGroup( int group_num, String field_id, String date )throws SQLException{
-//    System.out.println("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'");
-    int count = -1;
-	try{
-
-		if (startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'") == null)
-      	{
-			System.out.println("Skilar núll");
-			return 0;
-		}
-    	else{
-     		Startingtime[] temp = (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'");
-			count = temp.length;
-			System.out.println(count);
-		}
-	 }
-	 catch(SQLException e){
-	 	e.printStackTrace();
-		System.out.print("SQLException: " + e.getMessage());
-    	System.out.print("SQLState:     " + e.getSQLState());
-    	System.out.print("VendorError:  " + e.getErrorCode());
-	 }
-	 catch(Throwable th){
-	 	System.err.println("Error in StartService.entriesInGroup: "+th.getMessage());
-		th.printStackTrace(System.err);
-	 }
-	 return count;
+  public int countEntriesInGroup( int group_num, String field_id, idegaTimestamp date )throws SQLException{
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
   }
 
+  public int entriesInGroup( int group_num, String field_id, String date )throws SQLException{
+    return countEntriesInGroup( group_num, field_id, new idegaTimestamp(date) );
+  }
 
+  public int countOwnersEntries( int owner_id, String field_id, idegaTimestamp date )throws SQLException{
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE owner_id = '" + owner_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
+  }
+
+  public Startingtime getStartingtime(int member_id, idegaTimestamp date )throws SQLException{
+    GenericEntity[] time = this.startTime.findAllByColumn("member_id",Integer.toString(member_id),"startingtime_date",date.toString());
+    if(time != null && time.length > 0){
+      return (Startingtime)time[0];
+    }else{
+      return null;
+    }
+  }
 
 
    //  search.jsp

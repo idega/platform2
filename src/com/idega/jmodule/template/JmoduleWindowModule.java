@@ -10,6 +10,9 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
+import com.idega.projects.golf.templates.page.JmoduleWindowModuleWindow;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 public abstract class JmoduleWindowModule extends JSPModule implements JspPage{
@@ -20,174 +23,127 @@ public String URI = null;
 public String header_color ="#F2BC00";
 public String color = "#F2BCFF";
 
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+
 private MenuBar Menu;
 public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
-	public void setWindow(Window window){
-		setPage(window);
+	public void setWindow(JmoduleWindowModuleWindow window){
+          setPage(window);
 	}
 
 
 	public void initializePage(){
+          HttpServletRequest request = getRequest();
+            if (request != null) {
+              URI = request.getRequestURI();
+           }
 
-	HttpServletRequest request = getRequest();
-          if (request != null) {
-	    URI = request.getRequestURI();
-         }
-
-          setPage(new Window());
-	  Page jmodule = getPage();
-/*
-          Menu = new MenuBar();
-          MenuBar();
-          jmodule.add(Menu);
-*/
-	  jmodule.setMarginHeight(0);
-	  jmodule.setMarginWidth(0);
-	  jmodule.setLeftMargin(0);
-	  jmodule.setTopMargin(0);
-	  jmodule.setAlinkColor("black");
-	  jmodule.setVlinkColor("black");
-	  jmodule.setLinkColor("black");
-	  jmodule.add(gluggi());
-
-
-
-
+            setPage(new JmoduleWindowModuleWindow());
+  /*
+            Menu = new MenuBar();
+            MenuBar();
+            getPage().add(Menu);
+  */
 	}
 
 
 
 	public Window getWindow(){
-		return (Window) getPage();
-	}
-
-	public Table gluggi() {
-	  tafla = new Table(3,2);
-	  tafla.setWidth("100%");
-	  tafla.setHeight("100%");
-	  tafla.setHeight(1,1,"58");
-//          tafla.setWidth(1,1,"158");
-//          tafla.setWidth(3,1,"154");
-	  tafla.setBorder(0);
-	  //tafla.setAlignment("center");
-	  tafla.setCellpadding(0);
-	  tafla.setCellspacing(0);
-//	  tafla.mergeCells(1,1,2,1);
-	  tafla.mergeCells(1,2,3,2);
-//	  tafla.setColor(1,1,"#F2BC00");
-//          tafla.setVerticalAlignment(1,2,"middle");
-          tafla.setVerticalAlignment(1,2,"top");
-          Image topLeft = new Image("/pics/jmodules/images/golf/idegaweb_standard.gif");
-            topLeft.setHeight(58);
-            topLeft.setWidth(158);
-          Image topTiler = new Image("/pics/jmodules/images/golf/idegawebTiler.gif");
-          Image topRight = new Image("/pics/jmodules/images/golf/idegaweb_Golf.gif");
-            topRight.setHeight(58);
-            topRight.setWidth(154);
-            topRight.setAttribute("align","right");
-          Image back = new Image("/pics/jmodules/images/golf/idegaweb_Background.gif");
-
-	  tafla.add(topLeft,1,1);
-	  tafla.setBackgroundImage(1,1,topTiler);
-	  tafla.setBackgroundImage(2,1,topTiler);
-	  tafla.setBackgroundImage(3,1,topTiler);
-	  tafla.add(topRight,3,1);
-
-          tafla.setBackgroundImage(1,2,back);
-//	  tafla.add(new BackButton(new Image("/pics/jmodules/images/jmodules_main_11.gif")),2,2);
-//	  Link linkLoka = new Link(new Image("/pics/jmodules/images/jmodules_main_12.gif","Loka"),URI);
-//          linkLoka.addParameter("action","exit");
-
-//          tafla.add(linkLoka,2,2);
-
-//	  tafla.setColor(1,2,"#444444");
-//	  tafla.setColor(2,2,"#444444");
-//	  tafla.setColor(1,2,"#FFF6D5");
-
-	return tafla;
+          return (Window) getPage();
 	}
 
 
 	public void add(ModuleObject objectToAdd){
-			tafla.add(objectToAdd,1,2);
+          System.err.println("-> " + objectToAdd);
+          ((JmoduleWindowModuleWindow)getPage()).add(objectToAdd);
 	}
 
 
-        private void MenuBar(){
-
-          Menu.setPosition(0,39);
-          Menu.setSizes(1,1,0);
-          Menu.setColors("#444444", "#FFFFFF", "#BDBDBD" , "#444444" , "#F2BC00", "#444444" , "#BDBDBD" , "#F2BC00", "#444444");
-          Menu.setFonts("Arial", "Helvetica" , "sans-serif", "normal", "normal", 8,"Arial", "Helvetica", "sans-serif", "normal", "normal", 8);
-          Menu.scaleNavBar();
-
-          Menu.addMenu("file", 80, 120);
-          Menu.addMenu("addons", 80, 120);
-          Menu.addMenu("tools", 80, 120);
-          Menu.addMenu("options", 80, 120);
-          Menu.addMenu("help", 80, 120);
-
-          Menu.addItem("file", MenuAlignment+"File");
-          Menu.addItem("addons", MenuAlignment+"Add-ons");
-          Menu.addItem("tools", MenuAlignment+"Tools");
-          Menu.addItem("options", MenuAlignment+"Options");
-          Menu.addItem("help", MenuAlignment+"Help");
-
-          this.addToOptionsMenu("Themes", "");
-          this.addToOptionsMenu("Language","");
-          this.addToHelpMenu("Help", "");
-
-        }
 
 
         public void addToFileMenu(String ItemName, String Url){
-          Menu.addItem("file", MenuAlignment+ItemName, Url);
+          ((JmoduleWindowModuleWindow)getWindow()).addToFileMenu(ItemName, Url);
         }
 
 
         public void addToAddOnsMenu(String ItemName, String Url){
-          Menu.addItem("addons", MenuAlignment+ItemName, Url);
+          ((JmoduleWindowModuleWindow)getWindow()).addToAddOnsMenu(ItemName, Url);
         }
 
         public void addToToolsMenu(String ItemName, String Url){
-          Menu.addItem("tools", MenuAlignment+ItemName, Url);
+          ((JmoduleWindowModuleWindow)getWindow()).addToToolsMenu(ItemName, Url);
         }
 
         public void addToOptionsMenu(String ItemName, String Url){
-          Menu.addItem("options", MenuAlignment+ItemName, Url);
+          ((JmoduleWindowModuleWindow)getWindow()).addToOptionsMenu(ItemName, Url);
         }
 
         public void addToHelpMenu(String ItemName, String Url){
-          Menu.addItem("help", MenuAlignment+ItemName, Url);
+          ((JmoduleWindowModuleWindow)getWindow()).addToHelpMenu(ItemName, Url);
         }
 
 
         public MenuBar getMenu(){
-          return Menu;
+          return ((JmoduleWindowModuleWindow)getWindow()).getMenu();
         }
 
         public boolean isAdmin(ModuleInfo modinfo)throws Exception{
           return com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
         }
 
+  public boolean isDeveloper() {
+    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+  }
+
+  public boolean isClubAdmin() {
+    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+  }
+
+  public boolean isClubWorker() {
+    boolean ret;
+
+    try {
+      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+    }
+    catch(java.sql.SQLException e) {
+      e.printStackTrace();
+      ret = false;
+    }
+
+    return(ret);
+  }
+
+  public boolean isUser() {
+    return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+  }
 
 
+  public IWResourceBundle getResourceBundle(){
+     return getResourceBundle(getModuleInfo());
+  }
+
+  public IWBundle getBundle(){
+    return getBundle(getModuleInfo());
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
 
+  public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
+    modinfo.removeSessionAttribute("golf_union_id");
+  }
 
+  public String getUnionID(ModuleInfo modinfo){
+    return (String)modinfo.getSessionAttribute("golf_union_id");
+  }
 
-
-
-
-
-
-
-
-
-
-
+  public void setUnionID(ModuleInfo modinfo, String union_id){
+    modinfo.setSessionAttribute("golf_union_id", union_id);
+  }
 
 
 

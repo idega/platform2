@@ -33,6 +33,7 @@ public class Startingtime extends GolfEntity{
     addAttribute("card_name","Nafn korts",true,true,"java.lang.String");
     addAttribute("card_num","Kortanumer",true,true,"java.lang.String");
     addAttribute("grup_num","Hopnumer",true,true,"java.lang.Integer");
+    addAttribute("owner_id","Numer eiganda",true,true,"java.lang.Integer");
   }
 
   public String getEntityName(){
@@ -42,6 +43,7 @@ public class Startingtime extends GolfEntity{
   public void setDefaultValues(){
     this.setHandicap(Float.parseFloat("-1.0"));
     this.setMemberID(1);
+    this.setOwnerID(1);
   }
 
 
@@ -139,14 +141,26 @@ public class Startingtime extends GolfEntity{
     setColumn("grup_num",group_num);
   }
 
+
+  public int getOwnerID(){
+    return getIntColumnValue("owner_id");
+  }
+
+  public void setOwnerID( Integer group_num){
+    setColumn("owner_id",group_num);
+  }
+  public void setOwnerID( int owner_id){
+    setColumn("owner_id",owner_id);
+  }
+
+
   public Member getMember()throws SQLException{
   	Member member = null;
-	try
-	{
-		member = new Member(getMemberID());
+	try{
+          member = new Member(getMemberID());
 	}
-	catch(SQLException e)
-	{}
+	catch(SQLException e){
+        }
 	return member;
   }
 
