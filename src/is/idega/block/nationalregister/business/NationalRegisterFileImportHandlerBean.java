@@ -29,6 +29,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.user.util.Converter;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
@@ -86,6 +87,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String PROPERTY_NAME_RELATION_ONLY = "NAT_REG_RELATION_ONLY";
 	private final static String PROPERTY_NAME_POSTAL_CODE_FIX = "NAT_REG_POSTAL_CODE_FIX";
 	private final static String PROPERTY_NAME_GROUP_ID_FIX = "NAT_REG_GROUP_ID_FIX";
+	private final static String FATE_DECEASED = "LÉST";
+	private final static String FATE_CHANGE_PERSONAL_ID = "BRFD";
+	private final static String FATE_REMOVED = "BRFL";
+	private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean relationOnly = false;
 	private boolean postalCodeFix = false;
 	private Group citizenGroup = null;
@@ -592,13 +597,40 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (ssn == null || ssn.equals(""))
 			return false;
 
-		
-		
-		//			//initialize business beans and data homes           
-		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 
+		//initialize business beans and data homes           
+		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
+		UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+
+		if(FATE_DECEASED.equalsIgnoreCase(fate)){
+			//TODO (JJ) Handle the dead
+		}
+		
+		if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
+			natReg.updateUserPersonalID(ssn,newSsnOrName);
+			return true;
+		}
+		
+		if (FATE_REMOVED.equalsIgnoreCase(fate)) {
+			try {
+				User user = uBiz.getUser(ssn);
+				User performer = Converter.convertToNewUser(
+						getIWApplicationContext().getIWMainApplication().getAccessController().getAdministratorUser());
+				uBiz.deleteUser(user,performer);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		
+		if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
+			natReg.updateUserOldID(oldId,ssn);
+			return true;
+		}
+		
 		if (postalCodeFix || relationOnly) {
-			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			try {
 //				User user = uBiz.getUser(ssn);
 				if (postalCodeFix) {

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
@@ -198,6 +199,22 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		}
 
 		return true;
+	}
+	
+	public void updateUserPersonalID(String oldPersonalID, String newPersonalID) throws IBOLookupException{
+		UserBusiness userBiz = (UserBusiness) getServiceInstance(UserBusiness.class);	
+		NationalRegister reg = getEntryBySSN(oldPersonalID);
+
+		reg.setSSN(newPersonalID);
+		reg.store();
+	}
+	
+	public void updateUserOldID(String oldID, String personalID) throws IBOLookupException{
+		UserBusiness userBiz = (UserBusiness) getServiceInstance(UserBusiness.class);	
+		NationalRegister reg = getEntryBySSN(personalID);
+
+		reg.setOldId(oldID);
+		reg.store();
 	}
 	
 	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po) throws RemoteException, CreateException {
