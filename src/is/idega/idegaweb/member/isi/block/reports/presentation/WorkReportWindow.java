@@ -102,7 +102,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				table.add(new WorkReportSelector(),2,1);	
 			}
 			else if( action.equals(ACTION_EDIT_BOARD) ){
-				table.add(new WorkReportSelector(),2,1);	
+				table.add(new WorkReportBoardMemberEditor(),2,1);	
 			}
 			else if( action.equals(ACTION_UPLOAD_REPORT) ){
 				table.add(new WorkReportSelector(),2,1);	
@@ -151,7 +151,10 @@ public class WorkReportWindow extends IWAdminWindow {
 		//B.3
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
 		//B.4
-		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
+    LinkContainer editBoardList = new LinkContainer();
+    editBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
+    editBoardList.addParameter(ACTION,ACTION_EDIT_BOARD);
+		editList.add(editBoardList);
 		
 		//B.5		
 		LinkContainer uploadReport = new LinkContainer();
