@@ -13,9 +13,9 @@ public class TourHomeImpl extends com.idega.data.IDOFactory implements TourHome
  }
 
 
-public java.util.Collection find(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1,java.lang.Object[] p2,java.lang.Object[] p3,java.lang.Object[] p4)throws javax.ejb.FinderException{
+public java.util.Collection find(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1,java.lang.Object[] p2,java.lang.Object[] p3,java.lang.Object[] p4, String p5)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((TourBMPBean)entity).ejbFind(p0,p1,p2,p3,p4);
+	java.util.Collection ids = ((TourBMPBean)entity).ejbFind(p0,p1,p2,p3,p4,p5);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

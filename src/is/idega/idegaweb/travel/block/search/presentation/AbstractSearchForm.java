@@ -129,6 +129,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	public static String PARAMETER_NEW_SEARCH = "asf_p_ns";
 	public static String PARAMETER_PAGE_NR = "asf_p_nr";
 	
+	public static String PARAMETER_SUPPLIER_NAME = "hs_suppn";
+	
 	private IWContext iwc;
 
 	protected String textFontStyle;

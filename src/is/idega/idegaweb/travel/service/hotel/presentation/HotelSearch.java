@@ -69,6 +69,7 @@ public class HotelSearch extends AbstractSearchForm {
 		String sHotelType[] = iwc.getParameterValues(PARAMETER_HOTEL_TYPE);
 		String sMinRating = iwc.getParameter(PARAMETER_MIN_RATING);
 		String sMaxRating = iwc.getParameter(PARAMETER_MAX_RATING);
+		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
 		
 		try {
 			Object[] roomTypeIds = null;
@@ -113,7 +114,7 @@ public class HotelSearch extends AbstractSearchForm {
 			
 			if (suppIds.length > 0) {
 //				coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
-				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodeIds, suppIds, min, max);
+				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodeIds, suppIds, min, max, supplierName);
 			}
 			
 			return coll;
@@ -162,6 +163,7 @@ public class HotelSearch extends AbstractSearchForm {
 		if (!defined) {
 			bf.addAreaCodeInput(null);
 		}
+		bf.addSupplierNameInput();
 		IWTimestamp now = IWTimestamp.RightNow();
 		
 		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);

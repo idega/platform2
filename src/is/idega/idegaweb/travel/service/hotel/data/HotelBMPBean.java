@@ -45,7 +45,7 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
-    addAttribute(getNumberOfUnitsColumnName(), "Fjöldi eininga", true, true, Integer.class);
+    addAttribute(getNumberOfUnitsColumnName(), "Fjï¿½ldi eininga", true, true, Integer.class);
     addAttribute(getColumnNameMaxPerUnit(), "Fjoldi a einingu", true, true, Integer.class);
     addAttribute(getColumnNameRoomTypeId(), "room type", true, true, Integer.class, "one-to-one", RoomType.class);
     addAttribute(getColumnNameRating(), "rating", true, true, Float.class);
@@ -140,17 +140,18 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
   /**
    * Used only for the wait period, will be removed later
    */
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
-		return ejbFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1);
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId, String supplierName) throws FinderException {
+		return ejbFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1, supplierName);
 	}  
   
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating, String supplierName) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
 		boolean hotelType = ( hotelTypeId != null && hotelTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
+		boolean name = (supplierName != null && !supplierName.equals(""));
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
@@ -264,6 +265,9 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 
 			if (maxRating > -1) {
 				sql.append(" AND h.").append(getColumnNameRating()).append(" <= ").append(maxRating);
+			}
+			if(name) {
+				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
 			}
 			//sql.append(" order by ").append();
 			

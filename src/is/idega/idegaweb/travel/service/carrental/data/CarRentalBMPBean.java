@@ -113,13 +113,14 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 		super.setPrimaryKey(obj);	
 	}
 
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] postalCodeId, Object[] supplierId) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] postalCodeId, Object[] supplierId, String supplierName) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		//boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
 		//boolean hotelType = ( hotelTypeId != null && hotelTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
+		boolean name = (supplierName != null && !supplierName.equals(""));
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
@@ -210,6 +211,9 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 				}
 				sql.append(")");
 			}
+			if(name) {
+				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
+			}
 
 			/*
 			if (roomType) {
@@ -250,7 +254,7 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 */
 			//sql.append(" order by ").append();
 			
-			//System.out.println(sql.toString());
+			System.out.println(sql.toString());
 			return this.idoFindPKsBySQL(sql.toString());
 		}catch (IDOLookupException e) {
 			return null;

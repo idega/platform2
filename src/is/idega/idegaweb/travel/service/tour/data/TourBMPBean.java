@@ -50,8 +50,8 @@ public class TourBMPBean extends GenericEntity implements Tour {
     addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
     addAttribute(getHotelPickupTimeColumnName(), "Hotel pick-up time", true, true, Timestamp.class);
     addAttribute(getTotalSeatsColumnName(), "Total seats", true, true, Integer.class);
-    addAttribute(getMinimumSeatsColumnName(), "Lágmark sæta", true, true, Integer.class);
-    addAttribute(getNumberOfDaysColumnName(), "Fjöldi daga", true, true, Integer.class);
+    addAttribute(getMinimumSeatsColumnName(), "Lï¿½gmark sï¿½ta", true, true, Integer.class);
+    addAttribute(getNumberOfDaysColumnName(), "Fjï¿½ldi daga", true, true, Integer.class);
     addAttribute(getLengthColumnName(), "Lengd", true, true, Float.class);
     addAttribute(getEstimatedSeatsUsedColumnName(), "estimated seats used", true, true, Integer.class);
     
@@ -161,12 +161,13 @@ public class TourBMPBean extends GenericEntity implements Tour {
   	}
   }
 
-	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Object[] postalCodeId, Object[] supplierId, String supplierName) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean tourType = (tourTypeId != null && tourTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
+		boolean name = (supplierName != null && !supplierName.equals(""));
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
@@ -272,10 +273,13 @@ public class TourBMPBean extends GenericEntity implements Tour {
 				}			
 				sql.append(") ");
 			}
+			if(name) {
+				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
+			}
 
 			//sql.append(" order by ").append();
 			
-			//System.out.println(sql.toString());
+			System.out.println(sql.toString());
 			return this.idoFindPKsBySQL(sql.toString());
 		}catch (IDOLookupException e) {
 			return null;

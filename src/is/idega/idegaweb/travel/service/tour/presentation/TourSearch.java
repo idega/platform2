@@ -62,6 +62,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 		if (!defined) {
 			bf.addAreaCodeInput(null);
 		}
+		bf.addSupplierNameInput();
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
@@ -112,6 +113,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 	protected Collection getResults() throws RemoteException, InvalidSearchException {
 		String sManySeats = iwc.getParameter(PARAMETER_MANY_SEATS);
 		String sTourType[] = iwc.getParameterValues(PARAMETER_TOUR_TYPE_ID);
+		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
 		
 		InvalidSearchException ie = null;
 		try {
@@ -156,7 +158,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 			Collection coll = new Vector();
 			
 			if (suppIds.length > 0) {
-				coll = tHome.find(null, null, tourTypeIds, postalCodeIds, suppIds);
+				coll = tHome.find(null, null, tourTypeIds, postalCodeIds, suppIds, supplierName);
 			}
 			
 			return coll;

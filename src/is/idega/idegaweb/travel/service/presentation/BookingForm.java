@@ -2124,7 +2124,11 @@ public abstract class BookingForm extends TravelManager{
 	public void addHiddenInput(String name, String value) {
 		formTable.add(new HiddenInput(name, value));
 	}
-	
+	public void addSupplierNameInput() {
+		TextInput suppName = new TextInput(AbstractSearchForm.PARAMETER_SUPPLIER_NAME);
+		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")}, new PresentationObject[] {suppName});
+	}
+
 	public void addAreaCodeInput(Product product) {
 		try {
 			DropdownMenu menu = getPostalCodeDropdown(iwrb);
@@ -2139,7 +2143,6 @@ public abstract class BookingForm extends TravelManager{
 			e.printStackTrace();
 		}		
 	}
-	
 	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb) throws RemoteException, FinderException {
 		if (staticPostalCode != null) {
 			return (DropdownMenu) staticPostalCode.clone();

@@ -61,6 +61,7 @@ public class CarRentalSearch extends AbstractSearchForm {
 		if (!defined) {
 			bf.addAreaCodeInput(null);
 		}
+		bf.addSupplierNameInput();
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		IWTimestamp tomorrow = new IWTimestamp(now);
@@ -83,6 +84,7 @@ public class CarRentalSearch extends AbstractSearchForm {
 	}
 
 	protected Collection getResults() throws RemoteException, InvalidSearchException {
+		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
 		try {
 			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
@@ -91,7 +93,7 @@ public class CarRentalSearch extends AbstractSearchForm {
 			Collection coll = new Vector();
 			if (suppIds.length > 0) {
 //			coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
-				coll = crHome.find(null, null, postalCodeIds, suppIds);
+				coll = crHome.find(null, null, postalCodeIds, suppIds, supplierName);
 			}
 			return coll;
 			//handleResults(coll);
