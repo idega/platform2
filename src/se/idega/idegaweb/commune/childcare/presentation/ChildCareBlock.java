@@ -12,6 +12,7 @@ import com.idega.presentation.ui.DropdownMenu;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
@@ -120,5 +121,36 @@ public abstract class ChildCareBlock extends CommuneBlock {
 			menu.setSelectedElement(groupID);
 		
 		return (DropdownMenu) getStyledInterface(menu);	
+	}
+	
+	protected String getStatusString(ChildCareApplication application) throws RemoteException {
+		String status = application.getStatus();
+		
+		if (status.equals(getBusiness().getCaseStatusCancelled().getStatus())) {
+			return localize("child_care.status_cancelled","Cancelled");
+		}
+		else if (status.equals(getBusiness().getCaseStatusContract().getStatus())) {
+			return localize("child_care.status_contract","Contract");
+		}
+		else if (status.equals(getBusiness().getCaseStatusDenied().getStatus())) {
+			return localize("child_care.status_rejected","Rejected");
+		}
+		else if (status.equals(getBusiness().getCaseStatusGranted().getStatus())) {
+			return localize("child_care.status_accepted","Accepted");
+		}
+		else if (status.equals(getBusiness().getCaseStatusInactive().getStatus())) {
+			return localize("child_care.status_inactive","Inactive");
+		}
+		else if (status.equals(getBusiness().getCaseStatusOpen().getStatus())) {
+			return localize("child_care.status_open","Open");
+		}
+		else if (status.equals(getBusiness().getCaseStatusPreliminary().getStatus())) {
+			return localize("child_care.status_parents_accept","Parents accept");
+		}
+		else if (status.equals(getBusiness().getCaseStatusReady().getStatus())) {
+			return localize("child_care.status_ready","Ready");
+		}
+		
+		return "";
 	}
 }

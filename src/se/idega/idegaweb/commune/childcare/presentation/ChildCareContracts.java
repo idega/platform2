@@ -96,7 +96,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 					table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 					if (application.getApplicationStatus() == getBusiness().getStatusReady())
-						table.add(getSmallText(localize("child_care.status_ready","Active")), column, row);
+						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 					else if (application.getApplicationStatus() == getBusiness().getStatusCancelled())
 						table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
 					column++;

@@ -224,7 +224,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 			else
 				table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
-			table.add(getText(getBusiness().getLocalizedCaseStatusDescription(application.getCaseStatus(), iwc.getCurrentLocale()), isCurrentProvider), column++, row);
+			table.add(getText(getStatusString(application), isCurrentProvider), column++, row);
 			if (phone != null)
 				table.add(getText(phone, isCurrentProvider), column, row);
 			column++;
