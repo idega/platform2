@@ -477,7 +477,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		try {
 			User child = application.getChild();
-			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName()};
+			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName() };
 
 			User appParent = application.getOwner();
 			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
@@ -1241,6 +1241,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (changeStatus) {
 				application.setApplicationStatus(getStatusContract());
 				changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
+				
+				String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
+				String body = getLocalizedString("child_care.contract_created_body", "Your child care contract for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
+				sendMessageToParents(application, subject, body);
 			}
 			else
 				application.store();
