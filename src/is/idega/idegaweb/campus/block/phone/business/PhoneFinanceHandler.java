@@ -225,7 +225,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 }
                 ape.setAccountEntryId(AE.getID());
                 ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-                ape.setStatus(ape.statusBilled);
+                ape.setStatus(AccountPhoneEntry.statusBilled);
                 ape.setRoundId(iRoundId);
                 ape.update();
               }
@@ -248,7 +248,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 phoneEntry.setPrice(-1*entry.getNetto());
                 phoneEntry.setRoundId(iRoundId);
                 phoneEntry.setAccountEntryId(entry.getID());
-                phoneEntry.setStatus(phoneEntry.statusBilled);
+                phoneEntry.setStatus(AccountPhoneEntry.statusBilled);
                 //phoneEntry.setPhonedStamp(new idegaTimestamp(maxstamp).getTimestamp());
                 phoneEntry.insert();
                 entry.update();
@@ -411,7 +411,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
     AE.setInfo(T.getInfo());
-    AE.setStatus(AE.statusCreated);
+    AE.setStatus(AccountEntry.statusCreated);
     AE.setCashierId(1);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
@@ -436,7 +436,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     AE.setRoundId(iRoundId);
     AE.setName(tkey.getName());
     AE.setInfo(tkey.getInfo());
-    AE.setStatus(AE.statusCreated);
+    AE.setStatus(AccountEntry.statusCreated);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
     return AE;
