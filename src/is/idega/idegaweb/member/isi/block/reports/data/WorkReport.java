@@ -13,6 +13,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public java.util.Collection getLeagues()throws com.idega.data.IDOException;
  public java.lang.Integer getMemberFileId();
  public java.lang.Integer getRegionalUnionGroupId();
+ public java.lang.String getSentReportText();
  public java.lang.String getStatus();
  public java.lang.Integer getYearOfReport();
  public void initializeAttributes();
@@ -36,6 +37,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setMembersPartDone(boolean p0);
  public void setRegionalUnionGroupId(int p0);
  public void setRegionalUnionGroupId(java.lang.Integer p0);
+ public void setSentReportText(java.lang.String p0);
  public void setStatus(java.lang.String p0);
  public void setYearOfReport(int p0);
 }

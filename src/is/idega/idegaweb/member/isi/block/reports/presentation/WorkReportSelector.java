@@ -28,6 +28,7 @@ public class WorkReportSelector extends ClubSelector {
 	
 	protected int workReportId = -1;
 	protected int year = -1;
+	protected String userType = null;
 	
 	protected static final String PARAM_WORK_REPORT_ID = "iwme_wr_sel_wr_id";
 	protected static final String PARAM_WORK_YEAR = "iwme_wr_sel_year";
@@ -47,6 +48,20 @@ public class WorkReportSelector extends ClubSelector {
 	 */
 	public void setWorkReportId(int workReportId) {
 		this.workReportId = workReportId;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getUserType() {
+		return userType;
+	}
+
+	/**
+	 * @param userType
+	 */
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}
 
 	/**

@@ -115,7 +115,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				selector = new WorkReportDivisionBoardEditor();
       }
 			else if( action.equals(ACTION_SEND_REPORT) ){
-				selector = new WorkReportSelector();	
+				selector = new WorkReportSender();	
 			}
 			else if( action.equals(ACTION_IMPORT_MEMBERS) ){
 				selector = new WorkReportMemberImporter();
@@ -146,6 +146,7 @@ public class WorkReportWindow extends IWAdminWindow {
 					}
 					selector.setClubId(groupId.intValue());
 				}
+				selector.setUserType(getUserType());
 				table.add(selector,2,1);
 			}
 			

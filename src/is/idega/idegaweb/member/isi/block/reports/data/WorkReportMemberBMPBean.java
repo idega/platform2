@@ -26,7 +26,7 @@ import com.idega.user.data.User;
 public class WorkReportMemberBMPBean extends GenericEntity implements WorkReportMember{
 	protected final static String ENTITY_NAME = "ISI_WR_CLUB_MEMB";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
-	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
+	
 	protected final static String COLUMN_NAME_USER_ID = "IC_USER_ID";
 	protected final static String COLUMN_NAME_PERSONAL_ID = "PERSONAL_ID";
 	protected final static String COLUMN_NAME_NAME = "NAME";
@@ -154,7 +154,6 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
-
 	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
@@ -166,6 +165,22 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return (Integer) idoFindOnePKByQuery(sql);
 		
 	}
+	
+	public Collection ejbFindAllWorkReportMembersByWorkReportIdAndWorkReportGroup(int reportId,WorkReportGroup wrGroup) throws FinderException{
+		StringBuffer sql = new StringBuffer();
+		String middleTableName = this.getNameOfMiddleTable(this,wrGroup);
+		String primaryKeyName = wrGroup.getEntityDefinition().getPrimaryKeyDefinition().toString();
+		
+		sql.append("Select e.* from ").append(ENTITY_NAME).append(" e ,").append(middleTableName).append(" middle")
+		.append(" where ").append("e."+COLUMN_NAME_REPORT_ID).append("=").append(reportId)
+		.append(" and ").append("( middle."+primaryKeyName).append("=").append((Integer)wrGroup.getPrimaryKey()).append(" ) ")
+		.append(" and ").append("( e."+this.getIDColumnName()).append("=").append("e."+this.getIDColumnName()).append(" ) ");		
+
+		
+		return idoFindIDsBySQL(sql.toString());
+	}
+	
+
 	
 	public Collection getLeaguesForMember() throws IDOException {
 		//could be optimized by only getting league workreportgroups

@@ -35,6 +35,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
   protected final static String COLUMN_NAME_CREATION_FROM_DATABASE_DONE = "CREATION_FROM_DATABASE_DONE";
 	protected final static String COLUMN_NAME_STATUS = "STATUS";
 	protected final static String COLUMN_NAME_SENT = "SENT";
+	protected final static String COLUMN_NAME_SENT_REPORT = "SENT_REPORT";
 	protected final static String COLUMN_NAME_MEMBER_FILE_ID = "MEMBER_PART_FILE_ID";
 	protected final static String COLUMN_NAME_ACCOUNT_FILE_ID = "ACCOUNT_PART_FILE_ID";
 	protected final static String COLUMN_NAME_BOARD_FILE_ID = "BOARD_PART_FILE_ID";
@@ -62,6 +63,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
     addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_SENT, "Has the workreport been sent, finalized", true, true, Boolean.class);
+		addAttribute(COLUMN_NAME_SENT_REPORT, "Results from report check",true,true,String.class,10000);
 		
 		
 		addManyToManyRelationShip(WorkReportGroup.class);//so we can get the clubs related to leagues/divisions
@@ -186,7 +188,14 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return getBooleanColumnValue(COLUMN_NAME_SENT,false);
 	}
 	
-
+	public void setSentReportText(String text){
+		setColumn(COLUMN_NAME_SENT_REPORT,text);
+	}
+	
+	public String getSentReportText(){
+		return getStringColumnValue(COLUMN_NAME_SENT_REPORT);
+	}
+	
 	public void setMembersPartDone(boolean isDone){
 		setColumn(COLUMN_NAME_MEMBERS_DONE,isDone);
 	}

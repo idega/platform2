@@ -98,6 +98,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
+	
+
 	/**
 	 * This method gets you the id of the workreport of the club and year specified. It will create a new report if it does not exist already.
 	 * @param clubId
@@ -229,7 +231,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubAccountRecordHome;
 	}
 	
-	
+
 	
 	public WorkReportMember createWorkReportMember(int reportID, String personalID) throws CreateException {
 
@@ -1073,6 +1075,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	/**
+	 * Gets all the WorkReportMembers for the supplied WorkReport id and workreportgroup id
+	 * @param workReportId
+	 * @return a collection of WorkReportMembers or an empty list
+	 */
+	public Collection getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(int workReportId, WorkReportGroup workReportGroup){
+		try {
+			return getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdAndWorkReportGroup(workReportId,workReportGroup);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	}
+	
+	/**
 	 * Gets all the WorkReportBoardMembers for the supplied WorkReport id
 	 * @param workReportId
 	 * @return a collection of WorkReportBoardMember or an empty list
@@ -1615,9 +1631,105 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
     return true;
   }
-    
-   
+  
+  
+  
+  public boolean isWorkReportReadOnly(int workReportId){
+  	WorkReport report = getWorkReportById(workReportId);
+  	return report.isSent();
+  }
+  
+	public boolean sendWorkReport(int workReportId, String reportText){
+		//TODO Eiki change status
+		WorkReport report = getWorkReportById(workReportId);
+		report.setAsSent(true);
+		report.setSentReportText(reportText);
+		report.store();
+		
+		return true;
+	}
+  
+  public String getWorkReportSentText(int workReportId){
+  	return getWorkReportById(workReportId).getSentReportText();
+  } 
+  
+	public boolean unSendWorkReport(int workReportId, String reportText){
+		WorkReport report = getWorkReportById(workReportId);
+		report.setAsSent(false);
+	
+		report.store();
+		
+		return true;
+	}
+  
+  public boolean isThereAYearlyAccountForAnEmptyDivision(int workReportId){
+		WorkReportClubAccountRecordHome recHome =  getWorkReportClubAccountRecordHome();
+		Collection records = null;
+		Collection leagues = null;
+		
+		try {
+			records = recHome.findAllRecordsByWorkReportId(workReportId);
+		}
+		catch (FinderException e1) {
+			System.out.println("No account records for work report id : "+workReportId);
+			return false;//no records
+		}
+		
+		
+  	WorkReport report = this.getWorkReportById(workReportId);
 
+  	try {
+			leagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+			System.out.println("No divisions for work report id : "+workReportId);
+			return false;//no divisions
+		}
+		
+		ArrayList emptyLeagues = new ArrayList();
+		
+		Iterator iter = leagues.iterator();
+		while (iter.hasNext()) {
+			WorkReportGroup league = (WorkReportGroup) iter.next();
+			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId,league);
+			if(members.isEmpty()){
+				emptyLeagues.add(league.getPrimaryKey());
+			}
+		}
+		
+		
+		if(emptyLeagues.isEmpty()){
+			System.out.println("No empty divisions for work report id : "+workReportId);
+			return false;
+		}
+		else{
+			Iterator recs = records.iterator();
+			//the real check happens here
+			while (recs.hasNext()) {
+				WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord) recs.next();
+				if(emptyLeagues.contains(new Integer(rec.getWorkReportGroupId()))){
+					System.out.println("Empty divisions with account record found! workreportgroupid : "+rec.getWorkReportGroupId());
+					return true;	
+				}
+			}
+			
+			return false;
+			
+		}
+	
+  }
+  
+  
+
+	public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int workReportId) {
+		
+		return false;
+	}
+
+	public boolean isYearlyAccountMissingForADivisionWithMembers(int workReportId) {
+		
+		return false;
+	}
 
     
     
