@@ -1,8 +1,8 @@
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.access.LoginTableHome;
-import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.AddressHome;
 import is.idega.idegaweb.golf.entity.Country;
@@ -459,8 +459,7 @@ public class RegisterNewMember extends GolfBlock {
 		add(myTable);
 
 		iwc.getSession().setAttribute("member_login", member);
-		LoginBusiness.internalSetState(iwc, "loggedon");
-
+		AccessControl.internalSetState(iwc, "loggedon");
 	}
 
 	public void VillaIInnslaetti(String kt, String comment) {
