@@ -1,10 +1,12 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
+import java.util.*;
+
+import com.idega.business.IBOSessionBean;
+
+import se.idega.idegaweb.commune.message.data.*;
 import se.idega.idegaweb.commune.childcare.check.data.*;
 
-import com.idega.business.IBOServiceBean;
-
-import java.util.*;
 
 
 /**
@@ -16,21 +18,57 @@ import java.util.*;
  * @version 1.0
  */
 
-public class CheckBusinessBean extends IBOServiceBean implements CheckBusiness{
+public class CheckBusinessBean extends IBOSessionBean implements CheckBusiness{
+
+  private Check currentCheck = null;
+  private boolean rule1Verified = false;
+  private boolean rule2Verified = false;
+  private boolean rule3Verified = false;
+  private boolean rule4Verified = false;
+  private boolean rule5Verified = false;
+  private boolean allRulesVerified = false;
 
   public CheckBusinessBean() {
   }
 
-  private CheckHome getCheckHome() throws java.rmi.RemoteException{
+  private CheckHome getCheckHome()throws java.rmi.RemoteException{
     return (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
   }
 
-  public Check getCheck(int checkId) throws Exception {
+  public Check getCheck(int checkId)throws Exception{
     return getCheckHome().findByPrimaryKey(new Integer(checkId));
   }
 
-  public Collection findChecks() throws Exception {
+  public Check getCurrentCheck()throws Exception{
+    return this.currentCheck;
+  }
+
+  public Collection findChecks()throws Exception{
     return getCheckHome().findChecks();
+  }
+
+  public boolean isRule1Verified(){
+    return this.rule1Verified;
+  }
+
+  public boolean isRule2Verified(){
+    return this.rule2Verified;
+  }
+
+  public boolean isRule3Verified(){
+    return this.rule3Verified;
+  }
+
+  public boolean isRule4Verified(){
+    return this.rule4Verified;
+  }
+
+  public boolean isRule5Verified(){
+    return this.rule5Verified;
+  }
+
+  public boolean allRulesVerified(){
+    return this.allRulesVerified;
   }
 
   public void createCheck(
@@ -73,5 +111,75 @@ public class CheckBusinessBean extends IBOServiceBean implements CheckBusiness{
     check.setRule5(checkRule5);
     check.setStatus("NYTT");
     check.store();
+  }
+
+  public void sendMessageToCitizen(
+      String subject,
+      String body,
+      int managerId)throws Exception{
+    MessageHome home = (MessageHome)com.idega.data.IDOLookup.getHome(Message.class);
+    Message msg = home.create();
+    msg.setSubject(subject);
+    msg.setBody(body);
+//    msg.setSenderId(managerId);
+    msg.store();
+  }
+
+  public void verifyCheckRules(int checkId,String[] selectedRules,String notes,int managerId)throws Exception{
+    this.currentCheck = getCheck(checkId);
+    this.currentCheck.setManagerId(managerId);
+    this.rule1Verified = false;
+    this.rule2Verified = false;
+    this.rule3Verified = false;
+    this.rule4Verified = false;
+    this.rule5Verified = false;
+    if(selectedRules==null){
+      this.allRulesVerified = false;
+    }else{
+      for(int i=0; i<selectedRules.length; i++){
+        int rule = Integer.parseInt(selectedRules[i]);
+        switch (rule) {
+          case 1:
+            this.rule1Verified = true;
+            break;
+          case 2:
+            this.rule2Verified = true;
+            break;
+          case 3:
+            this.rule3Verified = true;
+            break;
+          case 4:
+            this.rule4Verified = true;
+            break;
+          case 5:
+            this.rule5Verified = true;
+            break;
+        }
+      }
+      // Rule 5 overrides all other rules
+      this.allRulesVerified = ((selectedRules.length==4)&&!rule5Verified)||rule5Verified;
+    }
+    this.currentCheck.setNotes(notes);
+    this.currentCheck.setRule1(this.rule1Verified);
+    this.currentCheck.setRule2(this.rule2Verified);
+    this.currentCheck.setRule3(this.rule3Verified);
+    this.currentCheck.setRule4(this.rule4Verified);
+    this.currentCheck.setRule5(this.rule5Verified);
+  }
+
+  public void commit()throws Exception{
+    this.currentCheck.store();
+  }
+
+  public void approveCheck()throws Exception{
+    this.currentCheck.setStatus("BVJD");
+  }
+
+  public void retrialCheck()throws Exception{
+    this.currentCheck.setStatus("OMPR");
+  }
+
+  public void saveCheck()throws Exception{
+    this.currentCheck.setStatus("UBEH");
   }
 }

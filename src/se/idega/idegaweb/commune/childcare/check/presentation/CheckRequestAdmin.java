@@ -38,14 +38,6 @@ public class CheckRequestAdmin extends CommuneBlock {
   private final static String PARAM_RULE = "chk_rule";
   private final static String PARAM_NOTES = "chk_notes";
 
-  private boolean isError = false;
-  private String errorMessage = null;
-  private boolean paramErrorRule1 = false;
-  private boolean paramErrorRule2 = false;
-  private boolean paramErrorRule3 = false;
-  private boolean paramErrorRule4 = false;
-  private boolean paramErrorRule5 = false;
-
 //  private IBPage formResponsePage = null;
 
   public CheckRequestAdmin() {
@@ -61,7 +53,9 @@ public class CheckRequestAdmin extends CommuneBlock {
           viewCheckList(iwc);
           break;
         case ACTION_VIEW_CHECK:
-          viewCheck(iwc);
+          int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
+          Check check = getCheckBusiness(iwc).getCheck(checkId);
+          viewCheck(iwc,check,false);
           break;
         case ACTION_GRANT_CHECK:
           grantCheck(iwc);
@@ -127,9 +121,7 @@ public class CheckRequestAdmin extends CommuneBlock {
     add(checkList);
   }
 
-  private void viewCheck(IWContext iwc)throws Exception{
-    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-    Check check = getCheckBusiness(iwc).getCheck(checkId);
+  private void viewCheck(IWContext iwc, Check check,boolean isError)throws Exception{
 
     Table frame = new Table();
     frame.setCellpadding(10);
@@ -165,7 +157,7 @@ public class CheckRequestAdmin extends CommuneBlock {
     add(new Break(2));
 
     if(isError){
-      add(getErrorText(errorMessage));
+      add(getErrorText(localize("check.must_check_all_rules","All rules must be checked.")));
       add(new Break(2));
     }
 
@@ -181,68 +173,50 @@ public class CheckRequestAdmin extends CommuneBlock {
     Table ruleTable = new Table(2,5);
     ruleTable.setCellpadding(4);
     ruleTable.setCellspacing(0);
-    boolean checkRule1 = false;
-    boolean checkRule2 = false;
-    boolean checkRule3 = false;
-    boolean checkRule4 = false;
-    boolean checkRule5 = false;
-    if(isError){
-      checkRule1 = !paramErrorRule1;
-      checkRule2 = !paramErrorRule2;
-      checkRule3 = !paramErrorRule3;
-      checkRule4 = !paramErrorRule4;
-      checkRule5 = !paramErrorRule5;
-    }else{
-      checkRule1 = check.getRule1();
-      checkRule2 = check.getRule2();
-      checkRule3 = check.getRule3();
-      checkRule4 = check.getRule4();
-      checkRule5 = check.getRule5();
-    }
     CheckBox rule1 = new CheckBox(PARAM_RULE,"1");
-    rule1.setChecked(checkRule1);
+    rule1.setChecked(check.getRule1());
     ruleTable.add(rule1,1,1);
     String ruleText1 = localize("check.nationally_registered","Nationally registered");
-    if(paramErrorRule1){
-      ruleTable.add(getErrorText(ruleText1),2,1);
-    }else{
+    if(check.getRule1()||!isError){
       ruleTable.add(getText(ruleText1),2,1);
+    }else{
+      ruleTable.add(getErrorText(ruleText1),2,1);
     }
     CheckBox rule2 = new CheckBox(PARAM_RULE,"2");
-    rule2.setChecked(checkRule2);
+    rule2.setChecked(check.getRule2());
     ruleTable.add(rule2,1,2);
     String ruleText2 = localize("check.child_one_year","Child one year of age");
-    if(paramErrorRule2){
-      ruleTable.add(getErrorText(ruleText2),2,2);
-    }else{
+    if(check.getRule2()||!isError){
       ruleTable.add(getText(ruleText2),2,2);
+    }else{
+      ruleTable.add(getErrorText(ruleText2),2,2);
     }
     CheckBox rule3 = new CheckBox(PARAM_RULE,"3");
-    rule3.setChecked(checkRule3);
+    rule3.setChecked(check.getRule3());
     ruleTable.add(rule3,1,3);
     String ruleText3 = localize("check.work_situation_approved","Work situation approved");
-    if(paramErrorRule3){
-      ruleTable.add(getErrorText(ruleText3),2,3);
-    }else{
+    if(check.getRule3()||!isError){
       ruleTable.add(getText(ruleText3),2,3);
+    }else{
+      ruleTable.add(getErrorText(ruleText3),2,3);
     }
     CheckBox rule4 = new CheckBox(PARAM_RULE,"4");
-    rule4.setChecked(checkRule4);
+    rule4.setChecked(check.getRule4());
     ruleTable.add(rule4,1,4);
     String ruleText4 = localize("check.dept_control","Skuldkontroll");
-    if(paramErrorRule4){
-      ruleTable.add(getErrorText(ruleText4),2,4);
-    }else{
+    if(check.getRule4()||!isError){
       ruleTable.add(getText(ruleText4),2,4);
+    }else{
+      ruleTable.add(getErrorText(ruleText4),2,4);
     }
     CheckBox rule5 = new CheckBox(PARAM_RULE,"5");
-    rule5.setChecked(checkRule5);
+    rule5.setChecked(check.getRule5());
     ruleTable.add(rule5,1,5);
     String ruleText5 = localize("check.need_for_special_support","Need for special support");
-    if(paramErrorRule5){
-      ruleTable.add(getErrorText(ruleText5),2,5);
-    }else{
+    if(check.getRule5()||!isError){
       ruleTable.add(getText(ruleText5),2,5);
+    }else{
+      ruleTable.add(getErrorText(ruleText5),2,5);
     }
     frame.add(ruleTable,1,1);
     frame.add(new Break(2),1,1);
@@ -268,86 +242,54 @@ public class CheckRequestAdmin extends CommuneBlock {
     add(f);
   }
 
-  private Check prepareCheck(IWContext iwc)throws Exception{
+  private CheckBusiness verifyCheckRules(IWContext iwc)throws Exception{
     int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-    Check check = getCheckBusiness(iwc).getCheck(checkId);
-    String[] rules = iwc.getParameterValues(PARAM_RULE);
-    paramErrorRule1 = true;
-    paramErrorRule2 = true;
-    paramErrorRule3 = true;
-    paramErrorRule4 = true;
-    paramErrorRule5 = true;
-    if(rules==null){
-      isError = true;
-    }else{
-      boolean specialNeed = false;
-      for(int i=0; i<rules.length; i++){
-        int rule = Integer.parseInt(rules[i]);
-        switch (rule) {
-          case 1:
-            paramErrorRule1 = false;
-            break;
-          case 2:
-            paramErrorRule2 = false;
-            break;
-          case 3:
-            paramErrorRule3 = false;
-            break;
-          case 4:
-            paramErrorRule4 = false;
-            break;
-          case 5:
-            paramErrorRule5 = false;
-            specialNeed = true;
-            break;
-        }
-      }
-      isError = !((rules.length==4)&&(!specialNeed)||specialNeed);
-    }
-    check.setNotes(iwc.getParameter(PARAM_NOTES));
-    check.setRule1(!paramErrorRule1);
-    check.setRule2(!paramErrorRule2);
-    check.setRule3(!paramErrorRule3);
-    check.setRule4(!paramErrorRule4);
-    check.setRule5(!paramErrorRule5);
-
-//    check.setManager(handlŠggare)
-    return check;
+    String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
+    String notes = iwc.getParameter(PARAM_NOTES);
+//    int managerId = iwc.getUser().getID();
+    int managerId = 123;
+    CheckBusiness cb = getCheckBusiness(iwc);
+    cb.verifyCheckRules(checkId,selectedRules,notes,managerId);
+    return cb;
   }
 
   private void grantCheck(IWContext iwc)throws Exception{
-    Check check = prepareCheck(iwc);
-    if(isError){
-      check.store();
-      errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
-      viewCheck(iwc);
+    CheckBusiness cb = verifyCheckRules(iwc);
+    if(!cb.allRulesVerified()){
+      cb.commit();
+//      this.errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
+//      this.isError = true;
+      viewCheck(iwc,cb.getCurrentCheck(),true);
       return;
     }
-    check.setStatus("BJVD");
-    check.store();
+    cb.approveCheck();
+    cb.commit();
+
 //Create message for archive
 //Create post message to citizen
-//Create message to citizen
+
+    String subject = "...";
+    String body = "...";
+//    int managerId = iwc.getUser().getID();
+    int managerId = 123;
+    cb.sendMessageToCitizen(subject,body,managerId);
 
     add(getText("Check granted:"));
     viewCheckList(iwc);
   }
 
   private void retrialCheck(IWContext iwc)throws Exception{
-//Create message to user
-    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-    Check check = getCheckBusiness(iwc).getCheck(checkId);
-    check.setStatus("OMPR");
-    check.store();
-//    check.setManager(handlŠggare)
-//    check.store();
+    CheckBusiness cb = verifyCheckRules(iwc);
+    cb.retrialCheck();
+    cb.commit();
     viewCheckList(iwc);
+//Create message to user
   }
 
   private void saveCheck(IWContext iwc)throws Exception{
-    Check check = prepareCheck(iwc);
-    check.setStatus("UBEH");
-    check.store();
+    CheckBusiness cb = verifyCheckRules(iwc);
+    cb.saveCheck();
+    cb.commit();
     viewCheckList(iwc);
   }
 
