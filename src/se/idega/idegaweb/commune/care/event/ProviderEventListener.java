@@ -4,11 +4,11 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package se.idega.idegaweb.commune.provider.event;
+package se.idega.idegaweb.commune.care.event;
 
 import java.rmi.RemoteException;
 
-import se.idega.idegaweb.commune.provider.business.ProviderSession;
+import se.idega.idegaweb.commune.care.business.ProviderSession;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;

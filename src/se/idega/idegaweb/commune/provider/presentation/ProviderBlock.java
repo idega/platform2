@@ -14,9 +14,9 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.ProviderSession;
+import se.idega.idegaweb.commune.care.event.ProviderEventListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.provider.business.ProviderSession;
-import se.idega.idegaweb.commune.provider.event.ProviderEventListener;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolYearComparator;

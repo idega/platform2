@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package se.idega.idegaweb.commune.provider.business;
+package se.idega.idegaweb.commune.care.business;
 
 import java.rmi.RemoteException;
 
