@@ -18,7 +18,7 @@ import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.sql.QuerySQL;
-import com.idega.block.dataquery.presentation.QueryBuilder;
+import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
@@ -67,8 +67,8 @@ public class ReportOverview extends Block {
 	
   // special init parameters
   // replaced by parameters in class QueryBuilder
-  public static final String SET_ID_OF_QUERY_FOLDER_KEY = QueryBuilder.PARAM_QUERY_FOLDER_ID;
-	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = QueryBuilder.PARAM_LAYOUT_FOLDER_ID;
+  public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM_QUERY_FOLDER_ID;
+	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID;
   
   public static final String DELETE_KEY = "delete_key";
   public static final String PDF_KEY = "pdf_key";
@@ -306,18 +306,18 @@ public class ReportOverview extends Block {
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
 		Link simpleModeLink = new Link(simpleModeText);
 
-		simpleModeLink.addParameter(QueryBuilder.SHOW_WIZARD, Integer.toString(SIMPLE_MODE));
-		simpleModeLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		simpleModeLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		simpleModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(SIMPLE_MODE));
+		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		simpleModeLink.setAsImageButton(true);
 
 		// new button for query builder (expert mode)
 		String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
 		Link expertModeLink = new Link(expertModeText);
 
-		expertModeLink.addParameter(QueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
-		expertModeLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		expertModeLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
+		expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		expertModeLink.setAsImageButton(true);
 		
 		// delete button
@@ -861,10 +861,10 @@ public class ReportOverview extends Block {
 			//String shortKeyPath = path.getShortKey();
 			EntityRepresentation idoEntity = (EntityRepresentation) value;
 			Link link = new Link(display);
-			link.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
-			link.addParameter(QueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
-			link.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-			link.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+			link.addParameter(ReportQueryBuilder.SHOW_WIZARD, ReportQueryBuilder.SHOW_WIZARD);
+			link.addParameter(ReportQueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
+			link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 			link.setAsImageButton(true);
 			return link;
 		}

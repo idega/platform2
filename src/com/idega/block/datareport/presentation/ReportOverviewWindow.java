@@ -1,6 +1,6 @@
 package com.idega.block.datareport.presentation;
 
-import com.idega.block.dataquery.presentation.QueryBuilder;
+import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -31,24 +31,24 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     IWResourceBundle iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("ro_report", "ReportGenerator"), IWConstants.BUILDER_FONT_STYLE_TITLE);
     // decide to show the query builder or the overview
-    if (iwc.isParameterSet(QueryBuilder.PARAM_CANCEL)) {
+    if (iwc.isParameterSet(ReportQueryBuilder.PARAM_CANCEL)) {
     	// do not show wizard even if the parameter show wizard is set
-    	QueryBuilder.cleanSession(iwc);
+    	ReportQueryBuilder.cleanSession(iwc);
     	ReportOverview overview = new ReportOverview();
     	add(overview,iwc);
     }
-    else if (iwc.isParameterSet(QueryBuilder.PARAM_SAVE)) {
-    	QueryBuilder queryBuilder = new QueryBuilder();
+    else if (iwc.isParameterSet(ReportQueryBuilder.PARAM_SAVE)) {
+    	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	queryBuilder.main(iwc);
     	// get the jid of the just created new file
     	int queryId = queryBuilder.getQueryId();
-    	QueryBuilder.cleanSession(iwc);
+    	ReportQueryBuilder.cleanSession(iwc);
     	ReportOverview overview = new ReportOverview();
     	overview.setShowOnlyOneQueryWithId(queryId);
     	add(overview,iwc);
     }
-    else if (iwc.isParameterSet(QueryBuilder.SHOW_WIZARD))	{
-    	QueryBuilder queryBuilder = new QueryBuilder();
+    else if (iwc.isParameterSet(ReportQueryBuilder.SHOW_WIZARD))	{
+    	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	add(queryBuilder,iwc);
     }
     else {
