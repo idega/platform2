@@ -403,9 +403,9 @@ public class TextEditorWindow extends AbstractChooserWindow{
         files = new Vector();
         files.add(file);
       }catch (IDOLookupException e) {
-		e.printStackTrace();
+		//e.printStackTrace();
 	  } catch (FinderException e) {
-		e.printStackTrace();
+		//e.printStackTrace();
 	  }
 
       TxText tx = TextBusiness.saveText(iTxTextId,iLocalizedTextId,iLocaleId,iUserId,iObjInsId,null,null,sHeadline,"",sBody,sAttribute,files);
