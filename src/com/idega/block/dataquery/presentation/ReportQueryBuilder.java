@@ -440,11 +440,20 @@ public class ReportQueryBuilder extends Block {
 		}
 		if (orderConditions != null) {
 			for (int i = 0; i < orderConditions.length; i++) {
-				QueryOrderConditionPart part = QueryOrderConditionPart.decode(orderConditions[i]);
-				if (part != null) {
-					QueryFieldPart fieldPart = part.getCorrespondingField();
+				// thomas: this is not the best way to do this but at the moment I have no other ideas.
+				// on the right side of the selection box are query order conditions or query fields if the 
+				// order condition has not been created yet.
+				QueryOrderConditionPart conditionPart = QueryOrderConditionPart.decode(orderConditions[i]);
+				QueryFieldPart fieldPart = null;
+				if (conditionPart == null) {
+					fieldPart = QueryFieldPart.decode(orderConditions[i]);
+				}
+				if (fieldPart != null) {
 					helper.addHiddenField(fieldPart);
-					helper.addOrderCondition(part);
+					conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
+				}
+				if (conditionPart != null) {
+					helper.addOrderCondition(conditionPart);
 				}
 			}
 		}
@@ -587,9 +596,11 @@ public class ReportQueryBuilder extends Block {
 			for (int i = 0; i < fields.length; i++) {
 				String field = fields[i];
 				System.out.println(field);
-				QueryOrderConditionPart part = QueryOrderConditionPart.decode(field);
-				part.setDescendant(true);
-				helper.addOrderCondition(part);
+				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+				helper.addHiddenField(fieldPart);
+				QueryOrderConditionPart	conditionPart = new QueryOrderConditionPart(fieldPart.getEntity(),fieldPart.getPath(),fieldPart.getColumns());
+				conditionPart.setDescendant(true);
+				helper.addOrderCondition(conditionPart);
 			}
 		}
 		return false;
@@ -845,7 +856,7 @@ public class ReportQueryBuilder extends Block {
 		if (entities == null)
 			entities = new Vector();
 		Iterator iterator = entities.iterator();
-		List listOfFields = helper.getListOfFields();
+		List listOfFields = helper.getListOfVisibleFields();
 		if (listOfFields == null)
 			listOfFields = new Vector();
 
@@ -875,7 +886,7 @@ public class ReportQueryBuilder extends Block {
 			List resultFields = new ArrayList();
 			QueryHelper previousQuery = helper.previousQuery();
 			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfFields();
+			List fields = previousQuery.getListOfVisibleFields();
 			Iterator fieldIterator = fields.iterator();
 			while (fieldIterator.hasNext())	{
 				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
@@ -958,7 +969,7 @@ public class ReportQueryBuilder extends Block {
 		if (helper.hasSourceEntity()) {
 			entityPart = helper.getSourceEntity();
 			// box is filled with values from the source entity
-			fillFieldSelectionBoxForOrder(service, entityPart, fieldMap, box);
+			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
 		
 		// box is filled with results field from the previous query
@@ -966,7 +977,7 @@ public class ReportQueryBuilder extends Block {
 			List resultFields = new ArrayList();
 			QueryHelper previousQuery = helper.previousQuery();
 			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfFields();
+			List fields = previousQuery.getListOfVisibleFields();
 			Iterator fieldIterator = fields.iterator();
 			while (fieldIterator.hasNext())	{
 				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
@@ -977,13 +988,13 @@ public class ReportQueryBuilder extends Block {
 					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type, false);
 				resultFields.add(newFieldPart);
 			}
-			fillFieldSelectionBoxForOrder(previousQueryName, resultFields, fieldMap,box);
+			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
 		}
 
 		// box is filled with values from the related entities
 		while (relatedEntitiesIterator.hasNext()) {
 			entityPart = (QueryEntityPart) relatedEntitiesIterator.next();
-			fillFieldSelectionBoxForOrder(service, entityPart, fieldMap, box);
+			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
 //		if(!fieldMap.isEmpty()){
 //			Iterator iter = fieldMap.values().iterator();
@@ -1072,55 +1083,49 @@ public class ReportQueryBuilder extends Block {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
 			String enc = part.encode();
-			if (fieldMap.containsKey(enc)) {
-//				box.getRightBox().addElement(
-//					part.encode(),
-//					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
-//					fieldMap.remove(enc);
-			}
-			else {
+			if (! fieldMap.containsKey(enc)) {
 				box.getLeftBox().addElement(
-					part.encode(),
-					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+				part.encode(),
+				iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
 			}
 		}
 	}
 
-	// fills the right and the left list of the specified box depending on values set in fieldMap
-	// values are retrieved from the specified entityPart
-	private void fillFieldSelectionBoxForOrder(
-		QueryService service,
-		QueryEntityPart entityPart,
-		Map fieldMap,
-		SelectionDoubleBox box)
-		throws RemoteException {
-		//System.out.println("filling box with fields from " + entityPart.getName());
-		Iterator iter = service.getListOfOrderConditionParts(iwrb, entityPart, expertMode).iterator();
-		while (iter.hasNext()) {
-			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
-			//System.out.println(" " + part.getName());
-			String enc = part.encode();
-			if (fieldMap.containsKey(enc)) {
-//				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
-//				buffer.append(' ');
-//				if (part.isAscendant()) {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-//				}
-//				else {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
-//				}
-//				box.getRightBox().addElement(
+//	// fills the right and the left list of the specified box depending on values set in fieldMap
+//	// values are retrieved from the specified entityPart
+//	private void fillFieldSelectionBoxForOrder(
+//		QueryService service,
+//		QueryEntityPart entityPart,
+//		Map fieldMap,
+//		SelectionDoubleBox box)
+//		throws RemoteException {
+//		//System.out.println("filling box with fields from " + entityPart.getName());
+//		Iterator iter = service.getListOfOrderConditionParts(iwrb, entityPart, expertMode).iterator();
+//		while (iter.hasNext()) {
+//			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
+//			//System.out.println(" " + part.getName());
+//			String enc = part.encode();
+//			if (fieldMap.containsKey(enc)) {
+////				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+////				buffer.append(' ');
+////				if (part.isAscendant()) {
+////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
+////				}
+////				else {
+////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
+////				}
+////				box.getRightBox().addElement(
+////					part.encode(),
+////					buffer.toString());
+////					fieldMap.remove(enc);
+//			}
+//			else {
+//				box.getLeftBox().addElement(
 //					part.encode(),
-//					buffer.toString());
-//					fieldMap.remove(enc);
-			}
-			else {
-				box.getLeftBox().addElement(
-					part.encode(),
-					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
-			}
-		}
-	}
+//					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+//			}
+//		}
+//	}
 	
 	// fills the right and the left list of the specified box depending on values set in fieldMap
 	// values are retrieved from the specified choiceFields
@@ -1136,16 +1141,10 @@ public class ReportQueryBuilder extends Block {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
 			String enc = part.encode();
-			if (fieldMap.containsKey(enc)) {
-//				box.getRightBox().addElement(
-//					part.encode(),
-//					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
-//					fieldMap.remove(enc);
-			}
-			else {
+			if (! fieldMap.containsKey(enc)) {
 				box.getLeftBox().addElement(
-					part.encode(),
-					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
+				part.encode(),
+				iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
 			}
 		}
 	}
@@ -1177,12 +1176,9 @@ public class ReportQueryBuilder extends Block {
 		while (iter.hasNext()) {
 			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
 			//System.out.println(" " + part.getName());
-			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
+			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getField());
 			buffer.append(' ');
-			if (part.isAscendant()) {
-				buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-			}
-			else {
+			if (part.isDescendant()) {
 				buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
 			}
 			box.getRightBox().addElement(
@@ -1191,42 +1187,42 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 
-		// fills the right and the left list of the specified box depending on values set in fieldMap
-	// values are retrieved from the specified choiceFields
-	private void fillFieldSelectionBoxForOrder(
-		String entityName,
-		List choiceFields,
-		Map fieldMap,
-		SelectionDoubleBox box)
-		throws RemoteException {
-		//System.out.println("filling box with fields from " + entityPart.getName());
-		Iterator iter = choiceFields.iterator();
-		while (iter.hasNext()) {
-			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
-			//System.out.println(" " + part.getName());
-			String enc = part.encode();
-			if (fieldMap.containsKey(enc)) {
-//				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
-//				buffer.append(' ');
-//				if (part.isAscendant()) {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-//				}
-//				else {
-//					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
-//				}
-//
-//				box.getRightBox().addElement(
+//		// fills the right and the left list of the specified box depending on values set in fieldMap
+//	// values are retrieved from the specified choiceFields
+//	private void fillFieldSelectionBoxForOrder(
+//		String entityName,
+//		List choiceFields,
+//		Map fieldMap,
+//		SelectionDoubleBox box)
+//		throws RemoteException {
+//		//System.out.println("filling box with fields from " + entityPart.getName());
+//		Iterator iter = choiceFields.iterator();
+//		while (iter.hasNext()) {
+//			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
+//			//System.out.println(" " + part.getName());
+//			String enc = part.encode();
+//			if (fieldMap.containsKey(enc)) {
+////				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
+////				buffer.append(' ');
+////				if (part.isAscendant()) {
+////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
+////				}
+////				else {
+////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
+////				}
+////
+////				box.getRightBox().addElement(
+////					part.encode(),
+////					buffer.toString());
+////					fieldMap.remove(enc);
+//			}
+//			else {
+//				box.getLeftBox().addElement(
 //					part.encode(),
-//					buffer.toString());
-//					fieldMap.remove(enc);
-			}
-			else {
-				box.getLeftBox().addElement(
-					part.encode(),
-					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
-			}
-		}
-	}
+//					iwrb.getLocalizedString(entityName, entityName) + " -> " + part.getDisplay());
+//			}
+//		}
+//	}
 
 
 
@@ -1283,6 +1279,7 @@ public class ReportQueryBuilder extends Block {
 		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
 		table.add(description, 6, row);
 		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
+		//table.add(new TextInput()
 		if(hasTemplatePermission){
 		
 			CheckBox lock = new CheckBox(PARAM_LOCK);	
@@ -1456,7 +1453,7 @@ public class ReportQueryBuilder extends Block {
 		if (helper.hasConditions())
 			size = helper.getListOfConditions().size();
 		Map map = new HashMap(size);
-		List fields = helper.getListOfFields();
+		List fields = helper.getListOfVisibleFields();
 		if (helper.hasConditions()) {
 			Iterator iter = helper.getListOfConditions().iterator();
 			while (iter.hasNext()) {
@@ -1476,10 +1473,10 @@ public class ReportQueryBuilder extends Block {
 	public Map getMapOfFieldsByName() {
 		int size = 0;
 		if (helper.hasFields())
-			size = helper.getListOfFields().size();
+			size = helper.getListOfVisibleFields().size();
 		Map map = new HashMap(size);
 		if (helper.hasFields()) {
-			Iterator iter = helper.getListOfFields().iterator();
+			Iterator iter = helper.getListOfVisibleFields().iterator();
 			while (iter.hasNext()) {
 				QueryFieldPart part = (QueryFieldPart) iter.next();
 				map.put(part.getName(), part);
@@ -1525,7 +1522,7 @@ public class ReportQueryBuilder extends Block {
 	private DropdownMenu getFieldDropdown() {
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
 		if (helper.hasFields()) {
-			List fields = helper.getListOfFields();
+			List fields = helper.getListOfVisibleFields();
 			for (Iterator iter = fields.iterator(); iter.hasNext();) {
 				QueryFieldPart element = (QueryFieldPart) iter.next();
 				drp.addMenuElement(element.getName(), element.getDisplay());
@@ -1539,7 +1536,7 @@ public class ReportQueryBuilder extends Block {
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
 		if(helper.hasFields()){
-			Iterator iter  = helper.getListOfFields().iterator();
+			Iterator iter  = helper.getListOfVisibleFields().iterator();
 			while (iter.hasNext()) {
 				QueryFieldPart part = (QueryFieldPart) iter.next();
 				drpMap.put(part.encode(),part);

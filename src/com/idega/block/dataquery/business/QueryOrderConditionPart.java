@@ -15,45 +15,38 @@ import com.idega.xml.XMLElement;
  */
 public class QueryOrderConditionPart implements QueryPart {
 	
-	private String name = null;
 	private String entity = null;
 	private String path = null;
 	private String field = null;
-	private String type = null;
-	private String display = null;
 	private int orderPriority = 0;
 	private String orderType = null;
 	
 	/** used for first initializing (default values for order type is ascendant, order priority is set to one) */
-	public QueryOrderConditionPart(String name, String entity, String path, String field, String display, String type) {
-		this(name, entity, path, field, display, type, QueryXMLConstants.TYPE_ASCENDANT, 1);
+	public QueryOrderConditionPart(String entity, String path, String[] fields) {
+		this(entity, path, fields[0], QueryXMLConstants.TYPE_ASCENDANT, 1);
 	}
 
-	public QueryOrderConditionPart(String name, String entity, String path, String field, String display, String type, String orderType, String orderPriority)	{
-		this(name, entity,path,field, display, type, orderType,  Integer.parseInt(orderPriority));
+	public QueryOrderConditionPart(String entity, String path, String field, String orderType, String orderPriority)	{
+		this(entity,path,field, orderType,  Integer.parseInt(orderPriority));
 	}
 
 		
-	public QueryOrderConditionPart(String name, String entity, String path, String field, String display, String type, String orderType, int orderPriority)	{
-		this.name = name;
+	public QueryOrderConditionPart(String entity, String path, String field, String orderType, int orderPriority)	{
 		this.entity = entity;
 		this.path = path;
 		this.field = field;
-		this.display = display;
-		this.type = type;
 		this.orderType = orderType;
 		this.orderPriority = orderPriority;
 	}
 		
 	
 	public QueryOrderConditionPart(XMLElement xml){
-		name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
 		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
 		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
-		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
-		orderType = xml.getAttribute(QueryXMLConstants.ORDER_TYPE).getValue();
 		if(xml.hasChildren()){
+			XMLElement xmlOrderType = xml.getChild(QueryXMLConstants.ORDER_TYPE);
+			orderType = xmlOrderType.getTextTrim();
 			XMLElement xmlPattern = xml.getChild(QueryXMLConstants.ORDER_PRIORITY);
 			orderPriority =Integer.parseInt(xmlPattern.getTextTrim());
 		}
@@ -61,12 +54,12 @@ public class QueryOrderConditionPart implements QueryPart {
 
 	public XMLElement getQueryElement()	{
 		XMLElement el = new XMLElement(QueryXMLConstants.ORDER_CONDITION);
-		el.setAttribute(QueryXMLConstants.NAME, name);
 		el.setAttribute(QueryXMLConstants.ENTITY,entity);
 		el.setAttribute(QueryXMLConstants.PATH, path);
 		el.setAttribute(QueryXMLConstants.FIELD,field);
-		el.setAttribute(QueryXMLConstants.TYPE,type);
-		el.setAttribute(QueryXMLConstants.ORDER_TYPE, orderType);
+		XMLElement xmlOrderType = new XMLElement(QueryXMLConstants.ORDER_TYPE);
+		xmlOrderType.addContent(orderType);
+		el.addContent(xmlOrderType);
 		XMLElement xmlPriority = new XMLElement(QueryXMLConstants.ORDER_PRIORITY);
 		xmlPriority.addContent(Integer.toString(orderPriority));
 		el.addContent(xmlPriority);
@@ -81,12 +74,9 @@ public class QueryOrderConditionPart implements QueryPart {
 	 */
 	public String encode(){
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(name).append(';');
 		buffer.append(entity).append(';');
 		buffer.append(path).append(';');
 		buffer.append(field).append(';');
-		buffer.append(display).append(';');
-		buffer.append(type).append(';');
 		buffer.append(orderType).append(';');
 		buffer.append(orderPriority);
 		return buffer.toString();
@@ -94,8 +84,8 @@ public class QueryOrderConditionPart implements QueryPart {
 
 	public static QueryOrderConditionPart decode(String encoded){
 		StringTokenizer toker = new StringTokenizer(encoded,";");
-		if(toker.countTokens()==8){
-			return new QueryOrderConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(), toker.nextToken(), toker.nextToken(), toker.nextToken());
+		if(toker.countTokens()==5){
+			return new QueryOrderConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
 		}
 		return null;
 	}
@@ -137,17 +127,7 @@ public class QueryOrderConditionPart implements QueryPart {
 		return entity;
 	}
 	
-	public String getName()	{
-		return name;
-	}
 	
-	public String getDisplay()	{
-		return name;
-	}
-	
-	public QueryFieldPart getCorrespondingField()	{
-		return new QueryFieldPart(name, entity, path, field, null, display, type, true);
-	}
 	
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.business.QueryPart#isLocked()

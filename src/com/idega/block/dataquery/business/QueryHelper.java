@@ -263,8 +263,8 @@ public class QueryHelper {
 	/**
 	 * @return <CODE>true</CODE> if the query has fields
 	 */
-	public boolean hasFields() {
-		return listOfFields != null && !listOfFields.isEmpty();
+	public boolean hasFields() {	
+		return listOfFields != null && ! getListOfVisibleFields().isEmpty();
 	}
 	
 	public boolean hasOrderConditions()	{
@@ -301,6 +301,21 @@ public class QueryHelper {
 	 */
 	public List getListOfFields() {
 		return listOfFields;
+	}
+	
+	public List getListOfVisibleFields()	{
+		if (listOfFields == null) {
+			return null;
+		}
+		List visibleFields = new ArrayList();
+		Iterator fieldIterator = listOfFields.iterator();
+		while (fieldIterator.hasNext()) {
+			QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+			if (! fieldPart.isHidden())	{
+				visibleFields.add(fieldPart);
+			}
+		}
+		return visibleFields;
 	}
 
 	/**
@@ -525,7 +540,15 @@ public class QueryHelper {
 	 *  Clears the field part of the query and updates the current step
 	 */
 	public void clearFields() {
-		listOfFields = null;
+		List invisibleFields = new ArrayList();
+		Iterator fieldIterator = listOfFields.iterator();
+		while (fieldIterator.hasNext()) {
+			QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+			if (fieldPart.isHidden())	{
+				invisibleFields.add(fieldPart);
+			}
+		}
+		listOfFields = invisibleFields;
 		checkStep();
 	}
 

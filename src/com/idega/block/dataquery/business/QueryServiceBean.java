@@ -295,28 +295,6 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName(), false);
 	}
 	
-	public Collection getListOfOrderConditionParts(IWResourceBundle iwrb,QueryEntityPart entityPart, boolean expertMode){
-		Vector list = new Vector();
-		Iterator iter = getEntityAttributes(entityPart).iterator();
-		while (iter.hasNext()) {
-			EntityAttribute element = (EntityAttribute) iter.next();
-			// added by thomas, filter out confusing entities if the query builder does not work in the expert mode
-			if (	expertMode || 
-						! (	element.isOneToNRelationship() || 
-								element.isPartOfManyToOneRelationship() ||
-								element.isPrimaryKey())) {
-				list.add( createOrderConditionPart(iwrb,entityPart.getBeanClassName(), entityPart.getPath(), element));
-			}
-		}
-		return list;
-	}
-	
-	public QueryOrderConditionPart createOrderConditionPart(IWResourceBundle iwrb, String entityName, String path, EntityAttribute attribute){
-		return new QueryOrderConditionPart( attribute.getName(), entityName, path, attribute.getColumnName(), iwrb.getLocalizedString(attribute.getName()), attribute.getStorageClassName());
-	}
-	
-	
-	
 	
 	public QueryResult generateQueryResult(Integer queryID, IWContext iwc) throws QueryGenerationException{
 		

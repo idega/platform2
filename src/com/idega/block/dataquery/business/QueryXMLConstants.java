@@ -16,6 +16,8 @@ package com.idega.block.dataquery.business;
  */
 
 public abstract class QueryXMLConstants {
+	
+public final static String ID = "ID";
 public final static String ROOT = "query";
 public final static String SOURCE_ENTITY = "source_entity";
 public final static String RELATED_ENTITIES = "related_entities";
