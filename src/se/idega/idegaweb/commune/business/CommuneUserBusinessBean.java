@@ -5,8 +5,12 @@ import com.idega.block.school.data.School;
 import com.idega.business.*;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.business.AddressBusiness;
 import com.idega.core.data.Address;
+import com.idega.core.data.Country;
+import com.idega.core.data.CountryHome;
 import com.idega.core.data.Phone;
+import com.idega.core.data.PostalCode;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
 import com.idega.user.business.*;
@@ -48,7 +52,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Also adds the citizen to the Commune Root Group.
 	 */
 	public User createCitizen(String firstname, String middlename, String lastname, String personalID) throws CreateException, RemoteException {
-		return this.createCitizen(firstname, middlename, lastname, personalID, null, null);
+		return this.createCitizen(firstname, middlename, lastname, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname, personalID,
@@ -92,7 +96,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Also adds the citizen to the Commune Root Group.
 	 */
 	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
-		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null, null);
+		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
 		User user = null;
@@ -150,7 +154,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Commune Special Citizen Root Group (people who don't live in Nacka).
 	 */
 	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
-		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null, null);
+		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
 		User user = null;
@@ -668,4 +672,55 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return -1;
 	}
 
-}
+	private Gender getGenderFromPin(String pin){
+		try {
+			GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
+			if(Integer.parseInt(pin.substring(10,11)) % 2 == 0 ){
+				return home.getFemaleGender();
+			}
+			else{
+				return home.getMaleGender();
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	private IWTimestamp getBirthDateFromPin(String pin){
+		int dd = Integer.parseInt(pin.substring(6,8));
+		int mm = Integer.parseInt(pin.substring(4,6));
+		int yyyy = Integer.parseInt(pin.substring(0,4));
+		IWTimestamp dob = new IWTimestamp(dd,mm,yyyy);
+		return dob;
+	}
+	
+	public void updateCitizen(int userID, String firstName, String middleName, String lastName, String personalID) throws RemoteException {
+		try {
+			updateUser(userID, firstName, middleName, lastName, null, null, (Integer) (getGenderFromPin(personalID).getPrimaryKey()), personalID, getBirthDateFromPin(personalID), (Integer) getRootCitizenGroup().getPrimaryKey());
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace(System.err);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+		}
+	}
+	
+	public void updateCitizenAddress(int userID, String address, String postalCode, String postalName) throws RemoteException {
+		try {
+			AddressBusiness addressBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
+			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("SE");
+			PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,country);
+
+			updateUsersMainAddressOrCreateIfDoesNotExist(new Integer(userID), address, (Integer) code.getPrimaryKey(), country.getName(), postalName, postalName, null);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace(System.err);
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+		}
+	}
+ }

@@ -72,4 +72,6 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException;
 	
 	public int getRootAdministratorGroupID() throws RemoteException;
+	public void updateCitizen(int userID, String firstName, String middleName, String lastName, String personalID) throws RemoteException;
+	public void updateCitizenAddress(int userID, String address, String postalCode, String postalName) throws RemoteException;
 }
