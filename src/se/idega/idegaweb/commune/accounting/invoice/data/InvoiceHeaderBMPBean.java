@@ -30,15 +30,10 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_OWN_POSTING = "own_postiong";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	
-	/**
-	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
-	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
-	/**
-	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
-	 */
+
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
