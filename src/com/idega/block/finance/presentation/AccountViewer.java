@@ -259,7 +259,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         TableTexts[0] = new Text(new idegaTimestamp(entry.getLastUpdated()).getISLDate(".",true));
         TableTexts[1] = new Text(entry.getName());
         TableTexts[2] = new Text(entry.getInfo());
-        int p = entry.getPrice();
+        float p = entry.getPrice();
         debet = p > 0 ? true : false ;
         TableTexts[3] = new Text(NF.format(p));
 

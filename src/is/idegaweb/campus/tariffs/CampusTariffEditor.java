@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.5 2001/07/23 10:04:56 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.6 2001/08/13 10:12:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -193,7 +193,7 @@ public class CampusTariffEditor extends KeyEditor{
           if(hLodgings.containsKey(tatt))
             T.add(formatText(((GenericEntity)hLodgings.get(tatt)).getName()),2,i+2);
           T.add(formatText(tariffs[i].getName()),3,i+2);
-          T.add(formatText(tariffs[i].getPrice()),4,i+2);
+          T.add(formatText(String.valueOf(tariffs[i].getPrice())),4,i+2);
           T.add(formatText(tariffs[i].getInfo()),5,i+2);
           Integer I = new Integer(tariffs[i].getAccountKeyId());
           if(hAK.containsKey(I))
@@ -301,7 +301,7 @@ public class CampusTariffEditor extends KeyEditor{
       int pos;
       if(i <= count && !ifnew ){
         pos = i-1;
-        int iPrice = tariffs[pos].getPrice();
+        float iPrice = tariffs[pos].getPrice();
         nameInput  = new TextInput("te_nameinput"+i,tariffs[pos].getName());
         infoInput = new TextInput("te_infoinput"+i,tariffs[pos].getInfo());
         drpAtt = this.drpLodgings("te_attdrp"+i,tariffs[pos].getTariffAttribute(),XL,BL,FL,CL,TL);
