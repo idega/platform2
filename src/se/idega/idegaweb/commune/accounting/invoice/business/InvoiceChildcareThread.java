@@ -149,6 +149,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//First option is to set it to the invoice receiver according to the contract
 		User invoiceReceiver = contract.getInvoiceReceiver();
 		errorRelated.append("Contract owner "+contract.getApplication().getOwner().getName());
+		errorRelated.append("Contract owner P# "+contract.getApplication().getOwner().getPersonalID());
 		User child = contract.getChild();
 		
 		//If non is set in the contract, start looking for parents at the same address
@@ -233,6 +234,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated = new ErrorLogger();
 					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
 					errorRelated.append("Contract "+contract.getContractID());
+					errorRelated.append("Contract Start "+contract.getValidFromDate());
+					errorRelated.append("Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
 					
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract
@@ -243,6 +246,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("SchoolType "+schoolType.getName());
 					errorRelated.append("Child "+contract.getChild().getName());
+					errorRelated.append("Child P# "+contract.getChild().getPersonalID());
 	
 					
 					// **Fetch invoice receiver

@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/07 10:32:29 $ by $Author: palli $
+ * Last modified: $Date: 2004/01/07 16:53:23 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.90 $
+ * @version $Revision: 1.91 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -143,7 +143,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							try {
 								errorRelated = new ErrorLogger(tmpErrorRelated);
 								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
-								errorRelated.append("SchoolClassMemeber: "+schoolClassMember.getPrimaryKey());
 								createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
 							}
 							catch (NullPointerException e) {
@@ -287,9 +286,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	
 	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
 			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+
+		errorRelated.append("SchoolClassMemeber: "+schoolClassMember.getPrimaryKey());
 		if (null != schoolClassMember.getStudent()) {
 			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
-			dispTime("Found " + schoolClassMember.getStudent().getName());
+			errorRelated.append("Student P#"+schoolClassMember.getStudent().getPersonalID());
 		}
 		errorRelated.logToConsole();
 		final boolean placementIsInPeriod = isPlacementInPeriod(schoolClassMember);
