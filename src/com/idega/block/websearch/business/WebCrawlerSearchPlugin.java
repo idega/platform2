@@ -1,5 +1,5 @@
 /*
- * $Id: WebCrawlerSearchPlugin.java,v 1.1 2005/01/25 17:48:51 eiki Exp $
+ * $Id: WebCrawlerSearchPlugin.java,v 1.2 2005/02/01 17:29:13 eiki Exp $
  * Created on Jan 17, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.lucene.queryParser.ParseException;
 import com.idega.block.websearch.data.WebSearchHit;
+import com.idega.block.websearch.data.WebSearchIndex;
 import com.idega.core.search.business.Search;
 import com.idega.core.search.business.SearchPlugin;
 import com.idega.core.search.business.SearchQuery;
@@ -28,12 +29,12 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/25 17:48:51 $ by $Author: eiki $
+ *  Last modified: $Date: 2005/02/01 17:29:13 $ by $Author: eiki $
  * This class implements the Searchplugin interface and can therefore be used in a Search block (com.idega.core.search)<br>
  * for searching the websites that are crawled and indexed by the websearch site crawler.
  * To use it simply register this class as a iw.searchable component in a bundle.
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class WebCrawlerSearchPlugin implements SearchPlugin {
 
@@ -101,41 +102,47 @@ public class WebCrawlerSearchPlugin implements SearchPlugin {
 		search.setSearchQuery(searchQuery);
 		
 
-		//todo use all indexes not just main
-		WebSearcher searcher = new WebSearcher(WebSearchManager.getIndex("main"));
+		
 		
 		try {
-			WebSearchHitIterator hits = searcher.search(queryString);
-			
-			while (hits.hasNext()) {
-				WebSearchHit hit = (WebSearchHit) hits.next();
+//			todo use all indexes not just main
+			WebSearchIndex index = WebSearchManager.getIndex("main");
+			if(index!=null){
+				WebSearcher searcher = new WebSearcher(index);
+				WebSearchHitIterator hits = searcher.search(queryString);
 				
-				//String extraInfo = hit.getHREF() + " - " + hit.getContentType() + " - " + iwrb.getLocalizedString("rank", "rank") + ": " + hit.getRank();
-				String extraInfo = hit.getContentType();
-				String sTitle = hit.getTitle();
-				if (sTitle == null){
-					sTitle = iwrb.getLocalizedString("websearch.untitled", "Untitled");
+				while (hits.hasNext()) {
+					WebSearchHit hit = (WebSearchHit) hits.next();
+					
+					//String extraInfo = hit.getHREF() + " - " + hit.getContentType() + " - " + iwrb.getLocalizedString("rank", "rank") + ": " + hit.getRank();
+					String extraInfo = hit.getContentType();
+					String sTitle = hit.getTitle();
+					if (sTitle == null){
+						sTitle = iwrb.getLocalizedString("websearch.untitled", "Untitled");
+					}
+					else if (sTitle.equals("null")){
+						sTitle = iwrb.getLocalizedString("websearch.untitled", "Untitled");
+					}
+					
+					String contents = hit.getContents(queryString); //could be heavy....
+	
+					if (contents != null) {
+						contents = "..." + contents + "...";
+					}
+					
+					BasicSearchResult result = new BasicSearchResult();
+					result.setSearchResultType(SEARCH_TYPE);
+					result.setSearchResultName(sTitle);
+					result.setSearchResultURI(hit.getHREF());
+					result.setSearchResultAbstract(contents);
+					result.setSearchResultExtraInformation(extraInfo);
+					
+					results.add(result);
 				}
-				else if (sTitle.equals("null")){
-					sTitle = iwrb.getLocalizedString("websearch.untitled", "Untitled");
-				}
-				
-				String contents = hit.getContents(queryString); //could be heavy....
-
-				if (contents != null) {
-					contents = "..." + contents + "...";
-				}
-				
-				BasicSearchResult result = new BasicSearchResult();
-				result.setSearchResultType(SEARCH_TYPE);
-				result.setSearchResultName(sTitle);
-				result.setSearchResultURI(hit.getHREF());
-				result.setSearchResultAbstract(contents);
-				result.setSearchResultExtraInformation(extraInfo);
-				
-				results.add(result);
 			}
-						
+			else{
+				System.err.println("WebCrawlerSearchPlugin: index does not exist.");
+			}				
 		}
 		catch (IOException e) {
 			e.printStackTrace();
