@@ -379,6 +379,8 @@ public class TournamentController{
             else if (AccessControl.isAdmin(modinfo)) {
 
             }
+
+            return null;
     }
 
     public static List getFields(ModuleInfo modinfo, Union union) throws SQLException{
@@ -388,6 +390,8 @@ public class TournamentController{
             else if (AccessControl.isAdmin(modinfo)) {
 
             }
+
+            return null;
     }
 
     public static SubmitButton getAheadButton(String name, String value) {
