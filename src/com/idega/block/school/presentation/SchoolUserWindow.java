@@ -20,7 +20,7 @@ public class SchoolUserWindow extends Window {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		//this.setParentToReload();
+		this.setParentToReload();
 		SchoolUserEditor e = new SchoolUserEditor();
 		e.setHideLogin(true);
 		e.setHideBackButton(true);
