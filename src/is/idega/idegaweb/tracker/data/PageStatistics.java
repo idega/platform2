@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.sql.SQLException;
 import com.idega.data.GenericEntity;
 import com.idega.builder.data.IBPage;
+import com.idega.core.ICUser;
 
 
 /**
@@ -33,7 +34,7 @@ public class PageStatistics extends GenericEntity {
     addAttribute(getColumnNameLocaleId(),"Locale",true,true, Integer.class,"many-to-one",ICLocale.class);
     addAttribute(getColumnNameDate(),"Date of record",true,true,Timestamp.class);
     addAttribute(getColumnNameGenerationTime(),"time to generate xml",true,true,Integer.class);
-    addAttribute(getColumnNameGenerationTime(),"time to generate xml",true,true,User.class);
+    addAttribute(getColumnNameUserId(),"user id",true,true,Integer.class,"many-to-one",ICUser.class);
   }
 
   public String getEntityName() {
@@ -48,6 +49,7 @@ public class PageStatistics extends GenericEntity {
   public static String getColumnNameSessions(){return "SESSIONS";}
   public static String getColumnNameDate(){return "MODIFICATION_DATE";}
   public static String getColumnNameGenerationTime(){return "GENERATION_TIME";}
+  public static String getColumnNameUserId(){return "USER_ID";}
 
   public int getPageId(){
     return getIntColumnValue(getColumnNamePageId());
@@ -67,6 +69,10 @@ public class PageStatistics extends GenericEntity {
 
   public int getSessions(){
     return getIntColumnValue(getColumnNameSessions());
+  }
+
+  public int getUserId(){
+    return getIntColumnValue(getColumnNameUserId());
   }
 
   public Timestamp getDate(){
@@ -99,6 +105,10 @@ public class PageStatistics extends GenericEntity {
 
   public void setGenerationTime(int milliseconds){
     setColumn(getColumnNameGenerationTime(), milliseconds);
+  }
+
+  public void setUserId(int userId){
+    setColumn(getColumnNameUserId(), userId);
   }
 
 }
