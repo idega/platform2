@@ -422,6 +422,18 @@ public class GolferPage extends Page{
     homeTable.add(Text.emptyString(),2,1);
 
     NewsReader news = new NewsReader();
+
+    //temp
+    boolean isBjorgvin = false;
+    try {
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(modinfo).getID() == this.memberId);
+    }
+    catch (Exception ex) {
+      isBjorgvin = false;
+    }
+
+    news.setAdmin(isBjorgvin);
+    //temp end
     news.setConnectionAttributes("golfer_page", homeNewsReaderId);
     news.setNewsEditorURL("/golfers/newsIndex.jsp");
 //    news.setNumberOfDays(4);
