@@ -20,4 +20,5 @@ public class RuleTypeConstant {
 	public final static String CONDITION_ID_STADSBIDRAG = "8";
 	public final static String CONDITION_ID_STUDY_PATH = "9";
 	public final static String CONDITION_ID_MAX_AMOUNT = "10";
+	public final static String CONDITION_ID_COMMUNE = "11";
 }

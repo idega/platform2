@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationComparator.java,v 1.3 2003/10/15 12:11:55 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.4 2003/10/23 21:10:33 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,14 +14,15 @@ import com.idega.data.GenericEntity;
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.resource.data.Resource;
+import com.idega.block.school.data.SchoolStudyPath;
 
 /**
  * RegulationComparator compares objects for the dropdowns
  * <p>
- * $Id: RegulationComparator.java,v 1.3 2003/10/15 12:11:55 kjell Exp $
+ * $Id: RegulationComparator.java,v 1.4 2003/10/23 21:10:33 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RegulationComparator implements Comparator {
 
@@ -47,6 +48,13 @@ public class RegulationComparator implements Comparator {
 				s1 = ""+((Resource) o1).getResourceName();
 				s2 = ""+((Resource) o2).getResourceName();
 			}
+			if (o1.getClass().getName().indexOf("SchoolStudyPathBMPBean") != -1) {
+				// Nasty hack to get the StudyPath entity with special methods to order properly
+				// Gotta find a better way to do this /Kelly
+				s1 = ""+((SchoolStudyPath) o1).getCode();
+				s2 = ""+((SchoolStudyPath) o2).getCode();
+			}
+			
 			return s1.compareTo(s2);
 		} else if (o1 instanceof Object []){
 			Object [] co1 = (Object []) o1;

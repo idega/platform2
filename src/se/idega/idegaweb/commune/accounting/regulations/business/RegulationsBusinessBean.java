@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.46 2003/10/17 13:44:21 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.47 2003/10/23 21:10:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -53,6 +53,8 @@ import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
+
+
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -1048,7 +1050,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"getLocalizationKey",
 					"")
 			);
-			
+			arr.add(new ConditionHolder(
+				RuleTypeConstant.CONDITION_ID_COMMUNE, 
+				"Kommun", 
+				LP + "kommun", 
+				"com.idega.core.location.business.CommuneBusiness", 
+				"getCommunes",
+				"getCommuneName",
+				"")
+			);
 			if (OperationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
 				arr.add(new ConditionHolder(
 					RuleTypeConstant.CONDITION_ID_STUDY_PATH, 
@@ -1056,11 +1066,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "studievag", 
 					"se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness", 
 					"findAllStudyPaths",
-					"getDescription",
+					"getCode",
 					"")
 				);
 			}
-
+		
 
 	/*
 			arr.add(new ConditionHolder(
