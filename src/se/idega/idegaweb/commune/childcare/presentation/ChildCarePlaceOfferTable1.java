@@ -246,7 +246,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 			add(_page.getSmallText(String.valueOf(queuePosition)), column++, row);
 		}
 
-		if (!disableReqBtn && !isCancelled) {
+		//if (!disableReqBtn && !isCancelled) {
+		if (!isCancelled) {
 			Link reqBtn = new Link(_page.getQuestionIcon(_page.localize(REQUEST_INFO)));
 			reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
 			reqBtn.addParameter(CCConstants.APPID, app.getNodeID());
