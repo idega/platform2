@@ -24,6 +24,7 @@ import com.idega.util.text.TextStyler;
 
 public class Box extends Block implements Builderaware {
 
+	private boolean _showHeaders;
 	private static final String _DEFAULT_ICON_PREFIX = "icfileicons/ui/iw/";
 	private static final String _DEFAULT_ICON_SUFFIX = ".gif";
 
@@ -71,6 +72,7 @@ public class Box extends Block implements Builderaware {
 	private String _activeStyle;
 	private String _hoverStyle;
 	private String _name;
+	private String _headerStyle;
 	private String _highlightColor = "#0000FF";
 	private boolean _showOnlyBelongingToUser = false;
 
@@ -400,6 +402,31 @@ public class Box extends Block implements Builderaware {
 			table.add(categoryText, 1, 1);
 
 			int linkRow = 2;
+			int column = 1;
+			
+			if (_showHeaders) {
+				Text nameHeader = new Text(_iwrb.getLocalizedString("link_name", "Name"));
+				if (_headerStyle != null)
+					nameHeader.setStyleAttribute(_headerStyle);
+				table.add(nameHeader, column++, linkRow);
+
+				if (_showFileSize) {
+					Text fileSizeHeader = new Text(_iwrb.getLocalizedString("link_file_size", "File size"));
+					if (_headerStyle != null)
+						fileSizeHeader.setStyleAttribute(_headerStyle);
+					table.setWidth(column++, linkRow, 12);
+					table.add(fileSizeHeader, column++, linkRow);
+					
+					if (_showMimeType) {
+						Text mimetypeHeader = new Text(_iwrb.getLocalizedString("link_mimetype", "Mimetype"));
+						if (_headerStyle != null)
+							mimetypeHeader.setStyleAttribute(_headerStyle);
+						table.setWidth(column++, linkRow, 12);
+						table.add(mimetypeHeader, column, linkRow);
+					}
+				}
+				linkRow++;
+			}
 
 			BoxLink[] links = null;
 			System.out.println("Getting links in getCollectionView()");
@@ -410,7 +437,6 @@ public class Box extends Block implements Builderaware {
 			else
 				links = BoxFinder.getLinksInBox(box, categories[a]);
 			if (links != null) {
-				int column = 1;
 				for (int b = 0; b < links.length; b++) {
 					column = 1;
 					Link link = getLink(links[b]);
@@ -706,6 +732,7 @@ public class Box extends Block implements Builderaware {
 		}
 		return obj;
 	}
+
 	/**
 	 * @param b
 	 */
@@ -718,6 +745,13 @@ public class Box extends Block implements Builderaware {
 	 */
 	public void setShowMimeType(boolean b) {
 		_showMimeType = b;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setShowHeaders(boolean b) {
+		_showHeaders = b;
 	}
 
 }
