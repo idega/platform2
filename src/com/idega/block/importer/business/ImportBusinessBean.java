@@ -3,6 +3,7 @@ package com.idega.block.importer.business;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -14,6 +15,8 @@ import com.idega.block.importer.data.ImportHandlerHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.business.IBOSession;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.business.GroupBusiness;
 
 
@@ -138,10 +141,10 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 			ImportFileHandler handler;
 			
   		if( isSessionBean ){
-				handler = (ImportFileHandler)  this.getSessionInstance(iwuc,importHandlerInterfaceClass);
+				handler = (ImportFileHandler)  getSessionInstance(iwuc,importHandlerInterfaceClass);
   		}
   		else{
-				handler = (ImportFileHandler)  this.getServiceInstance(importHandlerInterfaceClass);
+				handler = (ImportFileHandler)  getServiceInstance(importHandlerInterfaceClass);
   		}
  
 	    return handler;
@@ -151,10 +154,25 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	      return (ImportFile)Class.forName(fileClass).newInstance();
   	}
 
-  	
-  	
-  	
-  	
-  	
-
+	public DropdownMenu getImportHandlers(IWContext iwc, String name) throws RemoteException {
+		DropdownMenu menu = new DropdownMenu(name);
+		Collection col = getImportHandlers();
+		Iterator iter = col.iterator();
+		while (iter.hasNext()) {
+			ImportHandler element = (ImportHandler) iter.next();
+			menu.addMenuElement(element.getClassName(), element.getName());
+		}
+		return menu;
+	}
+	public DropdownMenu getImportFileClasses(IWContext iwc, String name) throws RemoteException {
+		DropdownMenu menu = new DropdownMenu(name);
+		Collection col = getImportFileTypes();
+		Iterator iter = col.iterator();
+		while (iter.hasNext()) {
+			ImportFileClass element = (ImportFileClass) iter.next();
+			menu.addMenuElement(element.getClassName(), element.getName());
+		}
+		return menu;
+	}
+	
 }

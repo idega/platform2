@@ -12,6 +12,7 @@ public interface ImportFile{
   public String getValueAtIndexFromRecordString(int index, String recordString);
   public void setFile(File file);
   public String getEmptyValueString();
+  public void close();
 /**
  * Method setEmptyValueString. This will be the value returned if a column you want is empty in the import file.
  * @param emptyValueString

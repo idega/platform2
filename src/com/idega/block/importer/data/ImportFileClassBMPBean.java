@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 
 
 /**
@@ -125,6 +126,12 @@ public class ImportFileClassBMPBean extends com.idega.data.GenericEntity impleme
 
   public Collection ejbFindAllImportFileClasses()throws FinderException{
     return super.idoFindAllIDsBySQL();
+  }
+
+  public Integer ejbFindByClassName(String className) throws FinderException {
+	IDOQuery query = idoQuery();
+	query.appendSelectAllFrom(this).appendWhereEqualsQuoted(getClassColumnName(), className);
+	return (Integer)idoFindOnePKByQuery(query);
   }
 
 }

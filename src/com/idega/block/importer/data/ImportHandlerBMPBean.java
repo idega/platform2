@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOQuery;
+
 
 /**
  * Title:        com.idega.block.importer.data.ImportHandlerBMPBean
@@ -32,7 +34,10 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
     this.addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
     this.addAttribute(getClassColumnName(),"Class name",true,true,"java.lang.String",500);
     this.addAttribute(getDescriptionColumnName(),"Description",true,true,"java.lang.String",500);
+    this.addAttribute(getAutoImpFolderColumnName(),"Automatic import folder",true,true,"java.lang.String",500);
+    this.addAttribute(getAutoImpFileTypeColumnName(),"Automatic import file type",true,true,"java.lang.String",500);
   }
+  
   public String getEntityName() {
     return "im_handler";
   }
@@ -48,12 +53,28 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
     return "description";
   }
 
+  public static String getAutoImpFolderColumnName(){
+    return "auto_imp_folder";
+  }
+
+  public static String getAutoImpFileTypeColumnName(){
+    return "auto_imp_file_type";
+  }
+
   public void setName(String name){
     this.setColumn(getNameColumnName(),name);
   }
 
   public void setDescription(String description){
     this.setColumn(getDescriptionColumnName(),description);
+  }
+
+  public void setAutoImpFolder(String autoImpFolder){
+    this.setColumn(getAutoImpFolderColumnName(),autoImpFolder);
+  }
+
+  public void setAutoImpFileType(String autoImpFileType){
+    this.setColumn(getAutoImpFileTypeColumnName(),autoImpFileType);
   }
 
   public String getName(){
@@ -64,7 +85,15 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
     return this.getStringColumnValue(getDescriptionColumnName());
   }
   
-    public void setClassName(String className){
+  public String getAutoImpFolder(){
+    return this.getStringColumnValue(getAutoImpFolderColumnName());
+  }
+  
+  public String getAutoImpFileType(){
+    return this.getStringColumnValue(getAutoImpFileTypeColumnName());
+  }
+  
+   public void setClassName(String className){
     this.setColumn(getClassColumnName(),className);
   }
   
@@ -122,6 +151,21 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
 
   public Collection ejbFindAllImportHandlers()throws FinderException{
     return super.idoFindAllIDsBySQL();
+  }
+  
+  public Collection ejbFindAllAutomaticUpdates() throws FinderException{
+	IDOQuery query = idoQuery();
+	query.appendSelectAllFrom(this);
+	query.appendWhere();
+	query.append(getAutoImpFolderColumnName());
+	query.appendIsNotNull();
+	return idoFindPKsByQuery(query);
+  }
+
+  public Integer ejbFindByClassName(String className) throws FinderException {
+	IDOQuery query = idoQuery();
+	query.appendSelectAllFrom(this).appendWhereEqualsQuoted(getClassColumnName(), className);
+	return (Integer)idoFindOnePKByQuery(query);
   }
 
 }

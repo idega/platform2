@@ -13,6 +13,13 @@ public class ImportHandlerHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public java.util.Collection findAllAutomaticUpdates()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ImportHandlerBMPBean)entity).ejbFindAllAutomaticUpdates();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllImportHandlers()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ImportHandlerBMPBean)entity).ejbFindAllImportHandlers();
@@ -20,18 +27,17 @@ public java.util.Collection findAllImportHandlers()throws javax.ejb.FinderExcept
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public ImportHandler findByClassName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ImportHandlerBMPBean)entity).ejbFindByClassName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public ImportHandler findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ImportHandler) super.findByPrimaryKeyIDO(pk);
  }
 
-/*
-public com.idega.user.data.ImportHandler getFemaleImportHandler()throws java.rmi.RemoteException,javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	com.idega.user.data.ImportHandler theReturn = ((ImportHandlerBMPBean)entity).ejbHomeGetFemaleImportHandler();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
+
+
 }
-*/
-
-
-} 

@@ -10,4 +10,6 @@ public interface ImportBusiness extends com.idega.business.IBOService
  public java.util.Collection getImportHandlers()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean importRecords(java.lang.String p0,java.lang.String p1,java.lang.String p2,com.idega.idegaweb.IWUserContext p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean importRecords(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,com.idega.idegaweb.IWUserContext p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.presentation.ui.DropdownMenu getImportHandlers(com.idega.presentation.IWContext p0, String p1) throws java.rmi.RemoteException;
+ public com.idega.presentation.ui.DropdownMenu getImportFileClasses(com.idega.presentation.IWContext p0, String p1) throws java.rmi.RemoteException;
 }

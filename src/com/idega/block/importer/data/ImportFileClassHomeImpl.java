@@ -20,18 +20,17 @@ public java.util.Collection findAllImportFileClasses()throws javax.ejb.FinderExc
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public ImportFileClass findByClassName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ImportFileClassBMPBean)entity).ejbFindByClassName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public ImportFileClass findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ImportFileClass) super.findByPrimaryKeyIDO(pk);
  }
 
-/*
-public com.idega.user.data.ImportFileClass getFemaleImportFileClass()throws java.rmi.RemoteException,javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	com.idega.user.data.ImportFileClass theReturn = ((ImportFileClassBMPBean)entity).ejbHomeGetFemaleImportFileClass();
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-*/
 
 
 }

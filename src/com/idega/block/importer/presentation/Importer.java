@@ -1,16 +1,13 @@
 package com.idega.block.importer.presentation;
 import java.io.File;
 import java.rmi.RemoteException;
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.importer.business.ImportBusiness;
-import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
-import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.media.business.MediaConstants;
 import com.idega.block.media.presentation.MediaChooserWindow;
@@ -31,7 +28,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -372,11 +368,11 @@ public class Importer extends StyledIWAdminWindow {
 				Text importHandler = new Text(iwrb.getLocalizedString("importer.import.handler", "Import handler : "));
 				importHandler.setBold();
 				fileTable.add(importHandler, 1, fileCount + 3);
-				fileTable.add(this.getImportHandlers(iwc), 2, fileCount + 3);
+				fileTable.add(getImportBusiness(iwc).getImportHandlers(iwc,PARAMETER_IMPORT_HANDLER), 2, fileCount + 3);
 				Text fileType = new Text(iwrb.getLocalizedString("importer.import.filetype", "File type : "));
 				fileType.setBold();
 				fileTable.add(fileType, 3, fileCount + 3);
-				fileTable.add(this.getImportFileClasses(iwc), 4, fileCount + 3);
+				fileTable.add(getImportBusiness(iwc).getImportFileClasses(iwc,this.PARAMETER_IMPORT_FILE), 4, fileCount + 3);
 				Link upload = new Link(iwrb.getLocalizedString("importer.upload", "Upload"));
 				upload.setWindowToOpen(MediaChooserWindow.class);
 				upload.setAsImageButton(true);
@@ -485,9 +481,9 @@ public class Importer extends StyledIWAdminWindow {
 				}
 			}
 			fileTable.add(iwrb.getLocalizedString("importer.select.import.handler", "Select import handler"), 1, files.length + 2);
-			fileTable.add(this.getImportHandlers(iwc), 2, files.length + 2);
+			fileTable.add(getImportBusiness(iwc).getImportHandlers(iwc,PARAMETER_IMPORT_HANDLER), 2, files.length + 2);
 			fileTable.add(iwrb.getLocalizedString("importer.select.import.file.type", "Select file type"), 1, files.length + 3);
-			fileTable.add(this.getImportFileClasses(iwc), 2, files.length + 3);
+			fileTable.add(getImportBusiness(iwc).getImportFileClasses(iwc,this.PARAMETER_IMPORT_FILE), 2, files.length + 3);
 			fileTable.add(new SubmitButton(), 2, files.length + 4);
 			add(form);
 		}
@@ -500,28 +496,7 @@ public class Importer extends StyledIWAdminWindow {
 			add(fileTable);
 		}
 	}
-	public DropdownMenu getImportHandlers(IWContext iwc) throws RemoteException {
-		DropdownMenu menu = new DropdownMenu(this.PARAMETER_IMPORT_HANDLER);
-		Collection col = getImportBusiness(iwc).getImportHandlers();
-		Iterator iter = col.iterator();
-		// should the business class to this for me?
-		while (iter.hasNext()) {
-			ImportHandler element = (ImportHandler) iter.next();
-			menu.addMenuElement(element.getClassName(), element.getName());
-		}
-		return menu;
-	}
-	public DropdownMenu getImportFileClasses(IWContext iwc) throws RemoteException {
-		DropdownMenu menu = new DropdownMenu(this.PARAMETER_IMPORT_FILE);
-		Collection col = getImportBusiness(iwc).getImportFileTypes();
-		Iterator iter = col.iterator();
-		// should the business class to this for me?
-		while (iter.hasNext()) {
-			ImportFileClass element = (ImportFileClass) iter.next();
-			menu.addMenuElement(element.getClassName(), element.getName());
-		}
-		return menu;
-	}
+
 	public ImportBusiness getImportBusiness(IWContext iwc) throws RemoteException {
 		return (ImportBusiness) IBOLookup.getServiceInstance(iwc, ImportBusiness.class);
 	}

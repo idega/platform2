@@ -281,4 +281,24 @@ public class GenericImportFile implements ImportFile{
 		this.emptyValueString = emptyValueString;
 	}
 
+	/**
+	 * Closes the FileReader and BufferedReader
+	 * @see com.idega.block.importer.data.ImportFile#close()
+	 */
+	public void close() {
+		if(null!=br){
+			try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if(null!=fr){
+			try {
+				fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
