@@ -186,4 +186,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return false;
 		}
 	}
-}
+	
+	
+	public WorkReport getWorkReportById(int id){
+		try {
+			return getWorkReportHome().findByPrimaryKey(new Integer(id));
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+
+}//end of class
