@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.9 2003/08/25 21:54:35 anders Exp $
+ * $Id: ApplicationForm.java,v 1.10 2003/08/28 10:31:08 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -19,22 +20,21 @@ import com.idega.presentation.ui.HiddenInput;
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/08/25 21:54:35 $
+ * Last modified: $Date: 2003/08/28 10:31:08 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ApplicationForm extends AccountingBlock {
 
 	private Form form = null;
 	private Table table = null;
 	private AccountingBlock parent = null;
-
+	
 	/**
 	 * Constructs an empty application form.
 	 */
-	public ApplicationForm(AccountingBlock parent) {
-		this.parent = parent;
+	public ApplicationForm(){
 		form = new Form();
 		table = new Table(1, 4);
 		table.setWidth(getWidth());
@@ -42,6 +42,20 @@ public class ApplicationForm extends AccountingBlock {
 		table.setCellspacing(getCellspacing());
 		form.add(table);
 		super.add(form);
+	}
+	
+	
+
+	/**
+	 * Constructs an empty application form.
+	 */
+	public ApplicationForm(AccountingBlock parent) {
+		this();
+		setParent(parent);
+	}
+	
+	public void setParent(AccountingBlock parent){
+		this.parent = parent;
 	}
 
 	/**
@@ -68,7 +82,7 @@ public class ApplicationForm extends AccountingBlock {
 	 * The search panel will appear below title in the application form.
 	 * @param searchPanel the table containing the search panel
 	 */
-	public void setSearchPanel(Table searchPanel) {
+	public void setSearchPanel(PresentationObject searchPanel) {
 		table.add(searchPanel, 1, 2);
 	}
 
@@ -109,6 +123,15 @@ public class ApplicationForm extends AccountingBlock {
 		table.add(new HiddenInput(parameter, value), 1, 4);
 	}
 	
+	/**
+	 * Maintains the specified parameter in the form request
+	 * @param parameterName
+	 */
+	public void maintainParameter(String parameterName){
+		if(this.form!=null)
+			this.form.maintainParameter(parameterName);
+	}
+	
 	public String localize(String textKey, String defaultText) {
 		if (parent != null) {
 			return parent.localize(textKey, defaultText);
@@ -116,5 +139,7 @@ public class ApplicationForm extends AccountingBlock {
 			return defaultText;
 		}
 	}
+	
+
 }
  

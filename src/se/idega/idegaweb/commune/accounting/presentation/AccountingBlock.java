@@ -18,6 +18,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -106,6 +107,8 @@ public class AccountingBlock extends CommuneBlock {
 	protected TextInput getTextInput(String parameter, String text) {
 		return (TextInput) getStyledInterface(new TextInput(parameter, text));
 	}
+	
+	
 	
 	/**
 	 * Returns a formatted text input with the specified width.
@@ -345,5 +348,15 @@ public class AccountingBlock extends CommuneBlock {
 		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), entities, methodName, getResourceBundle(), defaultValue);
 		
 		return menu;
+	}
+	
+	/**
+	 * Returns a formatted check box.
+	 * @param parameter the form parameter
+	 * @param value the value to set
+	 * @author aron
+	 */
+	protected CheckBox getCheckBox(String parameter, String value) {
+		return (CheckBox) getStyledInterface(new CheckBox(parameter, value));
 	}
 }

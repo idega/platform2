@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.11 2003/08/25 21:54:35 anders Exp $
+ * $Id: ButtonPanel.java,v 1.12 2003/08/28 10:31:08 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
@@ -18,10 +19,10 @@ import com.idega.builder.data.IBPage;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/25 21:54:35 $
+ * Last modified: $Date: 2003/08/28 10:31:08 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -108,14 +109,22 @@ public class ButtonPanel extends AccountingBlock {
 		addButton(button);
 	}
 
-	/*
+	/**
 	 * Adds a button to the panel.
 	 */
-	private void addButton(GenericButton button) {
+	public void addButton(GenericButton button) {
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
 	}
+	
+	/**
+	 * Adds a object to the panel.
+	*/
+	public void addObject(PresentationObject object) {
+	  table.add(object, buttonColumn , 1);
+	  buttonColumn++;
+    }
 	
 	public String localize(String textKey, String defaultText) {
 		if (parent != null) {
