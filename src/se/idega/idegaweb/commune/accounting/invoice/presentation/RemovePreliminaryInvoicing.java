@@ -57,9 +57,9 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 		form.add(month);
 
 		GenericButton saveButton = this.getSaveButton();
-		GenericButton cancelButton = this.getCancelButton();
+//		GenericButton cancelButton = this.getCancelButton();
 		form.add(saveButton);
-		form.add(cancelButton);
+//		form.add(cancelButton);
 	}
 	
 	/**
