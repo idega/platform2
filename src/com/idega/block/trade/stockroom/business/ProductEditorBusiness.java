@@ -70,37 +70,35 @@ public class ProductEditorBusiness extends IBOServiceBean {
 	public void setThumbnail(Product product, int thumbnailId) throws RemoteException, FinderException, IDOException {
 		try {
 			boolean perform = true;
-			if (thumbnailId != -1) {
-				int newThumbId = thumbnailId;
-				int oldThumbId = product.getFileId();
+			int newThumbId = thumbnailId;
+			int oldThumbId = product.getFileId();
 
-				if (newThumbId == product.getFileId()) {
-					perform = false;
+			if (newThumbId == product.getFileId()) {
+				perform = false;
+			}
+
+			if (perform) {
+				if (newThumbId == -1) {
+					dropImage(product, true);
+					//product.setFileId(null);
+					//product.update();
 				}
-
-				if (perform) {
-					if (newThumbId == -1) {
-						dropImage(product, true);
-						//product.setFileId(null);
-						//product.update();
-					}
-					else {
-						product.setFileId(newThumbId);
-						product.store();
-						ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-						ICFile file = fileHome.findByPrimaryKey(new Integer(newThumbId));
-						product.removeICFile(file);
-						//product.removeFrom(ICFile.class, newThumbId);
-					}
+				else {
+					product.setFileId(newThumbId);
+					product.store();
+					ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+					ICFile file = fileHome.findByPrimaryKey(new Integer(newThumbId));
+					product.removeICFile(file);
+					//product.removeFrom(ICFile.class, newThumbId);
 				}
+			}
 
-				if (perform) {
-					if (oldThumbId != -1) {
-						ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-						ICFile file = fileHome.findByPrimaryKey(new Integer(oldThumbId));
-						product.addICFile(file);
-						//	    product.addTo(ICFile.class, oldThumbId);
-					}
+			if (perform) {
+				if (oldThumbId != -1) {
+					ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+					ICFile file = fileHome.findByPrimaryKey(new Integer(oldThumbId));
+					product.addICFile(file);
+					//	    product.addTo(ICFile.class, oldThumbId);
 				}
 			}
 		}
