@@ -43,7 +43,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setDateCreated(java.sql.Date p0);
  public void setDays(int p0);
  public void setDoublePosting(java.lang.String p0);
- public void setInvoiceHeader(int p0);
+ public void setInvoiceHeaderId(int p0);
  public void setInvoiceHeader(InvoiceHeader p0);
  public void setInvoiceText(java.lang.String p0);
  public void setInvoiceText2(java.lang.String p0);

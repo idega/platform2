@@ -186,7 +186,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return (ChildCareContract) getColumnValue (COLUMN_CHILDCARE_CONTRACT_ID);
 	}
 
-	public void setInvoiceHeader(int i) {
+	public void setInvoiceHeaderId(int i) {
 		setColumn(COLUMN_INVOICE_HEADER, i);
 	}
 	public void setInvoiceHeader(InvoiceHeader i){

@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/02 13:14:31 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/03 20:17:59 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.104 $
+ * @version $Revision: 1.105 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -427,8 +427,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
 		final String doublePosting = getPostingString (context,
 																									 DOUBLE_POSTING_KEY);
+		/*
 		final Integer invoiceCompilation
 				= getIntegerParameter (context, INVOICE_COMPILATION_KEY);
+		*/
+		final InvoiceHeader header = getInvoiceHeader (context);
 		final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
 		final String invoiceText2 = context.getParameter (INVOICE_TEXT2_KEY);
 		final String note = context.getParameter (NOTE_KEY);
@@ -465,7 +468,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final InvoiceBusiness business = getInvoiceBusiness (context);
 		business.createInvoiceRecord
 				(currentUser,
-				 invoiceCompilation,
+				 header,
 				 placementId,
 				 providerId,
 				 ruleText,
@@ -528,13 +531,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
 		final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
 		final String ruleText = context.getParameter (RULE_TEXT_KEY);
+		final InvoiceHeader header = getInvoiceHeader (context);
 		final InvoiceRecord record = getInvoiceRecord (context);
 		
 		// set updated values
 		record.setAmount (amount.floatValue ());
 		record.setAmountVAT (vatAmount.floatValue ());
-		record.setChangedBy (getSignature (currentUser));
-		record.setDateChanged (new java.sql.Date (System.currentTimeMillis ()));
+		final String changedBy = getSignature (currentUser);
+		record.setChangedBy (changedBy);
+		header.setChangedBy (changedBy);
+		final java.sql.Date dateChanged
+				= new java.sql.Date (System.currentTimeMillis ());
+		record.setDateChanged (dateChanged);
+		header.setDateAdjusted (dateChanged);
+		header.store ();
 		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
 		record.setDoublePosting (doublePosting);
 		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
@@ -1538,7 +1548,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 	
 	private String getSignature (final User user) {
-		if (null == user) return "";
+		if (null == user) return "not logged on user";
 		final String firstName = user.getFirstName ();
 		final String lastName = user.getLastName ();
 		return (firstName != null ? firstName + " " : "")

@@ -54,11 +54,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/02 13:22:09 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/03 20:17:59 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -380,8 +380,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			if (null != schoolCategoryKey) header.setSchoolCategoryID
 																				 (schoolCategoryKey);
 			if (null != createdBy) {
-				final String createdBySignature =
-						createdBy.getFirstName () + " " + createdBy.getLastName();
+				final String createdBySignature = getSignature (createdBy);
 				header.setCreatedBy (createdBySignature);
 			}
 			header.setCustodianId (custodianId);
@@ -401,7 +400,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 	
 	private String getSignature (final User user) {
-		if (null == user) return "";
+		if (null == user) return "not logged in user";
 		final String firstName = user.getFirstName ();
 		final String lastName = user.getLastName ();
 		return (firstName != null ? firstName + " " : "")
@@ -410,7 +409,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	public InvoiceRecord createInvoiceRecord
 		(final User createdBy,
-		 final Integer invoiceHeaderId,
+		 final InvoiceHeader header,
 		 final Integer placementId,
 		 final Integer providerId,
 		 final String ruleText,
@@ -443,8 +442,12 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		record.setAmountVAT (null != vatAmount ? vatAmount.floatValue () : 0.0f);
 		record.setDays (null != numberOfDays ? numberOfDays.intValue () : 0);
 		record.setDoublePosting (doublePosting != null ? doublePosting : "");
-		if (null != invoiceHeaderId) record.setInvoiceHeader
-																		 (invoiceHeaderId.intValue ());
+		if (null != header) {
+			record.setInvoiceHeader (header);
+			header.setChangedBy (createdBySignature);
+			header.setDateAdjusted (now);
+			header.store ();
+		}
 		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
 				 ? invoiceText : ruleText);
 		record.setInvoiceText2(null != invoiceText2 && 0 < invoiceText2.length ()
@@ -484,7 +487,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					(regSpecTypeId);
 			final String regSpecTypeName = regSpecType.getRegSpecType ();
 			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
-				final InvoiceHeader header = record.getInvoiceHeader ();
 				final School school = record.getProvider ();
 				final SchoolCategory schoolCategory = header.getSchoolCategory ();
 				final Date period = header.getPeriod ();
