@@ -114,6 +114,10 @@ public PollResult() {
     else {
       if (PollBusiness.thisObjectSubmitted(iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
         PollBusiness.handleInsert(iwc);
+        if ( iwc.getParameter(PollBusiness._PARAMETER_CLOSE) != null ) {
+          setParentToReload();
+          close();
+        }
       }
 
       if ( _pollQuestionID != -1 )

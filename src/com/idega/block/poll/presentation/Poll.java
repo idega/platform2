@@ -2,6 +2,7 @@
 package com.idega.block.poll.presentation;
 
 import java.sql.SQLException;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -33,6 +34,7 @@ private int _iLocaleID;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
+protected IWBundle _iwbPoll;
 
 private Table _myTable;
 public static String _prmPollID = "po.poll_id";
@@ -50,6 +52,12 @@ private int _numberOfShownPolls;
 private boolean _showVotes;
 private boolean _showCollection;
 private idegaTimestamp _date;
+private Image _linkImage;
+private boolean _showInformation = false;
+
+public static final int RADIO_BUTTON_VIEW = 1;
+public static final int LINK_VIEW = 2;
+private int _layout = LINK_VIEW;
 
   public Poll(){
     setDefaultValues();
@@ -66,9 +74,10 @@ private idegaTimestamp _date;
     _pollID = pollID;
   }
 
-	public void main(IWContext iwc)throws Exception{
+  public void main(IWContext iwc)throws Exception{
     _iwrb = getResourceBundle(iwc);
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    _iwbPoll = getBundle(iwc);
 
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -119,10 +128,10 @@ private idegaTimestamp _date;
 
     _myTable.add(getPoll(iwc, poll),1,row);
     add(_myTable);
-	}
+  }
 
   private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
-    Link adminLink = new Link(_iwb.getImage("shared/create.gif"));
+    Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
       adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
       adminLink.addParameter(PollAdminWindow.prmID,pollID);
       if(newObjInst)
@@ -133,11 +142,9 @@ private idegaTimestamp _date;
     return adminLink;
   }
 
-  private Form getPoll(IWContext iwc, PollEntity poll) {
+  private PresentationObject getPoll(IWContext iwc, PollEntity poll) {
     LocalizedText locText = null;
     PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
-    Image submitImage = _iwrb.getImage("vote.gif");
-    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
     idegaTimestamp after;
     boolean pollByDate = false;
 
@@ -162,19 +169,40 @@ private idegaTimestamp _date;
       }
     }
 
+    PresentationObject obj = null;
+
     if ( locText != null ) {
-			Form form = new Form();
+      switch (_layout) {
+        case RADIO_BUTTON_VIEW:
+          obj = getRadioButtonView(locText,pollQuestion);
+          break;
+        case LINK_VIEW:
+          obj = getLinkView(iwc,locText,pollQuestion);
+          break;
+      }
+      return obj;
+    }
+    else {
+      return new Form();
+    }
+  }
+
+  private Form getRadioButtonView(LocalizedText locText,PollQuestion pollQuestion) {
+    Image submitImage = _iwrb.getImage("vote.gif");
+    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+
+      Form form = new Form();
         form.setWindowToOpen(PollResult.class);
 
       Table pollTable = new Table(2,3);
-				pollTable.setCellpadding(5);
-				pollTable.setCellspacing(0);
+        pollTable.setCellpadding(5);
+        pollTable.setCellspacing(0);
         pollTable.mergeCells(1,1,2,1);
         pollTable.mergeCells(1,2,2,2);
-				pollTable.setWidth(_pollWidth);
-				pollTable.setAlignment(1,1,"center");
-				pollTable.setAlignment(2,3,"right");
-			form.add(pollTable);
+        pollTable.setWidth(_pollWidth);
+        pollTable.setAlignment(1,1,"center");
+        pollTable.setAlignment(2,3,"right");
+      form.add(pollTable);
 
       Text question = new Text(locText.getHeadline());
         question.setFontStyle(_questionStyleAttribute);
@@ -230,15 +258,163 @@ private idegaTimestamp _date;
       }
 
       return form;
+  }
+
+  private Table getLinkView(IWContext iwc,LocalizedText locText,PollQuestion pollQuestion) {
+    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    Table pollTable = new Table();
+      pollTable.setCellpadding(3);
+      pollTable.setCellspacing(0);
+      pollTable.setWidth(_pollWidth);
+      pollTable.setAlignment(1,1,"center");
+    int pollRow = 1;
+
+    Text question = new Text(locText.getHeadline());
+      question.setFontStyle(_questionStyleAttribute);
+
+    pollTable.add(question,1,pollRow);
+    pollRow++;
+
+    Table answerTable = new Table();
+      answerTable.setCellspacing(0);
+      answerTable.setCellpadding(0);
+      answerTable.setWidth("100%");
+    PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
+
+    if ( PollBusiness.canVote(iwc,pollQuestion.getID()) ) {
+      boolean hasAnswers = false;
+
+      if ( answers != null ) {
+        int row = 1;
+
+        for ( int a = 0; a < answers.length; a++ ) {
+          LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
+          if ( locAnswerText != null ) {
+            hasAnswers = true;
+            Text answerText = new Text(locAnswerText.getHeadline());
+              answerText.setFontStyle(_styleAttribute);
+
+            Link answerLink = new Link(answerText);
+              answerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestion.getID());
+              answerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,answers[a].getID());
+              answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE);
+              answerLink.addParameter(PollBusiness._PARAMETER_CLOSE,PollBusiness._PARAMETER_TRUE);
+              answerLink.setWindowToOpen(PollResult.class);
+
+            if ( _linkImage != null ) {
+              Table imageTable = new Table(3,1);
+                imageTable.setCellspacing(0);
+                imageTable.setCellpadding(0);
+
+              imageTable.add(_linkImage,1,1);
+              imageTable.setWidth(2,"3");
+              imageTable.add(answerLink,3,1);
+              answerTable.add(imageTable,1,row);
+            }
+            else {
+              answerTable.add(answerText,1,row);
+            }
+            row++;
+            answerTable.setHeight(row,"4");
+            row++;
+          }
+        }
+      }
+
+      if ( hasAnswers ) {
+        pollTable.add(answerTable,1,pollRow);
+        pollRow++;
+      }
     }
     else {
-      return new Form();
+      int numberOfAnswers = PollBusiness.getNumberOfAnswers(pollQuestion);
+      int total = 0;
+      int row = 0;
+
+      if (answers != null) {
+        if (answers.length > 0) {
+          for ( int i = 0; i < answers.length; i++ ) {
+            total += answers[i].getHits();
+          }
+          for (int i = 0 ; i < answers.length ; i++ ) {
+            LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i],_iLocaleID);
+            if ( answerLocText != null ) {
+              ++row;
+
+              float percent = 0;
+              if ( answers[i].getHits() > 0 )
+                percent = ( (float) answers[i].getHits() / (float) total ) * 100;
+
+              Text answerText = new  Text(answerLocText.getHeadline());
+                answerText.setFontSize(1);
+                answerText.setFontStyle(_styleAttribute);
+              Text percentText = new Text(Text.NON_BREAKING_SPACE+com.idega.util.text.TextSoap.decimalFormat(percent,1)+"%");
+                percentText.setFontSize(1);
+
+              answerTable.mergeCells(1,row,2,row);
+              if ( _linkImage != null ) {
+                Table imageTable = new Table(3,1);
+                  imageTable.setCellspacing(0);
+                  imageTable.setCellpadding(0);
+
+                imageTable.add(_linkImage,1,1);
+                imageTable.setWidth(2,"3");
+                imageTable.add(answerText,3,1);
+                answerTable.add(imageTable,1,row);
+              }
+              else {
+                answerTable.add(answerText,1,row);
+              }
+              row++;
+
+              Image graph = _iwbPoll.getImage("shared/graph.gif");
+                graph.setHeight(11);
+                graph.setWidth(Integer.toString((int) percent)+"%");
+              answerTable.add(graph,1,row);
+              answerTable.add(percentText,2,row);
+              answerTable.setWidth(1,row,"100%");
+
+              row++;
+              answerTable.setHeight(row,"6");
+            }
+          }
+        }
+        answerTable.setWidth(1,"100%");
+        pollTable.add(answerTable,1,pollRow);
+        pollRow++;
+
+        String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(),_iLocaleID);
+        if ( information != null && _showInformation ) {
+          Text informationText = new Text(information);
+            informationText.setFontStyle(_styleAttribute);
+          pollTable.add(informationText,1,pollRow);
+          pollRow++;
+        }
+      }
     }
+
+    Link collectionLink = new Link(olderPollsImage);
+      collectionLink.setWindowToOpen(PollResult.class);
+      collectionLink.addParameter(Poll._prmPollID,_pollID);
+      collectionLink.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
+      collectionLink.addParameter(Poll._prmNumberOfPolls,_numberOfShownPolls);
+      if ( _showVotes ) {
+        collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
+      }
+      else {
+        collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
+      }
+
+    if ( _showCollection ) {
+      pollTable.add(collectionLink,1,pollRow);
+    }
+
+    return pollTable;
   }
 
   private void setDefaultValues() {
     _pollWidth = "150";
-    _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt";
+    _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
     _questionStyleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold";
     _numberOfShownPolls = 3;
     _showVotes = true;
@@ -281,5 +457,17 @@ private idegaTimestamp _date;
 
   public void showCollection(boolean collection) {
     _showCollection = collection;
+  }
+
+  public void setLinkImage(Image image) {
+    _linkImage = image;
+  }
+
+  public void setLayout(int layout) {
+   _layout = layout;
+  }
+
+  public void setShowInformation(boolean showInformation) {
+    _showInformation = showInformation;
   }
 }

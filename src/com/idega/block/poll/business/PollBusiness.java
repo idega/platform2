@@ -117,6 +117,23 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     return locString;
   }
 
+  public static String getLocalizedInformation(int pollQuestionID, int iLocaleID) {
+    String locString = null;
+
+    PollQuestion pollQuestion = getPollQuestion(pollQuestionID);
+    if ( pollQuestion != null ) {
+      LocalizedText locText = TextFinder.getLocalizedText(pollQuestion,iLocaleID);
+      if ( locText != null ) {
+        locString = locText.getBody();
+      }
+    }
+
+    if ( locString.length() == 0 )
+      locString = null;
+
+    return locString;
+  }
+
   public static PollAnswer[] getAnswers(int pollQuestionID) {
     try {
       return (PollAnswer[]) PollAnswer.getStaticInstance(PollAnswer.class).findAllByColumn(PollQuestion.getColumnNameID(),Integer.toString(pollQuestionID),"=");
@@ -193,7 +210,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     }
   }
 
-	public static void handleInsert(IWContext iwc) {
+  public static void handleInsert(IWContext iwc) {
     String questionString = iwc.getParameter(_PARAMETER_POLL_QUESTION);
     if ( questionString != null ) {
       try {
@@ -203,9 +220,9 @@ public static final String COOKIE_NAME = "idegaPOLL_";
         e.printStackTrace();
       }
     }
-	}
+  }
 
-	public static void handleInsert(IWContext iwc, int pollQuestionID) {
+  public static void handleInsert(IWContext iwc, int pollQuestionID) {
     String pollAnswerID = iwc.getParameter(_PARAMETER_POLL_ANSWER);
 
     PollAnswer answer = null;
@@ -225,8 +242,9 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       cookie.setMaxAge(31 * 24 * 60 * 60);
       cookie.setPath("/");
       iwc.addCookies(cookie);
+      System.out.println("Cookie added");
     }
-	}
+  }
 
   public static boolean canVote(IWContext iwc, int pollQuestionID) {
     Cookie[] cookies = (Cookie[]) iwc.getCookies();
@@ -329,7 +347,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     return drp;
   }
 
-  public static int savePollQuestion(int userID,int pollID,int pollQuestionID,String pollQuestionString,String pollStartDate,String pollEndDate,int iLocaleID) {
+  public static int savePollQuestion(int userID,int pollID,int pollQuestionID,String pollQuestionString,String pollInformationString,String pollStartDate,String pollEndDate,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
     int _pollQuestionID = -1;
@@ -384,8 +402,8 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     }
 
     locText.setHeadline(pollQuestionString);
-		locText.setBody("");
-		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+    locText.setBody(pollInformationString);
+    locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
 
     if ( newLocText ) {
       locText.setLocaleId(iLocaleID);

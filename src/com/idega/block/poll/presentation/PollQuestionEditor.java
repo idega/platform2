@@ -30,6 +30,7 @@ private boolean update = false;
 private int pollQuestionID = -1;
 private int pollID = -1;
 private static String prmQuestionParameter = "question";
+private static String prmInformationParameter = "information";
 private static String prmStartDateParameter = "start_date";
 private static String prmEndDateParameter = "end_date";
 
@@ -38,7 +39,7 @@ private IWResourceBundle iwrb;
 
 public PollQuestionEditor(){
   setWidth(430);
-  setHeight(230);
+  setHeight(330);
   setUnMerged();
   setMethod("get");
 }
@@ -86,7 +87,6 @@ public PollQuestionEditor(){
     if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
       try {
         pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
-        iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
@@ -97,15 +97,6 @@ public PollQuestionEditor(){
       savePollQuestion(iwc,iLocaleId);
     }*/
 
-    if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
-      try {
-        pollQuestionID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
-      }
-      catch (NumberFormatException e) {
-        pollQuestionID = -1;
-      }
-    }
-
     if ( iwc.getParameter(PollBusiness._PARAMETER_MODE) != null ) {
       if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_CLOSE) ) {
         closePollQuestion(iwc);
@@ -115,6 +106,15 @@ public PollQuestionEditor(){
           savePollQuestion(iwc,iLocaleId);
         else
           closePollQuestion(iwc);
+      }
+    }
+
+    if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
+      try {
+        pollQuestionID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
+      }
+      catch (NumberFormatException e) {
+        pollQuestionID = -1;
       }
     }
 
@@ -132,6 +132,7 @@ public PollQuestionEditor(){
 
   private void initializeFields(int iLocaleID) {
     String pollQuestion = PollBusiness.getLocalizedQuestion(pollQuestionID,iLocaleID);
+    String pollInformation = PollBusiness.getLocalizedInformation(pollQuestionID,iLocaleID);
 
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
       localeDrop.setToSubmit();
@@ -143,6 +144,12 @@ public PollQuestionEditor(){
       if ( update && pollQuestion != null ) {
         questionInput.setContent(pollQuestion);
       }
+
+    TextArea infoArea = new TextArea(prmInformationParameter,40,5);
+      if ( update && pollInformation != null ) {
+        infoArea.setContent(pollInformation);
+      }
+
 
     idegaTimestamp stampur = new idegaTimestamp();
 
@@ -159,6 +166,7 @@ public PollQuestionEditor(){
       }
 
     addLeft(iwrb.getLocalizedString("question","Question")+":",questionInput,true);
+    addLeft(iwrb.getLocalizedString("information","Information")+":",infoArea,true);
     addLeft(iwrb.getLocalizedString("start_date","Start date:"),startDate,true);
     addLeft(iwrb.getLocalizedString("end_date","End date:"),endDate,true);
     addHiddenInput(new HiddenInput(Poll._prmPollID,Integer.toString(pollID)));
@@ -178,6 +186,7 @@ public PollQuestionEditor(){
 
   private void savePollQuestion(IWContext iwc,int iLocaleID) {
     String pollQuestionString = iwc.getParameter(prmQuestionParameter);
+    String pollInformationString = iwc.getParameter(prmInformationParameter);
     String pollStartDate = iwc.getParameter(prmStartDateParameter);
     String pollEndDate = iwc.getParameter(prmEndDateParameter);
 
@@ -196,7 +205,7 @@ public PollQuestionEditor(){
       pollQuestionString = iwrb.getLocalizedString("no_text","No question entered");
     }
     if ( localeString != null ) {
-      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
+      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,pollInformationString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
     }
     iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(_pollQuestionID));
   }
