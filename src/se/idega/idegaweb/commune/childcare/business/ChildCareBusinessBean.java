@@ -2904,16 +2904,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						student = getLatestPlacement(application.getChildId(), application.getProviderId());
 					}
 					if (((Integer) student.getStudent().getPrimaryKey()).intValue() == application.getChildId()) {
-						student.setSchoolClassId(schoolClassId);
-						student.store();
-						
 						archive.setSchoolClassMember(student);
-						try {
-							SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
-							getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
-						}
-						catch (FinderException fe) {
-							log(fe);
+						if (schoolClassId != -1) {
+							student.setSchoolClassId(schoolClassId);
+							student.store();
+							try {
+								SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
+								getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
+							}
+							catch (FinderException fe) {
+								log(fe);
+							}
 						}
 					}
 					else {
