@@ -1,5 +1,4 @@
-//idega 2000 - Ægir
-
+//idega 2001 -eiki
 package com.idega.projects.golf.entity;
 
 //import java.util.*;
@@ -20,7 +19,6 @@ public class Family extends GolfEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("name","Fjölskylda",true,true,"java.lang.String");
-                addAttribute("union_id","Félagsnúmer",true,true,"java.lang.Integer");
 	}
 
         public void setDefaultValues(){
@@ -39,12 +37,5 @@ public class Family extends GolfEntity{
 		setColumn("name", name);
 	}
 
-        public void setUnionId(int union_id) {
-                setColumn("union_id", new Integer(union_id));
-        }
-
-        public int getUnionId() {
-            return getIntColumnValue("union_id");
-        }
 
 }
