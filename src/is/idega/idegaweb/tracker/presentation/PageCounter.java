@@ -99,7 +99,7 @@ public class PageCounter extends Block {
       agents.add("User agents",1,y2);
       agents.add("Count",2,y2);
 
-      ArrayList agentsList = TrackerBusiness.getAgentArrayListSortedByAgent();
+      ArrayList agentsList = TrackerBusiness.getAgentArrayListSortedBySessions();
       Iterator ua = agentsList.iterator();
       UserAgentStatistics item;
       while (ua.hasNext()) {
