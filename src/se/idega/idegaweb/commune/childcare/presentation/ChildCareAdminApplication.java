@@ -46,6 +46,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private ChildCareApplication application;
 	private boolean isAdministrator;
 	private ICPage contractsPage;
+	public static ICPage ccOverviewPage;
+	public static ICPage ascOverviewPage;
 	private Boolean _canEdit;
 	private boolean _useSubmitConfirm;
 	
@@ -584,6 +586,14 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		contractsPage = page;
 	}
 
+	public void setChildcareOverviewPage(ICPage page) {
+		ccOverviewPage = page;
+	}
+	
+	public void setAfterSchoolcareOverviewPage(ICPage page) {
+		ascOverviewPage = page;
+	}
+	
 	public void setCanEdit(boolean b) {
 		_canEdit = new Boolean(b);
 	}
