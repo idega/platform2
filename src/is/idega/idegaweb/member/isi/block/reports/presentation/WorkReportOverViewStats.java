@@ -55,11 +55,11 @@ public class WorkReportOverViewStats extends Block {
 		
 		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.header","Summary"),true,false,false) ,1,1);
 
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_players","Players"),true,false,false) ,1,2);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfPlayersForWorkReportYear(getYear()),2,2);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_members","Members"),true,false,false) ,1,2);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfMembersForWorkReportYear(getYear()),2,2);
 		
-		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_members","Members"),true,false,false) ,1,3);
-		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfMembersForWorkReportYear(getYear()),2,3);
+		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_players","Players"),true,false,false) ,1,3);
+		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfPlayersForWorkReportYear(getYear()),2,3);
 		
 		table.add(new Text(iwrb.getLocalizedString("workreportoverviewstats.total_competitors","Competitors"),true,false,false) ,1,4);
 		table.add(""+this.getWorkReportBusiness(iwc).getTotalCountOfCompetitorsForWorkReportYear(getYear()),2,4);
