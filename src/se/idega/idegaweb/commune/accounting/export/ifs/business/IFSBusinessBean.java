@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-//import java.sql.Date;
 import java.text.NumberFormat;
 //import java.util.Calendar;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import javax.transaction.UserTransaction;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-//import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -757,7 +755,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			double totalHeaderAmount = 0;
 			double totalAmount = 0;
 			HSSFCellStyle styleUnderline = wb.createCellStyle();
-			styleUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);;
+			styleUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 			
 			while (it.hasNext()) {
 				PaymentHeader pHead = (PaymentHeader) it.next();				
@@ -954,7 +952,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						}
 						bWriter.write(name);
 						//Kundadress
-						String address = mainAddress.getName();
+						String address = mainAddress.getStreetAddress();
 						if (address.length() < 27) {
 							StringBuffer p = new StringBuffer(address);
 							while (p.length() < 27)
@@ -996,17 +994,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						Address ad = getUserBusiness().getUsersCoAddress(custodian);
 						String co = "";
 						if (ad != null) {
-							//Hack to fix silly bug in database. There seems to be an entry in the Address table with type == 2 for the user, but the street name and number are null.
-							if (ad.getStreetName() != null) {
-								StringBuffer coBuffer = new StringBuffer(ad.getStreetName());
-								if (ad.getStreetNumber() != null) {
-									coBuffer.append(" ");
-									coBuffer.append(ad.getStreetNumber());
-								}
-								
-								co = coBuffer.toString();
-							}
+							co = ad.getStreetAddress();
 						}
+						
 						if (co.length() < 25) {
 							StringBuffer p = new StringBuffer(co);
 							while (p.length() < 25)

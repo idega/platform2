@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.101 2003/12/22 13:11:26 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.102 2003/12/29 16:23:44 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -490,7 +490,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-
 			else if (condition.equals(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
@@ -616,6 +615,48 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						int id = regCond.getIntervalID();
 						if (value.intValue() != id)
 							match = false;
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_STADSBIDRAG)) {
+				Boolean value = (Boolean) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+						int id = regCond.getIntervalID();
+						try {
+							YesNo yesNo = getYesNoHome().findYesNoValue(id);
+							if (yesNo.getIsYes() != value.booleanValue())
+								match = false;
+						}
+						catch (RemoteException e1) {
+							match = false;
+						}
+						catch (FinderException e1) {
+							match = false;
+						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_STUDY_PATH)) {
+				Integer value = (Integer) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_STUDY_PATH)) {
+						int id = regCond.getIntervalID();
+						if (id != value.intValue()) {
+							match = false;
+						}
 					}
 				}
 
@@ -1654,12 +1695,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									}
 								}
 								catch (EJBException e1) {
-									//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
 								catch (FinderException e1) {
-									//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
@@ -1669,6 +1708,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						float perc = reg.getMaxAmountDiscount();
 						if (!missingIncome && income > 0.0f && perc > 0.0f) {
 							float amount = income * perc / 100;
+							if (placementTimes != null && placementTimes.getMonths() != 0.0f)
+								total_sum /= placementTimes.getMonths();
 							if (amount < total_sum) {
 								ret = new PostingDetail();
 								ret.setAmount(Math.round(amount - total_sum));
@@ -1692,7 +1733,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 			}
 			else if (type.equals(RegSpecialCalculationConstant.LOWINCOME)) {
-				System.out.println("ENTERING LOW INCOME ROUTINE");
 				User child = null;
 				if (contract != null) {
 					child = contract.getChild();
@@ -1702,25 +1742,26 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 
 				if (child != null) {
-					System.out.println("LOW: CHILD = " + child.getName());
-					System.out.println("LOW: DATE = " + period);
-					System.out.println("LOW: OPERATION = " + (String) reg.getOperation().getPrimaryKey());
 					try {
 						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
 						if (low != null && !low.isEmpty()) {
 							Iterator lowIt = low.iterator();
 							if (lowIt.hasNext()) {
 								RegularInvoiceEntry entry = (RegularInvoiceEntry) lowIt.next();
-								System.out.println("LOW: GOT AN ENTRY");
-								System.out.println("LOW: VALUE = " + entry.getAmount());
-								ret = new PostingDetail();
-								ret.setAmount(Math.round(entry.getAmount() - total_sum));
-								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
-								ret.setTerm(reg.getName());
-								ret.setOrderID(reg.getConditionOrder().intValue());
-								//			ret.setVat(32.0f);
-								//			ret.setVatRegulationID(1);
-
+								if (placementTimes != null && placementTimes.getMonths() != 0.0f)
+									total_sum /= placementTimes.getMonths();
+								if (entry.getAmount() < total_sum) {
+									ret = new PostingDetail();
+									ret.setAmount(Math.round(entry.getAmount() - total_sum));
+									ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+									ret.setTerm(reg.getName());
+									ret.setOrderID(reg.getConditionOrder().intValue());
+									//			ret.setVat(32.0f);
+									//			ret.setVatRegulationID(1);
+								}
+								else {
+									throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
+								}
 							}
 							else {
 								throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
@@ -1729,9 +1770,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						else {
 							throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 						}
-					}catch (LowIncomeException e) {
+					}
+					catch (LowIncomeException e) {
 						throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
-					}catch (Exception e) {
+					}
+					catch (Exception e) {
 						e.printStackTrace();
 						throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 					}
