@@ -310,7 +310,7 @@ public class IFSFileCreationThread extends Thread {
                     createInvoiceFiles(fileName3.toString(), fileName7
                             .toString(), fileName8.toString(), schoolCategory,
                             now, currentLocale, periodText, header, ifsBetaFile
-                                    .toString());
+                                    .toString(), mapping);
                 } catch (IOException e6) {
                     e6.printStackTrace();
                 }
@@ -888,7 +888,7 @@ public class IFSFileCreationThread extends Thread {
     private void createInvoiceFiles(String fileName1, String fileName2,
             String fileName3, String schoolCategory, IWTimestamp executionDate,
             Locale currentLocale, String periodText,
-            IFSCheckHeader checkHeader, String ifsBetaFile) throws IOException {
+            IFSCheckHeader checkHeader, String ifsBetaFile, ExportDataMapping mapping) throws IOException {
         Collection iHeaders = null;
         try {
             iHeaders = ((InvoiceHeaderHome) IDOLookup
@@ -919,7 +919,7 @@ public class IFSFileCreationThread extends Thread {
         }
 
         try {
-            createIFSBetaFile(iHeaders, ifsBetaFile, executionDate);
+            createIFSBetaFile(iHeaders, ifsBetaFile, executionDate, mapping);
         } catch (IFSMissingCheckTaxaException e5) {
             e5.printStackTrace();
         } catch (IOException e5) {
@@ -1027,8 +1027,8 @@ public class IFSFileCreationThread extends Thread {
                         }
                         bWriter.write(pnr);
                         //Kundnamn
-                        String name = custodian.getFirstName() + " "
-                                + custodian.getLastName();
+                        String name = custodian.getLastName() + " "
+                                + custodian.getFirstName();
                         if (name.length() < 25) {
                             StringBuffer p = new StringBuffer(name);
                             while (p.length() < 25)
@@ -1462,7 +1462,7 @@ public class IFSFileCreationThread extends Thread {
     }
 
     private void createIFSBetaFile(Collection data, String fileName,
-            IWTimestamp executionDate) throws IOException,
+            IWTimestamp executionDate, ExportDataMapping mapping) throws IOException,
             IFSMissingCheckTaxaException {
         FileWriter writer = new FileWriter(fileName);
         BufferedWriter bWriter = new BufferedWriter(writer);
@@ -1494,6 +1494,8 @@ public class IFSFileCreationThread extends Thread {
                 e3.printStackTrace();
             }
 
+            long total = 0;
+            
             if (rec != null && !rec.isEmpty()) {
                 Iterator irIt = rec.iterator();
                 while (irIt.hasNext()) {
@@ -1508,6 +1510,7 @@ public class IFSFileCreationThread extends Thread {
 
                     if (iRec.getAmount() != 0.0f) {
                         long am = AccountingUtil.roundAmount(iRec.getAmount());
+                        total += am;
                         String postingType = null;
 
                         //Verifikat.nr.
@@ -1613,6 +1616,93 @@ public class IFSFileCreationThread extends Thread {
                         bWriter.newLine();
                     }
                 }
+
+                String customerPosting = mapping.getCustomerClaimAccount();
+                
+                //Verifikat.nr.
+                bWriter.write(";");
+                //Verif. aar
+                bWriter.write(executionDate.getDateString("yyyy"));
+                bWriter.write(";");
+                //Konto
+                String postingType = pb.findFieldInStringByName(customerPosting,
+                "Konto");
+                bWriter.write(postingType);
+                bWriter.write(";");
+                //Ansvar
+                postingType = pb.findFieldInStringByName(customerPosting,
+                "Ansvar");
+                	bWriter.write(postingType);
+                bWriter.write(";");
+                //Resurs
+                bWriter.write(";");
+                //Verksamhet
+                bWriter.write(";");
+                //Aktivitet
+                bWriter.write(";");
+                //Projekt
+                bWriter.write(";");
+                //Objekt
+                bWriter.write(";");
+                //Motpart
+                bWriter.write(";");
+                //Anlaggningsnummer
+                bWriter.write(";");
+                //Internranta
+                bWriter.write(";");
+                //SEK
+                bWriter.write("SEK");
+                bWriter.write(";");
+                //Debet belopp valuta
+                bWriter.write(";");
+                //Kredit belopp valuta
+                bWriter.write(";");
+                //Belopp valuta
+                bWriter.write(format.format(-total));
+                bWriter.write(";");
+                //Debet belopp red.valuta
+                bWriter.write(";");
+                //Kredit belopp red.valuta
+                bWriter.write(";");
+                //Belopp red.valuta
+                bWriter.write(format.format(-total));
+                bWriter.write(";");
+                //Kvantitet
+                bWriter.write(";");
+                //Processkod
+                bWriter.write(";");
+                //Kod
+                bWriter.write(";");
+                //Proj akt id
+                bWriter.write(";");
+                //Text
+                	StringBuffer text = new StringBuffer("");
+                	text.append(executionDate.getDateString("yyMM"));
+                	text.append(" Kundfordran ");
+                	bWriter.write(text.toString());
+                bWriter.write(";");
+                //Id
+                bWriter.write(";");
+                //Ref nr
+                bWriter.write(";");
+                //Ref serie
+                bWriter.write(";");
+                //Transkod
+                bWriter.write(";");
+                //3:e valuta debet
+                bWriter.write(";");
+                //3:e valuta kredit
+                bWriter.write(";");
+                //Transaktionsdatum
+                bWriter.write(lastDayOfMonthString);
+                bWriter.write(";");
+                //Group item
+                bWriter.write(";");
+                //Voucher Type
+                bWriter.write(";");
+
+                bWriter.newLine();
+
             }
         }
 
