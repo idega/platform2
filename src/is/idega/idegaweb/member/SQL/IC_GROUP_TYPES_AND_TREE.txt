@@ -13,6 +13,7 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_region
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league','A collection of club divisions (KSI)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_staff','An employee of a league','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_committee','An member of a league committee','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_league_club_division','The division in the club related to this league','N')
 
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club','A sports club','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division','A sports club divison (FOOTBALL)','Y')
@@ -60,6 +61,7 @@ insert into ic_group_type_tree values ('iwme_league_committee','iwme_league')
 insert into ic_group_type_tree values ('iwme_club_division_template','iwme_league')
 insert into ic_group_type_tree values ('general','iwme_league')
 insert into ic_group_type_tree values ('iwme_temporary','iwme_league')
+insert into ic_group_type_tree values ('iwme_league_club_division','iwme_league')
 
 insert into ic_group_type_tree values ('iwme_regional_union_staff','iwme_regional_union')
 insert into ic_group_type_tree values ('iwme_regional_union_committee','iwme_regional_union')
