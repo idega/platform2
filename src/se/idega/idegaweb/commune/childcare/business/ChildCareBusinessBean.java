@@ -3504,7 +3504,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			ChildCareApplication application = getApplication(applicationID);
 			if (application == null) {
-				application = getChildCareApplicationHome().create();
+				try {
+					application = getUnhandledApplicationsByChildAndProvider(childID, providerID);
+				}
+				catch (FinderException fe) { 
+					application = getChildCareApplicationHome().create();
+				}
 			}
 			else {
 				isUpdate = true;
