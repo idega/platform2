@@ -83,7 +83,7 @@ public class CommuneForumBusinessBean extends IBOServiceBean implements CommuneF
 		if (filePKs != null && !filePKs.isEmpty()) {
 			Iterator iter = filePKs.iterator();
 			while (iter.hasNext()) {
-				v.add(getICFileHome().findByPrimaryKey(iter.next()));	
+				v.add(iter.next());	
 			}
 		}
 		return v;	
