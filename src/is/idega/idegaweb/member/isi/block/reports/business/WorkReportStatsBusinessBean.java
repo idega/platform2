@@ -61,6 +61,75 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	}
 	
 	
+	
+	
+	public ReportableCollection getClubMemberStatisticsForRegionalUnions(Collection regionalUnions) throws RemoteException{
+	
+			initializeBundlesIfNeeded();
+		ReportableCollection reportData = new ReportableCollection();
+	
+		/*	
+			WorkReport report = this.getWorkReportBusiness().getWorkReportById(reportId.intValue());
+			Collection members = this.getWorkReportBusiness().getAllWorkReportMembersForWorkReportId(reportId.intValue());
+		
+			Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+
+		
+		
+			//initializing fields
+			IDOEntityDefinition reportDef = IDOLookup.getEntityDefinitionForClass(WorkReport.class);
+		
+			IDOEntityDefinition memberDef = IDOLookup.getEntityDefinitionForClass(WorkReportMember.class);
+		
+		
+			//Child - Fields
+			ReportableField personalId = new ReportableField(memberDef.findFieldByUniqueName("PERSONAL_ID"));
+			personalId.setCustomMadeFieldName("member_ssn");
+			personalId.setLocalizedName( _iwrb.getLocalizedString("WorkReportStatsBusiness.member_ssn","Personal ID"),currentLocale);
+			reportData.addField(personalId);
+		
+			ReportableField name = new ReportableField(memberDef.findFieldByUniqueName("NAME"));
+			name.setCustomMadeFieldName("child_last_name");
+			name.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.name","Name"),currentLocale);
+			reportData.addField(name);
+
+		
+			//reason
+				ReportableField reasonField = new ReportableField("reason",String.class);
+				reasonField.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.reason","Reason"),currentLocale);
+				reportData.addField(reasonField);
+		
+				//date of action
+				ReportableField actionDateField = new ReportableField("actionDate",String.class);
+				actionDateField.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.reg_date","Registration date"),currentLocale);
+				reportData.addField(actionDateField);
+	
+
+
+			//Creating report data and adding to collection 
+			Iterator iter = members.iterator();
+			while (iter.hasNext()) {
+				WorkReportMember member = (WorkReportMember)iter.next();
+				ReportableData data = new ReportableData();
+			
+			
+				//member data
+				data.addData(personalId,member.getPersonalId());
+				data.addData(name,name.getName());
+				reportData.add(data);
+			
+		
+				
+				}
+			
+	
+			reportData.addExtraHeaderParameter("workreportreport",_iwrb.getLocalizedString("WorkReportStatsBusiness.label","Current date"),"label",IWTimestamp.getTimestampRightNow().toGMTString());
+		*/
+			return reportData;
+		}
+	
+	
 	public ReportableCollection getAllMembersForWorkReportId(Integer reportId) throws RemoteException{
 	
 		initializeBundlesIfNeeded();
