@@ -212,7 +212,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		endTime = new IWTimestamp(endPeriod);
 		endTime.setAsDate();
 		//calc the how many months are in the given time.
-		months -= 1.0;
+		months = 1.0f;
 		days = IWTimestamp.getDaysBetween(startTime, endTime);
 	}
 
