@@ -123,7 +123,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //then for each get its leagues and the count for
 		 //each age and create a row and insert into an ordered map by league
 		 //then iterate the map and insert into the final report collection.
-		 Collection clubs = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsandGroups(dateFromFilter, dateToFilter, regionalUnionsFilter, regionalUnionsFilter);
+		 Collection clubs = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(dateFromFilter, dateToFilter, regionalUnionsFilter, regionalUnionsFilter);
 		 //List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, false);
 		 Map financeEntriesByDivisions = new TreeMap();
 		 
