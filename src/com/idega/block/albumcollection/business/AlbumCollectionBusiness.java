@@ -191,6 +191,22 @@ public class AlbumCollectionBusiness {
 
   }
 
+  public static void addPerformer(String name, String displayName) throws SQLException {
+    Performer performer = new Performer();
+
+    if( name != null){
+      performer.setName(name);
+    }
+
+    if(displayName != null){
+      performer.setDisplayName(displayName);
+    }
+
+
+    performer.insert();
+
+  }
+
 
   public static List getTracks(int albumId) throws SQLException {
     return EntityFinder.findAllByColumnOrdered(Track.getStaticInstance(Track.class),Track._COLUMNNAME_ALBUM_ID,Integer.toString(albumId), Track._COLUMNNAME_NUMBER);

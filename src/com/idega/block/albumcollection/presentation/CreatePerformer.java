@@ -1,6 +1,15 @@
 package com.idega.block.albumcollection.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 
 /**
  * Title:        AlbumCollection
@@ -13,9 +22,78 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 
 public class CreatePerformer extends IWAdminWindow {
 
+  private Form myForm;
+
+  private TextInput _fieldName;
+  private TextInput _fieldDisplayName;
+
+  private static String _fieldNameName = "ac_author_name";
+  private static String _fieldNameDisplayName = "ac_author_display_name";
+
   public CreatePerformer() {
+    super();
+    this.setHeight(170);
+    this.setWidth(350);
+    myForm = new Form();
   }
 
+  public void initFields(IWContext iwc){
+    _fieldName = new TextInput(_fieldNameName);
+    _fieldName.keepStatusOnAction();
+
+    _fieldDisplayName = new TextInput(_fieldNameDisplayName);
+    _fieldDisplayName.keepStatusOnAction();
+  }
+
+
+  public PresentationObject getElementsOredered(IWContext iwc){
+    Table contentTable = new Table();
+    contentTable.setWidth("100%");
+    //
+    Table nameTable = new Table(2,2);
+    nameTable.add(new Text("Fullt nafn:"),1,1);
+    nameTable.add(this._fieldName,2,1);
+    nameTable.add(new Text("Nafn á vef:"),1,2);
+    nameTable.add(this._fieldDisplayName,2,2);
+    // ButtonTable
+
+    contentTable.add(nameTable,1,1);
+
+    Table bTable = new Table(2,1);
+    //bTable.setCellpadding(4);
+    bTable.add(new SubmitButton("  Save  ","save","true"),1,1);
+    bTable.add(new CloseButton("  Close  "),2,1);
+
+    contentTable.add(bTable,1,2);
+    contentTable.setAlignment(1,2,"right");
+
+    return contentTable;
+  }
+
+
+  public void saveAuthor(IWContext iwc) throws Exception {
+    String acName = iwc.getParameter(_fieldNameName);
+    String acDisplayName = iwc.getParameter(_fieldNameDisplayName);
+
+    AlbumCollectionBusiness.addPerformer(acName,acDisplayName);
+
+  }
+
+
+
+  public void main(IWContext iwc) throws Exception {
+    if(iwc.getParameter("save") == null){
+      initFields(iwc);
+      this.add(myForm);
+      myForm.empty();
+      //updateFieldStatus(iwc);
+      myForm.add(getElementsOredered(iwc));
+    } else {
+      this.saveAuthor(iwc);
+      this.close();
+      this.setParentToReload();
+    }
+  }
 
 
 

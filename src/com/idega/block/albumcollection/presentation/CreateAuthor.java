@@ -32,7 +32,7 @@ public class CreateAuthor extends IWAdminWindow {
 
   public CreateAuthor() {
     super();
-    this.setHeight(200);
+    this.setHeight(170);
     this.setWidth(350);
     myForm = new Form();
   }
