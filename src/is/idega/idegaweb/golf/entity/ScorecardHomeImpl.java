@@ -7,9 +7,11 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
   return Scorecard.class;
  }
 
+
  public Scorecard create() throws javax.ejb.CreateException{
-  return (Scorecard) super.idoCreate();
+  return (Scorecard) super.createIDO();
  }
+
 
  public Scorecard createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
 
  }
 
- public Scorecard findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Scorecard) super.idoFindByPrimaryKey(id);
- }
 
  public Scorecard findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Scorecard) super.idoFindByPrimaryKey(pk);
+  return (Scorecard) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Scorecard findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Scorecard) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Scorecard findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,14 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
 	}
 
  }
+
+
+public int getCountRoundsPlayedByMember(int p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ScorecardBMPBean)entity).ejbHomeGetCountRoundsPlayedByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }
