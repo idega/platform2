@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/12 10:38:36 $ by $Author: birna $
- * @version $Revision: 1.110 $
+ *         Last modified: $Date: 2004/05/12 14:01:07 $ by $Author: birna $
+ * @version $Revision: 1.111 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -799,6 +799,35 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		return (Integer) idoFindOnePKBySQL(sql.toString());
 	}
+	public Integer ejbFindByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID, String[] studyPathIDs) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().appendInArray(studyPathIDs);
+
+		return (Integer) idoFindOnePKBySQL(sql.toString());
+	}
+	
+	public int ejbCountByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID, String[] studyPathIDs) throws IDOException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().appendInArray(studyPathIDs);
+
+		return idoGetNumberOfRecords(sql.toString());
+	}
+	
+	
 
 	public Collection ejbFindBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -1324,9 +1353,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.idoAddTo(group);
 	}
 	
-	public void addToSchoolStudyPath(SchoolStudyPath schoolStudyPath) throws IDOAddRelationshipException {
-		this.idoAddTo(schoolStudyPath);
-	}
 	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException {
 		super.idoAddTo(year);
 	}

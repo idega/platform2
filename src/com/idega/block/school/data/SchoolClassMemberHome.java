@@ -40,6 +40,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public SchoolClassMember findByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolAndSeason(int p0,int p1,int p2)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolAndSeason(int p0,int p1,int p2,java.util.Collection p3)throws javax.ejb.FinderException;
+ public SchoolClassMember findByUserAndSchoolAndSeasonAndStudyPath(int p0, int p1, int p2, String[] p3)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolClass(int p0,int p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolClass(com.idega.user.data.User p0,com.idega.block.school.data.SchoolClass p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException;

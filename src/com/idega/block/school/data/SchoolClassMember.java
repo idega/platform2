@@ -66,7 +66,6 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
 
 	public java.util.Collection getSubGroups() throws IDORelationshipException;
 	public void addToGroup(SchoolClass group) throws IDOAddRelationshipException;
-	public void addToSchoolStudyPath(SchoolStudyPath schoolStudyPath) throws IDOAddRelationshipException;
 	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
 	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException;
 }
