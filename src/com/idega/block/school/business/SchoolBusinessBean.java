@@ -460,9 +460,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			SchoolClass sClass = sClassHome.create();
 
 			sClass.setSchoolClassName(schoolClassName);
-			sClass.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
-			sClass.setSchoolSeasonId(((Integer) season.getPrimaryKey()).intValue());
-			sClass.setSchoolYearId(((Integer) year.getPrimaryKey()).intValue());
+			if (school != null)
+				sClass.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
+			if (year != null)
+				sClass.setSchoolSeasonId(((Integer) season.getPrimaryKey()).intValue());
+			if (season != null)
+				sClass.setSchoolYearId(((Integer) year.getPrimaryKey()).intValue());
+				
+			sClass.store();
 
 			return sClass;
 		}
