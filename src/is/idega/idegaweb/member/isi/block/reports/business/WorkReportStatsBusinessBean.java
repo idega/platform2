@@ -108,6 +108,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_PLAYERS_SINGLE_DIVISION = "WorkReportStatsBusiness.single_division_players";
 	private static final String LOCALIZED_PLAYERS_MULTI_DIVISION = "WorkReportStatsBusiness.multi_division_players";
 	private static final String LOCALIZED_PERSON_NAME = "WorkReportStatsBusiness.person_name";
+	private static final String LOCALIZED_SSN = "WorkReportStatsBusiness.ssn";
 	private static final String LOCALIZED_PHONE = "WorkReportStatsBusiness.phone";
 	private static final String LOCALIZED_ADDRESS = "WorkReportStatsBusiness.address";
 	private static final String LOCALIZED_POSTALCODE = "WorkReportStatsBusiness.postalcode";
@@ -176,6 +177,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_PLAYERS_SINGLE_DIVISION = "players_single_division";
 	private static final String FIELD_NAME_PLAYERS_MULTI_DIVISION = "players_multi_division";
 	private static final String FIELD_NAME_PERSON_NAME = "person_name";
+	private static final String FIELD_NAME_SSN = "ssn";
 	private static final String FIELD_NAME_PHONE = "phone";
 	private static final String FIELD_NAME_ADDRESS = "address";
 	private static final String FIELD_NAME_POSTALCODE = "postalcode";
@@ -4571,6 +4573,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		//PARAMETERS that are also FIELDS
 		
+		ReportableField ssn = new ReportableField(FIELD_NAME_SSN, String.class);
+		ssn.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SSN, "ssn"), currentLocale);
+		reportCollection.addField(ssn);
+		
 		ReportableField personName = new ReportableField(FIELD_NAME_PERSON_NAME, String.class);
 		personName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSON_NAME, "Name"), currentLocale);
 		reportCollection.addField(personName);
@@ -4660,6 +4666,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								}
 								
 								ReportableData regData = new ReportableData();
+								regData.addData(ssn, element.getPersonalId());
 								regData.addData(personName, element.getName());
 								regData.addData(phone, element.getHomePhone());
 								regData.addData(address, element.getStreetName());
