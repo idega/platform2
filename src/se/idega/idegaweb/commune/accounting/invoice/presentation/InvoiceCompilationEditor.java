@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/28 10:13:45 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/28 15:03:18 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.123 $
+ * @version $Revision: 1.124 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1842,9 +1842,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			col += 2;
 		}
 		final String recordId = record.getPrimaryKey ().toString ();
-		final boolean isManualRecord = isManualRecord (record);
+		final boolean isPreliminaryRecord = isPreliminaryRecord (record);
 		final String [][] editLinkParameters = getRecordLinkParameters
-				(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
+				(isPreliminaryRecord ? ACTION_SHOW_EDIT_RECORD_FORM
 				 : ACTION_SHOW_RECORD_DETAILS, recordId);
 		final Link textLink = createSmallLink (record.getInvoiceText (),
 																					 editLinkParameters);
@@ -1858,7 +1858,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Link editLink = createIconLink (getEditIcon (),
 																					editLinkParameters);
 		table.add (editLink, col++, row);
-		if (isManualRecord) {
+		if (isPreliminaryRecord) {
 			final String [][] deleteLinkParamaters = getRecordLinkParameters
 					(ACTION_DELETE_RECORD,  recordId);
 			final Link deleteLink = createIconLink (getDeleteIcon (),
@@ -2046,10 +2046,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
-	private static boolean isManualRecord (final InvoiceRecord record) {
+	private static boolean isPreliminaryRecord (final InvoiceRecord record) {
+		try {
+			final InvoiceHeader header = record.getInvoiceHeader ();
+			return header.getStatus () == 'P';
+		} catch (Exception e) {
+			e.printStackTrace ();
+			return false;
+		}
+		/*
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
+		*/
 	}
 	
 	private Text getSmallSignature (final String string) {

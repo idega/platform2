@@ -68,11 +68,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/28 10:13:45 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/28 15:03:18 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.88 $
+ * @version $Revision: 1.89 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -714,10 +714,13 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 	}
 	
 	
-	private static boolean isManualRecord (final PaymentRecord record) {
+	private static boolean isPreliminaryRecord (final PaymentRecord record) {
+		return record.getStatus () == 'P';
+		/*
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
+		*/
 	}
 	
 	private Text getSmallSignature (final String string) {
@@ -767,7 +770,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 				= null != getSchoolByLoggedInUser (context);
 		final boolean isFlowInAndOut
 				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
-		final boolean isRecordEditAllowed = isManualRecord (record)
+		final boolean isRecordEditAllowed = isPreliminaryRecord (record)
 				&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
 		final String [][] showRecordLinkParameters = isRecordEditAllowed
 				? new String [][] {{ ACTION_KEY,
