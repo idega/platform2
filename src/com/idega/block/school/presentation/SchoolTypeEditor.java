@@ -1,95 +1,67 @@
 package com.idega.block.school.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.ui.util.SelectorUtility;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.SchoolType;
-
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
-import com.idega.business.IBOLookup;
+
+import com.idega.block.school.data.SchoolType;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 
 /**
- * <p>
- * Title:
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company:
- * </p>
- * 
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
-public class SchoolTypeEditor extends Block {
+public class SchoolTypeEditor extends SchoolBlock {
 
-	IWResourceBundle iwrb;
-	IWBundle iwb;
-	TextFormat tFormat;
-	SchoolBusiness sbBean;
-	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
-	
 	private static final String PARAMETER_IS_FREETIME_TYPE = "sch_type_freetime";
 	private static final String PARAMETER_IS_FAMILY_FREETIME_TYPE = "sch_type_family_freetime";
 	private static final String PARAMETER_MAX_AGE = "sch_type_max_age";
 	private static final String PARAMETER_ORDER = "sch_type_order";
 	
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
-	}
-
-	private void control(IWContext iwc) throws Exception {
-		//debugParameters(iwc);
-		initBeans(iwc);
+	protected void init(IWContext iwc) throws Exception {
 		Form F = new Form();
 
 		if (iwc.isParameterSet("sch_save_type")) {
 			saveType(iwc);
-			F.add(getListTable(null));
+			F.add(getListTable(iwc, null));
 		}
 		else
 			if (iwc.isParameterSet("sch_delete_type")) {
 				int id = Integer.parseInt(iwc.getParameter("sch_delete_type"));
-				sbBean.removeSchoolType(id);
-				F.add(getListTable(null));
+				getBusiness().removeSchoolType(id);
+				F.add(getListTable(iwc, null));
 			}
 			else
 				if (iwc.isParameterSet("sch_school_type_id")) {
 					int id = Integer.parseInt(iwc.getParameter("sch_school_type_id"));
-					F.add(getInput(id));
+					F.add(getInput(iwc, id));
 
 				}
 				else
 					if (iwc.isParameterSet("sch_new_type")) {
-						F.add(getInput( -1));
+						F.add(getInput(iwc, -1));
 					}
 					else
-						F.add(getListTable(null));
+						F.add(getListTable(iwc, null));
 
 		add(F);
 
 	}
 
-	private void initBeans(IWContext iwc) throws java.rmi.RemoteException {
-		sbBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-		//sabBean = sabHome.create();
-	}
-
-	private PresentationObject getInput(int id) throws java.rmi.RemoteException {
-		return getInputTable(sbBean.getSchoolType(new Integer(id)));
+	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
+		return getInputTable(iwc, getBusiness().getSchoolType(new Integer(id)));
 	}
 
 	private void saveType(IWContext iwc) throws java.rmi.RemoteException {
@@ -128,74 +100,98 @@ public class SchoolTypeEditor extends Block {
 				}
 			}
 			
-			sbBean.storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order);
+			getBusiness().storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order);
 		}
 	}
 
-	public PresentationObject getListTable(SchoolType area) {
-		Table T = new Table();
+	public PresentationObject getListTable(IWContext iwc, SchoolType area) {
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setColumns(3);
+		table.setWidth(3, 12);
 		int row = 1;
+		int col = 1;
 
-		Collection schoolTypes = new java.util.Vector(0);
+		Collection schoolTypes = null;
 		try {
-			schoolTypes = sbBean.findAllSchoolTypes();
+			schoolTypes = getBusiness().findAllSchoolTypes();
 		}
-		catch (java.rmi.RemoteException rex) {
-
+		catch (RemoteException rex) {
+			schoolTypes = new ArrayList();
 		}
-		T.mergeCells(1, 1, 2, 1);
-		Link newLink = new Link(iwrb.getLocalizedImageButton("new", "New"));
-		newLink.addParameter("sch_new_type", "true");
-		T.add(newLink, 1, row);
-		row++;
-		T.add(tFormat.format(iwrb.getLocalizedString("name", "Name"), tFormat.HEADER), 2, row);
-		T.add(tFormat.format(iwrb.getLocalizedString("info", "Info"), tFormat.HEADER), 3, row);
-		row++;
+		
+		table.setCellpaddingLeft(1, row, 12);
+		table.add(getSmallHeader(localize("name", "Name")), col++, row);
+		table.add(getSmallHeader(localize("info", "Info")), col++, row);
+		table.setRowStyleClass(row++, getHeaderRowClass());
 
 		java.util.Iterator iter = schoolTypes.iterator();
 		SchoolType sType;
 		while (iter.hasNext()) {
+			col = 1;
 			sType = (SchoolType) iter.next();
 			try {
-				Link L = new Link(tFormat.format("edit"));
+				Link L = new Link(getEditIcon(localize("edit", "Edit")));
 				L.addParameter("sch_school_type_id", ((Integer) sType.getPrimaryKey()).intValue());
-				T.add(L, 1, row);
-				T.add(tFormat.format(sType.getSchoolTypeName()), 2, row);
-				T.add(tFormat.format(sType.getSchoolTypeInfo()), 3, row);
+
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+				table.add(getSmallText(sType.getSchoolTypeName()), col++, row);
+				table.add(getSmallText(sType.getSchoolTypeInfo()), col++, row);
+				table.add(L, col++, row);
+
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
 			}
 			catch (Exception ex) {
+				ex.printStackTrace();
 			}
 			row++;
 		}
-		return T;
+
+		table.setHeight(row++, 12);
+		table.setCellpaddingLeft(1, row, 12);
+		table.mergeCells(1, row, table.getColumns(), row);
+		GenericButton newLink = getButton(new GenericButton("new", localize("type.new", "New type")));
+		newLink.setPageToOpen(iwc.getCurrentIBPageID());
+		newLink.addParameterToPage("sch_new_type", "true");
+		table.add(newLink, 1, row);
+
+		return table;
 	}
 
-	public PresentationObject getInputTable(SchoolType type) throws RemoteException {
+	public PresentationObject getInputTable(IWContext iwc, SchoolType type) throws RemoteException {
 		Table T = new Table();
 		T.setColumns(3);
 		T.mergeCells(1, 1, 3, 1);
 		
-		T.add(tFormat.format(iwrb.getLocalizedString("school_type", "Schooltype"), tFormat.TITLE), 1, 1);
-		T.add(tFormat.format(iwrb.getLocalizedString("category", "Category")), 1, 2);
-		T.add(tFormat.format(iwrb.getLocalizedString("name", "Name")), 1, 3);
-		T.add(tFormat.format(iwrb.getLocalizedString("info", "Info")), 1, 4);
-		T.add(tFormat.format(iwrb.getLocalizedString("maxage", "Max school age")), 1, 5);
-		T.add(tFormat.format(iwrb.getLocalizedString("localization_key", "Key")), 1, 6);
-		T.add(tFormat.format(iwrb.getLocalizedString("is_freetime_type", "Is freetime type")), 1, 7);
-		T.add(tFormat.format(iwrb.getLocalizedString("is_family_freetime_type", "Is family freetime type")), 1, 8);
-		T.add(tFormat.format(iwrb.getLocalizedString("order", "order")), 1, 9);
+		T.add(getHeader(localize("school_type", "Schooltype")), 1, 1);
+		T.add(getHeader(localize("category", "Category")), 1, 2);
+		T.add(getHeader(localize("name", "Name")), 1, 3);
+		T.add(getHeader(localize("info", "Info")), 1, 4);
+		T.add(getHeader(localize("maxage", "Max school age")), 1, 5);
+		T.add(getHeader(localize("localization_key", "Key")), 1, 6);
+		T.add(getHeader(localize("is_freetime_type", "Is freetime type")), 1, 7);
+		T.add(getHeader(localize("is_family_freetime_type", "Is family freetime type")), 1, 8);
+		T.add(getHeader(localize("order", "order")), 1, 9);
 		
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), sbBean.getSchoolCategories(), "getLocalizedKey", iwrb);
+		DropdownMenu drpCategory = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), getBusiness().getSchoolCategories(), "getLocalizedKey", getResourceBundle()));
 
-		TextInput inputName = new TextInput("sch_type_name");
-		TextInput inputKey = new TextInput("sch_type_lockey");
-		TextInput inputAge = new TextInput(PARAMETER_MAX_AGE);
+		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_type_name"));
+		TextInput inputKey = (TextInput) getStyledInterface(new TextInput("sch_type_lockey"));
+		TextInput inputAge = (TextInput) getStyledInterface(new TextInput(PARAMETER_MAX_AGE));
 		inputAge.setLength(4);
-		TextArea inputInfo = new TextArea("sch_type_info");
-		CheckBox isFreetime = new CheckBox(PARAMETER_IS_FREETIME_TYPE);
-		CheckBox isFamilyFreetime = new CheckBox(PARAMETER_IS_FAMILY_FREETIME_TYPE);
-		TextInput inputOrder = new TextInput(PARAMETER_ORDER);
+		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_type_info"));
+		CheckBox isFreetime = getCheckBox(PARAMETER_IS_FREETIME_TYPE, "true");
+		CheckBox isFamilyFreetime = getCheckBox(PARAMETER_IS_FAMILY_FREETIME_TYPE, "true");
+		TextInput inputOrder = (TextInput) getStyledInterface(new TextInput(PARAMETER_ORDER));
 		inputOrder.setLength(4);
 		
 		int typeId = -1;
@@ -239,22 +235,17 @@ public class SchoolTypeEditor extends Block {
 		T.setHeight(10, 6);
 		
 		T.mergeCells(1, 11, 3, 11);
-		T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "sch_save_type", "true"), 1, 11);
-		Link cancel = new Link(iwrb.getLocalizedImageButton("cancel", "Cancel"));
+		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_type", "true")), 1, 11);
+		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
+		cancel.setPageToOpen(iwc.getCurrentIBPageID());
 		T.add(cancel, 1, 11);
 		if (typeId > 0) {
-			Link delete = new Link(iwrb.getLocalizedImageButton("delete", "Delete"));
-			delete.addParameter("sch_delete_type", typeId);
+			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
+			delete.setPageToOpen(iwc.getCurrentIBPageID());
+			delete.addParameterToPage("sch_delete_type", typeId);
 			T.add(delete, 1, 11);
 		}
 
 		return T;
-	}
-
-	public void main(IWContext iwc) throws Exception {
-		iwb = getBundle(iwc);
-		iwrb = getResourceBundle(iwc);
-		tFormat = tFormat.getInstance();
-		control(iwc);
 	}
 }

@@ -1,173 +1,187 @@
 package com.idega.block.school.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.business.SchoolBusiness;
-
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
-import com.idega.business.IBOLookup;
 
+import com.idega.block.school.data.SchoolArea;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
+ * <p>
+ * Title:
+ * </p>
+ * <p>
+ * Description:
+ * </p>
+ * <p>
+ * Copyright: Copyright (c) 2002
+ * </p>
+ * <p>
+ * Company:
+ * </p>
+ * 
+ * @author <br>
+ *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
  * @version 1.0
  */
 
-public class SchoolAreaEditor extends Block {
+public class SchoolAreaEditor extends SchoolBlock {
 
-  IWResourceBundle iwrb;
-  IWBundle iwb;
-  TextFormat tFormat;
+	protected void init(IWContext iwc) throws Exception {
+		Form F = new Form();
 
-  SchoolBusiness sabBean;
-  public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
+		if (iwc.isParameterSet("sch_save_area")) {
+			saveArea(iwc);
+			F.add(getListTable(iwc, null));
+		}
+		else if (iwc.isParameterSet("sch_delete_area")) {
+			int id = Integer.parseInt(iwc.getParameter("sch_delete_area"));
+			getBusiness().removeSchoolArea(id);
+			F.add(getListTable(iwc, null));
+		}
+		else if (iwc.isParameterSet("sch_school_area_id")) {
+			int id = Integer.parseInt(iwc.getParameter("sch_school_area_id"));
+			F.add(getInput(iwc, id));
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+		}
+		else if (iwc.isParameterSet("sch_new_area")) {
+			F.add(getInput(iwc, -1));
+		}
+		else
+			F.add(getListTable(iwc, null));
 
-  private void control(IWContext iwc) throws Exception{
-    //debugParameters(iwc);
-    initBeans(iwc);
-    Form F = new Form();
+		add(F);
 
-    if(iwc.isParameterSet("sch_save_area")){
-      saveArea(iwc);
-      F.add(getListTable(null));
-    }
-    else if(iwc.isParameterSet("sch_delete_area")){
-      int id = Integer.parseInt(iwc.getParameter("sch_delete_area"));
-      sabBean.removeSchoolArea(id);
-      F.add(getListTable(null));
-    }
-    else if(iwc.isParameterSet("sch_school_area_id")){
-      int id = Integer.parseInt(iwc.getParameter("sch_school_area_id"));
-      F.add(getInput(id));
+	}
 
-    }
-    else if(iwc.isParameterSet("sch_new_area")){
-      F.add(getInput(-1));
-    }
-    else
-      F.add(getListTable(null));
+	private PresentationObject getInput(IWContext iwc, int id) throws java.rmi.RemoteException {
+		return getInputTable(iwc, getBusiness().getSchoolArea(new Integer(id)));
+	}
 
-     add(F);
+	private void saveArea(IWContext iwc) throws java.rmi.RemoteException {
+		if (iwc.isParameterSet("sch_save_area")) {
+			String id = iwc.getParameter("sch_school_area_id");
+			String name = iwc.getParameter("sch_area_name");
+			String city = iwc.getParameter("sch_area_city");
+			String info = iwc.getParameter("sch_area_info");
+			int aid = -1;
+			if (id != null) {
+				aid = Integer.parseInt(id);
+			}
+			getBusiness().storeSchoolArea(aid, name, info, city);
+		}
+	}
 
-  }
+	public PresentationObject getListTable(IWContext iwc, SchoolArea area) {
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setColumns(4);
+		table.setWidth(4, 12);
+		int row = 1;
 
-  private void initBeans(IWContext iwc) throws java.rmi.RemoteException{
-    sabBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
-    //sabBean = sabHome.create();
-  }
+		Collection schoolAreas = null;
+		try {
+			schoolAreas = getBusiness().findAllSchoolAreas();
+		}
+		catch (RemoteException rex) {
+			schoolAreas = new ArrayList();
+		}
+		
+		table.setCellpaddingLeft(1, row, 12);
+		table.add(getSmallHeader(localize("name", "Name")), 1, row);
+		table.add(getSmallHeader(localize("city", "City")), 2, row);
+		table.add(getSmallHeader(localize("info", "Info")), 3, row);
+		table.setRowStyleClass(row++, getHeaderRowClass());
 
-  private PresentationObject getInput(int id)throws java.rmi.RemoteException{
-    return getInputTable(sabBean.getSchoolArea(new Integer(id)));
-  }
+		java.util.Iterator iter = schoolAreas.iterator();
+		SchoolArea sarea;
+		while (iter.hasNext()) {
+			sarea = (SchoolArea) iter.next();
+			try {
+				Link L = new Link(getEditIcon(localize("edit", "Edit")));
+				L.addParameter("sch_school_area_id", ((Integer) sarea.getPrimaryKey()).intValue());
 
-  private void saveArea(IWContext iwc)throws java.rmi.RemoteException{
-    if(iwc.isParameterSet("sch_save_area")){
-      String id = iwc.getParameter("sch_school_area_id");
-      String name = iwc.getParameter("sch_area_name");
-      String city = iwc.getParameter("sch_area_city");
-      String info = iwc.getParameter("sch_area_info");
-      int aid = -1;
-      if(id!=null)
-        aid = Integer.parseInt(id);
-      sabBean.storeSchoolArea(aid,name,info,city);
-    }
-  }
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(table.getColumns(), row, 12);
+				table.add(getSmallText(sarea.getSchoolAreaName()), 1, row);
+				table.add(getSmallText(sarea.getSchoolAreaCity()), 2, row);
+				table.add(getSmallText(sarea.getSchoolAreaInfo()), 3, row);
+				table.add(L, 4, row);
 
-  public PresentationObject getListTable(SchoolArea area) {
-    Table T = new Table();
-    int row = 1;
+				if (row % 2 == 0) {
+					table.setRowStyleClass(row, getDarkRowClass());
+				}
+				else {
+					table.setRowStyleClass(row, getLightRowClass());
+				}
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			row++;
+		}
 
-    Collection schoolAreas = new java.util.Vector(0);
-    try{
-      schoolAreas = sabBean.findAllSchoolAreas();
-    }
-    catch(java.rmi.RemoteException rex){
+		table.setHeight(row++, 12);
+		table.setCellpaddingLeft(1, row, 12);
+		table.mergeCells(1, row, table.getColumns(), row);
+		GenericButton newLink = getButton(new GenericButton("new", localize("area.new", "New area")));
+		newLink.setPageToOpen(iwc.getCurrentIBPageID());
+		newLink.addParameterToPage("sch_new_area", "true");
+		table.add(newLink, 1, row);
 
-    }
-    T.mergeCells(1,1,2,1);
-    Link newLink = new Link(iwrb.getLocalizedImageButton("new","New"));
-    newLink.addParameter("sch_new_area","true");
-    T.add(newLink,1,row);
-    row++;
-    T.add(tFormat.format(iwrb.getLocalizedString("name","Name"),tFormat.HEADER),2,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("city","City"),tFormat.HEADER),3,row);
-    row++;
+		return table;
+	}
 
-    java.util.Iterator iter = schoolAreas.iterator();
-    SchoolArea sarea ;
-    while(iter.hasNext()){
-      sarea = (SchoolArea) iter.next();
-      try{
-      Link L = new Link(tFormat.format("edit"));
-      L.addParameter("sch_school_area_id",((Integer)sarea.getPrimaryKey()).intValue());
-      T.add(L,1,row);
-      T.add(tFormat.format(sarea.getSchoolAreaName()),2,row);
-      T.add(tFormat.format(sarea.getSchoolAreaCity()),3,row);
-      }
-      catch(Exception ex){}
-      row++;
-    }
-    return T;
-  }
+	public PresentationObject getInputTable(IWContext iwc, SchoolArea area) {
+		Table T = new Table(3, 6);
+		T.mergeCells(1, 1, 3, 1);
+		T.add(getHeader(localize("school_area", "SchoolArea")), 1, 1);
+		T.add(getHeader(localize("name", "Name")), 1, 2);
+		T.add(getHeader(localize("city", "City")), 1, 3);
+		T.add(getHeader(localize("info", "Info")), 1, 4);
 
-  public PresentationObject getInputTable(SchoolArea area){
-    Table T = new Table(3,6);
-    T.mergeCells(1,1,3,1);
-    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.TITLE),1,1);
-    T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,2);
-    T.add(tFormat.format(iwrb.getLocalizedString("city","City")),1,3);
-    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
+		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_area_name"));
+		TextInput inputCity = (TextInput) getStyledInterface(new TextInput("sch_area_city"));
+		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_area_info"));
+		int areaId = -1;
+		if (area != null) {
+			try {
+				areaId = ((Integer) area.getPrimaryKey()).intValue();
+				inputName.setContent(area.getSchoolAreaName());
+				inputCity.setContent(area.getSchoolAreaCity());
+				inputInfo.setContent(area.getSchoolAreaInfo());
+				T.add(new HiddenInput("sch_school_area_id", String.valueOf(areaId)));
+			}
+			catch (Exception ex) {
+			}
+		}
 
-    TextInput inputName = new TextInput("sch_area_name");
-    TextInput inputCity = new TextInput("sch_area_city");
-    TextArea inputInfo = new TextArea("sch_area_info");
-    int areaId = -1;
-    if(area!=null){
-      try{
-      areaId = ((Integer)area.getPrimaryKey()).intValue();
-      inputName.setContent(area.getSchoolAreaName());
-      inputCity.setContent(area.getSchoolAreaCity());
-      inputInfo.setContent(area.getSchoolAreaInfo());
-      T.add(new HiddenInput("sch_school_area_id",String.valueOf(areaId)));
-      }
-      catch(Exception ex){}
-    }
+		T.add(inputName, 3, 2);
+		T.add(inputCity, 3, 3);
+		T.add(inputInfo, 3, 4);
+		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_area", "true")), 3, 5);
+		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
+		cancel.setPageToOpen(iwc.getCurrentIBPageID());
+		T.add(cancel, 3, 5);
+		if (areaId > 0) {
+			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
+			delete.setPageToOpen(iwc.getCurrentIBPageID());
+			delete.addParameterToPage("sch_delete_area", areaId);
+			T.add(delete, 3, 5);
+		}
 
-    T.add(inputName,3,2);
-    T.add(inputCity,3,3);
-    T.add(inputInfo,3,4);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_area","true"),3,5);
-    Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,5);
-    if(areaId > 0){
-      Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
-      delete.addParameter("sch_delete_area",areaId);
-      T.add(delete,3,5);
-    }
-
-    return T;
-  }
-
-  public void main(IWContext iwc)throws Exception{
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-    tFormat = tFormat.getInstance();
-    control(iwc);
-  }
+		return T;
+	}
 }
