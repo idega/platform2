@@ -38,6 +38,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 	private boolean showParentsAgree = false;
 	private boolean showRecreateContract = false;
+	private boolean showEmplDrop = true;
 
 	private static final String PARAMETER_COMMENTS = "cc_comments";
 	private static final String PARAMETER_CREATE_CONTRACT = "cc_create_contract";
@@ -52,6 +53,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public static ICPage ccOverviewPage;
 	public static ICPage ascOverviewPage;
 	private Boolean _canEdit;
+	
 	//private boolean _useSubmitConfirm;
 	
 	/**
@@ -551,11 +553,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
+						placeInGroup.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
 						table.add(placeInGroup, column, 1);
 					}
 				}
 				else {
 					placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
+					placeInGroup.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_EMPLOYMENT_DROP, String.valueOf(showEmplDrop));
 					table.add(placeInGroup, column, 1);
 				}
 			}
@@ -655,5 +659,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		if (useSubmitConfirm) {
 			log("setToUseSubmitConfirm called in ChildCareAdminApplication...");
 		}
+	}
+	
+	private void setShowEmploymentDropDown(boolean show){
+		showEmplDrop = show;
 	}
 }
