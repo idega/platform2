@@ -52,8 +52,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		
 	
 	public void main(IWContext iwc) throws Exception{
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		try{
-			IWResourceBundle iwrb = getResourceBundle(iwc);
+			
 			add(new Text(iwrb.getLocalizedString("nbssb_signcon","Sign Contract")));
 			
 			if (iwc.isInEditMode() || iwc.isInPreviewMode()){
@@ -78,7 +79,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 					break;
 				
 				case NBSSignedEntity.ACTION_END:
-					add(new Text(iwrb.getLocalizedString("nbssb_forwarding","Forwarding..."));				
+					add(new Text(iwrb.getLocalizedString("nbssb_forwarding","Forwarding...")));				
 					break;
 				
 			}
