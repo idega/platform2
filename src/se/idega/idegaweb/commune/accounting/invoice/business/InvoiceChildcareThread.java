@@ -42,6 +42,10 @@ import com.idega.util.Age;
  * and payment data, that is sent to external finance system.
  * 
  * @author Joakim
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public class InvoiceChildcareThread extends BillingThread{
 

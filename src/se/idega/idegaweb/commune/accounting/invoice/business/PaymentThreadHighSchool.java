@@ -9,8 +9,14 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 
 /**
+ * Holds most of the logic for the batchjob that creates the information that is base for 
+ * payment data, that is sent to external finance system.
+ * 
  * @author Joakim
- *
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceChildCareTread
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public class PaymentThreadHighSchool extends PaymentThreadSchool{
 	PaymentHeader paymentHeader;

@@ -23,8 +23,13 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 
 /**
+ * Abstract class that holds all the logic that is common for the shool billing
+ * 
  * @author Joakim
- *
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public abstract class PaymentThreadSchool extends BillingThread{
 	PaymentHeader paymentHeader;
