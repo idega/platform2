@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBMPBean.java,v 1.5 2004/12/14 01:02:49 laddi Exp $ Created on
+ * $Id: MeetingFeeBMPBean.java,v 1.6 2004/12/14 01:18:15 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,7 +28,7 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 09:44:45 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee {
 
@@ -52,7 +52,7 @@ public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee
 
 	public static final String GROUP_TYPE_MEETING = "meeting_group";
 	
-	public static final String COLUMN_COMMENT = "comment";
+	public static final String COLUMN_COMMENT = "notes";
 
 	/*
 	 * (non-Javadoc)
