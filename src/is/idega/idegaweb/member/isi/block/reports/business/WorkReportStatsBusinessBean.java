@@ -880,7 +880,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	
 	/*
 	 * Report B12.1.5 of the ISI Specs
-	 * NOT FINISHED
 	 */
 	public ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFiltering(final Integer year,Integer age,String gender, Collection leaguesFilter)throws RemoteException {
 		
@@ -934,10 +933,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), null, null );
 		
 		Map leagueStatsMap = new TreeMap();
-		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,false);
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year,leaguesFilter,true);
 		
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();

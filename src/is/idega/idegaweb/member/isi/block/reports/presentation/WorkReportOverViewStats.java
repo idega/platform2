@@ -111,7 +111,6 @@ public class WorkReportOverViewStats extends Block {
 		return reportBiz;
 	}
 
-	//TODO Eiki Make the year choosable
 	protected int getYear() {
 		return year;
 	}
