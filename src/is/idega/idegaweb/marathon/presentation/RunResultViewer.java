@@ -47,7 +47,7 @@ public class RunResultViewer extends Block {
 	private static final String STYLENAME_LIST_ROW = "listRow";
 
 	private static final String DEFAULT_INTERFACE_STYLE = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8px;font-weight:bold;border-width:1px;border-color:#000000;border-style:solid;";
-	private static final String DEFAULT_GROUP_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;padding:4px;";
+	private static final String DEFAULT_GROUP_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;padding:4px;background-color:#ACACAC";
 	private static final String DEFAULT_HEADER_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF;padding:2px;";
 	private static final String DEFAULT_LIST_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;padding:2px;";
 	
@@ -139,6 +139,8 @@ public class RunResultViewer extends Block {
 		table.setHeight(row++, 12);
 
 		if (distance != null) {
+				row = insertHeadersIntoTable(table, row);
+			
 				switch (sortBy) {
 					case IWMarathonConstants.RYSDD_TOTAL:
 						getTotalResults(table, row);
@@ -389,6 +391,7 @@ public class RunResultViewer extends Block {
 
 		table.add(getRunnerRowText(iwrb.getLocalizedString("results.group", "Group")), 13, row);
 		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setHeight(++row, 2);
 		
 		return ++row;
 	}
