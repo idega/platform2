@@ -582,14 +582,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     dialogs.clear();
     dialogs=null;
 /**@todo travers through hashtable and do this
-    if ( messageDialog !=null ){
       messageDialog.setVisible(false);
       messageDialog.cancel();
       messageDialog.dispose();
       messageDialog = null;
-    }
 */
-
   }
 
   /**Get Applet information*/

@@ -16,7 +16,7 @@ import java.util.Vector;
 public class MessageListener implements Runnable{
   private MessengerApplet client;
   private Thread t;
-  private long threadSleep = 5000;//5 sec
+  private long threadSleep = 5000;//5 seconds
   private boolean runThread = false;
 
   public MessageListener(MessengerApplet applet) {
