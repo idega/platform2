@@ -65,7 +65,7 @@ public class GroupMemberList extends Block {
 		Table table = new Table();
 		Iterator groupIter; //group.getChildren();
 		try {
-			groupIter = getGroupBusiness(iwc).getUsersDirectlyRelated(group).iterator();
+			groupIter = getGroupBusiness(iwc).getUsers(group).iterator();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
