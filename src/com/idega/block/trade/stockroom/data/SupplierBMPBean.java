@@ -370,8 +370,13 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements com
 
 
   public Settings getSettings() throws FinderException, RemoteException, CreateException {
-    Collection coll = this.idoGetRelatedEntities(Settings.class);
-
+    Collection coll = null;
+    try{
+      coll = this.idoGetRelatedEntities(Settings.class);
+    }
+    catch(IDOException ido){
+      //throw new CreateException(ido.getMessage());
+    }
     SettingsHome shome = (SettingsHome)IDOLookup.getHome(Settings.class);
     if (coll.size() == 1) {
       Iterator iter = coll.iterator();

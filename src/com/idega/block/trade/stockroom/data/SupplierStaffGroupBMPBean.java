@@ -15,14 +15,14 @@ import java.sql.SQLException;
 public class SupplierStaffGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
   public static final String GROUP_TYPE_VALUE = "sr_supplier_staff";
 
-
+  /*
   public SupplierStaffGroupBMPBean() {
     super();
   }
 
   public SupplierStaffGroupBMPBean(int id) throws SQLException {
     super(id);
-  }
+  }*/
 
 
   public String getGroupTypeValue() {
