@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.8 2003/10/08 09:41:21 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.9 2004/01/07 09:11:02 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,31 +9,32 @@
  */
 package se.idega.idegaweb.commune.accounting.message.business;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
-
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2003/10/08 09:41:21 $ by $Author: anders $
+ * Last modified: $Date: 2004/01/07 09:11:02 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -98,8 +99,8 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 							s[0] = school.getName();
 							s[1] = user.getName();
 							c.add(s);
-//	   remove comment			Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
-//	   to activate message		message.store();							
+							Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
+							message.store();							
 						}
 					}
 				}
