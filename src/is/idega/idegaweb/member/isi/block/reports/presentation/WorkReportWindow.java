@@ -55,7 +55,6 @@ public class WorkReportWindow extends IWAdminWindow {
 	private static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
 	
 	private IWResourceBundle iwrb;
-	private List failedInserts;
 
 
 	public WorkReportWindow() {
