@@ -60,36 +60,37 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		Form form = new Form();
 		add(form);
 		
-		monthInput = new DateInput(PARAM_MONTH,true);
-		String date = iwc.getParameter(PARAM_MONTH);
-		if(date!=null){
-			monthInput.setDate(new IWTimestamp(date).getDate());
-		}else{
-			monthInput.setToCurrentDate();
-		}
-		monthInput.setToShowDay(false);
-
-		int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
-		monthInput.setYearRange(currentYear - 1, currentYear + 1);
-		
-		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
-
-		readDateInput = new DateInput(PARAM_READ_DATE,true);
-		date = iwc.getParameter(PARAM_READ_DATE);
-		if(date!=null){
-			readDateInput.setDate(new IWTimestamp(date).getDate());
-		}else{
-			monthInput.setToCurrentDate();
-		}
-		readDateInput.setToDisplayDayLast(true);
-
-		readDateInput.setYearRange(currentYear - 1, currentYear + 1);
-		InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 			if(invoiceBusiness.isHighShool(schoolCategory)){
+				readDateInput = new DateInput(PARAM_READ_DATE,true);
+				String date = iwc.getParameter(PARAM_READ_DATE);
+				if(date!=null){
+					readDateInput.setDate(new IWTimestamp(date).getDate());
+				}else{
+					monthInput.setToCurrentDate();
+				}
+				readDateInput.setToDisplayDayLast(true);
+
+				int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+				readDateInput.setYearRange(currentYear - 1, currentYear + 1);
+				InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 				form.add(readDate);
 			}else{
+				monthInput = new DateInput(PARAM_MONTH,true);
+				String date = iwc.getParameter(PARAM_MONTH);
+				if(date!=null){
+					monthInput.setDate(new IWTimestamp(date).getDate());
+				}else{
+					monthInput.setToCurrentDate();
+				}
+				monthInput.setToShowDay(false);
+
+				int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+				monthInput.setYearRange(currentYear - 1, currentYear + 1);
+				
+				InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
+
 				form.add(month);
 			}
 		} catch (IDOLookupException e) {
