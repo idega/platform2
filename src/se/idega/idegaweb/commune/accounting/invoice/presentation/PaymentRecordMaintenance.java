@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/12 09:55:36 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/13 07:40:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -337,7 +337,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				 { AMOUNT_KEY, AMOUNT_DEFAULT },
 				 { NOTE_KEY, NOTE_DEFAULT }};
 		final PdfPTable table = new PdfPTable
-				(new float [] { 1.0f, 1.0f, 5.0f, 1.2f, 1.2f, 1.2f, 3.0f });
+				(new float [] { 1.0f, 1.0f, 5.0f, 1.0f, 1.2f, 1.4f, 3.0f });
 		table.setWidthPercentage (100f);
 		table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
 		for (int i = 0; i < columnNames.length; i++) {
@@ -387,8 +387,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
 		final Form form = new Form ();
 		form.maintainParameter (PROVIDER_KEY);
-		//		form.maintainParameter (START_PERIOD_KEY);
-		//		form.maintainParameter (END_PERIOD_KEY);
 		form.setOnSubmit("return checkInfoForm()");
 		form.add (htmlTable);
 		final Table formTable = createTable (1);
