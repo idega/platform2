@@ -57,6 +57,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
@@ -71,7 +72,7 @@ import com.idega.util.StringHandler;
  * @version 1.0
  * Created on Jun 10, 2003
  */
-public class JasperReportBusinessBean extends IBOServiceBean implements JasperReportBusiness { 
+public class JasperReportBusinessBean extends IBOServiceBean implements JasperReportBusiness,UserGroupPlugInBusiness { 
   
   private static String REPORT_FOLDER = "reports";
   private static String HTML_FILE_EXTENSION = "html";
@@ -612,7 +613,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)
@@ -624,7 +625,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)
