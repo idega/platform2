@@ -10,12 +10,18 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
@@ -34,6 +40,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
@@ -49,6 +56,18 @@ public class InvoiceBusinessBean implements Runnable{
 	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
 	private IWTimestamp startPeriod;
 	private IWTimestamp endPeriod;
+	private ChildCareContract contract;
+	private PostingDetail postingDetail;
+//	private PaymentRecord paymentRecord;
+	private int days;
+	private Date currentDate = new Date( new java.util.Date().getTime());
+	private IWTimestamp time, startTime, endTime;
+	private ExportDataMapping categoryPosting;
+	private int childcare = 0;
+	private int check = 0;
+	private int order;
+	private School school;
+	private float months;
 	
 	/**
 	 * spawns a new thread and starts the execution of the posting calculation and then returns
@@ -56,23 +75,15 @@ public class InvoiceBusinessBean implements Runnable{
 	 * @param endPeriod
 	 */
 	public void startPostingBatch(Date month){
-		//TODO (JJ) change this to use only month, not from and to.
 		startPeriod = new IWTimestamp(month);
 		startPeriod.setDay(1);
 		endPeriod = new IWTimestamp(startPeriod);
 		endPeriod.addMonths(1);
+		
+		//Spawn batch thread and return
 		new Thread(this).start();
 	}
 	
-	private ChildCareContract contract;
-	private PostingDetail postingDetail;
-	private int days;
-	private Date currentDate = new Date( new java.util.Date().getTime());
-	private IWTimestamp time, startTime, endTime;
-	private ExportDataMapping categoryPosting;
-	private int childcare = 0;
-	private int check = 0;
-	private School school;
 	/**
 	 * Does the acctual work on the batch process
 	 * @see java.lang.Runnable#run()
@@ -82,20 +93,12 @@ public class InvoiceBusinessBean implements Runnable{
 		Collection regulationArray = new ArrayList();
 		User custodian;
 		Age age;
-		float months;
 		int hours;
 		float totalSum;
 		InvoiceRecord invoiceRecord, subvention;
 
 
 		try {
-			//TODO (JJ) Probably need to remove the ref to KeyMappingBMPBean. But to what???
-/*
-			int childcare = getKeyMappingHome().findValueByCategoryAndKey(
-				KeyMappingBMPBean.CAT_ACTIVITY,KeyMappingBMPBean.KEY_CHILDCARE).getValue();
-			int check = getKeyMappingHome().findValueByCategoryAndKey(
-				KeyMappingBMPBean.CAT_REG_SPEC,KeyMappingBMPBean.KEY_CHECK).getValue();
-*/	
 			// **Flag all contracts as 'not processed'
 			
 			setSiblingOrder();
@@ -107,6 +110,7 @@ public class InvoiceBusinessBean implements Runnable{
 			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
 			
 			Iterator contractIter = contractArray.iterator();
+			order = 0;
 	
 			//Loop through all contracts
 			while(contractIter.hasNext())
@@ -117,8 +121,7 @@ public class InvoiceBusinessBean implements Runnable{
 				custodian = contract.getApplication().getOwner();
 				//**Fetch the reference at the provider
 				school = contract.getApplication().getProvider();
-				// **Create the invoice header
-				//TODO (JJ) This should not always be done! Sometimes the header might already be created...
+				// **Get or create the invoice header
 				InvoiceHeader invoiceHeader;
 				try{
 					invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
@@ -133,6 +136,11 @@ public class InvoiceBusinessBean implements Runnable{
 					invoiceHeader.setCreatedBy(BATCH_TEXT);
 					invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 					invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+					if(categoryPosting.getProviderAuthorization()){
+						invoiceHeader.setStatus(invoiceHeader.getStatusBase());
+					} else {
+						invoiceHeader.setStatus(invoiceHeader.getStatusPreliminary());
+					}
 				}
 				
 				// **Calculate how big part of time period this contract is valid for
@@ -182,86 +190,115 @@ public class InvoiceBusinessBean implements Runnable{
 					totalSum,						//Sent in to be used for "Specialutrakning
 					contract);						//Sent in to be used for "Specialutrakning
 			
-				// **Create the invoice record
-				createInvoiceRecord(invoiceHeader, school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK);
-				
-				totalSum = postingDetail.getAmount();
-
-				//Get all the rules for this contract
-				//TODO (JJ) This is a func that Thomas will provide.
-				regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-				childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
-					PaymentFlowConstant.IN, 		//The payment flow is out
-					currentDate,					//Current date to select the correct date range
-					RuleTypeConstant.DERIVED,		//The conditiontype
-					conditions						//The conditions that need to fulfilled
-					);
-
-
-				Iterator regulationIter = regulationArray.iterator();
-				while(regulationIter.hasNext())
-				{
-					postingDetail = regBus.getPostingDetailForContract(
-						totalSum,
-						contract);
-
+				try{
+					PaymentRecord paymentRecord = createPaymentRecord();			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
-					invoiceRecord = createInvoiceRecord(invoiceHeader, null);
+					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
+							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord);
+				
+					totalSum = postingDetail.getAmount();
+
+					//Get all the rules for this contract
+					//TODO (JJ) This is a func that Thomas will provide.
+					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+					childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+						PaymentFlowConstant.IN, 		//The payment flow is out
+						currentDate,					//Current date to select the correct date range
+						RuleTypeConstant.DERIVED,		//The conditiontype
+						conditions						//The conditions that need to fulfilled
+						);
+
+
+					Iterator regulationIter = regulationArray.iterator();
+					while(regulationIter.hasNext())
+					{
+						postingDetail = regBus.getPostingDetailForContract(
+							totalSum,
+							contract);
+
+						// **Create the invoice record
+						invoiceRecord = createInvoiceRecord(invoiceHeader);
 					
-					if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
-						subvention = invoiceRecord;
-					}
-					//TODO (JJ) Have to set the status of the invoiceHeader as well
+						if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
+							subvention = invoiceRecord;
+						}
 
-					totalSum += postingDetail.getAmount();
+						totalSum += postingDetail.getAmount();
 
-				}
-				//Make sure that the sum is not less than 0
-				if(totalSum<0){
-					if(subvention!=null){
-						subvention.setAmount(subvention.getAmount()+totalSum);
-						subvention.store();
-					} else {
-						createNewErrorMessage();
 					}
+					//Make sure that the sum is not less than 0
+					if(totalSum<0){
+						if(subvention!=null){
+							subvention.setAmount(subvention.getAmount()+totalSum);
+							subvention.store();
+						} else {
+							createNewErrorMessage(postingDetail.getTerm(),"invoice.noSubventionFound");
+						}
+					}
+				} catch(MissingMandatoryFieldException e){
+					createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
 				}
 			}
-				
-		} catch (RemoteException e1) {
-//			TODO (JJ) Auto-generated catch block
-			e1.printStackTrace();
-		} catch (CreateException e) {
-			// TODO (JJ) Auto-generated catch block
-			e.printStackTrace();
-		} catch (PostingParametersException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FinderException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * @param invoiceRecord
+	 */
+	private PaymentRecord createPaymentRecord() throws IDOLookupException, CreateException {
+		PaymentRecord paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).create();
+		paymentRecord.setAmount(postingDetail.getAmount()*months);
+		//TODO (JJ) set the rest of the parameters needed. Check first with Lotta what really needs to go in here.
+		paymentRecord.store();
+		return paymentRecord;
+	}
+
 	private void setSiblingOrder(){
+		//TODO (JJ) Insert code here
+	}
+	
+	private void createNewErrorMessage(String related, String desc){
+		try {
+			BatchRunError error = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).create();
+			error.setRelated(related);
+			error.setDescription(desc);
+			error.setOrder(order);
+			order++;
+		} catch (IDOLookupException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CreateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
-	private void createNewErrorMessage(){
-	}
-	
-	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String header) throws CreateException, PostingParametersException, RemoteException{
-		String ownPosting, doublePosting;
-
+	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, PaymentRecord paymentRecord) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
+		invoiceRecord.setInvoiceText(header);
 		//TODO (JJ) set the reference to utbetalningsposten
+		invoiceRecord.setPaymentRecordId(paymentRecord);
+		return createInvoiceRecordSub(invoiceRecord);
+	}
+	
+	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
+		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+		invoiceRecord.setInvoiceHeader(invoiceHeader);
+		invoiceRecord.setInvoiceText(postingDetail.getTerm());
+		return createInvoiceRecordSub(invoiceRecord);
+	}
+	
+	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
+		String ownPosting, doublePosting;
+
 		invoiceRecord.setProviderId(school);
 		invoiceRecord.setContractId(contract.getContractID());
-		if(header != null){
-			invoiceRecord.setInvoiceText(header);
-		} else {
-			invoiceRecord.setInvoiceText(postingDetail.getTerm());
-		}
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(days);
 		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
@@ -270,8 +307,8 @@ public class InvoiceBusinessBean implements Runnable{
 		invoiceRecord.setPeriodEndPlacement(endTime.getDate());
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
-		invoiceRecord.setAmount(postingDetail.getAmount());
-		invoiceRecord.setAmountVAT(postingDetail.getVat());
+		invoiceRecord.setAmount(postingDetail.getAmount()*months);
+		invoiceRecord.setAmountVAT(postingDetail.getVat()*months);
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
 		invoiceRecord.setRuleSpecType(postingDetail.getRuleSpecType());
 		//TODO (JJ) get the posting strings
@@ -284,12 +321,14 @@ public class InvoiceBusinessBean implements Runnable{
 		Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
 		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
-				
+		postingBusiness.validateString(ownPosting,currentDate);
 		invoiceRecord.setOwnPosting(ownPosting);
+	
 		doublePosting = parameters.getDoublePostingString();
 		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
 		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
-		invoiceRecord.setOwnPosting(doublePosting);
+		postingBusiness.validateString(doublePosting,currentDate);
+		invoiceRecord.setDoublePosting(doublePosting);
 		invoiceRecord.store();
 		
 		return invoiceRecord;
