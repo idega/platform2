@@ -611,7 +611,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
         link = (Link) changeLink.clone();
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,idForLink);
-				link.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
+				link.addParameter(BookingForm.parameterDepartureAddressId, trAddress.getID());
         table.add(link, 9, row);
         table.add(Text.NON_BREAKING_SPACE,9,row);
 
