@@ -19,6 +19,7 @@ public interface CalBusiness extends com.idega.business.IBOService {
 	public java.util.List getAllLedgers();
 	public CalendarLedger getLedger(int p0);
 	public int getLedgerIDByName(String name); 
+//	public CalendarLedger getLedgerByUserID(int userID);
 	public com.idega.block.cal.data.CalendarEntryType getEntryTypeByName(String entryTypeName); 
 	public CalendarEntry getEntry(int p0);
 	public void deleteEntry(int entryID);
@@ -28,7 +29,7 @@ public interface CalBusiness extends com.idega.business.IBOService {
 	public boolean createNewEntryType(String p0);
 	public void createNewEntry(String headline, String type, String repeat, String startDate, String startHour, String starMinute, String endDate, String enHour, String endMinute, String attendees,String ledger, String description, String location);		
 	public void updateEntry(String entryID, String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String description, String location);
-	public void createNewLedger(String name, int groupID, String coachName);
+	public void createNewLedger(String name, int groupID, String coachName, String date);
 	public void createNewMark(String markName, String description);
 	public Collection getUsersInLedger(int ledgerID);
 	public java.util.List getAttendancesByLedgerID(int ledgerID);

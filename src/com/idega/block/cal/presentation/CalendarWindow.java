@@ -32,6 +32,7 @@ public class CalendarWindow extends StyledIWAdminWindow{
 		setHeight(750);
 		setWidth(900);
 		setResizable(true);
+		setScrollbar(true);
 	}
 	
 	public void initializeWindow(IWContext iwc) {

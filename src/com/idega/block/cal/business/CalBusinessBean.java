@@ -157,6 +157,24 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		
 	}
+//	public CalendarLedger getLedgerByUserID(int userID) {
+//		CalendarLedger ledger = null;
+//		List allLedgers = getAllLedgers();
+//		Iterator allLedgersIter = allLedgers.iterator();
+//		while(allLedgersIter.hasNext()) {
+//			ledger = (CalendarLedger) allLedgersIter.next();
+//			Collection users = ledger.getUsers();
+//			Iterator usersIter = users.iterator();
+//			while(usersIter.hasNext()) {
+//				User user = (User) usersIter.next();
+//				Integer usID = (Integer) user.getPrimaryKey();
+//				if(userID == usID.intValue()) {
+//					return ledger;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 	/**
 	 * 
 	 */
@@ -319,6 +337,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		long month30 = 30L*24L*60L*60L*1000L;
 		long month29 = 29L*24L*60L*60L*1000L;
 		long month28 = 28L*24L*60L*60L*1000L;
+		long week = 7L*24L*60L*60L*1000L;
 		long day = 24L*60L*60L*1000L;
 		
 		Integer groupID = null;
@@ -339,8 +358,10 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				entry.setEndDate(endTime);
 				if(groupID != null) {
 					entry.setGroupID(groupID.intValue());
-				}					
-				entry.setLedgerID(ledgerID.intValue());
+				}	
+				if(ledgerID.intValue() != -1) {
+					entry.setLedgerID(ledgerID.intValue());
+				}
 				entry.setDescription(description);
 				entry.setLocation(location);
 				entry.store();
@@ -410,7 +431,9 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				}					
 			}
 			else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
-				
+				startCal.add(Calendar.DAY_OF_MONTH,7);
+				System.out.println("day: " + startCal.get(Calendar.DAY_OF_MONTH));
+				start += week;
 			}
 			//if the last day of the month
 			else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
@@ -622,12 +645,13 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		
 	}
-	public void createNewLedger(String name, int groupID, String coachName) {
+	public void createNewLedger(String name, int groupID, String coachName, String date) {
 		IWContext iwc = IWContext.getInstance();
 		Collection users = null;
 		Group group = null;
 		User user = null;
 		User coach = null;
+		Timestamp stamp = Timestamp.valueOf(date);
 		
 		
 		try {
@@ -645,6 +669,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			ledger.setName(name);
 			ledger.setGroupID(groupID);
 			ledger.setCoachID(coachID.intValue());
+			ledger.setDate(stamp);
 			ledger.store();
 			Iterator userIter = users.iterator();
 			while(userIter.hasNext()) {

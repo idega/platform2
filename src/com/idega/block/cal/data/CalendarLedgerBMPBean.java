@@ -28,7 +28,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 	public void initializeAttributes(){
 		addAttribute(getColumnNameLedgerID());
 		addAttribute(getColumnNameLedgerName(),"Ledger name",true,true,String.class);
-		addAttribute(getColumnNameAttendanceDate(),"Attendance date",true,true,Timestamp.class,"one-to-many",Timestamp.class);
+		addAttribute(getColumnNameDate(),"Date",true,true,Timestamp.class);
 		addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
 		addAttribute(getColumnNameUserID(), "Coach", true, true, Integer.class);
 //		addAttribute(getColumnNameUserID(), "User", true, true, Integer.class,"many-to-one",User.class);
@@ -38,7 +38,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 	public static String getEntityTableName() { return "CAL_LEDGER"; }
 	public static String getColumnNameLedgerID() { return "CAL_LEDGER_ID"; }
 	public static String getColumnNameLedgerName() { return "CAL_LEDGER_NAME"; }
-	public static String getColumnNameAttendanceDate() { return "CAL_LEDGER_ATTENDANCE_DATE"; }
+	public static String getColumnNameDate() { return "CAL_LEDGER_DATE"; }
 	public static String getColumnNameGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID();}
 	public static String getColumnNameUserID() { return com.idega.user.data.UserBMPBean.getColumnNameUserID(); }
 	
@@ -54,7 +54,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 		return getStringColumnValue(getColumnNameLedgerName());
 	}
 	public Timestamp getDate() {
-		return (Timestamp) getColumnValue(getColumnNameAttendanceDate());
+		return (Timestamp) getColumnValue(getColumnNameDate());
 	}
 	public int getGroupID() {
 		return getIntColumnValue(getColumnNameGroupID());
@@ -77,7 +77,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 		setColumn(getColumnNameLedgerName(),name);
 	}
 	public void setDate(Timestamp date) {
-		setColumn(getColumnNameAttendanceDate(),date);
+		setColumn(getColumnNameDate(),date);
 		
 	}
 	public void setGroupID(int groupID) {

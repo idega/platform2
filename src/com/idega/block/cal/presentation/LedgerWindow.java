@@ -236,10 +236,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				else {
 					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
 						user.removeMetaData(NEW_USER_IN_LEDGER);
+						user.setMetaData(NEW_USER_IN_LEDGER,"");
+						try {
+							user.updateMetaData();
+						}catch(Exception e) {
+							e.printStackTrace();
+						}
+												
+//						user.store();
 					}				
 					aLink.setStyleClass(styledLinkUnderline);
 				}
-				
 				
 				aLink.setWindowToOpen(UserPropertyWindow.class);
 				aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
@@ -399,11 +406,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		return entityBrowser;
 	}
 	public void main(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		form = new Form();
 		initializeTexts();
 		initializeFields();
-		
-		
+				
 		ledgerString = iwc.getParameter(LEDGER);		
 		ledgerID =new Integer(ledgerString);
 		
@@ -414,8 +421,6 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				
 		HiddenInput hi = new HiddenInput(LEDGER,ledgerString);
 		form.add(hi);
-		
-		
 
 		Collection users = null;
 		Collection entries = null;
@@ -459,10 +464,15 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			while(userIter.hasNext()) {
 				int h = 0;
 				user = (User) userIter.next();
+				
 				for(int j = 1; j<=userColumns;j++) {
 					Integer userID = (Integer) user.getPrimaryKey();
 					String mark = iwc.getParameter(userID.toString() + "_" + j);
 					if(mark != null) {
+						if(mark.equals("")) {
+							Text emptyWarning = new Text(iwrb.getLocalizedString("ledgerWindow.emptyCellWarning","There is a empty cell, to you want to go on?"));
+							setOnLoad("confirm('"+emptyWarning+"')");
+						}
 						//data validation
 						//if mark is a part of the allowable marks: match is true!
 						//b.toString() is a sequence of the allowable marks with a * after each mark!

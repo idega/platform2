@@ -21,7 +21,6 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;
-import com.idega.user.presentation.UserChooser;
 
 /**
  * Description: <br>
@@ -51,7 +50,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	
 	//fields
 	private Text coachNameField;
-	private UserChooser otherCoachesNameField;
+	private GroupChooser otherCoachesNameField;
   private GroupChooser groupNameField;
   private DatePicker fromDatePickerField;
   
@@ -106,9 +105,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 			User user =iwc.getCurrentUser();
 			coachNameField = new Text(user.getName());
 		}
-		//TODO: make more than only the one other coaches
-		otherCoachesNameField = new UserChooser(otherCoachesFieldParameterName);
-		//
+		otherCoachesNameField = new GroupChooser(otherCoachesFieldParameterName);
 		groupNameField = new GroupChooser(groupFieldParameterName);
 		//fromDate is the start date of the ledger
 		fromDatePickerField =new DatePicker(dateFieldParameterName);
@@ -157,9 +154,10 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		GroupBusiness grBiz =getGroupBusiness(iwc);
 		
 		Group g = grBiz.getGroupByGroupID(groupID);
-		String name = g.getName();		
+		String name = g.getName();
+		String date = iwc.getParameter(dateFieldParameterName);
 		
-		calBiz.createNewLedger(name + "_ledger",groupID,coachName);
+		calBiz.createNewLedger(name + "_ledger",groupID,coachName,date);
 		
 	}
 	

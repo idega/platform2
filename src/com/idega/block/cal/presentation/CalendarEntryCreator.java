@@ -69,11 +69,16 @@ public class CalendarEntryCreator extends Window{
 	public static String creatorViewParameterName = "creatorView";
 	public static String ledgerFieldParameterName = "ledger";
 	public static String locationFieldParameterName = "location";
+	public static String createNewEntry = "calendarEntry.create_new";
+	public static String noLedgerFieldParameterName = "noLedger";
 	
 	private String mainTableStyle = "main";
 	private String borderAllWhite = "borderAllWhite";
+	private String borderBottomStyle = "borderBottom";
 	private String styledLinkBox = "styledLinkBox";
 	private String boldText = "bold";
+	private String headlineFont = "headline";
+	
 	
 	
 	//texts
@@ -95,6 +100,7 @@ public class CalendarEntryCreator extends Window{
 	private Text practiceText;
 	private Text ledgerText;
 	private Text locationText;
+	private Text createNewText;
 	
 	//fields
 	private TextInput headlineField;
@@ -182,6 +188,9 @@ public class CalendarEntryCreator extends Window{
 		ledgerText.setStyleClass(boldText);
 		locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
 		locationText.setStyleClass(boldText);
+		createNewText = new Text(iwrb.getLocalizedString(createNewEntry, "Create new entry"));
+		createNewText.setStyleClass(headlineFont);
+		
 	}
 	/**
 	 * initialized fields
@@ -232,6 +241,7 @@ public class CalendarEntryCreator extends Window{
 			
 		}
 		ledgerField = new DropdownMenu(ledgerFieldParameterName);
+		ledgerField.addMenuElement(-1,iwrb.getLocalizedString(noLedgerFieldParameterName,"No ledger"));
 		
 		Iterator ledgerIter = calBiz.getAllLedgers().iterator();
 		while(ledgerIter.hasNext()) {
@@ -272,8 +282,7 @@ public class CalendarEntryCreator extends Window{
 		timeToField.setMinute(stamp.getMinute());
 		
 		attendeesField = new GroupChooser(attendeesFieldParameterName);
-		//TODO: add groups to menu and add a ledgerChooser
-			
+
 		descriptionField = new TextArea(descriptionFieldParameterName);
 		
 		save = new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue);
@@ -302,7 +311,9 @@ public class CalendarEntryCreator extends Window{
 			
 			Integer groupID = new Integer(entry.getGroupID());
 			try {
-				attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+				if(groupID.intValue() != 0) {
+					attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+				}
 			}catch (Exception e){
 				e.printStackTrace();
 			}
@@ -329,67 +340,67 @@ public class CalendarEntryCreator extends Window{
 		}		
 	}
 	
-	public void initializeViewFields(IWContext iwc) {
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-		
-		int view = CalendarParameters.MONTH;
-		if (iwc.getParameter(CalendarParameters.PARAMETER_VIEW) != null) {
-			view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
-		}
-		String entryIDString = iwc.getParameter(entryIDParameterName);
-		
-		Integer entryID = new Integer(entryIDString);
-		CalendarEntry entry = getCalBusiness(iwc).getEntry(entryID.intValue());
-		
-		viewHeadline = new Text(entry.getName());
-		viewType = new Text(entry.getEntryTypeName());
-		viewRepeat = new Text(entry.getRepeat());
-		viewDayFrom = new Text(entry.getDate().toString());
-		viewDayTo = new Text(entry.getEndDate().toString());
-		viewTimeFrom = new Text();
-		viewTimeTo = new Text();
-		
-		Integer groupID = new Integer(entry.getGroupID());
-		try {
-			viewAttendees = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
-		}catch (Exception e){
-			e.printStackTrace();
-		}	
-		viewLedger = new Text(getCalBusiness(iwc).getLedger(entry.getLedgerID()).getName());
-		viewLocation = new Text(entry.getLocation());
-		viewDescription = new Text(entry.getDescription());
-				
-		//stamp is needed to get the current day/week/month of the CalendarView 
-		//the parameters are then set to the change link (see below)
-		IWTimestamp stamp = null;
-		if (stamp == null) {
-			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
-			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
-			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
-
-			if(month == null || month.length() == 0 &&
-					day == null &&
-					year == null || year.length() == 0) {
-				stamp = IWTimestamp.RightNow();
-			}
-			else {
-				stamp = CalendarView.getTimestamp(day,month,year);
-			}
-		}
-		//change is the link from the view mode of the CalendarEntryCreator to the modifying view
-		change = new Link(iwrb.getLocalizedString(changeParameterName, "Change"));
-		change.addParameter(creatorViewParameterName,"");
-		change.addParameter(entryIDParameterName, entryIDString);
-		change.addParameter(CalendarView.ACTION,CalendarView.OPEN);
-		change.addParameter(CalendarParameters.PARAMETER_VIEW,view);
-		change.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
-		change.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
-		change.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
-		change.setAsImageTab(true,true);
-//		change.setStyleClass(styledLinkBox);
-		
-		
-	}
+//	public void initializeViewFields(IWContext iwc) {
+//		IWResourceBundle iwrb = getResourceBundle(iwc);
+//		
+//		int view = CalendarParameters.MONTH;
+//		if (iwc.getParameter(CalendarParameters.PARAMETER_VIEW) != null) {
+//			view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
+//		}
+//		String entryIDString = iwc.getParameter(entryIDParameterName);
+//		
+//		Integer entryID = new Integer(entryIDString);
+//		CalendarEntry entry = getCalBusiness(iwc).getEntry(entryID.intValue());
+//		
+//		viewHeadline = new Text(entry.getName());
+//		viewType = new Text(entry.getEntryTypeName());
+//		viewRepeat = new Text(entry.getRepeat());
+//		viewDayFrom = new Text(entry.getDate().toString());
+//		viewDayTo = new Text(entry.getEndDate().toString());
+//		viewTimeFrom = new Text();
+//		viewTimeTo = new Text();
+//		
+//		Integer groupID = new Integer(entry.getGroupID());
+//		try {
+//			viewAttendees = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+//		}catch (Exception e){
+//			e.printStackTrace();
+//		}	
+//		viewLedger = new Text(getCalBusiness(iwc).getLedger(entry.getLedgerID()).getName());
+//		viewLocation = new Text(entry.getLocation());
+//		viewDescription = new Text(entry.getDescription());
+//				
+//		//stamp is needed to get the current day/week/month of the CalendarView 
+//		//the parameters are then set to the change link (see below)
+//		IWTimestamp stamp = null;
+//		if (stamp == null) {
+//			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
+//			String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+//			String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+//
+//			if(month == null || month.length() == 0 &&
+//					day == null &&
+//					year == null || year.length() == 0) {
+//				stamp = IWTimestamp.RightNow();
+//			}
+//			else {
+//				stamp = CalendarView.getTimestamp(day,month,year);
+//			}
+//		}
+//		//change is the link from the view mode of the CalendarEntryCreator to the modifying view
+//		change = new Link(iwrb.getLocalizedString(changeParameterName, "Change"));
+//		change.addParameter(creatorViewParameterName,"");
+//		change.addParameter(entryIDParameterName, entryIDString);
+//		change.addParameter(CalendarView.ACTION,CalendarView.OPEN);
+//		change.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+//		change.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
+//		change.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+//		change.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
+//		change.setAsImageTab(true,true);
+////		change.setStyleClass(styledLinkBox);
+//		
+//		
+//	}
 	/**
 	 * lines up the gui - for editing entries
 	 * @return form containing the gui table
@@ -400,34 +411,38 @@ public class CalendarEntryCreator extends Window{
 		table.setStyleClass(mainTableStyle);
 		table.setCellspacing(0);
 		table.setCellpadding(0);
-		table.add(headlineText,1,1);
-		table.add(headlineField,2,1);
-		table.add(typeText,1,2);
-		table.add(typeField,2,2);
-		table.add(repeatText,1,3);
-		table.add(repeatField,2,3);
-		table.add(attendeesText,1,4);
-		table.add(attendeesField,2,4);
-		table.add(ledgerText,1,5);
-		table.add(ledgerField,2,5);
-		table.add(dayFromText,1,6);
-		table.add(dayFromField,2,6);
-		table.add(timeFromText,3,6);
-		table.add(timeFromField,4,6);
-		table.add(dayToText,1,7);
-		table.add(dayToField,2,7);
-		table.add(timeToText,3,7);
-		table.add(timeToField,4,7);
-		table.add(locationText,1,8);
-		table.add(locationField,2,8);
-		table.add(descriptionText,1,9);
-		table.add(descriptionField,2,9);
-		table.setAlignment(4,10,"right");		
-		table.add(save,4,10);
+		table.mergeCells(1,1,4,1);
+//		table.setAlignment(1,1,"center");
+		table.setStyleClass(1,1,borderBottomStyle);
+		table.add(createNewText,1,1);
+		table.add(headlineText,1,2);
+		table.add(headlineField,1,3);
+		table.add(typeText,1,4);
+		table.add(typeField,1,5);
+		table.add(repeatText,1,6);
+		table.add(repeatField,1,7);
+		table.add(attendeesText,1,8);
+		table.add(attendeesField,1,9);
+		table.add(ledgerText,1,10);
+		table.add(ledgerField,1,11);
+		table.add(dayFromText,1,12);
+		table.add(dayFromField,1,13);
+		table.add(timeFromText,2,12);
+		table.add(timeFromField,2,13);
+		table.add(dayToText,1,14);
+		table.add(dayToField,1,15);
+		table.add(timeToText,2,14);
+		table.add(timeToField,2,15);
+		table.add(locationText,1,16);
+		table.add(locationField,1,17);
+		table.add(descriptionText,1,18);
+		table.add(descriptionField,1,19);
+		table.setAlignment(4,20,"right");		
+		table.add(save,4,20);
 		String entryIDString = iwc.getParameter(entryIDParameterName);
 		if(entryIDString != null && !entryIDString.equals("")) {
-			table.add(Text.NON_BREAKING_SPACE,4,10);
-			table.add(deleteLink,4,10);
+			table.add(Text.NON_BREAKING_SPACE,4,20);
+			table.add(deleteLink,4,20);
 		}
 		//the hidden inputs are added to maintain parameters
 		form.add(hiddenEntryID); 
@@ -518,7 +533,7 @@ public class CalendarEntryCreator extends Window{
 //			calBiz.deleteEntryType(ii);
 //		}
 		initializeTexts(iwc);
-		String creatorView = iwc.getParameter(creatorViewParameterName);
+//		String creatorView = iwc.getParameter(creatorViewParameterName);
 
 //		String delete = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETE);
 //		String entryIDString = iwc.getParameter(entryIDParameterName);
@@ -529,14 +544,14 @@ public class CalendarEntryCreator extends Window{
 //			}
 			
 //		}
-		if(creatorView == null || creatorView.equals("")) {
+//		if(creatorView == null || creatorView.equals("")) {
 			initializeFields(iwc);
 			add(lineUpEdit(iwc));
-		}
-		else {
-			initializeViewFields(iwc);
-			add(lineUpView(iwc));
-		}
+//		}
+//		else {
+//			initializeViewFields(iwc);
+//			add(lineUpView(iwc));
+//	}
 				
 	}
 	public String getBundleIdentifier() {
