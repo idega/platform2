@@ -58,14 +58,12 @@ public class LoginPage extends TravelManager {
   }
 
   protected Table getLoginTable(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
-    Table table = new Table(3,4);
+    Table bigTable = new Table(1,2);
+    Table table = new Table(1,2);
       table.setWidth(543);
       table.setCellpadding(0);
-      table.setCellspacing(0);
-      table.setColor(super.WHITE);
-      table.mergeCells(1,1,3,1);
-      table.mergeCells(1,4,3,4);
-      table.setBorder(1);
+      table.setCellspacing(2);
+      table.setColor("#0E2C59");
 
       Image banner = iwrb.getImage("images/travel_banner.gif",543, 212);
       Image welcome = iwrb.getImage("images/welcome.gif",215, 75);
@@ -73,10 +71,6 @@ public class LoginPage extends TravelManager {
       Image login = iwrb.getImage("images/login.gif",174, 75);
       Image disclaimer = iwrb.getImage("images/disclaimer.gif",543, 18);
 
-      table.add(banner, 1, 1);
-      table.add(welcome, 1, 2);
-      table.add(language, 2, 2);
-      table.add(login, 3, 2);
 
       Text rightContent = (Text) theText.clone();
         rightContent.setFontColor("#ABABAB");
@@ -98,6 +92,13 @@ public class LoginPage extends TravelManager {
         rightContent.addToText(string);
         }
 
+    Table middleTable = new Table(3,2);
+      middleTable.setCellpaddingAndCellspacing(0);
+      middleTable.setColor(super.WHITE);
+      middleTable.add(welcome, 1, 1);
+      middleTable.add(language, 2, 1);
+      middleTable.add(login, 3, 1);
+
       Table leftTable = new Table(3, 1);
         leftTable.setCellpaddingAndCellspacing(0);
         leftTable.setWidth(1,1, "20");
@@ -114,16 +115,22 @@ public class LoginPage extends TravelManager {
         leftTable.add(rightContent,2,1);
         centerTable.add(getLocaleSwitcherForm(iwc),2,1);
         rightTable.add(getLoginObject(iwc, iwrb),2,1);
-      table.add(leftTable, 1, 3);
-      table.add(centerTable, 2, 3);
-      table.add(rightTable, 3, 3);
+      middleTable.add(leftTable, 1, 2);
+      middleTable.add(centerTable, 2, 2);
+      middleTable.add(rightTable, 3, 2);
 
-      table.setVerticalAlignment(1,3, "top");
-      table.setVerticalAlignment(2,3, "top");
-      table.setVerticalAlignment(3,3, "top");
+      middleTable.setVerticalAlignment(1,2, "top");
+      middleTable.setVerticalAlignment(2,2, "top");
+      middleTable.setVerticalAlignment(3,2, "top");
 
-      table.add(disclaimer, 1, 4);
-    return table;
+
+      table.add(banner, 1, 1);
+      table.add(middleTable, 1,2);
+
+      bigTable.add(table, 1, 1);
+      bigTable.add(disclaimer, 1, 2);
+      bigTable.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_CENTER);
+    return bigTable;
   }
 
   protected Table getLoginTableOld(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
