@@ -9,8 +9,8 @@ package com.idega.block.calendar.presentation;
  * @version 1.0
  */
 
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
+import java.text.DateFormat;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.IWBlock;
@@ -37,7 +37,7 @@ private int _iLocaleID;
 private int _view = CalendarBusiness.MONTH;
 
 private idegaTimestamp _stamp;
-private String _width = null;
+private String _width = "100%";
 private boolean _isSelectedDay = false;
 private int _daysAhead = 7;
 private int _daysBack = 7;
@@ -144,6 +144,7 @@ public Calendar(idegaTimestamp timestamp){
       outerTable.setCellpaddingAndCellspacing(0);
       if ( _width != null )
       outerTable.setWidth(_width);
+      outerTable.setWidth(1,Table.HUNDRED_PERCENT);
 
     Table entriesTable = new Table();
       entriesTable.setWidth(Table.HUNDRED_PERCENT);
@@ -185,7 +186,7 @@ public Calendar(idegaTimestamp timestamp){
 	      numberOfShown = entries.size();
     }
     else {
-      entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead,_daysBack,getCategoryIds());
+      entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
       if ( entries != null) {
 	      if ( entries.size() > _numberOfShown )
 		numberOfShown = _numberOfShown;
@@ -233,18 +234,19 @@ public Calendar(idegaTimestamp timestamp){
 	  if ( typeImage != null ) {
 	    typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
 	    entriesTable.add(typeImage,xpos,ypos);
+	    entriesTable.setWidth(xpos,ypos,"1");
 	    hasImage = true;
 	    xpos++;
 	  }
 
-	headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
-	entriesTable.setWidth(xpos,ypos,"100%");
+	headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: "+_headlineColor+";");
 	entriesTable.add(headlineText,xpos,ypos);
 
 	stamp = new idegaTimestamp(entry.getDate());
-	String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
-	Text dateText = new Text(date);
-	  dateText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
+	DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+	Date date = new Date(stamp.getTimestamp().getTime());
+	Text dateText = new Text(format.format(date));
+	  dateText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 10px; color: "+_dateColor+";");
 
 	xpos++;
 	entriesTable.setAlignment(xpos,ypos,"right");
@@ -256,9 +258,9 @@ public Calendar(idegaTimestamp timestamp){
 	  entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
 	}
 
-	if ( bodyText != null ) {
+	if ( bodyText != null && bodyText.getText().length() > 0 ) {
 	  ypos++;
-	  bodyText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
+	  bodyText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: "+_bodyColor+";");
 	  if ( hasImage ) {
 	    entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
 	    entriesTable.add(bodyText,2,ypos);
@@ -273,10 +275,9 @@ public Calendar(idegaTimestamp timestamp){
       }
       }
     }
-
-    if ( ypos == 2 ) {
+    else {
       headlineText = new Text(_iwrb.getLocalizedString("no_entries","No entries in calendar"));
-      headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
+      headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: "+_headlineColor+";");
       entriesTable.add(headlineText,1,2);
       ypos++;
     }

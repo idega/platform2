@@ -27,7 +27,7 @@ private boolean daysAreLinks = false;
 private boolean showNameOfDays = true;
 private boolean _highlight = false;
 
-private String textColor = "#999966";
+private String textColor = "#000000";
 private String highlightedText = "#660000";
 private String headerTextColor = "#000000";
 private String dayTextColor = headerTextColor;
@@ -78,13 +78,13 @@ public SmallCalendar() {
       String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
       String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
       if(isTarget() || !useTarget ){
-        stamp = CalendarBusiness.getTimestamp(day,month,year);
+	stamp = CalendarBusiness.getTimestamp(day,month,year);
       }
       else if(iwc.getSessionAttribute("smcal"+getICObjectInstanceID())!=null){
-        stamp = (idegaTimestamp) iwc.getSessionAttribute("smcal"+getICObjectInstanceID());
+	stamp = (idegaTimestamp) iwc.getSessionAttribute("smcal"+getICObjectInstanceID());
       }
       else
-        stamp = idegaTimestamp.RightNow();
+	stamp = idegaTimestamp.RightNow();
     //}
     make(iwc);
   }
@@ -94,7 +94,7 @@ public SmallCalendar() {
     int stampmonth = stamp.getMonth();
 
     boolean shadow = (thismonth == stampmonth)?true:false;
-        if (shadow) shadow = (today.getYear() == stamp.getYear()) ?true:false;
+	if (shadow) shadow = (today.getYear() == stamp.getYear()) ?true:false;
     int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
     int daynr = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);
     String sMonth = cal.getShortNameOfMonth(stamp.getMonth(),iwc);
@@ -109,15 +109,15 @@ public SmallCalendar() {
     tMonth.setFontColor(headerTextColor);
     tMonth.setFontSize(2);
     tMonth.setBold();
-    tMonth.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
+    tMonth.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
     Link right = new Link(">");
 
       right.setFontColor(headerTextColor);
       right.setFontSize(2);
       right.setBold();
-      right.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
+      right.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
       for (int i = 0; i < parameterName.size(); i++) {
-        right.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+	right.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
       }
 
     this.addNextMonthPrm(right,stamp);
@@ -127,9 +127,9 @@ public SmallCalendar() {
       left.setFontColor(headerTextColor);
       left.setFontSize(2);
       left.setBold();
-      left.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
+      left.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
       for (int i = 0; i < parameterName.size(); i++) {
-        left.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+	left.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
       }
 
     this.addLastMonthPrm(left,stamp);
@@ -149,13 +149,13 @@ public SmallCalendar() {
     //T.setColor(inactiveCellColor);
 
     if (useNextAndPreviousLinks) {
-        T2.add(left,1,1);
-        T2.add(Text.getNonBrakingSpace(1),1,1);
+	T2.add(left,1,1);
+	T2.add(Text.getNonBrakingSpace(1),1,1);
     }
     T2.add(tMonth,1,1);
     if (useNextAndPreviousLinks) {
-        T2.add(Text.getNonBrakingSpace(1),1,1);
-        T2.add(right,1,1);
+	T2.add(Text.getNonBrakingSpace(1),1,1);
+	T2.add(right,1,1);
     }
 
     int number = 1;
@@ -164,10 +164,10 @@ public SmallCalendar() {
     t.setFontSize(1);
     if (this.showNameOfDays) {
       for( int a = 1; a < 8; a++ ){
-        t = new Text(cal.getNameOfDay(a,iwc).substring(0,1).toUpperCase());
-        t.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+dayTextColor+"; font-size: 10px; text-decoration: none;");
-        T.setAlignment(a,1,"center");
-        T.add(t,a,1);
+	t = new Text(cal.getNameOfDay(a,iwc).substring(0,1).toUpperCase());
+	t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; font-weight: bold; color: "+dayTextColor+"; font-size: 10px; text-decoration: none;");
+	T.setAlignment(a,1,"center");
+	T.add(t,a,1);
       }
 
       if( dayCellColor != null) T.setRowColor(1,dayCellColor);
@@ -186,12 +186,12 @@ public SmallCalendar() {
     if ( dayColors != null ) {
       Enumeration enum = dayColors.keys();
       while (enum.hasMoreElements()) {
-        String dayString = (String) enum.nextElement();
-        if ( inThisMonth(dayString,year,month) ) {
-          idegaTimestamp newStamp = new idegaTimestamp(dayString);
-          int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDate());
-          T.setColor(XY[0],XY[1],getDayColor(dayString));
-        }
+	String dayString = (String) enum.nextElement();
+	if ( inThisMonth(dayString,year,month) ) {
+	  idegaTimestamp newStamp = new idegaTimestamp(dayString);
+	  int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDate());
+	  T.setColor(XY[0],XY[1],getDayColor(dayString));
+	}
       }
     }
 
@@ -203,58 +203,62 @@ public SmallCalendar() {
       t = new Text(String.valueOf(n));
       dayColor = textColor;
       if ( getDayFontColor(getDateString(year,month,n)) != null ) {
-        dayColor = getDayFontColor(getDateString(year,month,n));
+	dayColor = getDayFontColor(getDateString(year,month,n));
+	t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
       }
       else {
-        if ( today.getYear() == year && today.getMonth() == month && today.getDay() == n ) {
-          dayColor = dayTextColor;
-        }
+	if ( today.getYear() == year && today.getMonth() == month && today.getDay() == n ) {
+	  dayColor = dayTextColor;
+	  t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
+	}
+	else {
+	  t.setFontStyle("font-family: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
+	}
       }
-      t.setFontStyle("font-face: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
       T.setAlignment(xpos,ypos,"center");
 
       if ( (todayColor!=null) && ( (n == today.getDay()) && shadow)){
-        T.setColor(xpos,ypos,todayColor);
+	T.setColor(xpos,ypos,todayColor);
       }
 
       if ( _highlight ) {
-        if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
-          T.setColor(xpos,ypos,selectedColor);
-        }
+	if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
+	  T.setColor(xpos,ypos,selectedColor);
+	}
       }
 
       if (daysAreLinks) {
-        theLink = getLink();
-          theLink.setPresentationObject(t);
-          if ( _page != null ) {
-            theLink.setPage(_page);
-          }
-          theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
-          theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
-          theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
-          theLink.setFontColor(textColor);
-          theLink.setFontSize(1);
-          for (int i = 0; i < parameterName.size(); i++) {
-            theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
-          }
-        T.add(theLink,xpos,ypos);
+	theLink = getLink();
+	  theLink.setPresentationObject(t);
+	  if ( _page != null ) {
+	    theLink.setPage(_page);
+	  }
+	  theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
+	  theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
+	  theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
+	  theLink.setFontColor(textColor);
+	  theLink.setFontSize(1);
+	  for (int i = 0; i < parameterName.size(); i++) {
+	    theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+	  }
+	T.add(theLink,xpos,ypos);
       }
       else {
-        T.add(t,xpos,ypos);
+	T.add(t,xpos,ypos);
       }
 
       xpos = xpos % 7 + 1;
       if(xpos == 1)
-        ypos++;
+	ypos++;
       n++;
     }
 
     if( inactiveCellColor != null ){
       for ( int a = 1; a <= T.getRows(); a++ ) {
-        for ( int b = 1; b <= T.getColumns(); b++ ) {
-          if ( T.getColor(b,a) == null )
-            T.setColor(b,a,inactiveCellColor);
-        }
+	for ( int b = 1; b <= T.getColumns(); b++ ) {
+	  if ( T.getColor(b,a) == null )
+	    T.setColor(b,a,inactiveCellColor);
+	}
       }
     }
 
@@ -280,7 +284,7 @@ public SmallCalendar() {
       L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(idts.getMonth()+1));
       L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()));
     }
-    L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
+    //L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
   public void addLastMonthPrm(Link L,idegaTimestamp idts){
@@ -292,7 +296,7 @@ public SmallCalendar() {
       L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(idts.getMonth()-1));
       L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()));
     }
-    L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
+    //L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
   public idegaTimestamp nextMonth(idegaTimestamp idts){
@@ -316,10 +320,10 @@ public SmallCalendar() {
   public String getDayColor(String dateString) {
     if ( dayColors != null ) {
       if ( dayColors.get(dateString) != null ) {
-        return (String) dayColors.get(dateString);
+	return (String) dayColors.get(dateString);
       }
       else {
-        return null;
+	return null;
       }
     }
     return null;
@@ -328,10 +332,10 @@ public SmallCalendar() {
   public String getDayFontColor(String dateString) {
     if ( dayFontColors != null ) {
       if ( dayFontColors.get(dateString) != null ) {
-        return (String) dayFontColors.get(dateString);
+	return (String) dayFontColors.get(dateString);
       }
       else {
-        return null;
+	return null;
       }
     }
     return null;
@@ -340,7 +344,7 @@ public SmallCalendar() {
   private boolean inThisMonth(String dayString, int year, int month) {
     if ( dayString != null ) {
       if ( dayString.substring(0,7).equalsIgnoreCase(getDateString(year,month,1).substring(0,7)) ) {
-        return true;
+	return true;
       }
       return false;
     }
@@ -434,7 +438,7 @@ public SmallCalendar() {
 
   public void useColorToday(boolean useColorToday) {
     if (!useColorToday) {
-        this.todayColor = "";
+	this.todayColor = "";
     }
   }
 
@@ -476,7 +480,7 @@ public SmallCalendar() {
 
       int startingY = 1;
       if (showNameOfDays) {
-          ++startingY;
+	  ++startingY;
       }
       int[] lastDay = getMaxPos();
       int maxX = lastDay[0];
@@ -486,7 +490,7 @@ public SmallCalendar() {
 
 
       for (int i = startingY; i <= maxY; i++) {
-        T.setColor(dayOfWeek,i,color);
+	T.setColor(dayOfWeek,i,color);
       }
 
   }
@@ -504,17 +508,17 @@ public SmallCalendar() {
     int startingX = 1;
     int startingY = 1;
     if (showNameOfDays) {
-        ++startingY;
+	++startingY;
     }
 
     int daynr = cal.getDayOfWeek(year,month,1);
 
     int x = ((daynr-1) + day ) % 7;
     int y = (((daynr-1) + day ) / 7) +1;
-        if (x == 0) {
-            x=7;
-            --y;
-        }
+	if (x == 0) {
+	    x=7;
+	    --y;
+	}
 
     x += (startingX -1);
     y += (startingY -1);
@@ -535,7 +539,7 @@ public SmallCalendar() {
     if(_link==null){
       _link=new Link();
       if(getTarget()!=null){
-        _link.setTarget(getTarget());
+	_link.setTarget(getTarget());
       }
       setAsObjectInstanceTarget(_link);
     }
@@ -568,25 +572,25 @@ public SmallCalendar() {
     try {
       obj = (SmallCalendar)super.clone();
       if (this.today != null) {
-        obj.today = new idegaTimestamp(today);
+	obj.today = new idegaTimestamp(today);
       }
       if (this.stamp != null) {
-        obj.stamp = new idegaTimestamp(stamp);
+	obj.stamp = new idegaTimestamp(stamp);
       }
       if (this.T != null) {
-        obj.T = (Table)T.clone();
+	obj.T = (Table)T.clone();
       }
       if (this.dayColors != null) {
-        obj.dayColors = (Hashtable)dayColors.clone();
+	obj.dayColors = (Hashtable)dayColors.clone();
       }
       if (this.dayFontColors != null) {
-        obj.dayFontColors = (Hashtable)dayFontColors.clone();
+	obj.dayFontColors = (Hashtable)dayFontColors.clone();
       }
       if (this.parameterName != null) {
-        obj.parameterName = (Vector) parameterName.clone();
+	obj.parameterName = (Vector) parameterName.clone();
       }
       if (this.parameterValue != null) {
-        obj.parameterValue = (Vector) parameterValue.clone();
+	obj.parameterValue = (Vector) parameterValue.clone();
       }
 
       obj.cal = this.cal;

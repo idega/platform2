@@ -94,28 +94,28 @@ public CalendarEditor(){
   private void processForm(IWContext iwc, int iLocaleId,int iCategoryId) {
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID) != null ) {
       try {
-        _entryID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID));
+	_entryID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID));
       }
       catch (NumberFormatException e) {
-        _entryID = -1;
+	_entryID = -1;
       }
     }
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID) != null ) {
       try {
-        _typeID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID));
+	_typeID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID));
       }
       catch (NumberFormatException e) {
-        _typeID = -1;
+	_typeID = -1;
       }
     }
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE) != null ) {
       try {
-        _stamp = new idegaTimestamp(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE));
+	_stamp = new idegaTimestamp(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE));
       }
       catch (Exception e) {
-        _stamp = new idegaTimestamp();
+	_stamp = new idegaTimestamp();
       }
     }
     else {
@@ -124,29 +124,29 @@ public CalendarEditor(){
 
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE) != null ) {
       if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_CLOSE) ) {
-        closeEditor(iwc);
+	closeEditor(iwc);
       }
       else if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_SAVE) ) {
-        saveEntry(iwc,iLocaleId,iCategoryId);
+	saveEntry(iwc,iLocaleId,iCategoryId);
       }
     }
 
     if ( _entryID == -1 && iwc.getSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID) != null ) {
       try {
-        _entryID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID));
+	_entryID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID));
       }
       catch (NumberFormatException e) {
-        _entryID = -1;
+	_entryID = -1;
       }
       iwc.removeSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID);
     }
 
     if ( _entryID != -1 ) {
       if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE_DELETE) != null ) {
-        deleteEntry(iwc);
+	deleteEntry(iwc);
       }
       else {
-        _update = true;
+	_update = true;
       }
     }
 
@@ -178,20 +178,21 @@ public CalendarEditor(){
     TextInput entryHeadline = new TextInput(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
       entryHeadline.setLength(24);
       if ( locTexts != null && locTexts[0] != null ) {
-        entryHeadline.setContent(locTexts[0]);
+	entryHeadline.setContent(locTexts[0]);
       }
     addLeft(_iwrb.getLocalizedString("headline","Headline")+":",entryHeadline,true);
 
     TextArea entryBody = new TextArea(CalendarBusiness.PARAMETER_ENTRY_BODY,40,6);
       if ( locTexts != null && locTexts[1] != null ) {
-        entryBody.setContent(locTexts[1]);
+	entryBody.setContent(locTexts[1]);
       }
     addLeft(_iwrb.getLocalizedString("body","Body")+":",entryBody,true);
 
+    idegaTimestamp stamp = new idegaTimestamp();
     DateInput entryDate = new DateInput(CalendarBusiness.PARAMETER_ENTRY_DATE);
-      entryDate.setYearRange(new idegaTimestamp().getYear()-5,new idegaTimestamp().getYear()+10);
+      entryDate.setYearRange(stamp.getYear()-5,stamp.getYear()+10);
       if(_stamp==null){
-        _stamp = idegaTimestamp.RightNow();
+	_stamp = idegaTimestamp.RightNow();
       }
       entryDate.setDate(_stamp.getSQLDate());
       /*
@@ -200,7 +201,20 @@ public CalendarEditor(){
       entryDate.setYear(_stamp.getYear());
       */
       entryDate.setStyleAttribute("style",STYLE);
+
+    TimeInput entryTime = new TimeInput(CalendarBusiness.PARAMETER_ENTRY_TIME);
+      if ( _stamp != null ) {
+	entryTime.setHour(_stamp.getHour());
+	entryTime.setMinute(stamp.getMinute());
+      }
+      else {
+	entryTime.setHour(stamp.getHour());
+	entryTime.setMinute(stamp.getMinute());
+      }
+      entryTime.setStyleAttribute(STYLE);
+
     addLeft(_iwrb.getLocalizedString("date","Date")+":",entryDate,true);
+    addLeft(_iwrb.getLocalizedString("time","Time")+":",entryTime,true);
     addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_IC_CAT,String.valueOf(iCategoryId)));
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_CLOSE));
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_SAVE));
@@ -210,9 +224,10 @@ public CalendarEditor(){
     String entryHeadline = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
     String entryBody = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_BODY);
     String entryDate = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE);
+    String entryTime = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_TIME);
     String entryType = iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID);
 
-    int entryID = CalendarBusiness.saveEntry(_entryID,_userID,_groupID,localeID,categoryId,entryHeadline,entryBody,entryDate,entryType);
+    int entryID = CalendarBusiness.saveEntry(_entryID,_userID,_groupID,localeID,categoryId,entryHeadline,entryBody,entryDate,entryTime,entryType);
     iwc.setSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID,Integer.toString(entryID));
   }
 

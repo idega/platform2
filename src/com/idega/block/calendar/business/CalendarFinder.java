@@ -31,7 +31,7 @@ public class CalendarFinder {
     try {
       CalendarEntry[] cal = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumnOrdered(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stamp.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
-        return cal;
+	return cal;
       return null;
     }
     catch (SQLException e) {
@@ -40,20 +40,30 @@ public class CalendarFinder {
     }
   }
 
-  public List listOfEntries(idegaTimestamp stamp,int[] iCategoryIds) {
+  public List listOfEntries(idegaTimestamp _stamp,int[] iCategoryIds) {
     try {
-      java.io.StringWriter writer;
+      idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
+	stampPlus.addDays(1);
+	stampPlus.setMinute(0);
+	stampPlus.setHour(0);
+	stampPlus.setSecond(0);
+
+      idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
+	stamp.setMinute(0);
+	stamp.setHour(0);
+	stamp.setSecond(0);
+
       StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityTableName());
-      sql.append(" where ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append("= '").append(stamp.toString()).append("'");
+      sql.append(" where ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
+      sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
       sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnCategoryId()).append(" in (  ");
       for (int i = 0; i < iCategoryIds.length; i++) {
-        if(i > 0)
-          sql.append(",");
-        sql.append(iCategoryIds[i]);
+	if(i > 0)
+	  sql.append(",");
+	sql.append(iCategoryIds[i]);
       }
       sql.append(" ) ");
       sql.append(" order by ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID());
-      //System.err.println(sql.toString());
       return EntityFinder.findAll(com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance(),sql.toString());
     }
     catch (SQLException e) {
@@ -70,20 +80,20 @@ public class CalendarFinder {
   public CalendarEntry[] getWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
-        stampPlus.addDays(daysAhead);
-        stampPlus.setMinute(59);
-        stampPlus.setHour(23);
-        stampPlus.setSecond(59);
+	stampPlus.addDays(daysAhead);
+	stampPlus.setMinute(59);
+	stampPlus.setHour(23);
+	stampPlus.setSecond(59);
 
       idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
-        stamp.addDays(-daysBack);
-        stampPlus.setMinute(0);
-        stampPlus.setHour(0);
-        stampPlus.setSecond(0);
+	stamp.addDays(-daysBack);
+	stamp.setMinute(0);
+	stamp.setHour(0);
+	stamp.setSecond(0);
 
       CalendarEntry[] cal = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumnOrdered(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stampPlus.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stamp.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),"<",">=");
       if ( cal.length > 0 )
-        return cal;
+	return cal;
       return null;
     }
     catch (SQLException e) {
@@ -95,16 +105,16 @@ public class CalendarFinder {
   public List listOfWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack,int[] iCategoryIds) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
-        stampPlus.addDays(daysAhead);
-        stampPlus.setMinute(59);
-        stampPlus.setHour(23);
-        stampPlus.setSecond(59);
+	stampPlus.addDays(daysAhead);
+	stampPlus.setMinute(59);
+	stampPlus.setHour(23);
+	stampPlus.setSecond(59);
 
       idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
-        stamp.addDays(-daysBack);
-        stamp.setMinute(0);
-        stamp.setHour(0);
-        stamp.setSecond(0);
+	stamp.addDays(-daysBack);
+	stamp.setMinute(0);
+	stamp.setHour(0);
+	stamp.setSecond(0);
 
 
       StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityTableName());
@@ -112,9 +122,9 @@ public class CalendarFinder {
       sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
       sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnCategoryId()).append(" in ( ");
       for (int i = 0; i < iCategoryIds.length; i++) {
-        if(i > 0)
-          sql.append(",");
-        sql.append(iCategoryIds[i]);
+	if(i > 0)
+	  sql.append(",");
+	sql.append(iCategoryIds[i]);
       }
       sql.append(" ) ");
       sql.append("order by ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate());
@@ -128,29 +138,52 @@ public class CalendarFinder {
     return null;
   }
 
+  public List listOfNextEntries(int[] iCategoryIds) {
+    try {
+      idegaTimestamp stamp = new idegaTimestamp();
+
+      StringBuffer sql = new StringBuffer("select * from ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityTableName());
+      sql.append(" where ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
+      sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnCategoryId()).append(" in ( ");
+      for (int i = 0; i < iCategoryIds.length; i++) {
+	if(i > 0)
+	  sql.append(",");
+	sql.append(iCategoryIds[i]);
+      }
+      sql.append(" ) ");
+      sql.append("order by ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate());
+      return EntityFinder.findAll(com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance(),sql.toString());
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+
+    }
+    return null;
+  }
+
   public List getMonthEntries(idegaTimestamp stamp,int[] iCategoryIds) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
-        stampPlus.addMonths(1);
-        stampPlus.setDate(1);
-        stampPlus.setMinute(59);
-        stampPlus.setHour(23);
-        stampPlus.setSecond(59);
+	stampPlus.addMonths(1);
+	stampPlus.setDate(1);
+	stampPlus.setMinute(59);
+	stampPlus.setHour(23);
+	stampPlus.setSecond(59);
 
       idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
-        stampMinus.setDate(1);
-        stampMinus.setMinute(0);
-        stampMinus.setHour(0);
-        stampMinus.setSecond(0);
+	stampMinus.setDate(1);
+	stampMinus.setMinute(0);
+	stampMinus.setHour(0);
+	stampMinus.setSecond(0);
 
       StringBuffer sql = new StringBuffer("select distinct * from ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getEntityTableName());
       sql.append(" where ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
       sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate()).append(" >= '").append(stampMinus.toString()).append("'");
       sql.append(" and ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnCategoryId()).append(" in ( ");
       for (int i = 0; i < iCategoryIds.length; i++) {
-        if(i > 0)
-          sql.append(",");
-        sql.append(iCategoryIds[i]);
+	if(i > 0)
+	  sql.append(",");
+	sql.append(iCategoryIds[i]);
       }
       sql.append(" ) ");
       sql.append(" order by ").append(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate());
@@ -168,17 +201,17 @@ public class CalendarFinder {
   public List getMonthEntries(idegaTimestamp stamp) {
     try {
       idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
-        stampPlus.addMonths(1);
-        stampPlus.setDate(1);
-        stampPlus.setMinute(59);
-        stampPlus.setHour(23);
-        stampPlus.setSecond(59);
+	stampPlus.addMonths(1);
+	stampPlus.setDate(1);
+	stampPlus.setMinute(59);
+	stampPlus.setHour(23);
+	stampPlus.setSecond(59);
 
       idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
-        stampMinus.setDate(1);
-        stampPlus.setMinute(0);
-        stampPlus.setHour(0);
-        stampPlus.setSecond(0);
+	stampMinus.setDate(1);
+	stampPlus.setMinute(0);
+	stampPlus.setHour(0);
+	stampPlus.setSecond(0);
       return EntityFinder.findAllByColumnOrdered(com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stampPlus.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),stampMinus.toString(),com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate(),"<",">=","distinct",com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryDate());
     }
     catch (SQLException e) {
@@ -204,7 +237,7 @@ public class CalendarFinder {
     if ( type != null ) {
       LocalizedText loc = TextFinder.getLocalizedText(type,localeID);
       if ( loc != null ) {
-        return loc.getHeadline();
+	return loc.getHeadline();
       }
       return "";
     }
@@ -216,8 +249,8 @@ public class CalendarFinder {
     if ( entry != null ) {
       LocalizedText loc = TextFinder.getLocalizedText(entry,localeID);
       if ( loc != null ) {
-        returnString[0] = loc.getHeadline();
-        returnString[1] = loc.getBody();
+	returnString[0] = loc.getHeadline();
+	returnString[1] = loc.getBody();
       }
     }
     return returnString;

@@ -45,6 +45,7 @@ public static final String PARAMETER_LOCALE_DROP = "locale_drop";
 public static final String PARAMETER_ENTRY_HEADLINE = "entry_headline";
 public static final String PARAMETER_ENTRY_BODY = "entry_body";
 public static final String PARAMETER_ENTRY_DATE = "entry_date";
+public static final String PARAMETER_ENTRY_TIME = "entry_time";
 public static final String PARAMETER_IC_CAT = "ic_cat_id";
 
 public static final String PARAMETER_MODE = PARAMETER_CALENDAR+"_mode";
@@ -126,7 +127,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     return drp;
   }
 
-  public static int saveEntry(int entryID, int userID, int groupID, int localeID,int categoryId, String entryHeadline, String entryBody, String entryDate, String entryType) {
+  public static int saveEntry(int entryID, int userID, int groupID, int localeID,int categoryId, String entryHeadline, String entryBody, String entryDate, String entryTime, String entryType) {
     int returnInt = -1;
     boolean update = false;
     if ( entryID != -1 ) {
@@ -149,7 +150,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     entry.setEntryTypeID(Integer.parseInt(entryType));
     entry.setUserID(userID);
     entry.setGroupID(groupID);
-    entry.setDate(new idegaTimestamp(entryDate).getTimestamp());
+    entry.setDate(new idegaTimestamp(entryDate+" "+entryTime).getTimestamp());
 
     if ( !update ) {
       try {
