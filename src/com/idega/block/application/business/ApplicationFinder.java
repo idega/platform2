@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.10 2001/08/01 12:14:04 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.11 2001/08/10 09:13:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import java.util.List;
 import com.idega.data.EntityFinder;
 import java.util.Hashtable;
 import java.util.Vector;
+import com.idega.util.idegaTimestamp;
 
 /**
  *
@@ -41,7 +42,7 @@ public class ApplicationFinder {
     try {
       Application A = new Application();
       String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+status+"'";
-      //System.err.println(sql);
+      System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
     }
@@ -62,13 +63,20 @@ public class ApplicationFinder {
   }
 
   public static List listOfNewApplicants(){
-    return listOfNewApplicants(null);
+    return listOfApplicants(null,Application.statusSubmitted);
   }
 
+  public static List listOfNewApplicantsOrdered(String order){
+    return listOfApplicants(null,Application.statusSubmitted);
+  }
 
-  public static List listOfNewApplicants(String order){
+  public static List listOfApplicantsWithStatus(String status){
+    return listOfApplicants(null,status);
+  }
+
+  public static List listOfApplicants(String order,String status){
     try {
-       Applicant a = new Applicant();
+      Applicant a = new Applicant();
       Application A = new Application();
       StringBuffer sql = new StringBuffer("select distinct ");
       sql.append(a.getEntityName());
@@ -77,21 +85,30 @@ public class ApplicationFinder {
       sql.append(",");
       sql.append(A.getEntityName());
       sql.append(" where ");
-      sql.append(A.getEntityName());
+      sql.append(a.getEntityName());
       sql.append(".");
-      sql.append(A.getStatusColumnName());
-      sql.append(" = '");
-      sql.append(A.statusSubmitted);
-      sql.append("' and ");
       sql.append(a.getIDColumnName());
       sql.append(" = ");
+      sql.append(A.getEntityName());
+      sql.append(".");
       sql.append(A.getApplicantIdColumnName());
+      sql.append(" and ");
+      if(status != null){
+        sql.append(A.getEntityName());
+        sql.append(".");
+        sql.append(A.getStatusColumnName());
+        sql.append(" = '");
+        sql.append(status);
+        sql.append("' ");
+      }
       if(order != null && order.length() > 0){
         sql.append(" order by ");
         sql.append( order);
       }
       //System.err.println(sql.toString());
-      return(EntityFinder.findAll(a,sql.toString()));
+      List L = EntityFinder.findAll(a,sql.toString());
+      return(L);
+
     }
     catch(SQLException e){
       e.printStackTrace();
@@ -174,16 +191,17 @@ public class ApplicationFinder {
     return listOfApplicationHolders(L,A);
   }
 
-  public static List listOfNewApplicationHoldersInSubject(int id,String status){
+  public static List listOfApplicationHoldersInSubject(int id,String status){
     List A = listOfNewApplicants();
     List L = listOfApplicationInSubject(id,status);
     return listOfApplicationHolders(L,A);
   }
 
-  public static List listOfNewApplicationHoldersInSubject(int id,String status,String order){
-    List A = listOfNewApplicants(order);
+  public static List listOfApplicationHoldersInSubject(int id,String status,String order){
+    List A = listOfApplicants(order,status);
     List L = listOfApplicationInSubject(id,status);
-    return listOfHolders(L,A);
+    List B = listOfHolders(L,A);
+    return B;
   }
 
 
