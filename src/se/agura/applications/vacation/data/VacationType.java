@@ -1,23 +1,25 @@
 /*
- * $Id: VacationType.java,v 1.2 2004/12/13 14:44:20 anna Exp $
- * Created on 8.12.2004
+ * $Id: VacationType.java,v 1.3 2005/01/11 09:29:15 laddi Exp $
+ * Created on 11.1.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
 package se.agura.applications.vacation.data;
 
+
+
 import com.idega.data.IDOEntity;
 import com.idega.data.MetaDataCapable;
 
 
 /**
- * Last modified: 8.12.2004 14:05:29 by: anna
+ * Last modified: $Date: 2005/01/11 09:29:15 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.3 $
  */
 public interface VacationType extends IDOEntity, MetaDataCapable {
 
@@ -80,4 +82,5 @@ public interface VacationType extends IDOEntity, MetaDataCapable {
 	 * @see se.agura.applications.vacation.data.VacationTypeBMPBean#removeExtraTypeInformation
 	 */
 	public void removeExtraTypeInformation(String key);
+
 }
