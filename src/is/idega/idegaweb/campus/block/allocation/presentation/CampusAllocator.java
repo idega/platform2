@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.51 2003/07/29 10:40:37 aron Exp $
+ * $Id: CampusAllocator.java,v 1.52 2003/08/06 00:17:24 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -64,6 +64,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -1200,10 +1201,20 @@ public class CampusAllocator extends Block implements Campus {
 			setStyle(delete);
 			//T.add(delete, 1, row);
 			T.addButton(delete);
-			T.add(new HiddenInput("contract_id", String.valueOf(C.getID())));
-			if(waitingList!=null && waitingList.getRejectFlag()){
-				T.add(new HiddenInput("reset_reject_flag",waitingList.getPrimaryKey().toString()));
+			T.add(new HiddenInput("contract_id", C.getPrimaryKey().toString()));
+			CheckBox incrementRejections = new CheckBox("increment_rejections");
+			incrementRejections.setChecked(true);
+			if(waitingList!=null){
+				if(waitingList.getRejectFlag()){
+					T.add(new HiddenInput("reset_reject_flag","true"));
+					incrementRejections.setChecked(false);	
+				}
+				T.add(new HiddenInput("wl_id",waitingList.getPrimaryKey().toString()));
 			}
+			
+			T.add(formatText(iwrb.getLocalizedString("increment_rejections","Increment rejections")),1,row);
+			T.add(incrementRejections,3,row);
+			
 		}
 		//T.add(save, 3, row);
 		T.addButton(save);
@@ -1344,11 +1355,14 @@ public class CampusAllocator extends Block implements Campus {
 	private boolean deleteAllocation(IWContext iwc) {
 		String sContractId = iwc.getParameter("contract_id");
 		int iContractId = Integer.parseInt(sContractId);
-		if(iwc.isParameterSet("reset_reject_flag")){
+		if(iwc.isParameterSet("reset_reject_flag") || iwc.isParameterSet("increment_rejections")){
 			try {
-				Integer wlID = new Integer(iwc.getParameter("reset_reject_flag"));
+				Integer wlID = new Integer(iwc.getParameter("wl_id"));
 				WaitingList wl = ((WaitingListHome)IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wlID);
-				wl.setRejectFlag(false);
+				if(iwc.isParameterSet("increment_rejections"))
+					wl.incrementRejections(false);
+				else if(iwc.isParameterSet("reset_reject_flag"))		
+					wl.setRejectFlag(false);
 				wl.store();
 			}
 			catch (NumberFormatException e) {

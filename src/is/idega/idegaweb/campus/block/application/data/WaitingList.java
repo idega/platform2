@@ -38,7 +38,7 @@ public interface WaitingList extends com.idega.data.IDOLegacyEntity
  public java.lang.Integer getApartmentTypeId();
  public void setRejectFlag(boolean flag);
  public boolean getRejectFlag();
- public void incrementRejections();
+ public void incrementRejections(boolean flagAsRejected);
  public void setAcceptedDate(Timestamp stamp);
  public Timestamp getAcceptedDate();
 }

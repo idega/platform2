@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.31 2003/07/30 12:20:29 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.32 2003/08/06 00:17:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -424,7 +424,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				
 				Integer WID = Integer.valueOf(iwc.getParameter("adWaitL_id"));
 				WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(WID);
-				wl.incrementRejections();
+				wl.incrementRejections(true);
 				wl.store();
 			}
 			catch (NumberFormatException e) {

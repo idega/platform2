@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.7 2003/07/25 17:59:41 aron Exp $
+ * $Id: WaitingListBMPBean.java,v 1.8 2003/08/06 00:17:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -204,13 +204,13 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     setColumn(NUMBER_OF_REJECTIONS,count);
   }
   
-  public void incrementRejections(){
+  public void incrementRejections(boolean flagAsRejected){
   	int count = getNumberOfRejections();
   	if(count <0 )
   		count = 0;
   	count++;
   	setNumberOfRejections(count);
-  	setRejectFlag(true);
+  	setRejectFlag(flagAsRejected);
   }
 
   public int getNumberOfRejections() {
