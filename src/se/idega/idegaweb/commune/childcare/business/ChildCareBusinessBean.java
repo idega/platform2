@@ -25,14 +25,11 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
@@ -44,10 +41,6 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
-import com.idega.block.contract.business.ContractBusiness;
-import com.idega.block.contract.business.ContractFinder;
-import com.idega.block.contract.business.ContractWriter;
-import com.idega.block.contract.data.Contract;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
@@ -62,13 +55,10 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.io.PDFTemplateWriter;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.lowagie.text.ElementTags;
-import com.lowagie.text.Font;
 import com.lowagie.text.xml.XmlPeer;
 
 /**

@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.data;
 
-import javax.ejb.*;
 
 public interface ChildCarePrognosis extends com.idega.data.IDOEntity
 {

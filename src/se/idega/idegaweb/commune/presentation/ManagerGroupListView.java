@@ -137,7 +137,7 @@ public class ManagerGroupListView extends CommuneBlock {
 				PresentationObject userName = null;
 
 				//CheckBox deleteCheck = null;
-				boolean isRead = false;
+				//boolean isRead = false;
 				if (groups != null) {
 					Iterator iter = groups.iterator();
 					while (iter.hasNext()) {

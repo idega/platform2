@@ -1,7 +1,5 @@
 package se.idega.idegaweb.commune.childcare.business;
 
-import javax.ejb.*;
-
 import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness

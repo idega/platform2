@@ -1,22 +1,28 @@
 package se.idega.idegaweb.commune.report.presentation;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
+import se.idega.idegaweb.commune.report.business.Fetcher;
+
 import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.data.Report;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.io.*;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfWriter;
-import java.io.*;
-import javax.servlet.http.HttpServletRequest;
-import se.idega.idegaweb.commune.report.business.Fetcher;
+import com.idega.io.MediaWritable;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryOutputStream;
 
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/04/02 09:39:00 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:23 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */

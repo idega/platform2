@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.check.data;
 
-import javax.ejb.*;
 
 public interface Check extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {

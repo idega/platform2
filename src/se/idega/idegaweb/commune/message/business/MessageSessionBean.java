@@ -2,7 +2,6 @@ package se.idega.idegaweb.commune.message.business;
 
 import com.idega.business.IBOSessionBean;
 import com.idega.idegaweb.IWPropertyList;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
 import com.idega.user.data.User;
 

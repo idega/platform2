@@ -1,10 +1,7 @@
 package se.idega.idegaweb.commune.account.provider.business;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.*;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
-import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
 public interface ProviderAccountBusiness extends com.idega.business.IBOService, AccountBusiness
 {
 	public void rejectApplication(int p0, int p1)

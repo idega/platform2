@@ -18,7 +18,6 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -26,7 +25,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.idega.util.URLUtil;
 
 /**
  * @author laddi

@@ -1,11 +1,11 @@
 package se.idega.idegaweb.commune.message.business;
 
-import com.idega.util.IWTimestamp;
-
-import se.idega.idegaweb.commune.message.data.*;
 import java.rmi.RemoteException;
-import java.util.*;
 import java.util.Comparator;
+
+import se.idega.idegaweb.commune.message.data.Message;
+
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

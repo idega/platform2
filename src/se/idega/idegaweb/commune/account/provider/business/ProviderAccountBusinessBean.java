@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
 import se.idega.idegaweb.commune.account.business.IncompleteApplicationException;
@@ -13,16 +14,15 @@ import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplicationHome;
 
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.PostalCode;
 import com.idega.core.data.PostalCodeHome;
 import com.idega.data.IDOCreateException;
 import com.idega.user.data.User;
 import com.idega.util.ListUtil;
 import com.idega.util.Validator;
-import com.idega.block.process.data.*;
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolType;
 /**
  * Title:        idegaWeb
  * Description:

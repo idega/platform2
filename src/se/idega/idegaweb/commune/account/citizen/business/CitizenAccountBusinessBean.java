@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.49 2003/02/21 10:22:52 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.50 2003/04/02 16:12:22 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,37 +9,68 @@
  */
 package se.idega.idegaweb.commune.account.citizen.business;
 
-import se.idega.idegaweb.commune.message.data.Message;
-import com.idega.core.business.AddressBusiness;
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.*;
-import com.idega.core.accesscontrol.business.UserHasLoginException;
-import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.data.*;
-import com.idega.data.*;
-import com.idega.user.data.*;
-import com.idega.util.Encrypter;
-import com.idega.util.IWTimestamp;
-import is.idega.idegaweb.member.business.*;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+
 import java.rmi.RemoteException;
-import java.util.*;
-import javax.ejb.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import se.idega.idegaweb.commune.account.business.*;
-import se.idega.idegaweb.commune.account.citizen.data.*;
+import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
+import se.idega.idegaweb.commune.account.business.AccountBusiness;
+import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenAccountHome;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantChildren;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantChildrenHome;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantCohabitant;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantCohabitantHome;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantMovingTo;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantMovingToHome;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildren;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildrenHome;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.util.PIDChecker;
 
+import com.idega.core.accesscontrol.business.UserHasLoginException;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.business.AddressBusiness;
+import com.idega.core.data.Address;
+import com.idega.core.data.AddressHome;
+import com.idega.core.data.AddressType;
+import com.idega.core.data.Country;
+import com.idega.core.data.CountryHome;
+import com.idega.core.data.Email;
+import com.idega.core.data.EmailHome;
+import com.idega.core.data.Phone;
+import com.idega.core.data.PhoneBMPBean;
+import com.idega.core.data.PhoneHome;
+import com.idega.core.data.PostalCode;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.user.data.Gender;
+import com.idega.user.data.GenderHome;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+import com.idega.util.Encrypter;
+import com.idega.util.IWTimestamp;
+
 /**
- * Last modified: $Date: 2003/02/21 10:22:52 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 

@@ -1,16 +1,19 @@
 package se.idega.idegaweb.commune.message.data;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
 import com.idega.core.data.ICFile;
-import com.idega.data.*;
-import com.idega.block.process.data.*;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
+import com.idega.data.IDORuntimeException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-
-import javax.ejb.*;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.rmi.RemoteException;
 
 /**
  * Title:

@@ -1,16 +1,14 @@
 package se.idega.idegaweb.commune.printing.data;
+import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.core.data.ICFile;
-import com.idega.data.*;
-import com.idega.block.process.data.*;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-
-import javax.ejb.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.sql.Timestamp;
 /**
  * Title:
  * Description: A data object to view documents that are printed or scheduled for printing

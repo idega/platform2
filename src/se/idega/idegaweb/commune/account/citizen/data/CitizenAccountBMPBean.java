@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.19 2003/01/20 09:18:07 tryggvil Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.20 2003/04/02 16:12:21 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,15 +9,18 @@
  */
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.block.process.data.*;
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.account.data.AccountApplication;
+
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
-
-import java.rmi.RemoteException;
-import java.sql.Timestamp;
-import java.util.*;
-import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

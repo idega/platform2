@@ -13,7 +13,6 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;

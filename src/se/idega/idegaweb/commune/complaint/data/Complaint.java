@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.complaint.data;
 
-import javax.ejb.*;
 
 public interface Complaint extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {

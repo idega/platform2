@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.data;
 
-import javax.ejb.*;
 
 public interface ChangeChildCare extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {

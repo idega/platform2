@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.39 2003/03/26 16:11:41 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.40 2003/04/02 16:12:22 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -36,7 +35,6 @@ import com.idega.core.data.ICFile;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;

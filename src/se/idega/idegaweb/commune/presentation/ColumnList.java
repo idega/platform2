@@ -1,10 +1,14 @@
 package se.idega.idegaweb.commune.presentation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:
@@ -113,7 +117,7 @@ public class ColumnList extends CommuneBlock {
   }
 
   private Table createListTable(IWContext iwc){
-    IWResourceBundle iwrb = this.getResourceBundle(iwc);
+    //IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     int rows = 1 + rowList.size();
     int cols = this.cols;

@@ -1,15 +1,17 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.data.IDOHome;
 import java.rmi.RemoteException;
-import java.util.Collection;
-import javax.ejb.*;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
 
 /**
- * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:21 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface CitizenApplicantCohabitantHome extends IDOHome {
     public CitizenApplicantCohabitant create() throws CreateException,

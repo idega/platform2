@@ -3,15 +3,14 @@ package se.idega.idegaweb.commune.business;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.*;
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.data.User;
-
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
  * Title:        idegaWeb

@@ -15,7 +15,6 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;

@@ -1,7 +1,5 @@
 package se.idega.idegaweb.commune.message.data;
 
-import javax.ejb.*;
-
 import com.idega.user.data.User;
 
 public interface Message extends com.idega.data.IDOEntity,com.idega.block.process.data.Case

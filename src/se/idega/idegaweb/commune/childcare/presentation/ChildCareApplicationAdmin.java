@@ -9,6 +9,14 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -20,17 +28,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.Converter;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class does something very clever.....

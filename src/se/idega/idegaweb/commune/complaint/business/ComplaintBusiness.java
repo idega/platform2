@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.complaint.business;
 
-import javax.ejb.*;
 
 public interface ComplaintBusiness extends com.idega.business.IBOService,com.idega.block.process.business.CaseBusiness
 {

@@ -1,14 +1,12 @@
 package se.idega.idegaweb.commune.message.data;
 
-import com.idega.data.*;
-import com.idega.block.process.data.*;
-import com.idega.user.data.User;
-
-import javax.ejb.*;
-
 import java.util.Collection;
-import java.util.Iterator;
-import java.rmi.RemoteException;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.user.data.User;
 
 /**
  * Title:

@@ -9,6 +9,18 @@
  */
 package se.idega.idegaweb.commune.childcare.check.presentation;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.data.School;
 import com.idega.core.data.Address;
 import com.idega.core.data.PostalCode;
@@ -20,19 +32,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class does something very clever.....

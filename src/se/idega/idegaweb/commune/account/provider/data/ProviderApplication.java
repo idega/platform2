@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.account.provider.data;
 
-import javax.ejb.*;
 
 public interface ProviderApplication extends com.idega.data.IDOEntity,com.idega.block.process.data.Case,se.idega.idegaweb.commune.account.data.AccountApplication
 {

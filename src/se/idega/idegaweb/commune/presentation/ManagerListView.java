@@ -16,7 +16,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;

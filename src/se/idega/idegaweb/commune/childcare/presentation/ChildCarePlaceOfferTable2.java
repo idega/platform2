@@ -5,13 +5,11 @@ import java.util.Iterator;
 import java.util.SortedSet;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
 	
 class ChildCarePlaceOfferTable2 extends Table{	
 	

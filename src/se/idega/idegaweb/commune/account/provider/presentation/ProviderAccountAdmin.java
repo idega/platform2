@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountAdmin.java,v 1.2 2002/07/29 23:28:32 tryggvil Exp $
+ * $Id: ProviderAccountAdmin.java,v 1.3 2003/04/02 16:12:22 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,24 +8,22 @@
  *
  */
 package se.idega.idegaweb.commune.account.provider.presentation;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.account.provider.business.ProviderAccountBusiness;
+import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import se.idega.idegaweb.commune.account.data.AccountApplication;
-import se.idega.idegaweb.commune.account.provider.business.ProviderAccountBusiness;
-import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.ejb.FinderException;
 /**
  * @author <a href="mail:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0

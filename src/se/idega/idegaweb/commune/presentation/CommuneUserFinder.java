@@ -9,18 +9,14 @@ import java.util.Iterator;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
-import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.TextSoap;

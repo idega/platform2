@@ -9,19 +9,12 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import com.idega.data.IDOLookup;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.Label;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.User;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChangeChildCare;
@@ -29,12 +22,17 @@ import se.idega.idegaweb.commune.childcare.data.ChangeChildCareHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 
 /**
  * This class does something very clever.....

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.17 2003/01/15 12:46:12 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.18 2003/04/02 16:12:22 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,21 +9,32 @@
  */
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantMovingTo;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildren;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
-import com.idega.core.data.Address;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.Converter;
-import com.idega.user.data.*;
 import com.idega.util.PersonalIDFormatter;
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import java.util.*;
-import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
-import se.idega.idegaweb.commune.account.citizen.data.*;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
  * CitizenAccountAdmin is an IdegaWeb block that displays the admintstation user
@@ -32,11 +43,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/15 12:46:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;

@@ -11,8 +11,6 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.lowagie.text.ElementTags;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.markup.MarkupTags;
 import com.lowagie.text.xml.XmlPeer;
 
 /**

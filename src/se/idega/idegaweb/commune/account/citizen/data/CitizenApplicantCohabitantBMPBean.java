@@ -1,15 +1,16 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.data.GenericEntity;
-import java.rmi.RemoteException;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
 
+import com.idega.data.GenericEntity;
+
 /**
- * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:21 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     implements CitizenApplicantCohabitant {

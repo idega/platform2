@@ -1,28 +1,32 @@
 package se.idega.idegaweb.commune.childcare.check.presentation;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import com.idega.block.school.data.SchoolType;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import com.idega.core.data.PostalCode;
+
+import java.util.Collection;
+import java.util.Iterator;
+
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.presentation.CitizenChildren;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.Address;
+import com.idega.core.data.PostalCode;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
-import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
-
-import java.util.*;
-
-import se.idega.idegaweb.commune.presentation.*;
-import sun.beans.editors.IntEditor;
-import se.idega.idegaweb.commune.childcare.check.data.*;
-import se.idega.idegaweb.commune.childcare.check.business.*;
-
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.builder.data.IBPage;
 
 /**
  * Title:

@@ -22,7 +22,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.CustomDateFormat;
 

@@ -1,27 +1,23 @@
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
-import is.idega.idegaweb.golf.login.presentation.Login;
-
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.util.PIDChecker;
+
 import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginRecord;
 import com.idega.core.accesscontrol.data.LoginRecordHome;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.accesscontrol.data.LoginTableHome;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -29,12 +25,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-import com.idega.util.Encrypter;
-
-import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.util.PIDChecker;
 
 
 /**
@@ -190,11 +180,9 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     IWResourceBundle bundle = getResourceBundle();    
     // check if user has ever logged in
     int loginID = loginTable.getID();
-    LoginRecord loginRecord;
     boolean lastLoginRecordWasFound;
     try {
-      loginRecord =
-        ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);
+      ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);
         // last login was found
       lastLoginRecordWasFound = true;  
     }

@@ -1,22 +1,32 @@
 package se.cubecon.bun24.viewpoint.business;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.*;
-import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.user.data.*;
 import java.rmi.RemoteException;
-import java.util.*;
-import javax.ejb.*;
-import se.cubecon.bun24.viewpoint.data.*;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import se.cubecon.bun24.viewpoint.data.SubCategory;
+import se.cubecon.bun24.viewpoint.data.SubCategoryHome;
+import se.cubecon.bun24.viewpoint.data.TopCategory;
+import se.cubecon.bun24.viewpoint.data.TopCategoryHome;
+import se.cubecon.bun24.viewpoint.data.Viewpoint;
+import se.cubecon.bun24.viewpoint.data.ViewpointHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.CaseStatus;
+import com.idega.block.process.data.CaseStatusHome;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+
 /**
- * Last modified: $Date: 2002/12/28 11:52:17 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -56,7 +66,6 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
-        final int userId = viewpoint.getUserId ();
 		final MessageBusiness messageBusiness
                 = (MessageBusiness) IBOLookup.getServiceInstance
                 (getIWApplicationContext(), MessageBusiness.class);
@@ -102,7 +111,6 @@ public class ViewpointBusinessBean extends CaseBusinessBean
                 + viewpoint.getMessage ();
         final String messageBody = categoryLine + "\n\n" + answerLine + "\n\n"
                 + questionLine + "\n";
-        final int userId = viewpoint.getUserId ();
 		final MessageBusiness messageBusiness
                 = (MessageBusiness) IBOLookup.getServiceInstance
                 (getIWApplicationContext(), MessageBusiness.class);

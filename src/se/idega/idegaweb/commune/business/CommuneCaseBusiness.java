@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.business;
 
-import javax.ejb.*;
 
 public interface CommuneCaseBusiness extends com.idega.business.IBOService
 {

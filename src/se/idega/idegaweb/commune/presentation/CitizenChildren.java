@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.presentation;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,15 +22,12 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
-import com.idega.util.StringHandler;
-import com.idega.util.text.TextSoap;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>

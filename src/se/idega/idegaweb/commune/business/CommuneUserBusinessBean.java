@@ -1,10 +1,22 @@
 package se.idega.idegaweb.commune.business;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoChildrenFound;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
-import com.idega.business.*;
-import com.idega.core.accesscontrol.business.LoginCreateException;
-import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.business.IBOLookup;
 import com.idega.core.business.AddressBusiness;
 import com.idega.core.data.Address;
 import com.idega.core.data.Country;
@@ -12,27 +24,26 @@ import com.idega.core.data.CountryHome;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
+import com.idega.data.IDOCreateException;
+import com.idega.data.IDOFinderException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
-import com.idega.user.business.*;
-import com.idega.user.data.*;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.NoPhoneFoundException;
+import com.idega.user.business.UserBusinessBean;
+import com.idega.user.data.Gender;
+import com.idega.user.data.GenderHome;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.GroupType;
+import com.idega.user.data.GroupTypeHome;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
-
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.*;
-
-import javax.ejb.*;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 /**
  * Title:        se.idega.idegaweb.commune.business.CommuneUserBusinessBean
  * Description:	Use this business class to handle Citizen information
@@ -204,7 +215,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 */
 	public User createProviderAdministrator(String firstname, String middlename, String lastname, School school) throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
-		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
+		//SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootProviderAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
 		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
@@ -217,7 +228,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 */
 	public User createSchoolAdministrator(String firstname, String middlename, String lastname, School school) throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
-		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
+		//SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
 		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
@@ -311,7 +322,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupHome groupHome = getGroupHome();
 			rootCustomerChoiceGroup = groupHome.findByPrimaryKey(new Integer(groupId));
 		} else {
-			final GroupHome groupHome = getGroupHome();
+			//final GroupHome groupHome = getGroupHome();
 
 			System.err.println("trying to store Customer Choice Root group");
 			/**@todo this seems a wrong way to do things**/

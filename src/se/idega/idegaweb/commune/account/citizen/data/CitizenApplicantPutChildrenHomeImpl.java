@@ -1,15 +1,18 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.data.*;
-import java.rmi.RemoteException;
-import java.util.*;
-import javax.ejb.*;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
 /**
- * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:21 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CitizenApplicantPutChildrenHomeImpl extends IDOFactory
     implements CitizenApplicantPutChildrenHome {

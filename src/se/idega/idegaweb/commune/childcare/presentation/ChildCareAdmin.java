@@ -6,7 +6,6 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
-import com.idega.core.data.Address;
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

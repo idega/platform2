@@ -9,6 +9,15 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
@@ -18,16 +27,6 @@ import com.idega.core.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
-
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.FinderException;
 
 /**
  * This class does something very clever.....

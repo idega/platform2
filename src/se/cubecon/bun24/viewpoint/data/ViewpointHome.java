@@ -1,16 +1,18 @@
 package se.cubecon.bun24.viewpoint.data;
 
-import com.idega.data.IDOHome;
-import java.rmi.RemoteException;
-import javax.ejb.*;
-import com.idega.user.data.Group;
 import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
+import com.idega.user.data.Group;
+
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ViewpointHome extends IDOHome {
     Viewpoint create() throws CreateException, RemoteException;

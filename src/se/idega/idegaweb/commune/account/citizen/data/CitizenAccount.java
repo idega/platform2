@@ -1,11 +1,11 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
+import java.rmi.RemoteException;
+
+import se.idega.idegaweb.commune.account.data.AccountApplication;
+
 import com.idega.block.process.data.Case;
 import com.idega.data.IDOEntity;
-import java.rmi.RemoteException;
-import java.util.Date;
-import javax.ejb.*;
-import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
 	final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";

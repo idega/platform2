@@ -9,14 +9,13 @@
  */
 package se.idega.idegaweb.commune.childcare.check.data;
 
-import com.idega.block.school.data.School;
-import com.idega.data.GenericEntity;
-import com.idega.user.data.User;
-
 import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+import com.idega.user.data.User;
 
 /**
  * This class does something very clever.....

@@ -9,6 +9,17 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -31,18 +42,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
-
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 /**
  * This class does something very clever.....

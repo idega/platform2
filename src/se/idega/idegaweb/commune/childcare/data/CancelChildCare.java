@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.data;
 
-import javax.ejb.*;
 
 public interface CancelChildCare extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {

@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.9 2003/04/02 12:05:25 roar Exp $
+ * @version $Id: EventList.java,v 1.10 2003/04/02 16:12:22 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -192,9 +192,9 @@ public class EventList extends CommuneBlock {
 		if (iwc.isParameterSet(PRM_SSN)) {
 			searchSsn = iwc.getParameter(PRM_SSN);
 		}
-		if (iwc.isParameterSet(PRM_MSGID)) {
+		/*if (iwc.isParameterSet(PRM_MSGID)) {
 			String searchMsgId = iwc.getParameter(PRM_MSGID);
-		}
+		}*/
 
 	}
 
@@ -238,7 +238,7 @@ public class EventList extends CommuneBlock {
 
 		Iterator iter = selectedLetters.iterator();
 
-		int bulkId;
+		//int bulkId;
 		int layoutRow = 1;
 		while (iter.hasNext()) {
 			int row = 1;
@@ -552,7 +552,7 @@ public class EventList extends CommuneBlock {
 			}
 		}
 
-		int bulkId;
+		//int bulkId;
 		while (iter.hasNext() && count <= ccu) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 

@@ -1,17 +1,12 @@
 package se.idega.idegaweb.commune.printing.presentation;
 
 import java.rmi.RemoteException;
-import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
@@ -20,9 +15,6 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseBMPBean;
-import com.idega.block.process.data.CaseHome;
 import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
@@ -31,7 +23,6 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -271,7 +262,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private void printAllUnPrintedMessages(IWContext iwc) throws Exception {
-		int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
+		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		Collection unPrintedLetters = getDocumentBusiness(iwc).getUnPrintedMessages(currentType);
 		getDocumentBusiness(iwc).writeBulkPDF(
 			unPrintedLetters,
@@ -285,7 +276,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private void printMessage(IWContext iwc) throws Exception {
-		int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
+		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		if (msgID > 0) {
 			PrintedLetterMessage msg =
 				(PrintedLetterMessage) getDocumentBusiness(iwc)
@@ -316,7 +307,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private void printSelected(IWContext iwc) throws Exception {
-		int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
+		//int userID = ((Integer) iwc.getCurrentUser().getPrimaryKey()).intValue();
 		boolean bulk = iwc.isParameterSet("prv_bulk");
 		// show bulk list when printing to bulk files
 		isBulkManual = bulk;
@@ -682,7 +673,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		myForm.add(T);
 		add(myForm);
 
-		int urow = 1;
+		//int urow = 1;
 
 		if (isBulkManual)
 			T.add(new HiddenInput(PRM_BULK_VIEW, "true"));
@@ -908,7 +899,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			getMessageBusiness(iwc).getSinglePrintedLetterMessagesByType(currentType, pFrom, pTo);
 
 		int prow = 1;
-		int bulkId;
+		//int bulkId;
 		Table hT = new Table(2, 1);
 		hT.setWidth(hT.HUNDRED_PERCENT);
 		hT.setAlignment(2, 1, hT.HORIZONTAL_ALIGN_RIGHT);
@@ -963,7 +954,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		throws RemoteException, FinderException {
 		Table T = new Table();
 		T.setWidth(T.HUNDRED_PERCENT);
-		int urow = 1;
+		//int urow = 1;
 
 		if (isBulkManual)
 			T.add(new HiddenInput(PRM_BULK_VIEW, "true"));
@@ -1097,7 +1088,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			}
 		}
 
-		int bulkId;
+		//int bulkId;
 		UserBusiness ub = getUserBusiness(iwc);
 		Address addr;
 		while (iter.hasNext() && count <= ccu) {
@@ -1190,7 +1181,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		User owner;
 		UserBusiness ub = getUserBusiness(iwc);
 		Address addr;
-		String sAddr = "";
+		//String sAddr = "";
 		while (iter.hasNext()) {
 			msg = (PrintMessage) iter.next();
 			owner = msg.getOwner();

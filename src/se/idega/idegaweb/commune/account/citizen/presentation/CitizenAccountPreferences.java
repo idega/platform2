@@ -4,41 +4,33 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountSession;
+import se.idega.idegaweb.commune.message.business.MessageSession;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
 import com.idega.core.data.Address;
 import com.idega.core.data.AddressHome;
 import com.idega.core.data.AddressType;
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
 import com.idega.core.data.PostalCodeHome;
-//import com.idega.core.business.AddressBusiness;
-import com.idega.core.data.Phone;
-//import com.idega.core.data.PhoneHome;
-import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDORemoveRelationshipException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.User;
 import com.idega.user.business.UserBusiness;
-import com.idega.util.PersonalIDFormatter;
-import com.idega.business.IBOLookup;
-
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.message.business.MessageSession;
-import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountSession;
+import com.idega.user.data.User;
 
 /*
 import com.idega.presentation.ExceptionWrapper;
@@ -317,7 +309,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valueMessagesViaEmail = iwc.getParameter(PARAMETER_MESSAGES_VIA_EMAIL);
 		
 		Text tEmail = getSmallHeader(localize(KEY_EMAIL, DEFAULT_EMAIL));
-		Text tLogin = getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN));
+		//Text tLogin = getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN));
 		Text tCurrentPassword = getSmallHeader(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
 		Text tNewPassword = getSmallHeader(localize(KEY_NEW_PASSWORD, DEFAULT_NEW_PASSWORD));
 		Text tNewPasswordRepeated = getSmallHeader(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
@@ -393,7 +385,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			}
 		}
 		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
-		SubmitButton sbCancel = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_CANCEL, DEFAULT_CANCEL), PARAMETER_FORM_SUBMIT, "true"));
+		//SubmitButton sbCancel = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_CANCEL, DEFAULT_CANCEL), PARAMETER_FORM_SUBMIT, "true"));
 
 /*
 		Collection emails = user.getEmails();

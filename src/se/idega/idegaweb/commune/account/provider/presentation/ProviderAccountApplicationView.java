@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.3 2002/09/29 22:42:37 tryggvil Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.4 2003/04/02 16:12:22 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,27 +8,15 @@
  *
  */
 package se.idega.idegaweb.commune.account.provider.presentation;
-import com.idega.block.process.business.CaseBusiness;
-import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
+
+import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
+
 import com.idega.data.IDOUtil;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.Validator;
-import se.idega.idegaweb.commune.account.provider.business.ProviderAccountBusiness;
-import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import java.rmi.RemoteException;
-import java.util.Vector;
-import java.util.Iterator;
 /**
  * @author <a href="mail:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0

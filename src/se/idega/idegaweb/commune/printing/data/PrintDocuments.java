@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.printing.data;
 
-import javax.ejb.*;
 
 public interface PrintDocuments extends com.idega.data.IDOEntity
 {

@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.business;
 
-import javax.ejb.*;
 
 public interface ChildCareSession extends com.idega.business.IBOSession
 {

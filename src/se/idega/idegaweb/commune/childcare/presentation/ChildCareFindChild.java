@@ -5,8 +5,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 
-import javax.ejb.EJBException;
-
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;

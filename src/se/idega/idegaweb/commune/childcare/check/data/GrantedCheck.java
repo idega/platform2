@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.check.data;
 
-import javax.ejb.*;
 
 public interface GrantedCheck extends com.idega.data.IDOEntity
 {

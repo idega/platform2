@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.account.data;
 
-import javax.ejb.*;
 
 public interface AccountApplication extends com.idega.block.process.data.Case
 {

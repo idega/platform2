@@ -1,23 +1,21 @@
 package se.idega.idegaweb.commune.complaint.business;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseCode;
-import com.idega.block.process.data.CaseStatus;
-import com.idega.block.process.data.CaseStatusHome;
-import com.idega.user.data.User;
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.complaint.data.Complaint;
 import se.idega.idegaweb.commune.complaint.data.ComplaintHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.CaseCode;
+import com.idega.block.process.data.CaseStatus;
+import com.idega.block.process.data.CaseStatusHome;
+import com.idega.user.data.User;
 
 /**
  * Title:        idegaWeb
