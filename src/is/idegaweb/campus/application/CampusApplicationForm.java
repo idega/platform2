@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.2 2001/06/28 13:07:45 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.3 2001/07/09 12:06:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -358,15 +358,49 @@ public class CampusApplicationForm extends ApplicationForm {
     String key2 = (String)modinfo.getParameter("aprtType2");
     String key3 = (String)modinfo.getParameter("aprtType3");
 
+    Applied applied1 = null;
+    Applied applied2 = null;
+    Applied applied3 = null;
 
+    applied1 = new Applied();
+    int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
+    int complex = ApartmentTypeComplexHelper.getPartKey(key1,2);
+    applied1.setApartmentTypeId(type);
+    applied1.setComplexId(complex);
+    applied1.setOrder(1);
 
+    if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
+      applied2 = new Applied();
+      type = ApartmentTypeComplexHelper.getPartKey(key2,1);
+      complex = ApartmentTypeComplexHelper.getPartKey(key2,2);
+      applied2.setApartmentTypeId(type);
+      applied2.setComplexId(complex);
+      applied2.setOrder(2);
+    }
+
+    if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
+      applied3 = new Applied();
+      type = ApartmentTypeComplexHelper.getPartKey(key3,1);
+      complex = ApartmentTypeComplexHelper.getPartKey(key3,2);
+      applied3.setApartmentTypeId(type);
+      applied3.setComplexId(complex);
+      applied3.setOrder(3);
+    }
+
+    modinfo.setSessionAttribute("applied1",applied1);
+    if (applied2 != null)
+      modinfo.setSessionAttribute("applied2",applied2);
+    if (applied3 != null)
+      modinfo.setSessionAttribute("applied3",applied3);
   }
 
   protected boolean saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
     com.idega.block.application.data.Application application = (com.idega.block.application.data.Application)modinfo.getSessionAttribute("application");
     Application campusApplication = (Application)modinfo.getSessionAttribute("campusapplication");
-    Applied applied = (Applied)modinfo.getSessionAttribute("applied");
+    Applied applied1 = (Applied)modinfo.getSessionAttribute("applied1");
+    Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
+    Applied applied3 = (Applied)modinfo.getSessionAttribute("applied3");
 
     try {
       applicant.insert();
@@ -377,8 +411,18 @@ public class CampusApplicationForm extends ApplicationForm {
       campusApplication.setAppApplicationId(application.getID());
       campusApplication.insert();
 
-//      applied.setApplicationId(campusApplication.getID());
-//      applied.insert();
+      applied1.setApplicationId(campusApplication.getID());
+      applied1.insert();
+
+      if (applied2 != null) {
+        applied2.setApplicationId(campusApplication.getID());
+        applied2.insert();
+      }
+
+      if (applied3 != null) {
+        applied3.setApplicationId(campusApplication.getID());
+        applied3.insert();
+      }
     }
     catch(SQLException e) {
       System.err.println(e.toString());
@@ -388,7 +432,9 @@ public class CampusApplicationForm extends ApplicationForm {
       modinfo.removeSessionAttribute("applicant");
       modinfo.removeSessionAttribute("application");
       modinfo.removeSessionAttribute("campusapplication");
-      modinfo.removeSessionAttribute("applied");
+      modinfo.removeSessionAttribute("applied1");
+      modinfo.removeSessionAttribute("applied2");
+      modinfo.removeSessionAttribute("applied3");
       modinfo.removeSessionAttribute("aprtCat");
     }
 

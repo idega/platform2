@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.1 2001/06/28 13:07:38 palli Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.2 2001/07/09 12:06:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,8 @@
  *
  */
 package com.idega.block.building.business;
+
+import java.util.StringTokenizer;
 
 /**
  *
@@ -39,5 +41,29 @@ public class ApartmentTypeComplexHelper {
 
   public String getName() {
     return(name_);
+  }
+
+  public static int getPartKey(String key, int index) {
+    StringTokenizer t = new StringTokenizer(key,"-");
+    int not = t.countTokens();
+    if (index > not)
+      return(-1);
+
+    int i = 0;
+    while (t.hasMoreElements()) {
+      i++;
+      String txt = (String)t.nextElement();
+      if (index == i) {
+        int ret = -1;
+        try {
+          ret = Integer.parseInt(txt);
+        }
+        catch(java.lang.NumberFormatException e) {}
+
+        return(ret);
+      }
+    }
+
+    return(-1);
   }
 }
