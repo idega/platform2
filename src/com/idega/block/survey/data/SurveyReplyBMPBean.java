@@ -13,6 +13,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
@@ -145,21 +146,19 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 	public int ejbHomeGetCountByQuestionAndAnswer(SurveyQuestion question, SurveyAnswer answer) throws IDOException {
 		Table table = new Table(this);
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table.getColumn(COLUMNNAME_QUESTION_ID));
+		query.addColumn(new CountColumn(table, COLUMNNAME_QUESTION_ID));
 		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_QUESTION_ID), MatchCriteria.EQUALS, question));
 		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_ANSWER_ID), MatchCriteria.EQUALS, answer));
 		
-		query.setAsCountQuery(true);		
 		return this.idoGetNumberOfRecords(query.toString());
 	}
 	
 	public int ejbHomeGetCountByQuestion(SurveyQuestion question) throws IDOException {
 		Table table = new Table(this);
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(table.getColumn(COLUMNNAME_QUESTION_ID));
+		query.addColumn(new CountColumn(table, COLUMNNAME_QUESTION_ID));
 		query.addCriteria(new MatchCriteria(table.getColumn(COLUMNNAME_QUESTION_ID), MatchCriteria.EQUALS, question));
 
-		query.setAsCountQuery(true);
 		return this.idoGetNumberOfRecords(query.toString());
 	}	
 }

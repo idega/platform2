@@ -14,10 +14,10 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
-import com.idega.data.query.WildCardColumn;
 
 /**
  * @author laddi
@@ -44,8 +44,7 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		Table strokes = new Table(this);
 		
 		SelectQuery query = new SelectQuery(strokes);
-		query.setAsCountQuery(true);
-		query.addColumn(new WildCardColumn());
+		query.addColumn(new CountColumn(strokes, this.COLUMN_HOLE_ID));
 		try {
 			query.addJoin(strokes, hole);
 		}
