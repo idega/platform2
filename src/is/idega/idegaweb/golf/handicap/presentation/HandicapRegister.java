@@ -3,20 +3,6 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
-import java.math.BigDecimal;
-import java.util.Hashtable;
-
-import com.idega.data.EntityBulkUpdater;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.UpdateHandicap;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
@@ -31,6 +17,24 @@ import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+
+import java.math.BigDecimal;
+import java.util.Hashtable;
+
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -862,7 +866,6 @@ public class HandicapRegister extends GolfBlock {
 
 		if (mode.equalsIgnoreCase(iwrb.getLocalizedString("handicap.save", "Save"))) {
 			System.err.println(new IWTimestamp().getTimestampRightNow().toString() + ": Getting BulkUpdater...(" + member_id + ")");
-			EntityBulkUpdater updater = new EntityBulkUpdater();
 			String new_handicap = modinfo.getParameter("handicap");
 			if (new_handicap == null) {
 				new_handicap = "0";
@@ -944,7 +947,9 @@ public class HandicapRegister extends GolfBlock {
 				int tee_nr = tee_id[teeNumber].getID();
 				int score_nr = 0;
 
+				TransactionManager trans = IdegaTransactionManager.getInstance();
 				try {
+					trans.begin();
 					if (update) {
 						/*
 						 * Stroke[] strokesID = (Stroke[]) (new
@@ -956,8 +961,7 @@ public class HandicapRegister extends GolfBlock {
 							strokesID.setStrokeCount(Integer.parseInt(hoggin));
 							strokesID.setPointCount(Integer.parseInt(punktar));
 
-							//strokesID.update();
-							updater.add(strokesID, EntityBulkUpdater.update);
+							strokesID.update();
 						}
 						else {
 							Stroke strokeID = (Stroke) IDOLookup.createLegacy(Stroke.class);
@@ -969,13 +973,11 @@ public class HandicapRegister extends GolfBlock {
 							strokeID.setHoleHandicap((int) tee_id[teeNumber].getHandicap());
 
 							if (tournament == false) {
-								//strokeID.insert();
-								updater.add(strokeID, EntityBulkUpdater.insert);
+								strokeID.insert();
 							}
 							else {
 								if (Integer.parseInt(hoggin) > 0) {
-									//strokeID.insert();
-									updater.add(strokeID, EntityBulkUpdater.insert);
+									strokeID.insert();
 								}
 							}
 						}
@@ -986,8 +988,7 @@ public class HandicapRegister extends GolfBlock {
 							statID[statID.length - 1].setFairway(Integer.parseInt(abraut));
 							statID[statID.length - 1].setGreens(Integer.parseInt(aflot));
 							statID[statID.length - 1].setPutts(Integer.parseInt(puttin));
-							//statID[statID.length-1].update();
-							updater.add(statID[statID.length - 1], EntityBulkUpdater.update);
+							statID[statID.length-1].update();
 						}
 						else {
 							Statistic statNew = (Statistic) IDOLookup.createLegacy(Statistic.class);
@@ -996,8 +997,7 @@ public class HandicapRegister extends GolfBlock {
 							statNew.setFairway(Integer.parseInt(abraut));
 							statNew.setGreens(Integer.parseInt(aflot));
 							statNew.setPutts(Integer.parseInt(puttin));
-							//statNew.insert();
-							updater.add(statNew, EntityBulkUpdater.insert);
+							statNew.insert();
 						}
 					}
 					else {
@@ -1013,8 +1013,7 @@ public class HandicapRegister extends GolfBlock {
 						strokeID.setTeeID(tee_nr);
 						strokeID.setHolePar(tee_id[teeNumber].getPar());
 						strokeID.setHoleHandicap((int) tee_id[teeNumber].getHandicap());
-						//strokeID.insert();
-						updater.add(strokeID, EntityBulkUpdater.insert);
+						strokeID.insert();
 
 						if (stat.equals("1")) {
 							Statistic statID = (Statistic) IDOLookup.createLegacy(Statistic.class);
@@ -1023,22 +1022,21 @@ public class HandicapRegister extends GolfBlock {
 							statID.setFairway(Integer.parseInt(abraut));
 							statID.setGreens(Integer.parseInt(aflot));
 							statID.setPutts(Integer.parseInt(puttin));
-							//statID.insert();
-							updater.add(statID, EntityBulkUpdater.insert);
+							statID.insert();
 						}
 					}
+					trans.commit();
 				}
 				catch (Exception e) {
+					try {
+						trans.rollback();
+					}
+					catch (SystemException se) {
+						se.printStackTrace(System.err);
+					}
 					e.printStackTrace(System.err);
 				}
 				teeNumber++;
-			}
-
-			try {
-				updater.execute();
-			}
-			catch (Exception ex) {
-				ex.printStackTrace(System.err);
 			}
 
 			UpdateHandicap.update(Integer.parseInt(member_id), stampur);

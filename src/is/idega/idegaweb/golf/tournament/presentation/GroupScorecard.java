@@ -24,8 +24,9 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
-import com.idega.data.EntityBulkUpdater;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -35,6 +36,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -269,90 +271,101 @@ public class GroupScorecard extends GolfBlock {
 				scorecardHash.put(Integer.toString(stroke[i].getScorecardID()), v);
 			}
 
-			EntityBulkUpdater updater = null;
-
+			
 			for (int a = 0; a < members.length; a++) {
-				updater = new EntityBulkUpdater();
 				Scorecard sc = (Scorecard) membersHash.get(members[a]);
 				Vector strokes = (Vector) scorecardHash.get(Integer.toString(sc.getID()));
 				Vector tees = (Vector) teesHash.get(Integer.toString(sc.getTeeColorID()));
 
-				if (strokes == null) {
-					strokes = new Vector();
-					scorecardHash.put(Integer.toString(sc.getID()), strokes);
-				}
-
-				String hour = modinfo.getParameter(members[a] + "_hour");
-				String minute = modinfo.getParameter(members[a] + "_minute");
-
-				IWTimestamp stampur = new IWTimestamp(round.getRoundDate());
-
-				for (int b = 0; b < tees.size(); b++) {
-					Tee currentTee = (Tee) tees.elementAt(b);
-
-					if (b == 0) {
-						if (hour != null && minute != null) {
-							stampur.setHour(Integer.parseInt(hour));
-							stampur.setMinute(Integer.parseInt(minute));
-							sc.setScorecardDate(stampur.getTimestamp());
-						}
-						sc.setSlope(currentTee.getSlope());
-						sc.setCourseRating(currentTee.getCourseRating());
-						sc.setFieldID(field.getID());
-						updater.add(sc, updater.update);
-					}
-
-					Stroke currentStroke = null;
-					if (strokes.size() > b)
-						currentStroke = (Stroke) strokes.elementAt(currentTee.getHoleNumber() - 1);
-					String stroke_count = modinfo.getParameter(members[a] + "_" + (b + 1));
-					if (stroke_count == null || stroke_count.equals("")) {
-						stroke_count = "";
-					}
-					if (stroke_count.equalsIgnoreCase("x")) {
-						stroke_count = "0";
-					}
-
-					if (stroke_count != "") {
-						int stroke_new = Integer.parseInt(stroke_count);
-						if (stroke_new == 0) {
-							stroke_new = currentTee.getPar() + 5;
-						}
-						if (currentStroke != null) {
-							currentStroke.setHoleHandicap((int) currentTee.getHandicap());
-							currentStroke.setHolePar(currentTee.getPar());
-							currentStroke.setTeeID(currentTee.getID());
-							currentStroke.setStrokeCount(stroke_new);
-							currentStroke.setPointCount(0);
-							updater.add(currentStroke, updater.update);
-						}
-						else {
-							Stroke newStrokes = (Stroke) IDOLookup.createLegacy(Stroke.class);
-							newStrokes.setScorecardID(sc.getID());
-							newStrokes.setHoleHandicap((int) tee[b].getHandicap());
-							newStrokes.setHolePar(tee[b].getPar());
-							newStrokes.setTeeID(tee[b].getID());
-							newStrokes.setStrokeCount(stroke_new);
-							newStrokes.setPointCount(0);
-							updater.add(newStrokes, updater.insert);
-							if (currentTee.getHoleNumber() > strokes.size())
-								strokes.setSize(currentTee.getHoleNumber());
-							strokes.setElementAt(newStrokes, currentTee.getHoleNumber() - 1);
-						}
-					}
-					else {
-						if (currentStroke != null) {
-							updater.add(currentStroke, updater.delete);
-						}
-					}
-				}
-				updater.execute();
-				//System.out.println(strokes.size());
-
 				Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(members[a]));
 				Handicap handicap = new Handicap((double) sc.getHandicapBefore());
 				int playHandicap = handicap.getLeikHandicap((double) sc.getSlope(), (double) sc.getCourseRating(), (double) field.getFieldPar());
-				int heildarpunktar = Handicap.calculatePoints(sc, strokes, playHandicap);
+
+				TransactionManager trans = IdegaTransactionManager.getInstance();
+				try {
+					trans.begin();
+					if (strokes == null) {
+						strokes = new Vector();
+						scorecardHash.put(Integer.toString(sc.getID()), strokes);
+					}
+	
+					String hour = modinfo.getParameter(members[a] + "_hour");
+					String minute = modinfo.getParameter(members[a] + "_minute");
+	
+					IWTimestamp stampur = new IWTimestamp(round.getRoundDate());
+	
+					for (int b = 0; b < tees.size(); b++) {
+						Tee currentTee = (Tee) tees.elementAt(b);
+	
+						if (b == 0) {
+							if (hour != null && minute != null) {
+								stampur.setHour(Integer.parseInt(hour));
+								stampur.setMinute(Integer.parseInt(minute));
+								sc.setScorecardDate(stampur.getTimestamp());
+							}
+							sc.setSlope(currentTee.getSlope());
+							sc.setCourseRating(currentTee.getCourseRating());
+							sc.setFieldID(field.getID());
+							sc.update();
+						}
+	
+						Stroke currentStroke = null;
+						if (strokes.size() > b)
+							currentStroke = (Stroke) strokes.elementAt(currentTee.getHoleNumber() - 1);
+						String stroke_count = modinfo.getParameter(members[a] + "_" + (b + 1));
+						if (stroke_count == null || stroke_count.equals("")) {
+							stroke_count = "";
+						}
+						if (stroke_count.equalsIgnoreCase("x")) {
+							stroke_count = "0";
+						}
+	
+						if (stroke_count != "") {
+							int stroke_new = Integer.parseInt(stroke_count);
+							if (stroke_new == 0) {
+								stroke_new = currentTee.getPar() + 5;
+							}
+							if (currentStroke != null) {
+								currentStroke.setHoleHandicap((int) currentTee.getHandicap());
+								currentStroke.setHolePar(currentTee.getPar());
+								currentStroke.setTeeID(currentTee.getID());
+								currentStroke.setStrokeCount(stroke_new);
+								currentStroke.setPointCount(0);
+								currentStroke.update();
+							}
+							else {
+								Stroke newStrokes = (Stroke) IDOLookup.createLegacy(Stroke.class);
+								newStrokes.setScorecardID(sc.getID());
+								newStrokes.setHoleHandicap((int) tee[b].getHandicap());
+								newStrokes.setHolePar(tee[b].getPar());
+								newStrokes.setTeeID(tee[b].getID());
+								newStrokes.setStrokeCount(stroke_new);
+								newStrokes.setPointCount(0);
+								newStrokes.insert();
+								if (currentTee.getHoleNumber() > strokes.size())
+									strokes.setSize(currentTee.getHoleNumber());
+								strokes.setElementAt(newStrokes, currentTee.getHoleNumber() - 1);
+							}
+						}
+						else {
+							if (currentStroke != null) {
+								currentStroke.delete();
+							}
+						}
+					}
+					int heildarpunktar = Handicap.calculatePoints(sc, strokes, playHandicap);
+					trans.commit();
+				}
+				catch (Exception e) {
+					try {
+						trans.rollback();
+					}
+					catch (SystemException se) {
+						System.err.println(se);
+					}
+				}
+				//System.out.println(strokes.size());
+
 
 				Table scoreTable = new Table();
 				scoreTable.setAlignment("center");
