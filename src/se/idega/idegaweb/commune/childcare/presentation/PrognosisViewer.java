@@ -25,6 +25,7 @@ public class PrognosisViewer extends ChildCareBlock {
 		if (getSession().hasPrognosis()) {
 			add(getPrognosisTable(iwc));
 			add(new Break());
+			add(getProviderCapacity(iwc));
 			add(getAdminButton());
 		}
 		else {
@@ -35,6 +36,29 @@ public class PrognosisViewer extends ChildCareBlock {
 			add(new Break());
 			add(getAdminButton());
 		}
+	}
+	
+	public Table getProviderCapacity(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		table.setColumns(1);
+		table.setRows(2);
+		
+		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
+		if (prognosis != null) {
+			int provierCapacity = prognosis.getProviderCapacity();
+			table.add(getSmallText(localize("child_care.provider_capacity","Provider capacity")+": "),1,1);
+			if (provierCapacity != -1) {
+				table.add(getSmallHeader(String.valueOf(provierCapacity)),1,1);	
+			}
+			else {
+				table.add(getSmallHeader(localize("child_care.provider_capacity_not_set","Capacity not set")),1,1);
+			}
+			
+			
+		}
+		return  table;
 	}
 	
 	public Table getPrognosisTable(IWContext iwc) throws RemoteException {

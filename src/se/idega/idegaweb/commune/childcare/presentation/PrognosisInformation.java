@@ -36,7 +36,7 @@ public class PrognosisInformation extends ChildCareBlock {
 	}
 	
 	protected Table getPrognosisInformation(ChildCarePrognosis prognosis) throws RemoteException {
-		Table table = new Table(2, 6);
+		Table table = new Table(2, 7);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setHeight(2, 12);
@@ -62,8 +62,17 @@ public class PrognosisInformation extends ChildCareBlock {
 		}
 		
 		table.mergeCells(1, 6, 2, 6);
-		table.add(getSmallText(localize("child_care.total_in_queue", "Total in queue") + ":" + Text.NON_BREAKING_SPACE), 1, 6);
-		table.add(getSmallHeader(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), 1, 6);
+		table.mergeCells(1, 7, 2, 7);
+		int provierCapacity = prognosis.getProviderCapacity();
+		table.add(getSmallText(localize("child_care.provider_capacity","Provider capacity")+": "),1,6);
+		if (provierCapacity != -1) {
+			table.add(getSmallHeader(String.valueOf(prognosis.getProviderCapacity())),1,6);
+		}
+		else {
+			table.add(getSmallHeader(localize("child_care.provider_capacity_not_set","Capacity not set")),1,6);
+		}
+		table.add(getSmallText(localize("child_care.total_in_queue", "Total in queue") + ":" + Text.NON_BREAKING_SPACE), 1, 7);
+		table.add(getSmallHeader(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), 1, 7);
 		
 		return table;
 	}
