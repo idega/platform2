@@ -25,6 +25,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCard;
 import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCardHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -40,10 +41,13 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.basket.data.BasketEntry;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -666,7 +670,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public boolean insertPayment(String type, String amount, User currentUser, Map basket) {
+	public boolean insertPayment(String type, String amount, User currentUser, Map basket, IWUserContext iwuc) {
 		PaymentType eType = null;
 		if (type != null) {
 			try {
@@ -691,10 +695,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (Exception e) {
 		}
 
-		return insertPayment(eType, am, currentUser, basket);
+		return insertPayment(eType, am, currentUser, basket, iwuc);
 	}
 
-	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket) {
+	public boolean insertPayment(PaymentType type, int amount, User currentUser, Map basket, IWUserContext iwuc) {
 		try {
 		    Iterator keys = basket.keySet().iterator();
 		    BasketEntry bEntry = null;
@@ -724,7 +728,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			entry.setEntryOpen(false);
 			entry.setInsertedByUser(currentUser);
 			entry.store();
-			
+
+			equalizeBasket(basket, (float)amount, iwuc);
 			return true;
 		}
 		catch (CreateException e) {
@@ -734,6 +739,42 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return false;
 	}
 	
+	public void equalizeBasket(Map basket, float amount, IWUserContext iwuc) {
+            if (basket != null && !basket.isEmpty()) {
+                Iterator it = basket.keySet().iterator();
+
+                while (it.hasNext() && amount != 0.0f) {
+                    BasketEntry bEntry = (BasketEntry) basket
+                            .get(it.next());
+                    FinanceEntry entry = (FinanceEntry) bEntry.getItem();
+                    if (amount >= entry.getItemPrice().doubleValue()) {
+                        amount -= entry.getItemPrice().doubleValue();
+                        entry.setAmountEqualized(entry.getAmountEqualized() + entry.getItemPrice().doubleValue());
+                        entry.setEntryOpen(false);
+                        try {
+                            System.out.println("Removing equalized entry");
+                            getBasketBusiness(iwuc).removeItem(entry);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }                        
+                    } else {
+                        entry.setAmountEqualized(entry.getAmountEqualized() + amount);
+                        amount = 0.0f;
+                    }
+                    
+                    entry.store();
+                }
+            }
+	}
+
+    private BasketBusiness getBasketBusiness(IWUserContext iwuc) {
+        try {
+            return (BasketBusiness) getSessionInstance(iwuc, BasketBusiness.class);
+        } catch (IBOLookupException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 	public boolean insertManualAssessment(Group club, Group div, User user, String groupId, String tariffId, String amount, String info, User currentUser) {
 		Group group = null;
 		if (groupId != null) {
@@ -795,9 +836,16 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			entry.setTariffTypeID(tariff.getTariffTypeId());
 			entry.setStatusCreated();
 			entry.setTypeManual();
-			entry.setEntryOpen(true);
+			if (amount < 0.0f) {
+			    entry.setEntryOpen(false);
+			    entry.setAmountEqualized(amount);
+				equalizeEntries(club, div, user, -amount);
+			} else {
+				entry.setEntryOpen(true);
+			}
 			entry.setInsertedByUser(currentUser);
 			entry.store();
+
 			
 			return true;
 		}
@@ -806,6 +854,34 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 		
 		return false;
+	}
+	
+	public void equalizeEntries(Group club, Group div, User user, float amount) {
+		try {
+            Collection entries = getFinanceEntryHome().findAllOpenAssessmentByUser(club, div, user);
+            if (entries != null && !entries.isEmpty()) {
+                Iterator it = entries.iterator();
+                while (it.hasNext() && amount != 0.0f) {
+                    System.out.println("amount = " + amount);
+                    FinanceEntry entry = (FinanceEntry) it.next();
+                    System.out.println("itemprice = " + entry.getItemPrice().doubleValue());
+                    if (amount >= entry.getItemPrice().doubleValue()) {
+                        amount -= entry.getItemPrice().doubleValue();
+                        entry.setAmountEqualized(entry.getAmountEqualized() + entry.getItemPrice().doubleValue());
+                        entry.setEntryOpen(false);
+                    } else {
+                        entry.setAmountEqualized(entry.getAmountEqualized() + amount);
+                        amount = 0.0f;
+                    }
+                    
+                    entry.store();
+                }
+            }
+        } catch (FinderException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
 	}
 	
 	public Collection findAllOpenAssessmentEntriesByUserGroupAndDivision(Group club, Group div, User user) {

@@ -74,7 +74,7 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
         for (int i = 0; i < lockey.length; i++) {
             type = typeHome.create();
             type.setName(names[i]);
-            type.setLacalizationKey(lockey[i]);
+            type.setLocalizationKey(lockey[i]);
             type.setDeleted(false);
             type.store();
         }
@@ -88,7 +88,7 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
         return getStringColumnValue(COLUMN_NAME);
     }
 
-    public void setLacalizationKey(String key) {
+    public void setLocalizationKey(String key) {
         setColumn(COLUMN_LOCALIZATION_KEY, key);
     }
 

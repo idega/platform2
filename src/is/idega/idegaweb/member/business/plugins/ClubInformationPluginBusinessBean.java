@@ -164,7 +164,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
     /**
      * A method to create a connection between a club and a league. Creates a
      * copy of the groups under the league template in under the club and
-     * aliases to these groups under te league.
+     * aliases to these groups under the league.
      * 
      * @param connection
      *            The primary key id of the league that the club/division is

@@ -8,6 +8,8 @@
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
@@ -15,10 +17,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.basket.data.BasketEntry;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -189,10 +195,34 @@ public class Checkout extends CashierSubWindowTemplate {
         String type = iwc.getParameter(LABEL_PAYMENT_TYPE);
         String amount = iwc.getParameter(LABEL_TO_PAY);
 
+		PaymentType eType = null;
+		if (type != null) {
+			try {
+				PaymentTypeHome pHome = (PaymentTypeHome) IDOLookup.getHome(PaymentType.class);
+				eType = pHome.findByPrimaryKey(new Integer(type));
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+//		Class.forName()
+		
+		if (eType != null) {
+//		    if (eType.get)
+		}
+
+        
         try {
             Map basket = getBasketBusiness(iwc).getBasket();
             getAccountingBusiness(iwc).insertPayment(type, amount,
-                    iwc.getCurrentUser(), basket);
+                    iwc.getCurrentUser(), basket, iwc);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -271,7 +301,7 @@ public class Checkout extends CashierSubWindowTemplate {
         labelDiscountAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelToPay = new Text(iwrb.getLocalizedString(LABEL_TO_PAY,
                 "To pay"));
-        labelDiscountAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        labelToPay.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
         SubmitButton pay = new SubmitButton(iwrb.getLocalizedString(ACTION_PAY,
                 "Pay"), ACTION_PAY, "pay");
@@ -321,11 +351,11 @@ public class Checkout extends CashierSubWindowTemplate {
                 if (entry.getUser() != null) {
                     paymentTable.add(entry.getUser().getName(), 2, row);
                 }
-                if (entry.getClub() != null) {
-                    paymentTable.add(entry.getClub().getName(), 3, row);
-                }
                 if (entry.getDivision() != null) {
-                    paymentTable.add(entry.getDivision().getName(), 4, row);
+                    paymentTable.add(entry.getDivision().getName(), 3, row);
+                }
+                if (entry.getGroup() != null) {
+                    paymentTable.add(entry.getGroup().getName(), 4, row);
                 }
                 paymentTable.add(entry.getInfo(), 5, row);
                 paymentTable.add(nf.format(entry.getAmount()), 6, row);
