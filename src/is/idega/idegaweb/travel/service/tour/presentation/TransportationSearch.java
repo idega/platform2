@@ -14,7 +14,7 @@ public class TransportationSearch extends TourSearch {
 	}
 	
 	protected String getServiceName(IWResourceBundle iwrb) {
-		return iwrb.getLocalizedString("travel.search.tour","Tour");		
+		return iwrb.getLocalizedString("travel.search.transportation","Transportation");		
 	}
 
 }
