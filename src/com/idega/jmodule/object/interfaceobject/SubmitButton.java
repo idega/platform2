@@ -22,7 +22,7 @@ public class SubmitButton extends GenericButton{
 private Window window;
 private Image defaultImage;
 //private Parameter includedParameter;
-private boolean check=false;
+private boolean usingControlParameter=false;
 private String parameterName;
 private String parameterValue;
 private String headerText;
@@ -55,7 +55,7 @@ public SubmitButton(String displayText,String parameterName,String parameterValu
   //this.includedParameter = new Parameter(parameterName,parameterValue);
   this.parameterName=parameterName;
   this.parameterValue=parameterValue;
-  check=true;
+  usingControlParameter=true;
   /*System.out.println("Inni i constructor");
   if (includedParameter==null){
     System.out.println("includedParameter==null");
@@ -144,7 +144,7 @@ private void printButton(ModuleInfo modinfo) throws IOException{
 
 	if (defaultImage == null){
 
-                if (check){
+                if (usingControlParameter){
                   //this.includedParameter.print(modinfo);
                   //System.out.println("includedParameter!=null");
                   this.getParentForm().setControlParameter(parameterName,"");
