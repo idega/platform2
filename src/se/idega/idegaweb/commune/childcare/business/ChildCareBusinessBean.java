@@ -5108,7 +5108,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			else {
 				sendToOtherParent = true;
 			}
-
+			
 			if (sendToOtherParent) {
 				try {
 					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
@@ -5117,7 +5117,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						User parent = (User) iter.next();
 						if (!parent.equals(appParent)) {
 //						if (!getUserBusiness().haveSameAddress(parent, appParent)) {
-							getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+							boolean sendLetter = !getUserBusiness().haveSameAddress(parent, appParent);
+							getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), sendLetter, alwaysSendLetter);
 //						}
 						}
 					}
