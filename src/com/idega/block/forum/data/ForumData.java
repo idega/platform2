@@ -1,7 +1,6 @@
 package com.idega.block.forum.data;
 
 import com.idega.data.TreeableEntity;
-import javax.ejb.*;
 
 public interface ForumData extends TreeableEntity
 {

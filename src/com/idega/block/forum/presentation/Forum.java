@@ -1,29 +1,39 @@
 package com.idega.block.forum.presentation;
 
-import com.idega.event.IWPresentationState;
-import com.idega.core.data.*;
-import com.idega.core.user.data.User;
-import com.idega.core.business.CategoryBusiness;
-import com.idega.block.text.business.TextFormatter;
-import java.text.ParseException;
 import java.text.DateFormat;
-import com.idega.builder.data.IBPage;
-import com.idega.core.business.CategoryFinder;
-import java.util.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.block.IWBlock;
-import com.idega.block.forum.business.*;
-import com.idega.block.forum.data.*;
-import com.idega.presentation.ui.*;
+import com.idega.block.forum.business.ForumBusiness;
+import com.idega.block.forum.business.ForumTree;
+import com.idega.block.forum.data.ForumData;
 import com.idega.block.presentation.CategoryBlock;
-import com.idega.util.*;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWUserContext;
-import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.text.business.TextFormatter;
+import com.idega.builder.data.IBPage;
+import com.idega.core.business.CategoryBusiness;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.data.Email;
+import com.idega.core.data.ICCategory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.event.IWPresentationState;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWUserContext;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.StatefullPresentation;
+import com.idega.presentation.StatefullPresentationImplHandler;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        Forum block<p>

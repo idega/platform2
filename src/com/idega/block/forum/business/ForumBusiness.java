@@ -1,19 +1,21 @@
 package com.idega.block.forum.business;
 
-import javax.ejb.EJBException;
 import java.rmi.RemoteException;
-import com.idega.core.data.ICCategory;
-import javax.ejb.FinderException;
-import com.idega.data.IDOLookup;
-import java.util.*;
-import com.idega.core.ICTreeNode;
 import java.sql.SQLException;
-import com.idega.block.forum.data.*;
-import com.idega.presentation.IWContext;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
+import com.idega.block.forum.data.ForumData;
+import com.idega.block.forum.data.ForumDataHome;
+import com.idega.core.ICTreeNode;
+import com.idega.core.data.ICCategory;
+import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.transaction.IdegaTransactionManager;
-import javax.transaction.TransactionManager;
 /**
  * Title:
  * Description:

@@ -1,25 +1,21 @@
 package com.idega.block.forum.presentation;
 
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICLocale;
+import java.io.IOException;
+import java.sql.SQLException;
+
 import com.idega.block.IWBlock;
-import com.idega.block.forum.data.*;
-import com.idega.block.forum.business.*;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.block.forum.business.ForumBusiness;
+import com.idega.block.forum.data.ForumData;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 
 public class ForumThreadEditor extends IWAdminWindow{
 

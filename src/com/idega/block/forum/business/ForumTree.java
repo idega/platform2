@@ -1,21 +1,22 @@
 package com.idega.block.forum.business;
 
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.*;
-import com.idega.core.user.data.User;
-import com.idega.core.data.Email;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.builder.data.IBPage;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Iterator;
+
+import com.idega.block.forum.data.ForumData;
+import com.idega.builder.data.IBPage;
 import com.idega.core.ICTreeNode;
-import com.idega.presentation.ui.AbstractTreeViewer;
+import com.idega.core.data.Email;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.block.forum.data.*;
+import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
 
 /**
  * Title:

@@ -1,15 +1,16 @@
 package com.idega.block.forum.data;
 
-import java.util.List;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import java.util.Collection;
-import java.sql.*;
-import java.util.Iterator;
+
+import com.idega.core.data.ICCategory;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserBMPBean;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICCategoryBMPBean;
 import com.idega.data.TreeableEntityBMPBean;
 
 /**

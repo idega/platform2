@@ -9,6 +9,10 @@
  */
 package com.idega.block.help.presentation;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Locale;
+
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
@@ -16,12 +20,11 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text; 
+import com.idega.presentation.text.Text;
 import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
@@ -32,12 +35,6 @@ import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 import com.idega.xml.XMLParser;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This class does something very clever.....
