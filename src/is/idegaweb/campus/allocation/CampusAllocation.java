@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.6 2001/08/10 16:32:22 aron Exp $
+ * $Id: CampusAllocation.java,v 1.7 2001/08/30 01:33:38 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,94 +13,68 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
 import is.idegaweb.campus.entity.SystemProperties;
 import java.util.List;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import is.idegaweb.campus.allocation.AllocationMenu;
 
 /**
  *
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusAllocation extends KeyEditor{
+public class CampusAllocation extends JModuleObject{
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final String strAction = "fin_action";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
+  public final static String FRAME_NAME = "rightFrame";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
+   public void main(ModuleInfo modinfo){
+   SysPropsSetter.isSysPropsInMemoryElseLoad(modinfo);
 
-  public CampusAllocation(String sHeader) {
-    super(sHeader);
-  }
+    Table myTable = new Table(2,2);
+      myTable.setBorder(1);
+      myTable.setBorderColor("#000000");
+      myTable.mergeCells(2,1,2,2);
+      myTable.setWidth(1,"130");
+      myTable.setWidth(2,"100%");
+      myTable.setCellpadding(3);
+      myTable.setWidth("100%");
+      myTable.setHeight("100%");
+      myTable.setColumnAlignment(1,"left");
+      //myTable.setColumnAlignment(2,"left");
 
-  protected void control(ModuleInfo modinfo){
+      myTable.setBorder(0);
+      myTable.setVerticalAlignment(1,1,"top");
+      myTable.setVerticalAlignment(2,1,"top");
+      myTable.setVerticalAlignment(1,2,"top");
 
-    if(modinfo.getApplicationAttribute(SystemProperties.getEntityTableName())==null){
-     SystemProperties SysProps =  SysPropsSetter.seekProperties();
-     modinfo.setApplicationAttribute(SystemProperties.getEntityTableName(),SysProps);
-    }
+    IFrame iFrame = new IFrame("menuFrame");
+      iFrame.setSrc(AllocationMenu.class);
+      iFrame.setWidth(120);
+      iFrame.setHeight(150);
+      iFrame.setBorder(IFrame.FRAMEBORDER_ON);
+      iFrame.setScrolling(IFrame.SCROLLING_YES);
+      iFrame.setStyle("border: 1 solid #000000");
+      //iFrame.setAlignment(IFrame.ALIGN_LEFT);
+      myTable.add(iFrame,1,1);
 
-    if(isAdmin)
-      add((makeSubjectTable()));
-    else
-      addMain(new Text("Ekki Réttindi"));
+    IFrame iFrame2 = new IFrame(FRAME_NAME);
+      iFrame2.setWidth("100%");
+      iFrame2.setHeight("100%");
+      iFrame2.setBorder(IFrame.FRAMEBORDER_ON);
+      iFrame2.setScrolling(IFrame.SCROLLING_YES);
+      iFrame2.setAlignment(IFrame.ALIGN_LEFT);
+      iFrame2.setStyle("border: 1 solid #000000");
+      myTable.add(iFrame2,2,1);
 
-  }
-
-  public ModuleObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
-    return LinkTable;
-  }
-
-  public ModuleObject makeSubjectTable(){
-    //List L = ApplicationFinder.listOfSubject();
-    Table Frame = new Table(3,2);
-      Frame.setCellpadding(0);
-      Frame.setCellspacing(0);
-    Table Left = new Table();
-      Left.setCellpadding(0);
-      Left.setCellspacing(0);
-    Table Right = new Table();
-      Right.setCellpadding(0);
-      Right.setCellspacing(0);
-    Form myForm = new Form();
-    myForm.add(Left);
-    Frame.add(myForm,1,1);
-    Frame.setWidth(2,"40");
-    Frame.add(Right,3,1);
-/*
-    if(L != null){
-      String sParameter = "app_sub_id";
-      ApplicationSubject AS;
-      int len = L.size();
-      for (int i = 0; i < len; i++) {
-        AS = (ApplicationSubject) L.get(i);
-        RadioButton R = new RadioButton(sParameter,String.valueOf(AS.getID()));
-        Left.add(R,1,i+1);
-        Left.add(AS.getDescription(),2,i+1);
-      }
-    }
-    else{
-      Left.add(new Text("Ekkert úthlutunartímabil til"));
-    }
-*/
-
-    Link Approve = new Link("Samþykkja nýskráðar umsóknir","/allocation/approve.jsp");
-    Link Contracts = new Link("Samningar","/allocation/contracts.jsp");
-    Link Waitinglist = new Link("Biðlistar","/allocation/waitinglists.jsp");
-    Link RoughOrder = new Link("Grófraða úthlutun","/allocation/roughorder.jsp");
-    Link Allocate = new Link("Úthluta","/allocation/allocation.jsp");
-    Link Subject = new Link("Nýtt umsóknartímabil","/allocation/subject.jsp");
-
-    Right.add(Approve,1,1);
-    Right.add(Contracts,1,2);
-    Right.add(Waitinglist,1,3);
-    Right.add(RoughOrder,1,4);
-    Right.add(Allocate,1,5);
-    Right.add(Subject,1,6);
-
-    return Frame;
+    add(myTable);
   }
 }

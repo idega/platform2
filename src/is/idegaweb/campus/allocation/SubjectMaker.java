@@ -1,10 +1,14 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
@@ -22,14 +26,18 @@ import java.util.List;
  */
 
 
-public class SubjectMaker extends KeyEditor{
+public class SubjectMaker extends ModuleObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
+  protected boolean isAdmin = false;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
 
-  public SubjectMaker(String sHeader) {
-    super(sHeader);
+  public SubjectMaker() {
+
   }
 
   protected void control(ModuleInfo modinfo){
@@ -45,7 +53,7 @@ public class SubjectMaker extends KeyEditor{
         this.add(makeInputTable());
       }
       else
-        this.add(new Text("Ekki Réttindi"));
+        this.add(new Text(iwrb.getLocalizedString("access_denied","Access Denied")));
 
   }
 
@@ -74,8 +82,8 @@ public class SubjectMaker extends KeyEditor{
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setDate(idegaTimestamp.RightNow().getSQLDate());
     SubmitButton SaveButton = new SubmitButton("save","Save");
-    T.add("Description :",1,1);
-    T.add("Expiredate :",2,1);
+    T.add(iwrb.getLocalizedString("description", "Description") +" :",1,1);
+    T.add(iwrb.getLocalizedString("expiredate", "Expiredate") +" :",2,1);
     T.add(Description,1,2);
     T.add(ExpireDate,2,2);
     T.add(SaveButton,3,2);
@@ -84,8 +92,8 @@ public class SubjectMaker extends KeyEditor{
       int a = 3;
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
-        T.add(formatText(AS.getDescription()),1,a);
-        T.add(formatText(new idegaTimestamp(AS.getExpires()).getISLDate()),2,a);
+        T.add(Edit.formatText(AS.getDescription()),1,a);
+        T.add(Edit.formatText(new idegaTimestamp(AS.getExpires()).getISLDate()),2,a);
         T.add((getDeleteLink(AS)),3,a);
         a++;
       }
@@ -130,6 +138,18 @@ public class SubjectMaker extends KeyEditor{
 
       }
     }
+  }
+
+   public void main(ModuleInfo modinfo){
+    try{
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){
+      isAdmin = false;
+    }
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    control(modinfo);
   }
 
 }

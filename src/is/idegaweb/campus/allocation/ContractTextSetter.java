@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.entity.SystemProperties;
 import is.idegaweb.campus.entity.ContractText;
 import com.idega.idegaweb.*;
@@ -36,12 +37,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
   private String bottomThickness = "8";
   private boolean isAdmin;
   private boolean useObjectInstanciator = false;
-  protected int fontSize = 2;
-  protected boolean fontBold = false;
-  protected String styleAttribute = "font-size: 8pt";
-  private int iBorder = 2;
-  private String TextFontColor = "#000000",whiteColor = "#FFFFFF",blackColor = "#000000";
-  private String redColor = "#942829",blueColor = "#27324B",lightBlue ="#ECEEF0";
+
 
   public ContractTextSetter() {
 
@@ -125,14 +121,12 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     T.add(getPDFLink(new Image("/pics/print.gif")),1,row);
     T.add(getNewLink(),2,row);
     row++;
-    TextFontColor= whiteColor;
-    T.add(formatText(iwrb.getLocalizedString("header","Header")),1,row);
+    T.add(Edit.titleText(iwrb.getLocalizedString("header","Header")),1,row);
     row++;
     T.add(newTitleLink,2,row);
     row++;
-    T.add(formatText(iwrb.getLocalizedString("order","Order")),1,row);
-    T.add(formatText(iwrb.getLocalizedString("title","Title")),2,row);
-    TextFontColor = blackColor;
+    T.add(Edit.titleText(iwrb.getLocalizedString("order","Order")),1,row);
+    T.add(Edit.titleText(iwrb.getLocalizedString("title","Title")),2,row);
     row++;
     if(L!=null){
       int len = L.size();
@@ -146,16 +140,16 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
         row++;
       }
       //T.setColumnAlignment(1,"right");
-      T.setHorizontalZebraColored(lightBlue,whiteColor);
-      T.setRowColor(1,whiteColor);
-      T.setRowColor(2,blueColor);
-      T.setRowColor(4,blueColor);
-      T.setRowColor(row,redColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorWhite);
+      T.setRowColor(2,Edit.colorBlue);
+      T.setRowColor(4,Edit.colorBlue);
+      T.setRowColor(row,Edit.colorRed);
       T.setWidth(1,"30");
       T.mergeCells(1,2,2,2);
 
       T.mergeCells(1,row,8,row);
-      T.add(formatText(" "),1,row);
+      T.add(Edit.formatText(" "),1,row);
       T.setHeight(row,bottomThickness);
     }
     else{
@@ -188,7 +182,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     }
     SubmitButton save = new SubmitButton("savetitle","Save");
     text.setLength(80);
-    T.add(formatText(iwrb.getLocalizedString("text","Text")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(save,1,row);
     F.add(T);
@@ -236,9 +230,9 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     SubmitButton save = new SubmitButton("savetext","Save");
     SubmitButton delete = new SubmitButton("delete","Delete");
     name.setLength(80);
-    T.add(formatText(iwrb.getLocalizedString("title","Title")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("title","Title")),1,row++);
     T.add(name,1,row++);
-    T.add(formatText(iwrb.getLocalizedString("text","Text")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(intDrop,1,row);
     T.add(CB,1,row);
@@ -424,25 +418,10 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
 
   private TextArea getTextArea(String name,String content){
     TextArea TA = new TextArea(name,content);
-    TA.setStyle(this.styleAttribute);
+    TA.setStyle(Edit.styleAttribute);
     TA.setWidth(80);
     TA.setHeight(20);
     return TA;
-  }
-
-    public Text formatText(String s){
-    Text T= new Text();
-    if(s!=null){
-      T= new Text(s);
-      if(this.fontBold)
-      T.setBold();
-      T.setFontColor(this.TextFontColor);
-      T.setFontSize(this.fontSize);
-    }
-    return T;
-  }
-  public Text formatText(int i){
-    return formatText(String.valueOf(i));
   }
 
    public void main(ModuleInfo modinfo){

@@ -405,7 +405,7 @@ public class CampusAllocator extends ModuleObjectContainer{
   }
 
   public ModuleObject getApplicantInfo(int applicantId,ModuleInfo modinfo){
-    CampusApprover CA = new CampusApprover("");
+    CampusApprover CA = new CampusApprover();
     ModuleObject MO = new Table();
 
       CampusApplicationHolder AH = CampusApplicationFinder.getApplicantInfo(applicantId);

@@ -1,9 +1,11 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.core.user.data.User;
@@ -36,43 +38,35 @@ import java.util.List;
  * @version 1.0
  */
 
-public class CampusContracts extends KeyEditor{
+public class CampusContracts extends ModuleObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String redColor = "#942829";
-  private String blueColor = "#27324B",lightBlue ="#ECEEF0";
+
   private int iSubjectId = -1;
   private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
-  private String bottomThickness = "8";
-  private String conPrm = "contract_status";
+
+
   private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmCt="cl_ct",prmTp="cl_tp",prmOrder="ct_or";
   private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
   private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
   private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
   private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLCT,sCLTP,sORDER};
-
+  protected boolean isAdmin = false;
+  private String conPrm = "contract_status";
   private String sessConPrm = "sess_con_status";
 
-  /*
-  Blár litur í topp # 27324B
-  Hvítur litur fyrir neðan það # FFFFFF
-  Ljósblár litur í töflu # ECEEF0
-  Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
-  */
-
-  public CampusContracts(String sHeader) {
-    super(sHeader);
+  public CampusContracts() {
+    super();
   }
 
   protected void control(ModuleInfo modinfo){
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
-    this.fontSize = 1;
     for (int i = 0; i < prmArray.length; i++) {
       if(modinfo.getParameter(prmArray[i])!=null){
       sValues[i] = (modinfo.getParameter(prmArray[i]));
@@ -105,7 +99,7 @@ public class CampusContracts extends KeyEditor{
       }
 
     else
-      add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
     //add(String.valueOf(iSubjectId));
   }
 
@@ -124,7 +118,7 @@ public class CampusContracts extends KeyEditor{
     DropdownMenu status = statusDrop(conPrm,sGlobalStatus);
     drp.setToSubmit();
     status.setToSubmit();
-    setStyle(status);
+    Edit.setStyle(status);
     myForm.add(drp);
     myForm.add(status);
     return myForm;
@@ -139,32 +133,32 @@ public class CampusContracts extends KeyEditor{
     DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
     DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
-    setStyle(status);
-    setStyle(complex);
-    setStyle(building);
-    setStyle(floor);
-    setStyle(cat);
-    setStyle(type);
-    setStyle(order);
+    Edit.setStyle(status);
+    Edit.setStyle(complex);
+    Edit.setStyle(building);
+    Edit.setStyle(floor);
+    Edit.setStyle(cat);
+    Edit.setStyle(type);
+    Edit.setStyle(order);
     Table T = new Table();
-      T.add(formatText(iwrb.getLocalizedString("status","Status")),1,1);
-      T.add(formatText(iwrb.getLocalizedString("complex","Complex")),2,1);
-      T.add(formatText(iwrb.getLocalizedString("building","Building")),3,1);
-      T.add(formatText(iwrb.getLocalizedString("floor","Floor")),4,1);
-      T.add(formatText(iwrb.getLocalizedString("category","Category")),5,1);
-      T.add(formatText(iwrb.getLocalizedString("type","Type")),6,1);
-      T.add(formatText(iwrb.getLocalizedString("order","Order")),7,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),1,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("complex","Complex")),1,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("building","Building")),2,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("floor","Floor")),3,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("category","Category")),4,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),5,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("order","Order")),2,1);
       T.add(status,1,2);
-      T.add(complex,2,2);
-      T.add(building,3,2);
-      T.add(floor,4,2);
-      T.add(cat,5,2);
-      T.add(type,6,2);
-      T.add(order,7,2);
+      T.add(complex,1,4);
+      T.add(building,2,4);
+      T.add(floor,3,4);
+      T.add(cat,4,4);
+      T.add(type,5,4);
+      T.add(order,2,2);
       SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
-      setStyle(get);
-      T.add(get,8,2);
-    T.setCellpadding(0);
+      Edit.setStyle(get);
+      T.add(get,3,2);
+    T.setCellpadding(1);
     T.setCellspacing(0);
 
     myForm.add(T);
@@ -250,7 +244,7 @@ public class CampusContracts extends KeyEditor{
         catch(SQLException ex){
         }
       }
-      setStyle(drp);
+      Edit.setStyle(drp);
       drp.setSelectedElement(selected);
     }
     return drp;
@@ -268,54 +262,63 @@ public class CampusContracts extends KeyEditor{
     Floor F = null;
     Complex CX = null;
     Table T = new Table();
+    T.setCellspacing(0);
+    T.setCellpadding(2);
     if(L!=null){
-      Image printImage = new Image("/pics/print.gif");
-      Image registerImage = new Image("/pics/register.gif");
+      Image printImage =  iwb.getImage("/print.gif");
+      Image registerImage = iwb.getImage("/pen.gif");
       int len = L.size();
       int row = 2;
+      int col = 1;
       StringBuffer sbIDs = new StringBuffer();
       for (int i = 0; i < len; i++) {
-
+        col = 1;
         try {
+
           C = (Contract) L.get(i);
           sbIDs.append(C.getID());
           sbIDs.append(ContractFiler.prmSeperator);
           U = new User(C.getUserId().intValue());
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
+          T.add(Edit.formatText(i+1),col++,row);
           //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
-            T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),1,row);
-          if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted))
-            T.add(getSignedLink(registerImage,C.getID()),2,row);
-          T.add(formatText(Ap.getFullName()),3,row);
-          T.add(formatText(Ap.getSSN()),4,row);
-          T.add((getApartmentTable(A)),5,row);
-          T.add(formatText(C.getValidFrom().toString()),6,row);
-          T.add(formatText(C.getValidTo().toString()),7,row);
+          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
+          if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted) || C.getStatus().equalsIgnoreCase(Contract.statusSigned)  )
+            T.add(getSignedLink(registerImage,C.getID()),col,row);
+          col++;
+          T.add(Edit.formatText(Ap.getFullName()),col++,row);
+          T.add(Edit.formatText(Ap.getSSN()),col++,row);
+          T.add((getApartmentTable(A)),col++,row);
+          T.add(Edit.formatText(C.getValidFrom().toString()),col++,row);
+          T.add(Edit.formatText(C.getValidTo().toString()),col++,row);
           row++;
+          col = 1;
         }
         catch (SQLException ex) {  ex.printStackTrace(); }
         }
         T.add(getPDFLink(printImage,sbIDs.toString()),1,row);
-        T.add(headerText(" "),1,1);
-        T.add(headerText(iwrb.getLocalizedString("name","Name")),3,1);
-        T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),4,1);
-        T.add(headerText(iwrb.getLocalizedString("apartment","Apartment")),5,1);
-        T.add(headerText(iwrb.getLocalizedString("validfrom","Valid from")),6,1);
-        T.add(headerText(iwrb.getLocalizedString("validto","Valid To")),7,1);
-        T.setHorizontalZebraColored(lightBlue,WhiteColor);
-        T.setRowColor(1,blueColor);
-        T.setRowColor(row,redColor);
-        //T.mergeCells(1,1,2,1);
+        T.add(Edit.titleText(" "),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("print","Print")),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("sign","Sign")),col++,1);
+        col = 4;
+        T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("apartment","Apartment")),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("validfrom","Valid from")),col++,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("validto","Valid To")),col++,1);
+        T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+        T.setRowColor(1,Edit.colorBlue);
+        T.setRowColor(row,Edit.colorRed);
         T.mergeCells(1,row,8,row);
         T.setWidth(1,"15");
-        T.add(formatText(" "),1,row);
+        T.add(Edit.formatText(" "),1,row);
         T.setColumnAlignment(1,"left");
-        T.setHeight(row,bottomThickness);
+        T.setHeight(row,Edit.bottomBarThickness);
         T.setWidth("100%");
     }
     else
-      add(formatText(iwrb.getLocalizedString("no_contracts","No contracts")));
+      add(Edit.formatText(iwrb.getLocalizedString("no_contracts","No contracts")));
     return T;
   }
 
@@ -356,10 +359,10 @@ public class CampusContracts extends KeyEditor{
     Floor F = BuildingCacher.getFloor(A.getFloorId());
     Building B = BuildingCacher.getBuilding(F.getBuildingId());
     Complex C = BuildingCacher.getComplex(B.getComplexId());
-    T.add(formatText(A.getName()),1,1);
-    T.add(formatText(F.getName()),2,1);
-    T.add(formatText(B.getName()),3,1);
-    T.add(formatText(C.getName()),4,1);
+    T.add(Edit.formatText(A.getName()),1,1);
+    T.add(Edit.formatText(F.getName()),2,1);
+    T.add(Edit.formatText(B.getName()),3,1);
+    T.add(Edit.formatText(C.getName()),4,1);
     return T;
   }
 
@@ -389,19 +392,15 @@ public class CampusContracts extends KeyEditor{
     return drp;
   }
 
-   public Text headerText(String text){
-    Text T = new Text(text);
-    T.setBold();
-    T.setFontColor(this.WhiteColor);
-    T.setFontSize(1);
-    return T;
-  }
+
 
   public Link getSignedLink(ModuleObject MO,int contractId){
-    Window W = new Window("Signature","/allocation/contractsign.jsp");
-    W.setResizable(true);
-    W.setMenubar(true);
-    Link L = new Link(MO,W);
+    //ContractSignWindow W = new ContractSignWindow();
+    //Window W = new Window("Signature","/allocation/contractsign.jsp");
+    //W.setResizable(true);
+    //W.setMenubar(true);
+    Link L = new Link(MO);
+    L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);
     return L;
   }
@@ -431,5 +430,15 @@ public class CampusContracts extends KeyEditor{
     Link L = new Link(MO,W);
     L.addParameter(ContractFiler.prmManyIds,ids);
     return L;
+  }
+
+
+  public void main(ModuleInfo modinfo){
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 }

@@ -36,7 +36,7 @@ import com.idega.jmodule.server.mail.SendMail;
  * @version 1.0
  */
 
-public class ContractSigner extends ModuleObjectContainer{
+public class ContractSignWindow extends Window{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -56,10 +56,11 @@ public class ContractSigner extends ModuleObjectContainer{
     Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
   */
 
-  public ContractSigner() {
+  public ContractSignWindow() {
   }
 
   protected void control(ModuleInfo modinfo){
+    setParentToReload();
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
 
@@ -118,29 +119,32 @@ public class ContractSigner extends ModuleObjectContainer{
       CloseButton close = new CloseButton(iwrb.getLocalizedString("close","Close"));
       PrintButton PB = new PrintButton(iwrb.getLocalizedString("print","Print"));
       TextInput email = new TextInput("new_email");
-      CheckBox accountCheck = new CheckBox("new_fin_account");
+      CheckBox accountCheck = new CheckBox("new_fin_account","true");
       accountCheck.setChecked(true);
-      CheckBox phoneAccountCheck = new CheckBox("new_phone_account");
+      CheckBox phoneAccountCheck = new CheckBox("new_phone_account","true");
       phoneAccountCheck.setChecked(true);
-      CheckBox loginCheck = new CheckBox("new_login");
+      CheckBox loginCheck = new CheckBox("new_login","true");
       loginCheck.setChecked(true);
 
       int row = 2;
-      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")+" : "),1,row);
+      T.add(Edit.headerText(iwrb.getLocalizedString("name","Name")+" : "),1,row);
       T.add(eApplicant.getFullName(),2,row);
       row++;
-      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","SocialNumber")+" : "),1,row);
+      T.add(Edit.headerText(iwrb.getLocalizedString("ssn","SocialNumber")+" : "),1,row);
       T.add(eApplicant.getSSN(),2,row);
       row++;
-      T.add(Edit.titleText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,row);
+      T.add(Edit.headerText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,row);
       T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
       row++;
-      T.add(Edit.titleText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
+      T.add(Edit.headerText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
       T.add(Edit.formatText(from.getLocaleDate(modinfo)+" "+to.getLocaleDate(modinfo)),2,row);
       row++;
-      T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
+      T.add(Edit.headerText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
       if(lEmails !=null){
-        T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
+        //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
+        int pos = lEmails.size()-1;
+        email.setContent(((Email)lEmails.get(pos)).getEmailAddress());
+        T.add(email,2,row);
       }
       else{
         T.add(email,2,row);
@@ -152,39 +156,39 @@ public class ContractSigner extends ModuleObjectContainer{
         T.add(Hgroup);
         if(lFinanceAccounts == null){
           T.add(accountCheck,2,row);
-          T.add(Edit.titleText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
+          T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
         }
         else{
           int len = lFinanceAccounts.size();
           for (int i = 0; i < len; i++) {
-            T.add(Edit.titleText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
+            T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
             T.add(Edit.formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
           }
         }
         row++;
         if(lPhoneAccounts == null){
           T.add(phoneAccountCheck,2,row);
-          T.add(Edit.titleText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
+          T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
         }
         else{
           int len = lPhoneAccounts.size();
           for (int i = 0; i < len; i++) {
-            T.add(Edit.titleText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
+            T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
             T.add(Edit.formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
           }
         }
         row++;
         if(loginTable != null ){
-          T.add(Edit.titleText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
+          T.add(Edit.headerText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
           T.add(Edit.formatText(loginTable.getUserLogin()),2,row);
           row++;
-          T.add(Edit.titleText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
+          T.add(Edit.headerText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
           if(passwd != null)
             T.add(Edit.formatText(passwd),2,row++);
         }
         else{
           T.add(loginCheck,2,row);
-          T.add(Edit.titleText(iwrb.getLocalizedString("new_login","New login")),2,row);
+          T.add(Edit.headerText(iwrb.getLocalizedString("new_login","New login")),2,row);
         }
         row++;
         HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
@@ -200,7 +204,8 @@ public class ContractSigner extends ModuleObjectContainer{
         T.add(HI,1,row);
       }
       else{
-        T.add(Edit.formatText(iwrb.getLocalizedString("syspropserror","System property error")),1,row);
+        T.add(Edit.formatText(iwrb.getLocalizedString("syspropserror","System property error")),2,row++);
+        T.add(Edit.formatText(iwrb.getLocalizedString("no_default_group","No default group")),2,row++);
       }
       Form F = new Form();
       F.add(T);
@@ -234,7 +239,8 @@ public class ContractSigner extends ModuleObjectContainer{
         ex.printStackTrace();
       }
 
-    if(eContract != null && sSigned != null){
+    if(eContract != null ){
+      boolean bSign = sSigned != null ? true:false;
       int iUserId = eContract.getUserId().intValue();
       if(sEmail !=null && sEmail.trim().length() >0){
         UserBusiness.addNewUserEmail(iUserId,sEmail);
@@ -269,8 +275,10 @@ public class ContractSigner extends ModuleObjectContainer{
             passwd = null;
             print = false;
           }
-          eContract.setStatusSigned();
-          eContract.update();
+          if(bSign){
+            eContract.setStatusSigned();
+            eContract.update();
+          }
         }
         catch (SQLException ex) {
           ex.printStackTrace();
@@ -319,7 +327,7 @@ public class ContractSigner extends ModuleObjectContainer{
   public void main(ModuleInfo modinfo){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}
     control(modinfo);

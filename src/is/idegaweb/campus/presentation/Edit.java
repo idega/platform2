@@ -18,7 +18,7 @@ public class Edit {
   public static String colorDark  = "#27334B";
   public static String colorWhite =  "#FFFFFF";
   public static String colorTextFont = "#000000";
-  public static String colorTitleFont = "#27334B";
+  public static String colorTitleFont = "#FFFFFF";
   public static String colorHeaderFont = "#27334B";
   public static String colorIndexFont = "#000000";
   public static String colorRed = "#942829";

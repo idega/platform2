@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.entity.SystemProperties;
 import com.idega.idegaweb.*;
 import com.idega.jmodule.object.*;
@@ -21,16 +22,17 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class EmailSetter extends KeyEditor{
+public class EmailSetter extends ModuleObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.emails";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private String propParameter = SystemProperties.getEntityTableName();
   private String localesParameter="iw_locales";
+  private boolean isAdmin = false;
 
-  public EmailSetter(String sHeader) {
-    super(sHeader);
+  public EmailSetter() {
+
   }
 
   public String getBundleIdentifier(){
@@ -78,13 +80,13 @@ public class EmailSetter extends KeyEditor{
     T.add(saveBundle,1,row);
     T.add(reloadBundle,1,row);
     row++;
-    T.add(formatText(iwrb.getLocalizedString("title_applied","Applied")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("title_applied","Applied")),1,row++);
     T.add(getTextArea("ta1",iwrb.getLocalizedString("letter_applied")),1,row++);
-    T.add(formatText(iwrb.getLocalizedString("title_invalid","Applied")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("title_invalid","Applied")),1,row++);
     T.add(getTextArea("ta2",iwrb.getLocalizedString("letter_invalid")),1,row++);
-    T.add(formatText(iwrb.getLocalizedString("title_approved","Applied")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("title_approved","Applied")),1,row++);
     T.add(getTextArea("ta3",iwrb.getLocalizedString("letter_approved")),1,row++);
-    T.add(formatText(iwrb.getLocalizedString("title_allocated","Applied")),1,row++);
+    T.add(Edit.formatText(iwrb.getLocalizedString("title_allocated","Applied")),1,row++);
     T.add(getTextArea("ta4",iwrb.getLocalizedString("letter_allocated")),1,row++);
 
     Form myForm = new Form();
@@ -117,10 +119,20 @@ public class EmailSetter extends KeyEditor{
 
   private TextArea getTextArea(String name,String content){
     TextArea TA = new TextArea(name,content);
-    TA.setStyle(this.styleAttribute);
+    TA.setStyle(Edit.styleAttribute);
     TA.setWidth(80);
     TA.setHeight(8);
     return TA;
+  }
+
+  public void main(ModuleInfo modinfo){
+    try{
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){
+      isAdmin = false;
+    }
+    control(modinfo);
   }
 
 }

@@ -1,11 +1,12 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -32,20 +33,18 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 
-public class CampusApprover extends KeyEditor{
+public class CampusApprover extends ModuleObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String redColor = "#942829";
-  private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
   private String sGlobalStatus = "S",sGlobalOrder = Applicant.getFullnameOrderValue();
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
-  private String bottomThickness = "8";
   private final String sView = "view",sEdit = "edit";
+  protected boolean isAdmin = false;
 
   /*
   Blár litur í topp # 27324B
@@ -54,9 +53,8 @@ public class CampusApprover extends KeyEditor{
   Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
   */
 
-  public CampusApprover(String sHeader) {
-    super(sHeader);
-    this.fontSize = 1;
+  public CampusApprover() {
+
   }
 
   protected void control(ModuleInfo modinfo){
@@ -123,7 +121,7 @@ public class CampusApprover extends KeyEditor{
       }
     }
     else
-      add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
     //add(String.valueOf(iSubjectId));
   }
 
@@ -223,33 +221,33 @@ public class CampusApprover extends KeyEditor{
         ApplicationHolder AH = (ApplicationHolder) L.get(i);
         Applicant A = AH.getApplicant();
         Application a = AH.getApplication();
-        T.add(formatText(String.valueOf(i+1)),col++,row);
+        T.add(Edit.formatText(String.valueOf(i+1)),col++,row);
         String Name = A.getFirstName()+" "+A.getMiddleName()+" "+A.getLastName();
-        T.add(formatText(Name),col++,row);
-        T.add(formatText(A.getSSN()!=null?A.getSSN():""),col++,row);
-        T.add(formatText(A.getLegalResidence()!=null?A.getLegalResidence():""),col++,row);
-        T.add(formatText(A.getResidence()!=null?A.getResidence():""),col++,row);
-        T.add(formatText(A.getPO()!=null?A.getPO():""),col++,row);
-        T.add(formatText(A.getResidencePhone()!=null?A.getResidencePhone():""),col++,row);
-        T.add(formatText(A.getMobilePhone()!=null?A.getMobilePhone():""),col++,row);
+        T.add(Edit.formatText(Name),col++,row);
+        T.add(Edit.formatText(A.getSSN()!=null?A.getSSN():""),col++,row);
+        T.add(Edit.formatText(A.getLegalResidence()!=null?A.getLegalResidence():""),col++,row);
+        T.add(Edit.formatText(A.getResidence()!=null?A.getResidence():""),col++,row);
+        T.add(Edit.formatText(A.getPO()!=null?A.getPO():""),col++,row);
+        T.add(Edit.formatText(A.getResidencePhone()!=null?A.getResidencePhone():""),col++,row);
+        T.add(Edit.formatText(A.getMobilePhone()!=null?A.getMobilePhone():""),col++,row);
         T.add((getPDFLink(printImage,A.getID())),col++,row);
         T.add( getApplicationLink(viewImage,a.getID()),col,row);
         if(lastcol < col)
           lastcol = col;
       }
 
-      T.setHorizontalZebraColored(this.lightBlue,this.WhiteColor);
-      T.setRowColor(1,this.blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = len+2;
       T.mergeCells(1,lastrow,lastcol,lastrow);
-      T.setRowColor(lastrow,this.redColor);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.setRowColor(lastrow,Edit.colorRed);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.add(getPDFLink(printImage,sGlobalStatus,iSubjectId),1,++row);
 
     }
     else{
-      T.add(formatText(iwrb.getLocalizedString("no_applications","No applications in database")));
+      T.add(Edit.formatText(iwrb.getLocalizedString("no_applications","No applications in database")));
     }
     return T;
   }
@@ -428,49 +426,49 @@ public class CampusApprover extends KeyEditor{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("applicant","Applicant")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("residence","Residence")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("po","PO")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("email","Email")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("residence","Residence")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("po","PO")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
 
       col = 2;
       row = 2;
-      T.add(formatText(eApplicant.getFullName()),col,row++);
-      T.add(formatText(eApplicant.getSSN()),col,row++);
-      T.add(formatText(eApplicant.getLegalResidence()),col,row++);
-      T.add(formatText(eApplicant.getResidence()),col,row++);
-      T.add(formatText(eApplicant.getPO()),col,row++);
-      T.add(formatText(eApplicant.getResidencePhone()),col,row++);
-      T.add(formatText(eApplicant.getMobilePhone()),col,row++);
-      T.add(formatText(eCampusApplication.getEmail()),col,row++);
-      T.add(formatText(eCampusApplication.getFaculty()),col,row++);
-      T.add(formatText(eCampusApplication.getStudyTrack()),col,row++);
+      T.add(Edit.formatText(eApplicant.getFullName()),col,row++);
+      T.add(Edit.formatText(eApplicant.getSSN()),col,row++);
+      T.add(Edit.formatText(eApplicant.getLegalResidence()),col,row++);
+      T.add(Edit.formatText(eApplicant.getResidence()),col,row++);
+      T.add(Edit.formatText(eApplicant.getPO()),col,row++);
+      T.add(Edit.formatText(eApplicant.getResidencePhone()),col,row++);
+      T.add(Edit.formatText(eApplicant.getMobilePhone()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getEmail()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getFaculty()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getStudyTrack()),col,row++);
       String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
       String endMonth = (eCampusApplication.getStudyEndMonth().toString());
-      T.add(formatText(beginMonth+" "+eCampusApplication.getStudyBeginYear().intValue()),col,row++);
-      T.add(formatText(endMonth+" "+eCampusApplication.getStudyEndYear().intValue()),col,row++);
-      T.add(formatText(eCampusApplication.getIncome().intValue()),col,row);
+      T.add(Edit.formatText(beginMonth+" "+eCampusApplication.getStudyBeginYear().intValue()),col,row++);
+      T.add(Edit.formatText(endMonth+" "+eCampusApplication.getStudyEndYear().intValue()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getIncome().intValue()),col,row);
 
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.mergeCells(1,1,2,1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row+1;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth(1,"50");
       T.setWidth("100%");
       return T;
@@ -482,45 +480,45 @@ public class CampusApprover extends KeyEditor{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("applicant","Applicant")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("residence","Residence")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("po","PO")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("email","Email")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("residence","Residence")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("po","PO")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
 
       col = 2;
       row = 2;
 
       TextInput tiFullName = new TextInput("ti_full",eApplicant.getFullName()!=null?eApplicant.getFullName():"");
-      setStyle(tiFullName);
+      Edit.setStyle(tiFullName);
       TextInput tiSsn = new TextInput("ti_ssn",eApplicant.getSSN()!=null?eApplicant.getSSN():"");
-      setStyle(tiSsn);
+      Edit.setStyle(tiSsn);
       TextInput tiLegRes = new TextInput("ti_legres",eApplicant.getLegalResidence()!=null?eApplicant.getLegalResidence():"");
-      setStyle(tiLegRes);
+      Edit.setStyle(tiLegRes);
       TextInput tiRes = new TextInput("ti_res",eApplicant.getResidence()!=null?eApplicant.getResidence():"");
-      setStyle(tiRes);
+      Edit.setStyle(tiRes);
       TextInput tiPo = new TextInput("ti_po",eApplicant.getPO()!=null?eApplicant.getPO():"");
-      setStyle(tiPo);
+      Edit.setStyle(tiPo);
       TextInput tiResPho = new TextInput("ti_respho",eApplicant.getResidencePhone()!=null?eApplicant.getResidencePhone():"");
-      setStyle(tiResPho);
+      Edit.setStyle(tiResPho);
       TextInput tiMobPho = new TextInput("ti_mobpho",eApplicant.getMobilePhone()!=null?eApplicant.getMobilePhone():"");
-      setStyle(tiMobPho);
+      Edit.setStyle(tiMobPho);
       TextInput tiEmail = new TextInput("ti_email",eCampusApplication.getEmail()!=null?eCampusApplication.getEmail():"");
-      setStyle(tiEmail);
+      Edit.setStyle(tiEmail);
       TextInput tiFac = new TextInput("ti_facult",eCampusApplication.getFaculty()!=null?eCampusApplication.getFaculty():"");
-      setStyle(tiFac);
+      Edit.setStyle(tiFac);
       TextInput tiTrack= new TextInput("ti_track",eCampusApplication.getStudyTrack()!=null?eCampusApplication.getStudyTrack():"");
-      setStyle(tiTrack);
+      Edit.setStyle(tiTrack);
       TextInput tiIncome= new TextInput("ti_income",eCampusApplication.getIncome().toString());
-      setStyle(tiIncome);
+      Edit.setStyle(tiIncome);
       tiIncome.setAsIntegers();
 
       T.add(tiFullName,col,row++);
@@ -541,10 +539,10 @@ public class CampusApprover extends KeyEditor{
       DropdownMenu drEM = intDrop("dr_em",endMonth,1,12);
       DropdownMenu drBY = intDrop("dr_by",beginYear,year-10,year+10);
       DropdownMenu drEY = intDrop("dr_ey",endYear,year-10,year+10);
-      setStyle(drBM);
-      setStyle(drEM);
-      setStyle(drBY);
-      setStyle(drEY);
+      Edit.setStyle(drBM);
+      Edit.setStyle(drEM);
+      Edit.setStyle(drBY);
+      Edit.setStyle(drEY);
       T.add(drBM,col,row);
       T.add(drBY,col,row++);
       T.add(drEM,col,row);
@@ -555,13 +553,13 @@ public class CampusApprover extends KeyEditor{
       T.setCellspacing(1);
       T.mergeCells(1,1,2,1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row+1;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth(1,"50");
       T.setWidth("100%");
       return T;
@@ -637,37 +635,37 @@ public class CampusApprover extends KeyEditor{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("spouse","Spouse")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("school","School")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("school","School")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
       col = 2;
       row = 2;
 
-      T.add(formatText(eCampusApplication.getSpouseName()),col,row++);
-      T.add(formatText(eCampusApplication.getSpouseSSN()),col,row++);
-      T.add(formatText(eCampusApplication.getSpouseSchool()),col,row++);
-      T.add(formatText(eCampusApplication.getSpouseStudyTrack()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getSpouseName()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getSpouseSSN()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getSpouseSchool()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getSpouseStudyTrack()),col,row++);
       String beginMonth = (eCampusApplication.getSpouseStudyBeginMonth().toString());
       String endMonth = (eCampusApplication.getSpouseStudyEndMonth().toString());
-      T.add(formatText(beginMonth+" "+eCampusApplication.getStudyBeginYear().intValue()),col,row++);
-      T.add(formatText(endMonth+" "+eCampusApplication.getStudyEndYear().intValue()),col,row++);
-      T.add(formatText(eCampusApplication.getSpouseIncome().intValue()),col,row);
+      T.add(Edit.formatText(beginMonth+" "+eCampusApplication.getStudyBeginYear().intValue()),col,row++);
+      T.add(Edit.formatText(endMonth+" "+eCampusApplication.getStudyEndYear().intValue()),col,row++);
+      T.add(Edit.formatText(eCampusApplication.getSpouseIncome().intValue()),col,row);
 
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.mergeCells(1,1,2,1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row+1;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth(1,"50");
       T.setWidth("100%");
       return T;
@@ -679,13 +677,13 @@ public class CampusApprover extends KeyEditor{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("spouse","Spouse")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("school","School")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("school","School")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
       col = 2;
       row = 2;
 
@@ -694,11 +692,11 @@ public class CampusApprover extends KeyEditor{
       TextInput tiSpSchl = new TextInput("ti_sp_schl",eCampusApplication.getSpouseSchool());
       TextInput tiSpStTr = new TextInput("ti_sp_sttr",eCampusApplication.getSpouseStudyTrack());
       TextInput tiSPIncome = new TextInput("ti_sp_income",eCampusApplication.getSpouseIncome().toString());
-      setStyle(tiSpName);
-      setStyle(tiSpSsn);
-      setStyle(tiSpSchl);
-      setStyle(tiSpStTr);
-      setStyle(tiSPIncome);
+      Edit.setStyle(tiSpName);
+      Edit.setStyle(tiSpSsn);
+      Edit.setStyle(tiSpSchl);
+      Edit.setStyle(tiSpStTr);
+      Edit.setStyle(tiSPIncome);
 
       T.add(tiSpName,col,row++);
       T.add(tiSpSsn,col,row++);
@@ -713,10 +711,10 @@ public class CampusApprover extends KeyEditor{
       DropdownMenu drEM = intDrop("dr_sp_em",endMonth,1,12);
       DropdownMenu drBY = intDrop("dr_sp_by",beginYear,year-10,year+10);
       DropdownMenu drEY = intDrop("dr_sp_ey",endYear,year-10,year+10);
-      setStyle(drBM);
-      setStyle(drEM);
-      setStyle(drBY);
-      setStyle(drEY);
+      Edit.setStyle(drBM);
+      Edit.setStyle(drEM);
+      Edit.setStyle(drBY);
+      Edit.setStyle(drEY);
       T.add(drBM,col,row);
       T.add(drBY,col,row++);
       T.add(drEM,col,row);
@@ -727,13 +725,13 @@ public class CampusApprover extends KeyEditor{
       T.setCellspacing(1);
       T.mergeCells(1,1,2,1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row+1;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth(1,"50");
       T.setWidth("100%");
       return T;
@@ -790,19 +788,19 @@ public class CampusApprover extends KeyEditor{
       T.add(headerText(iwrb.getLocalizedString("children","Children")),col,row++);
       StringTokenizer st = new StringTokenizer(eCampusApplication.getChildren(),"\n");
       while(st.hasMoreTokens()){
-         T.add(formatText(st.nextToken()),col,row++);
+         T.add(Edit.formatText(st.nextToken()),col,row++);
       }
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
       T.setVerticalAlignment("top");
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth("100%");
       return T;
   }
@@ -815,20 +813,20 @@ public class CampusApprover extends KeyEditor{
       TextArea taChilds = new TextArea("ti_sp_childs",eCampusApplication.getChildren());
       taChilds.setWidth(30);
       taChilds.setHeight(4);
-      setStyle(taChilds);
+      Edit.setStyle(taChilds);
       T.add(taChilds,col,row++);
 
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,2,lastrow);
       T.setVerticalAlignment("top");
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth("100%");
       return T;
   }
@@ -849,43 +847,43 @@ public class CampusApprover extends KeyEditor{
         int len = lApplied.size();
         for (int i = 0; i < len; i++) {
           Applied A = (Applied) lApplied.get(i);
-          T.add(boldText(i+1),1,row);
-          T.add(formatText((BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName())),2,row++);
+          T.add(Edit.titleText(i+1),1,row);
+          T.add(Edit.formatText((BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName())),2,row++);
         }
       }
       col = 3;
       row = 1;
        T.add(headerText(iwrb.getLocalizedString("requests","Requests")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 4;
       row = 2;
       idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
-      T.add(formatText(iT.getLocaleDate(modinfo)),col,row++);
+      T.add(Edit.formatText(iT.getLocaleDate(modinfo)),col,row++);
       if(eCampusApplication.getWantFurniture())
-        T.add(formatText("X"),col,row++);
+        T.add(Edit.formatText("X"),col,row++);
       if(eCampusApplication.getOnWaitinglist())
-        T.add(formatText("X"),col,row++);
+        T.add(Edit.formatText("X"),col,row++);
       T.mergeCells(1,1,2,1);
       T.mergeCells(3,1,4,1);
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = 5;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,4,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth("100%");
       return T;
   }
 
   public DropdownMenu drpTypes(Vector v,String name,String selected,boolean firstEmpty){
     DropdownMenu drpTypes = new DropdownMenu(name);
-    setStyle(drpTypes);
+    Edit.setStyle(drpTypes);
     if(firstEmpty)
       drpTypes.addMenuElementFirst("-1","-");
     for (int i = 0; i < v.size(); i++) {
@@ -929,35 +927,35 @@ public class CampusApprover extends KeyEditor{
       DropdownMenu drpOne = drpTypes(vAprtType,"drp_one",sOne,false);
       DropdownMenu drpTwo = drpTypes(vAprtType,"drp_two",sTwo,true);
       DropdownMenu drpThree = drpTypes(vAprtType,"drp_three",sThree,true);
-      setStyle(drpOne);
-      setStyle(drpTwo);
-      setStyle(drpThree);
+      Edit.setStyle(drpOne);
+      Edit.setStyle(drpTwo);
+      Edit.setStyle(drpThree);
 
-      T.add(boldText(1),1,row);
+      T.add(Edit.titleText(1),1,row);
       T.add(drpOne,2,row++);
-      T.add(boldText(2),1,row);
+      T.add(Edit.titleText(2),1,row);
       T.add(drpTwo,2,row++);
-      T.add(boldText(3),1,row);
+      T.add(Edit.titleText(3),1,row);
       T.add(drpThree,2,row++);
 
       col = 3;
       row = 1;
        T.add(headerText(iwrb.getLocalizedString("requests","Requests")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
-      T.add(boldText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
+      T.add(Edit.titleText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 4;
       row = 2;
       idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
 
       DateInput diRentFrom = new DateInput("ap_rentfrom",true);
       diRentFrom.setDate(iT.getSQLDate());
-      diRentFrom.setStyleAttribute("style",styleAttribute);
+      diRentFrom.setStyleAttribute("style",Edit.styleAttribute);
       T.add(diRentFrom,col,row++);
       CheckBox chkFurni = new CheckBox("ap_furni","true");
-      setStyle(chkFurni);
+      Edit.setStyle(chkFurni);
       CheckBox chkWait = new CheckBox("ap_wait","true");
-      setStyle(chkWait);
+      Edit.setStyle(chkWait);
       if(eCampusApplication.getWantFurniture())
         chkFurni.setChecked(true);
       T.add(chkFurni,col,row++);
@@ -969,13 +967,13 @@ public class CampusApprover extends KeyEditor{
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = 5;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,4,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth("100%");
       return T;
   }
@@ -1063,25 +1061,25 @@ public class CampusApprover extends KeyEditor{
   public ModuleObject getViewApplication(Application eApplication){
     Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
-      T.add(boldText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
-      T.add(formatText(eApplication.getSubmitted().toString()),2,2);
-      T.add(boldText(iwrb.getLocalizedString("changed","Status change")),1,3);
-      T.add(formatText(eApplication.getStatusChanged().toString()),2,3);
-      T.add(boldText(iwrb.getLocalizedString("status","Status")),3,2);
-      T.add(formatText(getStatus(eApplication.getStatus())),3,3);
+      T.add(Edit.titleText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
+      T.add(Edit.formatText(eApplication.getSubmitted().toString()),2,2);
+      T.add(Edit.titleText(iwrb.getLocalizedString("changed","Status change")),1,3);
+      T.add(Edit.formatText(eApplication.getStatusChanged().toString()),2,3);
+      T.add(Edit.titleText(iwrb.getLocalizedString("status","Status")),3,2);
+      T.add(Edit.formatText(getStatus(eApplication.getStatus())),3,3);
 
 
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.mergeCells(1,1,3,1);
       T.setBorder(0);
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+      T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = 4;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,3,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setWidth("100%");
     return T;
   }
@@ -1089,26 +1087,26 @@ public class CampusApprover extends KeyEditor{
   private ModuleObject getRemoteControl(String sStatus,boolean bEdit,IWResourceBundle iwrb){
       Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("control","Control")),1,1);
-      T.add(boldText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
-      T.add(boldText(iwrb.getLocalizedString("study_progress","Study progress")),1,3);
-      T.add(boldText(iwrb.getLocalizedString("choice1","Choice 1")),1,4);
-      T.add(boldText(iwrb.getLocalizedString("choice2","Choice 2")),1,5);
+      T.add(Edit.titleText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
+      T.add(Edit.titleText(iwrb.getLocalizedString("study_progress","Study progress")),1,3);
+      T.add(Edit.titleText(iwrb.getLocalizedString("choice1","Choice 1")),1,4);
+      T.add(Edit.titleText(iwrb.getLocalizedString("choice2","Choice 2")),1,5);
       TextInput units = new TextInput("unit");
        units.setLength(1);
-       setStyle(units);
+       Edit.setStyle(units);
       CheckBox choice1 = new CheckBox("choice1");
-       setStyle(choice1);
+       Edit.setStyle(choice1);
       CheckBox choice2 = new CheckBox("choice2");
-       setStyle(choice2);
+       Edit.setStyle(choice2);
       CheckBox choice3 = new CheckBox("choice3");
-       setStyle(choice3);
+       Edit.setStyle(choice3);
       T.add(choice1,2,2);
       T.add(units,2,3);
       T.add(choice2,2,4);
       T.add(choice3,2,5);
       DropdownMenu status = statusDrop("status_drop",sStatus);
       status.setToSubmit();
-      setStyle(status);
+      Edit.setStyle(status);
       T.add(status,2,6);
       if(bEdit){
         SubmitButton view = new SubmitButton("viewer","View");
@@ -1125,13 +1123,13 @@ public class CampusApprover extends KeyEditor{
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-       T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+       T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = 8;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,4,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
       T.setHeight("100%");
       T.setWidth("100%");
     return T;
@@ -1185,8 +1183,8 @@ public class CampusApprover extends KeyEditor{
     drp.setToSubmit();
     status.setToSubmit();
     order.setToSubmit();
-    setStyle(status);
-    setStyle(order);
+    Edit.setStyle(status);
+    Edit.setStyle(order);
     myForm.add(drp);
     myForm.add(status);
     myForm.add(order);
@@ -1204,7 +1202,7 @@ public class CampusApprover extends KeyEditor{
         AS = (ApplicationSubject) L.get(i);
         drp.addMenuElement(AS.getID(),AS.getName());
       }
-      setStyle(drp);
+      Edit.setStyle(drp);
       drp.setSelectedElement(selected);
     }
     return drp;
@@ -1252,16 +1250,6 @@ public class CampusApprover extends KeyEditor{
     return drp;
   }
 
-  private Text boldText(String text){
-    Text T = new Text(text);
-    T.setBold();
-    T.setFontColor(DarkColor);
-    T.setFontSize(this.fontSize);
-    return T;
-  }
-  private Text boldText(int i){
-    return boldText(String.valueOf(i));
-  }
 
   public Link getApplicationLink(ModuleObject MO,int id){
     Link L = new Link(MO);
@@ -1273,7 +1261,7 @@ public class CampusApprover extends KeyEditor{
   public Text headerText(String text){
     Text T = new Text(text);
     T.setBold();
-    T.setFontColor(this.WhiteColor);
+    T.setFontColor(Edit.colorWhite);
     T.setFontSize(1);
     return T;
   }
@@ -1294,6 +1282,15 @@ public class CampusApprover extends KeyEditor{
     L.addParameter("app_status",status);
     L.addParameter("app_sub_id",subject_id);
     return L;
+  }
+
+  public void main(ModuleInfo modinfo){
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 
 }

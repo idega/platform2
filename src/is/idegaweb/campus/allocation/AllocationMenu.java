@@ -5,11 +5,16 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.jmodule.object.FrameList;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
 import is.idegaweb.campus.entity.SystemProperties;
 import java.util.List;
+import java.sql.SQLException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 /**
  * Title:
  * Description:
@@ -20,74 +25,39 @@ import java.util.List;
  */
 
 
-public class AllocationMenu extends KeyEditor{
+public class AllocationMenu extends FrameList{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
+  private boolean isAdmin = false;
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
 
 
-  public AllocationMenu(String sHeader) {
-    super(sHeader);
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+
+    setLinkStyle("font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 7pt; text-decoration: none;");
+    makeLinkTable();
+    setZebraColors("#FFFFFF","#ECECEC");
   }
 
-  protected void control(ModuleInfo modinfo){
-    if(modinfo.getApplicationAttribute(SystemProperties.getEntityTableName())==null){
-     SystemProperties SysProps =  SysPropsSetter.seekProperties();
-     modinfo.setApplicationAttribute(SystemProperties.getEntityTableName(),SysProps);
-    }
 
-    if(isAdmin)
-      this.add((makeSubjectTable()));
-    else
-      this.add(new Text("Ekki Réttindi"));
+  public void makeLinkTable(){
+
+    addToList(CampusApprover.class,iwrb.getLocalizedString("applications","Applications"),CampusAllocation.FRAME_NAME);
+    addToList(CampusContracts.class,iwrb.getLocalizedString("contracts","Contracts"),CampusAllocation.FRAME_NAME);
+    addToList(RoughOrderForm.class,iwrb.getLocalizedString("roughorder","Rough order"),CampusAllocation.FRAME_NAME);
+    addToList(CampusAllocator.class,iwrb.getLocalizedString("allocate","Allocate"),CampusAllocation.FRAME_NAME);
+    addToList(EmailSetter.class,iwrb.getLocalizedString("emails","Emails"),CampusAllocation.FRAME_NAME);
+    addToList(ContractTextSetter.class,iwrb.getLocalizedString("contracttexts","Contract Texts"),CampusAllocation.FRAME_NAME);
+    addToList(SubjectMaker.class,iwrb.getLocalizedString("subjects","Subjects"),CampusAllocation.FRAME_NAME);
+    addToList(AprtTypePeriodMaker.class,iwrb.getLocalizedString("periods","Periods"),CampusAllocation.FRAME_NAME);
+    addToList(SysPropsSetter.class,iwrb.getLocalizedString("properties","Properties"),CampusAllocation.FRAME_NAME);
 
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
-    return LinkTable;
-  }
 
-  public ModuleObject makeSubjectTable(){
-    //List L = ApplicationFinder.listOfSubject();
-    Table Frame = new Table(3,2);
-      Frame.setCellpadding(0);
-      Frame.setCellspacing(0);
-    Table Left = new Table();
-      Left.setCellpadding(0);
-      Left.setCellspacing(0);
-    Table Right = new Table();
-      Right.setCellpadding(0);
-      Right.setCellspacing(0);
-    Form myForm = new Form();
-    myForm.add(Left);
-    Frame.add(myForm,1,1);
-    Frame.setWidth(2,"40");
-    Frame.add(Right,3,1);
-
-
-    Link Approve = new Link("Samþykkja nýskráðar umsóknir","/allocation/approve.jsp");
-    Link Contracts = new Link("Samningar","/allocation/contracts.jsp");
-    Link Waitinglist = new Link("Biðlistar","/allocation/waitinglists.jsp");
-    Link RoughOrder = new Link("Grófraða úthlutun","/allocation/roughorder.jsp");
-    Link Allocate = new Link("Úthluta","/allocation/allocation.jsp");
-    Link Subject = new Link("Nýtt umsóknartímabil","/allocation/subject.jsp");
-    Link Properties = new Link("Kerfisstillingar","/allocation/sysprops.jsp");
-    Link Emails = new Link("Tölvupóstar","/allocation/emails.jsp");
-    Link ContractText = new Link("Samningstextar","/allocation/contracttext.jsp");
-    Link TypePeriods = new Link("Samnings dagsetningar","/allocation/aprttypeperiods.jsp");
-
-    Right.add(Approve,1,1);
-    Right.add(Contracts,1,2);
-    Right.add(Waitinglist,1,3);
-    Right.add(RoughOrder,1,4);
-    Right.add(Allocate,1,5);
-    Right.add(Subject,1,6);
-    Right.add(Properties,1,7);
-    Right.add(Emails,1,8);
-    Right.add(ContractText,1,9);
-    Right.add(TypePeriods,1,10);
-
-    return Frame;
-  }
 }

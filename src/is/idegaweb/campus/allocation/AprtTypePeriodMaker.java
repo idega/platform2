@@ -4,6 +4,7 @@ import com.idega.jmodule.object.ModuleObjectContainer;
 import java.util.List;
 import java.sql.SQLException;
 import com.idega.jmodule.object.ModuleInfo;
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.textObject.*;
@@ -35,14 +36,8 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   private boolean isAdmin = false;
-  protected String styleAttribute = "font-size: 8pt";
-  protected int fontSize = 2;
-  protected boolean fontBold = false;
-  protected String TextFontColor = "#000000";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String redColor = "#942829",blueColor = "#27324B",lightBlue ="#ECEEF0",WhiteColor = "#FFFFFF";
-    private String bottomThickness = "8";
 
 
   public String getBundleIdentifier(){
@@ -76,9 +71,9 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
       int len = Types.size();
       ApartmentType AT;
 
-      T.add(headerText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
-      T.add(headerText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
-      T.add(headerText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
+      T.add(Edit.titleText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
+      T.add(Edit.titleText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
+      T.add(Edit.titleText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
       int row = 2;
       for (int i = 0; i < len; i++) {
         AT = (ApartmentType) Types.get(i);
@@ -98,10 +93,10 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
           drpMonthTwo.setSelectedElement(String.valueOf(ATP.getSecondDateMonth()));
           id = ATP.getID();
         }
-        setStyle( drpDayOne);
-        setStyle(drpMonthOne);
-        setStyle(drpDayTwo);
-        setStyle(drpMonthTwo);
+        Edit.setStyle( drpDayOne);
+        Edit.setStyle(drpMonthOne);
+        Edit.setStyle(drpDayTwo);
+        Edit.setStyle(drpMonthTwo);
         T.add(new HiddenInput("typeid"+i,String.valueOf(AT.getID())),1,row);
         T.add(new HiddenInput("id"+i,String.valueOf(id)),1,row);
         T.add(drpDayOne,2,row);
@@ -111,17 +106,19 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
         row++;
       }
       T.add(new HiddenInput("count",String.valueOf(len)));
-      T.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,row);
+      SubmitButton save = new SubmitButton("save",iwrb.getLocalizedString("save","Save"));
+      Edit.setStyle(save);
+      T.add(save,1,row);
        T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
-       T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      T.setRowColor(1,blueColor);
+       T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorBlue);
       int lastrow = row;
-      T.setRowColor(lastrow,redColor);
+      T.setRowColor(lastrow,Edit.colorRed);
       T.mergeCells(1,lastrow,4,lastrow);
-      T.add(formatText(" "),1,lastrow);
-      T.setHeight(lastrow,bottomThickness);
+      T.add(Edit.formatText(" "),1,lastrow);
+      T.setHeight(lastrow,Edit.bottomBarThickness);
 
     }
     else
@@ -215,29 +212,6 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
   }
 
 
-
-  public Text formatText(String s){
-    Text T= new Text();
-    if(s!=null){
-      T= new Text(s);
-      if(this.fontBold)
-      T.setBold();
-      T.setFontColor(this.TextFontColor);
-      T.setFontSize(this.fontSize);
-    }
-    return T;
-  }
-  public Text formatText(int i){
-    return formatText(String.valueOf(i));
-  }
-  public Text headerText(String text){
-    Text T = new Text(text);
-    T.setBold();
-    T.setFontColor(this.WhiteColor);
-    T.setFontSize(1);
-    return T;
-  }
-
   public void main(ModuleInfo modinfo){
     try{
       isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
@@ -252,10 +226,6 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
 
   private Link getHomeLink(){
     return new Link(new Image("/pics/list.gif"),"/allocation/index.jsp");
-  }
-
-  protected void setStyle(InterfaceObject O){
-    O.setAttribute("style",this.styleAttribute);
   }
 
 }

@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.ModuleObjectContainer;
 import java.util.List;
 import java.sql.SQLException;
@@ -35,12 +36,9 @@ public class SysPropsSetter extends ModuleObjectContainer{
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getEntityTableName();
+  private static String propParameter = SystemProperties.getEntityTableName();
   private boolean isAdmin = false;
-  protected String styleAttribute = "font-size: 8pt";
-  protected int fontSize = 2;
-  protected boolean fontBold = false;
-  protected String TextFontColor = "#000000";
+
   public SysPropsSetter() {
 
   }
@@ -59,13 +57,31 @@ public class SysPropsSetter extends ModuleObjectContainer{
       if(SysProps != null)
         modinfo.setApplicationAttribute(propParameter,SysProps);
       else{
-        add("No System properties in database");
+        add(iwrb.getLocalizedString("no_sys_props","No System properties in database"));
       }
     }
-    add(getHomeLink());
+    //add(getHomeLink());
     if(SysProps !=null)
       add(getProperties(SysProps));
 
+  }
+
+  public static boolean isSysPropsInMemoryElseLoad(ModuleInfo modinfo){
+    if(modinfo.getApplicationAttribute(propParameter)!=null)
+      return true;
+    else
+      return loadSystemProperties(modinfo);
+
+  }
+
+  public static boolean loadSystemProperties(ModuleInfo modinfo){
+    SystemProperties Props = seekProperties();
+      if(Props != null){
+        modinfo.setApplicationAttribute(propParameter,Props);
+        return true;
+      }
+      else
+        return false;
   }
 
   public static SystemProperties seekProperties(){
@@ -95,11 +111,11 @@ public class SysPropsSetter extends ModuleObjectContainer{
     TextInput emailHost = new TextInput("email_host");
     DropdownMenu groups = new DropdownMenu(com.idega.core.user.business.UserBusiness.listOfGroups(),"def_group");
     int row = 1;
-    T.add(formatText("Contract date"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("contract_date","Contract date")),1,row);
     T.add(DI,3,row);
     if(SysProps.getContractDate()!=null){
       //DI.setDate(SysProps.getContractDate());
-      T.add(formatText(new idegaTimestamp(SysProps.getContractDate()).toString()),4,row);
+      T.add(Edit.formatText(new idegaTimestamp(SysProps.getContractDate()).toString()),4,row);
     }
     row++;
     if(SysProps.getAdminEmail()!= null)
@@ -107,24 +123,23 @@ public class SysPropsSetter extends ModuleObjectContainer{
     if(SysProps.getEmailHost()!= null)
       emailHost.setContent(SysProps.getEmailHost());
 
-    T.add(formatText("Contract years"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("contract_years","Contract years")),1,row);
     if(SysProps.getContractYears() > 0){
-      T.add(formatText(SysProps.getContractYears()),4,row);
+      T.add(Edit.formatText(SysProps.getContractYears()),4,row);
     }
     T.add(TI,3,row);
     row++;
-    T.add(formatText("Default group"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("default_group","Default user group")),1,row);
     int groupId = SysProps.getDefaultGroup();
     if(groupId > 0){
-      add("group_id"+String.valueOf(groupId));
       groups.setSelectedElement(String.valueOf(groupId));
     }
     T.add(groups,3,row);
     row++;
-    T.add(formatText("Admin Email"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("admin_email","Admin Email")),1,row);
     T.add(adminEmail,3,row);
     row++;
-    T.add(formatText("Email Host "),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("email_host","Email Host")),1,row);
     T.add(emailHost,3,row);
     SubmitButton save = new SubmitButton("save","Save");
     T.add(save,4,7);
@@ -179,21 +194,6 @@ public class SysPropsSetter extends ModuleObjectContainer{
       drp.addMenuElement(String.valueOf(i));
     }
     return drp;
-  }
-
-   public Text formatText(String s){
-    Text T= new Text();
-    if(s!=null){
-      T= new Text(s);
-      if(this.fontBold)
-      T.setBold();
-      T.setFontColor(this.TextFontColor);
-      T.setFontSize(this.fontSize);
-    }
-    return T;
-  }
-  public Text formatText(int i){
-    return formatText(String.valueOf(i));
   }
 
   public void main(ModuleInfo modinfo){
