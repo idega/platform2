@@ -67,11 +67,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/21 13:06:40 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/22 09:20:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.83 $
+ * @version $Revision: 1.84 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -616,11 +616,18 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 				= getFormattedDate (record.getDateChanged ());
 		final String changedBy = record.getChangedBy ();
 		final Integer memberId = new Integer (record.getSchoolClassMemberId ());
-		final SchoolClassMember member = home.findByPrimaryKey (memberId);
-		final User user = member.getStudent ();
-		final String ssn = formatSsn (user.getPersonalID ());
-		final String userName = getUserName (user);
-		
+		String ssn = "?";
+		String userName = "?";
+		try {
+			final SchoolClassMember member = home.findByPrimaryKey (memberId);
+			final User user = member.getStudent ();
+			ssn = formatSsn (user.getPersonalID ());
+			userName = getUserName (user);
+		} catch (Exception e) {
+			logError ("InvoiceRecord " + record.getPrimaryKey ()
+								+ " has an unknown School Class Member Id " + memberId);
+			e.printStackTrace ();
+		}
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 											 : getZebraColor2 ());
