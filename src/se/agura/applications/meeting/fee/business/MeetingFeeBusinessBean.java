@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.5 2004/12/13 14:35:10 anna Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.6 2004/12/14 00:29:06 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -73,6 +73,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a vacation request");
