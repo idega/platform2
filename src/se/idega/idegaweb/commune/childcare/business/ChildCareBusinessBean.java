@@ -2375,7 +2375,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String caseCode = "unreachable";
 		try {
 			caseCode = theCase.getCode();
-			if (ChildCareConstants.CASE_CODE_KEY.equals(caseCode) || CareConstants.AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
+			if (CareConstants.CASE_CODE_KEY.equals(caseCode) || CareConstants.AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
 				int caseID = ((Integer) theCase.getPrimaryKey()).intValue();
 				return this.getApplicationByPrimaryKey(String.valueOf(caseID));
 			}
@@ -3612,7 +3612,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -3621,7 +3621,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -3630,7 +3630,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange(ChildCareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();

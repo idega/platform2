@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
@@ -210,7 +211,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
-				link.setParameter(getSession().getParameterCaseCode(), ChildCareConstants.CASE_CODE_KEY);
+				link.setParameter(getSession().getParameterCaseCode(), CareConstants.CASE_CODE_KEY);
 				if (getResponsePage() != null)
 					link.setPage(getResponsePage());
 	

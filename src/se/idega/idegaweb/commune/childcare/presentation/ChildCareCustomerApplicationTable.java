@@ -14,7 +14,6 @@ import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -40,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.76 2004/10/19 17:20:02 thomas Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.77 2004/10/20 15:13:36 thomas Exp $
  * @since 12.2.2003 
  */
 
@@ -203,7 +202,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		_caseCode = null;
 		if (_showOnlyChildcare) {
-			_caseCode = ChildCareConstants.CASE_CODE_KEY;
+			_caseCode = CareConstants.CASE_CODE_KEY;
 		}
 		else if (_showOnlyAfterSchoolCare) {
 			_caseCode = CareConstants.AFTER_SCHOOL_CASE_CODE_KEY;

@@ -9,12 +9,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
-
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
@@ -108,7 +106,7 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 
 		int numberOfChoices = 0;
 		try {
-			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), ChildCareConstants.CASE_CODE_KEY);
+			Collection children = getChildCareBusiness().findSentInAndRejectedApplicationsByArea(areaID, numberOfMonths.intValue(), numberOfWeeks.intValue(), firstHandOnly.booleanValue(), CareConstants.CASE_CODE_KEY);
 			if (children != null) {
 				Iterator iter = children.iterator();
 				while (iter.hasNext()) {
