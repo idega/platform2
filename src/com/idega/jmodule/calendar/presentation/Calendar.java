@@ -982,11 +982,12 @@ private String DatastoreType;
 
 	Link link;
 
+        String colorToUse = color_1;
 
-	//Table myTable = new Table();
-	Table myTable = new Table(7,20);
+	Table myTable = new Table();
+	//Table myTable = new Table(7,10);
 		myTable.setAlignment(table_alignment);
-		myTable.setHorizontalZebraColored(color_1,color_2);
+		//myTable.setHorizontalZebraColored(color_1,color_2);
 		myTable.setCellpadding(0);
 		myTable.setCellspacing(1);
 		myTable.setBorder(0);
@@ -1163,13 +1164,16 @@ private String DatastoreType;
         if (i != 1) {
             row++;
         }
+
+        if ((i % 2)== 0) colorToUse = color_1;
+        else colorToUse = color_2;
+
 //	myTable.setHeight(i+1,"56");
 		for (j=1; j<=(7); j++) {
 		if ((i==1) && ((m + j) == 9))
 			break;
 
-		if ((i % 2)== 0) cellColor="#666699";
-		else cellColor="#9999CC";
+                myTable.setColor(j,i,colorToUse);
 
 		double hoursToday=0;
 
