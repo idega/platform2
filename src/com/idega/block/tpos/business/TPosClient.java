@@ -36,10 +36,42 @@ public class TPosClient {
 
     try {
       _client = new TPOS3Client(path);
+      _client.setIPSet(2);
     }
     catch(Exception e) {
       System.out.println("Got an exception trying to create client");
     }
+  }
+
+  public boolean getCACertifycate() {
+    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
+    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
+    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+
+    boolean valid = _client.sendCACertificateReq();
+
+    if (!valid) {
+      System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+      System.err.println("Error string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+    }
+
+    return(valid);
+  }
+
+  public boolean getKeys() {
+    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
+    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
+    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+    _client.setProperty(TPOS3Client.PN_KEYRECEIVEPASSWORD, "5JGL64EF");
+
+    boolean valid = _client.sendKeyPairReq();
+
+    if (!valid) {
+      System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+      System.err.println("Error string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+    }
+
+    return(valid);
   }
 
   /**
@@ -67,11 +99,17 @@ public class TPosClient {
    *
    */
   private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType) throws TPosException {
-    _client.setProperty(TPOS3Client.PN_USERID, "IDE");
+/*    _client.setProperty(TPOS3Client.PN_USERID, "IDE");
     _client.setProperty(TPOS3Client.PN_PASSWORD, "IDE");
     _client.setProperty(TPOS3Client.PN_MERCHANTID, "IDE");
     _client.setProperty(TPOS3Client.PN_LOCATIONID, "0000000001");
-    _client.setProperty(TPOS3Client.PN_POSID, "IDE001001");
+    _client.setProperty(TPOS3Client.PN_POSID, "IDE001001");*/
+
+    _client.setProperty(TPOS3Client.PN_USERID, "IDEGA");
+    _client.setProperty(TPOS3Client.PN_PASSWORD, "TEST");
+    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
+    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
+    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
 
     _client.setProperty(TPOS3Client.PN_PAN,cardnumber);
     _client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires+monthExpires);
