@@ -2190,7 +2190,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					providerMap.put("-1", emptyString);
 					
 					SchoolArea area = (SchoolArea) iter.next();
-					Collection providers = getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
+					SchoolBusiness sb = getSchoolBusiness();
+					Collection providers = sb.findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
+					providers = sb.getHomeCommuneSchools(providers);
 					if (providers != null) {
 						Iterator iterator = providers.iterator();
 						while (iterator.hasNext()) {
