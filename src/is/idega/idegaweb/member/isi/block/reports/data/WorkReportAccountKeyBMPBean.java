@@ -129,7 +129,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindExponsesAccountKeys() throws FinderException {
+	public Collection ejbFindExpensesAccountKeys() throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
 		sql.append(" where ");

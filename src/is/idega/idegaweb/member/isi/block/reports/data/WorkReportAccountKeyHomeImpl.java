@@ -41,9 +41,9 @@ public java.util.Collection findDeptAccountKeys()throws javax.ejb.FinderExceptio
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findExponsesAccountKeys()throws javax.ejb.FinderException{
+public java.util.Collection findExpensesAccountKeys()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindExponsesAccountKeys();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindExpensesAccountKeys();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
