@@ -87,6 +87,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
     }
     catch(MalformedURLException e) {
+      System.out.println("MessageApplet: error in init!");
       e.printStackTrace(System.err);
     }
 
@@ -187,9 +188,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   private URLConnection getURLConnection(){
-    PrintWriter outTest = null;
-    BufferedReader inTest = null;
-    Packet thePacket = null;
     URLConnection servletConnection = null;
 
     try{
@@ -213,7 +211,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       }
       catch (Exception e){
-          System.out.println(e.toString());
+          System.out.println("MessengerApplet : error in getURLConnection"+e.toString());
           e.printStackTrace(System.err);
       }
       return servletConnection;
