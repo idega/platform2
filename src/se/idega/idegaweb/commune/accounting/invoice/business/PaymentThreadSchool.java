@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/02 16:41:17 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/02 17:53:38 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.77 $
+ * @version $Revision: 1.78 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -456,9 +456,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 //				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
-				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
+				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase((getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
 					errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType());
-					errorRelated.append("RegSpecType from posting detail"+((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
+					errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
