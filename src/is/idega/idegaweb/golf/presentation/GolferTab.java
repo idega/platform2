@@ -24,10 +24,12 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericSelect;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.SelectPanel;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserTab;
+import com.idega.util.ListUtil;
 
 /**
  * A tab for displaying and editing a user golf specific data, such as his main golf club and sub golf club lists.
@@ -36,6 +38,8 @@ import com.idega.user.presentation.UserTab;
  */
 
 public class GolferTab extends UserTab {
+	
+private static final String NO_MAIN_CLUB = "   ";
 	protected static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected static final String TAB_NAME = "golfer_info_tab";
 	protected static final String DEFAULT_TAB_NAME = "Golfer Info";
@@ -44,13 +48,22 @@ public class GolferTab extends UserTab {
 	protected Map titles;
 	private GolfUserPluginBusiness golfBiz;
 	private String mainClubAbbrFromRequest;
-	private String subClubsAbbrFromRequest;
+	private String[] subClubsAbbrFromRequest;
+	private SelectOption noMainClub = null;
+	private boolean hasNotAddedNoMainClub = true;
 	
 	public GolferTab() {
 		super();
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+	}
+	
+	public void init(){
+		hasNotAddedNoMainClub = true;
+		noMainClub = new SelectOption(NO_MAIN_CLUB,NO_MAIN_CLUB);
+		
+		super.init();
 	}
 
 	public void initializeFieldNames() {}
@@ -67,17 +80,31 @@ public class GolferTab extends UserTab {
 			mainSelected.add(mainClubAbbreviation);
 		}
 		
-		//sub clubs
-		String subClubAbbreviations = (subClubsAbbrFromRequest!=null)?subClubsAbbrFromRequest : user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		List subClubSelected = new ArrayList();
-		if(subClubAbbreviations!=null){
-			subClubSelected.add(subClubAbbreviations);
+		//sub clubs
+		if(subClubsAbbrFromRequest==null){
+			String subClubAbbreviations = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+			if(subClubAbbreviations!=null){
+				subClubSelected = getListFromSubClubsString(subClubAbbreviations);
+				subClubSelected.add(subClubAbbreviations);
+			}
+		}
+		else{
+			subClubSelected = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
 		}
 		
 		getFilledGenericSelect(GolfConstants.MAIN_CLUB_META_DATA_KEY,mainSelected);
 
 		getFilledGenericSelect(GolfConstants.SUB_CLUBS_META_DATA_KEY,subClubSelected);
 		
+	}
+
+	/**
+	 * @param subClubAbbreviations
+	 * @return
+	 */
+	private List getListFromSubClubsString(String subClubAbbreviations) {
+		return ListUtil.convertCommaSeparatedStringToList(subClubAbbreviations);
 	}
 
 	public void initializeFields() {
@@ -97,7 +124,7 @@ public class GolferTab extends UserTab {
 	 * @return
 	 */
 	protected GenericSelect getSubClubsSelectionBox() {
-		GenericSelect subClubsInput = new GenericSelect(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+		GenericSelect subClubsInput = new SelectPanel(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 		return subClubsInput;
 	}
 
@@ -142,6 +169,10 @@ public class GolferTab extends UserTab {
 	 */
 	protected GenericSelect getMainClubDropDown() {
 		SelectDropdown mainClubInput = new SelectDropdown(GolfConstants.MAIN_CLUB_META_DATA_KEY);	
+		if(hasNotAddedNoMainClub){
+			mainClubInput.addOption(noMainClub);
+			hasNotAddedNoMainClub = false;
+		}
 		return mainClubInput;
 	}
 
@@ -216,7 +247,10 @@ public class GolferTab extends UserTab {
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			mainClubAbbrFromRequest = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
-			subClubsAbbrFromRequest = iwc.getParameter(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+			if(NO_MAIN_CLUB.equals(mainClubAbbrFromRequest)){
+				mainClubAbbrFromRequest = null;
+			}
+			subClubsAbbrFromRequest = iwc.getParameterValues(GolfConstants.SUB_CLUBS_META_DATA_KEY);
 			this.updateFieldsDisplayStatus();
 
 			return true;
@@ -227,26 +261,28 @@ public class GolferTab extends UserTab {
 	
 	public boolean store(IWContext iwc) {
 		User user = getUser();
-		boolean store = false;
-		if(mainClubAbbrFromRequest!=null){
-			user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
-			store = true;
-		}
+		
+		user.setMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY, mainClubAbbrFromRequest);
 		
 		if(subClubsAbbrFromRequest!=null){
-			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, subClubsAbbrFromRequest);
-			store = true;
+			List abbrList = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
+			
+			if(mainClubAbbrFromRequest!=null && abbrList.contains(mainClubAbbrFromRequest)){
+				abbrList.remove(mainClubAbbrFromRequest);
+			}
+			
+			String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
+			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
+		}else{
+			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,null);
 		}
 		
-		if(store){
-			user.store();
-		}
+		user.store();
+		mainClubAbbrFromRequest = null;
+		subClubsAbbrFromRequest = null;
+
+		updateFieldsDisplayStatus();
 		
-		//String subAbbr = tokens.nextToken();
-//		if(subUnions!=null && mainUnion!=null){
-//		StringTokenizer tokens = new StringTokenizer(subUnions,",");
-//		while (tokens.hasMoreTokens()) {
-//
 		return true;
 	}
 	
