@@ -256,6 +256,15 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 				}
 			}
 		}
+		setGolfUserType(modinfo);
+		return returner;
+	}
+
+	/**
+	 * @param modinfo
+	 * @throws SQLException
+	 */
+	protected void setGolfUserType(IWContext modinfo) throws SQLException {
 		if (isAdmin(modinfo)) {
 			modinfo.getSession().setAttribute(UserAccessAttributeParameter, "admin");
 		}
@@ -268,7 +277,6 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 		if (isUser(modinfo)) {
 			modinfo.getSession().setAttribute(UserAccessAttributeParameter, "user");
 		}
-		return returner;
 	}
 
 	public static void logOut2(IWContext modinfo) throws Exception {
@@ -362,6 +370,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 		}
 		if (member != null) {
 			iwc.setSessionAttribute(UserAttributeParameter, member);
+			setGolfUserType(iwc);
 		}
 		return super.logInByUUID(iwc, uuid);
 	}
