@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingBusiness;
+import se.idega.idegaweb.commune.accounting.business.AccountingException;
 import se.idega.idegaweb.commune.accounting.business.AccountingSession;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -150,6 +151,15 @@ public abstract class AccountingBlock extends CommuneBlock {
 	public Text getLocalizedText(String textKey, String defaultText) {
 		return getSmallText(localize(textKey, defaultText));
 	}
+	
+	/**
+	 * Returns a formatted and localized exception text.
+	 * @param ex AccountingException to localize
+	 * @author roar
+	 */
+	public Text getLocalizedException(AccountingException ex) {
+		return getErrorText(localize(ex.getTextKey(), ex.getDefaultText()));
+	}	
 	
 	/**
 	 * Returns a formatted and form text.
