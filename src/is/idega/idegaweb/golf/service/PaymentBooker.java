@@ -7,7 +7,6 @@ import com.idega.presentation.text.*;
 import is.idega.idegaweb.golf.entity.*;
 import is.idega.idegaweb.golf.templates.*;
 import is.idega.idegaweb.golf.*;
-import com.idega.projects.*;
 import com.idega.util.*;
 import com.idega.io.FileSaver;
 import java.math.*;
