@@ -491,7 +491,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
-		System.out.println(sql.toString());
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
@@ -532,7 +531,6 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(F_ + COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(F_ + COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
-		System.out.println(sql.toString());
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
