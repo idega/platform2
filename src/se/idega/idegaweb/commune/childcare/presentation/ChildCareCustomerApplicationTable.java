@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.18 2003/04/16 16:36:26 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.19 2003/04/16 16:52:02 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -308,15 +308,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			_status = status;
 	
 			if (day != null && month != null && year != null) {
-				IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+				try{
+					IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+					
 				/*Calendar calendar = Calendar.getInstance();
 				calendar.set(Integer.parseInt(year), Integer.parseInt(month) - 1, Integer.parseInt(day));*/
-				try{
 					//_date = new java.sql.Date(calendar.getTimeInMillis());
 					_date = stamp.getDate();
+				}catch(NumberFormatException ex){
+					_date = new Date(0); 
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
-				}
+				}			
 			}
 		}	
 		
