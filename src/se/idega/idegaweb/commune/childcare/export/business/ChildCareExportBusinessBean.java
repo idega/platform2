@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.4 2005/02/03 13:20:49 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.5 2005/02/14 19:32:14 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.childcare.export.business;
 import java.io.ByteArrayInputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
@@ -46,10 +47,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/03 13:20:49 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/14 19:32:14 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -75,18 +76,19 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 
 	/**
 	 * Creates an export file with child care placements for the IST Extens system.
-	 * @param userId the id for the user who is creating the export file 
+	 * @param userId the id for the user who is creating the export file
+	 * @param to the latest date for placements included in the export 
 	 * @return the name of the export file
 	 * @throws ChildCareExportException
 	 */
-	public String exportPlacementFile(int userId) throws ChildCareExportException {
+	public String exportPlacementFile(int userId, Date to) throws ChildCareExportException {
 		String fileName = null;
 		UserTransaction transaction = this.getSessionContext().getUserTransaction();		
 		try {
 			transaction.begin();
 
 			fileName = storePlacementExportFileTimestamp(userId);
-			String text = getPlacementFileContent();
+			String text = getPlacementFileContent(to);
 			writeFile(text, fileName);
 			
 			transaction.commit();
@@ -109,18 +111,19 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	 * Creates an export file with child care placement with changes in taxekategori (child care time)
 	 * for the IST Extens system.
 	 * @param userId the id for the user who is creating the export file 
+	 * @param from the first date from which to include changes 
+	 * @param to the last date to which to include changes 
 	 * @return the name of the export file
 	 * @throws ChildCareExportException
 	 */
-	public String exportTaxekatFile(int userId) throws ChildCareExportException {
+	public String exportTaxekatFile(int userId, Date from, Date to) throws ChildCareExportException {
 		String fileName = null;
 		UserTransaction transaction = this.getSessionContext().getUserTransaction();		
 		try {
 			transaction.begin();
 			
-			Date lastExportDate = getLastExportDate(FILE_TYPE_TAXEKAT);
-			fileName = storeTaxekatExportFileTimestamp(userId);
-			String text = getTaxekatFileContent(lastExportDate);
+			fileName = storeTaxekatExportFileTimestamp(userId, from, to);
+			String text = getTaxekatFileContent(from, to);
 			writeFile(text, fileName);
 			
 			transaction.commit();
@@ -142,18 +145,26 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	/*
 	 * Returns text with child care placement records for the IST Extens system.
 	 */
-	private String getPlacementFileContent() throws ChildCareExportException {
+	private String getPlacementFileContent(Date to) throws ChildCareExportException {
 		String s = "";
 		try {
 			Iterator placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare()).iterator();
 			while (placements.hasNext()) {
 				SchoolClassMember placement = (SchoolClassMember) placements.next();
+
+				Date placementDate = Date.valueOf(new Date(placement.getRegisterDate().getTime()).toString());
+				if (placementDate.compareTo(to) > 0) {
+					continue;
+				}
 				User user = placement.getStudent();
 				Date placementStartDate = null;
 				int placementSchoolClassId = -1; 
 				Iterator placementLogs = getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement).iterator();
 				while (placementLogs.hasNext()) {
 					SchoolClassMemberLog log = (SchoolClassMemberLog) placementLogs.next();
+					if (log.getStartDate() != null && log.getStartDate().compareTo(to) > 0) {
+						continue;
+					}
 					if (placementStartDate != null) {
 						if (getISTDate(placementStartDate).equals(getISTDate(log.getStartDate())) && 
 							(placementSchoolClassId == log.getSchoolClassID())) {
@@ -189,10 +200,10 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	/*
 	 * Returns text with child care placement records with 'taxekategori' changes for the IST Extens system.
 	 */
-	private String getTaxekatFileContent(Date lastExportDate) throws ChildCareExportException {
+	private String getTaxekatFileContent(Date from, Date to) throws ChildCareExportException {
 		String s = "";
 		try {
-			Iterator contracts = getChildCareContractHome().findChangedSinceDate(lastExportDate).iterator();
+			Iterator contracts = getChildCareContractHome().findChangedBetween(from, to).iterator();
 			while (contracts.hasNext()) {
 				ChildCareContract contract = (ChildCareContract) contracts.next();
 				ChildCareApplication application = contract.getApplication();
@@ -209,28 +220,46 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				SchoolClass group = placement.getSchoolClass();
 				Date placementFromDate = new Date(placement.getRegisterDate().getTime());
 				Date contractFromDate = contract.getValidFromDate();
+				SchoolClassMemberLog log = null;
+				SchoolClassMemberLogHome home = getSchoolBusiness().getSchoolClassMemberLogHome();
 				if (contractFromDate != null) {
-					SchoolClassMemberLogHome home = getSchoolBusiness().getSchoolClassMemberLogHome();
-					SchoolClassMemberLog log = null;
 					try {
-						log = home. findByPlacementAndDate(placement, contractFromDate);
+						log = home.findByPlacementAndDate(placement, contractFromDate);
 					} catch (FinderException e) {}
 					if (log != null) {
 						placementFromDate = log.getStartDate();
 						group = log.getSchoolClass();
 					}
+				} else {
+					continue;
 				}
 				School school = group.getSchool();
 				SchoolType schoolType = group.getSchoolType(); 
-					
-				s += getISTPersonalId(user) + SEPARATOR_CHAR;
-				s += getISTSchoolId(school) + SEPARATOR_CHAR;
-				s += getISTGroupId(group) + SEPARATOR_CHAR;
-				s += getISTSchoolTypeId(schoolType) + SEPARATOR_CHAR;
-				s += getISTDate(placementFromDate) + SEPARATOR_CHAR;
-				s += getISTTaxekat(contract.getCareTime()) + SEPARATOR_CHAR;
-				s += getISTDate(contract.getValidFromDate()) + SEPARATOR_CHAR;
-				s += getISTDate(contract.getTerminatedDate());
+
+				if (contract.getValidFromDate().compareTo(from) >= 0 ||
+						(contract.getTerminatedDate() != null && (contract.getTerminatedDate().compareTo(from) >= 0))) {
+					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), contract.getValidFromDate(), contract.getTerminatedDate());
+				} else {
+					log = null;
+				}
+				
+				Collection logs = null;
+				try {
+					logs = home.findAllBySchoolClassMember(placement);
+				} catch (FinderException e) {}
+				
+				if (logs != null) {
+					Iterator iter = logs.iterator();
+					while (iter.hasNext()) {
+						SchoolClassMemberLog l = (SchoolClassMemberLog) iter.next();
+						if (isLogsEqual(l, log)) {
+							continue;
+						}
+						if (isLogInInterval(l, from, to) && isLogInContract(l, contract)) {
+							s += getTaxekatLine(user, school, group, schoolType, l.getStartDate(), contract.getCareTime(), l.getStartDate(), l.getEndDate());
+						}
+					}
+				}
 					
 				if (contracts.hasNext()) {
 					s += "\r\n";						
@@ -244,17 +273,92 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	}
 
 	/*
-	 * Returns the date for when the last export with the specified file type was created.
+	 * Returns true if the specified log has dates within specified date interval.
 	 */
-	private Date getLastExportDate(int fileType) {
-		Date date = new Date(0L);
-		try {
-			ChildCareExportTime et = getChildCareExportTimeHome().findLatest(fileType);
-			IWTimestamp t = new IWTimestamp(et.getCreated());
-			t.setAsDate();
-			date = t.getDate();
-		} catch (Exception e) {}
-		return date;
+	private boolean isLogInInterval(SchoolClassMemberLog l, Date from, Date to) {
+		Date lFrom = l.getStartDate();
+		Date lTo = l.getEndDate();
+		
+		if (lFrom.compareTo(from) >= 0 && lFrom.compareTo(to) <= 0) {
+			return true;
+		}
+		
+		if (lTo != null) {
+			if (lTo.compareTo(from) >= 0 && lTo.compareTo(to) <= 0) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/*
+	 * Returns true if the specified logs are equal (only dates used in comparison).
+	 */
+	private boolean isLogsEqual(SchoolClassMemberLog l1, SchoolClassMemberLog l2) {
+		if (l1 == null || l2 == null) {
+			return false;
+		}
+		if (l1.getStartDate().compareTo(l2.getStartDate()) != 0) {
+			return false;
+		}
+		if (l1.getEndDate() == null && l2.getEndDate() == null) {
+			return true;
+		}
+		if (l1.getEndDate() != null && l2.getEndDate() != null) {
+			if (l1.getEndDate().compareTo(l2.getEndDate()) == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/*
+	 * Returns true if the specified log is within dates of contract.
+	 */
+	private boolean isLogInContract(SchoolClassMemberLog l, ChildCareContract c) {
+		Date lStart = l.getStartDate();
+		Date lEnd = l.getEndDate();
+		Date cStart = c.getValidFromDate();
+		Date cEnd = c.getTerminatedDate();
+		
+		if (lStart.compareTo(cStart) >= 0) {
+			if (cEnd != null) {
+				if (lStart.compareTo(cEnd) <= 0) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		}
+
+		if (lEnd != null && lEnd.compareTo(cStart) >= 0) {
+			if (cEnd != null) {
+				if (lEnd.compareTo(cEnd) <= 0) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/*
+	 * Returns a taxekat export file line.
+	 */
+	private String getTaxekatLine(User user, School school, SchoolClass group, SchoolType schoolType, Date placementFromDate, String careTime, Date contractFrom, Date contractTo) {
+		String s = "";
+		s += getISTPersonalId(user) + SEPARATOR_CHAR;
+		s += getISTSchoolId(school) + SEPARATOR_CHAR;
+		s += getISTGroupId(group) + SEPARATOR_CHAR;
+		s += getISTSchoolTypeId(schoolType) + SEPARATOR_CHAR;
+		s += getISTDate(placementFromDate) + SEPARATOR_CHAR;
+		s += getISTTaxekat(careTime) + SEPARATOR_CHAR;
+		s += getISTDate(contractFrom) + SEPARATOR_CHAR;
+		s += getISTDate(contractTo);
+		return s;
 	}
 
 	/*
@@ -351,6 +455,27 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 		} catch (Exception e) {}
 		return taxekat;
 	}
+	
+	/**
+	 * Returns the formated date interval for the specified export filename.
+	 */
+	public String getFileDateInterval(String fileName) {
+		String s = "";
+		try {
+			ChildCareExportTime et = getChildCareExportTimeHome().findByFileName(fileName);
+			IWTimestamp from = null;
+			IWTimestamp to = null;
+			if (et.getFromDate() != null) {
+				from = new IWTimestamp(et.getFromDate());
+				s += from.getDateString("yyyy-MM-dd");
+			}
+			if (et.getToDate() != null) {
+				to = new IWTimestamp(et.getToDate());
+				s += " - " + to.getDateString("yyyy-MM-dd");
+			}
+		} catch (Exception e) {}
+		return s;
+	}
 
 	/*
 	 * Writes the specified text to a file.
@@ -409,30 +534,32 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	 * Stores a new entry in the export file timestamp log (ChildCareExportTime).
 	 * The created timestamp is set to current time.
 	 * The file type is set to IST Extens placement export file.
-	 * @param userId the id for the user who created the export file.
+	 * @param userId the id for the user who created the export file
 	 * @return the file name for the export file
 	 * @throws ChildCareExportException
 	 */
 	public String storePlacementExportFileTimestamp(int userId) throws ChildCareExportException {
-		return storeExportFileTimestamp(userId, FILE_TYPE_PLACEMENT);		
+		return storeExportFileTimestamp(userId, FILE_TYPE_PLACEMENT, null, null);		
 	}
 
 	/**
 	 * Stores a new entry in the export file timestamp log (ChildCareExportTime).
 	 * The created timestamp is set to current time.
 	 * The file type is set to IST Extens taxekat export file.
-	 * @param userId the id for the user who created the export file.
+	 * @param userId the id for the user who created the export file
+	 * @param from the first date from which to include changes 
+	 * @param to the last date to which to include changes 
 	 * @return the file name for the export file
 	 * @throws ChildCareExportException
 	 */
-	public String storeTaxekatExportFileTimestamp(int userId) throws ChildCareExportException {
-		return storeExportFileTimestamp(userId, FILE_TYPE_TAXEKAT);
+	public String storeTaxekatExportFileTimestamp(int userId, Date from, Date to) throws ChildCareExportException {
+		return storeExportFileTimestamp(userId, FILE_TYPE_TAXEKAT, from, to);
 	}
 	
 	/*
 	 * Store a new entry in the export file timestamp log.
 	 */
-	private String storeExportFileTimestamp(int userId, int fileType) throws ChildCareExportException {		
+	private String storeExportFileTimestamp(int userId, int fileType, Date from, Date to) throws ChildCareExportException {		
 		IWTimestamp now = IWTimestamp.RightNow();
 		String fileName = getExportFileName(fileType, now);
 
@@ -442,6 +569,8 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 			entry.setUserId(userId);
 			entry.setFileName(fileName);
 			entry.setFileType(fileType);
+			entry.setFromDate(from);
+			entry.setToDate(to);
 			entry.store();
 		} catch (Exception e) {
 			log(e);
