@@ -80,6 +80,7 @@ public class TourBookingForm extends TravelManager {
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
     super.main(iwc);
+    super.debugParameters(iwc);
     setProduct(iwc, product);
     iwrb = super.getResourceBundle(iwc);
     supplier = super.getSupplier();
@@ -1360,11 +1361,17 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.parameterInquiry);
       form.maintainParameter(parameterFromDate);
       form.maintainParameter(this.parameterOnlineBooking);
-      if (withBookingAction)
-      form.maintainParameter(this.BookingAction);
+      if (withBookingAction) {
+        form.maintainParameter(this.BookingAction);
+      }
+
       ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, false);
       for (int i = 0; i < pPrices.length; i++) {
         form.maintainParameter("priceCategory"+i);
+      }
+      ProductPrice[] misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(this._productId, -1, -1, false);
+      for (int i = 0; i < misc.length; i++) {
+        form.maintainParameter("miscPriceCategory"+i);
       }
       form.maintainParameter(this.parameterFromDate);
       form.maintainParameter(this.parameterManyDays);

@@ -798,8 +798,9 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"left");
       table.setAlignment(2,row,"right");
       table.add(no,1,row);
-      if (valid)
-      table.add(yes,2,row);
+      if (valid) {
+        table.add(yes,2,row);
+      }
 
 
     return table;
@@ -832,9 +833,11 @@ public class PublicBooking extends Block  {
         int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
 
         ProductPrice[] pPrices = {};
+        ProductPrice[] misc = {};
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
         if (tFrame != null) {
           pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
+          misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
         for (int j = 0; j < days; j++) {
@@ -845,12 +848,19 @@ public class PublicBooking extends Block  {
             }catch (NumberFormatException n) {
               current = 0;
             }
-
             total += current;
-
             price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
-
           }
+
+          for (int i = 0; i < misc.length; i++) {
+            try {
+              current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
+            }catch (NumberFormatException n) {
+              current = 0;
+            }
+            price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,this.productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+          }
+
         }
 
         TourBookingForm tbf = new TourBookingForm(iwc,product);
