@@ -1,4 +1,4 @@
-package is.idega.idegaweb.campus.presentation;
+package is.idega.idegaweb.campus.block.finance.presentation;
 
 
 import com.idega.presentation.PresentationObjectContainer;
@@ -14,14 +14,14 @@ import com.idega.presentation.IWContext;
  * @version 1.1
  */
 
-public class CampusHabitants extends PresentationObjectContainer {
+public class CampusTariffReports extends PresentationObjectContainer {
 
-  public CampusHabitants() {
+  public CampusTariffReports() {
   }
 
   public void main(IWContext iwc){
     Reporter R = new Reporter();
-		R.setReportCategoryId(1);
+    R.setReportCategoryId(2);
     //R.setMainCategoryAttribute("tenants");
     R.setSQLEdit(true);
     add(R);

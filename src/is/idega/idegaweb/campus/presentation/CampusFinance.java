@@ -91,6 +91,7 @@ public class CampusFinance extends Block {
       FL.add(getLink(CampusAssessments.class,iwrb.getLocalizedString("assessment","Assessment"),CampusFinance.FRAME_NAME),1,5);
       FL.add(getLink(PhoneFiles.class,iwrb.getLocalizedString("phonefiles","Phone files"),CampusFinance.FRAME_NAME),1,6);
       FL.add(getLink(CampusEntryGroups.class,iwrb.getLocalizedString("bunks","Bunks"),CampusFinance.FRAME_NAME),1,7);
+      FL.add(getLink(CampusTariffReports.class,iwrb.getLocalizedString("reports","Reports"),CampusFinance.FRAME_NAME),1,8);
       return FL;
   }
 
