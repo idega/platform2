@@ -25,13 +25,29 @@ public class PageCounter extends PresentationObjectContainer {
 
   public void main(IWContext iwc) throws Exception{
     TrackerBusiness.runThroughTheStatsMachine(iwc);
-    Text hits = new Text(TrackerBusiness.getCurrentPageHits(iwc)+" page hits!");
+
+    Text hits = new Text("Current page hits: "+TrackerBusiness.getCurrentPageHits(iwc));
     hits.setBold(true);
     add(hits);
 
-    Text hits2 = new Text(TrackerBusiness.getTotalPageHits()+" total page hits!");
+    addBreak();
+
+    Text hits2 = new Text("Current page sessions: "+TrackerBusiness.getCurrentPageSessions(iwc));
     hits2.setBold(true);
     add(hits2);
+
+    addBreak();
+
+    Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalHits());
+    hits4.setBold(true);
+    add(hits4);
+
+    addBreak();
+
+    Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalSessions());
+    hits3.setBold(true);
+    add(hits3);
+
 
   }
 

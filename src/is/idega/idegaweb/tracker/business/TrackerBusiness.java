@@ -36,19 +36,44 @@ public class TrackerBusiness {
   private static Map referers;
   private static Map agents;
   private static Map domain;
+  private static Map pageSessions;
+  private static Map pageHits;
 
   private static int totalHits = 0;
+  private static int totalSessions = 0;
 
   public TrackerBusiness() {
   }
 
-  public static void runThroughTheStatsMachine(IWContext iwc){
+  private static void init(IWContext iwc){
     if( cm == null ) cm = IWCacheManager.getInstance(iwc.getApplication());
     if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
+    if( pages == null ){pages = new HashMap();}
+    if( pageSessions == null ){ pageSessions = new Hashtable();}
+    if( pageHits == null ){ pageSessions = new Hashtable();}
+    if( agents == null ){ agents = new Hashtable();}
+  }
 
+  private static void incrementPageHits(String pageId){
+    Integer hits = (Integer) pageHits.get(pageId);
+    pageHits.put(pageId,getIncrementedInteger(hits));
+  }
 
+  private static void incrementPageSessions(String pageId){
+    Integer hits = (Integer) pageSessions.get(pageId);
+    pageSessions.put(pageId,getIncrementedInteger(hits));
+  }
 
+  private static Integer getIncrementedInteger(Integer i){
+    if( i == null ) i = new Integer(1);
+    else {
+      i = new Integer(i.intValue()+1);
+    }
+    return i;
+  }
 
+  public static void runThroughTheStatsMachine(IWContext iwc){
+    init(iwc);
     handlePageStats(iwc);
     //handleDomainStats(iwc);
     handleReferrerStats(iwc);
@@ -56,36 +81,39 @@ public class TrackerBusiness {
   }
 
   public static void handlePageStats(IWContext iwc){
-    if( pages == null ){
-      pages = new HashMap();
-    }
-
     int pageId = getCurrentPageId(iwc);
+    String sPageId = String.valueOf(pageId);
+    String sessionId = iwc.getSession().getId();
+
+
     if(pageId!=-1){
-      PageStatistics page = new PageStatistics();
+      PageStatistics page = new PageStatistics();/**@todo clone this?**/
       page.setPageId(pageId);
       page.setPreviousPageId(pageId);/**@todo this shit here**/
       page.setLocale(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
       page.setUserId(iwc.getUserId());
       page.setModificationDate(idegaTimestamp.getTimestampRightNow());
-      page.setGenerationTime(200);
+      page.setGenerationTime(200);/**@todo this shit here**/
 
-      ArrayList pageLog = (ArrayList) pages.get(String.valueOf(pageId));
+      ArrayList pageLog = (ArrayList) pages.get(sessionId);
       if( pageLog == null ){
         pageLog = new ArrayList();
+        //session stuff
+        totalSessions++;
+        incrementPageSessions(sPageId);
       }
 
       pageLog.add(page);
-      pages.put(iwc.getSession().getId(),pageLog);
+      pages.put(sessionId,pageLog);
+      //hit stuff
       totalHits++;
+      incrementPageHits(sPageId);
     }
 
 
   }
 
   public static void handleDomainStats(IWContext iwc){
-    if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
-    //domain.getID();
     // bara utreikningar og insert
   }
 
@@ -110,7 +138,6 @@ public class TrackerBusiness {
 
   public static void handleUserAgentStats(IWContext iwc){
     String userAgent = iwc.getUserAgent();
-    if( agents == null ){ agents = new Hashtable();}
 
     if(userAgent!=null){
       UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
@@ -125,33 +152,6 @@ public class TrackerBusiness {
         stats.setSessions(stats.getSessions()+1);
       }
     }
-  }
-
-  public static int getCurrentPageHits(IWContext iwc){
-    int pageId = getCurrentPageId(iwc);
-    int hits = 0;
-    if(pages!=null){
-      ArrayList pageLog = (ArrayList) pages.get(String.valueOf(pageId));
-      if(pageLog!=null) hits = pageLog.size();
-    }
-    return hits;
-  }
-
-  public static int getTotalHits(){
-    return totalHits;
-  }
-
-  public static int getTotalSessions(){
-    int hits = 0;
-    if(pages!=null){
-      hits = pages.size();
-      Iterator iter = pages.entrySet().iterator();
-      while (iter.hasNext()) {
-        String item = (String) iter.next();
-        hits+=((ArrayList)pages.get(item)).size();
-      }
-    }
-    return hits;
   }
 
   public static int getCurrentPageId(IWContext iwc){
@@ -171,4 +171,23 @@ public class TrackerBusiness {
     return returner;
   }
 
+  public static int getCurrentPageHits(IWContext iwc){
+    Integer hits = (Integer) pageHits.get(String.valueOf(getCurrentPageId(iwc)));
+    if( hits == null ) return 0;
+    else return hits.intValue();
+  }
+
+  public static int getCurrentPageSessions(IWContext iwc){
+    Integer sessions = (Integer) pageSessions.get(String.valueOf(getCurrentPageId(iwc)));
+    if( sessions == null ) return 0;
+    else return sessions.intValue();
+  }
+
+  public static int getTotalHits(){
+    return totalHits;
+  }
+
+  public static int getTotalSessions(){
+    return totalSessions;
+  }
 }
