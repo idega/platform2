@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -251,7 +252,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
-						GroupRelation rel = (GroupRelation)iterator.next();
+						GroupRelation rel = (GroupRelation)pIterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
 							data.addData(parent1GroupInvitationDate,dataFormat.format(time));
@@ -281,7 +282,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
-						GroupRelation rel = (GroupRelation)iterator.next();
+						GroupRelation rel = (GroupRelation)pIterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
 							data.addData(parent2GroupInvitationDate,dataFormat.format(time));
