@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.13 2001/06/22 15:24:35 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.14 2001/06/27 00:12:27 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
 
 /**
- * @author
+ * @author Gudmundur idega iceland
  */
 public class GolfMainJSPModulePage extends MainPage {
   protected Login login;
@@ -92,7 +92,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
   protected Table Left(ModuleInfo modinfo) throws SQLException, IOException {
-    Table leftTable = new Table(1,12);
+    Table leftTable = new Table(1,13);
     //leftTable.setBorder(1);
     leftTable.setVerticalAlignment("top");
     leftTable.setVerticalAlignment(1,1,"top");
@@ -108,18 +108,41 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.setVerticalAlignment(1,11,"top");
     //leftTable.setHeight("100%");
     leftTable.setColumnAlignment(1, "left");
-    leftTable.setWidth("" + LEFTWIDTH);
+    leftTable.setWidth(LEFTWIDTH);
     leftTable.setCellpadding(0);
     leftTable.setCellspacing(0);
-    leftTable.add( Sponsors(), 1,1);
-    leftTable.add(clubNews(),1,3);
-    leftTable.add(new TournamentBox(),1,5);
-    leftTable.add(getChat(),1,7);
-    leftTable.add(getLinks(modinfo),1,9);
-    leftTable.add(idega(),1,11);
+
+    leftTable.add(Languages(),1,1);
+    leftTable.add(Sponsors(), 1,3);
+    leftTable.add(clubNews(),1,5);
+    leftTable.add(new TournamentBox(),1,7);
+    leftTable.add(getChat(),1,9);
+    leftTable.add(getLinks(modinfo),1,11);
+    leftTable.add(idega(),1,13);
 
     return leftTable;
   }
+
+  protected Table Languages() throws SQLException {
+    Table languages = new Table(4,1);
+    languages.setAlignment("left");
+    Text IS = new Text(iwrb.getLocalizedString("languages.icelandic","icelandic"));
+    Text EN = new Text(iwrb.getLocalizedString("languages.english","english"));
+    IS.setFontSize(Text.FONT_SIZE_7_HTML_1);
+    EN.setFontSize(Text.FONT_SIZE_7_HTML_1);
+
+    // vantar link á textann og myndirnar
+   // IS.setFontColor("#CCCCCC");
+   // EN.setFontColor("#ABABAB");
+
+    languages.add( iwb.getImage("shared/icelandic.gif") , 1,1);
+    languages.add( IS , 2,1);
+    languages.add( iwb.getImage("shared/english.gif") , 3,1);
+    languages.add( EN , 4,1);
+
+    return languages;
+  }
+
 
   protected HeaderTable getChat() throws SQLException {
     HeaderTable table = new HeaderTable();
