@@ -10,6 +10,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -21,13 +22,15 @@ import com.idega.presentation.text.Text;
  * @author laddi
  */
 public class ClubNavigation extends GolfBlock {
+  
+  private ICPage iPage = null;
 
 	public void main(IWContext modinfo) throws Exception {
 		modinfo.removeSessionAttribute("golf_union_id");
 		String URI = modinfo.getRequestURI();
 
 		add(Text.getBreak());
-		add(getLinkTable(URI));
+		add(getLinkTable());
 		add(Text.getBreak());
 		add(getUnions(modinfo));
 	}
@@ -142,7 +145,10 @@ public class ClubNavigation extends GolfBlock {
 
 		for (int i = 0; i < unions.size(); i++) {
 			union = ((Union) unions.elementAt(i));
-			link = new Link(union.getName(), "index2.jsp");
+			link = new Link(union.getName());
+			if (getPage() != null) {
+			  link.setPage(getPage());
+			}
 			link.addParameter("union_id", union.getID());
 
 			table.setVerticalAlignment(1, i + 1, "top");
@@ -168,37 +174,37 @@ public class ClubNavigation extends GolfBlock {
 	}
 
 	public Image getImage(int location) {
-		Image returner = new Image("/");
+		Image returner = new Image();
 
 		if (location == 12)
 			location = 1;
 		switch (location) {
 			case 1 :
-				returner = new Image("/pics/clubs/city.gif");
+				returner = getBundle().getImage("shared/map/city.gif");
 				break;
 			case 2 :
-				returner = new Image("/pics/clubs/reykjanes.gif");
+				returner = getBundle().getImage("shared/map/reykjanes.gif");
 				break;
 			case 3 :
-				returner = new Image("/pics/clubs/west.gif");
+				returner = getBundle().getImage("shared/map/west.gif");
 				break;
 			case 4 :
-				returner = new Image("/pics/clubs/westfjord.gif");
+				returner = getBundle().getImage("shared/map/westfjord.gif");
 				break;
 			case 5 :
-				returner = new Image("/pics/clubs/northwest.gif");
+				returner = getBundle().getImage("shared/map/northwest.gif");
 				break;
 			case 6 :
-				returner = new Image("/pics/clubs/northeast.gif");
+				returner = getBundle().getImage("shared/map/northeast.gif");
 				break;
 			case 7 :
-				returner = new Image("/pics/clubs/east.gif");
+				returner = getBundle().getImage("shared/map/east.gif");
 				break;
 			case 8 :
-				returner = new Image("/pics/clubs/south.gif");
+				returner = getBundle().getImage("shared/map/south.gif");
 				break;
 			case 10 :
-				returner = new Image("/pics/clubs/iceland.gif");
+				returner = getBundle().getImage("shared/map/iceland.gif");
 				break;
 		}
 		return returner;
@@ -241,7 +247,7 @@ public class ClubNavigation extends GolfBlock {
 		return returner;
 	}
 
-	public Table getLinkTable(String URI) {
+	public Table getLinkTable() {
 		int font_size = 2;
 
 		Text rvkText = new Text(getLocationName(1));
@@ -265,25 +271,25 @@ public class ClubNavigation extends GolfBlock {
 		Text otherText = new Text(getLocationName(12));
 		otherText.setFontSize(font_size);
 
-		Link rvk = new Link(rvkText, URI);
+		Link rvk = new Link(rvkText);
 		rvk.addParameter("i_golf_field_location", "" + 1);
-		Link reykjanes = new Link(reykjanesText, URI);
+		Link reykjanes = new Link(reykjanesText);
 		reykjanes.addParameter("i_golf_field_location", "" + 2);
-		Link vesturland = new Link(vesturlandText, URI);
+		Link vesturland = new Link(vesturlandText);
 		vesturland.addParameter("i_golf_field_location", "" + 3);
-		Link vesturfirdir = new Link(vestfirdirText, URI);
+		Link vesturfirdir = new Link(vestfirdirText);
 		vesturfirdir.addParameter("i_golf_field_location", "" + 4);
-		Link nordurvest = new Link(nordurvestText, URI);
+		Link nordurvest = new Link(nordurvestText);
 		nordurvest.addParameter("i_golf_field_location", "" + 5);
-		Link norduraust = new Link(norduraustText, URI);
+		Link norduraust = new Link(norduraustText);
 		norduraust.addParameter("i_golf_field_location", "" + 6);
-		Link austur = new Link(austurText, URI);
+		Link austur = new Link(austurText);
 		austur.addParameter("i_golf_field_location", "" + 7);
-		Link sudur = new Link(sudurText, URI);
+		Link sudur = new Link(sudurText);
 		sudur.addParameter("i_golf_field_location", "" + 8);
-		Link alltLand = new Link(alltLandText, URI);
+		Link alltLand = new Link(alltLandText);
 		alltLand.addParameter("i_golf_field_location", "" + 10);
-		Link other = new Link(otherText, URI);
+		Link other = new Link(otherText);
 		other.addParameter("i_golf_field_location", "" + 12);
 
 		Table outerTable = new Table(1, 1);
@@ -321,56 +327,17 @@ public class ClubNavigation extends GolfBlock {
 		table.add(" ] ", x_pos, y_pos);
 	}
 
-	public void main_before_gimmi(IWContext modinfo) throws Exception {
-
-		Table clubs = new Table();
-		clubs.setAlignment("center");
-		//clubs.setWidth("250");
-		clubs.setCellpadding(3);
-		clubs.setCellspacing(2);
-		clubs.setColor("FFFFFF");
-
-		Text clubText = new Text("Klúbbur");
-		clubText.setBold();
-		clubText.setFontColor("FFFFFF");
-		Text abbreText = new Text("Skammstöfun");
-		abbreText.setBold();
-		abbreText.setFontColor("FFFFFF");
-		Text numberText = new Text("Númer");
-		numberText.setBold();
-		numberText.setFontColor("FFFFFF");
-
-		clubs.add(clubText, 1, 1);
-
-		Union[] unions = (Union[]) ((Union) IDOLookup.instanciateEntity(Union.class)).findAllByColumnOrdered("union_type", "golf_club", "abbrevation");
-		unions[0].setVisible("union_type", false);
-
-		int rows = (unions.length / 2);
-
-		for (int a = 0; a < unions.length; a++) {
-
-			Text unionName = new Text(unions[a].getName());
-			unionName.setFontSize(1);
-
-			Text abbreviation = new Text(unions[a].getAbbrevation());
-			abbreviation.setFontSize(1);
-
-			Link unionLink = new Link(unionName, "/clubs/index2.jsp");
-			unionLink.addParameter("union_id", String.valueOf(unions[a].getID()));
-
-			if (a <= rows) {
-				clubs.add(abbreviation, 1, a + 2);
-				clubs.add(unionLink, 2, a + 2);
-			}
-			else {
-				clubs.add(abbreviation, 3, a + 1 - rows);
-				clubs.add(unionLink, 4, a + 1 - rows);
-			}
-		}
-
-		clubs.mergeCells(1, 1, 4, 1);
-		clubs.setRowColor(1, "8ab490");
-
-		add(clubs);
-	}
+  /**
+   * @return Returns the page.
+   */
+  private ICPage getPage() {
+    return this.iPage;
+  }
+  
+  /**
+   * @param page The page to set.
+   */
+  public void setClubPage(ICPage page) {
+    this.iPage = page;
+  }
 }

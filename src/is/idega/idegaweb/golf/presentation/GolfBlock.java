@@ -45,6 +45,10 @@ public abstract class GolfBlock extends Block {
 		
 		_member = getMember(modinfo);
 
+		if (modinfo.isParameterSet("union_id")) {
+		  modinfo.setSessionAttribute("golf_union_id",modinfo.getParameter("union_id"));
+		}
+
 		super._main(modinfo);
 	}
 	

@@ -72,8 +72,8 @@ public class MemberFamily extends GolfBlock {
 
 		if (modinfo.getSession().getAttribute("golf_union_id") == null) {
 			vError.addElement("Félagsnúmer");
-			modinfo.getRequest().getSession().setAttribute("error", vError);
-			modinfo.getResponse().sendRedirect("membererror.jsp");
+			//modinfo.getRequest().getSession().setAttribute("error", vError);
+			//modinfo.getResponse().sendRedirect("membererror.jsp");
 		}
 		else
 			unionId = (String) modinfo.getSession().getAttribute("golf_union_id");

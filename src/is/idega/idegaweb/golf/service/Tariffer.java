@@ -1730,7 +1730,7 @@ public class Tariffer extends PresentationObjectContainer {
 	}
 
 	public static List getExtraCatalogList(String union_id) throws SQLException {
-		return EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(AccountYear.class), "union_id", union_id, "in_use", "Y", "is_independent", "Y");
+		return EntityFinder.findAllByColumn((PriceCatalogue) IDOLookup.instanciateEntity(PriceCatalogue.class), "union_id", union_id, "in_use", "Y", "is_independent", "Y");
 	}
 
 	public PriceCatalogue[] getExtraCatalogues(String unionID) throws SQLException {

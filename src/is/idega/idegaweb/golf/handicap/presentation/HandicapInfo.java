@@ -294,7 +294,7 @@ public class HandicapInfo extends GolfBlock {
 		memberImage.setAlt(memberInfo.getName());
 		memberImage.setAlignment("absmiddle");
 
-		Image swingImage = iwb.getImage("shared/swing.gif", "", 161, 300);
+		Image swingImage = iwb.getImage("shared/handicap/swing.gif", "", 161, 300);
 
 		imageTable.add(memberImage);
 

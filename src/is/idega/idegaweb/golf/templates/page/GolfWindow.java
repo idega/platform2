@@ -12,26 +12,23 @@ import com.idega.presentation.ui.Window;
 
 public class GolfWindow extends Window {
 
+  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
+
   private Table tafla;
   
   private Class _golfClassToInstanciate = null;
 
-  //8ab490
+  private MenuBar Menu;
+
   public String header_color = "#F2BC00";
 
   public String color = "#F2BCFF";
 
-  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
-
-  protected IWResourceBundle iwrb;
-
-  protected IWBundle iwb;
-
-  private MenuBar Menu;
-
   public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
-
-  public boolean initialized = false;
+  
+  protected IWBundle iwb;
+  protected IWResourceBundle iwrb;
+  private boolean initialized;
 
   public GolfWindow() {
     super();
@@ -96,17 +93,17 @@ public class GolfWindow extends Window {
   public void add(PresentationObject objectToAdd) {
     tafla.add(objectToAdd, 1, 2);
   }
-  
+
   public void empty() {
-  	tafla.emptyCell(1,2);
+  		tafla.emptyCell(1,2);
   }
-  
+
   public void setContentHorizontalAlignment(String align) {
-  	tafla.setAlignment(1,2,align);
+    tafla.setAlignment(1, 2, align);
   }
-  
+
   public void setContentVerticalAlignment(String align) {
-  	tafla.setVerticalAlignment(1,2,align);
+    tafla.setVerticalAlignment(1, 2, align);
   }
 
   private void MenuBar() {
@@ -175,13 +172,37 @@ public class GolfWindow extends Window {
   	_golfClassToInstanciate = c;
   }
 
-  public void main(IWContext modinfo) throws Exception {
-
+  public void _main(IWContext modinfo) throws Exception {
+  		iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    if (!initialized) {
-      initTable(modinfo);
+    
+    try {
+      if (!initialized) {
+        initTable(modinfo);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    super._main(modinfo);
+  }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#clone()
+   */
+  public Object clone() {
+    GolfWindow obj = null;
+    try {
+      obj = (GolfWindow) super.clone();
+      obj.tafla = (Table) this.tafla.clone();
+      obj.Menu = (MenuBar) this.Menu.clone();
+      obj.initialized = this.initialized;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    return obj;
   }
 }

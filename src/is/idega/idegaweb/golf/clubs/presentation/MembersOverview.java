@@ -3,6 +3,9 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,16 +16,16 @@ import java.util.Locale;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Window;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
 import com.idega.util.LocaleUtil;
 import com.idega.util.text.TextSoap;
 
@@ -36,29 +39,28 @@ public class MembersOverview extends GolfBlock {
 	ResultSet RS;
 
 	public void main(IWContext modinfo) throws Exception {
-		IWBundle iwb = getBundle(modinfo);
-		IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
-		/*
-		 * java.util.Enumeration en = modinfo.getParameterNames();
-		 * while(en.hasMoreElements()){ String prm = (String) en.nextElement();
-		 * System.err.println("prm "+prm+" value "+modinfo.getParameter(prm)); }
-		 */
-
 		try {
 			Conn = getConnection();
-			createTable(modinfo, iwb, iwrb);
+			createTable(modinfo);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 		finally {
-			if (stmt != null)
+			if (stmt != null) {
 				stmt.close();
-			if (RS != null)
-				RS.close();
-			if (Conn != null)
+			}
+			if (RS != null) {
+			  try {
+			    RS.close();
+			  }
+			  catch (SQLException sql) {
+			    log(sql);
+			  }
+			}
+			if (Conn != null) {
 				freeConnection(Conn);
-
+			}
 		}
 	}
 
@@ -89,7 +91,6 @@ public class MembersOverview extends GolfBlock {
 		strSQL.append(orderBy);
 
 		stmt = Conn.createStatement();
-		// System.out.println(strSQL.toString());
 		RS = stmt.executeQuery(strSQL.toString());
 	}
 
@@ -98,18 +99,12 @@ public class MembersOverview extends GolfBlock {
 		if (orderBy != null)
 			orderBy = " order by " + orderBy;
 		StringBuffer strSQL = new StringBuffer("select count(member_id)");
-		//strSQL.append(" from
-		// member,member_address,address,union_member_info,member_info,union_member
-		// where ");
 		strSQL.append(" from member,member_address,address,union_member_info,member_info where ");
 		if (findLike.length() <= 2) {
 			strSQL.append("member.first_name like '");
 			strSQL.append(findLike);
 			strSQL.append("' and ");
 		}
-		//strSQL.append("union_member.union_id = '");
-		//strSQL.append(unionId);
-		//strSQL.append("' ");
 		strSQL.append(" union_member_info.union_id='");
 		strSQL.append(unionId);
 		strSQL.append("' ");
@@ -126,7 +121,7 @@ public class MembersOverview extends GolfBlock {
 		return RS2.getInt(1);
 	}
 
-	public void createTable(IWContext modinfo, IWBundle iwb, IWResourceBundle iwrb) throws Exception {
+	public void createTable(IWContext modinfo) throws Exception {
 		boolean admin = isAdmin();
 		Table table = null;
 		Locale locale = modinfo.getCurrentLocale();
@@ -134,10 +129,6 @@ public class MembersOverview extends GolfBlock {
 		if (locale.equals(LocaleUtil.getIcelandicLocale())) {
 			alphabet = "AÁBCDEÉFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ";
 		}
-		/*
-		 * else if(locale.equals(LocaleUtil.getSwedishLocale())){ alphabet =
-		 * "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"; }
-		 */
 		else {
 			alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		}
@@ -149,24 +140,24 @@ public class MembersOverview extends GolfBlock {
 			unionId = (String) modinfo.getSession().getAttribute("golf_union_id");
 		}
 
-		String[] colNames = null;
-		if (admin)
-			colNames = new String[]{iwrb.getLocalizedString("member.name", "Name"), iwrb.getLocalizedString("member.address", "Address"), iwrb.getLocalizedString("member.email", "Email"), iwrb.getLocalizedString("member.handicap", "Handicap"), iwrb.getLocalizedString("member.delete", "Delete"), iwrb.getLocalizedString("member.more", "More")};
+		String[] colNames = new String[]{getResourceBundle().getLocalizedString("member.name", "Name"), getResourceBundle().getLocalizedString("member.address", "Address"), getResourceBundle().getLocalizedString("member.email", "Email"), getResourceBundle().getLocalizedString("member.handicap", "Handicap")};
+		/*if (admin)
+			colNames = new String[]{getResourceBundle().getLocalizedString("member.name", "Name"), getResourceBundle().getLocalizedString("member.address", "Address"), getResourceBundle().getLocalizedString("member.email", "Email"), getResourceBundle().getLocalizedString("member.handicap", "Handicap"), getResourceBundle().getLocalizedString("member.delete", "Delete"), getResourceBundle().getLocalizedString("member.more", "More")};
 		else
-			colNames = new String[]{iwrb.getLocalizedString("member.name", "Name"), iwrb.getLocalizedString("member.address", "Address"), iwrb.getLocalizedString("member.email", "Email"), iwrb.getLocalizedString("member.handicap", "Handicap")};
-
+			colNames = new String[]{getResourceBundle().getLocalizedString("member.name", "Name"), getResourceBundle().getLocalizedString("member.address", "Address"), getResourceBundle().getLocalizedString("member.email", "Email"), getResourceBundle().getLocalizedString("member.handicap", "Handicap")};
+		*/
+		
 		Text text = null;
-		Image greittImage = new Image("/pics/clubs/members/greitt.gif");
-		Image infoImage = new Image("/pics/clubs/members/info.gif");
+		Image greittImage = getBundle().getImage("shared/clubs/members/greitt.gif");
+		Image infoImage = getBundle().getImage("shared/clubs/members/info.gif");
 		Text noHandicap = new Text("-");
 		noHandicap.setFontSize(2);
 
 		int colNum = 4;
-		//debug removed gjold
 		if (admin)
 			colNum = 6;
 
-		Text headerText = new Text(iwrb.getLocalizedString("member.members", "Members"), true, false, false);
+		Text headerText = new Text(getResourceBundle().getLocalizedString("member.members", "Members"), true, false, false);
 		headerText.setFontSize(3);
 		headerText.setFontColor("#FFFFFF");
 
@@ -179,15 +170,13 @@ public class MembersOverview extends GolfBlock {
 		else if (modinfo.isParameterSet("status"))
 			status = modinfo.getParameter("status");
 
-		getResultSetAlphabetOrderedMembersInUnion(toOrder, unionId, "first_name", status);
-
-		//int Length = getCount(toOrder, unionId, "first_name");
+		getResultSetAlphabetOrderedMembersInUnion(toOrder, unionId, "first_name, middle_name, last_name", status);
 
 		table = new Table();
 		table.setWidth("100%");
 		table.mergeCells(1, 1, colNum, 1);
 		table.mergeCells(1, 2, colNum, 2);
-		table.mergeCells(1, 3, colNum - 1, 3);
+		table.mergeCells(1, 3, colNum, 3);
 		table.setAlignment(1, 1, "left");
 		table.setAlignment(1, 3, "center");
 		table.setAlignment(colNum, 3, "right");
@@ -200,6 +189,13 @@ public class MembersOverview extends GolfBlock {
 		table.add(new HiddenInput("toOrder", toOrder));
 		table.add(new HiddenInput("status", status));
 		table.add(new HiddenInput("union_id", unionId));
+		
+		Table alphabetTable = new Table(3, 1);
+		alphabetTable.setWidth(Table.HUNDRED_PERCENT);
+		alphabetTable.setWidth(2, 1, 20);
+		alphabetTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
+		alphabetTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(alphabetTable, 1, 3);
 
 		for (int i = 0; i < alphabet.length(); i++) {
 			Character charToString = new Character(alphabet.charAt(i));
@@ -207,34 +203,28 @@ public class MembersOverview extends GolfBlock {
 			link.addParameter("toOrder", charToString.toString());
 			link.addParameter("status", status);
 			link.addParameter("union_id", unionId);
-			table.add(link, 1, 3);
-			//table.add(new
-			// Link(charToString.toString(),"members.jsp?toOrder="+java.net.URLEncoder.encode(charToString.toString())+"&union_id="+unionId),
-			// 1,2);
-			// if( i != alphabet.length())
-			table.add("-", 1, 3);
+			alphabetTable.add(link, 1, 1);
+			alphabetTable.add("-", 1, 1);
 		}
-		Link link = new Link(iwrb.getLocalizedString("member.all", "All"));
+		Link link = new Link(getResourceBundle().getLocalizedString("member.all", "All"));
 		link.addParameter("toOrder", "all");
 		link.addParameter("union_id", unionId);
 		link.addParameter("status", status);
 		table.add(link, 1, 3);
 
 		if (admin) {
-			DropdownMenu drp = statusDropdown("statusdrp", status, iwrb);
+			DropdownMenu drp = statusDropdown("statusdrp", status);
 			drp.setToSubmit();
-			table.add(drp, colNum, 3);
+			alphabetTable.add(drp, 3, 1);
 		}
-
-		//table.add(new
-		// Link(iwrb.getLocalizedString("member.all","All"),"members.jsp?toOrder=all"+"&union_id="+unionId),
-		// 1,2);
 
 		for (int i = 0; i < colNum; i++) {
 			table.setColor(i + 1, 4, "#ADCAB1");
-			text = new Text(colNames[i], true, false, false);
-			text.setFontColor("black");
-			table.add(text, i + 1, 4);
+			if (i < colNames.length) {
+				text = new Text(colNames[i]);
+				text.setBold();
+				table.add(text, i + 1, 4);
+			}
 		}
 
 		String memberId = "";
@@ -250,7 +240,6 @@ public class MembersOverview extends GolfBlock {
 
 		int i = 5;
 		while (RS.next()) {
-			//debug sía út tvöfalda membera gera þetta betur!
 			lastMember = memberId;
 			memberId = RS.getString("member_id");
 			if (!lastMember.equalsIgnoreCase(memberId)) {
@@ -284,45 +273,39 @@ public class MembersOverview extends GolfBlock {
 
 				if (admin) {
 					table.setAlignment(5, i, "center");
-					table.add(insertInfoImageLink(new Image("/pics/handicap/trash.gif"), "member_id", memberId, "/clubs/delete.jsp"), 5, i);
+					table.add(insertInfoImageLink(getBundle().getImage("shared/handicap/trash.gif"), "member_id", memberId, MemberDelete.class), 5, i);
 
 					table.setAlignment(6, i, "center");
-					table.add(insertInfoImageLink(infoImage, "member_id", memberId, "/clubs/member.jsp"), 6, i);
+					table.add(insertInfoImageLink(infoImage, "member_id", memberId, MemberEditor.class), 6, i);
 				}
 
 				i++;
 			}
 		}
-		//RS.next ends
-		//debug dirty fix
-
-		Window memberWindow = new Window(iwrb.getLocalizedString("member.new_member", "New member"), 700, 580, "/clubs/member.jsp");
-
-		memberWindow.setMenubar(false);
-		memberWindow.setResizable(true);
-		memberWindow.setTitlebar(false);
-		memberWindow.setScrollbar(true);
 
 		if (admin) {
-			table.add(new Link(iwrb.getImage("tabs/newmember1.gif"), memberWindow), 1, 1);
-			Window tarifWindow = new Window(iwrb.getLocalizedString("member.payments", "Payments"), 600, 600, "/tarif/tarif.jsp");
+		  Link newMember = new Link(getResourceBundle().getImage("tabs/newmember1.gif"));
+		  newMember.setWindowToOpen(MemberEditor.class);
+			table.add(newMember, 1, 1);
+			Window tarifWindow = new Window(getResourceBundle().getLocalizedString("member.payments", "Payments"), 600, 600, "/tarif/tarif.jsp");
 			tarifWindow.setLocation(true);
 			tarifWindow.setStatus(true);
 			tarifWindow.setResizable(true);
 
-			Link linkur = new Link(iwrb.getImage("tabs/payments1.gif"), tarifWindow);
+			Link linkur = new Link(getResourceBundle().getImage("tabs/payments1.gif"), tarifWindow);
 
-			Window listWindow = new Window(iwrb.getLocalizedString("member.lists", "Lists"), 600, 600, "/reports/index.jsp");
+			Window listWindow = new Window(getResourceBundle().getLocalizedString("member.lists", "Lists"), 600, 600, "/reports/index.jsp");
 			listWindow.setLocation(false);
 			listWindow.setStatus(true);
 			listWindow.setResizable(true);
 			listWindow.setMenubar(true);
 
-			Link linkur3 = new Link(iwrb.getImage("tabs/lists1.gif"), listWindow);
+			Link linkur3 = new Link(getResourceBundle().getImage("tabs/lists1.gif"), listWindow);
 
-			Window searchWindow = new Window("", 400, 280, "/clubs/select_member.jsp");
+			Window searchWindow = new Window("", 400, 280);
+			searchWindow.add(new MemberSearcher());
 			searchWindow.setResizable(true);
-			Image selectMemberImage = iwrb.getImage("tabs/search1.gif");
+			Image selectMemberImage = getResourceBundle().getImage("tabs/search1.gif");
 			Link selectMember = new Link(selectMemberImage, searchWindow);
 			selectMember.clearParameters();
 
@@ -335,16 +318,10 @@ public class MembersOverview extends GolfBlock {
 		add(form);
 	}
 
-	public Link insertInfoImageLink(Image image, String URLParamName, String URLParamValue, String action) {
-		Window window = new Window("Memberwindow", 690, 610, action);
-		window.setMenubar(false);
-		window.setResizable(true);
-		window.setScrollbar(true);
-		window.setTitlebar(false);
-
+	public Link insertInfoImageLink(Image image, String URLParamName, String URLParamValue, Class windowClass) {
 		image.setBorder(0);
-		Link myLink = new Link(image, window);
-		//myLink.setURL(action);
+		Link myLink = new Link(image);
+		myLink.setWindowToOpen(windowClass);
 		myLink.addParameter(URLParamName, URLParamValue);
 
 		return myLink;
@@ -354,19 +331,19 @@ public class MembersOverview extends GolfBlock {
 		Text T = new Text();
 		if (s != null) {
 			T = new Text(s);
-			T.setFontColor("#000000");
-			T.setFontSize(1);
+			//T.setFontColor("#000000");
+			//T.setFontSize(1);
 		}
 		return T;
 	}
 
-	public DropdownMenu statusDropdown(String name, String selected, IWResourceBundle iwrb) {
+	public DropdownMenu statusDropdown(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
-		drp.addMenuElement("A", iwrb.getLocalizedString("member.active", "Virkur"));
-		drp.addMenuElement("I", iwrb.getLocalizedString("member.inactive", "Óvirkur"));
-		drp.addMenuElement("W", iwrb.getLocalizedString("member.waiting", "Í bið"));
-		drp.addMenuElement("Q", iwrb.getLocalizedString("member.retired", "Hættur"));
-		drp.addMenuElement("D", iwrb.getLocalizedString("member.deceased", "Látinn"));
+		drp.addMenuElement("A", getResourceBundle().getLocalizedString("member.active", "Virkur"));
+		drp.addMenuElement("I", getResourceBundle().getLocalizedString("member.inactive", "Óvirkur"));
+		drp.addMenuElement("W", getResourceBundle().getLocalizedString("member.waiting", "Í bið"));
+		drp.addMenuElement("Q", getResourceBundle().getLocalizedString("member.retired", "Hættur"));
+		drp.addMenuElement("D", getResourceBundle().getLocalizedString("member.deceased", "Látinn"));
 		drp.setSelectedElement(selected);
 		return drp;
 	}

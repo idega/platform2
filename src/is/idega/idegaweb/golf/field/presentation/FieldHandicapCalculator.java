@@ -86,7 +86,7 @@ public class FieldHandicapCalculator extends GolfBlock {
 			gender = member.getGender();
 		}
 
-		Form myForm = new Form("/clubs/field2.jsp", "get");
+		Form myForm = new Form();
 		myForm.add(new HiddenInput("field_id", field_id));
 
 		DropdownMenu tees = new DropdownMenu("tee_color_id");

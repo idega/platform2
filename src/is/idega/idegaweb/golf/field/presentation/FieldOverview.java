@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.entity.TeeImage;
+import is.idega.idegaweb.golf.handicap.presentation.HandicapTable;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -28,6 +30,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
@@ -36,8 +39,8 @@ import com.idega.presentation.ui.Window;
  * @author laddi
  */
 public class FieldOverview extends GolfBlock {
-
-	String field_admin_url = "/field/index.jsp";
+  
+  private ICPage gameHandicapPage;
 
 	public void main(IWContext modinfo) throws Exception {
 		String union_id = modinfo.getParameter("union_id");
@@ -68,13 +71,12 @@ public class FieldOverview extends GolfBlock {
 		}
 
 		if (isAdmin()) {
-			Window gluggi = new Window("Vallarstjórinn", 1000, 600, field_admin_url);
-			Form form = new Form(gluggi);
-			//                        Form form = new Form("/field/index.jsp");
+			Form form = new Form();
+			form.setWindowToOpen(FieldEditor.class);
 			form.add(new HiddenInput("field_id", field_id + ""));
 			form.add(new HiddenInput("union_id", union_id));
-			form.add(new HiddenInput("redir", "Brautastjórinn"));
-			form.add(new SubmitButton(new Image("/pics/formtakks/brautarstjorinn.gif", "", 145, 19)));
+			form.add(new HiddenInput("redir", getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
+			form.add(new SubmitButton(getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
 			add(form);
 		}
 
@@ -148,7 +150,7 @@ public class FieldOverview extends GolfBlock {
 					holeNumber.setFontSize(1);
 					holeNumber.setFontColor("FFFFFF");
 
-					Link holeView = new Link(holeNumber, "/clubs/field.jsp");
+					Link holeView = new Link(holeNumber);
 					holeView.setFontColor("#FFFFFF");
 					holeView.addParameter("field_id", field_id);
 					holeView.addParameter("hole_number", tee[b].getStringColumnValue("hole_number"));
@@ -173,11 +175,11 @@ public class FieldOverview extends GolfBlock {
 				}
 
 				if (b + 1 == tee.length) {
-					Text holeText = new Text("Hola&nbsp;");
+					Text holeText = new Text(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE);
 					holeText.setFontSize(1);
 					holeText.setFontColor("FFFFFF");
 
-					Text totalText = new Text("Total");
+					Text totalText = new Text(getResourceBundle().getLocalizedString("field.total", "Total"));
 					totalText.setFontSize(1);
 					totalText.setFontColor("FFFFFF");
 
@@ -191,15 +193,15 @@ public class FieldOverview extends GolfBlock {
 					totalPar.setFontSize(1);
 					totalPar.setFontColor("FFFFFF");
 
-					Text ratingText = new Text("CR/Slope");
+					Text ratingText = new Text(getResourceBundle().getLocalizedString("field.cr_slope", "CR/Slope"));
 					ratingText.setFontSize(1);
 					ratingText.setFontColor("FFFFFF");
 
-					Text parText2 = new Text("Par&nbsp;");
+					Text parText2 = new Text(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
 					parText2.setFontSize(1);
 					parText2.setFontColor("FFFFFF");
 
-					Text handicap = new Text("Forgjöf&nbsp;");
+					Text handicap = new Text(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
 					handicap.setFontSize(1);
 					handicap.setFontColor("FFFFFF");
 
@@ -258,21 +260,11 @@ public class FieldOverview extends GolfBlock {
 		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
 
 		if (fieldImage.length != 0) {
-
 			Image fieldMynd = new Image(fieldImage[0].getImageId());
 			fieldMynd.setVerticalSpacing(6);
 			fieldMynd.setHorizontalSpacing(6);
 
 			contentTable.add(fieldMynd, 1, 2);
-
-		}
-
-		else {
-
-			//			Text fieldMynd = new Text("No picture entry in database...");
-
-			//			contentTable.add(fieldMynd,1,2);
-
 		}
 
 		TextReader fieldText = null;
@@ -281,7 +273,6 @@ public class FieldOverview extends GolfBlock {
 			fieldText = new TextReader("" + hole_text[0].getTextId());
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
-
 		}
 
 		contentTable.setCellpadding(0);
@@ -300,20 +291,25 @@ public class FieldOverview extends GolfBlock {
 		contentTable.add(myTable, 1, row);
 		row++;
 
-		Link handicapTables = new Link(new Image("/pics/formtakks/handicap_table.gif", "", 145, 19), "/handicap/handicap_table.jsp");
-		//Link handicapTables = new Link(new
-		// Flash("http://jgenerator.sidan.is/takki1.swt?type=gif&texti=FORGJAFARTÖFLUR","",145,19),"/handicap/handicap_table.jsp");
-		handicapTables.addParameter("field_id", field_id);
-		handicapTables.setTarget("_blank");
-		Link gameHandicaps = new Link(new Image("/pics/formtakks/reiknalf.gif", "", 145, 19), "/clubs/field2.jsp");
-		gameHandicaps.addParameter("field_id", field_id);
+		GenericButton handicapTables = new GenericButton("handicap_tables", getResourceBundle().getLocalizedString("field.handicap_tables", "Handicap tables"));
+		handicapTables.addParameterToPage("field_id", field_id);
+		handicapTables.setWindowToOpen(HandicapTable.class);
 
 		Table formTable = new Table();
 		formTable.setAlignment(2, 1, "right");
 		formTable.setWidth("100%");
 
 		formTable.add(handicapTables, 1, 1);
-		formTable.add(gameHandicaps, 2, 1);
+
+		if (gameHandicapPage != null) {
+		  GenericButton gameHandicaps = new GenericButton("game_handicap", getResourceBundle().getLocalizedString("field.game_handicap", "Game handicap"));
+			gameHandicaps.addParameterToPage("field_id", field_id);
+			gameHandicaps.setPageToOpen(gameHandicapPage);
+			formTable.add(gameHandicaps, 2, 1);
+		}
+		else {
+		  formTable.add("Game handicap page not set...");
+		}
 
 		contentTable.add(formTable, 1, row);
 
@@ -321,7 +317,7 @@ public class FieldOverview extends GolfBlock {
 
 	public Form getHoleChooser(String field_id) throws IOException {
 
-		Form myForm = new Form("/clubs/field.jsp");
+		Form myForm = new Form();
 		myForm.add(new HiddenInput("field_id", field_id));
 
 		DropdownMenu holeChooser = new DropdownMenu("hole_number");
@@ -335,10 +331,10 @@ public class FieldOverview extends GolfBlock {
 		Table myTable = new Table();
 		myTable.setAlignment("right");
 
-		Text holeText = new Text("Veldu holu:");
+		Text holeText = new Text(getResourceBundle().getLocalizedString("field.select_hole", "Select hole"));
 		holeText.setBold();
 
-		SubmitButton senda = new SubmitButton(new Image("/pics/formtakks/saekja.gif", "", 76, 19));
+		SubmitButton senda = new SubmitButton(getResourceBundle().getLocalizedString("field.get_hole", "Get"));
 
 		myTable.add(holeText, 1, 1);
 		myTable.add(holeChooser, 2, 1);
@@ -371,7 +367,7 @@ public class FieldOverview extends GolfBlock {
 				parText.setBold();
 				parText.setFontSize(4);
 
-				Text handicapText = new Text("Forgjöf " + ((int) tee[a].getFloatColumnValue("handicap")));
+				Text handicapText = new Text(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE + ((int) tee[a].getFloatColumnValue("handicap")));
 				handicapText.setBold();
 				handicapText.setFontSize(4);
 
@@ -390,15 +386,8 @@ public class FieldOverview extends GolfBlock {
 			myTable.setColor(a + 3, 1, getTeeColor(tee[a].getIntColumnValue("tee_color_id")));
 		}
 
-		if (tee.length == 0) {
-
-			//			myTable.setColor(1,1,"FFFFFF");
-			//			myTable.addText("No entries in database...",1,1);
-
-		}
-
-		else {
-			Text holeText = new Text(hole_number + ". hola");
+		if (tee.length > 0) {
+			Text holeText = new Text(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE + hole_number);
 			holeText.setBold();
 			holeText.setFontSize(6);
 
@@ -408,7 +397,7 @@ public class FieldOverview extends GolfBlock {
 
 			if (tee[0].getStringColumnValue("hole_name") != null) {
 
-				holeName.setText("&nbsp&nbsp" + tee[0].getStringColumnValue("hole_name"));
+				holeName.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + tee[0].getStringColumnValue("hole_name"));
 			}
 
 			outerTable.add(holeText, 1, row);
@@ -423,14 +412,6 @@ public class FieldOverview extends GolfBlock {
 			Image teeMynd = new Image(teeImage[0].getImageId());
 
 			outerTable.add(teeMynd, 1, row);
-
-		}
-
-		else {
-
-			//			Text teeMynd = new Text("No picture entry in database...");
-
-			//			outerTable.add(teeMynd,1,2);
 
 		}
 
@@ -459,14 +440,14 @@ public class FieldOverview extends GolfBlock {
 		linksTable.setWidth(2, "33%");
 		linksTable.setWidth(3, "33%");
 
-		Link backHole = new Link("<<&nbsp;Fyrri&nbsp;hola", "/clubs/field.jsp");
+		Link backHole = new Link(getResourceBundle().getLocalizedString("field.previous_hole", "&lt;&lt;&nbsp;Previous&nbsp;hole"));
 		backHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) - 1));
 		backHole.addParameter("field_id", field_id);
 
-		Link courseOverview = new Link("-&nbsp;Vallaryfirlit&nbsp;-", "/clubs/field.jsp");
+		Link courseOverview = new Link(getResourceBundle().getLocalizedString("field.field_overview", "-&nbsp;Field&nbsp;overview&nbsp;-"));
 		courseOverview.addParameter("field_id", field_id);
 
-		Link nextHole = new Link("Næsta&nbsp;hola&nbsp;>>", "/clubs/field.jsp");
+		Link nextHole = new Link(getResourceBundle().getLocalizedString("field.next_hole", "Next&nbsp;hole&nbsp;&gt;&gt;"));
 		nextHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) + 1));
 		nextHole.addParameter("field_id", field_id);
 
@@ -499,4 +480,10 @@ public class FieldOverview extends GolfBlock {
 		return nyForgjof2;
 
 	}
+  /**
+   * @param gameHandicapPage The gameHandicapPage to set.
+   */
+  public void setGameHandicapPage(ICPage gameHandicapPage) {
+    this.gameHandicapPage = gameHandicapPage;
+  }
 }
