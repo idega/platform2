@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareConstants.java,v 1.1 2004/09/09 13:25:20 aron Exp $
+ * $Id: ChildCareConstants.java,v 1.2 2004/10/04 17:06:39 thomas Exp $
  * Created on 9.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,10 +11,10 @@ package se.idega.idegaweb.commune.childcare.business;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/09 13:25:20 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/04 17:06:39 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareConstants {
     public final static char STATUS_ACCEPTED = 'C';
@@ -33,4 +33,9 @@ public class ChildCareConstants {
 	public final static char STATUS_TIMED_OUT = 'S';
 	
 	public final static String CLEAN_QUEUE_RUNNING = "clean_queue_running";
+	
+	// case code keys
+	public final static String CASE_CODE_KEY = "MBANBOP";
+	public final static String AFTER_SCHOOL_CASE_CODE_KEY = "MBFRITV";
+
 }
