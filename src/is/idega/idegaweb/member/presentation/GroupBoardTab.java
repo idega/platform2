@@ -111,6 +111,7 @@ public class GroupBoardTab extends UserGroupTab {
 				_ssn3Field.setSelectedUser(ssn3,user3.getName());
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 		}
 		
 	}

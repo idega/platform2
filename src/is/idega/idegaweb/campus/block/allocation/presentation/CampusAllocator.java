@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.44 2002/09/30 16:45:45 aron Exp $
+ * $Id: CampusAllocator.java,v 1.45 2003/04/07 11:20:46 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -475,10 +475,11 @@ public class CampusAllocator extends Block implements Campus {
 					Applicant A = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
 
 					Application app = CampusApplicationFinder.getLastApprovedApplication(A);
-					if (app.getSubjectId() == 14)
-						TextFontColor = "#00CC00";
-					else
-						TextFontColor = TempColor;
+					TextFontColor = TempColor;
+						
+					if (WL.getType().equals("T")) {
+						TextFontColor = "#0000CC";
+					}
 
 					Frame.add(formatText(numberOnList), col++, row);
 					numberOnList++;

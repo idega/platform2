@@ -45,6 +45,13 @@ public java.util.Collection findByApartmentTypeAndComplexForApplicationType(int 
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findNextForTransferByApartmentTypeAndComplex(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WaitingListBMPBean)entity).ejbFindNextForTransferByApartmentTypeAndComplex(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public WaitingList findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WaitingList) super.findByPrimaryKeyIDO(pk);
  }

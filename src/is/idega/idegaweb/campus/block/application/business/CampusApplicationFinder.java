@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.13 2002/09/01 23:38:08 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.14 2003/04/07 11:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,6 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.data.SimpleQuerier;
 
 /**
  *
@@ -658,5 +657,80 @@ public abstract class CampusApplicationFinder {
     }
 				
 		return table;
+	}
+
+	public static int findMaxTransferInWaitingList(int typeId, int cmplxId) {
+		StringBuffer sql = new StringBuffer("select max(app.ordered) ");
+		sql.append(" from cam_waiting_list app ");
+		sql.append(" where app.bu_apartment_type_id = ");
+		sql.append(typeId);
+		sql.append(" and app.bu_complex_id =");
+		sql.append(cmplxId);
+		sql.append(" and app.list_type = 'T'");
+
+		int maxId = 0;
+		try {
+			maxId = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome) com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy().getNumberOfRecords(sql.toString());
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		if (maxId < 0)
+			maxId = 0;
+		return maxId;
+	}
+
+//	public static int findNextTransferInWaitingList(int typeId, int cmplxId, int from) {
+//		StringBuffer sql = new StringBuffer("select max(app.ordered) ");
+//		sql.append(" from cam_applied app ");
+//		sql.append(" where app.bu_aprt_type_id = ");
+//		sql.append(typeId);
+//		sql.append(" and app.bu_complex_id =");
+//		sql.append(cmplxId);
+//		sql.append(" and app.list_type = 'T'");
+//
+//		int maxId = 0;
+//		try {
+//			maxId = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome) com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy().getNumberOfRecords(sql.toString());
+//		}
+//		catch (SQLException ex) {
+//			ex.printStackTrace();
+//		}
+//
+//		if (maxId < 0)
+//			maxId = 0;
+//		return maxId;
+//	}
+
+	protected static java.util.Collection nextForTransfer(int aprtTypeId, int cmplxId, int orderedFrom) {
+		try {
+			is.idega.idegaweb.campus.block.application.data.WaitingListHome WLHome = (is.idega.idegaweb.campus.block.application.data.WaitingListHome) com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class);
+			return WLHome.findNextForTransferByApartmentTypeAndComplex(aprtTypeId, cmplxId, orderedFrom);
+		}
+		catch (Exception e) {
+			return (null);
+		}
+	}
+	
+	public static WaitingList findRightPlaceForTransfer(WaitingList wl) {
+		
+		int cmplx = wl.getComplexId().intValue();
+		int aprttype = wl.getApartmentTypeId().intValue();
+		
+		int lastTransfer = findMaxTransferInWaitingList(aprttype,cmplx);
+
+		java.util.Collection transfers = nextForTransfer(aprttype,cmplx,lastTransfer);
+		
+		if (transfers.size() > 4) {
+			java.util.Iterator it = transfers.iterator();
+			WaitingList wl2 = null;
+			for (int i = 0; i < 4; i++)
+				wl2 = (WaitingList)it.next();
+				
+			wl.setOrder(wl2.getOrder());
+		}
+
+		return wl;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.16 2002/09/04 23:00:48 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.17 2003/04/07 11:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -209,17 +209,20 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 					Table container = new Table();
 					Table appliedTable = new Table();
 					appliedTable.setBorder(1);
-					appliedTable.setColumns(3);
+					appliedTable.setColumns(4);
 
 					Text appliedText1 = new Text(_iwrb.getLocalizedString("appAppliedHeader", "Applied for"));
 					Text appliedText2 = new Text(_iwrb.getLocalizedString("appPositionOnList", "# on list"));
 					Text appliedText3 = new Text(_iwrb.getLocalizedString("appStayOnList", "Stay on list"));
+					Text appliedText4 = new Text(_iwrb.getLocalizedString("lastConfirmation", "Last confirmation"));
 					appliedText1.setBold();
 					appliedText2.setBold();
 					appliedText3.setBold();
+					appliedText4.setBold();
 					appliedTable.add(appliedText1, 1, 1);
 					appliedTable.add(appliedText2, 2, 1);
 					appliedTable.add(appliedText3, 3, 1);
+					appliedTable.add(appliedText4, 4, 1);
 
 					int pos = 1;
 					Iterator it = choices.iterator();
@@ -255,6 +258,8 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 							check.setChecked(true);
 							appliedTable.add(check, 3, pos);
 							appliedTable.setAlignment(3, pos, "center");
+							
+							appliedTable.add(wait.getLastConfirmationDate().toString(),4,pos);
 						}
 					}
 

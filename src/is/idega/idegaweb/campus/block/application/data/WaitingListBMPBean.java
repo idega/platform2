@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.5 2002/06/10 12:18:58 laddi Exp $
+ * $Id: WaitingListBMPBean.java,v 1.6 2003/04/07 11:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -325,4 +325,27 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
 
     return super.idoFindIDsBySQL(sql.toString());
   }
+  
+	public Collection ejbFindNextForTransferByApartmentTypeAndComplex(int aprtId, int complexId, int orderedFrom) throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getTableName());
+		sql.append(" where ");
+		sql.append(getApartmentTypeIdColumnName());
+		sql.append(" = ");
+		sql.append(aprtId);
+		sql.append(" and ");
+		sql.append(getComplexIdColumnName());
+		sql.append(" = ");
+		sql.append(complexId);
+		sql.append(" and ");
+		sql.append(getPriorityColumnName());
+		sql.append(" = 'C' and ");
+		sql.append(getOrderColumnName());
+		sql.append(" > ");
+		sql.append(orderedFrom);
+		sql.append(" order by ");
+		sql.append(getOrderColumnName());
+
+		return super.idoFindIDsBySQL(sql.toString());
+	}  
 }
