@@ -3,7 +3,11 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.data.School;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.SelectDropdownDouble;
 
 /**
@@ -29,28 +33,26 @@ public class ProviderDropdownDouble extends SelectDropdownDouble {
 	/**
 	 * @see com.idega.presentation.ui.SelectDropdownDouble#getValue(java.lang.Object)
 	 */
-	protected String getValue(Object value) {
-		try {
-			if (value instanceof School) {
-				School school = (School) value;
-				return school.getSchoolName();
-			}
-			return (String) value;
+	protected String getValue(IWContext iwc, Object value) {
+		if (value instanceof School) {
+			School school = (School) value;
+			return school.getSchoolName();
 		}
-		catch (ClassCastException e) {
-			return (String) value;
+		else {
+			IWResourceBundle iwrb = iwc.getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+			return iwrb.getLocalizedString("child_care.select_provider","Select provider...");
 		}
 	}
 
 	/**
 	 * @see com.idega.presentation.ui.SelectDropdownDouble#getKey(java.lang.Object)
 	 */
-	protected String getKey(Object key) {
-		try {
+	protected String getKey(IWContext iwc, Object key) {
+		if (key instanceof School) {
 			School school = (School) key;
 			return school.getPrimaryKey().toString();
 		}
-		catch (ClassCastException e) {
+		else {
 			return (String) key;
 		}
 	}
