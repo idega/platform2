@@ -104,7 +104,7 @@ public class IFSFileCreationThread extends Thread {
 
     private HSSFCellStyle styleItalicUnderlineAlignRight = null;
 
-    private float inCommuneSum = 0;
+    private long inCommuneSum = 0;
 
     private NumberFormat numberFormat = null;
 
@@ -422,8 +422,7 @@ public class IFSFileCreationThread extends Thread {
         try {
             createPaymentSigningFilesExcel(phAll, fileName5 + ".xls",
                     "Utbetalningsattestlista " + localizedSchoolCategoryName
-                            + ", " + executionDate.getDateString("yyyy-MM-dd"),
-                    true);
+                            + ", " + executionDate.getDateString("yyyy-MM-dd"));
         } catch (IOException e3) {
             e3.printStackTrace();
         } catch (FinderException e3) {
@@ -705,7 +704,7 @@ public class IFSFileCreationThread extends Thread {
                     Iterator prIt = rec.iterator();
                     Iterator sumIt = rec.iterator();
 
-                    float sum = 0;
+                    long sum = 0;
                     while (sumIt.hasNext()) {
                         PaymentRecord r = (PaymentRecord) sumIt.next();
                         sum += AccountingUtil.roundAmount(r.getTotalAmount());
@@ -1629,8 +1628,8 @@ public class IFSFileCreationThread extends Thread {
             HSSFSheet sheet = wb.getSheet("Excel");
             short rowNumber = (short) (sheet.getLastRowNum() + 1);
             short cellNumber = 0;
-            float totalAmount = 0;
-            float recordAmount;
+            long totalAmount = 0;
+            long recordAmount;
             boolean invoiceHeaderDeviations;
             Iterator it = data.iterator();
             createStyleAlignRight();
@@ -1643,10 +1642,10 @@ public class IFSFileCreationThread extends Thread {
                         .getHome(InvoiceRecord.class))
                         .findByInvoiceHeader(iHead));
                 if (!iRecs.isEmpty()) {
-                    int headerSum = 0;
+                    long headerSum = 0;
                     invoiceHeaderDeviations = false;
                     for (int i = 0; i < iRecs.size(); i++)
-                        headerSum += ((InvoiceRecord) iRecs.get(i)).getAmount();
+                        headerSum += AccountingUtil.roundAmount(((InvoiceRecord) iRecs.get(i)).getAmount());
                     if (headerSum < 0) {
                         setDeviationString("Total belopp från faktura huvud är negativt");
                         invoiceHeaderDeviations = true;
@@ -1751,8 +1750,8 @@ public class IFSFileCreationThread extends Thread {
             //		    header.setLeft(headerText);
             //			header.setRight("Sida "+HSSFHeader.page());
             //			sheet.getPrintSetup().setLandscape(true);
-            float totalAmount = 0;
-            float amount;
+            long totalAmount = 0;
+            long amount;
             PostingBusiness pb = getIFSBusiness().getPostingBusiness();
             Iterator it = data.iterator();
             int numberOfRecords = 0;
@@ -1761,7 +1760,7 @@ public class IFSFileCreationThread extends Thread {
                 PaymentRecord pRec = (PaymentRecord) it.next();
                 School school = pRec.getPaymentHeader().getSchool();
                 if (pRec.getTotalAmount() != 0.0f) {
-                    amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
+                	amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
                     totalAmount += amount;
                     if (fileType == FILE_TYPE_OWN_POSTING
                             || fileType == FILE_TYPE_DOUBLE_POSTING) {
@@ -1779,6 +1778,8 @@ public class IFSFileCreationThread extends Thread {
                     }
                 }
             }
+            if (fileType == FILE_TYPE_KOMMUN)
+            	setInCommuneSum(totalAmount);
             sheet
                     .createRow(rowNumber += 2)
                     .createCell(row.getFirstCellNum())
@@ -1793,7 +1794,7 @@ public class IFSFileCreationThread extends Thread {
     }
 
     private short createPaymentLine(String[] columnNames, HSSFSheet sheet,
-            short rowNumber, float amount, PostingBusiness pb,
+            short rowNumber, long amount, PostingBusiness pb,
             PaymentRecord pRec, School school, String postingString,
             int fileType) throws RemoteException {
         short cellNumber = 0;
@@ -1882,7 +1883,7 @@ public class IFSFileCreationThread extends Thread {
     }
 
     private void createPaymentSigningFilesExcel(Collection data,
-            String fileName, String headerText, boolean signingFooter)
+            String fileName, String headerText)
             throws IOException, FinderException {
         if (data != null && !data.isEmpty()) {
             int[] columnWidths = { 25, 35, 12, 12};
@@ -1971,32 +1972,26 @@ public class IFSFileCreationThread extends Thread {
             rowNumber++;
             row = sheet.createRow(rowNumber++);
             cell = row.createCell(cellNumber -= 3);
-            if (!signingFooter) {
-                setInCommuneSum(totalAmount);
-            } else {
-                cell.setCellValue("Summa från egna kommunala anordnare");
-                cell = row.createCell(cellNumber += 3);
-                cell.setCellValue(getNumberFormat().format(getInCommuneSum()));
-                cell.setCellStyle(getStyleAlignRight());
-                row = sheet.createRow(rowNumber++);
-                cell = row.createCell(cellNumber -= 3);
-                cell.setCellValue("Summa från övriga anordnare");
-                cell = row.createCell(cellNumber += 3);
-                cell.setCellValue(getNumberFormat().format(
-                        totalAmount - getInCommuneSum()));
-                cell.setCellStyle(getStyleAlignRight());
-                row = sheet.createRow(rowNumber++);
-                cell = row.createCell(cellNumber -= 3);
-            }
+            cell.setCellValue("Summa från egna kommunala anordnare");
+            cell = row.createCell(cellNumber += 3);
+            cell.setCellValue(getNumberFormat().format(getInCommuneSum()));
+            cell.setCellStyle(getStyleAlignRight());
+            row = sheet.createRow(rowNumber++);
+            cell = row.createCell(cellNumber -= 3);
+            cell.setCellValue("Summa från övriga anordnare");
+            cell = row.createCell(cellNumber += 3);
+            cell.setCellValue(getNumberFormat().format(
+                    totalAmount - getInCommuneSum()));
+            cell.setCellStyle(getStyleAlignRight());
+            row = sheet.createRow(rowNumber++);
+            cell = row.createCell(cellNumber -= 3);
             cell.setCellValue("Bruttosumma att utbetala");
             cell.setCellStyle(getStyleBold());
             cell = row.createCell(cellNumber += 3);
             cell.setCellValue(getNumberFormat().format(totalAmount));
             cell.setCellStyle(getStyleBoldAlignRight());
 
-            if (signingFooter) {
-                createSigningFooter(sheet, rowNumber);
-            }
+            createSigningFooter(sheet, rowNumber);
             saveExcelWorkBook(fileName, wb);
         }
     }
@@ -2178,12 +2173,12 @@ public class IFSFileCreationThread extends Thread {
         return styleItalicUnderlineAlignRight;
     }
 
-    private float getInCommuneSum() {
-        return inCommuneSum;
+    private long getInCommuneSum() {
+    	return inCommuneSum;
     }
 
-    private void setInCommuneSum(float inCommuneSum) {
-        this.inCommuneSum = inCommuneSum;
+    private void setInCommuneSum(long inCommuneSum) {
+    	this.inCommuneSum = inCommuneSum;
     }
 
 }
