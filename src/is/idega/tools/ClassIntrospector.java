@@ -75,37 +75,37 @@ public class ClassIntrospector {
         //}
         String methodName = m.getName();
         //System.out.println("methodName: "+methodName);
-        if(methodName.equals(this.INITIALIZE_ATTRIBUTES)){
+        if(methodName.equals(INITIALIZE_ATTRIBUTES)){
           //v.add(m);
         }
-        else if(methodName.equals(this.SET_DEFAULT_VALUES)){
+        else if(methodName.equals(SET_DEFAULT_VALUES)){
           //v.add(m);
         }
-        else if(methodName.equals(this.INSERT_START_DATA)){
+        else if(methodName.equals(INSERT_START_DATA)){
           //v.add(m);
         }
-        else if(methodName.equals(this.GET_ENTITY_NAME)){
+        else if(methodName.equals(GET_ENTITY_NAME)){
           //v.add(m);
         }
-        else if(methodName.equals(this.UPDATE)){
+        else if(methodName.equals(UPDATE)){
           //v.add(m);
         }
-        else if(methodName.equals(this.DELETE)){
+        else if(methodName.equals(DELETE)){
           //v.add(m);
         }
-        else if(methodName.equals(this.INSERT)){
+        else if(methodName.equals(INSERT)){
           //v.add(m);
         }
-        else if(methodName.equals(this.REMOVE)){
+        else if(methodName.equals(REMOVE)){
           //v.add(m);
         }
-        else if(methodName.equals(this.GET_NAME_OF_MIDDLE_TABLE)){
+        else if(methodName.equals(GET_NAME_OF_MIDDLE_TABLE)){
           //v.add(m);
         }
-        else if(methodName.equals(this.GET_ID_COLUMN_NAME)){
+        else if(methodName.equals(GET_ID_COLUMN_NAME)){
         	//v.add(m);
         }
-        else if(methodName.startsWith(this.EJB_START)){
+        else if(methodName.startsWith(EJB_START)){
           //v.add(m);
         }
         else{
@@ -136,7 +136,7 @@ public class ClassIntrospector {
 
 
   String getPostCreateMethodName(String ejbCreateMethodName){
-      return EJB_POST_CREATE_START+ejbCreateMethodName.substring(this.EJB_CREATE_START.length());
+      return EJB_POST_CREATE_START+ejbCreateMethodName.substring(EJB_CREATE_START.length());
   }
 
   public String[] getCreateMethods(){
@@ -173,15 +173,15 @@ public class ClassIntrospector {
 
       String realMethodName = thisMethod.getName();
       String methodName = realMethodName;
-      if(realMethodName.startsWith(this.EJB_FIND_START)){
+      if(realMethodName.startsWith(EJB_FIND_START)){
         methodName = "find"+realMethodName.substring(EJB_FIND_START.length());
         returnType = this.getReturnTypeTranslated(returnTypeClass);
       }
-      else if(realMethodName.startsWith(this.EJB_HOME_START)){
+      else if(realMethodName.startsWith(EJB_HOME_START)){
         String firstChar = realMethodName.substring(EJB_HOME_START.length(),EJB_HOME_START.length()+1);
         methodName = firstChar.toLowerCase()+realMethodName.substring(EJB_HOME_START.length()+1,realMethodName.length());
       }
-      else if(realMethodName.startsWith(this.EJB_CREATE_START)){
+      else if(realMethodName.startsWith(EJB_CREATE_START)){
         methodName = "create"+realMethodName.substring(EJB_CREATE_START.length());
         returnType = this.getReturnTypeTranslated(returnTypeClass);
       }
@@ -320,15 +320,15 @@ public class ClassIntrospector {
 
 
   Method[] getFinderMethodsArray(){
-    return this.getMethodsStartingWith(this.EJB_FIND_START);
+    return this.getMethodsStartingWith(EJB_FIND_START);
   }
 
   Method[] getHomeMethodsArray(){
-    return this.getMethodsStartingWith(this.EJB_HOME_START);
+    return this.getMethodsStartingWith(EJB_HOME_START);
   }
 
   Method[] getCreateMethodsArray(){
-    return this.getMethodsStartingWith(this.EJB_CREATE_START);
+    return this.getMethodsStartingWith(EJB_CREATE_START);
   }
 
 
