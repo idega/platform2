@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.16 2003/04/16 11:29:04 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.17 2003/04/16 11:35:51 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -444,10 +444,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Collection applications = null;
 
 		try {
-			String childId = (String) iwc.getSessionAttribute(CHILD_ID);
-			if (childId == null){
-				childId = iwc.getParameter(CHILD_ID);
+			String childId = iwc.getParameter(CHILD_ID);			
+
+			if (childId != null){
 				iwc.setSessionAttribute(CHILD_ID, childId);
+			} else {
+				childId = (String) iwc.getSessionAttribute(CHILD_ID);
 			}
 			
 			applications = getChildCareBusiness(iwc).getApplicationsForChild(Integer.parseInt(childId));
