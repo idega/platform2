@@ -18,10 +18,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.CreateException;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntries;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.FileUtil;
@@ -294,25 +296,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 					logText.append("\nAction Code = " + returnedCaptureProperties.get(PROPERTY_ACTION_CODE).toString());
 
 					try {
-
-						KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
-						KortathjonustanAuthorisationEntries auth = authHome.create();
-
 						String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
-
-						auth.setAmount(Double.parseDouble(strAmount));
-						auth.setAuthorizationCode(authCode);
-						auth.setBrandName(returnedCaptureProperties.get(PROPERTY_CARD_BRAND_NAME).toString());
-						auth.setCardExpires(monthExpires+yearExpires);
-						//auth.setCardExpires(strCCExpire);
-						auth.setCardNumber(tmpCardNum);
-						auth.setCurrency(currency);
-						auth.setDate(stamp.getDate());
-						auth.setErrorNumber(returnedCaptureProperties.get(PROPERTY_ERROR_CODE).toString());
-						auth.setErrorText(returnedCaptureProperties.get(PROPERTY_ERROR_TEXT).toString());
-						auth.setTransactionType(KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
-						auth.setServerResponse(returnedCaptureProperties.get(PROPERTY_TOTAL_RESPONSE).toString());
-						auth.store();
+						this.storeAuthorizationEntry(tmpCardNum, null, returnedCaptureProperties, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
 
 						logger.info(logText.toString());
 
@@ -354,32 +339,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 			logText.append("\nRefund successful").append("\nAuthorization Code = " + authCode);
 			logText.append("\nAction Code = " + properties.get(PROPERTY_ACTION_CODE).toString());
 			try {
-				KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
-				KortathjonustanAuthorisationEntries auth = authHome.create();
-
 				String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
-
-				auth.setAmount(Double.parseDouble(strAmount));
-				auth.setAuthorizationCode(authCode);
-				auth.setBrandName(null);
-				auth.setCardExpires(monthExpires+yearExpires);
-				auth.setCardNumber(tmpCardNum);
-				auth.setCurrency(currency);
-				auth.setDate(stamp.getDate());
-				auth.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
-				auth.setErrorText(properties.get(PROPERTY_ERROR_TEXT).toString());
-				auth.setTransactionType(KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_REFUND);
-				auth.setServerResponse(properties.get(PROPERTY_TOTAL_RESPONSE).toString());
-				if (parentDataPK != null) {
-					try {
-						auth.setParentID(((Integer) parentDataPK).intValue());
-					}
-					catch (Exception e) {
-						System.out.println("KortathjonustanCCCleint : could not set parentID : " + parentDataPK);
-					}
-				}
-				auth.store();
-
+				storeAuthorizationEntry(tmpCardNum, parentDataPK, properties, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_REFUND);
 				logger.info(logText.toString());
 
 			}
@@ -410,8 +371,50 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 
 	}
 
+	/**
+	 * @param cardnumber
+	 * @param parentDataPK
+	 * @param properties
+	 * @throws IDOLookupException
+	 * @throws CreateException
+	 */
+	private void storeAuthorizationEntry(String encodedCardnumber, Object parentDataPK, Hashtable properties, String authorizationType) throws IDOLookupException, CreateException {
+		KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
+		KortathjonustanAuthorisationEntries auth = authHome.create();
+
+		if (properties.contains(PROPERTY_AMOUNT))
+			auth.setAmount(Double.parseDouble(properties.get(PROPERTY_AMOUNT).toString()));//Double.parseDouble(strAmount));
+		if (properties.contains(PROPERTY_APPROVAL_CODE))
+			auth.setAuthorizationCode(properties.get(PROPERTY_APPROVAL_CODE).toString());//authCode);
+		if (properties.contains(PROPERTY_CARD_BRAND_NAME))
+			auth.setBrandName(null);
+		if (properties.contains(PROPERTY_CC_EXPIRE))
+			auth.setCardExpires(properties.get(PROPERTY_CC_EXPIRE).toString());//monthExpires+yearExpires);
+		if (properties.contains(PROPERTY_CURRENCY_CODE))
+			auth.setCurrency(properties.get(PROPERTY_CURRENCY_CODE).toString());//currency);
+		if (properties.contains(PROPERTY_ERROR_CODE))
+			auth.setErrorNumber(properties.get(PROPERTY_ERROR_CODE).toString());
+		if (properties.contains(PROPERTY_ERROR_TEXT))
+			auth.setErrorText(properties.get(PROPERTY_ERROR_TEXT).toString());
+		if (properties.contains(PROPERTY_TOTAL_RESPONSE))
+			auth.setServerResponse(properties.get(PROPERTY_TOTAL_RESPONSE).toString());
+
+		auth.setTransactionType(authorizationType);
+		auth.setCardNumber(encodedCardnumber);
+		auth.setDate(IWTimestamp.RightNow().getDate());
+		
+		if (parentDataPK != null) {
+			try {
+				auth.setParentID(((Integer) parentDataPK).intValue());
+			}
+			catch (Exception e) {
+				System.out.println("KortathjonustanCCCleint : could not set parentID : " + parentDataPK);
+			}
+		}
+		auth.store();
+	}
+
 	private String getDateString(IWTimestamp stamp) {
-		// stamp.addHours(-1); // Temp for gimmi to test
 		return stamp.getDateString("yyMMddHHmmss");
 	}
 
@@ -572,7 +575,16 @@ public class KortathjonustanCreditCardClient implements CreditCardClient {
 	}
 	
 	public void finishTransaction(String properties) throws KortathjonustanAuthorizationException {
-		finishTransaction(parseResponse(properties));
+		Hashtable returnedCaptureProperties = finishTransaction(parseResponse(properties));
+		try {
+			//String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
+			this.storeAuthorizationEntry(null, null, returnedCaptureProperties, KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_DELAYED_TRANSACTION);
+		}
+		catch (Exception e) {
+			System.err.println("Unable to save entry to database");
+			e.printStackTrace();
+			throw new KortathjonustanAuthorizationException(e);
+		}
 	}
 
 	private Hashtable finishTransaction(Hashtable properties) throws KortathjonustanAuthorizationException {
