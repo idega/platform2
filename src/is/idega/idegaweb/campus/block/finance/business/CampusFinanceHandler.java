@@ -208,8 +208,13 @@ public class CampusFinanceHandler implements FinanceHandler {
 									totalAmount += Amount;
 								}
 							} // Inner loop block
-							// If the contract got some invoices we register it to the batch work
-							createBatchContract(user,AR);
+							try {
+                                // If the contract got some invoices we register it to the batch work
+                                createBatchContract(user,AR);
+                            } catch (Exception e2) {
+                                System.out.println("failing to register batchcontract for user "+user.getUserId());
+                                e2.printStackTrace();
+                            }
 						}
 						totals += totalAmount * -1;
 					} // Outer loop block
