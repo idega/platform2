@@ -12,6 +12,7 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -47,8 +48,11 @@ public class SchoolAreaSelector extends Block {
 	private int _spaceBeforeExpanded = 2;
 	private boolean _isHighSchool = false;
 	private boolean _showSchoolArea = true;
+	
+	private IWResourceBundle iwrb = null;
 
 	public void main(IWContext iwc) throws RemoteException{
+		iwrb = getResourceBundle(iwc);
 		init(iwc);
 		
 	if (!_displayWithoutTypeId && _schoolTypeId == -1) {
@@ -205,7 +209,7 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 						}
 					}else if (_expandSchools && _schoolTypeId == -1) {
 						++row;
-						table.add(getText("School Type Not Defined", false), col, row);
+						table.add(getText(iwrb.getLocalizedString("school.school_type_not_defined", "Choose school type."), false), col, row);
 					}
 				}else {
 					table.add(getLink(sArea.getName(), sArea.getPrimaryKey().toString() ), col, row);
