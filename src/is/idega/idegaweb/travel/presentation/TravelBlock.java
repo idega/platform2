@@ -26,7 +26,6 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -35,6 +34,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 /**
  * @author gimmi
@@ -138,10 +138,11 @@ public class TravelBlock extends Block {
 	      if (pGroup != null) {
 		      	UserBusiness uBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 		      	GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
-		      	List allUsers = pGroup.getAllGroupsContainingUser(user);
-		      	Iterator iter = allUsers.iterator();
-	        if (allUsers != null) {
-	          return allUsers.contains(pGroup);
+		      	List allGroups = user.getParentGroups();
+		      	//List allUsers = pGroup.getAllGroupsContainingUser(user);
+		      	Iterator iter = allGroups.iterator();
+	        if (allGroups != null) {
+	          return allGroups.contains(pGroup);
 	        }
 	      }
 	    }catch (Exception sql) {
@@ -224,7 +225,8 @@ public class TravelBlock extends Block {
   }
 
   protected boolean isTravelAdministrator(IWContext iwc) {
-    return iwc.hasEditPermission(this);
+  	return iwc.isSuperAdmin();
+    //return iwc.hasEditPermission(this);
   }
 
   protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException{

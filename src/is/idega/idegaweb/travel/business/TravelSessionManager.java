@@ -12,7 +12,7 @@ public interface TravelSessionManager extends com.idega.business.IBOSession
  public com.idega.block.trade.stockroom.data.Reseller getReseller() throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine getSearchEngine() throws java.rmi.RemoteException;
  public com.idega.block.trade.stockroom.data.Supplier getSupplier() throws java.rmi.RemoteException;
- public com.idega.core.user.data.User getUser() throws java.rmi.RemoteException;
+ public com.idega.user.data.User getUser() throws java.rmi.RemoteException;
  public int getUserId() throws java.rmi.RemoteException;
  public void setReseller(com.idega.block.trade.stockroom.data.Reseller p0) throws java.rmi.RemoteException;
  public void setSearchEngine(is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine p0) throws java.rmi.RemoteException;

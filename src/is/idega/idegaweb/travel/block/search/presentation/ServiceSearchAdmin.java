@@ -8,18 +8,14 @@ import is.idega.idegaweb.travel.presentation.AdministratorReport;
 import is.idega.idegaweb.travel.presentation.AdministratorReports;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.presentation.Users;
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -33,6 +29,9 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * @author gimmi
@@ -262,7 +261,8 @@ public class ServiceSearchAdmin extends TravelManager {
 		if (userID != null) {
 			form.addParameter(PARAMETER_USER_ID, userID);
 			try {
-				user = UserBusiness.getUser(Integer.parseInt(userID));
+				user = ((UserHome) IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(userID));
+				//user = UserBusiness.getUser(Integer.parseInt(userID));
 				LoginTable lt = LoginDBHandler.getUserLogin(user.getID());
 				name.setContent(user.getName());
 				if (lt != null) {
@@ -359,7 +359,8 @@ public class ServiceSearchAdmin extends TravelManager {
     
     if (!inUse && passwordsOK) {
 			try {
-			  UserBusiness ub = new UserBusiness();
+				UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+			  //UserBusiness ub = new UserBusiness();
 			  User user = null;
 	
 			  boolean isAdmin = false;
@@ -372,8 +373,8 @@ public class ServiceSearchAdmin extends TravelManager {
 					user = ub.insertUser(name, "", "", name, "staff", null, null, null);
 					LoginDBHandler.createLogin(user.getID(), login, passOne);
 			  }else {
-					user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userID));
-					ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null);
+					user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userID));
+					ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null, null);
 					if (passwordUpdate) {
 					  LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userID));
 					  if (lt == null) {
@@ -413,7 +414,7 @@ public class ServiceSearchAdmin extends TravelManager {
 		String userID = iwc.getParameter(PARAMETER_USER_ID);
 		if (userID != null) {
 			try {
-				User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userID));
+				User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(userID));
 				Text text = getText(user.getName());
 				text.setBold(true);
 				table.add(text, 1, 2);
@@ -438,7 +439,7 @@ public class ServiceSearchAdmin extends TravelManager {
 		String userID = iwc.getParameter(PARAMETER_USER_ID);
 		if (userID != null) {
 			try {
-				User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userID));
+				User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userID));
 				com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
 				Users.removeUserFromAllGroups(user);
 				add(getText(iwrb.getLocalizedString("travel.operation_successful","Operation successful")));

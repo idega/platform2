@@ -1,21 +1,33 @@
 package is.idega.idegaweb.travel.presentation;
 
-import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.service.presentation.InitialDataObject;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.core.accesscontrol.business.*;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.data.*;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
+import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.business.SupplierManager;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.accesscontrol.data.*;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -216,7 +228,12 @@ public class Users extends TravelManager implements InitialDataObject {
 
     User user = null;
     if (userId != -1) {
-      user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userId);
+      try {
+      	user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKey(new Integer(userId));
+			}
+			catch (FinderException e) {
+				throw new SQLException(e.getMessage());
+			}
     }
 
     Table table = new Table();
@@ -332,7 +349,8 @@ public class Users extends TravelManager implements InitialDataObject {
 
     if (!inUse && passwordsOK) {
       try {
-        UserBusiness ub = new UserBusiness();
+      	UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+//        UserBusiness ub = new UserBusiness();
         User user = null;
 
         boolean isAdmin = false;
@@ -342,8 +360,8 @@ public class Users extends TravelManager implements InitialDataObject {
           user = ub.insertUser(name, "", "", name, "staff", null, null, null);
           LoginDBHandler.createLogin(user.getID(), login, passOne);
         }else {
-          user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userId));
-          ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null);
+          user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userId));
+          ub.updateUser(user, name, "", "", name, "staff", null, null, null, null);
           if (passwordUpdate) {
             LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
             if (lt == null) {
@@ -424,7 +442,7 @@ public class Users extends TravelManager implements InitialDataObject {
   private Form deleteUser(IWContext iwc) {
     String userId = iwc.getParameter(this.paramaterUserID);
     try {
-      User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userId));
+      User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userId));
       com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
       removeUserFromAllGroups(user);
       add(getText(_iwrb.getLocalizedString("travel.operation_successful","Operation successful")));
@@ -432,6 +450,18 @@ public class Users extends TravelManager implements InitialDataObject {
       sql.printStackTrace(System.err);
       add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
     }
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+      add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+      add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+      add(getText(_iwrb.getLocalizedString("travel.operation_failed","Operation failed")));
+		}
     return getUserList(iwc);
   }
 

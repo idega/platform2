@@ -1,16 +1,15 @@
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
-
 import java.util.Locale;
-
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.data.User;
 
 /**
  * Title:        idegaWeb
@@ -55,8 +54,11 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
 
   public User getUser() {
     if (_user == null) {
-      _user = getUserContext().getUser();
-//      user = LoginBusiness.getUser(iwc);
+    	try {
+      _user = getUserContext().getCurrentUser();
+    	} catch (NotLoggedOnException e) {
+    		System.out.println("SessionManager : Noone is logged on");
+    	}
     }
     return _user;
   }
