@@ -5,7 +5,7 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.invoice.business.BatchAlreadyRunningException;
+import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -122,7 +122,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	 */
 	private void handleSave(IWContext iwc, String schoolCategory) {
 		try {
-			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+//			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 			Date month = null;
 			Date readDate = null;
 			if(iwc.getParameter(PARAM_MONTH)!=null){
@@ -136,7 +136,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 					return;
 				}
 			}
-			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
+			BatchRunQueue.addBatchRunToQueue(month, readDate, schoolCategory, iwc);
+//			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
 			add(getLocalizedText("invbr.batchrun_started","Batchrun started"));
 			add(new Break());
 			if(link!=null)
@@ -151,8 +152,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		} catch (SchoolCategoryNotFoundException e) {
 			add(getErrorText(getLocalizedString("invbr.please_select_valid_school_category","Please select valid school category.",iwc)));
 			e.printStackTrace();
-		} catch (BatchAlreadyRunningException e) {
-			add(getErrorText(getLocalizedString("invbr.batchrun_already_started","Batchrun already started",iwc)));
+//		} catch (BatchAlreadyRunningException e) {
+//			add(getErrorText(getLocalizedString("invbr.batchrun_already_started","Batchrun already started",iwc)));
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}

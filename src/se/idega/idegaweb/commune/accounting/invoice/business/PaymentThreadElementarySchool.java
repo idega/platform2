@@ -55,5 +55,6 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 		}
 		batchRunLoggerDone();
 		BatchRunSemaphore.releaseElementaryRunSemaphore();
+		BatchRunQueue.BatchRunDone();
 	}
 }

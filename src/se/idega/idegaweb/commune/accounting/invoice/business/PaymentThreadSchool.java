@@ -71,11 +71,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/27 14:18:18 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/02 16:02:19 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.111 $
+ * @version $Revision: 1.112 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -134,7 +134,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 			RegulationsBusiness regBus = getRegulationsBusiness();
 
-			//Go through all elementary schools
+			//Go through all schools
 			for (Iterator i = getSchools().iterator(); i.hasNext();) {
 //			for (int i = 0; i < 1; i++) {
 				try {

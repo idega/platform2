@@ -133,6 +133,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		}
 		batchRunLoggerDone();
 		BatchRunSemaphore.releaseChildcareRunSemaphore();
+		BatchRunQueue.BatchRunDone();
 	}
 	
 	/**

@@ -71,6 +71,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}
 		batchRunLoggerDone();
 		BatchRunSemaphore.releaseHighRunSemaphore();
+		BatchRunQueue.BatchRunDone();
 	}
 
 	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions,SchoolClassMember placement) throws RegulationException {

@@ -57,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/02 07:44:15 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/02 16:02:19 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.91 $
+ * @version $Revision: 1.92 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -124,7 +124,41 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * 
 	 * @param month
 	 */
-	public void removePreliminaryInvoice(CalendarMonth month, String category) throws RemoveException {
+	public void removePreliminaryInvoice(CalendarMonth month, String category) throws FinderException, RemoveException, BatchAlreadyRunningException, SchoolCategoryNotFoundException, IDOLookupException {
+		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+		if (sch.findChildcareCategory().getCategory().equals(category)) {
+			if(BatchRunSemaphore.getChildcareRunSemaphore()){
+				removePreliminaryInvoiceSub(month, category);
+				BatchRunSemaphore.releaseChildcareRunSemaphore();
+			}else{
+				throw new BatchAlreadyRunningException("Childcare");
+			}
+		} else if (sch.findElementarySchoolCategory().getCategory().equals(category)) {
+			if(BatchRunSemaphore.getElementaryRunSemaphore()){
+				removePreliminaryInvoiceSub(month, category);
+				BatchRunSemaphore.releaseElementaryRunSemaphore();
+			}else{
+				throw new BatchAlreadyRunningException("ElementarySchool");
+			}
+		} else if (sch.findHighSchoolCategory().getCategory().equals(category)) {
+			if(BatchRunSemaphore.getHighRunSemaphore()){
+				removePreliminaryInvoiceSub(month, category);
+				BatchRunSemaphore.releaseHighRunSemaphore();
+			}else{
+				throw new BatchAlreadyRunningException("HighSchool");
+			}
+		} else {
+			throw new SchoolCategoryNotFoundException("Couldn't find any Schoolcategory for billing named " + category);
+		}
+	}
+	
+	/**
+	 * removes all the invoice records and header and the related information in 
+	 * the payment records for the given month where the status was set to preliminary
+	 * 
+	 * @param month
+	 */
+	private void removePreliminaryInvoiceSub(CalendarMonth month, String category) throws RemoveException {
 		PaymentRecord paymentRecord;
 		Iterator headerIter;
 		InvoiceHeader header;		
