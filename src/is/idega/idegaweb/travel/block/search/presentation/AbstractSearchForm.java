@@ -602,8 +602,8 @@ public abstract class AbstractSearchForm extends Block{
 		}
 	}
 		
-	protected void listResults(IWContext iwc, HashMap results) throws RemoteException{
-		if (results != null && !results.isEmpty()) {
+	protected void listResults(IWContext iwc, Collection products, HashMap availability) throws RemoteException{
+		if (products != null && !products.isEmpty()) {
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 			// TODO move to a better location
@@ -619,10 +619,14 @@ public abstract class AbstractSearchForm extends Block{
 			Currency currency;
 			Timeframe[] timeframes;
 			boolean available;
-			Iterator iter = results.keySet().iterator();
-			while (iter.hasNext()) {
+			Iterator iter = products.iterator();
+			int productsSize = products.size();
+			Vector tmp = new Vector(products);
+			for (int i = (productsSize-1); i >= 0 ; i--) {
+			//while (iter.hasNext()) {
 				try {
-					product = pHome.findByPrimaryKey(iter.next());
+					product = pHome.findByPrimaryKey(tmp.get(i));
+					System.out.println("printing product : "+product.getPrimaryKey());
 					supplier = sHome.findByPrimaryKey(product.getSupplierId());
 					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
 					addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true);
@@ -633,7 +637,7 @@ public abstract class AbstractSearchForm extends Block{
 					table.add(getText(supplier.getName()), 1, row);
 					table.mergeCells(1, row, 2, row);
 					++row;
-					available = ((Boolean)results.get(product.getPrimaryKey())).booleanValue();
+					available = ((Boolean)availability.get(product.getPrimaryKey())).booleanValue();
 					table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
 					table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 					if (available) {
