@@ -98,12 +98,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     if(iTextId < 0){
       String sTextId = iwc.getParameter(prmTextId );
       if(sTextId != null)
-        iTextId = Integer.parseInt(sTextId);
+	iTextId = Integer.parseInt(sTextId);
       else if(getICObjectInstanceID() > 0){
-        iTextId = TextFinder.getObjectInstanceTextId(getICObjectInstance());
-        if(iTextId <= 0 ){
-          newobjinst = true;
-        }
+	iTextId = TextFinder.getObjectInstanceTextId(getICObjectInstance());
+	if(iTextId <= 0 ){
+	  newobjinst = true;
+	}
       }
     }
     int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
@@ -194,20 +194,20 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 			//System.err.println("image metadata : "+att+" "+TextEditorWindow.imageAttributeKey);
       Image textImage = new Image(imid);
       if(att != null)
-        textImage.setAttributes(getAttributeMap(att));
+	textImage.setAttributes(getAttributeMap(att));
       T.add(textImage,1,bodyRow);
       }
       catch(SQLException ex){
-        ex.printStackTrace();
+	ex.printStackTrace();
       }
     }
     ////////////////////////////////////////////
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
-        Anchor headlineAnchor = new Anchor(headline,headline.getText());
-        headlineAnchor.setFontColor(headlineColor);
-        T.add(headlineAnchor ,1,headerRow);
-        T.add(body,1,bodyRow);
+	/*Anchor headlineAnchor = new Anchor(headline,headline.getText());
+	headlineAnchor.setFontColor(headlineColor);*/
+	T.add(headline ,1,headerRow);
+	T.add(body,1,bodyRow);
       }
     }
     else {
@@ -238,19 +238,19 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.add(breyta,1,1);
 
       if ( enableDelete ) {
-        Link delete = new Link(iwb.getImage("/shared/delete.gif"));
-        delete.setWindowToOpen(TextEditorWindow.class);
-        delete.addParameter(TextEditorWindow.prmDelete,iTextId);
-        T.add(delete,2,1);
+	Link delete = new Link(iwb.getImage("/shared/delete.gif"));
+	delete.setWindowToOpen(TextEditorWindow.class);
+	delete.addParameter(TextEditorWindow.prmDelete,iTextId);
+	T.add(delete,2,1);
       }
     }
     if(newObjInst && !hasId){
       Link newLink = new Link(iwb.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(TextEditorWindow.class);
       if(newObjInst)
-        newLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
+	newLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
       else if(newWithAttribute)
-        newLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
+	newLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
 
       T.add(newLink,3,1);
     }
