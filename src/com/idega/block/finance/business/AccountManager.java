@@ -39,7 +39,7 @@ public class AccountManager {
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
     A.setLastUpdated(idegaTimestamp.getTimestampRightNow()) ;
-    A.setMemberId(iMemberId);
+//    A.setMemberId(iMemberId);
     A.setName(sName) ;
     A.setExtraInfo(sExtra);
     A.setCashierId(iCashierId);
