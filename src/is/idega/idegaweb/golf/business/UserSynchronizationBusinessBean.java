@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import com.ibm.icu.util.StringTokenizer;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
@@ -234,7 +234,8 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
 		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-		mainUnion = ("".equals(mainUnion))?NO_CLUB_ABBR:mainUnion;
+		//set the user out of clubs if
+		mainUnion = (mainUnion==null || "".equals(mainUnion))?NO_CLUB_ABBR:mainUnion;
 		//todo remove the connection to the club
 		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
 		subUnions = ("".equals(subUnions))?null:subUnions;
@@ -250,24 +251,43 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 						unionCorrect.setMainUnion(member,sub.getID());
 					}
 					catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
 			
+		}else{
+			//sub club
+			try {
+				//deactivate all subclubs member infos
+				unionCorrect.setMemberInactiveInAllSubUnions(member);
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		//must be done last!
-		Union main = getUnionFromAbbreviation(mainUnion);
-		if(main!=null){
+		if(!NO_CLUB_ABBR.equals(mainUnion)){
+			Union main = getUnionFromAbbreviation(mainUnion);
+			if(main!=null){
+				try {
+					unionCorrect.setMainUnion(member, main.getID());
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		else{
+			//does not have a current main club
 			try {
-				unionCorrect.setMainUnion(member, main.getID());
+				unionCorrect.setMemberInactiveInMainUnion(member);
 			}
 			catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	}
 
