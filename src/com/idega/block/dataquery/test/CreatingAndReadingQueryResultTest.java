@@ -1,5 +1,7 @@
 package com.idega.block.dataquery.test;
 
+import java.text.NumberFormat;
+
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.presentation.Block;
@@ -57,6 +59,5 @@ public class CreatingAndReadingQueryResultTest extends Block {
     XMLData data4 = XMLData.getInstanceForFile(55);
     XMLDocument document4 = data4.getDocument();
     result = QueryResult.getInstanceForDocument(document4);
-    
   }
 }
