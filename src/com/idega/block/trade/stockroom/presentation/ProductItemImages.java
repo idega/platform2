@@ -75,7 +75,7 @@ public class ProductItemImages extends ProductItem {
 
     Table table = new Table();
       table.setCellpadding(0);
-      table.setCellspacing(0);
+      table.setCellspacing(_cellspacing);
       if ( _tableWidth != null )
 	table.setWidth(_tableWidth);
     int row = 1;
@@ -114,9 +114,6 @@ public class ProductItemImages extends ProductItem {
 
 
 	if (this._horizontalView) {
-	  if ( _cellspacing > 0 ) {
-	    table.setWidth(column++,row,String.valueOf(_cellspacing));
-	  }
 	  if ( column == _numberOfImages ) {
 	    column = 1;
 	    row++;
@@ -125,9 +122,6 @@ public class ProductItemImages extends ProductItem {
 	    ++column;
 	  }
 	}else {
-	  if ( _cellspacing > 0 ) {
-	    table.setHeight(column,row++,String.valueOf(_cellspacing));
-	  }
 	  if ( row == _numberOfImages ) {
 	    row = 1;
 	    column++;
