@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -12,12 +14,14 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
@@ -39,6 +43,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.User;
@@ -65,7 +70,7 @@ public class InvoiceBusinessBean implements Runnable{
 	private ExportDataMapping categoryPosting;
 	private int childcare = 0;
 	private int check = 0;
-	private int order;
+	private int errorOrder;
 	private School school;
 	private float months;
 	
@@ -101,7 +106,6 @@ public class InvoiceBusinessBean implements Runnable{
 		try {
 			// **Flag all contracts as 'not processed'
 			
-			setSiblingOrder();
 
 			SchoolCategory childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
@@ -110,7 +114,8 @@ public class InvoiceBusinessBean implements Runnable{
 			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
 			
 			Iterator contractIter = contractArray.iterator();
-			order = 0;
+			setSiblingOrder(contractIter);
+			errorOrder = 0;
 	
 			//Loop through all contracts
 			while(contractIter.hasNext())
@@ -136,11 +141,7 @@ public class InvoiceBusinessBean implements Runnable{
 					invoiceHeader.setCreatedBy(BATCH_TEXT);
 					invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 					invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
-					if(categoryPosting.getProviderAuthorization()){
-						invoiceHeader.setStatus(invoiceHeader.getStatusBase());
-					} else {
-						invoiceHeader.setStatus(invoiceHeader.getStatusPreliminary());
-					}
+					invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 				}
 				
 				// **Calculate how big part of time period this contract is valid for
@@ -196,7 +197,8 @@ public class InvoiceBusinessBean implements Runnable{
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord);
 				
-					totalSum = postingDetail.getAmount();
+					totalSum = postingDetail.getAmount()*months;
+					conditions.add(new ConditionParameter(IntervalConstant.SIBLING_NUMBER,new Integer(this.getSiblingOrder(contract))));
 
 					//Get all the rules for this contract
 					//TODO (JJ) This is a func that Thomas will provide.
@@ -223,7 +225,7 @@ public class InvoiceBusinessBean implements Runnable{
 							subvention = invoiceRecord;
 						}
 
-						totalSum += postingDetail.getAmount();
+						totalSum += postingDetail.getAmount()*months;
 
 					}
 					//Make sure that the sum is not less than 0
@@ -246,28 +248,161 @@ public class InvoiceBusinessBean implements Runnable{
 		}
 	}
 	
-	/**
-	 * @param invoiceRecord
-	 */
 	private PaymentRecord createPaymentRecord() throws IDOLookupException, CreateException {
 		PaymentRecord paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).create();
 		paymentRecord.setAmount(postingDetail.getAmount()*months);
+		if(categoryPosting.getProviderAuthorization()){
+			paymentRecord.setStatus(ConstantStatus.BASE);
+		} else {
+			paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
+		}
+		//TODO (JJ) paymentRecord.setPaymentHeader(paymentHeader);
+		//TODO (JJ) paymentRecord.setPeriod()
+//		TODO (JJ) paymentRecord.setBolagsform()
+		paymentRecord.setDateCreated(currentDate);
+		paymentRecord.setCreatedBy(BATCH_TEXT);
+		//TODO (JJ) paymentRecord.setPlacements();
+		//TODO (JJ) paymentRecord.setItemPrice(postingDetail.getAmount());
+		paymentRecord.setAmount(postingDetail.getAmount()*months);
+		paymentRecord.setAmountVAT(postingDetail.getVat()*months);
+		//TODO (JJ) Calculate the posting stringsT
+		paymentRecord.setVATType(postingDetail.getVatRegulationID());
+		
 		//TODO (JJ) set the rest of the parameters needed. Check first with Lotta what really needs to go in here.
 		paymentRecord.store();
 		return paymentRecord;
 	}
 
-	private void setSiblingOrder(){
+	/**
+	 * Code to set all the sibling order used to calculate the sibling discount for each contract.
+	 * At the moment there is no sibling order column in the User object, so this function is not used.
+	 * Instead the getSiblingOrder(ChildCareContract contract) is used, but that means a lot slower 
+	 * performance.
+	 * 
+	 * @param contractIter
+	 */
+	private void setSiblingOrder(Iterator contractIter){
 		//TODO (JJ) Insert code here
+		boolean found;
+		TreeSet sortedSiblings;
+		//Zero all sibling orders
+		ChildCareContract contract;
+		//Itterate through all contracts
+		while(contractIter.hasNext()){
+			contract = (ChildCareContract)contractIter.next();
+
+			sortedSiblings = new TreeSet();
+			
+			SortableSibling sortableChild = new SortableSibling(contract.getChild());
+			sortedSiblings.add(sortableChild);
+
+			List parents = contract.getChild().getParentGroups();
+			Iterator parentIter = parents.iterator();
+			//Itterate through parents
+			while(parentIter.hasNext()){
+				User parent = (User)parentIter.next();
+				Iterator siblingsIter = parent.getChildren();
+				//Itterate through their kids
+				Collection addr1Coll = contract.getChild().getAddresses();
+				while(siblingsIter.hasNext())
+				{
+					User sibling = (User) siblingsIter.next();
+					//If kids have same address add to collection
+					found = false;
+					Collection addr2Coll = sibling.getAddresses();
+					Iterator addr1Iter = addr1Coll.iterator();
+					while(addr1Iter.hasNext() && found==false){
+						Address addr1 = (Address)addr1Iter.next();
+
+						Iterator addr2Iter = addr2Coll.iterator();
+						while(addr2Iter.hasNext() && found==false){
+							Address addr2 = (Address)addr2Iter.next();
+							if(addr1.getPrimaryKey().equals(addr2.getPrimaryKey())){
+								found = true;
+							}
+						}
+					}
+					//Sort kids in age order
+					if(found){
+						SortableSibling sortableSibling = new SortableSibling(sibling);
+						if(!sortedSiblings.contains(sortableSibling)){
+							sortedSiblings.add(sortableSibling);
+						}
+					}
+				}
+			}
+			//TODO (JJ) Here we need to set the order to the User objects if allowed to create an extra col
+			sortedSiblings.headSet(sortableChild).size();
+		}
 	}
 	
+	/**
+	 * Calculates the sibling order for the child connected to a contract
+	 * 
+	 * @param contract
+	 * @return the sibling order for the child connected to the contract
+	 */
+	private int getSiblingOrder(ChildCareContract contract){
+		TreeSet sortedSiblings;
+		boolean found;
+		
+		sortedSiblings = new TreeSet();
+			
+		SortableSibling sortableChild = new SortableSibling(contract.getChild());
+		sortedSiblings.add(sortableChild);
+
+		List parents = contract.getChild().getParentGroups();
+		Iterator parentIter = parents.iterator();
+		//Itterate through parents
+		while(parentIter.hasNext()){
+			User parent = (User)parentIter.next();
+			Iterator siblingsIter = parent.getChildren();
+			//Itterate through their kids
+			Collection addr1Coll = contract.getChild().getAddresses();
+			while(siblingsIter.hasNext())
+			{
+				User sibling = (User) siblingsIter.next();
+				//If kids have same address add to collection
+				found = false;
+				Collection addr2Coll = sibling.getAddresses();
+				Iterator addr1Iter = addr1Coll.iterator();
+				while(addr1Iter.hasNext() && found==false){
+					Address addr1 = (Address)addr1Iter.next();
+
+					Iterator addr2Iter = addr2Coll.iterator();
+					while(addr2Iter.hasNext() && found==false){
+						Address addr2 = (Address)addr2Iter.next();
+						if(addr1.getPrimaryKey().equals(addr2.getPrimaryKey())){
+							found = true;
+						}
+					}
+				}
+				//Sort kids in age order
+				if(found){
+					SortableSibling sortableSibling = new SortableSibling(sibling);
+					if(!sortedSiblings.contains(sortableSibling)){
+						sortedSiblings.add(sortableSibling);
+					}
+				}
+			}
+		}
+		//TODO (JJ) Here we need to set the order to the User objects if allowed to create an extra col
+		return sortedSiblings.headSet(sortableChild).size();
+	}
+	
+	/**
+	 * Creates a new error message (to be used according to fonster 33 in C&P Req.Spec.)
+	 *  
+	 * @param related Description of related objects
+	 * @param desc Description possible errors
+	 */
 	private void createNewErrorMessage(String related, String desc){
 		try {
 			BatchRunError error = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).create();
 			error.setRelated(related);
 			error.setDescription(desc);
-			error.setOrder(order);
-			order++;
+			error.setOrder(errorOrder);
+			errorOrder++;
 		} catch (IDOLookupException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -278,15 +413,37 @@ public class InvoiceBusinessBean implements Runnable{
 		
 	}
 	
+	/**
+	 * Creates an invoice record with the specific descriptive text for the check.
+	 * @param invoiceHeader
+	 * @param header
+	 * @param paymentRecord
+	 * @return InvoiceRecord
+	 * @throws PostingParametersException
+	 * @throws PostingException
+	 * @throws RemoteException
+	 * @throws CreateException
+	 * @throws MissingMandatoryFieldException
+	 */
 	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, PaymentRecord paymentRecord) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
-		//TODO (JJ) set the reference to utbetalningsposten
+		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecordId(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord);
 	}
 	
+	/**
+	 * Creates an invoice record
+	 * @param invoiceHeader
+	 * @return
+	 * @throws PostingParametersException
+	 * @throws PostingException
+	 * @throws RemoteException
+	 * @throws CreateException
+	 * @throws MissingMandatoryFieldException
+	 */
 	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader) throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
@@ -311,7 +468,7 @@ public class InvoiceBusinessBean implements Runnable{
 		invoiceRecord.setAmountVAT(postingDetail.getVat()*months);
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
 		invoiceRecord.setRuleSpecType(postingDetail.getRuleSpecType());
-		//TODO (JJ) get the posting strings
+
 		//Set the posting strings
 		PostingBusiness postingBusiness = getPostingBusinessHome().create();
 		PostingParameters parameters = postingBusiness.getPostingParameter(
@@ -334,6 +491,11 @@ public class InvoiceBusinessBean implements Runnable{
 		return invoiceRecord;
 	}
 	
+	/**
+	 * Calculates the amount of the month that has passed at the given date.
+	 * @param date
+	 * @return the amount (%) of the month that has passed
+	 */
 	private float percentOfMonthDone(IWTimestamp date){
 		int daysInMonth;
 		IWTimestamp firstDay, lastDay;
@@ -344,26 +506,26 @@ public class InvoiceBusinessBean implements Runnable{
 		lastDay.addMonths(1);
 		daysInMonth = IWTimestamp.getDaysBetween(firstDay, lastDay);
 		return (float)(date.getDay()-1)/(float)daysInMonth;
-		
 	}
 
-	public ChildCareContractHome getChildCareContractHome() throws RemoteException {
+	//Getters to different home objects
+	private ChildCareContractHome getChildCareContractHome() throws RemoteException {
 		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 	}
 
-	public InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
+	private InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
 	}
 
-	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
+	private InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
 		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
 	}
 
-	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
+	private PostingBusinessHome getPostingBusinessHome() throws RemoteException {
 		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
 	}
 
-	public RegulationsBusinessHome getRegulationsBusinessHome() throws RemoteException {
+	private RegulationsBusinessHome getRegulationsBusinessHome() throws RemoteException {
 		return (RegulationsBusinessHome) IDOLookup.getHome(RegulationsBusiness.class);
 	}
 
