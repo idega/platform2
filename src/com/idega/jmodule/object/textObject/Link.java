@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.42 2001/09/25 13:33:16 palli Exp $
+ * $Id: Link.java,v 1.43 2001/09/27 12:53:05 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,8 @@ public class Link extends Text {
   private Form _formToSubmit;
   private Class _windowClass = null;
   private boolean _maintainAllGlobalParameters = false;
+  private String displayString;
+  private boolean hasClass = false;
 
   private static final String HASH = "#";
   private static final String JAVASCRIPT = "javascript:";
@@ -67,6 +69,7 @@ public class Link extends Text {
    */
   public Link(String text) {
     this( new Text(text) );
+    displayString = text;
   }
 
   /**
@@ -454,6 +457,20 @@ public class Link extends Text {
   /**
    *
    */
+  public void setFontClass(String styleClass) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
+      ((Text)_obj).setFontClass(styleClass);
+    }
+  }
+
+  public void setStyle(String style) {
+    super.setStyle(style);
+    this.hasClass = true;
+  }
+
+  /**
+   *
+   */
   public void setSessionId(boolean addSessionId) {
     _addSessionId = addSessionId;
   }
@@ -782,6 +799,10 @@ public class Link extends Text {
     boolean addParameters = true;
     String oldURL = getURL();
 
+System.out.println("DisplayString: "+displayString);
+System.out.println("ObjectType: "+_objectType);
+System.out.println("HasClass: "+hasClass);
+
     if (oldURL == null) {
       oldURL = modinfo.getRequestURI();
       setURL(oldURL);
@@ -813,9 +834,25 @@ public class Link extends Text {
           myText.print(modinfo);
         }
         else {
-          _obj.print(modinfo);
+          if (_objectType==OBJECT_TYPE_TEXT) {
+            if ( hasClass ) {
+              if ( displayString != null ) {
+                print(displayString);
+              }
+              else {
+                if ( ((Text)_obj).getText() != null ) {
+                  print(((Text)_obj).getText());
+                }
+              }
+            }
+            else {
+              _obj.print(modinfo);
+            }
+          }
+          else {
+            _obj.print(modinfo);
+          }
         }
-
         print("</a>");
 			}
       else {
@@ -823,7 +860,21 @@ public class Link extends Text {
           setURL(oldURL+getParameterString(modinfo,oldURL));
         }
         print("<a "+getAttributeString()+" >");
-        _obj.print(modinfo);
+        if (_objectType==OBJECT_TYPE_TEXT) {
+          if ( hasClass ) {
+            if ( displayString != null ) {
+              print(displayString);
+            }
+            else {
+              if ( ((Text)_obj).getText() != null ) {
+                print(((Text)_obj).getText());
+              }
+            }
+          }
+          else {
+            _obj.print(modinfo);
+          }
+        }
         print("</a>");
       }
 		}
@@ -951,6 +1002,11 @@ public class Link extends Text {
     _windowClass=windowClass;
     setURL(IWMainApplication.windowOpenerURL);
     addParameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName());
+  }
+
+  public void setNoTextObject(boolean noText) {
+    if ( _objectType == this.OBJECT_TYPE_TEXT )
+      hasClass = noText;
   }
 }
 

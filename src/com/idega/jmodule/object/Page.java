@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.23 2001/09/24 10:32:29 palli Exp $
+ * $Id: Page.java,v 1.24 2001/09/27 12:52:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,6 +42,7 @@ public class Page extends ModuleObjectContainer {
   private boolean _isPage = true;
   private boolean _isDraft = false;
   private boolean _isExtendingTemplate = false;
+  private Hashtable styleDefinitions;
 
 
   private static Page NULL_CLONE_PAGE = new Page();
@@ -74,6 +75,7 @@ public class Page extends ModuleObjectContainer {
    */
   public Page(String s) {
     super();
+    setDefaultValues();
     setTitle(s);
   }
 
@@ -104,6 +106,52 @@ public class Page extends ModuleObjectContainer {
   public void setHoverColor(String color) {
     setAttribute("alink",color);
     _hoverColor = color;
+  }
+
+  public void setStyleDefinition(String styleName, String styleAttribute) {
+    if (styleDefinitions == null) {
+      styleDefinitions = new Hashtable();
+    }
+    styleDefinitions.put(styleName,styleAttribute);
+  }
+
+  private void setDefaultValues() {
+	  setStyleDefinition("A:link","color:"+_linkColor+"; text-decoration:"+_textDecoration+";");
+    setStyleDefinition("A:visited","color:"+_visitedColor+"; text-decoration:"+_textDecoration+";");
+    setStyleDefinition("A:hover","color:"+_hoverColor+"; text-decoration:"+_textDecoration+";");
+    setStyleDefinition("body","font-family: "+_pageStyleFont+"; font-size: "+_pageStyleFontSize+"; font-style: "+_pageStyleFontStyle+";");
+  }
+
+  public String getStyleDefinition() {
+    StringBuffer returnString = new StringBuffer();
+    String styleName ="";
+
+    if (this.styleDefinitions != null) {
+      Enumeration e = styleDefinitions.keys();
+      while (e.hasMoreElements()) {
+        styleName = (String)e.nextElement();
+        returnString.append("\t");
+        returnString.append(styleName);
+        String styleAttribute=getStyleAttribute(styleName);
+        if(!styleAttribute.equals(slash)){
+          returnString.append(" { ");
+          returnString.append(styleAttribute);
+          returnString.append(" }\n");
+        }
+        returnString.append("");
+      }
+    }
+
+    return returnString.toString();
+  }
+
+  public String getStyleAttribute(String styleName) {
+    if (this.styleDefinitions != null){
+      return (String)this.styleDefinitions.get((Object)styleName);
+    }
+    else {
+      return null;
+    }
   }
 
   /**
@@ -528,15 +576,10 @@ public class Page extends ModuleObjectContainer {
           println("<link rel=\"stylesheet\" href=\""+_styleSheetURL+"\" type=\"text/css\">\n");
         }
         else {
-          println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:" + _linkColor +
-                  "; text-decoration:" + _textDecoration +
-                  ";}\n	A:visited {color:" + _visitedColor +
-                  "; text-decoration:" + _textDecoration +
-                  ";}\n	A:hover {color:" + _hoverColor +
-                  "; text-decoration:" + _textDecoration +
-                  ";}\n	body {  font-family: " + _pageStyleFont +
-                  "; font-size: " + _pageStyleFontSize +
-                  "; font-style: " + _pageStyleFontStyle + ";}\n   -->\n</STYLE>");
+          println("<STYLE TYPE=\"text/css\">\n" +
+                  "<!--\n" +
+                  getStyleDefinition() +
+                  "   -->\n</STYLE>");
         }
         println("</head>\n<body  "+getAttributeString()+" >\n");
       }

@@ -132,6 +132,10 @@ public void setFontStyle(String style){
 	setAttribute("style",style);
 }
 
+public void setFontClass(String styleClass){
+	setStyle(styleClass);
+}
+
 public void setStyle(String style) {
   setAttribute("class",style);
 }
