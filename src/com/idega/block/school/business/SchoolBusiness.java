@@ -4,14 +4,14 @@ import javax.ejb.*;
 
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
- public void addHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException, FinderException;
+ public void addHeadmaster(com.idega.block.school.data.School p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public void addSchoolAdministrator(com.idega.user.data.User p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,int p9,int[] p10)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,int[] p6)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,int p9,int[] p10)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School createSchool(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,int p9,int[] p10,int[] p11)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection findAllPreviousSchoolSeasons(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllPreviousSchoolSeasons(com.idega.block.school.data.SchoolSeason p0) throws java.rmi.RemoteException;
+ public java.util.Collection findAllPreviousSchoolSeasons(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreas() throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreasByType(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreasByTypes(java.util.Collection p0) throws java.rmi.RemoteException;
@@ -26,6 +26,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllSchoolYearsInSchool(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchools()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByAreaAndType(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection findAllSchoolsByAreaAndTypeAndYear(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByAreaAndTypes(int p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByType(java.util.Collection p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolsByType(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -45,7 +46,9 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findStudentsBySchoolAndSeason(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findStudentsBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findStudentsInClass(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection findStudentsInSchool(int schoolID, int schoolClassID) throws java.rmi.RemoteException;
+ public java.util.Collection findStudentsInSchool(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.String getChildCareSchoolCategory() throws java.rmi.RemoteException;
+ public java.lang.String getElementarySchoolSchoolCategory() throws java.rmi.RemoteException;
  public com.idega.user.data.User getHeadmaster(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection getHeadmasters(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Map getMapOfSchoolYearPlaces(int p0) throws java.rmi.RemoteException;
@@ -63,16 +66,19 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection getSchoolGroups(com.idega.user.data.User p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolHome getSchoolHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getSchoolManagementTypeString(int p0) throws java.rmi.RemoteException;
+ public java.lang.String getSchoolPhone(int p0) throws java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolTypes(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Map getSchoolRelatedSchoolYears(com.idega.block.school.data.School p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolSeason getSchoolSeason(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolType getSchoolType(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolTypeHome getSchoolTypeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.school.business.SchoolUserBusiness getSchoolUserBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYear getSchoolYear(java.lang.Object p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearHome getSchoolYearHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearPlaces getSchoolYearPlaces(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearPlacesHome getSchoolYearPlacesHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasEditPermission(com.idega.user.data.User p0,com.idega.block.school.data.School p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasSchoolRelationToYear(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void invalidateSchoolClass(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeSchool(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeSchoolArea(int p0) throws java.rmi.RemoteException;
@@ -85,8 +91,8 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public void removeSchoolYearPlace(int p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.School storeSchool(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,int p10,int[] p11,int[] p12)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolArea(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolClass storeSchoolClass(java.lang.String p0,com.idega.block.school.data.School p1,com.idega.block.school.data.SchoolYear p2,com.idega.block.school.data.SchoolSeason p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolClass(int p0,java.lang.String p1,int p2,int p3,int p4,int p5)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolClass storeSchoolClass(java.lang.String p0,com.idega.block.school.data.School p1,com.idega.block.school.data.SchoolYear p2,com.idega.block.school.data.SchoolSeason p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClassMember storeSchoolClassMember(int p0,int p1,java.sql.Timestamp p2,int p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClassMember storeSchoolClassMember(com.idega.block.school.data.SchoolClass p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClassMember storeSchoolClassMember(int p0,int p1,java.sql.Timestamp p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -94,7 +100,4 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public void storeSchoolType(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolYear(int p0,java.lang.String p1,java.lang.String p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolYearPlaces(int p0,int p1,int p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection findAllSchoolsByAreaAndTypeAndYear(int areaID, int typeID, int yearID) throws java.rmi.RemoteException;
- public boolean hasSchoolRelationToYear(com.idega.block.school.data.School school, com.idega.block.school.data.SchoolYear schoolYear) throws java.rmi.RemoteException;
- public String getSchoolPhone(int schoolID);
 }

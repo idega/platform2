@@ -59,6 +59,8 @@ import com.idega.util.IWTimestamp;
  */
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness {
 
+	private static String CHILDCARE_SCHOOL_CATEGORY="CHILDCARE";
+	private static String ELEMENTARY_SCHOOL_CATEGORY="SCHOOL";
 	public static final String GROUP_TYPE_SCHOOL_GROUP = "school_staff_group";
 	public static String MANAGEMENT_TYPE_PRIVATE = "school_man_type_private";
 	public static final int MANAGEMENT_TYPE_PRIVATE_ID = 1;
@@ -814,12 +816,26 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	/**
+	 * @return The School type key registered for Childcare school types.
+	 */
+	public String getChildCareSchoolCategory(){
+		return CHILDCARE_SCHOOL_CATEGORY;
+	}
+
+	/**
+	 * @return The School type key registered for Elementary school types.
+	 */
+	public String getElementarySchoolSchoolCategory(){
+		return ELEMENTARY_SCHOOL_CATEGORY;
+	}
+
 	public Collection findAllSchoolTypesForChildCare() {
-		return findAllSchoolTypesInCategory("CHILDCARE");
+		return findAllSchoolTypesInCategory(getChildCareSchoolCategory());
 	}
 
 	public Collection findAllSchoolTypesForSchool() {
-		return findAllSchoolTypesInCategory("SCHOOL");
+		return findAllSchoolTypesInCategory(getElementarySchoolSchoolCategory());
 	}
 
 	public void storeSchoolType(int id, String name, String info, String category, String locKey) throws java.rmi.RemoteException {
