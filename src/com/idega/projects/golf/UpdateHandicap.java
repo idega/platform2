@@ -36,7 +36,7 @@ public class UpdateHandicap {
       try {
             int member_id = member.getID();
 
-            System.out.print("Updating member "+member_id);
+            System.out.print("Updating for member '"+member_id+"'");
             idegaTimestamp timeBefore = new idegaTimestamp();
 
             MemberInfo memberInfo = new MemberInfo(member_id);
@@ -64,6 +64,7 @@ public class UpdateHandicap {
             double tournamentHandicap = 0;
 
             Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
+            System.out.print(", "+scorecard.length+" scorecards -> ");
             if ( scorecard.length > 0 ) {
               Scorecard[] scorecardsBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
               if ( scorecardsBefore.length > 0 ) {
@@ -167,7 +168,7 @@ public class UpdateHandicap {
             int secondsAfter = timeAfter.getSecond() + (timeAfter.getMinute() * 60) + (timeAfter.getHour() * 60 * 60);
             int secondsBefore = timeBefore.getSecond() + (timeBefore.getMinute() * 60) + (timeBefore.getHour() * 60 * 60);
             int between = secondsAfter - secondsBefore;
-            System.out.println("Done! ("+between+")");
+            System.out.println("Done! ("+between+" sec)");
 
       }
 
