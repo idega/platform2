@@ -171,10 +171,12 @@ public class TextBusiness{
         if(iLocalizedTextId > 0){
           locUpdate = true;
           locText = new LocalizedText(iLocalizedTextId);
+          System.err.println("locText update");
         }
         else{
           locUpdate = false;
           locText = new LocalizedText();
+          System.err.println("locText insert");
         }
       }
       else{
@@ -210,11 +212,9 @@ public class TextBusiness{
         txText.setCreated(idegaTimestamp.getTimestampRightNow());
         txText.setUserId(iUserId);
         txText.insert();
-        System.err.println("id : "+txText.getID());
         locText.setCreated(idegaTimestamp.getTimestampRightNow());
         locText.insert();
         locText.addTo(txText);
-
       }
       t.commit();
     }

@@ -36,13 +36,27 @@ public class TextFinder {
       return null;
   }
 
+   public static TextHelper getTextHelper(int iTxTextId,int iLocaleId){
+    TextHelper TH = new TextHelper();
+    TxText T = getText(iTxTextId);
+    if(T!=null){
+      TH.setTxText(T);
+      TH.setLocalizedText(getLocalizedText(iTxTextId,iLocaleId));
+      return TH;
+    }
+    else{
+      System.err.println("no text");
+      return null;
+    }
+  }
+
   public static TextHelper getTextHelper(int iTxTextId,Locale locale){
     TextHelper TH = new TextHelper();
     TxText T = getText(iTxTextId);
 
     if(T!=null){
       TH.setTxText(T);
-      TH.setLocalizedText(listOfLocalizedText(iTxTextId,locale));
+      TH.setLocalizedText(getLocalizedText(iTxTextId,locale));
       return TH;
     }
     else
@@ -54,7 +68,19 @@ public class TextFinder {
     TxText T = getText(sAttribute);
     if(T!=null){
       TH.setTxText(T);
-      TH.setLocalizedText(listOfLocalizedText(T.getID(),locale));
+      TH.setLocalizedText(getLocalizedText(T.getID(),locale));
+      return TH;
+    }
+    else
+      return null;
+  }
+
+  public static TextHelper getTextHelper(String sAttribute,int iLocaleId){
+    TextHelper TH = new TextHelper();
+    TxText T = getText(sAttribute);
+    if(T!=null){
+      TH.setTxText(T);
+      TH.setLocalizedText(getLocalizedText(T.getID(),iLocaleId));
       return TH;
     }
     else
@@ -64,24 +90,67 @@ public class TextFinder {
   public static List listOfLocalizedText(int iTxTextId){
     List L = null;
     try {
-      L = EntityFinder.findReverseRelated(new TxText(),new LocalizedText());
+      TxText tt = new TxText(iTxTextId);LocalizedText lt = new LocalizedText();
+      L = EntityFinder.findRelated(tt,lt);
     }
     catch (SQLException ex) {
       ex.printStackTrace();
       L = null;
     }
-    if(L==null) System.err.println("failed");
     return L;
   }
 
-  public static LocalizedText listOfLocalizedText(int iTxTextId,Locale locale){
+  public static List listOfLocalizedText(int iTxTextId,int iLocaleId){
+    /*
+    select lt.* from tx_localized_text lt, tx_text t,tx_text_localized ttl
+    where ttl.tx_text_id = t.tx_text_id
+    and ttl.tx_localized_text_id = lt.tx_localized_text_id
+    and t.tx_text_id = 22
+    and lt.ic_locale_id = 2
+
+    */
+    StringBuffer sql = new StringBuffer("select lt.* from tx_localized_text lt, tx_text t,tx_text_localized ttl ");
+    sql.append(" where ttl.tx_text_id = t.tx_text_id ");
+    sql.append(" and ttl.tx_localized_text_id = lt.tx_localized_text_id ");
+    sql.append(" and t.tx_text_id = ");
+    sql.append(iTxTextId);
+    sql.append(" and lt.ic_locale_id =  ");
+    sql.append(iLocaleId);
+    //System.err.println(sql.toString());
+    try {
+      return EntityFinder.findAll(new LocalizedText(),sql.toString());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+
+  }
+
+  public static LocalizedText getLocalizedText(int iTxTextId,int iLocaleId){
     LocalizedText LTX = null;
-      int Lid = getLocaleId(locale);
+    List L =   listOfLocalizedText(iTxTextId,iLocaleId);
+    if(L!= null){
+      LTX = (LocalizedText) L.get(0);
+    }
+    else
+      System.err.println("not found");
+    return LTX;
+  }
+
+  public static LocalizedText getLocalizedText(int iTxTextId,Locale locale){
+    int Lid = getLocaleId(locale);
+    return getLocalizedText(iTxTextId,Lid);
+  }
+/*
+   public static LocalizedText listOfLocalizedText(int iTxTextId,int iLocaleId){
+    LocalizedText LTX = null;
       List L =  listOfLocalizedText(iTxTextId);
+
       if(L!=null){
-        for (int i = 0; i < L.size(); i++) {
+        int len = L.size();
+        for (int i = 0; i < len; i++) {
           LocalizedText ltx = (LocalizedText) L.get(i);
-          if(ltx.getID() == Lid){
+          if(ltx.getLocaleId() == iLocaleId){
             LTX = ltx;
             break;
           }
@@ -89,7 +158,7 @@ public class TextFinder {
     }
     return LTX;
   }
-
+*/
   public static TxText getText(String sAttribute){
     TxText th = null;
     try {

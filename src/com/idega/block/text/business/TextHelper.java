@@ -37,6 +37,16 @@ public class TextHelper{
       return null;
   }
 
+  public LocalizedText getLocalizedText(){
+    LocalizedText LT= null,lt = null;
+    if(lLocalizedText!=null){
+      LT = (LocalizedText) lLocalizedText.get(0);
+      return  LT;
+    }
+    else
+      return null;
+  }
+
   public List getLocalizedTexts(){
     return lLocalizedText;
   }
