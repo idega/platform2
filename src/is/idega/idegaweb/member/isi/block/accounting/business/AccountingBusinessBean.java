@@ -21,11 +21,11 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
@@ -95,7 +95,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to) {
+	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -133,10 +133,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (Exception e) {
 		}
 
-		return insertTariff(club, group, type, text, am, from, to);
+		return insertTariff(club, group, type, text, am, from, to, applyToChildren);
 	}
 
-	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to) {
+	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to, boolean applyToChildren) {
 		ClubTariff eTariff;
 		try {
 			eTariff = getClubTariffHome().create();
@@ -150,6 +150,18 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 			eTariff.store();
 
+			if (applyToChildren) {
+				Iterator children = group.getChildren();
+				if (children != null) {
+					while (children.hasNext()) {
+						Group child = (Group) children.next();
+						boolean ret = insertTariff(club, child, type, text, amount, from, to, applyToChildren);
+						if (!ret)
+							return ret;
+					}
+				}
+			}
+			
 			return true;
 		}
 		catch (CreateException e) {
