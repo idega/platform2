@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.25 2003/10/10 12:45:19 anders Exp $
+ * $Id: VATEditor.java,v 1.26 2003/10/14 09:32:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Break;
 
 import com.idega.block.school.data.SchoolCategory;
 
@@ -41,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/10/10 12:45:19 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/14 09:32:45 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -158,7 +157,7 @@ public class VATEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
+		} else if (getIntParameter(iwc, PARAMETER_DELETE_ID) > 0) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_COPY_ID)) {
 			action = ACTION_COPY;
@@ -173,9 +172,6 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
-		add(new OperationalFieldsMenu());
-		add(new Break());
-		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -188,9 +184,6 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
-		add(new OperationalFieldsMenu());
-		add(new Break());
-		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Momssats - sškresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -338,6 +331,8 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private Table getSearchPanel(IWContext iwc) {
 		Table table = new Table();
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
+		table.add(new OperationalFieldsMenu(), 2, 1);
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
 		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_FROM, getParameter(iwc, PARAMETER_SEARCH_PERIOD_FROM), 60), 2, 2);
 		table.add(getText(" - "), 2, 2);

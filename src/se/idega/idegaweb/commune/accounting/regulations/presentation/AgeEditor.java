@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.16 2003/10/10 09:26:07 anders Exp $
+ * $Id: AgeEditor.java,v 1.17 2003/10/14 09:32:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Break;
 
 import com.idega.block.school.data.SchoolCategory;
 
@@ -38,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/10 09:26:07 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/14 09:32:45 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -156,7 +155,7 @@ public class AgeEditor extends AccountingBlock {
 			action = ACTION_SAVE;
 		} else if (iwc.isParameterSet(PARAMETER_COPY_ID)) {
 			action = ACTION_COPY;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
+		} else if (getIntParameter(iwc, PARAMETER_DELETE_ID) > 0) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_AGE_REGULATION_ID)) {
 			action = ACTION_OPEN;
@@ -169,9 +168,6 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
-		add(new OperationalFieldsMenu());
-		add(new Break());
-		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Regelverk beräkna ålder");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -184,9 +180,6 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
-		add(new OperationalFieldsMenu());
-		add(new Break());
-		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Regelverk beräkna ålder - sökresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -327,6 +320,8 @@ public class AgeEditor extends AccountingBlock {
 	 */
 	private Table getSearchPanel(IWContext iwc) {
 		Table table = new Table();
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
+		table.add(new OperationalFieldsMenu(), 2, 1);
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
 		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_FROM, getParameter(iwc, PARAMETER_SEARCH_PERIOD_FROM), 60), 2, 2);
 		table.add(getText(" - "), 2, 2);
