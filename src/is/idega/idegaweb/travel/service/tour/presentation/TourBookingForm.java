@@ -1165,6 +1165,19 @@ public class TourBookingForm extends TravelManager {
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
     int iAddressId = Integer.parseInt(sAddressId);
     Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
+    String sBookingId = iwc.getParameter(this.parameterBookingId);
+    int iBookingId = -1;
+
+    int previousBookings = 0;
+    if (sBookingId != null){
+      iBookingId = Integer.parseInt(sBookingId);
+      try {
+        GeneralBooking gBook = new GeneralBooking(iBookingId);
+        previousBookings = gBook.getTotalCount();
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+    }
 
     ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
     int current = 0;
@@ -1191,6 +1204,9 @@ public class TourBookingForm extends TravelManager {
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
     }catch (Exception e) {}
+
+    iMany -= previousBookings;
+    debug("removing "+previousBookings+" from iMany ");
 
     int iAvailable;
     if (totalSeats > 0) {
@@ -1254,9 +1270,13 @@ public class TourBookingForm extends TravelManager {
 
       table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
       for (int i = 0; i < errorDays.size(); i++) {
-        ++row;
-        temp = new idegaTimestamp((idegaTimestamp)errorDays.get(i));
-        table.add(temp.getLocaleDate(iwc), 1,row);
+        try {
+          ++row;
+          temp = new idegaTimestamp((idegaTimestamp)errorDays.get(i));
+          table.add(temp.getLocaleDate(iwc), 1,row);
+        }catch (NullPointerException npe) {
+          npe.printStackTrace(System.err);
+        }
       }
 
       ++row;
@@ -1452,9 +1472,43 @@ public class TourBookingForm extends TravelManager {
         }
 
 
+        /**
+         * removing booking from resellers...
+         */
+        for (int o = 0; o < bookingIds.length; o++) {
+          try {
+            ((Reseller)Reseller.getStaticInstance(Reseller.class)).removeFrom(GeneralBooking.class, bookingIds[o]);
+          }catch (SQLException sql) {debug(sql.getMessage());}
+        }
+
+        /**
+         * adding booking to reseller if resellerUser is chosen from dropdown...
+         */
+        int resId = -7;
+        try {
+          if (!sUserId.equals("-1")) {
+            User user = new User(Integer.parseInt(sUserId));
+            Reseller res = ResellerManager.getReseller(user);
+            if (res != null) {
+              resId = res.getID();
+              for (int i = 0; i < bookingIds.length; i++) {
+                try {
+                  res.addTo(GeneralBooking.class, bookingIds[i]);
+                }catch (SQLException sql) {debug(sql.getMessage());}
+              }
+            }
+          }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
+
         if (_reseller != null) {
-          for (int i = 0; i < bookingIds.length; i++) {
-            _reseller.addTo(GeneralBooking.class, bookingIds[i]);
+          if (_resellerId != resId) {
+            for (int i = 0; i < bookingIds.length; i++) {
+              try {
+                _reseller.addTo(GeneralBooking.class, bookingIds[i]);
+              }catch (SQLException sql) {debug(sql.getMessage());}
+            }
           }
         }
 
