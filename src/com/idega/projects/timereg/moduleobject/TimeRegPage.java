@@ -90,7 +90,7 @@ private Link link5;
 		myTable.add(mo,1,2);
 	}
 
-	public void print(ModuleInfo modinfo)throws IOException{
+	public void print(ModuleInfo modinfo)throws Exception{
 		super.print(modinfo);
 	}
 

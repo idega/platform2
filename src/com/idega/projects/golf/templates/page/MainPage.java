@@ -223,7 +223,7 @@ public class MainPage extends Page{
 
 
 
-        public void print(ModuleInfo modinfo)throws IOException{
+        public void print(ModuleInfo modinfo)throws Exception{
           checkSettings();
           super.print(modinfo);
         }
