@@ -312,7 +312,7 @@ public class ReportGenerator extends Block {
 		JasperReportBusiness reportBusiness = getReportBusiness();
 		if(_layoutICFilePK!=null){
 			int designId = _layoutICFilePK.intValue();
-			_design = reportBusiness.getDesign(designId);	
+			_design = reportBusiness.getDesignBox(designId).getDesign();	 
 		}
 		else if(_layoutFileName!=null){
 			if(_layoutIWBundle!=null){
