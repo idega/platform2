@@ -27,7 +27,6 @@ import javax.mail.MessagingException;
 
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
-import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.block.trade.data.Currency;
@@ -74,7 +73,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
-import com.sun.rsasign.s;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author gimmi
@@ -210,13 +209,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		++row;
 		
 		if (useSecureServer && !iwc.isSecure()) {
-			String URI = iwc.getRequest().getRequestURI();
+			String URL = iwc.getRequest().getRequestURL().toString();
 			String serverName = bundle.getProperty(LinkGenerator.PROPERTY_SERVER_NAME);
-			if (URI.indexOf("nat.sidan.is") >= 0 && serverName != null) {
-				URI.replaceFirst("nat.sidan.is",  serverName);
+			if (URL.indexOf("nat.sidan.is") >= 0 && serverName != null) {
+				URL = URL.replaceFirst("nat.sidan.is",  serverName);
 			}
-			Link secureLink = new Link(getErrorText(iwrb.getLocalizedString("travel.click_here", "CLICK HERE")), URI+"?"+iwc.getQueryString());
-			secureLink.setHttps(true);
+			URL = URL.replaceFirst("http", "https");
+			
+			Link secureLink = new Link(getErrorText(iwrb.getLocalizedString("travel.click_here", "CLICK HERE")), URL+"?"+iwc.getQueryString());
 			form.add(getErrorText(iwrb.getLocalizedString("travel.click_here_to_switch_to_secure_mode","You are not using our secure form. To switch to secure mode please")+" "));
 			form.add(secureLink);
 		}
