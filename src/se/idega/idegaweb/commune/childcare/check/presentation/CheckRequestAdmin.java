@@ -23,15 +23,15 @@ import com.idega.builder.data.IBPage;
 
 public class CheckRequestAdmin extends CommuneBlock {
 
-  private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.childcare.check";
-
   private final static int ACTION_VIEW_CHECK_LIST = 1;
   private final static int ACTION_VIEW_CHECK = 2;
-  private final static int ACTION_APPROVE_CHECK = 3;
+  private final static int ACTION_GRANT_CHECK = 3;
+  private final static int ACTION_RETRIAL_CHECK = 4;
 
   private final static String PARAM_VIEW_CHECK_LIST = "chk_v_c_l";
   private final static String PARAM_VIEW_CHECK = "chk_view_check";
-  private final static String PARAM_APPROVE_CHECK = "chk_approve_check";
+  private final static String PARAM_GRANT_CHECK = "chk_grant_check";
+  private final static String PARAM_RETRIAL_CHECK = "chk_retrial_check";
   private final static String PARAM_CHECK_ID = "chk_check_id";
   private final static String PARAM_RULE = "chk_rule";
   private final static String PARAM_NOTES = "chk_notes";
@@ -49,10 +49,6 @@ public class CheckRequestAdmin extends CommuneBlock {
   public CheckRequestAdmin() {
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
   public void main(IWContext iwc){
     this.setResourceBundle(getResourceBundle(iwc));
 
@@ -65,8 +61,11 @@ public class CheckRequestAdmin extends CommuneBlock {
         case ACTION_VIEW_CHECK:
           viewCheck(iwc);
           break;
-        case ACTION_APPROVE_CHECK:
-          approveCheck(iwc);
+        case ACTION_GRANT_CHECK:
+          grantCheck(iwc);
+          break;
+        case ACTION_RETRIAL_CHECK:
+          retrialCheck(iwc);
           break;
         default:
           break;
@@ -83,8 +82,8 @@ public class CheckRequestAdmin extends CommuneBlock {
       action = ACTION_VIEW_CHECK;
     }
 
-    if(iwc.isParameterSet(PARAM_APPROVE_CHECK)){
-      action = ACTION_APPROVE_CHECK;
+    if(iwc.isParameterSet(PARAM_GRANT_CHECK)){
+      action = ACTION_GRANT_CHECK;
     }
 
     return action;
@@ -92,11 +91,12 @@ public class CheckRequestAdmin extends CommuneBlock {
 
   private void viewCheckList(IWContext iwc)throws Exception{
     ColumnList checkList = new ColumnList(5);
-    checkList.setHeader("Checknummer",1);
-    checkList.setHeader("Datum",2);
-    checkList.setHeader("Personnummer",3);
-    checkList.setHeader("Handläggare",4);
-    checkList.setHeader("Status",5);
+    checkList.setWidth("600");
+    checkList.setHeader(localize("check.check_number","Check number"),1);
+    checkList.setHeader(localize("check.date","Date"),2);
+    checkList.setHeader(localize("check.social_security_number","Social security number"),3);
+    checkList.setHeader(localize("check.manager","Manager"),4);
+    checkList.setHeader(localize("check.status","Status"),5);
 
     Collection checks = getCheckBusiness(iwc).findChecks();
     Iterator iter = checks.iterator();
@@ -126,13 +126,20 @@ public class CheckRequestAdmin extends CommuneBlock {
     checkInfoTable.setCellpadding(6);
     checkInfoTable.setCellspacing(0);
     frame.add(checkInfoTable);
-    checkInfoTable.add(getSmallHeader("Ärende nr:"),1,1);
-    checkInfoTable.add(getSmallHeader("Ansökan avser:"),1,2);
-    checkInfoTable.add(getSmallHeader("Barn:"),1,3);
-    checkInfoTable.add(getSmallHeader("Vårdnadshavare:"),1,4);
-    checkInfoTable.add(getSmallHeader("Språk moder-barn:"),1,6);
-    checkInfoTable.add(getSmallHeader("Språk fader-barn:"),1,7);
-    checkInfoTable.add(getSmallHeader("Språk föräldrar:"),1,8);
+    checkInfoTable.add(getLocalizedSmallHeader("check.case_number","Case number"),1,1);
+    checkInfoTable.add(getSmallHeader(":"),1,1);
+    checkInfoTable.add(getLocalizedSmallHeader("check.request_regarding","Request regarding"),1,2);
+    checkInfoTable.add(getSmallHeader(":"),1,2);
+    checkInfoTable.add(getLocalizedSmallHeader("check.child","Child"),1,3);
+    checkInfoTable.add(getSmallHeader(":"),1,3);
+    checkInfoTable.add(getLocalizedSmallHeader("check.custodians","Custodians"),1,4);
+    checkInfoTable.add(getSmallHeader(":"),1,4);
+    checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child","Language mother-child"),1,6);
+    checkInfoTable.add(getSmallHeader(":"),1,6);
+    checkInfoTable.add(getLocalizedSmallHeader("check.language_father_child","Language father-child"),1,7);
+    checkInfoTable.add(getSmallHeader(":"),1,7);
+    checkInfoTable.add(getLocalizedSmallHeader("check.language_parents","Language parents"),1,8);
+    checkInfoTable.add(getSmallHeader(":"),1,8);
     checkInfoTable.add(getSmallText(check.getPrimaryKey().toString()),2,1);
     checkInfoTable.add(getSmallText("Förskoleverksamhet"),2,2);
     checkInfoTable.add(getSmallText("980312-3213, Mickelin Henrik, Odenvägen 2C 133 38 SALTSJÖBADEN"),2,3);
@@ -151,13 +158,12 @@ public class CheckRequestAdmin extends CommuneBlock {
 
     Form f = new Form();
     f.addParameter(PARAM_CHECK_ID,check.getPrimaryKey().toString());
-    f.addParameter(PARAM_APPROVE_CHECK,"true");//temp
     frame = new Table(2,1);
     frame.setCellpadding(14);
     frame.setCellspacing(0);
     frame.setColor(getBackgroundColor());
     frame.setVerticalAlignment(2,1,"top");
-    frame.add(getSmallText("Grundkrav"),1,1);
+    frame.add(getLocalizedSmallText("check.requirements","Requirements"),1,1);
     frame.add(new Break(2));
     Table ruleTable = new Table(2,5);
     ruleTable.setCellpadding(4);
@@ -167,7 +173,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       rule1.setChecked(!paramErrorRule1);
     }
     ruleTable.add(rule1,1,1);
-    String ruleText1 = "Folkbokförd";
+    String ruleText1 = localize("check.nationally_registered","Nationally registered");
     if(paramErrorRule1){
       ruleTable.add(getErrorText(ruleText1),2,1);
     }else{
@@ -178,7 +184,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       rule2.setChecked(!paramErrorRule2);
     }
     ruleTable.add(rule2,1,2);
-    String ruleText2 = "Barnet fyllt ett år";
+    String ruleText2 = localize("check.child_one_year","Child one year of age");
     if(paramErrorRule2){
       ruleTable.add(getErrorText(ruleText2),2,2);
     }else{
@@ -189,7 +195,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       rule3.setChecked(!paramErrorRule3);
     }
     ruleTable.add(rule3,1,3);
-    String ruleText3 = "Arbetssituation godkänd";
+    String ruleText3 = localize("check.work_situation_approved","Work situation approved");
     if(paramErrorRule3){
       ruleTable.add(getErrorText(ruleText3),2,3);
     }else{
@@ -200,7 +206,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       rule4.setChecked(!paramErrorRule4);
     }
     ruleTable.add(rule4,1,4);
-    String ruleText4 = "Skuldkontroll";
+    String ruleText4 = localize("check.dept_control","Skuldkontroll");
     if(paramErrorRule4){
       ruleTable.add(getErrorText(ruleText4),2,4);
     }else{
@@ -211,7 +217,7 @@ public class CheckRequestAdmin extends CommuneBlock {
       rule5.setChecked(!paramErrorRule5);
     }
     ruleTable.add(rule5,1,5);
-    String ruleText5 = "Behov av särskilt stöd";
+    String ruleText5 = localize("check.need_for_special_support","Need for special support");
     if(paramErrorRule5){
       ruleTable.add(getErrorText(ruleText5),2,5);
     }else{
@@ -219,15 +225,14 @@ public class CheckRequestAdmin extends CommuneBlock {
     }
     frame.add(ruleTable,1,1);
     frame.add(new Break(2),1,1);
-    Link approveButton = new Link("Bevilja check");
-    approveButton.setAsImageButton(true);
-    approveButton.setToFormSubmit(f);
-    frame.add(approveButton,1,1);
+    Image image = getResourceBundle().getLocalizedImageButton("check._grant_check","Grant check");
+    SubmitButton grantButton = new SubmitButton(image,PARAM_GRANT_CHECK);
+    frame.add(grantButton,1,1);
     frame.add(new Text("&nbsp;&nbsp;&nbsp;"));
-    Link rejectButton = new Link("Omprövning");
-    rejectButton.setAsImageButton(true);
-    frame.add(rejectButton,1,1);
-    frame.add(getSmallText("Noteringar"),2,1);
+    image = getResourceBundle().getLocalizedImageButton("check.retrial","Retrial");
+    SubmitButton retrialButton = new SubmitButton(image,PARAM_RETRIAL_CHECK);
+    frame.add(retrialButton,1,1);
+    frame.add(getLocalizedSmallText("check.notes","Notes"),2,1);
     frame.add(new Break(2),2,1);
     TextArea notes = new TextArea(PARAM_NOTES);
     notes.setHeight(8);
@@ -237,11 +242,7 @@ public class CheckRequestAdmin extends CommuneBlock {
     add(f);
   }
 
-  private void approveCheck(IWContext iwc)throws Exception{
-  //check rules
-    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
-    Check check = getCheckBusiness(iwc).getCheck(checkId);
-
+  private void grantCheck(IWContext iwc)throws Exception{
     String[] rules = iwc.getParameterValues(PARAM_RULE);
     paramErrorRule1 = true;
     paramErrorRule2 = true;
@@ -274,11 +275,30 @@ public class CheckRequestAdmin extends CommuneBlock {
       }
     }
     if(isError){
-      errorMessage = "Du måste bocka av samtliga regler";
+      errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
       viewCheck(iwc);
       return;
     }
-    add(getText("Check approved:"+rules.length+","+rules[0]));
+    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
+    Check check = getCheckBusiness(iwc).getCheck(checkId);
+//    check.setStatus(granted);
+//    check.setManager(handläggare)
+//    check.store();
+//Create message for archive
+//Create post message to citizen
+//Create message to citizen
+
+    add(getText("Check granted:"+rules.length+","+rules[0]));
+  }
+
+  private void retrialCheck(IWContext iwc)throws Exception{
+//Create message to user
+    int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
+    Check check = getCheckBusiness(iwc).getCheck(checkId);
+//    check.setStatus(Omprövning);
+//    check.setManager(handläggare)
+//    check.store();
+    viewCheckList(iwc);
   }
 
   private CheckBusiness getCheckBusiness(IWContext iwc)throws Exception{

@@ -14,6 +14,8 @@ import com.idega.presentation.text.*;
  */
 
 public class CommuneBlock extends com.idega.presentation.Block {
+  public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+
   private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
   private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
   private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
@@ -40,8 +42,16 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
   private IWResourceBundle iwrb = null;
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   public void setResourceBundle(IWResourceBundle iwrb){
     this.iwrb = iwrb;
+  }
+
+  public IWResourceBundle getResourceBundle(){
+    return this.iwrb;
   }
 
   public String getBackgroundColor(){

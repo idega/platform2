@@ -35,6 +35,7 @@ public class ColumnList extends CommuneBlock {
     rowList = new ArrayList();
     bottomRowList = new ArrayList();
     tempRow = new PresentationObject[cols];
+    setWidth("100%");
   }
 
   public void setHeader(String headerText,int col){
@@ -119,7 +120,7 @@ public class ColumnList extends CommuneBlock {
     Table t = new Table(cols,rows+bottomRowList.size());
     t.setCellpadding(3);
     t.setCellspacing(0);
-    t.setWidth("100%");
+    t.setWidth(getWidth());
 
     for(int col=1; col<=cols; col++){
       PresentationObject po = headerRow[col-1];

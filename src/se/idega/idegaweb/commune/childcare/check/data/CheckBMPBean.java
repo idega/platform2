@@ -35,6 +35,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
   private static final String COLUMN_METHOD="METHOD";
   private static final String COLUMN_AMOUNT="AMOUNT";
   private static final String COLUMN_CHECK_FEE="CHECK_FEE";
+  private static final String COLUMN_MANAGER_ID="MANAGER_ID";
 
   public CheckBMPBean() {
   }
@@ -59,6 +60,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
     this.addAttribute(COLUMN_METHOD,"Method used when applying for check (1 citizen, 2 quick)",Integer.class);
     this.addAttribute(COLUMN_AMOUNT,"Total check amount",Integer.class);
     this.addAttribute(COLUMN_CHECK_FEE,"The fee citizen pays",Integer.class);
+    this.addAttribute(COLUMN_MANAGER_ID,"The manager for the check request",Integer.class);
 //    this.addManyToManyRelationShip(SampleEntity.class);
   }
 
@@ -169,6 +171,14 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
 
   public int getCheckFee()throws java.rmi.RemoteException{
     return this.getIntColumnValue(COLUMN_CHECK_FEE);
+  }
+
+  public void setManagerId(int id)throws java.rmi.RemoteException{
+    this.setColumn(COLUMN_MANAGER_ID,new Integer(id));
+  }
+
+  public int getManagerId()throws java.rmi.RemoteException{
+    return this.getIntColumnValue(COLUMN_MANAGER_ID);
   }
 
   public Collection ejbFindChecks()throws FinderException{
