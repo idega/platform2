@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -136,9 +137,40 @@ public class ChildCareAdmin extends ChildCareBlock {
 	}*/
 	
 	private Collection getApplicationCollection() throws RemoteException {
-		Collection applications;
-		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL)
-			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
+		Collection applications = null;
+		if (getSession().getSortBy() != -1 && getSession().getSortBy() != SORT_ALL){
+			try {
+				IWTimestamp stamp = new IWTimestamp();
+				
+				IWTimestamp stampFrom = getSession().getFromTimestamp();
+				IWTimestamp stampTo = getSession().getToTimestamp();
+				Date from =  null;
+				Date to = null;
+				if (stampFrom != null)
+					from = stampFrom.getDate();
+				if (stampTo != null)
+					to = stampTo.getDate();
+				
+			
+				if (from == null){
+					stamp.addYears(-10);
+					from = stamp.getDate();					
+				}
+				stamp = new IWTimestamp();
+				
+				if (to == null){
+					stamp.addYears(10);
+					to = stamp.getDate();					
+				}
+					
+				//applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());	
+				applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), from, to);
+			}
+			catch (Exception e){
+				log(e);
+				
+			}
+		}
 		else
 			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start);
 		return applications;
