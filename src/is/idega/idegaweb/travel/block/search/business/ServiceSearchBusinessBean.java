@@ -340,7 +340,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 							//productIsValid = bus.getIfDay(iwc, product, tmp);
 							tmp.addDays(1);
 						}
-						map.put(product.getPrimaryKey(), new Boolean(productIsValid));
+						if (productIsValid) {
+							map.put(product.getPrimaryKey(), new Boolean(productIsValid));
+						}
 						
 					}
 				} catch (Exception e1) {
