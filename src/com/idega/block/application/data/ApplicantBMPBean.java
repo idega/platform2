@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantBMPBean.java,v 1.1 2002/04/06 19:07:28 tryggvil Exp $
+ * $Id: ApplicantBMPBean.java,v 1.2 2002/05/03 00:05:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -318,5 +318,16 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean imple
   public void update() throws SQLException{
     setFullName();
     super.update();
+  }
+
+  public java.util.Collection ejbFindBySSN(String SSN) throws javax.ejb.FinderException {
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(getTableName());
+    sql.append(" where ");
+    sql.append(this.getSSNColumnName());
+    sql.append(" = ");
+    sql.append(SSN);
+
+    return super.idoFindIDsBySQL(sql.toString());
   }
 }

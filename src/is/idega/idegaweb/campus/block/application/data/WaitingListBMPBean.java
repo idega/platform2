@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.3 2002/05/02 01:44:57 palli Exp $
+ * $Id: WaitingListBMPBean.java,v 1.4 2002/05/03 00:05:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -255,7 +255,7 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     return PRIORITY_LEVEL;
   }
 
-  public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId, String type) throws FinderException {
+  public Collection ejbFindByApartmentTypeAndComplexForApplicationType(int aprtId, int complexId) throws FinderException {
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(getTableName());
     sql.append(" where ");
@@ -266,12 +266,52 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
     sql.append(getComplexIdColumnName());
     sql.append(" = ");
     sql.append(complexId);
-    if (type != null) {
-      sql.append(" and ");
-      sql.append(getTypeColumnName());
-      sql.append(" = ");
-      sql.append(type);
-    }
+    sql.append(" and ");
+    sql.append(getTypeColumnName());
+    sql.append(" = ");
+    sql.append(TYPE_APPLICATION);
+    sql.append(" order by ");
+    sql.append(getPriorityColumnName());
+    sql.append(", ");
+    sql.append(getOrderColumnName());
+
+    return super.idoFindIDsBySQL(sql.toString());
+  }
+
+  public Collection ejbFindByApartmentTypeAndComplexForTransferType(int aprtId, int complexId) throws FinderException {
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(getTableName());
+    sql.append(" where ");
+    sql.append(getApartmentTypeIdColumnName());
+    sql.append(" = ");
+    sql.append(aprtId);
+    sql.append(" and ");
+    sql.append(getComplexIdColumnName());
+    sql.append(" = ");
+    sql.append(complexId);
+    sql.append(" and ");
+    sql.append(getTypeColumnName());
+    sql.append(" = ");
+    sql.append(TYPE_TRANSFER);
+    sql.append(" order by ");
+    sql.append(getPriorityColumnName());
+    sql.append(", ");
+    sql.append(getOrderColumnName());
+
+    return super.idoFindIDsBySQL(sql.toString());
+  }
+
+  public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId) throws FinderException {
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(getTableName());
+    sql.append(" where ");
+    sql.append(getApartmentTypeIdColumnName());
+    sql.append(" = ");
+    sql.append(aprtId);
+    sql.append(" and ");
+    sql.append(getComplexIdColumnName());
+    sql.append(" = ");
+    sql.append(complexId);
     sql.append(" order by ");
     sql.append(getPriorityColumnName());
     sql.append(", ");

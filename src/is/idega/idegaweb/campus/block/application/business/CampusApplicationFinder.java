@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.8 2002/05/02 01:44:57 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.9 2002/05/03 00:05:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -274,10 +274,30 @@ public abstract class CampusApplicationFinder {
     return(cah);
   }
 
-  public static java.util.Collection listOfWaitinglist(int aprtTypeId, int cmplxId, String type) {
+  public static java.util.Collection listOfWaitinglist(int aprtTypeId, int cmplxId) {
      try {
       is.idega.idegaweb.campus.block.application.data.WaitingListHome WLHome = (is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class);
-      return WLHome.findByApartmentTypeAndComplex(aprtTypeId,cmplxId,type);
+      return WLHome.findByApartmentTypeAndComplex(aprtTypeId,cmplxId);
+    }
+    catch(Exception e) {
+      return(null);
+    }
+  }
+
+  public static java.util.Collection listOfWaitinglistForTypeApplication(int aprtTypeId, int cmplxId) {
+     try {
+      is.idega.idegaweb.campus.block.application.data.WaitingListHome WLHome = (is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class);
+      return WLHome.findByApartmentTypeAndComplexForApplicationType(aprtTypeId,cmplxId);
+    }
+    catch(Exception e) {
+      return(null);
+    }
+  }
+
+  public static java.util.Collection listOfWaitinglistForTypeTransfer(int aprtTypeId, int cmplxId) {
+     try {
+      is.idega.idegaweb.campus.block.application.data.WaitingListHome WLHome = (is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class);
+      return WLHome.findByApartmentTypeAndComplexForTransferType(aprtTypeId,cmplxId);
     }
     catch(Exception e) {
       return(null);

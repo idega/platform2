@@ -39,5 +39,12 @@ public class ApplicantHomeImpl extends com.idega.data.IDOFactory implements Appl
 
  }
 
+public java.util.Collection findBySSN(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApplicantBMPBean)entity).ejbFindBySSN(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 
 }

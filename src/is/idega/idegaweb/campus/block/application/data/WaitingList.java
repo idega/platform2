@@ -23,14 +23,14 @@ public interface WaitingList extends com.idega.data.IDOLegacyEntity
  public void setOrder(int p0);
  public void setComplexId(int p0);
  public java.lang.Integer getOrder();
- public void setApplicantId(int p0);
+ public void setApplicantId(java.lang.Integer p0);
+ public void setNumberOfRejections(java.lang.Integer p0);
  public void setTypeApplication();
  public java.lang.Integer getChoiceNumber();
  public void setTypeTransfer();
  public void setNumberOfRejections(int p0);
- public void setNumberOfRejections(java.lang.Integer p0);
  public boolean getRemovedFromList();
  public java.lang.Integer getApplicantId();
+ public void setApplicantId(int p0);
  public java.lang.Integer getApartmentTypeId();
- public void setApplicantId(java.lang.Integer p0);
 }

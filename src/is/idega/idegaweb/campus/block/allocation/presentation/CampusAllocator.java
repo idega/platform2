@@ -1,6 +1,5 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-
 import com.idega.presentation.ui.*;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.presentation.text.*;
@@ -374,7 +373,9 @@ public class CampusAllocator extends Block implements Campus{
       Frame.add(registerImage,col++,row);
       //Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
-    java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId,null);
+    java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
+    java.util.Collection w_application = CampusApplicationFinder.listOfWaitinglistForTypeApplication(aprtTypeId,cmplxId);
+    java.util.Collection t_application = CampusApplicationFinder.listOfWaitinglistForTypeTransfer(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
     boolean bcontracts = false;
     Contract C;

@@ -1,27 +1,65 @@
+/*
+ * $Id: CampusApprover.java,v 1.24 2002/05/03 00:05:35 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package is.idega.idegaweb.campus.block.application.presentation;
 
-
-import java.sql.*;
-import java.util.*;
-
-import com.idega.block.application.business.*;
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.block.application.data.*;
-import com.idega.block.building.business.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.*;
-import is.idega.idegaweb.campus.block.application.business.*;
-import is.idega.idegaweb.campus.block.application.data.*;
-import is.idega.idegaweb.campus.block.mailinglist.business.*;
-import is.idega.idegaweb.campus.presentation.*;
+import com.idega.block.application.business.ApplicationHolder;
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationSubject;
+import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.idegaTimestamp;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.presentation.Edit;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.Vector;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
+import java.util.Hashtable;
 
-public class CampusApprover extends Block{
-
+/**
+ *
+ * @author <a href="mailto:aron@idega.is">Aron</a>
+ * @version 1.0
+ */
+public class CampusApprover extends Block {
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private int iSubjectId = -1;
@@ -119,6 +157,9 @@ public class CampusApprover extends Block{
       else if(iwc.getParameter("new")!=null){
         add(makeApplicationForm(-1,true,iwc,iwrb));
       }
+      else if(iwc.getParameter("new2")!=null){
+        add(makeApplicationForm(-1,true,iwc,iwrb));
+      }
       else{
         add(subjectForm());
         add(makeApplicantTable(iwc,iwrb));
@@ -189,6 +230,10 @@ public class CampusApprover extends Block{
                 wl.setPriorityLevelC();
               else if (level.equals("D"))
                 wl.setPriorityLevelD();
+              else if (level.equals("T")) {
+                wl.setPriorityLevelA();
+                wl.setTypeTransfer();
+              }
               wl.update();
             }
           }
@@ -357,7 +402,8 @@ public class CampusApprover extends Block{
       T.setCellpadding(2);
       T.setCellspacing(1);
     */
-    List L = ApplicationFinder.listOfApplicationHoldersInSubject(this.iSubjectId,this.sGlobalStatus,this.sGlobalOrder);
+    System.out.println("sGlobalStatus = " + sGlobalStatus);
+    List L = ApplicationFinder.listOfApplicationHoldersInSubject(iSubjectId,sGlobalStatus,sGlobalOrder);
 
     if(L != null){
       ListIterator iterator = L.listIterator();
@@ -607,6 +653,97 @@ public class CampusApprover extends Block{
     return theForm;
   }
 
+/*  public PresentationObject makeTransferForm(int id, IWContext iwc, IWResourceBundle iwrb) {
+    Form theForm = new Form();
+    theForm.add(new HiddenInput("application_id",String.valueOf(id)));
+    try{
+      Application eApplication = null;
+      Applicant spouse = null;
+      Vector children = null;
+      Applicant eApplicant = null;
+      if(id < -1 && iterator != null){
+        ApplicationHolder AS = null;
+        if( id == -2 && iterator.hasPrevious()){
+          AS = (ApplicationHolder)iterator.previous();
+        }
+        else if(id == -4 && iterator.hasNext()){
+          AS = (ApplicationHolder)iterator.next();
+        }
+        if(AS !=null){
+          eApplication = AS.getApplication();
+          eApplicant = AS.getApplicant();
+          id = eApplication.getID();
+        }
+      }
+      else {
+        if (id > 0) {
+          eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+          eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eApplication.getApplicantId());
+        }
+      }
+
+      CampusApplication A = null;
+      CampusApplication eCampusApplication = null;
+      List L = null;
+      if( eApplication !=null && eApplicant != null){
+        java.util.Iterator iter = eApplicant.getChildren();
+        if(iter !=null){
+          Applicant a;
+          while(iter.hasNext()){
+            a = (Applicant) iter.next();
+            if(a.getStatus().equals("P")){
+              spouse = a;
+            }
+            else if(a.getStatus().equals("C")){
+              if(children ==null)
+                children = new Vector();
+              children.add(a);
+            }
+          }
+        }
+
+        A = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
+        eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+        L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
+      }
+
+        int border = 0;
+
+        Table OuterFrame = new Table(3,1);
+        OuterFrame.setCellpadding(2);
+        OuterFrame.setCellspacing(0);
+        OuterFrame.setBorder(border);
+        OuterFrame.setRowVerticalAlignment(1,"top");
+        //OuterFrame.setWidth(1,"550");
+
+        Table Left = new Table(1,3);
+          Left.add(getFieldsApplicant(eApplicant,eCampusApplication,iwrb),1,1);
+          Left.add(getFieldsSpouse(spouse,eCampusApplication,iwrb),1,2);
+          Left.add(getFieldsChildren(children,eCampusApplication,iwrb),1,3);
+
+        Table Middle =new Table(1,3);
+          Middle.add(getViewApplication(eApplication),1,1);
+          Middle.add(getFieldsApartment(eCampusApplication,L,iwc,iwrb),1,2);
+          Middle.add(getFieldsApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
+
+        Table Right =new Table(1,3);
+          Right.add(getRemoteControl(iwrb),1,1);
+          Right.add(getKnobs(iwrb),1,2);
+          String status = eApplication!=null ? eApplication.getStatus():"";
+          String pStatus = eCampusApplication!=null ? eCampusApplication.getPriorityLevel():"";
+          Right.add(getButtons(eApplication,status,pStatus,bEdit,iwrb),1,3);
+
+          OuterFrame.add(Left,1,1);
+          OuterFrame.add(Middle,2,1);
+          OuterFrame.add(Right,3,1);
+
+        theForm.add(OuterFrame);
+    }
+    catch(SQLException sql){sql.printStackTrace();}
+    catch(Exception e){e.printStackTrace();}
+    return theForm;
+  }*/
+
   public PresentationObject getViewApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     DataTable T = new DataTable();
     T.setWidth("100%");
@@ -727,7 +864,6 @@ public class CampusApprover extends Block{
         endMonth = (eCampusApplication.getStudyEndMonth().toString());
         beginYear = eCampusApplication.getStudyBeginYear().toString();
         endYear = eCampusApplication.getStudyEndYear().toString();
-
       }
 
       T.add(tiFullName,col,row++);
@@ -1421,12 +1557,14 @@ public class CampusApprover extends Block{
     DropdownMenu status = statusDrop("global_status",sGlobalStatus);
     DropdownMenu order = orderDrop("global_order",sGlobalOrder);
     SubmitButton New = new SubmitButton("new","New");
+    SubmitButton New2 = new SubmitButton("new2","New transfer");
     drp.setToSubmit();
     status.setToSubmit();
     order.setToSubmit();
     Edit.setStyle(status);
     Edit.setStyle(order);
     Edit.setStyle(New);
+    Edit.setStyle(New2);
     DataTable T = new DataTable();
     T.addTitle(iwrb.getLocalizedString("filter","Filter"));
     T.setTitlesHorizontal(true);
@@ -1440,8 +1578,10 @@ public class CampusApprover extends Block{
     T.add(drp,col++,row);
     T.add(status,col++,row);
     T.add(order,col++,row);
-    if(iSubjectId > 0)
+    if(iSubjectId > 0) {
       T.add(New,col++,row);
+      T.add(New2,col++,row);
+    }
     myForm.add(T);
 
     return myForm;
@@ -1504,6 +1644,7 @@ public class CampusApprover extends Block{
     drp.addMenuElement("B","B");
     drp.addMenuElement("C","C");
     drp.addMenuElement("D","D");
+    drp.addMenuElement("T","T");
     drp.setSelectedElement(selected);
     return drp;
   }
