@@ -106,6 +106,10 @@ public class NewsFormatter {
           info.append(" ");
           info.append(NewsTime);
       }
+      if(!"".equals(sCategory)){
+      	info.append(spacer);
+        info.append(sCategory);
+      }
     }
     else{
       if(!"".equals(sCategory)){

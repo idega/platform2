@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.129 2004/05/28 00:00:22 gummi Exp $
+ * $Id: NewsReader.java,v 1.130 2004/05/28 00:26:59 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -155,6 +155,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   private int visibleNewsRangeStart = 0;
   private int visibleNewsRangeEnd = Integer.MAX_VALUE;
   private boolean setHeadlineLinktToCategoryMainViewerPage = false;
+  private  boolean showCategoryInSingleLineView = false;
 
   public NewsReader(){
     setCacheable(getCacheKey(), 999999999);//cache indefinately
@@ -837,9 +838,17 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   }
 
   private Text getInfoText(NwNews nwNews,Content content ,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst,boolean showUpdatedDate){
-    if(showInfo)
-      return new Text(NewsFormatter.getInfoText(nwNews,content,"",locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst,showUpdatedDate) );
-    else
+    if(showInfo) {
+    	String categoryName = "";
+    	try {
+    		if(showCategoryInSingleLineView)
+    			categoryName = nwNews.getNewsCategory().getName(locale);
+	} catch (RuntimeException e) {
+		System.out.println("Error in NewsReader#getInfoText(...)");
+		//
+	}  
+    	return new Text(NewsFormatter.getInfoText(nwNews,content,categoryName,locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst,showUpdatedDate) );
+    } else
       return null;
   }
 
@@ -1341,5 +1350,12 @@ public boolean isHeadlineLinktSetToCategoryMainViewerPage() {
  */
 public void setHeadlineLinktToCategoryMainViewerPage(boolean value) {
 	this.setHeadlineLinktToCategoryMainViewerPage = value;
+}
+
+/**
+ * @param value The showCategoryInSingleLineView to set.
+ */
+public void setToShowCategoryInSingleLineView(boolean value) {
+	this.showCategoryInSingleLineView = value;
 }
 }
