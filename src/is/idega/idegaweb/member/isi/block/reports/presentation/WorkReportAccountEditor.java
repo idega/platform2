@@ -283,12 +283,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Iterator workReportClubAccountRecordsIterator = workReportClubAccountRecords.iterator();
     while (workReportClubAccountRecordsIterator.hasNext())  {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) workReportClubAccountRecordsIterator.next();
+      Integer groupId = new Integer(record.getWorkReportGroupId());
       // note: workReportGroupId is -1 if the record belongs to the main board
       // (the column value is null but the getIntValue-method returns -1 
-      Integer groupId = new Integer(record.getWorkReportGroupId());
-      if (groupId.intValue() == -1) {
-        groupId = WorkReportConstants.MAIN_BOARD_ID;
-      }
+      // 23.09.2003: the data model has changed:
+      // the main board is now represented by a real work report group.
+      // That means, that the groupId should never be null. 
+      // old data model: 
+      // if (groupId.intValue() == -1) {
+      //  groupId = WorkReportConstants.MAIN_BOARD_ID;
+      // }
       Integer accountKey = new Integer(record.getAccountKeyId());
       leagueKeyMatrix.put(groupId, accountKey, record);
     }
@@ -439,8 +443,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (leagueIterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       // handle the special case that the group id is null
-      String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : group.getName();
-      Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
+      // 23.09.2003: the data model has changed:
+      // the main board is now represented by a real work report group.
+      // That means, that the group should never be null. 
+      // old data model: String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : group.getName();
+      String groupName = group.getName();
+      // old data model: Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
+      Integer groupId = (Integer) group.getPrimaryKey();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }

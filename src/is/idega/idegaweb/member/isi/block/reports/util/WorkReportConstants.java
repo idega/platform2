@@ -35,7 +35,11 @@ public class WorkReportConstants extends IWMemberConstants{
   public static final String MAIN_BOARD_GROUP_NAME = "AÐA"; 
   // artificial id of the "group" that represents the main board
   // do not use -1 because that is used to represent a new entity that is not stored yet 
-  public static final Integer MAIN_BOARD_ID = new Integer(-42);
+  // 23.09.2003: the data model has changed:
+  // the main board is now represented by a real work report group.
+  // That means, that the groupId should never be null. 
+  // old data model: 
+  // public static final Integer MAIN_BOARD_ID = new Integer(-42);
   
   public static final String INCOME_SUM_KEY = "FIN_income_sum";
   public static final String EXPENSES_SUM_KEY = "FIN_expenses_sum";
