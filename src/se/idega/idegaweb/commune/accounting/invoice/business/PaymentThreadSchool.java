@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/02 17:53:38 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/04 19:36:28 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.78 $
+ * @version $Revision: 1.79 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -310,7 +310,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
-							createPaymentsForOppenVerksamhet(regBus, provider, schoolClassMember, conditions, placementTimes);
+							createPaymentsForOppenVerksamhet(regBus, provider, schoolClassMember, conditions, placementTimes, schoolType);
 							break;
 						}
 					}
@@ -319,7 +319,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)) {
-							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions, placementTimes);
+							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions, placementTimes, schoolType);
 							break;
 						}
 					}
@@ -436,7 +436,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes) throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		ArrayList oppenConditions = new ArrayList();
 		oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
@@ -456,12 +456,14 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 //				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
-				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase((getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
-					errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType());
-					errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
+				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType(),1);
+				errorRelated.append("RegSpecType from posting detail"+((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
+				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(((RegulationSpecType)getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey())){
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
-				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+//				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
+				
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName(),1);
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
@@ -475,7 +477,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	private void createPaymentsForOppenVerksamhet(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes) throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	private void createPaymentsForOppenVerksamhet(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		ArrayList oppenConditions = new ArrayList();
 		School school = schoolClassMember.getSchoolClass().getSchool();
 
@@ -495,7 +497,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions,placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+//				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
+				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
+
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName(),1);
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
