@@ -10,14 +10,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import se.agura.applications.vacation.business.ExtraInformation;
 import se.agura.applications.vacation.data.VacationType;
+
 import com.idega.block.media.presentation.FileChooser;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DateInput;
@@ -213,14 +217,17 @@ public class VacationApplication extends VacationBlock {
 
 	private Table getTimeTable(IWContext iwc) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp();
+		stamp.addYears(-1);
 		
 		DateInput fromDateInput = (DateInput) getInput(new DateInput(PARAMETER_VACATION_FROM_DATE));
 		fromDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.from_date_not_empty", "This field may not be empty"));
-		fromDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.from_date_back_in_time", "From date can not be back in time."));
+		//fromDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.from_date_back_in_time", "From date can not be back in time."));
+		fromDateInput.setYearRange(stamp.getYear(), stamp.getYear() + 4);
 		
 		DateInput toDateInput = (DateInput) getInput(new DateInput(PARAMETER_VACATION_TO_DATE));
 		toDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.to_date_not_empty", "This field may not be empty"));
-		toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
+		//toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
+		toDateInput.setYearRange(stamp.getYear(), stamp.getYear() + 4);
 		
 		DropdownMenu hours = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_VACATION_WORKING_HOURS));
 		hours.addMenuElement(1, "1");
@@ -231,10 +238,8 @@ public class VacationApplication extends VacationBlock {
 		hours.addMenuElement(6, "6");
 		hours.addMenuElement(7, "7");
 		hours.addMenuElement(8, "8");
-		hours.setSelectedElement(1);
+		hours.setSelectedElement(8);
 	
-		//hvaÝ ef ßaÝ er skr‡Ý inn tala hŽr???
-		//TextInput hours = (TextInput) getInput(new TextInput(PARAMETER_VACATION_WORKING_HOURS));
 		hours.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.hours_not_empty", "This field may not be empty"));
 		
 		Table timeTable = new Table(2, 6);
@@ -468,7 +473,14 @@ public class VacationApplication extends VacationBlock {
 			log(re);
 		}
 
-		table.setCellpaddingLeft(1, row, 0);
+		Map extraInfo = null;
+		try {
+			extraInfo = getBusiness(iwc).getExtraVacationTypeInformation(type);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.required_vacation", "Required vacation")), 1, row);
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.from_date", "From date") + ":" + Text.NON_BREAKING_SPACE), 2, row);
@@ -479,7 +491,6 @@ public class VacationApplication extends VacationBlock {
 		table.add(getText(toDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
 		table.setHeight(row++, 12);
 
-		table.setCellpaddingLeft(1, row, 0);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.ordinary_hours", "Ordinary workinghours per day")),
 				1, row);
 		table.add(getText(selectedHours), 2, row++);
@@ -530,25 +541,58 @@ public class VacationApplication extends VacationBlock {
 			table.setHeight(row++, 12);
 		}
 		
-		table.setCellpaddingLeft(1, row, 0);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.type", "Type")), 1, row);
 		table.mergeCells(2, row, table.getColumns(), row);
 		if (type != null) {
-			table.add(getText(getResourceBundle().getLocalizedString(type.getLocalizedKey())), 2, row++);
+			table.add(getText(getResourceBundle().getLocalizedString(type.getLocalizedKey())), 2, row);
 		}
+		row++;
+		table.setHeight(row++, 12);
 		
-		table.setCellpaddingLeft(1, row, 0);
+		if (extraInfo != null && extraInfo.size() > 0) {
+			Iterator iter = extraInfo.keySet().iterator();
+			while (iter.hasNext()) {
+				try {
+					String key = (String) iter.next();
+					String metaType = getBusiness(iwc).getExtraInformationType(type, key);
+					String value = iwc.getParameter(key);
+					if (value != null) {
+						table.add(getHeader(getResourceBundle().getLocalizedString("vacation_type_metadata." + key, key)), 1, row);
+						table.mergeCells(2, row, table.getColumns(), row);
+						
+						if (metaType.equals("com.idega.presentation.ui.TextArea") || metaType.equals("com.idega.presentation.ui.TextInput")) {
+							table.add(getText(value), 2, row);
+						}
+						else if (metaType.equals("com.idega.presentation.ui.RadioButton")) {
+							table.add(getText(getResourceBundle().getLocalizedString("vacation_type_metadata_boolean." + value, value)), 2, row);
+						}
+						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+							Link link = getLink(getResourceBundle().getLocalizedString("vacation_request.attachment", "Attachment"));
+							link.setFile(Integer.parseInt(value));
+							table.add(link, 2, row);
+						}
+						row++;
+					}
+				}
+				catch (RemoteException re) {
+					log(re);
+				}
+			}
+			table.setHeight(row++, 12);
+		}
+
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.motivation","Motivation")),1,row);
 		table.mergeCells(2, row, table.getColumns(), row);
 		if(motivation != null) {
-			table.add(getText(motivation), 2, row++);
+			table.add(getText(motivation), 2, row);
 		}
+		row++;
 
-		table.setCellpaddingLeft(1, row, 0);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.request_date", "Request date")), 1, row);
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getText(today.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
 		
+		table.setCellpaddingLeft(1, 0);
 		table.setWidth(1, iHeaderColumnWidth);
 		
 		return table;

@@ -9,6 +9,7 @@ package se.agura.applications.vacation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import se.agura.applications.vacation.business.VacationBusiness;
 import se.agura.applications.vacation.business.VacationConstants;
@@ -158,6 +159,14 @@ public abstract class VacationBlock extends Block {
 			log(re);
 		}
 
+		Map extraInfo = null;
+		try {
+			extraInfo = getBusiness(iwc).getExtraVacationTypeInformation(vacationType);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.required_vacation", "Required vacation")), 1, row);
 		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.from_date", "From date") + ":" + Text.NON_BREAKING_SPACE), 2, row);
@@ -220,6 +229,44 @@ public abstract class VacationBlock extends Block {
 		table.add(getText(vacationType.getTypeName()), 2, row++);
 		table.setHeight(row++, 12);
 
+		if (extraInfo != null && extraInfo.size() > 0) {
+			Iterator iter = extraInfo.keySet().iterator();
+			while (iter.hasNext()) {
+				try {
+					String key = (String) iter.next();
+					String metaType = getBusiness(iwc).getExtraInformationType(vacationType, key);
+					String value = vacation.getExtraTypeInformation(key);
+					if (value != null) {
+						table.add(getHeader(getResourceBundle().getLocalizedString("vacation_type_metadata." + key, key)), 1, row);
+						table.mergeCells(2, row, table.getColumns(), row);
+						
+						if (metaType.equals("com.idega.presentation.ui.TextArea") || metaType.equals("com.idega.presentation.ui.TextInput")) {
+							table.add(getText(value), 2, row);
+						}
+						else if (metaType.equals("com.idega.presentation.ui.RadioButton")) {
+							table.add(getText(getResourceBundle().getLocalizedString("vacation_type_metadata_boolean." + value, value)), 2, row);
+						}
+						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+							Link link = getLink(getResourceBundle().getLocalizedString("vacation_request.attachment", "Attachment"));
+							link.setFile(Integer.parseInt(value));
+							table.add(link, 2, row);
+						}
+						row++;
+					}
+				}
+				catch (RemoteException re) {
+					log(re);
+				}
+			}
+			table.setHeight(row++, 12);
+		}
+
+		if (vacation.getComment() != null) {
+			table.add(getHeader(getResourceBundle().getLocalizedString("vacation.motivation","Motivation")),1,row);
+			table.mergeCells(2, row, table.getColumns(), row);
+			table.add(getText(vacation.getComment()), 2, row++);
+		}
+	
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request_date", "Request date")), 1, row);
 		table.add(getText(date.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
