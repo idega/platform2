@@ -19,9 +19,12 @@ import com.idega.business.IBOServiceBean;
 
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness{
 
+  public SchoolHome getSchoolHome(){
+    return getSchoolHome();
+  }
   public School getSchool(Object primaryKey){
      try{
-      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
+      SchoolHome shome = getSchoolHome();
       return shome.findByPrimaryKey(primaryKey);
     }
     catch(Exception ex){
@@ -31,7 +34,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
   public void removeSchool(int id){
     try{
-      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
       School school = getSchool(new Integer(id));
       school.remove();
     }
@@ -43,7 +45,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
   public Collection findAllSchools()  {
     try{
-      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
+      SchoolHome shome = getSchoolHome();
       return shome.findAllSchools();
     }
     catch(Exception ex){
@@ -54,7 +56,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
   public Collection findAllSchoolsByAreaAndType(int area,int type){
     try{
-      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
+      SchoolHome shome = getSchoolHome();
       return shome.findAllByAreaAndType(area,type);
     }
     catch(Exception ex){
@@ -79,7 +81,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
               int[] year_ids
       ) throws java.rmi.RemoteException{
 
-      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
+      SchoolHome shome = getSchoolHome();
       School newSchool;
       try{
         if(id > 0){
