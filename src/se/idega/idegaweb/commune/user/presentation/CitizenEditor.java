@@ -11,6 +11,7 @@ import is.idega.idegaweb.member.presentation.UserEditor;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.ejb.EJBException;
@@ -234,6 +235,8 @@ public class CitizenEditor extends UserEditor {
 
 		addToMainPart(buttonTable);
 	}
+	
+	
 
 	/**
 	 * Returns the default delete icon with the tooltip specified.
@@ -252,6 +255,18 @@ public class CitizenEditor extends UserEditor {
 
 	public CommuneUserBusiness getCommuneUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserEditor#storeUserAsDeceased(com.idega.presentation.IWContext, java.lang.Integer, java.util.Date)
+	 */
+	protected void storeUserAsDeceased(IWContext iwc, Integer userID, Date deceasedDate) {
+		try {
+			getCommuneUserService(iwc).setUserAsDeceased(userID,deceasedDate);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
