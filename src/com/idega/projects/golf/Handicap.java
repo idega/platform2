@@ -1,6 +1,9 @@
 package com.idega.projects.golf;
 
+import java.io.*;
+import java.sql.*;
 import java.text.DecimalFormat;
+import com.idega.projects.golf.entity.*;
 
 public class Handicap {
 
@@ -103,6 +106,27 @@ private double grunn;
 		int leik = (int) Math.rint(leikhandicap);
 
 		return leik;
+
+	}
+
+	public static float getHandicapForScorecard (int tournament_id, int tee_color_id, float max_handicap) throws IOException,SQLException {
+
+            Tournament tournament = new Tournament(tournament_id);
+            Field field = tournament.getField();
+
+            float course_rating = 72;
+            int slope = 113;
+            int field_par = field.getFieldPar();
+
+            Tee[] tee = (Tee[]) (new Tee()).findAllByColumn("field_id",field.getID()+"","tee_color_id",tee_color_id+"");
+            if ( tee.length > 0 ) {
+              course_rating = tee[0].getCourseRating();
+              slope = tee[0].getSlope();
+            }
+
+            float handicap = (float) ( ( max_handicap - ( course_rating - field_par ) ) * 113 ) / slope;
+
+            return handicap;
 
 	}
 
