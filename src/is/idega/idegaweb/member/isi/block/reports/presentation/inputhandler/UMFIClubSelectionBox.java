@@ -33,11 +33,11 @@ public class UMFIClubSelectionBox extends GroupSelectionBox {
 		super("", IWMemberConstants.GROUP_TYPE_CLUB, metaDataMap);
 	}
 	
-	static private Map metaDataMap = null;
+	static private Map metaDataMap = getMetaDataMap();
 	
-	{
-		metaDataMap = new Hashtable();
+	static private Map getMetaDataMap() {
+		Map metaDataMap = new Hashtable();
 		metaDataMap.put(IWMemberConstants.META_DATA_CLUB_IN_UMFI, "true");
-		System.out.println("Metadata map prepared");
+		return metaDataMap;
 	}
 }
