@@ -37,6 +37,9 @@ private String _width = null;
 private boolean _isSelectedDay = false;
 private int _daysAhead = 7;
 private int _daysBack = 7;
+private String _bodyColor = "#000000";
+private String _headlineColor = "#000000";
+private String _dateColor = "#000000";
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
@@ -87,7 +90,6 @@ public Calendar(idegaTimestamp timestamp){
     String[] localeStrings = null;
     Text headlineText = null;
     Text bodyText = null;
-    Table dayTable = null;
     idegaTimestamp stamp = null;
     boolean hasImage = true;
     int imageID;
@@ -104,8 +106,6 @@ public Calendar(idegaTimestamp timestamp){
     if ( entries != null ) {
       for ( int a = 0; a < entries.length; a++ ) {
         Image typeImage = null;
-        dayTable = new Table();
-        dayTable.setWidth("100%");
         localeStrings = CalendarFinder.getEntryStrings(entries[a],_iLocaleID);
         imageID = CalendarFinder.getImageID(entries[a].getEntryTypeID());
 
@@ -139,45 +139,52 @@ public Calendar(idegaTimestamp timestamp){
         if ( headlineText != null ) {
           if ( typeImage != null ) {
             typeImage.setName(CalendarFinder.getEntryTypeName(entries[a].getEntryTypeID(),_iLocaleID));
-            dayTable.add(typeImage,xpos,1);
+            entriesTable.add(typeImage,xpos,ypos);
             hasImage = true;
             xpos++;
           }
 
-          headlineText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold;");
-          dayTable.setWidth(xpos,1,"100%");
-          dayTable.add(headlineText,xpos,1);
+          headlineText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
+          entriesTable.setWidth(xpos,ypos,"100%");
+          entriesTable.add(headlineText,xpos,ypos);
 
           stamp = new idegaTimestamp(entries[a].getDate());
           String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
           Text dateText = new Text(date);
-            dateText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold;");
+            dateText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
 
           xpos++;
-          dayTable.setAlignment(xpos,1,"right");
-          dayTable.add(dateText,xpos,1);
+          entriesTable.setAlignment(xpos,ypos,"right");
+          entriesTable.add(dateText,xpos,ypos);
 
           if ( _isAdmin ) {
             xpos++;
-            dayTable.add(getEditButtons(entries[a].getID()),xpos,1);
+            entriesTable.add(getEditButtons(entries[a].getID()),xpos,ypos);
           }
 
           if ( bodyText != null ) {
-            bodyText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt;");
+            ypos++;
+            bodyText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
             if ( hasImage ) {
-              dayTable.mergeCells(2,2,dayTable.getColumns(),2);
-              dayTable.add(bodyText,2,2);
+              entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
+              entriesTable.add(bodyText,2,ypos);
             }
             else {
-              dayTable.mergeCells(1,2,dayTable.getColumns(),2);
-              dayTable.add(bodyText,1,2);
+              entriesTable.mergeCells(1,ypos,entriesTable.getColumns(),ypos);
+              entriesTable.add(bodyText,1,ypos);
             }
           }
 
-          entriesTable.add(dayTable,1,ypos);
           ypos++;
         }
       }
+    }
+
+    if ( ypos == 1 ) {
+      headlineText = new Text(_iwrb.getLocalizedString("no_entries","No entries in calendar"));
+      headlineText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
+      entriesTable.add(headlineText,1,1);
+      ypos++;
     }
 
     if ( _isAdmin ) {
@@ -303,6 +310,18 @@ public Calendar(idegaTimestamp timestamp){
 
   public void setDaysBack(int daysBack) {
     _daysBack = daysBack;
+  }
+
+  public void setHeadlineColor(String headlineColor) {
+    _headlineColor = headlineColor;
+  }
+
+  public void setBodyColor(String bodyColor) {
+    _bodyColor = bodyColor;
+  }
+
+  public void setDateColor(String dateColor) {
+    _dateColor = dateColor;
   }
 
   public void setDate(int year,int month,int day) {
