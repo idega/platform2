@@ -1,0 +1,30 @@
+Registering plugins:
+Add the plugin business to a bundle as an application.component
+
+Find out the ic_object_id of the object
+
+insert a record into ic_user_plugin
+
+
+
+
+209 is.idega.idegaweb.member.business.plugins.GroupOfficeContactPluginBusiness 
+insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Group Office Contact Plugin',null,'group',1,null,209)
+
+208 is.idega.idegaweb.member.business.plugins.GroupOfficeAddressPluginBusiness 
+insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Group Office Address Plugin',null,'group',1,null, 208)
+
+207 is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness 
+insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Club Informatio Plugin',null,'group',null, 207)
+
+126 is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness
+insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Age and Gender Plugin',null,'group',null, 126)
+
+insert into middle table
+insert into ic_group_type_ic_user_plugin values(3,'iwme_club')
+insert into ic_group_type_ic_user_plugin values(2,'iwme_club')
+insert into ic_group_type_ic_user_plugin values(1,'iwme_club')
+
+insert into ic_group_type_ic_user_plugin values(4,'iwme_club_player')
+
+
