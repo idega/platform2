@@ -616,22 +616,23 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 
 	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException{
 		Collection coll = getText();
-		TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
+		//TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
 		if (coll != null && !coll.isEmpty()) {
 			Iterator iter = coll.iterator();
 			TxText text;
-			try {
-				text = textHome.findByPrimaryKey(iter.next());
+			//try {
+				text = (TxText) iter.next();
+				//text = textHome.findByPrimaryKey(iter.next());
 				/* May want to use this...
 				if (iter.hasNext()) {
 					System.out.println("[SchoolBMPBean] Found too many localizedTexts, removing this one ("+text.getID()+") and trying again..");
 					TextBusiness.deleteText(text.getID());
 					return getLocalizedText(localeId);
 				}*/
-			} catch (FinderException e) {
-				e.printStackTrace(System.err);
-				return null;
-			}
+			//} catch (ClassCastException e) {
+			//	e.printStackTrace(System.err);
+			//	return null;
+			//}
 			LocalizedText lText = TextFinder.getContentHelper(text.getID(), localeId).getLocalizedText();
 			return lText;
 		}else {
