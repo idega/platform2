@@ -1,5 +1,6 @@
 package is.idega.idegaweb.tracker.business;
 
+import java.util.*;
 import is.idega.idegaweb.tracker.data.*;
 
 import com.idega.presentation.IWContext;
@@ -12,14 +13,9 @@ import com.idega.builder.data.IBPage;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Hashtable; //synchronized
-import java.util.HashMap;//unsynchronized
-import java.util.ArrayList;//unsynchronized
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+ //synchronized
+//unsynchronized
+//unsynchronized
 
 /**
  * Title:        is.idega.idegaweb.tracker.business.TrackerBusiness
@@ -147,6 +143,48 @@ public class TrackerBusiness {
         stats.setSessions(stats.getSessions()+1);
       }
     }
+  }
+
+  public static ArrayList getRefererArrayList(){
+    ArrayList list = new ArrayList();
+
+    if( referers!=null ){
+      Iterator iter = referers.keySet().iterator();
+        while (iter.hasNext()) {
+          ReferrerStatistics item = (ReferrerStatistics) referers.get((String)iter.next());
+          list.add(item);
+        }
+    }
+
+    return list;
+  }
+
+  public static ArrayList getRefererArrayListSortedBySessions(){
+    RefererComparator comparer = new RefererComparator(RefererComparator.ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getRefererArrayList());
+  }
+
+  public static ArrayList getRefererArrayListReverseSortedBySessions(){
+    RefererComparator comparer = new RefererComparator(RefererComparator.REVERSE_ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getRefererArrayList());
+  }
+
+  public static ArrayList getRefererArrayListSortedByURL(){
+    RefererComparator comparer = new RefererComparator(RefererComparator.ORDER_BY_URL);
+    return comparer.sortedArrayList(getRefererArrayList());
+  }
+
+  public static ArrayList getAgentArrayList(){
+    ArrayList list = new ArrayList();
+
+    if( agents!=null ){
+      Iterator iter = agents.keySet().iterator();
+        while (iter.hasNext()) {
+          ReferrerStatistics item = (ReferrerStatistics) agents.get((String)iter.next());
+          list.add(item);
+        }
+    }
+    return list;
   }
 
   public static void handleUserAgentStats(IWContext iwc){

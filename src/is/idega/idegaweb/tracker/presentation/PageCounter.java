@@ -1,5 +1,6 @@
 package is.idega.idegaweb.tracker.presentation;
 
+import java.util.*;
 import com.idega.presentation.Block;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -7,10 +8,6 @@ import com.idega.presentation.text.*;
 
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.tracker.business.TrackerBusiness;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import is.idega.idegaweb.tracker.data.*;
 /**
@@ -23,11 +20,13 @@ import is.idega.idegaweb.tracker.data.*;
  */
 
 public class PageCounter extends Block {
-  private boolean cph = true;
-  private boolean cps = false;
-  private boolean tph = false;
-  private boolean tps = false;
-  private boolean update = true;
+  private boolean cph = true;//show current page hits
+  private boolean cps = false;//show current page sessions
+  private boolean tph = false;//show total page hits
+  private boolean tps = false;//show total page session
+  private boolean srf = false;//show referers
+  private boolean sag = false;//show user agents
+  private boolean update = true;//update the stats(true) or just showing stats(false)
   private Map ipFilter = new HashMap();/**clone**/
 
   public PageCounter() {
@@ -71,44 +70,48 @@ public class PageCounter extends Block {
 
 
 
-    if(cph){
+    if(srf){
 
-    //referers
-    Table refs = new Table();
-    int y = 1;
-    refs.add("Referer url",1,y);
-    refs.add("Count",2,y);
+      //referers
+      Table refs = new Table();
+      int y = 1;
+      refs.add("Referer url",1,y);
+      refs.add("Count",2,y);
 
-    Hashtable referers = (Hashtable) TrackerBusiness.getReferers();
-    if( referers != null ){
-      Iterator iter = referers.keySet().iterator();
-      while (iter.hasNext()) {
-        ReferrerStatistics item = (ReferrerStatistics) referers.get((String)iter.next());
+      ArrayList referers =  TrackerBusiness.getRefererArrayListSortedBySessions();
+
+      Iterator referer = referers.iterator();
+      ReferrerStatistics item;
+      while (referer.hasNext()) {
+        item = (ReferrerStatistics) referer.next();
         refs.add(item.getReferrerUrl(),1,++y);
         refs.add(String.valueOf(item.getSessions()),2,y);
       }
+
+     add(refs);
     }
-    add(refs);
 
     addBreak();
-    //agents
-    Table agents = new Table();
-    int y2 = 1;
-    agents.add("User agents",1,y2);
-    agents.add("Count",2,y2);
 
-    Hashtable ua = (Hashtable) TrackerBusiness.getUserAgents();
-    if( ua != null ){
-      Iterator iter = ua.keySet().iterator();
-      while (iter.hasNext()) {
-        UserAgentStatistics item = (UserAgentStatistics) ua.get((String)iter.next());
-        agents.add(item.getUserAgent(),1,++y2);
-        agents.add(String.valueOf(item.getSessions()),2,y2);
+    if(sag){
+      //agents
+      Table agents = new Table();
+      int y2 = 1;
+      agents.add("User agents",1,y2);
+      agents.add("Count",2,y2);
+
+      Hashtable ua = (Hashtable) TrackerBusiness.getUserAgents();
+      if( ua != null ){
+        Iterator iter = ua.keySet().iterator();
+        while (iter.hasNext()) {
+          UserAgentStatistics item = (UserAgentStatistics) ua.get((String)iter.next());
+          agents.add(item.getUserAgent(),1,++y2);
+          agents.add(String.valueOf(item.getSessions()),2,y2);
+        }
       }
-    }
-    add(agents);
+      add(agents);
 
-    }
+      }
 
   }
 
@@ -133,8 +136,20 @@ public class PageCounter extends Block {
     this.update = update;
   }
 
+  public void setShowReferers(boolean show){
+    this.srf = show;
+  }
+
+  public void setShowAgents(boolean show){
+    this.sag = show;
+  }
+
   public void setIpFilterNumber(String ipNumber){
    ipFilter.put(ipNumber,ipNumber);
+  }
+
+  public void setIpFilterNumber(String name, String ipNumber){
+   ipFilter.put(name,ipNumber);
   }
 
   public void removeIpFilterNumber(String ipNumber){

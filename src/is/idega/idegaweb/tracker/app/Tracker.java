@@ -55,7 +55,7 @@ public class Tracker extends IWApplication {
     this.setSpanPixels(3,35);
     this.setScrollbar(false);
     this.setScrolling(1,false);
-    this.setScrolling(2,false);
+    this.setScrolling(2,true);
     this.setScrolling(3,false);
   }
 
@@ -126,7 +126,14 @@ public class Tracker extends IWApplication {
     }
 
    public void main(IWContext iwc) throws Exception {
-      add(new PageCounter());
+      PageCounter counter = new PageCounter();
+      counter.setShowCurrentPageHits(false);
+      counter.setShowCurrentPageSessions(false);
+      counter.setShowTotalHits(true);
+      counter.setShowTotalSessions(true);
+      counter.setUpdateStats(false);
+
+      add(counter);
     }
 
 
