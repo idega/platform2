@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.3 2004/12/07 07:40:57 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.4 2004/12/08 10:35:27 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import javax.ejb.CreateException;
 
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -24,9 +25,9 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -35,13 +36,15 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
 	private static final String PARAMETER_HOURS = "meet_hours";
 
 	private static final String PARAMETER_MINUTES = "meet_minutes";
+	
+	private ICPage iGroupEditPage;
 
 	public void present(IWContext iwc) {
 		String action = iwc.getParameter(PARAMETER_ACTION);
@@ -154,11 +157,11 @@ public class MeetingReport extends MeetingFeeBlock {
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants", "Participants")), 1, row++);
 		table.mergeCells(1, row, table.getColumns(), row);
 		table.add(participantsMenu, 1, row);
-		if (getPage() != null) {
+		if (iGroupEditPage != null) {
 			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(getNewGroupButton(), 1, row);
+			table.add(getNewGroupButton(iGroupEditPage), 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(getEditButton(), 1, row);
+			table.add(getEditButton(iGroupEditPage), 1, row);
 		}
 
 		table.setWidth(1, iHeaderColumnWidth);
@@ -228,8 +231,9 @@ public class MeetingReport extends MeetingFeeBlock {
 		return table;
 	}
 
-	private SubmitButton getNewGroupButton() {
-		SubmitButton newGroupButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.new_group", "New group")));
+	private GenericButton getNewGroupButton(ICPage page) {
+		GenericButton newGroupButton = getButton(new GenericButton("new_group", getResourceBundle().getLocalizedString("meeting.fee.new_group", "New group")));
+		newGroupButton.setPageToOpen(page);
 		return newGroupButton;
 	}
 
@@ -256,5 +260,12 @@ public class MeetingReport extends MeetingFeeBlock {
 			menu.setSelectedElement(iwc.getParameter(PARAMETER_MINUTES + "_" + user.getPrimaryKey()));
 		}
 		return menu;
+	}
+	
+	/**
+	 * @param groupEditPage The groupEditPage to set.
+	 */
+	public void setGroupEditPage(ICPage groupEditPage) {
+		iGroupEditPage = groupEditPage;
 	}
 }
