@@ -6,14 +6,14 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
-import com.idega.jmodule.image.presentation.SimpleChooserWindow;
+import com.idega.block.media.presentation.SimpleChooserWindow;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import com.oreilly.servlet.*;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.Editor;
-import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -709,7 +709,6 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     imageInsert.setHasUseBox(false);
     imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
-    imageInsert.setAdminURL("/image/imageview.jsp");
     imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     //imageInsert.setDefaultImageURL(sMemberImageURL);
     imageObject = imageInsert;
