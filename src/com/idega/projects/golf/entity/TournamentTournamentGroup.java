@@ -65,39 +65,45 @@ public class TournamentTournamentGroup extends GolfEntity{
         }
 
         public void update() {
+            Connection conn = null;
             try {
-              Connection conn = getConnection();
+              conn = getConnection();
               Statement Stmt = conn.createStatement();
 
                   Stmt.executeUpdate("UPDATE "+this.getTableName()+" SET tournament_id="+this.getTournamentId()+" AND tournament_group_id="+this.getTournamentGroupId()+" AND registration_fee="+this.getRegistrationFee()+" AND tee_color_id="+this.getTeeColorId());
 
               Stmt.close();
 
-              if (conn != null){
-                freeConnection(conn);
-              }
             }
             catch (SQLException sq) {
                 sq.printStackTrace(System.err);
+            }
+            finally {
+              if (conn != null){
+                freeConnection(conn);
+              }
             }
         }
 
 
         public void insert() {
+          Connection conn = null;
             try {
-              Connection conn = getConnection();
+              conn = getConnection();
               Statement Stmt = conn.createStatement();
 
                   Stmt.executeUpdate("INSERT INTO "+this.getTableName()+" VALUES ("+this.getTournamentGroupId()+","+this.getTournamentId()+","+this.getRegistrationFee()+","+this.getTeeColorId()+")");
 
               Stmt.close();
 
-              if (conn != null){
-                freeConnection(conn);
-              }
             }
             catch (SQLException sq) {
                 sq.printStackTrace(System.err);
+            }
+            finally {
+              if (conn != null){
+                freeConnection(conn);
+              }
             }
 
         }

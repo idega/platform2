@@ -67,6 +67,8 @@ public class ReportWriter {
   }
   public static boolean writeXLS(Report report,String realpath){
       boolean returner = false;
+      Connection Conn = null;
+
       try{
         String[] Headers = report.getHeaders();
         String sql = report.getSQL();
@@ -76,7 +78,7 @@ public class ReportWriter {
 
         char[] c  = null;
 
-        Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
+        Conn = com.idega.util.database.ConnectionBroker.getConnection();
         Statement stmt = Conn.createStatement();
         ResultSet RS  = stmt.executeQuery(sql);
         ResultSetMetaData MD = RS.getMetaData();
@@ -103,7 +105,6 @@ public class ReportWriter {
         }
         RS.close();
         stmt.close();
-        ConnectionBroker.freeConnection(Conn);
         out.close();
 
         returner = true;
@@ -111,11 +112,16 @@ public class ReportWriter {
       catch(Exception ex){
         ex.printStackTrace();
       }
+      finally {
+        ConnectionBroker.freeConnection(Conn);
+      }
       return returner;
   }
 
   public static boolean writePDF(Report report,String realpath){
     boolean returner = false;
+    Connection Conn = null;
+
     try {
         String[] Headers = report.getHeaders();
         int Hlen = Headers.length;
@@ -140,7 +146,7 @@ public class ReportWriter {
         }
         datatable.endHeaders();
 
-        Connection Conn = com.idega.util.database.ConnectionBroker.getConnection();
+        Conn = com.idega.util.database.ConnectionBroker.getConnection();
         Statement stmt = Conn.createStatement();
         ResultSet RS  = stmt.executeQuery(sql);
         ResultSetMetaData MD = RS.getMetaData();
@@ -155,7 +161,6 @@ public class ReportWriter {
 
         RS.close();
         stmt.close();
-        ConnectionBroker.freeConnection(Conn);
 
         document.add(datatable);
         document.close();
@@ -163,6 +168,9 @@ public class ReportWriter {
     }
     catch (Exception ex) {
       returner = false;
+    }
+    finally {
+      ConnectionBroker.freeConnection(Conn);
     }
 
     return returner;

@@ -385,9 +385,9 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
 
   private Vector searchInDatabase(String SQL){
     Vector Members = new Vector();
-    Connection Conn = getConnection();
+    Connection Conn = null;
     try{
-
+      Conn = getConnection();
       Statement stmt = Conn.createStatement();
       ResultSet RS = stmt.executeQuery(SQL);
       ResultSetMetaData MD = RS.getMetaData();
@@ -432,9 +432,13 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       }
       RS.close();
       stmt.close();
+    }
+    catch(SQLException e) {
+      e.printStackTrace();
+    }
+    finally {
       freeConnection(Conn);
     }
-    catch(SQLException e){freeConnection(Conn); e.printStackTrace();}
     return Members;
   }
 

@@ -176,8 +176,9 @@ public class ReportMaker {
   }
   private Vector searchInDatabase(String SQL){
     Vector v = new Vector();
-    Connection Conn = ConnectionBroker.getConnection();
+    Connection Conn = null;
     try{
+      Conn = ConnectionBroker.getConnection();
       Statement stmt = Conn.createStatement();
       ResultSet RS = stmt.executeQuery(SQL);
       ResultSetMetaData MD = RS.getMetaData();
@@ -196,10 +197,12 @@ public class ReportMaker {
       }
       RS.close();
       stmt.close();
-      ConnectionBroker.freeConnection(Conn);
     }
     catch(SQLException e){
       e.printStackTrace();
+    }
+    finally {
+      ConnectionBroker.freeConnection(Conn);
     }
     return v;
   }
