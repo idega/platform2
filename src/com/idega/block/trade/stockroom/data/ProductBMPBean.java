@@ -702,6 +702,11 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
   public Collection ejbFindProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter, boolean useTimeframes) throws FinderException{
     Collection coll;
 
+    String orderString = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName();
+    if (orderBy != null) {
+    	orderString = orderBy;
+    }
+
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
     ProductCategory pCat = (ProductCategory) com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getStaticInstance(ProductCategory.class);
     LocalizedText locText = (LocalizedText) LocalizedTextBMPBean.getStaticInstance(LocalizedText.class);
@@ -718,7 +723,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 
 
     StringBuffer timeframeSQL = new StringBuffer();
-      timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
+      timeframeSQL.append("SELECT distinct "+Ptable+".*, "+orderString+" FROM "+Ptable);
       if (from != null && to != null && useTimeframes) {
         timeframeSQL.append(", "+Ttable+", "+middleTable);
       }
@@ -797,11 +802,10 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     }
      */
 
-
     if (orderBy != null) {
-      timeframeSQL.append(" ORDER BY "+orderBy);
+      timeframeSQL.append(" ORDER BY "+orderString);
     }else if (from != null && to != null) {
-      timeframeSQL.append(" ORDER BY "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName());
+      timeframeSQL.append(" ORDER BY "+orderString);
     }
 
 //    System.out.println(timeframeSQL.toString());
