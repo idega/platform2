@@ -33,7 +33,7 @@ public static final String PARAMETER_STRING = "complex_id";
 private int building_id = 0;
 private String nameStyle = "font-family:verdana; font-size: 11pt; font-weight: bold; color: #27324B;";
 private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight: bold; color: #9FA9B3;";
-private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:11px; color:#000000; line-height: 1.8; text-align: justify;";
+private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
 
 public BuildingViewer(){
