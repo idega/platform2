@@ -514,8 +514,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sdayHome.create();
-          days = sDay.getDaysOfWeek(service.getID());
+          days = sdayHome.getDaysOfWeek(service.getID());
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }

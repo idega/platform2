@@ -107,7 +107,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 
       IWTimestamp tempStamp = new IWTimestamp(fromStamp);
       ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay = sDayHome.create();
+      ServiceDay sDay;// = sDayHome.create();
 
       toStamp.addDays(1);
       while (toStamp.isLaterThan(tempStamp)) {
@@ -144,7 +144,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
-                sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
+                sDay = sDayHome.findByServiceAndDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
                 if (sDay != null) {
                   iCount = sDay.getMax();
                 }
@@ -328,8 +328,8 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 
 		if (_supplier != null) {
       ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-			ServiceDay sDay = sDayHome.create();
-			sDay = sDay.getServiceDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
+			ServiceDay sDay;
+			sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
 			if (sDay != null) {
 				seats = sDay.getMax();
 			}

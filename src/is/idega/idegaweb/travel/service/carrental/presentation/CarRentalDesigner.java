@@ -537,8 +537,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sdayHome.create();
-          days = sDay.getDaysOfWeek(_service.getID());
+          days = sdayHome.getDaysOfWeek(_service.getID());
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }

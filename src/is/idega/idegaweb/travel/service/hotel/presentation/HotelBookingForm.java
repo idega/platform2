@@ -1709,8 +1709,8 @@ public class HotelBookingForm extends BookingForm {
 								totalRooms = hotel.getNumberOfUnits();
 								if (totalRooms < 1) {
 									ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-									ServiceDay sDay = sDayHome.create();
-									sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
+									ServiceDay sDay;// = sDayHome.create();
+									sDay = sDayHome.findByServiceAndDay(_product.getID() , fromStamp.getDayOfWeek());
 				  
 									if (sDay != null) {
 										totalRooms = sDay.getMax();
@@ -1723,8 +1723,8 @@ public class HotelBookingForm extends BookingForm {
 						totalRooms = hotel.getNumberOfUnits();
 						if (totalRooms < 1) {
 							ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-							ServiceDay sDay = sDayHome.create();
-							sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
+							ServiceDay sDay;// = sDayHome.create();
+							sDay = sDayHome.findByServiceAndDay(_product.getID() , fromStamp.getDayOfWeek());
 			  
 							if (sDay != null) {
 								totalRooms = sDay.getMax();
@@ -1789,8 +1789,8 @@ public class HotelBookingForm extends BookingForm {
 			max = hotel.getNumberOfUnits();
 			if (max < 1) {
 				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-				ServiceDay sDay = sDayHome.create();
-				sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+				ServiceDay sDay;// = sDayHome.create();
+				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 		  
 				if (sDay != null) {
 					max = sDay.getMax();

@@ -184,8 +184,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       int[] daysOfWeek = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(serviceId);
       try {
         ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-        ServiceDay sDay = sdayHome.create();
-        daysOfWeek = sDay.getDaysOfWeek(serviceId);
+        daysOfWeek = sdayHome.getDaysOfWeek(serviceId);
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }

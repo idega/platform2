@@ -1,16 +1,26 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.data.ServiceDayPK;
+
 import java.rmi.RemoteException;
-import com.idega.presentation.text.Text;
-import com.idega.util.IWCalendar;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.travel.data.*;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.data.IDOLookup;
-import com.idega.block.trade.stockroom.data.Product;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWCalendar;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -36,7 +46,7 @@ public class ServiceDaySetter extends TravelWindow {
   private Product _product;
   private ServiceDayHome _serviceDayHome;
   private IWCalendar _cal;
-  private ServiceDay[] _serviceDays;
+  private int[] _serviceDays;
   private int _textInputSize = 5;
 
 
@@ -76,8 +86,7 @@ public class ServiceDaySetter extends TravelWindow {
 
         _product = productHome.findByPrimaryKey(new Integer(serviceId));
 
-        ServiceDay sDay = _serviceDayHome.create();
-        _serviceDays = sDay.getServiceDaysOfWeek(Integer.parseInt(serviceId));
+        _serviceDays = _serviceDayHome.getDaysOfWeek(Integer.parseInt(serviceId));
       }
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -94,9 +103,8 @@ public class ServiceDaySetter extends TravelWindow {
     int iEst;
 
     try {
-      ServiceDay sDay = _serviceDayHome.create();
-        _serviceDayHome.setServiceWithNoDays(_product.getID());
-        sDay.store();
+    	_serviceDayHome.setServiceWithNoDays(_product.getID());
+    	ServiceDay sDay;
 
       for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
         avail = iwc.getParameter(PARAMETER_AVAILABLE+i);
@@ -120,13 +128,13 @@ public class ServiceDaySetter extends TravelWindow {
         }
 
         if (avail != null) {
-          sDay = _serviceDayHome.create();
+          sDay = _serviceDayHome.create(new ServiceDayPK(_product.getPrimaryKey(), new Integer(i)));
           sDay.setDayOfWeek(_product.getID(), i, iMax, iMin, iEst);
           sDay.store();
         }
       }
 
-      _serviceDays = sDay.getServiceDaysOfWeek(_product.getID());
+      _serviceDays = _serviceDayHome.getDaysOfWeek(_product.getID());
 
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -151,7 +159,6 @@ public class ServiceDaySetter extends TravelWindow {
     table.add(getTextHeader(_iwrb.getLocalizedString("travel.estimated","Estimated")), 5, row);
     table.setRowColor(row, TravelManager.backgroundColor);
 
-
     int arrayIndex = 0;
     if (_serviceDays.length == 0) {
       arrayIndex = -1;
@@ -164,6 +171,7 @@ public class ServiceDaySetter extends TravelWindow {
     int iMax = -1;
     int iMin = -1;
     int iEst = -1;
+    ServiceDay sDay;
 
     for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
       ++row;
@@ -176,24 +184,32 @@ public class ServiceDaySetter extends TravelWindow {
         min.setSize(_textInputSize);
         estimated.setSize(_textInputSize);
 
-      if ( arrayIndex != -1 && _serviceDays[arrayIndex].getDayOfWeek() == i) {
-          avail.setChecked(true);
-          iMax = _serviceDays[arrayIndex].getMax();
-          iMin = _serviceDays[arrayIndex].getMin();
-          iEst = _serviceDays[arrayIndex].getEstimated();
-          if (iMax != -1) {
-            max.setContent(Integer.toString(iMax));
-          }
-          if (iMin != -1) {
-            min.setContent(Integer.toString(iMin));
-          }
-          if (iEst != -1) {
-            estimated.setContent(Integer.toString(iEst));
-          }
-
-          if ( ++arrayIndex == _serviceDays.length) {
-            arrayIndex = -1;
-          }
+      for (int j = 0; j < _serviceDays.length; j++) {
+      	if (_serviceDays[j] == i) {
+      		try {
+	      		sDay = _serviceDayHome.findByServiceAndDay(this._product.getID(), i);
+	          avail.setChecked(true);
+	          iMax = sDay.getMax();
+	          iMin = sDay.getMin();
+	          iEst = sDay.getEstimated();
+	          if (iMax != -1) {
+	            max.setContent(Integer.toString(iMax));
+	          }
+	          if (iMin != -1) {
+	            min.setContent(Integer.toString(iMin));
+	          }
+	          if (iEst != -1) {
+	            estimated.setContent(Integer.toString(iEst));
+	          }
+	
+	          //if ( ++arrayIndex == _serviceDays.length) {
+	            //arrayIndex = -1;
+	          //}
+	          break;
+      		}catch (FinderException f) {
+      			f.printStackTrace();
+      		}
+      	}
       }
 
 

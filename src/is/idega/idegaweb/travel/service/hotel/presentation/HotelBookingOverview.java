@@ -117,7 +117,6 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
       IWTimestamp tempStamp = new IWTimestamp(fromStamp);
       ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay = sDayHome.create();
 
       toStamp.addDays(1);
       while (toStamp.isLaterThan(tempStamp)) {

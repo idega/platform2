@@ -443,8 +443,8 @@ public class Contracts extends TravelManager {
           if (allDays != null) {
             try {
               ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-              ServiceDay sDay = sdayHome.create();
-              tempDays = sDay.getDaysOfWeek(productId);
+              //ServiceDay sDay = sdayHome.create();
+              tempDays = sdayHome.getDaysOfWeek(productId);
             }catch (Exception e) {
               e.printStackTrace(System.err);
             }
@@ -709,8 +709,7 @@ public class Contracts extends TravelManager {
     int[] serviceDays = new int[]{};// = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
     try {
       ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay = sdayHome.create();
-      serviceDays = sDay.getDaysOfWeek(productId);
+      serviceDays = sdayHome.getDaysOfWeek(productId);
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }

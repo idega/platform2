@@ -669,8 +669,8 @@ public abstract class BookingForm extends TravelManager{
 
     try {
       ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay = sDayHome.create();
-        sDay = sDay.getServiceDay(this._productId, _stamp);
+      ServiceDay sDay;// = sDayHome.create();
+        sDay = sDayHome.findByServiceAndDay(this._productId, _stamp.getDayOfWeek());
       if (sDay != null) {
         max = sDay.getMax();
         min = sDay.getMin();
@@ -1553,9 +1553,9 @@ public abstract class BookingForm extends TravelManager{
 			}	
     } else {
 			ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-			ServiceDay sDay = sDayHome.create();
+			ServiceDay sDay;// = sDayHome.create();
 			
-			sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+			sDay = sDayHome.findByServiceAndDay(serviceId, fromStamp.getDayOfWeek());
 			if (sDay != null) {
 			  totalSeats = sDay.getMax();
 			}
@@ -2818,8 +2818,8 @@ public abstract class BookingForm extends TravelManager{
 			}	
 	  } else {//if (supplier != null) {
 		  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-		  ServiceDay sDay = sDayHome.create();
-		  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+		  ServiceDay sDay;// = sDayHome.create();
+		  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 		  
 		  if (sDay != null) {
 		  	max = sDay.getMax();
@@ -2838,8 +2838,8 @@ public abstract class BookingForm extends TravelManager{
 
 	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 	  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-	  ServiceDay sDay = sDayHome.create();
-	  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+	  ServiceDay sDay;// = sDayHome.create();
+	  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 	  
 	  if (sDay != null) {
 	  	int min = sDay.getMin();

@@ -179,8 +179,7 @@ public class ServiceViewer extends Window {
       int[] dagur = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(serv.getID());
       try {
         ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-        ServiceDay sDay = sdayHome.create();
-        dagur = sDay.getDaysOfWeek(((Integer) serv.getPrimaryKey()).intValue());
+        dagur = sdayHome.getDaysOfWeek(((Integer) serv.getPrimaryKey()).intValue());
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }

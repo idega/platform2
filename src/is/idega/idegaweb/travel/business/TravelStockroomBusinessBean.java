@@ -7,6 +7,7 @@ import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.data.ServiceDayPK;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -803,8 +804,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         int[] weekDays = new int[]{};
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sdayHome.create();
-          weekDays = sDay.getDaysOfWeek(product.getID());
+          weekDays = sdayHome.getDaysOfWeek(product.getID());
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
@@ -933,10 +933,13 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   protected boolean setActiveDaysAll(int serviceId) throws RemoteException {
-    return setActiveDays(serviceId, new int[]{GregorianCalendar.SUNDAY, GregorianCalendar.MONDAY,GregorianCalendar.TUESDAY, GregorianCalendar.WEDNESDAY, GregorianCalendar.THURSDAY, GregorianCalendar.FRIDAY, GregorianCalendar.SATURDAY});
+    return setActiveDays(serviceId, new int[]{GregorianCalendar.SUNDAY, GregorianCalendar.MONDAY,GregorianCalendar.TUESDAY, GregorianCalendar.WEDNESDAY, GregorianCalendar.THURSDAY, GregorianCalendar.FRIDAY, GregorianCalendar.SATURDAY}, false);
   }
 
   protected boolean setActiveDays(int serviceId, int[] activeDays) throws RemoteException {
+  	return setActiveDays(serviceId, activeDays, true);
+  }	
+  protected boolean setActiveDays(int serviceId, int[] activeDays, boolean removeUnactive) throws RemoteException {
     boolean returner = true;
     try {
       List list = new Vector();
@@ -947,20 +950,27 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       if (serviceId != -1) {
         if (activeDays.length > 0) {
           ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDayTemp = sDayHome.create();
-          ServiceDay sDay;
+          ServiceDay sDay = null;
+          ServiceDayPK sdPK = null;
 
           for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
-            sDay = sDayTemp.getServiceDay(serviceId, i);
+          	sdPK = new ServiceDayPK(new Integer(serviceId), new Integer(i));
+          	try {
+          		sDay = sDayHome.findByPrimaryKey(sdPK);
+          	} catch (FinderException f) {
+          		sDay = null;
+          	}
+          	//sDay = sDayHome.findByServiceAndDay(serviceId, i);
+          	
             if (list.contains(new Integer(i))) {
               if (sDay == null) {
-                sDay = sDayHome.create();
+                sDay = sDayHome.create(new ServiceDayPK(new Integer(serviceId), new Integer(i)));
                 sDay.setServiceId(serviceId);
                 sDay.setDayOfWeek(i);
                 sDay.store();
               }
             }else {
-              if (sDay != null) {
+              if (sDay != null && removeUnactive) {
                 sDay.remove();
               }
 
@@ -1192,15 +1202,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			if (stamp != null) {
 			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 			  ServiceDay sDay;
-				sDay = sDayHome.create();
-			  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 			  if (sDay != null) {
 			    return sDay.getMax();
 			  }
 		  }
 			return 0;
 
-		} catch (CreateException e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	
@@ -1211,15 +1220,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			if (stamp != null) {
 			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 			  ServiceDay sDay;
-				sDay = sDayHome.create();
-			  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 			  if (sDay != null) {
 			    return sDay.getMin();
 			  }
 		  }
 			return 0;
 
-		} catch (CreateException e) {
+		} catch (Exception e) {
 			return 0;
 		}
 	}

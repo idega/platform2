@@ -168,8 +168,7 @@ public class FishingOverview extends AbstractServiceOverview {
 
         try {
           ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sdayHome.create();
-          dayOfWeek = sDay.getDaysOfWeek(((Integer) service.getPrimaryKey()).intValue());
+          dayOfWeek = sdayHome.getDaysOfWeek(((Integer) service.getPrimaryKey()).intValue());
           if (dayOfWeek.length == 7) {
             actDays.setText(_iwrb.getLocalizedString("travel.daily","daily"));
           }else {
@@ -396,8 +395,7 @@ public class FishingOverview extends AbstractServiceOverview {
       int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
       try {
         ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-        ServiceDay sDay = sdayHome.create();
-        days = sDay.getDaysOfWeek(product.getID());
+        days = sdayHome.getDaysOfWeek(product.getID());
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
