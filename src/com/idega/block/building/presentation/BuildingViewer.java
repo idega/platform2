@@ -109,11 +109,15 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
       if(L!=null){
-
+       ICFile file = new ICFile(((Building)L.get(0)).getImageId());
+        ImageSlideShow slide = new ImageSlideShow();
+        slide.setFileFolder(file);
+        complexTable.add(slide,3,2);
+        /*
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
        buildingImage.setMaxImageWidth(imageMaxSize);
        complexTable.add(buildingImage,3,2);
-
+       */
       }
 
       if ( types != null ) {
@@ -211,11 +215,20 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       String divideText = ("<br>.........<br><br>");
 
-      Image typeImage = new Image(types[a].getImageId());
+
+      PresentationObject typeImage;
       if ( types[a].getImageId() == -1 )
         typeImage = iwrb_.getImage("/building/default.jpg");
-        typeImage.setHorizontalSpacing(6);
-        typeImage.setMaxImageWidth(imageMaxSize);
+      else{
+        ImageSlideShow slide =  new ImageSlideShow();
+        slide.setFileId( types[a].getImageId());
+        typeImage = slide;
+
+      }
+
+       // Image typeImage = new Image(types[a].getImageId());
+       // typeImage.setHorizontalSpacing(6);
+       // typeImage.setMaxImageWidth(imageMaxSize);
 
       /*Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
         typeWindow.setWidth(400);
