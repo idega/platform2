@@ -6,6 +6,7 @@ import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.StringTokenizer;
 import java.util.Collections;
 import com.idega.jmodule.object.Editor;
 import com.idega.jmodule.object.Table;
@@ -24,25 +25,35 @@ public class ReportEditor extends Editor{
   private String prefix = "reed_";
   private String sLastOrder = "0";
   private int iCategory;
+  private int iReportId = -1;
 
 
   public ReportEditor(){
+    this.iCategory = 0;
+  }
 
+  public ReportEditor(int iCategory){
+    this.iCategory = iCategory;
   }
 
   protected void control(ModuleInfo modinfo){
     try{
-        iCategory = ReportService.getSessionCategory(modinfo);
-        System.err.println("category : "+iCategory);
+        this.makeView();
+        //iCategory = ReportService.getSessionCategory(modinfo);
+
         if(modinfo.getParameter(sAction) != null)
           sActPrm = modinfo.getParameter(sAction);
+        else if(modinfo.getParameter("report")!=null){
+          iReportId = Integer.parseInt(modinfo.getParameter("report"));
+          sActPrm = "2";
+        }
         else
           sActPrm = "0";
         try{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
-            case ACT1:    break;
-            case ACT2: break;
+            case ACT1: doSave(modinfo);   break;
+            case ACT2: doAdmin(modinfo); break;
             case ACT3: doChange(modinfo); break;
             case ACT4: doUpdate(modinfo); break;
             default : doMain(modinfo);           break;
@@ -80,88 +91,192 @@ public class ReportEditor extends Editor{
   }
 
   private void doMain(ModuleInfo modinfo){
-    this.makeView();
+
     if(iCategory > 0){
-    ReportCondition[] RC = ReportEntityHandler.getConditions(iCategory);
-    modinfo.setSessionAttribute(prefix+"force",RC);
-    //this.BORDER = 0;
-    Table T = new Table();
-    T.setWidth("100%");
-    T.setBorder(BORDER);
-    T.setCellpadding(0);
-    T.setCellspacing(0);
-    Form form = new Form();
-    form.add(T);
-    SelectionDoubleBox box = new SelectionDoubleBox("box","Fields","Order");
+      ReportCondition[] RC = ReportEntityHandler.getConditions(iCategory);
+      modinfo.setSessionAttribute(prefix+"force",RC);
+      //this.BORDER = 0;
+      Table T = new Table();
+      T.setWidth("100%");
+      T.setBorder(BORDER);
+      T.setCellpadding(0);
+      T.setCellspacing(0);
+      Form form = new Form();
+      form.add(T);
+      SelectionDoubleBox box = new SelectionDoubleBox("box","Fields","Order");
 
-    Table U = new Table();
-    Table M = new Table();
-    Table ML = new Table();
-    Table B = new Table();
-    U.setBorder(BORDER);
-    U.setCellpadding(0);
-    U.setCellspacing(0);
-    M.setBorder(BORDER);
-    M.setCellpadding(0);
-    M.setCellspacing(0);
-    ML.setBorder(BORDER);
-    ML.setCellpadding(0);
-    ML.setCellspacing(0);
+      Table U = new Table();
+      Table M = new Table();
+      Table ML = new Table();
+      Table B = new Table();
+      U.setBorder(BORDER);
+      U.setCellpadding(0);
+      U.setCellspacing(0);
+      M.setBorder(BORDER);
+      M.setCellpadding(0);
+      M.setCellspacing(0);
+      ML.setBorder(BORDER);
+      ML.setCellpadding(0);
+      ML.setCellspacing(0);
 
-    B.setBorder(BORDER);
-    B.setCellpadding(0);
-    B.setCellspacing(0);
-    M.setWidth("100%");
-    M.setWidth(1,"40%");
-    M.add(box,1,1);
-    M.add(ML,2,1);
-    T.add(U,1,1);
-    T.add(M,1,2);
-    T.add(B,1,3);
+      B.setBorder(BORDER);
+      B.setCellpadding(0);
+      B.setCellspacing(0);
+      M.setWidth("100%");
+      M.setWidth(1,"40%");
+      M.add(box,1,1);
+      M.add(ML,2,1);
+      T.add(U,1,1);
+      T.add(M,1,2);
+      T.add(B,1,3);
 
-    Text nameText = new Text("Name");
-    Text infoText = new Text("Info");
-    TextInput nameInput = new TextInput(prefix+"name");
-    TextInput infoInput = new TextInput(prefix+"info");
-    U.add(nameText,1,1);
-    U.add(nameInput,1,2);
-    U.add(infoText,2,1);
-    U.add(infoInput,2,2);
+      Text nameText = new Text("Name");
+      Text infoText = new Text("Info");
+      TextInput nameInput = new TextInput(prefix+"name");
+      TextInput infoInput = new TextInput(prefix+"info");
+      U.add(nameText,1,1);
+      U.add(nameInput,1,2);
+      U.add(infoText,2,1);
+      U.add(infoInput,2,2);
 
-    SelectionBox box1 = box.getLeftBox();
-    box1.keepStatusOnAction();
-    SelectionBox box2 = box.getRightBox();
-    box1.keepStatusOnAction();
-    box2.addUpAndDownMovers();
-    int a = 1;
-    for (int i = 0; i < RC.length; i++) {
-      box1.addMenuElement(i,RC[i].getDisplay());
-      ModuleObject mo = ReportObjectHandler.getInput(RC[i],prefix+"in"+i,"");
-      ML.add(RC[i].getDisplay(),1,a);
-      ML.add(mo,2,a++);
-    }
-    box1.setHeight(20);
-    box2.setHeight(20);
-    box2.selectAllOnSubmit();
-    B.add(new SubmitButton(new Image("/reports/pics/ok.gif")));
-    B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
+      SelectionBox box1 = box.getLeftBox();
+      box1.keepStatusOnAction();
+      SelectionBox box2 = box.getRightBox();
+      box1.keepStatusOnAction();
+      box2.addUpAndDownMovers();
+      int a = 1;
+      for (int i = 0; i < RC.length; i++) {
+        box1.addMenuElement(i,RC[i].getDisplay());
+        ModuleObject mo = ReportObjectHandler.getInput(RC[i],prefix+"in"+i,"");
+        ML.add(RC[i].getDisplay(),1,a);
+        ML.add(mo,2,a++);
+      }
+      box1.setHeight(20);
+      box2.setHeight(20);
+      box2.selectAllOnSubmit();
+      B.add(new SubmitButton(new Image("/reports/pics/ok.gif")));
+      B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
 
-    addMain(form);
+      addMain(form);
     }
     else
       addMain(new Text("Nothing to show"));
     Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
-
     this.addToHeader(back);
-    this.addToHeader(formatText("Report Editor"));
+    if(isAdmin){
+      Link admin = new Link(new Image("/reports/pics/admin.gif"));
+      admin.addParameter(sAction,String.valueOf(ACT2));
+      this.addToHeader(admin);
+    }
+
+
+    this.addLinks(formatText("Report Editor"));
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
 
   }
 
+
+  protected void doAdmin(ModuleInfo modinfo) throws SQLException{
+    Report R = null;
+    boolean b = false;
+    if(iReportId >0 ){
+      try {
+        R = new Report(iReportId);
+        b = true;
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+    Form form = new Form();
+    Table T = new Table();
+
+    Text nameText = formatText("Name");
+    Text infoText = formatText("Info");
+    Text headersText = formatText("Headers");
+    Text sqlText = formatText("SQL");
+    TextInput nameInput = new TextInput(prefix+"name",b?R.getName():"");
+    TextInput infoInput = new TextInput(prefix+"info",b?R.getInfo():"");
+    TextInput headersInput = new TextInput(prefix+"headers",b?R.getHeader():"");
+    if(b)
+      form.add(new HiddenInput("report_id",String.valueOf(R.getID())));
+    headersInput.setLength(80);
+    TextArea sqlInput = new TextArea(prefix+"sql",b?R.getSQL():"");
+    sqlInput.setWidth(80);
+    sqlInput.setHeight(8);
+
+    T.add(nameText,1,1);
+    T.add(nameInput,1,2);
+    T.add(infoText,1,3);
+    T.add(infoInput,1,4);
+    T.add(headersText,1,5);
+    T.add(headersInput,1,6);
+    T.add(sqlText,1,7);
+    T.add(sqlInput,1,8);
+
+    T.add(new SubmitButton(new Image("/reports/pics/ok.gif")),1,9);
+    T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,9);
+
+    form.add(T);
+    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    this.addToHeader(back);
+    addMain(form);
+  }
+
+  private void doSave(ModuleInfo modinfo){
+    String msg = "";
+    String sName = modinfo.getParameter(prefix+"name").trim();
+    String sInfo = modinfo.getParameter(prefix+"info").trim();
+    String sHeaders = modinfo.getParameter(prefix+"headers").trim();
+    add(sHeaders);
+    String sSql = modinfo.getParameter(prefix+"sql").trim();
+    String sReportId = modinfo.getParameter("report_id");
+    if(sName != null && sName.length() > 1 ){
+      if(sSql != null && sHeaders!= null){
+        String[] he = str2array(sHeaders,",:;");
+        try{
+          if(sReportId==null){
+            Report R = new Report();
+            R.setCategory(iCategory);
+            R.setName(sName);
+            R.setInfo(sInfo);
+            R.setSQL(sSql);
+            R.setHeaders(he);
+            R.insert();
+            msg = "Report was saved";
+          }
+          else{
+            Report R = new Report(Integer.parseInt(sReportId));
+            R.setCategory(iCategory);
+            R.setName(sName);
+            R.setInfo(sInfo);
+            R.setSQL(sSql);
+            R.setHeaders(he);
+            R.update();
+            msg = "Report was updated";
+          }
+        }
+        catch(SQLException ex){
+          msg = "Report could not be saved";
+          System.err.println(msg);
+          ex.printStackTrace();
+        }
+        catch(NumberFormatException ex){
+          msg = "Wrong Report id";
+        }
+      }
+    }
+    else
+      msg = "Needs a name";
+    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    this.addToHeader(back);
+    addMain(formatText(msg));
+  }
+
+
   protected void doUpdate(ModuleInfo modinfo) throws SQLException{
     String[] s = modinfo.getParameterValues("box");
-
     ReportCondition[] RC = (ReportCondition[])modinfo.getSessionAttribute(prefix+"force");
     Vector vRC = new Vector();
     int len = s.length;
@@ -191,6 +306,24 @@ public class ReportEditor extends Editor{
     info = info != null?info: "";
 
     ReportMaker rm = new ReportMaker();
+
+    //// Golf union case ////////////////////////////////////
+
+    if(modinfo.getSessionAttribute("golf_union_id")!= null){
+      String sUnionId = ((String) modinfo.getSessionAttribute("golf_union_id"));
+
+      ReportItem RIx = new ReportItem();
+      RIx.setMainTable("union_member_info");
+      RIx.setJoinTables("member");
+      RIx.setJoin("union_member_info.member_id = member.member_id and union_member_info.union_id = "+sUnionId);
+      ReportCondition RCx = new ReportCondition(RIx);
+      RCx.setIsSelect();
+      vRC.addElement(RCx);
+
+    }
+
+    //////////////////////////////////////////////////////////////////
+
     String sql = rm.makeSQL(vRC);
     Report R = new Report();
     R.setCategory(iCategory);
@@ -207,13 +340,21 @@ public class ReportEditor extends Editor{
 
     ReportService.setSessionReport(modinfo,R);
     makeAnswer(R);
+  }
 
-
+  private String[] str2array(String s,String delim){
+    StringTokenizer st = new StringTokenizer(s,delim);
+    String[] array = new String[st.countTokens()];
+    int i = 0;
+    while(st.hasMoreTokens()){
+      array[i++] = st.nextToken();
+    }
+    return array;
   }
   public void makeAnswer(Report R){
     Link L = new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     add(L);
     add("<br>");
-    //add(R.getSQL());
+    add(R.getSQL());
   }
 }

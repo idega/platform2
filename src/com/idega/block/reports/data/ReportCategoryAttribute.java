@@ -12,13 +12,13 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class ReportCategoryAttributes extends GenericEntity{
+public class ReportCategoryAttribute extends GenericEntity{
 
-  public ReportCategoryAttributes(){
+  public ReportCategoryAttribute(){
     super();
   }
 
-  public ReportCategoryAttributes(int id)throws SQLException{
+  public ReportCategoryAttribute(int id)throws SQLException{
     super(id);
   }
 
@@ -29,7 +29,7 @@ public class ReportCategoryAttributes extends GenericEntity{
     addAttribute("attribute_id","Attribute Id",true,true, "java.lang.Integer");
   }
   public String getEntityName(){
-    return "report_category_attributes";
+    return "report_category_attribute";
   }
 
   public void setName(String name) {

@@ -124,7 +124,7 @@ public class ReportItemizer extends Editor{
     Text Info = new Text(sInfo);
 
     Table T2 = new Table();
-    T2.add("Flokkur",1,1);
+    T2.add("Category",1,1);
     T2.add(drp,1,2);
     T2.add("Name:",2,1);
     T2.add(Name,2,2);
@@ -173,7 +173,7 @@ public class ReportItemizer extends Editor{
 
     DropdownMenu drp = ReportObjectHandler.drpCategories(prefix+"id","");
 
-    Table T =  new Table(2,11);
+    Table T =  new Table(2,12);
     T.setCellpadding(2);
     T.setCellspacing(1);
     T.setHorizontalZebraColored(LightColor,WhiteColor);
@@ -191,12 +191,13 @@ public class ReportItemizer extends Editor{
     T.add(formatText("Condition Operator"),1,a++);
     T.add(formatText("Entity Class"),1,a++);
     T.add(formatText("Information"),1,a++);
+    T.add(formatText("Is Select"),1,a++);
 
     String s = "";
     TextInput name,field,table,joins,jointables,
               condtype,conddata,condop,entity,info;
     HiddenInput idInput;
-    CheckBox delCheck;
+    CheckBox delCheck,isSelect;
 
     name        = new TextInput(prefix+"name");
     field       = new TextInput(prefix+"field");
@@ -246,7 +247,7 @@ public class ReportItemizer extends Editor{
     T.add(info,col,row++);
 
     myForm.add(T);
-    myForm.add(new SubmitButton("Vista",this.sAction,String.valueOf(this.ACT4 )));
+    myForm.add(new SubmitButton("Save",this.sAction,String.valueOf(this.ACT4 )));
     myForm.add(drp);
     Frame.add(myForm,1,1);
 

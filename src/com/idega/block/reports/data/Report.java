@@ -59,6 +59,9 @@ public class Report extends GenericEntity {
   public void setHeaders(String[] headers){
     setColumn("headers",array2str(headers,delim()));
   }
+  public String getHeader(){
+    return getStringColumnValue("headers");
+  }
   public String[] getHeaders(){
     return str2array(getStringColumnValue("headers"),delim());
   }
