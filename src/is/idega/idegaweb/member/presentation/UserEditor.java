@@ -1148,7 +1148,8 @@ public class UserEditor extends Block {
 					|| isNewValue(iwc, prm_first_name)
 					|| isNewValue(iwc, prm_middle_name)
 					|| isNewValue(iwc, prm_last_name)
-					|| isNewValue(iwc, prm_primary_group_id)) {
+					|| isNewValue(iwc, prm_primary_group_id)
+					|| isRemovedValue(iwc,prm_middle_name)) {
 					String pid = user.getPersonalID(), first = user.getFirstName(), middle = user.getMiddleName(), last = user.getLastName();
 					Integer groupID = null;
 					boolean legalState = false;
@@ -1195,6 +1196,10 @@ public class UserEditor extends Block {
 					}
 					if (isNewValue(iwc, prm_middle_name)) {
 						middle = iwc.getParameter(prm_middle_name);
+						legalState |= true;
+					}
+					else if (isRemovedValue(iwc, prm_middle_name)) {
+						middle = "";
 						legalState |= true;
 					}
 					if (isNewValue(iwc, prm_last_name)) {
