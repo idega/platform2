@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.13 2003/10/09 09:27:33 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.14 2003/10/10 13:20:47 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/09 09:27:33 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/10 13:20:47 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -195,6 +195,12 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			String providerTypeIdString,
 			String operationalField) throws VATException {
 				
+
+		// Operational field
+		if ((operationalField == null) || (operationalField.length() == 0)) {
+			throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
+		}
+
 		// Period from
 		String s = periodFromString.trim();
 		if (s.equals("")) {
@@ -259,11 +265,6 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new VATException(KEY_PROVIDER_TYPE_MISSING, DEFAULT_PROVIDER_TYPE_MISSING);
 		}
 		int providerTypeId = Integer.parseInt(s);
-
-		// Operational field
-		if ((operationalField == null) || (operationalField.length() == 0)) {
-			throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
-		}
 		
 		// Overlapping date intervals
 		Collection c = findAllVATRegulations(operationalField);
