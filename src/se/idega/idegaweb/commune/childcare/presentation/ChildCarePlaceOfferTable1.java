@@ -28,10 +28,28 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 	private static String GRANTED, VALID_UNTIL;
 
-	private final static String[] SUBMIT_ALERT_1 =
-		new String[] {
-			"ccot_alert_1",
-			"Do you want to commit your choice? This can not be undone afterwards." };
+	private final static 
+		String[] SUBMIT_ALERT_1 =
+			new String[] {
+				"ccot_alert_1",
+				"Do you want to commit your choice? This can not be undone afterwards." 
+			},
+		SUBMIT_UNVALID_DATE =
+			new String[] {
+				"ccot_valid_date",
+				"Please select a valid date." 
+			},
+		EDIT_TOOLTIP = 
+			new String[] {
+				"ccot_edit_tooltip",
+				"View prognosis and provider queue"		
+			},
+		DELETE_TOOLTIP = 
+			new String[] {
+				"ccot_delete_tooltip",
+				"Delete"		
+			};			
+		
 
 	private static boolean _initializeStatics = false;
 
@@ -154,7 +172,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			"validateDates",
 			"function validateDates() { if("
 				+ validateDateScript
-				+ ") { alert('Please select a valid date'); return false; } else {return true;}}");
+				+ ") { alert('" + _page.localize(SUBMIT_UNVALID_DATE) + "'); return false; } else {return true;}}");
 
 		_onSubmitHandler =
 			"if (!validateDates()) return false; else return confirm('"
@@ -352,7 +370,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			Link popup = new Link();
 			//		popup.setImage(new Image());
 			//		popup.setAsImageButton(true);
-			popup.setImage(_page.getEditIcon("View prognosis and provider queue"));
+			popup.setImage(_page.getEditIcon(_page.localize(EDIT_TOOLTIP)));
 			popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
 			popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
 			popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
@@ -362,7 +380,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	
 			Link delete = new Link();
 			//		delete.setAsImageButton(true);
-			delete.setImage(_page.getDeleteIcon("Delete"));
+			delete.setImage(_page.getDeleteIcon(_page.localize(DELETE_TOOLTIP)));
 			//		popup.setImage(new Image());
 			delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
 			delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);

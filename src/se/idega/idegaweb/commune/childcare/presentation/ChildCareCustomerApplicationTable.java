@@ -33,27 +33,26 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.28 2003/05/14 10:38:30 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.29 2003/05/22 11:05:31 roar Exp $
  * @since 12.2.2003 
  */
 
 public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
-	private final static String[] SUBMIT =
-		new String[] { "ccot_submit", "Next" };
-	private final static String[] CANCEL =
-		new String[] { "ccot_cancel", "Cancel" };
-	private final static String[] SUBMIT_ALERT_2 =
-		new String[] {
-			"ccot_alert_2",
-			"Do you want to commit your choice? This can not be undone afterwards." };
-	private final static String[] NO_PLACEMENT =
-		{ "ccot_no_placement", "Detta barn har ingen placering" };
-	private final static String[] PLACED_AT =
-		{ "ccot_placed_at", "Placerad hos" };
-	private final static String[] PERSONAL_ID =
-		{ "ccot_personal_id", "Personal id" };
-	private final static String[] NAME = { "ccot_name", "Name" };
+	private final static String[] 
+		SUBMIT = { "ccot_submit", "Next" },
+		CANCEL = { "ccot_cancel", "Cancel" },
+		SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." },
+		NO_PLACEMENT =	{ "ccot_no_placement", "Detta barn har ingen placering" },
+		PLACED_AT =	{ "ccot_placed_at", "Placerad hos" },
+		PERSONAL_ID = { "ccot_personal_id", "Personal id" },
+		NAME = { "ccot_name", "Name" },
+		REQUEST_SUBJECT = {"ccot_request_subject", "Request for information"},
+		REQUEST_MESSAGE = {"ccot_request_message", "Requesting information..."},
+		REQUEST_CONFIRM = {"ccot_request_sent_confirm", "Your request has been sent."},
+		NO_APPLICATION = {"ccot_no_application", "No application found"},
+		NEW_CARETIME = {"ccot_new_caretime", "New caretime"},
+		END_CARETIME = {"ccot_end_caretime", "Avsluta kontrakt"};
 
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -115,10 +114,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						iwc.getParameter(CCConstants.APPID));
 				getChildCareBusiness(iwc).sendMessageToProvider(
 					application,
-					"Requst for information",
-					"Requesting information...",
+					localize(REQUEST_SUBJECT),
+					localize(REQUEST_MESSAGE),
 					application.getOwner());
-				//TODO: internationalize
+
 				iwc.setSessionAttribute(
 					REQ_BUTTON + application.getNodeID(),
 					new Boolean(true));
@@ -160,8 +159,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 */
 	private int parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(CCConstants.ACTION)) {
-			System.out.println(
-				"ACTION: " + iwc.getParameter(CCConstants.ACTION));
+//			System.out.println(
+//				"ACTION: " + iwc.getParameter(CCConstants.ACTION));
 			return Integer.parseInt(iwc.getParameter(CCConstants.ACTION));
 		} else if (
 			iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
@@ -355,7 +354,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			iwc.setSessionAttribute(DELETED_APPLICATIONS, deletedApps);
 		}
 		//The application is given status TYST/Z, so that it will be rendered correctly (red font)
-		application.setMessage("Deleted!"); //Todo Roar for debugging only
+//		application.setMessage("Deleted!"); //Todo Roar for debugging only
 		application.setApplicationStatus(childCarebusiness.getStatusRejected());
 		application.setStatus(STATUS_TYST);
 		deletedApps.add(application);
@@ -459,7 +458,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//		submitBtn.setName(SUBMIT[0] + PAGE_1);
 		submitBtn.setAsImageButton(true);
 
-		layoutTbl.add(new Text("Your request has been sent."), 1, 1);
+		layoutTbl.add(new Text(localize(REQUEST_CONFIRM)), 1, 1);
 		layoutTbl.add(submitBtn, 1, 2);
 		layoutTbl.setAlignment(1, 2, "right");
 	}
@@ -477,7 +476,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Collection applications)
 		throws RemoteException {
 		if (applications.size() == 0) {
-			layoutTbl.add(new Text("No application found"));
+			layoutTbl.add(new Text(localize(NO_APPLICATION)));
 			//TODO format better
 			return "";
 
@@ -548,7 +547,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.setAlignment(1, 3, "bottom");
 			layoutTbl.setAlignment(2, 3, "bottom");
 
-			Link careTimePopup = new Link("Endra omsorgstid");
+			Link careTimePopup = new Link(localize(NEW_CARETIME));
 			//			popup.setImage(new Image());
 			careTimePopup.setWindowToOpen(ChildCareNewCareTimeWindow.class);
 			careTimePopup.addParameter(
@@ -557,7 +556,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			careTimePopup.setAsImageButton(true);
 			layoutTbl.add(careTimePopup, 1, 8);
 
-			Link contractPopup = new Link("Avsluta kontrakt");
+			Link contractPopup = new Link(localize(END_CARETIME));
 			//			popup.setImage(new Image());
 			contractPopup.setWindowToOpen(ChildCareEndContractWindow.class);
 			contractPopup.addParameter(
@@ -858,7 +857,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		tbl.setWidth(1, 1, 700);
 		Text t =
 			getLocalizedSmallText(
-				"ccatp1_help",
+				"ccot1_help",
 				"Om du accepterar erbjudande kan du enbart kvarstå i kö till i de ovanstående valen. Du stryks automatiskt från de underliggande alternativen. Om ditt erbjudande gäller ditt förstahandsval har du möjlighet att välja att kvarstå i kö för ETT alternativ av de underliggande alternativen.");
 		t.setItalic(true);
 		tbl.add(t);

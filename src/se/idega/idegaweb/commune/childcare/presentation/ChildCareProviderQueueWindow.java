@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.data.School;
@@ -45,12 +46,18 @@ public class ChildCareProviderQueueWindow extends Window {
 				
 	public void main(IWContext iwc) throws Exception {
 		
-		
 		String providerId = iwc.getParameter(CCConstants.PROVIDER_ID);
 		String appId = iwc.getParameter(CCConstants.APPID);		
 		School school = getChildCareBusiness(iwc).getSchoolBusiness().getSchool(providerId);
 		
-		String prognosis = null;
+		
+		ChildCarePrognosis prognosis = getChildCareBusiness(iwc).getPrognosis(Integer.parseInt(providerId));
+						
+		//todo: (Roar) localize
+		String prognosisText = prognosis == null ? "No prognosis available" :
+			"Three months: " + prognosis.getThreeMonthsPrognosis()+
+			"  One year: " + prognosis.getOneYearPrognosis() +
+			"  Updated date: " + prognosis.getUpdatedDate();	
 		
 		Table appTbl = new Table();
 		
@@ -70,19 +77,10 @@ public class ChildCareProviderQueueWindow extends Window {
 			while(i.hasNext()){
 				ChildCareApplication app = (ChildCareApplication) i.next();
 				
-
-				
-				if (prognosis == null){
-					prognosis = app.getPrognosis();
-				}
-
-				Text queueOrder = style.getSmallText("" + app.getQueueOrder()),
-//				choiceNumber = style.getSmallText("" + app.getChoiceNumber()),
-//				caseStatus = style.getSmallText(app.getStatus()+"/"+app.getApplicationStatus()),
-				queueDate = style.getSmallText(app.getQueueDate().toString()),
-				fromDate = style.getSmallText(app.getFromDate().toString()),
-				currentAppId = style.getSmallText(""+app.getNodeID());
-				
+				Text queueOrder = style.getSmallText("" + getChildCareBusiness(iwc).getNumberInQueue(app)),
+					queueDate = style.getSmallText(app.getQueueDate().toString()),
+					fromDate = style.getSmallText(app.getFromDate().toString()),
+					currentAppId = style.getSmallText(""+app.getNodeID());
 				
 				appTbl.add(queueOrder, 1, row);
 				appTbl.add(queueDate, 2, row);
@@ -114,7 +112,7 @@ public class ChildCareProviderQueueWindow extends Window {
 		layoutTbl.setRowHeight(2, "20px");	
 		
 		layoutTbl.add(PROGNOSIS, 1, 3);
-		layoutTbl.add(style.getSmallText(prognosis), 2, 3);		
+		layoutTbl.add(style.getSmallText(prognosisText), 2, 3);		
 			
 		layoutTbl.setRowHeight(4, "20px");
 			
