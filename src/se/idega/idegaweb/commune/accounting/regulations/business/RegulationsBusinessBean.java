@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.125 2004/06/04 14:40:14 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.126 2004/06/04 15:45:08 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -578,7 +578,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									match = false;
 								break;
 							case 4 :
-								if (1 > value.intValue() || value.intValue() > 24)
+								if (value.intValue() > 24)
 									match = false;
 								break;
 							case 5 :
@@ -586,7 +586,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									match = false;
 								break;
 							case 6 :
-								if (1 > value.intValue() || value.intValue() > 13)
+								if (value.intValue() > 13)
 									match = false;
 								break;
 							case 7 :
