@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/17 14:24:38 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/17 15:02:07 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.128 $
+ * @version $Revision: 1.129 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -496,7 +496,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					createRegularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
 					
 				}catch (CommuneChildcareOutsideHomeCommuneException e1) {
-					errorRelated.append(e1);
+//					errorRelated.append(e1);
 					createNewErrorMessage(errorRelated,"invoice.CommuneChildcareOutsideHomeCommune");
 				}catch (NoSchoolClassMemberException e1) {
 					errorRelated.append(e1);
