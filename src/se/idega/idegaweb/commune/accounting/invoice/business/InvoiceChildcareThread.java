@@ -455,7 +455,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append("Total sum is:"+totalSum);
 					if(totalSum<0){
 						if(subvention!=null){
-							errorRelated.append("Sum too low, changing subvention from "+subvention.getAmount()+"...to "+subvention.getAmount()+totalSum,1);
+							errorRelated.append("Sum too low, changing subvention from "+subvention.getAmount()+"...to "+(subvention.getAmount()-totalSum),1);
 							createNewErrorMessage(errorRelated,"invoice.Info_SubventionChangedToMakeSumZero");
 							subvention.setAmount(subvention.getAmount()-totalSum);
 							subvention.store();
