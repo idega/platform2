@@ -43,7 +43,7 @@ import javax.transaction.UserTransaction;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
-	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId) {
+	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId, String subject, String message) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -87,7 +87,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 //			check.setStatus(this.getcases)
 //			check.store();
 
-			sendMessageToProvider(new Integer(provider[0]),null,null);
+			sendMessageToProvider(new Integer(provider[0]),subject,message);
 			
 			t.commit();
 		}
@@ -117,7 +117,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator it = users.iterator();
 			while (it.hasNext()) {
 				User providerUser = (User)it.next();
-				messageBiz.createUserMessage(providerUser,"New application","You have new mail");
+				messageBiz.createUserMessage(providerUser,subject,message);
 			}				
 		}
 		else 
@@ -212,7 +212,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean rejectApplication(ChildCareApplication application) {
+	public boolean rejectApplication(ChildCareApplication application, String subject, String message) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -226,7 +226,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					proc.setCaseStatus(getCaseStatusOpen());
 					proc.store();
 					ChildCareApplication child = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(proc.getPrimaryKey());
-					sendMessageToProvider(new Integer(child.getProviderId()),null,null);
+					sendMessageToProvider(new Integer(child.getProviderId()),subject,message);
 				}
 			}
 			
@@ -247,11 +247,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;	
 	}
 	
-	public boolean rejectApplication(int applicationId) {
+	public boolean rejectApplication(int applicationId, String subject, String message) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
-			return rejectApplication(appl);
+			return rejectApplication(appl,subject,message);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -263,7 +263,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 	
-	public boolean acceptApplication(ChildCareApplication application) {
+	public boolean acceptApplication(ChildCareApplication application, String subject, String message) {
 		TransactionManager t = IdegaTransactionManager.getInstance();
 		try {
 			t.begin();
@@ -271,7 +271,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.store();
 			
 			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
-			messageBiz.createUserMessage(application.getOwner(),"Child care application","Your child care application has been accepted.");
+			messageBiz.createUserMessage(application.getOwner(),subject,message);
 					
 			t.commit();
 			
@@ -290,12 +290,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;	
 	}
 	
-	public boolean acceptApplication(int applicationId) {
+	public boolean acceptApplication(int applicationId, String subject, String message) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
 
-			return acceptApplication(appl);
+			return acceptApplication(appl,subject,message);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

@@ -63,6 +63,11 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String ERROR_NO_APPLICATIONS = "ccaa_no_applications";
 	private final static String ERROR_UNABLE_TO_CHANGE = "ccaa_unable_to_change_status";
 	private final static String ERROR_MUST_BE_INTEGER	 = "ccaa_must_be_integer";
+
+	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
+	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
+	private final static String EMAIL_USER_SUBJECT = "cca_user_email_subject";
+	private final static String EMAIL_USER_MESSAGE = "cca_user_email_message";
 	
 	protected User _user = null;
 
@@ -253,7 +258,10 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			String id = iwc.getParameter(PARAM_ID);
 			if (id != null) {
 				try {
-					return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id));
+					String subject = localize(EMAIL_PROVIDER_SUBJECT,"Child care application");
+					String message = localize(EMAIL_PROVIDER_MESSAGE,"You have received a new childcare application");
+
+					return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),subject,message);
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -264,7 +272,10 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			String id = iwc.getParameter(PARAM_ID);
 			if (id != null) {
 				try {
-					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id));
+					String subject = localize(EMAIL_USER_SUBJECT,"Child care application");
+					String message = localize(EMAIL_USER_MESSAGE,"Your child care application has been accepted.");
+
+					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message);
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();

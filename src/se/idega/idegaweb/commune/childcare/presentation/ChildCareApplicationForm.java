@@ -80,6 +80,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
 	
+	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
+	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
 
 	protected User _user = null;
 	protected IBPage _presentationPage = null;
@@ -324,7 +326,10 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		boolean done = false;
 		if (business != null) {
 			try {
-				done = business.insertApplications(_user,_valProvider,_valDate,new Integer(checkId).intValue(),new Integer(childId).intValue());
+				String subject = localize(EMAIL_PROVIDER_SUBJECT,"Child care application");
+				String message = localize(EMAIL_PROVIDER_MESSAGE,"You have received a new childcare application");
+				
+				done = business.insertApplications(_user,_valProvider,_valDate,new Integer(checkId).intValue(),new Integer(childId).intValue(),subject,message);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -348,17 +353,6 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	public IBPage getProviderPresentationLink() {
 		return _presentationPage;
-	}
-
-	private Collection getSchoolTypes(IWContext iwc, String category) {
-		try {
-			SchoolTypeBusiness sBuiz = (SchoolTypeBusiness) IBOLookup.getServiceInstance(iwc, SchoolTypeBusiness.class);
-			return sBuiz.findAllSchoolTypesInCategory(category);
-		}
-		catch (Exception ex) {
-
-		}
-		return null;
 	}
 
 	private Collection getAreas(IWContext iwc, String category) {
