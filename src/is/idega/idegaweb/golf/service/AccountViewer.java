@@ -179,16 +179,16 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       if(modinfo.getParameter(prmString) == null){
         doMain(modinfo);
       }
-      if(modinfo.getParameter("deleteall.x")!=null){
+      if(modinfo.getParameter("deleteall")!=null){
         doDeleteAll(modinfo);
       }
-      else if(modinfo.getParameter("payall.x")!=null){
+      else if(modinfo.getParameter("payall")!=null){
         this.doPayAll(modinfo);
       }
-      else if(modinfo.getParameter("updatepay.x")!=null){
+      else if(modinfo.getParameter("updatepay")!=null){
         this.doUpdatePay(modinfo);
       }
-      else if(modinfo.getParameter("makenew.x")!=null){
+      else if(modinfo.getParameter("makenew")!=null){
         this.doMakeNew(modinfo);
       }
       else if(modinfo.getParameter(prmString) != null){

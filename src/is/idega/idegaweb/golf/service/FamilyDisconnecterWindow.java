@@ -54,7 +54,7 @@ public class FamilyDisconnecterWindow extends com.idega.presentation.ui.Window{
       try {
 
 
-          String strStore = modinfo.getRequest().getParameter(STORE_NAME+".x");
+          String strStore = modinfo.getRequest().getParameter(STORE_NAME);
 
           HeaderTable hTable = new HeaderTable();
           hTable.setHeaderText(headerText);

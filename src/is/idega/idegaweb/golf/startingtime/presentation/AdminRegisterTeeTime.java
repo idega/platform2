@@ -58,7 +58,7 @@ public class AdminRegisterTeeTime extends GolfBlock {
 
 		setGraphic(myForm);
 		try {
-			if (deleteCheckBox != null && modinfo.getParameter("btnUpdatePlayer.x") != null) {
+			if (deleteCheckBox != null && modinfo.getParameter("btnUpdatePlayer") != null) {
 				if (!updatePlayers(MemberId, modinfo)) {
 					setErroResponse(myForm);
 				}
@@ -68,7 +68,7 @@ public class AdminRegisterTeeTime extends GolfBlock {
 					getParentPage().close();
 				}
 			}
-			else if (modinfo.getParameter("btnUpdatePlayer.x") != null) {
+			else if (modinfo.getParameter("btnUpdatePlayer") != null) {
 				if (!updatePlayers(MemberId, modinfo)) {
 					setErroResponse(myForm);
 				}
@@ -327,28 +327,28 @@ public class AdminRegisterTeeTime extends GolfBlock {
 	private String getOrderByClause(IWContext modinfo) {
 		String ordyerByClause = "grup_num";
 
-		if (modinfo.getParameter("steSkraName.x") != null) {
+		if (modinfo.getParameter("steSkraName") != null) {
 			ordyerByClause = "player_name";
 		}
-		else if (modinfo.getParameter("hCap.x") != null) {
+		else if (modinfo.getParameter("hCap") != null) {
 			ordyerByClause = "handicap";
 		}
-		else if (modinfo.getParameter("Time.x") != null) {
+		else if (modinfo.getParameter("Time") != null) {
 			ordyerByClause = "grup_num";
 		}
-		else if (modinfo.getParameter("steName.x") != null) {
+		else if (modinfo.getParameter("steName") != null) {
 			ordyerByClause = "player_name";
 		}
-		else if (modinfo.getParameter("steClub.x") != null) {
+		else if (modinfo.getParameter("steClub") != null) {
 			ordyerByClause = "club_name";
 		}
-		else if (modinfo.getParameter("steCardNo.x") != null) {
+		else if (modinfo.getParameter("steCardNo") != null) {
 			ordyerByClause = "card_num";
 		}
-		else if (modinfo.getParameter("steDate.x") != null) {
+		else if (modinfo.getParameter("steDate") != null) {
 			ordyerByClause = "startingtime_date";
 		}
-		else if (modinfo.getParameter("serkort.x") != null) {
+		else if (modinfo.getParameter("serkort") != null) {
 			ordyerByClause = "card_name";
 		}
 

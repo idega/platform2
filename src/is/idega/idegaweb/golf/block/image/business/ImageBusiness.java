@@ -76,7 +76,7 @@ public static void saveImageToCatagories(int imageId, String[] categoryId)throws
 public static void handleEvent(IWContext modinfo,ImageHandler handler) throws Exception{
 
   String action = modinfo.getParameter("action");
-  String scaling = modinfo.getParameter("scale.x");
+  String scaling = modinfo.getParameter("scale");
   String imageId2 = modinfo.getParameter("image_id");
 
   int imageId = (handler!=null)? handler.getOriginalImageId() : Integer.parseInt(imageId2);

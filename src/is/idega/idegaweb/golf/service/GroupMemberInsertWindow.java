@@ -180,7 +180,7 @@ public class GroupMemberInsertWindow extends com.idega.presentation.ui.Window{
     }
 
 */
-    if(iwc.isParameterSet("close.x")){
+    if(iwc.isParameterSet("close")){
       setParentToReload();
       close();
     }
@@ -198,10 +198,10 @@ public class GroupMemberInsertWindow extends com.idega.presentation.ui.Window{
         int memberUnion = Integer.parseInt(sMemberUnionId);
         member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(memberid);
 
-        if(iwc.isParameterSet("save.x")){
+        if(iwc.isParameterSet("save")){
           store(iwc,member);
         }
-        else if(iwc.isParameterSet("add_group.x")){
+        else if(iwc.isParameterSet("add_group")){
           int addUnion = Integer.parseInt(iwc.getParameter("add_union"));
           String name = iwc.getParameter("group_name");
           saveGroup(addUnion,name);

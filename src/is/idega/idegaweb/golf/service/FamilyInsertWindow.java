@@ -96,8 +96,8 @@ public class FamilyInsertWindow extends com.idega.presentation.ui.Window{
       try {
 
 
-        String strStore = modinfo.getRequest().getParameter(STORE_NAME+".x");
-        String strFind = modinfo.getRequest().getParameter(FIND_NAME+".x");
+        String strStore = modinfo.getRequest().getParameter(STORE_NAME);
+        String strFind = modinfo.getRequest().getParameter(FIND_NAME);
 
         BorderTable hTable = new BorderTable();
 
