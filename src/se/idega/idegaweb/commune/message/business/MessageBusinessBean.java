@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.56 2004/01/12 13:41:40 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.57 2004/01/21 18:00:23 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -424,6 +424,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	public void flagMessageAsPrinted(User performer,Message message)throws RemoteException{
 		String newCaseStatus=getCaseStatusReady().getStatus();
+		super.changeCaseStatus(message,newCaseStatus,performer);
+	}
+	
+	public void flagMessageAsUnPrinted(User performer,Message message)throws RemoteException{
+		String newCaseStatus=getCaseStatusOpen().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
 	

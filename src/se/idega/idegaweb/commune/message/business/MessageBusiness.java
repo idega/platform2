@@ -65,6 +65,7 @@ public interface MessageBusiness extends CaseBusiness
  public void sendMessageToCommuneAdministrators(String subject, String body) throws java.rmi.RemoteException;
  public PrintedLetterMessage createPasswordMessage(com.idega.user.data.User user, String username,String password) throws CreateException, java.rmi.RemoteException ;
  public void flagMessageAsPrinted(com.idega.user.data.User performer,se.idega.idegaweb.commune.message.data.Message message)throws  java.rmi.RemoteException;
+ public void flagMessageAsUnPrinted(com.idega.user.data.User performer,se.idega.idegaweb.commune.message.data.Message message)throws  java.rmi.RemoteException;
  public void flagMessageAsInactive(User performer,Message message)throws RemoteException;
  public void flagMessagesAsInactive(User performer, String[] msgKeys)throws RemoteException,FinderException;
  public void flagMessagesWithStatus(User performer, String[] msgKeys,String status)throws RemoteException,FinderException;
