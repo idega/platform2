@@ -166,7 +166,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getText(String s){
-    return setStyle(s,this.STYLENAME_TEXT);
+    return getStyleText(s,this.STYLENAME_TEXT);
   }
 
   public Text getLocalizedText(String s, String d){
@@ -174,7 +174,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getSmallText(String s){
-    return setStyle(s,this.STYLENAME_SMALL_TEXT);
+    return getStyleText(s,this.STYLENAME_SMALL_TEXT);
   }
 
   public Text getLocalizedSmallText(String s, String d){
@@ -182,7 +182,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getHeader(String s){
-    return setStyle(s,this.STYLENAME_HEADER);
+    return getStyleText(s,this.STYLENAME_HEADER);
   }
 
   public Text getLocalizedHeader(String s, String d){
@@ -190,7 +190,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getSmallHeader(String s){
-    return setStyle(s,this.STYLENAME_SMALL_HEADER);
+    return getStyleText(s,this.STYLENAME_SMALL_HEADER);
   }
 
   public Text getLocalizedSmallHeader(String s, String d){
@@ -198,7 +198,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Link getLink(String s){
-    return setStyle(new Link(s),this.STYLENAME_LINK);
+    return getStyleLink(new Link(s),this.STYLENAME_LINK);
   }
 
   public Link getLocalizedLink(String s, String d){
@@ -206,11 +206,11 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getErrorText(String s){
-    return setStyle(s,this.STYLENAME_ERROR_TEXT);
+    return getStyleText(s,this.STYLENAME_ERROR_TEXT);
   }
 
   public Text getSmallErrorText(String s){
-    return setStyle(s,this.STYLENAME_SMALL_ERROR_TEXT);
+    return getStyleText(s,this.STYLENAME_SMALL_ERROR_TEXT);
   }
 
   public IBPage getResponsePage(){
