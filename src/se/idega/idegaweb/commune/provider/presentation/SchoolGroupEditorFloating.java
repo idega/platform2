@@ -32,12 +32,12 @@ public class SchoolGroupEditorFloating extends SchoolGroupEditorAdmin {
 		if (_provider != null){
 			table.add(getGroupTable(), 1, 3);
 			
-			Link editLink = new Link((localize("save_group", "Save group")));
-			editLink.setAsImageButton(true);
-			editLink.addParameter(PARAMETER_ACTION, ACTION_EDIT);
-			editLink.addParameter(getProviderAsParameter());
-			editLink.addParameter(PARAMETER_TYPE_ID, _iwc.getParameter(PARAMETER_TYPE_ID));
-			table.add(editLink, 1, 5);
+			Link createLink = new Link((localize("create_group", "Create group")));
+			createLink.setAsImageButton(true);
+			createLink.addParameter(PARAMETER_ACTION, ACTION_EDIT);
+			createLink.addParameter(getProviderAsParameter());
+			createLink.addParameter(PARAMETER_TYPE_ID, _iwc.getParameter(PARAMETER_TYPE_ID));
+			table.add(createLink, 1, 5);
 
 		}
 		return table;
