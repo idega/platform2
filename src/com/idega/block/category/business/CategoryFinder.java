@@ -34,14 +34,14 @@ public class CategoryFinder {
 
   private static CategoryFinder categoryFinder;
 
-  public static ICCategory getCategory(int iCategoryId){
+  public ICCategory getCategory(int iCategoryId){
     if( iCategoryId > 0){
         return (ICCategory) ICCategory.getEntityInstance(ICCategory.class,iCategoryId);
     }
     return null;
   }
 
-  public static List listOfCategories(String type){
+  public List listOfCategories(String type){
     try {
       return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnType(),type);
     }
@@ -50,7 +50,7 @@ public class CategoryFinder {
     }
   }
 
-  public static List listOfValidCategories(){
+  public List listOfValidCategories(){
     try {
       return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"Y");
     }
@@ -59,7 +59,7 @@ public class CategoryFinder {
     }
   }
 
-  public static List listOfValidCategories(String type){
+  public List listOfValidCategories(String type){
     try {
       return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"Y",ICCategory.getColumnType(),type);
     }
@@ -68,7 +68,7 @@ public class CategoryFinder {
     }
   }
 
-  public static List listOfInValidCategories(){
+  public List listOfInValidCategories(){
     try {
       return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"N");
     }
@@ -77,7 +77,7 @@ public class CategoryFinder {
     }
   }
 
-  public static List listOfInValidCategories(String type){
+  public List listOfInValidCategories(String type){
     try {
       return EntityFinder.findAllByColumn(ICCategory.getStaticInstance(ICCategory.class),ICCategory.getColumnValid(),"N",ICCategory.getColumnType(),type);
     }
@@ -88,7 +88,7 @@ public class CategoryFinder {
 
 
 
-  public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
+  public int getObjectInstanceIdFromCategoryId(int iCategoryId){
     try {
       ICCategory nw = (ICCategory) getCategory(iCategoryId);
       List L = EntityFinder.findRelated( nw,new ICObjectInstance());
@@ -104,13 +104,13 @@ public class CategoryFinder {
     }
   }
 
-  public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew,String type){
+  public int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew,String type){
     int id = -1;
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
       id = getObjectInstanceCategoryId(obj);
       if(id <= 0 && CreateNew ){
-        id = CategoryBusiness.createCategory(iObjectInstanceId ,type);
+        id = CategoryBusiness.getInstance().createCategory(iObjectInstanceId ,type);
       }
     }
     catch (Exception ex) {
@@ -119,13 +119,13 @@ public class CategoryFinder {
     return id;
   }
 
-  public static int[] getObjectInstanceCategoryIds(int iObjectInstanceId,boolean CreateNew,String type){
+  public int[] getObjectInstanceCategoryIds(int iObjectInstanceId,boolean CreateNew,String type){
     int[] ids = new int[0];
     try {
       ids = getObjectInstanceCategoryIds(iObjectInstanceId);
       if(ids.length == 0 && CreateNew ){
         ids = new int[1];
-        ids[0] = CategoryBusiness.createCategory(iObjectInstanceId ,type);
+        ids[0] = CategoryBusiness.getInstance().createCategory(iObjectInstanceId ,type);
       }
     }
     catch (Exception ex) {
@@ -134,7 +134,7 @@ public class CategoryFinder {
     return ids;
   }
 
-  public static int getObjectInstanceCategoryId(int iObjectInstanceId){
+  public int getObjectInstanceCategoryId(int iObjectInstanceId){
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
       return getObjectInstanceCategoryId(obj);
@@ -145,7 +145,7 @@ public class CategoryFinder {
     return -1;
   }
 
-  public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
+  public int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
     try {
       List L = EntityFinder.findRelated(eObjectInstance ,(GenericEntity)ICCategory.getStaticInstance(ICCategory.class));
       if(L!= null){
@@ -160,7 +160,7 @@ public class CategoryFinder {
     }
   }
 
-  public static int[] getObjectInstanceCategoryIds(int ICObjectInstanceId){
+  public int[] getObjectInstanceCategoryIds(int ICObjectInstanceId){
     //select ic_category_id from IC_CATEGORY_ic_object_instance where ic_object_instance_ID=51
     StringBuffer sql = new StringBuffer("select ");
     ICCategory cat = (ICCategory) ICCategory.getStaticInstance(ICCategory.class);
@@ -205,7 +205,7 @@ public class CategoryFinder {
     */
   }
 
-  public static List listOfCategoryForObjectInstanceId(int instanceid){
+  public List listOfCategoryForObjectInstanceId(int instanceid){
     try {
       ICObjectInstance obj = new ICObjectInstance(instanceid );
       return listOfCategoryForObjectInstanceId(obj);
@@ -215,7 +215,7 @@ public class CategoryFinder {
     }
   }
 
-  public static List listOfCategoryForObjectInstanceId( ICObjectInstance obj){
+  public List listOfCategoryForObjectInstanceId( ICObjectInstance obj){
     try {
       List L = EntityFinder.findRelated(obj,ICCategory.getStaticInstance(ICCategory.class));
       return L;
@@ -225,7 +225,7 @@ public class CategoryFinder {
     }
   }
 
-  private static String getRelatedSQL(int iObjectInstanceId){
+  private String getRelatedSQL(int iObjectInstanceId){
     StringBuffer sql = new StringBuffer("select ");
     sql.append(((ICCategory)ICCategory.getStaticInstance(ICCategory.class)).getIDColumnName());
     sql.append(" from ").append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class));
@@ -234,7 +234,7 @@ public class CategoryFinder {
     return sql.toString();
   }
 
-  private static String getRelatedEntitySQL(String tablename,int iObjectInstanceId){
+  private String getRelatedEntitySQL(String tablename,int iObjectInstanceId){
     StringBuffer sql = new StringBuffer("select ");
     sql.append(tablename).append(".* from ").append(tablename).append(",");
     String middletable = EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class);
@@ -251,7 +251,7 @@ public class CategoryFinder {
    *  Returns a Collection of ICCategory entities
    *  with specified type
    */
-  public static Collection getCategories(int[] ids,String type){
+  public Collection getCategories(int[] ids,String type){
     StringBuffer sql = new StringBuffer("select * from ");
     ICCategory cat = (ICCategory)ICCategory.getStaticInstance(ICCategory.class);
     sql.append(cat.getEntityTableName());
@@ -276,7 +276,7 @@ public class CategoryFinder {
    *  Returns a Collection of ICCategory-ids that
    *  have reference to a ICObjectInstance
    */
-  public static Collection collectCategoryIntegerIds(int iObjectInstanceId){
+  public Collection collectCategoryIntegerIds(int iObjectInstanceId){
     String[] ids = null;
 
     try {

@@ -336,6 +336,6 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
   }
 
   public static boolean deleteBlock(int iObjectInstanceId){
-    return CategoryBusiness.deleteBlock(iObjectInstanceId);
+    return CategoryBusiness.getInstance().deleteBlock(iObjectInstanceId);
   }
 }
