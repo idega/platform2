@@ -13,6 +13,8 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
@@ -36,8 +38,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.util.ErrorLogger;
 
 import com.idega.block.school.data.School;

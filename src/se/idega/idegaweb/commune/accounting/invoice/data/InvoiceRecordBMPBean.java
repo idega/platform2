@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;

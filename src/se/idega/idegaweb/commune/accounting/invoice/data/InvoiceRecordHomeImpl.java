@@ -13,7 +13,7 @@ public class InvoiceRecordHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
-public java.util.Collection findByContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0)throws javax.ejb.FinderException{
+public java.util.Collection findByContract(se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByContract(p0);
 	this.idoCheckInPooledEntity(entity);

@@ -11,8 +11,8 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractHome;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;

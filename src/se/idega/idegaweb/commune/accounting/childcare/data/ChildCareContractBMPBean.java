@@ -1,12 +1,15 @@
 /*
  * Created on 26.3.2003
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.accounting.childcare.data;
 
 import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationBMPBean;
+import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;
