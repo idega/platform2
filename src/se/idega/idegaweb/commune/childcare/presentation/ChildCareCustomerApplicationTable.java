@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.11 2003/04/07 08:28:43 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.12 2003/04/07 13:44:15 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -59,25 +59,35 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
 				createPagePhase2(iwc, layoutTbl); 
 				break;
+			
+			case CCConstants.ACTION_SUBMIT_CONFIRM:
+				createPagePhase1(iwc, layoutTbl); 				
+				break;
 				
 			case CCConstants.ACTION_CANCEL_1: 
 				/**@todo: What should happen here? */ 
+			    iwc.forwardToIBPage(getParentPage(), getEndPage());
 				break;
 				
 			case CCConstants.ACTION_SUBMIT_2: 
 //				iwc.setSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE, getKeepInQueue(iwc));
 				handleAcceptStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));				
 				handleKeepQueueStatus(iwc, getKeepInQueue(iwc));
+				iwc.forwardToIBPage(getParentPage(), getEndPage());
 //				createSubmitPage(iwc, layoutTbl);
 				break;
 				
 			case CCConstants.ACTION_CANCEL_2: 
 				/**@todo: What should happen here? */ 
+				iwc.forwardToIBPage(getParentPage(), getEndPage());
 				break;
 
 			case CCConstants.ACTION_REQUEST_INFO: 
 				/**@todo: How do i 'connect' to the message editor block? */ 
-				iwc.forwardToIBPage(getParentPage(), getMessageBoxPage());
+			    ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
+			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner());
+			    createRequestInfoConfirmPage(iwc, layoutTbl); 
+
 				
 			/*	layoutTbl.add(new Text("[Requesting info from " + 
 					getChildCareBusiness(iwc)
@@ -355,7 +365,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return CCConstants.NO_ACTION;	
 	}
 		
+	private void createRequestInfoConfirmPage(IWContext iwc, Table layoutTbl) throws RemoteException{
+		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_CONFIRM).toString());
+//		submitBtn.setName(SUBMIT[0] + PAGE_1);
+		submitBtn.setAsImageButton(true);		
 		
+		layoutTbl.add(new Text("Your request has been sent."), 1, 1);
+		layoutTbl.add(submitBtn, 1, 2);
+		layoutTbl.setAlignment(1, 2, "right");
+	}
+			
 	private void createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException{
 		Collection applications = findApplications(iwc);
 		if (applications.size() == 0){
@@ -465,19 +484,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return getSmallHeader(localize(key, defaultValue));
 	}
 	
-	private IBPage _messageBoxPage;
+	private IBPage _endPage;
 	
 	/**
 	 * 
 	 * Property method
-	 * @param page
+	 * @param page The page to return after finshed or cancelled
 	 */
-	public void setMessageBoxPage(IBPage page){
-		_messageBoxPage = page;
+	public void setEndPage(IBPage page){
+		_endPage = page;
 	}
 	
-	public IBPage getMessageBoxPage(){
-		return _messageBoxPage;
+	public IBPage getEndPage(){
+		return _endPage;
 	}
 	
 	//Because these methods is made protected in CommuneBlock, 
