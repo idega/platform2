@@ -181,6 +181,7 @@ public class BookingRefunder extends TravelBlock {
 
     boolean error = false;
     boolean incorrectCCNum = false;
+    boolean incorrectCCDate = false;
     table.mergeCells(1,row,3,row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")), 1, row);
     //table.setRowColor(row, backgroundColor);
@@ -200,7 +201,11 @@ public class BookingRefunder extends TravelBlock {
       error = true;
     		e.printStackTrace();
     }
-
+    incorrectCCDate = !ccAuthEntry.getCardExpires().equals(month+year);
+    if (incorrectCCDate) {
+    		error = true;
+    }
+    
     ++row;
     table.add(ccMonth,2,row);
     table.add(month,3,row);
@@ -251,10 +256,10 @@ public class BookingRefunder extends TravelBlock {
       error = true;
     }
 
-	  if (incorrectCCNum) {
-	  		++row;
-	  		table.mergeCells(1, row, 3, row);
-  			table.add(getErrorText(iwrb.getLocalizedString("creditcard.credicard_number_not_the_same_as_on_booking", "Creditcard is not the same as the one used when booking.")), 1, row);
+	  if (incorrectCCNum || incorrectCCDate) {
+  			++row;
+  			table.mergeCells(1, row, 3, row);
+			table.add(getErrorText(iwrb.getLocalizedString("creditcard.credicard_info_not_the_same_as_on_booking", "Creditcard information is not the same as the one used when booking.")), 1, row);
 	  }
 
     ++row;
@@ -307,7 +312,7 @@ public class BookingRefunder extends TravelBlock {
 	    ++row;
 	    //table.setRowColor(row, GRAY);
 	    table.add(getText(iwrb.getLocalizedString("travel.amount","Amount")), 1, row);
-	    String sAmount = df.format(getBooker(iwc).getBookingPrice(booking));
+	    String sAmount = df.format(getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(booking)));
 	    table.add(getText(sAmount), 2, row);
 	    table.add(new HiddenInput(PARAMETER_AMOUNT, sAmount), 2, row);
 	    //table.add(amount, 2, row);
@@ -344,14 +349,14 @@ public class BookingRefunder extends TravelBlock {
 
 
 	  try{
-	  		if (!ccAuthEntry.getCardExpires().equals(year+month)) {
+	  		if (!ccAuthEntry.getCardExpires().equals(month+year)) {
 	  			CreditCardAuthorizationException e = new CreditCardAuthorizationException();
 	  			e.setDisplayError(iwrb.getLocalizedString("travel.card_expire_date_wrong", "Creditcard expire date is incorrect."));
 	  			throw e;
 	  		}
 	    System.out.println("Starting CreditCard test : "+IWTimestamp.RightNow().toString());
-	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getExtraField());
-	    booking.setCreditcardAuthorizationNumber(heimild);
+	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
+	    //booking.setCreditcardAuthorizationNumber(heimild);
 	    booking.setIsValid(false);
 	    booking.store();
 	    System.out.println("Ending CreditCard test : "+IWTimestamp.RightNow().toString());
