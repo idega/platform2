@@ -14,8 +14,25 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
+
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.DirectSQLStatement;
@@ -41,20 +58,6 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
-import dori.jasper.engine.JRBand;
-import dori.jasper.engine.JRDataSource;
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JRExporterParameter;
-import dori.jasper.engine.JRField;
-import dori.jasper.engine.JasperExportManager;
-import dori.jasper.engine.JasperFillManager;
-import dori.jasper.engine.JasperManager;
-import dori.jasper.engine.JasperPrint;
-import dori.jasper.engine.JasperReport;
-import dori.jasper.engine.design.JasperDesign;
-import dori.jasper.engine.export.JRHtmlExporter;
-import dori.jasper.engine.export.JRXlsExporter;
-import dori.jasper.engine.export.JRXlsExporterParameter;
 
 /**
  * <p>Title: idegaWeb</p>

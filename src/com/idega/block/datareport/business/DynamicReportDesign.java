@@ -9,6 +9,10 @@ package com.idega.block.datareport.business;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperManager;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import com.idega.block.datareport.business.jasperdesignxml.ColumnFooter;
 import com.idega.block.datareport.business.jasperdesignxml.ColumnHeader;
 import com.idega.block.datareport.business.jasperdesignxml.DesignDocument;
@@ -30,10 +34,6 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
-
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JasperManager;
-import dori.jasper.engine.design.JasperDesign;
 
 /**
  * Title:		DynamicReportDesign

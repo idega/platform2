@@ -12,6 +12,9 @@ import java.util.Map;
 
 import javax.ejb.FinderException;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+
 import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
@@ -45,9 +48,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringHandler;
-
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JasperPrint;
 
 
 /**

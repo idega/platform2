@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
 import com.idega.util.datastructures.SortedHashMatrix;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
-
-import dori.jasper.engine.JRDataSource;
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JRField;
 
 /**
  * <p>Title: idegaWeb</p>

@@ -3,7 +3,7 @@ package com.idega.block.datareport.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import dori.jasper.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
  * <p>Title: idegaWeb</p>

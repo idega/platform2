@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRField;
+
 import com.idega.data.EntityAttribute;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOReportableField;
-
-import dori.jasper.engine.JRField;
 
 /**
  * Title:		ReportableField

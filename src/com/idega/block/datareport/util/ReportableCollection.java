@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
 import com.idega.data.IDOReportableEntity;
 import com.idega.data.IDOReportableField;
 import com.idega.util.datastructures.QueueMap;
-
-import dori.jasper.engine.JRDataSource;
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JRField;
 
 /**
  * Title:		IDOReportableCollection

@@ -29,6 +29,11 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.design.JasperDesign;
+
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.QueryHome;
@@ -72,11 +77,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLException;
-
-import dori.jasper.engine.JRDataSource;
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JasperPrint;
-import dori.jasper.engine.design.JasperDesign;
 /**
  * Title: ReportGenerator Description: Copyright: Copyright (c) 2003 Company:
  * idega Software
