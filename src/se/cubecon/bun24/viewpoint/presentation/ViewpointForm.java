@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/11 09:06:59 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -898,7 +898,7 @@ public class ViewpointForm extends CommuneBlock {
         return result;
     }
 
-    private Table getRadioButtonTable (final String name,
+    /*private Table getRadioButtonTable (final String name,
                                        final String [][] labels) {
         final Table table = new Table (3, labels.length);
         for (int row = 0; row < labels.length; row++) {
@@ -918,7 +918,7 @@ public class ViewpointForm extends CommuneBlock {
         }
         
         return table;
-    }
+    }*/
 
     private Link getStartPageLink (final IWContext context) {
         Link result = null;
