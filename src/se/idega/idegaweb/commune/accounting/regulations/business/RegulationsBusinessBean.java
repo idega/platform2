@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.66 2003/11/21 14:56:50 roar Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.67 2003/11/21 16:28:58 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -424,30 +424,29 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return 0;
 		}
 
-		//If there are no conditions on the rule then the rule does not satisfy the conditions sent into the method. NB Lotta is checking this
+		//If there are no conditions on the rule then the rule does satisfies the conditions
 		if (cond != null || cond.isEmpty())
-			return 0;
+			return 1;
 
-		//Go through each condition sent in and try to see if the rule has all the conditions it needs. If some are missing 0 will be returned.
+		//Go through each condition sent in and try to see if the rule satisfies the conditions it needs
 		Iterator it = c.iterator();
 		while (it.hasNext()) {
 			ConditionParameter param = (ConditionParameter) it.next();
-
 			String condition = param.getCondition();
 
 			//Checking each type of condition
 			if (condition.equals(IntervalConstant.ACTIVITY)) {
 				String value = (String) param.getInterval();
 				Iterator i = cond.iterator();
-				boolean match = false;
+				boolean match = true;
 				while (i.hasNext() && !match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_OPERATION)) {
 						int id = regCond.getIntervalID();
 						try {
 							SchoolType act = getSchoolTypeHome().findByPrimaryKey(new Integer(id));
-							if (act.getLocalizationKey().equals(value))
-								match = true;
+							if (!act.getLocalizationKey().equals(value))
+								match = false;
 						}
 						catch (RemoteException e1) {
 							e1.printStackTrace();
@@ -466,43 +465,32 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			else if (condition.equals(IntervalConstant.AGE)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
-				boolean match = false;
+				boolean match = true;
 				while (i.hasNext() && !match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 						int id = regCond.getIntervalID();
 						
-						//This is not needed here. I'll just use the fact that this is hardcoded.
-/*						ArrayList ages = (ArrayList)findAllAgeIntervals();
-						Iterator it2 = ages.iterator();
-						while (it2.hasNext()) {
-							Object age[] = (Object[])it.next();
-							if (((Integer)age[0]).intValue() == value.intValue())
-								match = checkAgeIntervals(value.intValue(),(String)age[1]);
-								if (match)
-									break;					
-						}*/
-						
 						switch (id) {
 							case 1 : 
-								if (1 <= value.intValue() && value.intValue() <= 2)
-									match = true;
+								if (1 > value.intValue() || value.intValue() > 2)
+									match = false;
 								break;
 							case 2 :
-								if (3 <= value.intValue() && value.intValue() <= 5)
-									match = true;
+								if (3 > value.intValue() || value.intValue() > 5)
+									match = false;
 								break;
 							case 3 :
-								if (4 <= value.intValue() && value.intValue() <= 5)
-									match = true;
+								if (4 > value.intValue() || value.intValue() > 5)
+									match = false;
 								break;
 							case 4 :
-								if (6 == value.intValue())
-									match = true;
+								if (6 != value.intValue())
+									match = false;
 								break;
 							case 5 :
-								if (value.intValue() >= 5)
-									match = true;
+								if (value.intValue() > 5)
+									match = false;
 								break;	
 						}
 					}
@@ -522,32 +510,32 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						//I'll just use the fact that this is hardcoded.						
 						switch (id) {
 							case 1 : 
-								if (1 <= value.intValue() && value.intValue() <= 25)
-									match = true;
+								if (1 > value.intValue() || value.intValue() > 25)
+									match = false;
 								break;
 							case 2 :
-								if (26 <= value.intValue() && value.intValue() <= 35)
-									match = true;
+								if (26 > value.intValue() || value.intValue() > 35)
+									match = false;
 								break;
 							case 3 :
-								if (value.intValue() >= 36)
-									match = true;
+								if (value.intValue() < 36)
+									match = false;
 								break;
 							case 4 :
-								if (value.intValue() <= 24)
-									match = true;
+								if (value.intValue() > 24)
+									match = false;
 								break;
 							case 5 :
-								if (value.intValue() >= 25)
-									match = true;
+								if (value.intValue() < 25)
+									match = false;
 								break;	
 							case 6 :
-								if (value.intValue() <= 13)
-									match = true;
+								if (value.intValue() > 13)
+									match = false;
 								break;	
 							case 7 :
-								if (value.intValue() >= 14)
-									match = true;
+								if (value.intValue() < 14)
+									match = false;
 								break;	
 						}
 					}
@@ -567,20 +555,20 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						//I'll just use the fact that this is hardcoded.						
 						switch (id) {
 							case 1 : 
-								if (1 == value.intValue())
-									match = true;
+								if (1 != value.intValue())
+									match = false;
 								break;
 							case 2 :
-								if (2 == value.intValue())
-									match = true;
+								if (2 != value.intValue())
+									match = false;
 								break;
 							case 3 :
-								if (3 == value.intValue())
-									match = true;
+								if (3 != value.intValue())
+									match = false;
 								break;
 							case 4 :
-								if (value.intValue() >= 4)
-									match = true;
+								if (value.intValue() < 4)
+									match = false;
 								break;
 						}
 					}
@@ -1479,19 +1467,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return ArrayList containing the regulations 
 	 */
 	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, Collection condition) {
-		/*
-				Collection regulations = new ArrayList();
-		
-				try {
-					regulations = getRegulationHome().findRegulationsByPeriod(new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()));
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-		
-				return regulations;
-		*/
-
 		Collection match = new ArrayList();
 
 		try {
@@ -1521,7 +1496,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 
 			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, -1);
-//			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, -1);
 			if (reg != null && !reg.isEmpty()) {
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
