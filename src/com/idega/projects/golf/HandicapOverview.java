@@ -64,11 +64,15 @@ private String headerTextColor = "#FFFFFF";
 
 private Text headerText = new Text();  //Bjarni added 14.08.01
 private Text tableText = new Text();
+private Text tilFraText = new Text();
 private Link textLink = new Link();
 
-{  //headerText and tableText and textLink properties initialized.
+{  //text properties initialized.
   headerText.setFontSize(1);
   headerText.setFontColor(headerTextColor);
+
+  tilFraText.setFontColor(headerTextColor);
+  tilFraText.setBold();
 
   tableText.setFontSize(1);
 
@@ -584,12 +588,10 @@ private Link textLink = new Link();
           skoda = new SubmitButton(iwrb.getImage("getOverview.gif"));
         }
 
-				Text fra = ( (Text) headerText.clone());
+				Text fra = ( (Text) tilFraText.clone());
                                 fra.setText(iwrb.getLocalizedString("handicap.from","From")+": ");
-					fra.setBold();
-				Text til = ( (Text) headerText.clone());
+				Text til = ( (Text) tilFraText.clone());
                                 til.setText(iwrb.getLocalizedString("handicap.to","To")+": ");
-					til.setBold();
 				Text strik = new Text("&nbsp;");
 				Text bil = new Text("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 
@@ -731,6 +733,10 @@ private Link textLink = new Link();
 
     public void setTableTextProperties(Text textToClonePropertiesFrom){
       this.tableText = textToClonePropertiesFrom;
+    }
+
+    public void setTilFraTextProperties(Text textToClonePropertiesFrom){
+      this.tilFraText = textToClonePropertiesFrom;
     }
 
     public void setTextLinkProperties(Link linkToClonePropertiesFrom){
