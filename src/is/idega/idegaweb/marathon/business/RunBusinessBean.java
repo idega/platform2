@@ -352,6 +352,29 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException cre) {
 		}
 	}
+	
+	public void setParticipantNumber(Run participant) {
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+
+			Group group = participant.getRunDistanceGroup();
+			int participantNumber = runHome.getNextAvailableParticipantNumber(getMinParticipantNumber(group.getName()), getMaxParticipantNumber(group.getName()));
+			if (participantNumber == 0) {
+				participantNumber = getMinParticipantNumber(group.getName());
+			}
+			else {
+				participantNumber++;
+			}
+			participant.setParticipantNumber(participantNumber);
+			participant.store();
+		}
+		catch (IDOException ie) {
+			log(ie);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+	}
 
 	public void sendMessage(String email, String subject, String body) {
 

@@ -4,12 +4,18 @@
 package is.idega.idegaweb.marathon.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.MaxColumn;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+import com.idega.user.data.Group;
 
 /**
  * Description: <br>
@@ -135,6 +141,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return getIntColumnValue(getColumnNameRunDistanceGroupID());
 	}
 
+	public Group getRunDistanceGroup() {
+		return (Group) getColumnValue(getColumnNameRunDistanceGroupID());
+	}
+
 	public int getRunGroupGroupID() {
 		return getIntColumnValue(getColumnNameRunGroupGroupID());
 	}
@@ -234,6 +244,15 @@ public class RunBMPBean extends GenericEntity implements Run {
 	
 	public void setParticipantNumber(int participantNumber) {
 		setColumn(getColumnNameParticipantNumber(), participantNumber);
+	}
+	
+	public Collection ejbFindAll() throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		
+		return idoFindPKsBySQL(query.toString());
 	}
 	
 	public int ejbHomeGetNextAvailableParticipantNumber(int min, int max) throws IDOException {
