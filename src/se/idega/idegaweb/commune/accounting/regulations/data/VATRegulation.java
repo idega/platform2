@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.accounting.regulations.data;
 
 public interface VATRegulation extends com.idega.data.IDOEntity
 {
+ public java.lang.String getCategory();
  public java.lang.String getDescription();
  public java.lang.String getIDColumnName();
  public se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType getPaymentFlowType();
@@ -13,6 +14,7 @@ public interface VATRegulation extends com.idega.data.IDOEntity
  public int getProviderTypeId();
  public float getVATPercent();
  public void initializeAttributes();
+ public void setCategory(java.lang.String p0);
  public void setDescription(java.lang.String p0);
  public void setPaymentFlowTypeId(int p0);
  public void setPeriodFrom(java.sql.Date p0);

@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.22 2003/09/09 14:09:44 laddi Exp $
+ * $Id: VATEditor.java,v 1.23 2003/10/06 14:42:41 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,8 +21,10 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Break;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
@@ -37,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -50,7 +52,6 @@ public class VATEditor extends AccountingBlock {
 	private final static int ACTION_NEW = 3;
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
-//	private final static int ACTION_DELETE_CONFIRM = 6;
 	private final static int ACTION_DELETE = 6;
 	
 	private final static String PP = "cacc_vat_"; // Parameter prefix 
@@ -69,8 +70,6 @@ public class VATEditor extends AccountingBlock {
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
-//	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
-//	private final static String PARAMETER_DELETE = PP + "delete";
 	private final static String PARAMETER_EDIT = PP + "edit";
 	
 	private final static String KP = "vat_editor."; // key prefix 
@@ -80,13 +79,12 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_TITLE_EDIT = KP + "title_edit";
 	private final static String KEY_TITLE_DELETE_CONFIRM = KP + "title_delete_confirm";
-	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_PERIOD = KP + "period";
 	private final static String KEY_DESCRIPTION = KP+ "description";
 	private final static String KEY_VAT_PERCENT = KP + "vat_percent";
 	private final static String KEY_PAYMENT_FLOW_TYPE = KP + "payment_flow_type";
 	private final static String KEY_PROVIDER_TYPE = KP + "provider_type";
-	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
+//	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
 	private final static String KEY_PAYMENT_FLOW_TYPE_HEADER = KP + "payment_flow_type_header";
 	private final static String KEY_PROVIDER_TYPE_HEADER = KP + "provider_type_header";
 	private final static String KEY_SEARCH = KP + "search";
@@ -94,9 +92,6 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_EDIT = KP + "edit";
 	private final static String KEY_CANCEL = KP + "cancel";
-//	private final static String KEY_DELETE = KP + "delete";
-//	private final static String KEY_DELETE_YES = KP + "delete_yes";
-//	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
 	private final static String KEY_DELETE = KP + "delete";
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
@@ -127,9 +122,6 @@ public class VATEditor extends AccountingBlock {
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
 					break;
-//				case ACTION_DELETE_CONFIRM:
-//					handleDeleteConfirmAction(iwc);
-//					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					break;
@@ -155,8 +147,6 @@ public class VATEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-//		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
-//			action = ACTION_DELETE_CONFIRM;
 		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_VAT_REGULATION_ID)) {
@@ -170,6 +160,9 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
+		add(new OperationalFieldsMenu());
+		add(new Break());
+		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -182,6 +175,9 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
+		add(new OperationalFieldsMenu());
+		add(new Break());
+		add(new Break());
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Momssats - sškresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
@@ -241,6 +237,7 @@ public class VATEditor extends AccountingBlock {
 		String errorMessage = null;
 
 		try {
+			String operationalField = getSession().getOperationalField();
 			VATBusiness vb = getVATBusiness(iwc);
 			vb.saveVATRegulation(
 					getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID),
@@ -251,7 +248,8 @@ public class VATEditor extends AccountingBlock {
 					iwc.getParameter(PARAMETER_DESCRIPTION),
 					iwc.getParameter(PARAMETER_VAT_PERCENT),
 					iwc.getParameter(PARAMETER_PAYMENT_FLOW_TYPE_ID),
-					iwc.getParameter(PARAMETER_PROVIDER_TYPE_ID));		
+					iwc.getParameter(PARAMETER_PROVIDER_TYPE_ID),
+					operationalField);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -277,57 +275,6 @@ public class VATEditor extends AccountingBlock {
 		}
 		
 	}
-
-	/*
-	 * Handles the delete confirm action for this block.
-	 */	
-/*
-	private void handleDeleteConfirmAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm(this);
-		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort momssats");
-		Table table = new Table();
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		try {
-			VATBusiness vb = getVATBusiness(iwc);
-			VATRegulation vr = vb.getVATRegulation(getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID));
-			table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 1);
-			table.add(getText(formatDate(vr.getPeriodFrom(), 4) + " - " + formatDate(vr.getPeriodTo(), 4)), 2, 1);
-			table.add(getLocalizedLabel(KEY_DESCRIPTION, "BenŠmning"), 1, 2);
-			table.add(getText(vr.getDescription()), 2, 2);
-			table.add(getLocalizedLabel(KEY_VAT_PERCENT, "Procentsats"), 1, 3);
-			table.add(getText("" + vr.getVATPercent()), 2, 3);
-			table.add(getLocalizedLabel(KEY_PAYMENT_FLOW_TYPE, "Stršm"), 1, 4);
-			String textKey = vr.getPaymentFlowType().getTextKey();
-			table.add(getLocalizedText(textKey, textKey), 2, 4);
-			table.add(getLocalizedLabel(KEY_PROVIDER_TYPE, "Anordnartyp"), 1, 5);
-			textKey = vr.getProviderType().getTextKey();
-			table.add(getLocalizedText(textKey, textKey), 2, 5);
-			table.setColumnWidth(1, "90");
-			table.setColumnWidth(2, "160");
-			Table t = new Table();
-			t.setCellpadding(0);
-			t.setCellspacing(0);
-			t.add(table, 1, 1);
-			Table t2 = new Table();
-			t2.setCellpadding(getCellpadding());
-			t2.setCellspacing(getCellspacing());
-			t2.add(getErrorText(localize(KEY_DELETE_CONFIRM_MESSAGE, "Vill du verkligen ta bort denna momssats?")), 1, 2);
-			t.add(t2, 1, 2);
-			app.setMainPanel(t);
-		} catch (Exception e) {
-			add(new ExceptionWrapper(e));
-			return;
-		}
-		ButtonPanel bp = new ButtonPanel(this);
-		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE_YES, "Ja");
-		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
-		app.setButtonPanel(bp);
-		
-		app.addHiddenInput(PARAMETER_VAT_REGULATION_ID, getParameter(iwc, PARAMETER_VAT_REGULATION_ID));
-		add(app);
-	}
-	*/
 
 	/*
 	 * Handles the delete action for this block.
@@ -365,8 +312,6 @@ public class VATEditor extends AccountingBlock {
 	 */
 	private Table getSearchPanel(IWContext iwc) {
 		Table table = new Table();
-		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
-		table.add(getLocalizedText(KEY_SCHOOL, "Skola"), 2, 1);
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 2);
 		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_FROM, getParameter(iwc, PARAMETER_SEARCH_PERIOD_FROM), 60), 2, 2);
 		table.add(getText(" - "), 2, 2);
@@ -388,11 +333,12 @@ public class VATEditor extends AccountingBlock {
 			String periodToString = iwc.getParameter(PARAMETER_SEARCH_PERIOD_TO);
 			Date periodFrom = parseDate(periodFromString);
 			Date periodTo = parseDate(periodToString);
+			String operationalField = getSession().getOperationalField();
 			try {
 				if (search == true) {
-					vatRegulations = vb.findVATRegulations(periodFrom, periodTo, periodFromString, periodToString);
+					vatRegulations = vb.findVATRegulations(periodFrom, periodTo, periodFromString, periodToString, operationalField);
 				} else {
-					vatRegulations = vb.findAllVATRegulations();
+					vatRegulations = vb.findAllVATRegulations(operationalField);
 				}
 			} catch (VATException e) {
 				errorMessage = localize(e.getTextKey(), e.getDefaultText());
@@ -421,8 +367,7 @@ public class VATEditor extends AccountingBlock {
 			while (iter.hasNext()) {
 				VATRegulation vr = (VATRegulation) iter.next();
 				list.add(formatDate(vr.getPeriodFrom(), 4) + " - " + formatDate(vr.getPeriodTo(), 4));
-				list.add(vr.getDescription());
-//				list.add(getLink(vr.getDescription(), PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
+				list.add(getLink(vr.getDescription(), PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
 				list.add("" + vr.getVATPercent());
 				String localizationKey = vr.getPaymentFlowType().getLocalizationKey();
 				list.add(localizationKey, localizationKey);
@@ -432,11 +377,6 @@ public class VATEditor extends AccountingBlock {
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna momssats")));
 				edit.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
 				list.add(edit);
-
-//				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
-//				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
-//				delete.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
-//				list.add(delete);
 
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
 				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka här för att ta bort denna momssats"));
@@ -471,14 +411,6 @@ public class VATEditor extends AccountingBlock {
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
-//		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE, "Ta bort");
-
-//		bp.addLocalizedConfirmButton(
-//				PARAMETER_DELETE,
-//				KEY_DELETE,
-//				"Ta bort",
-//				KEY_CONFIRM_DELETE_MESSAGE,
-//				"Vill du verkligen ta bort markerade momssatser?");
 		return bp;
 	}
 	

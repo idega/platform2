@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.8 2003/08/31 15:57:18 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.9 2003/10/06 14:42:41 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/31 15:57:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -41,6 +41,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_VAT_PERCENT_VALUE = KP + "vat_percent_value";
 	public final static String KEY_PAYMENT_FLOW_TYPE_MISSING = KP + "payment_flow_type_missing";
 	public final static String KEY_PROVIDER_TYPE_MISSING = KP + "provider_type_missing";
+	public final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
 	public final static String KEY_CANNOT_SAVE_VAT_REGULATION = KP + "cannot_save_vat_regulation";
 	public final static String KEY_CANNOT_DELETE_VAT_REGULATION = KP + "cannot_delete_vat_regulation";
 	public final static String KEY_CANNOT_FIND_VAT_REGULATION = KP + "cannot_find_vat_regulation";
@@ -55,6 +56,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_VAT_PERCENT_VALUE = "Procentsatsen måste vara mellan 0 och 100.";
 	public final static String DEFAULT_PAYMENT_FLOW_TYPE_MISSING = "Ström måste väljas.";
 	public final static String DEFAULT_PROVIDER_TYPE_MISSING = "Anordnartyp måste väljas.";
+	public final static String DEFAULT_OPERATIONAL_FIELD_MISSING = "Huvudverksamhet m?ste v?ljas.";
 	public final static String DEFAULT_CANNOT_SAVE_VAT_REGULATION = "Momssatsen kunde inte sparas på grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_DELETE_VAT_REGULATION = "Momssatsen kunde inte tas bort på grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_FIND_VAT_REGULATION = "Kan ej hitta momssatsen.";
@@ -83,12 +85,30 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	}	
 	
 	/**
+	 * Finds all VAT regulations for the specified operational field.
+	 * @param operationalField the operational field (school category)
+	 * @return collection of VAT regulation objects
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation 
+	 */
+	public Collection findAllVATRegulations(String operationalField) {
+		try {
+			VATRegulationHome home = getVATRegulationHome();
+			return home.findByCategory(operationalField);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	
+	/**
 	 * Finds all VAT regulations for the specified period.
 	 * The string values are used for exception handling only.
 	 * @param periodFrom the start of the period
 	 * @param periodTo the end of the period
 	 * @param periodFromString the unparsed from date
 	 * @param periodToString the unparsed to date
+	 * @param operationalField the operational field (school category)
 	 * @return collection of VAT regulation objects
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation
 	 * @throws VATException if invalid period parameters
@@ -97,7 +117,8 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			Date periodFrom,
 			Date periodTo,
 			String periodFromString,
-			String periodToString) throws VATException {
+			String periodToString,
+			String operationalField) throws VATException {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 
@@ -125,7 +146,11 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 				}
 			}
 
-			return home.findByPeriod(periodFrom, periodTo);
+			if ((operationalField == null) || (operationalField.length() == 0)) {
+				throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
+			}
+			
+			return home.findByPeriod(periodFrom, periodTo, operationalField);
 			
 		} catch (RemoteException e) {
 			return null;
@@ -157,7 +182,8 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			String description,
 			String vatPercentString,
 			String paymentFlowTypeIdString,
-			String providerTypeIdString) throws VATException {
+			String providerTypeIdString,
+			String operationalField) throws VATException {
 				
 		// Period from
 		String s = periodFromString.trim();
@@ -219,6 +245,11 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new VATException(KEY_PROVIDER_TYPE_MISSING, DEFAULT_PROVIDER_TYPE_MISSING);
 		}
 		int providerTypeId = Integer.parseInt(s);
+
+		// Operational field
+		if ((operationalField == null) || (operationalField.length() == 0)) {
+			throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
+		}
 		
 		try {
 			VATRegulationHome home = getVATRegulationHome();
@@ -234,6 +265,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			vr.setVATPercent(vatPercent);
 			vr.setPaymentFlowTypeId(paymentFlowTypeId);
 			vr.setProviderTypeId(providerTypeId);
+			vr.setCategory(operationalField);
 			vr.store();
 		} catch (RemoteException e) { 
 			throw new VATException(KEY_CANNOT_SAVE_VAT_REGULATION, DEFAULT_CANNOT_SAVE_VAT_REGULATION);

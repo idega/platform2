@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.11 2003/09/08 15:49:10 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.12 2003/10/06 14:42:41 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,13 +17,15 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 
+import com.idega.block.school.data.SchoolCategory;
+
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/09/08 15:49:10 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -36,6 +38,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	private static final String COLUMN_VAT_PERCENT = "vat_percent";
 	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "payment_flow_type_id";
 	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
+	private static final String COLUMN_CATEGORY = "category";
 		
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -56,6 +59,8 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
+		setAsPrimaryKey (getIDColumnName(), true);
+
 		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_DESCRIPTION, "Description of the VAT regulation", true, true, java.lang.String.class);
@@ -64,7 +69,8 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 				Integer.class, "many-to-one", PaymentFlowType.class);
 		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, 
 				Integer.class, "many-to-one", ProviderType.class);
-		setAsPrimaryKey (getIDColumnName(), true);
+		addAttribute(COLUMN_CATEGORY, "Operational field (school category) (foreign key)", true, true, 
+				String.class, "many-to-one", SchoolCategory.class);
 	}
 
 	public Date getPeriodFrom() {
@@ -90,13 +96,17 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	public ProviderType getProviderType() {
 		return (ProviderType) getColumnValue(COLUMN_PROVIDER_TYPE_ID);	
 	}
-
+	
 	public int getPaymentFlowTypeId() {
 		return getIntColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID);	
 	}
 
 	public int getProviderTypeId() {
 		return getIntColumnValue(COLUMN_PROVIDER_TYPE_ID);	
+	}
+	
+	public String getCategory() {
+		return getStringColumnValue(COLUMN_CATEGORY);	
 	}
 
 	public void setPeriodFrom(Date from) { 
@@ -123,6 +133,10 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, id); 
 	}
 
+	public void setCategory(String category) { 
+		setColumn(COLUMN_CATEGORY, category); 
+	}
+
 	/**
 	 * Finds all VAT regulations.
 	 * @return collection of all VAT regulation objects
@@ -136,19 +150,37 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		sql.appendCommaDelimited(s);
 		return idoFindPKsBySQL(sql.toString());
 	}
+
+	/**
+	 * Finds all VAT regulations with the specified category (operational field).
+	 * @param category the school category (operational field)
+	 * @return collection of the VAT regulation objects found
+	 * @throws FinderException
+	 */
+	public Collection ejbFindByCategory(String category) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_CATEGORY, category);
+		sql.appendOrderBy();
+		String[] s = {COLUMN_PERIOD_FROM + " desc", COLUMN_PERIOD_TO + " desc", COLUMN_DESCRIPTION};
+		sql.appendCommaDelimited(s);
+		return idoFindPKsBySQL(sql.toString());
+	}
 	
 	/**
-	 * Finds all VAT regulations for the specified time period.
+	 * Finds all VAT regulations for the specified time period and category.
 	 * @param from the start of the period
 	 * @param to the end of the period
+	 * @param category the school category (operational field)
 	 * @return collection of all VAT regulation for the specified period
 	 * @throws FinderException
 	 */
-	public Collection ejbFindByPeriod(Date from, Date to) throws FinderException {
+	public Collection ejbFindByPeriod(Date from, Date to, String category) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_CATEGORY, category);
 		if (from != null) {
-			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendAnd().append(COLUMN_PERIOD_FROM);
 			sql.appendGreaterThanOrEqualsSign();
 			sql.append("'" + from + "'");
 			if (to != null) {
@@ -158,7 +190,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 				sql.append("'" + to + "'");
 			}
 		} else if (to != null) {
-			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendAnd().append(COLUMN_PERIOD_FROM);
 			sql.appendLessThanOrEqualsSign();		
 			sql.append("'" + to + "'");
 		}
