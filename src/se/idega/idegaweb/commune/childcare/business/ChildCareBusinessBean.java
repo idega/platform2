@@ -3908,13 +3908,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			
 			if (removeContract) {
-				Contract contract = latestContract.getContract();
+				Contract contract = latestContract.getContract();				
+
+				latestContract.remove();
+				
 				if (contract != null) {
-					contract.setStatus("T");
-					contract.store();
+					contract.removeAllFiles();
+					contract.remove();
 				}
 				
-				latestContract.remove();				
 				ChildCareContract newLatestContract = getLatestContract(applicationID);
 
 				if (newLatestContract != null) {
@@ -3929,6 +3931,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setContractFileId(null);
 					application.setContractId(null);
 					application.setCareTime(null);
+					application.setRejectionDate(null);
+					application.setCancelConfirmationReceived(null);
+					application.setCancelMessage(null);
+					application.setHasDateSet(false);
 					application.setStatus(String.valueOf(this.getStatusSentIn()));
 					application.store();
 
