@@ -176,7 +176,7 @@ public class PersonalNumberResult extends Block implements Campus {
 	DataTable T = new DataTable();
 		T.setUseBottom(false);
 		T.setUseTop(false);
-		T.addTitle(iwrb.getLocalizedString("applicants_without_contracts","Applicants without contracts"));
+		T.addTitle(iwrb.getLocalizedString("applicant_info","Applicant info"));
 		T.setTitlesHorizontal(false);
 		int col = 1;
 		int row = 1;
