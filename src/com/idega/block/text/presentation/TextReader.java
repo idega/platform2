@@ -234,6 +234,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     Link breyta = new Link(iwb.getImage("/shared/edit.gif"));
       breyta.setWindowToOpen(TextEditorWindow.class);
       breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
+      breyta.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
     T.add(breyta,1,1);
 
       if ( enableDelete ) {
