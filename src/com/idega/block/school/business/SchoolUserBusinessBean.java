@@ -267,7 +267,6 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
 			//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
 		Collection schUsers = getSchoolUserHome().findByUser(user);
-			String[] showContact;
 			Iterator iter = schUsers.iterator();
 			boolean show = true;
 			while (iter.hasNext()) {
@@ -282,7 +281,6 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
 		//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
 		Collection schUsers = getSchoolUserHome().findByUser(user);
-		String[] showContact;
 		Iterator iter = schUsers.iterator();
 		boolean main_head = false;
 		while (iter.hasNext()) {
