@@ -289,9 +289,10 @@ public abstract class AbstractSearchForm extends Block{
 				link = new Link(getLinkText(bsf.getServiceName(iwrb)));
 				link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, bsf.getClassName());
 				table.add(link, ++column, 1);
+				table.setNoWrap(column, 1);
 				table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_LEFT);
-				table.setWidth(column, 2);
-				table.setWidth(++column, 2);
+				table.setWidth(column, 1);
+				table.setWidth(++column, 1);
 			}
 		}	else {
 			System.out.println(" no extra searchForms found" );
