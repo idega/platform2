@@ -22,7 +22,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * Description: Views buildings in a campus
  * Copyright:    Copyright (c) 2001
  * Company: idega
- * @author Laddi
+ * @author Laddi©
  * @version 1.0
  */
 

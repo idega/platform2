@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.4 2001/08/28 19:13:56 laddi Exp $
+ * $Id: Title.java,v 1.5 2001/08/30 01:31:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -54,7 +54,12 @@ public class Title extends JModuleObject{
       if(modinfo.getParameter(strAction) == null){
         if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
           sAct = (String) modinfo.getSessionAttribute(strAction);
-          iAct = Integer.parseInt(sAct);
+          try {
+            iAct = Integer.parseInt(sAct);
+          }
+          catch (NumberFormatException e){
+            iAct = -1;
+          }
         }
         else {
           iAct = NOACT;
@@ -62,7 +67,12 @@ public class Title extends JModuleObject{
       }
       if(modinfo.getParameter(strAction) != null){
         sAct = modinfo.getParameter(strAction);
-        iAct = Integer.parseInt(sAct);
+        try {
+          iAct = Integer.parseInt(sAct);
+        }
+        catch (NumberFormatException e){
+          iAct = -1;
+        }
         if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
           modinfo.setSessionAttribute(strAction,sAct);
         }
