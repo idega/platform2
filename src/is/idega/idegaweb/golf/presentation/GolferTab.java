@@ -270,14 +270,16 @@ public class GolferTab extends UserTab {
 			}
 			
 			if(abbrList.isEmpty()){
-				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, null);
+				//not to null because when we replicate this field it then removes the value on the other server if it is ""
+				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, "");
 			}
 			else{
 				String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
 				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
 			}
 		}else{
-			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,null);
+//			not to null because when we replicate this field it then removes the value on the other server if it is ""
+			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,"");
 		}
 		
 		user.store();
