@@ -20,11 +20,9 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public int getSchoolSeasonId();
  public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
- public com.idega.block.school.data.SchoolYear getSchoolYear();
- public int getSchoolYearId();
- public com.idega.user.data.User getTeacher();
- public int getTeacherId();
  public boolean getValid();
+ public boolean hasRelationToSchoolYear(com.idega.block.school.data.SchoolYear p0);
+ public boolean hasRelationToTeacher(com.idega.user.data.User p0);
  public void initializeAttributes();
  public void removeFromSchoolYear()throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromUser()throws com.idega.data.IDORemoveRelationshipException;
@@ -39,9 +37,5 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void setSchoolId(int p0);
  public void setSchoolSeasonId(int p0);
  public void setSchoolTypeId(int p0);
- public void setSchoolYearId(int p0);
- public void setSchoolYearId(java.lang.Integer p0);
- public void setTeacherId(int p0);
- public void setTeacherId(java.lang.Integer p0);
  public void setValid(boolean p0);
 }
