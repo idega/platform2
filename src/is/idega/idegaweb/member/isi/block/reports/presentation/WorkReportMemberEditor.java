@@ -53,6 +53,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -462,7 +463,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   // business method: create
   private void createWorkReportMember(String personalId, IWApplicationContext iwac)  {
     try {
-      getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
+      WorkReportMember member = getWorkReportBusiness(iwac).createWorkReportMember(getWorkReportId(), personalId);
     } catch (CreateException e) {
       System.err.println("[WorkReportDivisionBoardEditor] Could not create new WorkReportDivisionBoard. Message is: "+ e.getMessage());
       e.printStackTrace(System.err);
@@ -484,6 +485,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       member.setName(value.toString());
     }
     else if (pathShortKey.equals(PERSONAL_ID))  {
+      String socialSecurityNumber = value.toString();
+      Integer userId = getUserIdBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
       member.setPersonalId(value.toString());
     }
     else if (pathShortKey.equals(STREET_NAME))  {
@@ -499,6 +502,21 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }
   
+  private Integer getUserIdBySocialSecurityNumber(String socialSecurirtyNumber, WorkReportBusiness workReportBusiness)  {
+    User user;
+    try {
+      user = workReportBusiness.getUser(socialSecurirtyNumber);
+    } 
+    catch (FinderException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve user.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    } ;
+    return (user == null) ? null : (Integer) user.getPrimaryKey();
+  }    
+ 
   // business method: remove league
   private void removeLeague(WorkReportBusiness workReportBusiness, String groupToBeRemoved, WorkReportMember member) {
     int year = getYear();
@@ -579,7 +597,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
       else {
         // unicode black dot
-        text = "\u25CF";
+        text = String.valueOf('\u25A0');
       }
       Link link = new Link(text);
       link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());
