@@ -322,9 +322,9 @@ public class CashierWindow extends StyledIWAdminWindow {
         debtOverview.add(formatText(iwrb.getLocalizedString(
                 "isi_acc_cashierwindow.debtOverview", "Debt overview (A.29)")));
         addParametersToMenuItems(debtOverview, ACTION_REPORTS);
-        //debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.3.xml");
-        //debtOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.3.xml");
-        //debtOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.debtOverview");
+        debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.3.xml");
+        debtOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.3.xml");
+        debtOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.debtOverview");
         
         LinkContainer entryOverview = new LinkContainer();
         entryOverview.setStyleClass(styledLink);
@@ -340,18 +340,18 @@ public class CashierWindow extends StyledIWAdminWindow {
         latePaymentList.add(formatText(iwrb.getLocalizedString(
         		"isi_acc_cashierwindow.latePaymentList", "Late payment list (A.29)")));
         addParametersToMenuItems(latePaymentList, ACTION_REPORTS);
-        //latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.5.xml");
-        //latePaymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.5.xml");
-        //latePaymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.latePaymentList");
+        latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.5.xml");
+        latePaymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.5.xml");
+        latePaymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.latePaymentList");
         
         LinkContainer paymentList = new LinkContainer();
         paymentList.setStyleClass(styledLink);
         paymentList.add(formatText(iwrb.getLocalizedString(
         		"isi_acc_cashierwindow.paymentList", "Payment list (A.29)")));
         addParametersToMenuItems(paymentList, ACTION_REPORTS);
-        //paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.6.xml");
-        //paymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.6.xml");
-        //paymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentList");
+        paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.6.xml");
+        paymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.6.xml");
+        paymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentList");
         
         LinkContainer ledgerList = new LinkContainer();
         ledgerList.setStyleClass(styledLink);

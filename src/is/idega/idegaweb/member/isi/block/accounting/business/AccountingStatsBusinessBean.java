@@ -680,6 +680,10 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal ID"),currentLocale);
 		reportCollection.addField(personalIDField);
 		
+		ReportableField phoneField = new ReportableField(FIELD_NAME_PHONE, Double.class);
+		phoneField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		reportCollection.addField(phoneField);
+		
 		ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
@@ -687,10 +691,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
 		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		reportCollection.addField(entryDateField);
-		
-		ReportableField amountEqualizedField = new ReportableField(FIELD_NAME_AMOUNT_EQUALIZED, Double.class);
-		amountEqualizedField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT_EQUALIZED, "Amount equalized"), currentLocale);
-		reportCollection.addField(amountEqualizedField);
 		
 		ReportableField tariffTypeField = new ReportableField(FIELD_NAME_TARIFF_TYPE, String.class);
 		tariffTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_TARIFF_TYPE, "Tariff type"), currentLocale);
@@ -705,7 +705,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
 		
-		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
+		String[] types = null;
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
@@ -713,10 +713,16 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			//try {
+
 			Group division = financeEntry.getDivision();
 			Group group = financeEntry.getGroup();
 			User user = financeEntry.getUser();
+			
+			String phone = null;
+			Collection phones = user.getPhones();
+			Iterator phIt =	phones.iterator();
+			if (phIt.hasNext())
+				phone = (String) phIt.next();
 			
 			String personalID = user.getPersonalID();
 			if (personalID != null && personalID.length() == 10) {
@@ -729,9 +735,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(groupField, group.getName() );
 			data.addData(nameField, user.getName() );
 			data.addData(personalIDField, personalID );
+			data.addData(phoneField, phone );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
-			data.addData(amountEqualizedField, new Double(financeEntry.getAmount()-financeEntry.getAmountEqualized()) );
+			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );			
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
 			
@@ -740,10 +746,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				statsForDivision = new Vector();
 			statsForDivision.add(data);
 			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			//}
-			//catch (Exception e) {
-			//	e.printStackTrace();
-			//}
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
