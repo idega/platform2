@@ -15,6 +15,7 @@ import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -56,6 +57,15 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
 			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 			table.add(createGroup, 1, 5);
+			
+			if (getSession().getGroupID() != -1 && getBusiness().getSchoolBusiness().getNumberOfStudentsInClass(getSession().getGroupID()) == 0) {
+				GenericButton deleteGroup = (GenericButton) getButton(new GenericButton("delete_group", localize("child_care.delete_group", "Delete group")));
+				deleteGroup.setWindowToOpen(ChildCareWindow.class);
+				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_DELETE_GROUP);
+				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				table.add(Text.getNonBrakingSpace(), 1, 5);
+				table.add(deleteGroup, 1, 5);
+			}
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
@@ -67,7 +77,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(6);
+		table.setColumns(7);
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
@@ -75,7 +85,8 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row++);
+		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row++);
 			
 		SchoolClassMember student;
 		User child;
@@ -83,6 +94,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Phone phone;
 		Link move;
 		Link delete;
+		IWTimestamp registered;
 		
 		IWTimestamp stamp = new IWTimestamp();
 		//stamp.addDays(1);
@@ -95,6 +107,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			child = student.getStudent();
 			address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 			phone = getBusiness().getUserBusiness().getChildHomePhone(child);
+			registered = new IWTimestamp(student.getRegisterDate());
 
 			move = new Link(getEditIcon(localize("child_care.move_to_another_group", "Move child to another group")));
 			move.setWindowToOpen(ChildCareWindow.class);
@@ -121,6 +134,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			column++;
 			if (phone != null)
 				table.add(getSmallText(phone.getNumber()), column, row);
+			column++;
+			if (registered.isLaterThan(stamp))
+				table.add(getSmallText(registered.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column, row);
 			column++;
 			
 			table.setWidth(column, row, 12);

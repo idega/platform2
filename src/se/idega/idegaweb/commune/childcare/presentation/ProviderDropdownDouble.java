@@ -31,8 +31,11 @@ public class ProviderDropdownDouble extends SelectDropdownDouble {
 	 */
 	protected String getValue(Object value) {
 		try {
-			School school = (School) value;
-			return school.getSchoolName();
+			if (value instanceof School) {
+				School school = (School) value;
+				return school.getSchoolName();
+			}
+			return (String) value;
 		}
 		catch (ClassCastException e) {
 			return (String) value;
@@ -51,5 +54,4 @@ public class ProviderDropdownDouble extends SelectDropdownDouble {
 			return (String) key;
 		}
 	}
-
 }

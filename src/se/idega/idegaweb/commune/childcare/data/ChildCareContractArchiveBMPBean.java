@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.contract.data.Contract;
 import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
@@ -22,6 +23,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 	
 	public static final String COLUMN_CHILD_ID = "child_id";
 	public static final String COLUMN_APPLICATION_ID = "application_id";
+	public final static String COLUMN_CONTRACT_ID = "contract_id";
 	public static final String COLUMN_CONTRACT_FILE_ID = "contract_file_id";
 	public static final String COLUMN_CREATED_DATE = "created_date";
 	public static final String COLUMN_VALID_FROM_DATE = "valid_from_date";
@@ -48,6 +50,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		addManyToOneRelationship(COLUMN_CHILD_ID,User.class);
 		addManyToOneRelationship(COLUMN_APPLICATION_ID,ChildCareApplication.class);
 		addOneToOneRelationship(COLUMN_CONTRACT_FILE_ID,ICFile.class);
+		addOneToOneRelationship(COLUMN_CONTRACT_ID,Contract.class);
 	}
 	
 	public Date getCreatedDate() {
@@ -82,6 +85,14 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		return (ChildCareApplication) getColumnValue(COLUMN_APPLICATION_ID);
 	}
 
+	public int getContractID() {
+		return getIntColumnValue(COLUMN_CONTRACT_ID);
+	}
+	
+	public Contract getContract() {
+		return (Contract) getColumnValue(COLUMN_CONTRACT_ID);
+	}
+	
 	public int getContractFileID() {
 		return getIntColumnValue(COLUMN_CONTRACT_FILE_ID);
 	}
@@ -120,6 +131,14 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 	
 	public void setApplication(ChildCareApplication application) {
 		setColumn(COLUMN_APPLICATION_ID, application);
+	}
+	
+	public void setContractID(int contractID) {
+		setColumn(COLUMN_CONTRACT_ID, contractID);
+	}
+	
+	public void setContract(Contract contract) {
+		setColumn(COLUMN_CONTRACT_ID, contract);
 	}
 	
 	public void setContractFileID(int contractFileID) {

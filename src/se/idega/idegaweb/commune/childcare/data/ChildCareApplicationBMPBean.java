@@ -375,7 +375,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER+", c."+QUEUE_DATE);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -403,7 +403,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
 			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
 		}
-		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER+", c."+QUEUE_DATE);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -631,24 +631,48 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID, String[] caseStatus) throws IDOException {
+	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String[] caseStatus) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
-		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
 		return idoGetNumberOfRecords(sql);
 	}
 
-	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID, String caseStatus) throws IDOException {
+	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String caseStatus) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
 		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String[] caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAndEquals(QUEUE_DATE, queueDate);
+		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAndEquals(QUEUE_DATE, queueDate);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
 		return idoGetNumberOfRecords(sql);
 	}

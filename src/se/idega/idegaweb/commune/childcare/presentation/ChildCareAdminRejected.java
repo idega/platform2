@@ -11,6 +11,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.PersonalIDFormatter;
@@ -20,11 +22,14 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareAdminRejected extends ChildCareBlock {
 
+	private static final String PARAMETER_APPLICATION_ID = "ccr_application_id";
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
+			performAction(iwc);
 			add(getApplicationTable(iwc));
 		}
 		else {
@@ -32,13 +37,16 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 		}
 	}
 	
-	private Table getApplicationTable(IWContext iwc) throws RemoteException {
+	private Form getApplicationTable(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(5);
+		table.setColumns(6);
 		table.setRowColor(1, getHeaderColor());
+		form.add(table);
 		int row = 1;
 		int column = 1;
 			
@@ -54,6 +62,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			User child;
 			IWCalendar placementDate;
 			IWCalendar rejectDate;
+			SubmitButton activateApplication;
 				
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -76,7 +85,14 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				table.add(getSmallText(getStatusString(application)), column++, row);
 				table.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
 				if (rejectDate != null)
-					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column++, row++);
+					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
+				if (application.getApplicationStatus() == getBusiness().getStatusNotAnswered()) {
+					activateApplication = new SubmitButton(getDeleteIcon(localize("child_care.activate_application", "Click to reactivate application")),"activate_appliction_"+application.getPrimaryKey().toString());
+					activateApplication.setDescription(localize("child_care.activate_application", "Click to reactivate application"));
+					activateApplication.setValueOnClick(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
+					activateApplication.setSubmitConfirm(localize("school.confirm_activation","Are you sure you want to reactivate this application?"));
+					table.add(activateApplication, column, row++);
+				}
 				else
 					row++;
 			}
@@ -86,6 +102,13 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 			
-		return table;
+		return form;
+	}
+	
+	private void performAction(IWContext iwc) throws RemoteException{
+		if (iwc.isParameterSet(PARAMETER_APPLICATION_ID)) {
+			int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
+			getBusiness().reactivateApplication(applicationID, iwc.getCurrentUser());
+		}
 	}
 }

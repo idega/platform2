@@ -145,6 +145,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						table.add(getSmallText(application.getMessage()), 3, row++);
 						table.setHeight(row++, 12);
 					}
+					
+					if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
+						IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
+						table.add(getLocalizedSmallHeader("child_care.reply_date","Reply date"), 1, row);
+						table.add(getSmallText(validUntil.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
+						table.setHeight(row++, 12);
+					}
 				
 					table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 					table.add(getLocalizedSmallHeader("child_care.comments","Comments"), 1, row);
@@ -284,6 +291,26 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
 				parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
 				table.add(parentsAgree, 3, 1);
+				
+				IWTimestamp dateNow = new IWTimestamp();
+				IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
+				if (dateNow.isLaterThanOrEquals(validUntil)) {
+					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("change_offer", localize("child_care.change_offer_date","Change offer date")));
+					offer.setWindowToOpen(ChildCareWindow.class);
+					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
+					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
+					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CHANGE_OFFER);
+					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+					table.add(offer, 5, 1);
+					
+					GenericButton removeFromQueue = (GenericButton) getStyledInterface(new GenericButton("remove_from_queue", localize("child_care.remove_from_queue","Remove from queue")));
+					removeFromQueue.setWindowToOpen(ChildCareWindow.class);
+					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
+					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
+					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_RETRACT_OFFER);
+					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+					table.add(offer, 5, 1);
+				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
 				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);

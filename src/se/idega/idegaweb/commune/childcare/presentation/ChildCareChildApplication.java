@@ -205,6 +205,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 			providerText = getSmallHeader(provider + Text.NON_BREAKING_SPACE + i + ":");
 			inputTable.add(providerText, 1, row);
+			inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			inputTable.add(dropdown, 3, row++);
 
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
@@ -319,13 +320,14 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private ProviderDropdownDouble getDropdown(Locale locale, String primaryName, String secondaryName) {
 		ProviderDropdownDouble dropdown = new ProviderDropdownDouble(primaryName, secondaryName);
-		dropdown.addEmptyElement(localize("child_care.select_area","Select area..."), localize("child_care.select_provider","Select provider..."));
+		String emptyString = localize("child_care.select_provider","Select provider...");
+		dropdown.addEmptyElement(localize("child_care.select_area","Select area..."), emptyString);
 		
 		try {
 			if (areas == null)
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
-				providerMap = getBusiness().getProviderAreaMap(areas, locale);
+				providerMap = getBusiness().getProviderAreaMap(areas, locale, emptyString);
 				
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();

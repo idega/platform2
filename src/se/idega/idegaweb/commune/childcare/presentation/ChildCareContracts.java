@@ -40,6 +40,7 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.setRowColor(1, getHeaderColor());
 			int column = 1;
 			int row = 1;
+			IWTimestamp dateNow = new IWTimestamp();
 			
 			table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
@@ -58,18 +59,25 @@ public class ChildCareContracts extends ChildCareBlock {
 				Link alterCareTime;
 				Link viewContract;
 				Link archive;
+				boolean isCancelled;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
 					column = 1;
 					application = (ChildCareApplication) iter.next();
-					contract = getBusiness().getContractFile(application.getContractFileId());
+					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
 					created = new IWTimestamp(contract.getCreatedDate());
 					validFrom = new IWTimestamp(contract.getValidFromDate());
+					if (application.getRejectionDate() != null) {
+						IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
+						isCancelled = cancelledDate.isEarlierThan(dateNow);
+					}
+					else
+						isCancelled = false;
 					
 					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-					viewContract.setFile(application.getContractFileId());
+					viewContract.setFile(contract.getContractFileID());
 					viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 					
 					alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
@@ -95,12 +103,12 @@ public class ChildCareContracts extends ChildCareBlock {
 					table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 					table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 					table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					if (application.getApplicationStatus() == getBusiness().getStatusReady())
-						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
-					else if (application.getApplicationStatus() == getBusiness().getStatusCancelled())
+					if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
 						table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
+					else
+						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 					column++;
-					table.add(getSmallText(String.valueOf(application.getCareTime())), column++, row);
+					table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
 					
 					table.setWidth(column, row, 12);
 					table.add(viewContract, column++, row);

@@ -64,6 +64,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_UPDATE_PROGNOSIS = 9;
 	public static final int METHOD_ALTER_CARE_TIME = 10;
 	public static final int METHOD_CANCEL_CONTRACT = 11;
+	public static final int METHOD_CHANGE_OFFER = 12;
+	public static final int METHOD_RETRACT_OFFER = 13;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -77,6 +79,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_CANCEL_CONTRACT = 9;
 	public static final int ACTION_UPDATE_PROGNOSIS = 10;
 	public static final int ACTION_ALTER_CARE_TIME = 11;
+	public static final int ACTION_DELETE_GROUP = 12;
+	public static final int ACTION_RETRACT_OFFER = 13;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -129,6 +133,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_ALTER_CARE_TIME :
 				alterCareTime(iwc);
+				break;
+			case ACTION_DELETE_GROUP :
+				deleteGroup(iwc);
+				break;
+			case ACTION_RETRACT_OFFER :
+				retractOffer(iwc);
 				break;
 		}
 
@@ -212,6 +222,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract")));
 				contentTable.add(getCancelContractForm(iwc));
 				break;
+			case METHOD_CHANGE_OFFER :
+				headerTable.add(getHeader(localize("child_care.change_offer_placing", "Change offer placing")));
+				contentTable.add(getChangeOfferForm(iwc));
+				break;
+			case METHOD_RETRACT_OFFER :
+				headerTable.add(getHeader(localize("child_care.retract_offer", "Retract offer")));
+				contentTable.add(getRetractOfferForm(iwc));
+				break;
 		}
 		
 		add(form);
@@ -267,8 +285,68 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
 		table.add(dateInput, 1, row++);
 
-		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
-		table.add(reject, 1, row);
+		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
+		table.add(offer, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getChangeOfferForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		String message = MessageFormat.format(localize("child_care.change_offer_message", "We are extending our offer for a placing for {0} in our childcare since you haven't answered our previous offer.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
+		textArea.setWidth(Table.HUNDRED_PERCENT);
+		textArea.setRows(7);
+		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+
+		table.add(getSmallHeader(localize("child_care.offer_message_info", "The following message will be sent to the child's parents.")), 1, row++);
+		table.add(textArea, 1, row++);
+
+		IWTimestamp stamp = new IWTimestamp();
+		stamp.addDays(14);
+		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_OFFER_VALID_UNTIL));
+		dateInput.setDate(stamp.getDate());
+
+		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
+		table.add(dateInput, 1, row++);
+
+		SubmitButton changeOffer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_offer", "Change offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
+		table.add(changeOffer, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getRetractOfferForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		String message = MessageFormat.format(localize("child_care.retract_offer_message", "We have retracted our offer for {0} for a placing in our childcare because you haven't replied to our offer.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
+		textArea.setWidth(Table.HUNDRED_PERCENT);
+		textArea.setRows(7);
+		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+
+		table.add(getSmallHeader(localize("child_care.offer_message_info", "The following message will be sent to the child's parents.")), 1, row++);
+		table.add(textArea, 1, row++);
+
+		SubmitButton retract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.retract_offer", "Retract offer"), PARAMETER_ACTION, String.valueOf(ACTION_RETRACT_OFFER)));
+		table.add(retract, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
@@ -560,6 +638,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		close();
 	}
 	
+	private void retractOffer(IWContext iwc) throws RemoteException {
+		String messageHeader = localize("child_care.offer_retracted_subject", "Offer for child care retracted.");
+		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
+		getBusiness().retractOffer(_applicationID, messageHeader, messageBody, iwc.getCurrentUser());
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
 	private void changeDate(IWContext iwc) throws RemoteException {
 		String placingDate = iwc.getParameter(PARAMETER_CHANGE_DATE);
 		IWTimestamp stamp = new IWTimestamp(placingDate);
@@ -594,6 +681,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void createGroup(IWContext iwc) throws RemoteException {
 		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
 		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), -1, -1, -1);
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void deleteGroup(IWContext iwc) throws RemoteException {
+		getBusiness().getSchoolBusiness().removeSchoolClass(getSession().getGroupID());
+		getSession().setGroupID(-1);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();

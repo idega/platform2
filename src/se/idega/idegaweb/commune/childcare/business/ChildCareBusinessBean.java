@@ -599,7 +599,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public int getNumberInQueue(ChildCareApplication application) {
 		try {
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
-			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId(), caseStatus);
+			int numberInQueue = 0;
+			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), caseStatus);
+			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), caseStatus);
+			return numberInQueue;
 		}
 		catch (RemoteException e) {
 			return -1;
@@ -611,7 +614,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNumberInQueueByStatus(ChildCareApplication application) {
 		try {
-			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId(), application.getCaseStatus().getStatus());
+			int numberInQueue = 0;
+			numberInQueue += getChildCareApplicationHome().getPositionInQueue(application.getQueueDate(), application.getProviderId(), application.getCaseStatus().getStatus());
+			numberInQueue += getChildCareApplicationHome().getPositionInQueueByDate(application.getQueueOrder(), application.getQueueDate(), application.getProviderId(), application.getCaseStatus().getStatus());
+			return numberInQueue;
 		}
 		catch (RemoteException e) {
 			return -1;
@@ -846,6 +852,64 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return false;
+	}
+
+	public boolean retractOffer(int applicationID, String subject, String message, User user) throws RemoteException {
+		try {
+			ChildCareApplication appl = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+
+			return retractOffer(appl, subject, message, user);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public boolean retractOffer(ChildCareApplication application, String subject, String message, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			application.setApplicationStatus(getStatusNotAnswered());
+			caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+
+			sendMessageToParents(application, subject, message);
+
+			t.commit();
+
+			return true;
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public boolean reactivateApplication(int applicationID, User user) throws RemoteException {
+		try {
+			ChildCareApplication appl = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+
+			return reactivateApplication(appl, user);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean reactivateApplication(ChildCareApplication application, User user) throws RemoteException {
+		application.setApplicationStatus(getStatusSentIn());
+		changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+		return true;
 	}
 
 	public boolean cancelContract(ChildCareApplication application, boolean parentalLeave, IWTimestamp date, String message, String subject, String body, User user) {
@@ -1758,7 +1822,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public Map getProviderAreaMap(Collection schoolAreas, Locale locale) throws RemoteException {
+	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString) throws RemoteException {
 		try {
 			SortedMap areaMap = new TreeMap(new SchoolAreaComparator(locale));
 			if (schoolAreas != null) {
@@ -1768,8 +1832,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
 					SortedMap providerMap = new TreeMap(new SchoolComparator(locale));
+					//providerMap.put("-1", emptyString);
+					
 					SchoolArea area = (SchoolArea) iter.next();
-					List providers = new ArrayList(getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes));
+					Collection providers = getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
 					if (providers != null) {
 						Iterator iterator = providers.iterator();
 						while (iterator.hasNext()) {
