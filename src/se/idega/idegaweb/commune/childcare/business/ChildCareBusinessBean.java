@@ -613,6 +613,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
 	}
 
+	public String getBundleIdentifier() {
+		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
+	}
+
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws RemoteException {
 		ChildCareApplication choice = getChildCareApplicationInstance(theCase);
 		Object[] arguments = { choice.getChild().getFirstName(), String.valueOf(choice.getChoiceNumber()), choice.getProvider().getName() };
