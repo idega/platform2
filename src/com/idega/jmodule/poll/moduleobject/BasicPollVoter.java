@@ -578,6 +578,7 @@ private String color_2 = null;
                                 if (color_1 != null) {
                                   table.setColor(color_1);
                                 }
+                                table.setBorder(0);
                                 /*if (header_color != null) {
                                   table.setRowColor(1,header_color);
                                   table.setRowColor(3,header_color);

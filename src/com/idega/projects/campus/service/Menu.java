@@ -57,59 +57,59 @@ public class Menu extends JModuleObject{
 
   private void doAct(){
     int MenuCount = 7;
-    Table LinkTable = new Table(1,MenuCount+1);
+    Table LinkTable = new Table(1,MenuCount+2);
     LinkTable.setBorder(0);
     LinkTable.setCellpadding(0);
     LinkTable.setCellspacing(0);
     LinkTable.setWidth("100%");
-    int iWidht = 130;
-    int iHeight = 17;
+    int iWidth = 131;
+    int iHeight = 18;
 
-    Image menu1 = new Image(iAct != ACT1?"/pics/menu/info.gif":"/pics/menu/info1.gif");
+    Image menu1 = new Image(iAct != ACT1?"/pics/menu/info.gif":"/pics/menu/info1.gif","Upplýsingar",iWidth,iHeight);
     Link link1 = new Link(menu1);
     link1.setURL(getUrl(ACT1));
     link1.addParameter(strAction,ACT1);
     LinkTable.add(link1,1,1);
 
 
-    Image menu2 = new Image(iAct != ACT2?"/pics/menu/regulations.gif":"/pics/menu/regulations1.gif");
+    Image menu2 = new Image(iAct != ACT2?"/pics/menu/regulations.gif":"/pics/menu/regulations1.gif","Reglugerðir",iWidth,iHeight);
     Link link2 = new Link(menu2);
     link2.setURL(getUrl(ACT2));
     link2.addParameter(strAction,ACT2);
     LinkTable.add(link2,1,2);
 
-    Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif");
+    Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif","Umsókn",iWidth,iHeight);
     Link link3 = new Link(menu3);
     link3.setURL(getUrl(ACT3));
     link3.addParameter(strAction,ACT3);
     LinkTable.add(link3,1,3);
 
-    Image menu4 = new Image(iAct != ACT4?"/pics/menu/apartment.gif":"/pics/menu/apartment1.gif");
+    Image menu4 = new Image(iAct != ACT4?"/pics/menu/apartment.gif":"/pics/menu/apartment1.gif","Íbúðir");
     Link link4 = new Link(menu4);
     link4.setURL(getUrl(ACT4));
     link4.addParameter(strAction,ACT4);
     LinkTable.add(link4,1,4);
 
-    Image menu5 = new Image(iAct != ACT5?"/pics/menu/links.gif":"/pics/menu/links1.gif");
+    Image menu5 = new Image(iAct != ACT5?"/pics/menu/links.gif":"/pics/menu/links1.gif","Tenglar",iWidth,iHeight);
     Link link5 = new Link(menu5);
     link5.setURL(getUrl(ACT5));
     link5.addParameter(strAction,ACT5);
     LinkTable.add(link5,1,5);
 
-    Image menu6 = new Image(iAct != ACT6?"/pics/menu/english.gif":"/pics/menu/english1.gif");
+    Image menu6 = new Image(iAct != ACT6?"/pics/menu/english.gif":"/pics/menu/english1.gif","English",iWidth,iHeight);
     Link link6 = new Link(menu6);
     link6.setURL(getUrl(ACT6));
     link6.addParameter(strAction,ACT6);
     LinkTable.add(link6,1,6);
 
-    Image menu7 = new Image("/pics/menu/home.gif");
+    Image menu7 = new Image("/pics/menu/home.gif","Heim",iWidth,iHeight);
     Link link7 = new Link(menu7);
     link7.setURL(getUrl(ACT7));
     link7.addParameter(strAction,ACT7);
     LinkTable.add(link7,1,7);
 
-    LinkTable.setColor(1,8,"#932A2B");
-    LinkTable.addText("",1,8);
+    LinkTable.add(new Image("/pics/menu/redtab.gif","",iWidth,iHeight),1,8);
+    LinkTable.add(new Image("/pics/menu/idegaweb.gif","",iWidth,39),1,9);
 
     Title = getT();
 

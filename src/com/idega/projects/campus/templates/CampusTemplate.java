@@ -5,6 +5,7 @@ package com.idega.projects.campus.templates;
 import com.idega.projects.campus.templates.MainTemplate;
 import com.idega.jmodule.login.presentation.Login;
 import com.idega.jmodule.poll.moduleobject.BasicPollVoter;
+import com.idega.jmodule.quote.presentation.QuoteReader;
 import com.idega.projects.campus.service.*;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.textObject.Text;
@@ -45,10 +46,15 @@ public abstract class CampusTemplate extends MainTemplate{
     BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp");
       poll.setWidth(135);
 
+    QuoteReader quote = new QuoteReader();
+      quote.setClean();
+      quote.setQuoteWidth("135");
+
     addMenuTitle(new Image("/pics/titles/IS/menutitle.gif"));
     addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));
     addTopLeft(new Menu());
     addTopRight(login);
+//    addRight(quote);
     addRight(new Image("/pics/titles/IS/poll.gif"));
     addRight(poll);
     addRight(Text.getBreak());
