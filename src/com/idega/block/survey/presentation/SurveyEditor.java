@@ -63,8 +63,8 @@ public class SurveyEditor extends FolderBlock {
 
 
 
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.survey";
-	public static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	final static String IW_BUNDLE_IDENTIFIER = Survey.IW_BUNDLE_IDENTIFIER;
+	static final String HELP_BUNDLE_IDENTIFIER = Survey.IW_BUNDLE_IDENTIFIER;
 	protected IWResourceBundle _iwrb;
 	protected IWBundle _iwb;
 	protected IWBundle _iwbSurvey;
@@ -129,6 +129,10 @@ public class SurveyEditor extends FolderBlock {
 	private Vector prmVector = new Vector();
 	private HashMap _prmValues = new HashMap();
 	
+	
+	private String messageTextStyle;// = "font-weight: bold;";
+	private String messageTextHighlightStyle ;//= "font-weight: bold;color: #FF0000;";
+
 
 
 	/**
@@ -177,23 +181,24 @@ public class SurveyEditor extends FolderBlock {
 		add(getModeChangeLink());
 		
 		Form myForm = new Form();
-		this.add(myForm);
+		
 		//Edit		
 //		if(this.hasEditPermission()){
 			switch (_state) {
 				case STATE_ONE :
+					add(getHelp("su_help_question_step"));
 					myForm.add(getStateOne());
 					break;
 				case STATE_TWO :
+					add(getHelp("su_help_answer_step"));
 					myForm.add(getStateTwo());
-					break;
-				default :
-					myForm.add(getDefaultState());
 					break;
 			}			
 //		} else {
 //			//store information temporary while logging in
 //		}
+
+		
 
 		//save to DB
 		if(_action==ACTION_SAVE){
@@ -208,9 +213,14 @@ public class SurveyEditor extends FolderBlock {
 				//prmVector.add(new Parameter(PRM_SURVEY_ID,String.valueOf(pk)));
 			}
 			
-			add(new Text("Survey has been saved"));
+			add(Text.BREAK);
+			add(Text.BREAK);
+			add(getMessageTextObject(_iwrb.getLocalizedString("survey_has_been_saved","Survey has been saved"),false));
+			add(Text.BREAK);
+			add(Text.BREAK);
 		}
 		
+		this.add(myForm);
 		
 		beforeParameterListIsAdded();
 		for (Iterator iter = prmVector.iterator(); iter.hasNext();) {
@@ -409,7 +419,7 @@ public class SurveyEditor extends FolderBlock {
 		if(!_surveyHasBeenLoaded && _surveyID != null && surveyPRMVal != null){
 			loadSurvey(iwc);
 		} else {
-			if(_surveyID != null){
+			if(_surveyID != null && !_surveyHasBeenLoaded){
 				loadSurveyIDs(iwc);
 			}
 			
@@ -461,6 +471,9 @@ public class SurveyEditor extends FolderBlock {
 		}
 		
 		_prmValues.put(PRM_QUESTION_IDS,prmQuestionIDs.toArray(new String[0]));
+		
+		prmVector.add(new Parameter(PRM_SURVEY_LOADED+PRM_MAINTAIN_SUFFIX,Boolean.toString(_surveyHasBeenLoaded)));
+
 		
 	}
 	
@@ -682,22 +695,20 @@ public class SurveyEditor extends FolderBlock {
 		stateOne.add(getAddQuestionFieldset(),1,++rowIndex);
 		
 	
-
-		SubmitButton saveButton = new SubmitButton(_iwrb.getLocalizedString("save","  Save  "),PRM_ACTION,String.valueOf(ACTION_SAVE));
-		setStyle(saveButton);
-		stateOne.add(saveButton,1,++rowIndex);
-		stateOne.setRowAlignment(rowIndex,Table.HORIZONTAL_ALIGN_RIGHT);
-		
-		stateOne.add(Text.NON_BREAKING_SPACE,1,rowIndex);
+//		TODO fix bugs and uncomment
+//		SubmitButton saveButton = new SubmitButton(_iwrb.getLocalizedString("save","  Save  "),PRM_ACTION,String.valueOf(ACTION_SAVE));
+//		setStyle(saveButton);
+//		stateOne.add(saveButton,1,++rowIndex);
+//		stateOne.setRowAlignment(rowIndex,Table.HORIZONTAL_ALIGN_RIGHT);
+//		
+//		stateOne.add(Text.NON_BREAKING_SPACE,1,rowIndex);
 		
 		SubmitButton forwardButton = new SubmitButton(_iwrb.getLocalizedString("forward","  Forward  "),PRM_GOTO_STATE,String.valueOf(STATE_TWO));
 		setStyle(forwardButton);
-		stateOne.add(forwardButton,1,rowIndex);
-		//stateOne.setRowAlignment(rowIndex,Table.HORIZONTAL_ALIGN_RIGHT);
-		
+		//stateOne.add(forwardButton,1,rowIndex);
+		stateOne.add(forwardButton,1,++rowIndex);
+		stateOne.setRowAlignment(rowIndex,Table.HORIZONTAL_ALIGN_RIGHT);
 
-		
-		
 		
 		return stateOne;
 	}
@@ -852,7 +863,7 @@ public class SurveyEditor extends FolderBlock {
 		
 		fs.add(qt);
 		if(answerType != ANSWERTYPE_TEXTAREA){
-			fs.add(getAddAnswerFieldSet(no));
+			//fs.add(getAddAnswerFieldSet(no));
 		}
 		return fs;
 	}
@@ -1017,10 +1028,37 @@ public class SurveyEditor extends FolderBlock {
 	}
 	public Help getHelp(String helpTextKey) {
 		Help help = new Help();
-		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextBundle(HELP_BUNDLE_IDENTIFIER);
 		help.setHelpTextKey(helpTextKey);
 		help.setLinkText("help");
 		return help;
 	}
+	
+	
+	
+	private PresentationObject getMessageTextObject(String message, boolean highlight) {
+		Text text = new Text(message);
+		if(!highlight){
+			if(messageTextStyle != null){
+				text.setStyleAttribute(messageTextStyle);
+			}
+		} else {
+			if(messageTextHighlightStyle != null){
+				text.setStyleAttribute(messageTextHighlightStyle);
+			}
+		}
+		return text;
+	}
+	
+	public void setMessageTextStyle(String style) {
+		messageTextStyle = style;
+	}
+
+
+	public void setMessageTextHighlightStyle(String style) {
+		messageTextHighlightStyle = style;
+	}
+
+
 
 }
