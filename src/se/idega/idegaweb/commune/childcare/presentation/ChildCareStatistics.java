@@ -4,6 +4,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -32,12 +34,16 @@ public class ChildCareStatistics extends ChildCareBlock {
 
 	protected static final String PARAMETER_AREA = "cc_area";
 	protected static final String PARAMETER_ACTION = "cc_action";
+	protected static final String PARAMETER_FROM_DATE = "cc_from_date";
+	protected static final String PARAMETER_TO_DATE = "cc_to_date";
 
 	protected static final int ORDER_BY_ALL_CHOICES = 1;
 	protected static final int ORDER_BY_FIRST_HAND_CHOICES = 2;
 	
 	private int _action = ORDER_BY_ALL_CHOICES;
 	private int _areaID = -1;
+	private Date _fromDate = null;
+	private Date _toDate = null;
 	
 	private boolean _useSorting = false;
 	
@@ -185,6 +191,29 @@ public class ChildCareStatistics extends ChildCareBlock {
 	
 	private Form getNavigationTable(IWContext iwc) {
 		Form form = new Form();
+
+		form.add(getSmallHeader(localize("child_care.from", "From")));
+		form.add(Text.getNonBrakingSpace());
+		DateInput from = new DateInput(PARAMETER_FROM_DATE);
+		from.setToDisplayDayLast(true);
+		from = (DateInput) getStyledInterface(from);
+		if (_fromDate != null) {
+			from.setDate(_fromDate);
+		}
+		form.add(from);
+		
+		form.add(Text.getNonBrakingSpace());
+		form.add(getSmallHeader(localize("child_care.to", "To")));
+		form.add(Text.getNonBrakingSpace());
+		DateInput to = new DateInput(PARAMETER_TO_DATE);
+		to.setToDisplayDayLast(true);
+		to = (DateInput) getStyledInterface(to);
+		if (_toDate != null) {
+			to.setDate(_toDate);
+		}
+		form.add(to);
+		form.add(Text.getBreak());
+		form.add(Text.getBreak());
 		
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACTION));
 		menu.addMenuElement(ORDER_BY_ALL_CHOICES, localize("child_care.show_provider_statistics","Show by area"));
@@ -213,7 +242,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("child_care.get", "Get")));
 		form.add(Text.getNonBrakingSpace());
 		form.add(submit);
-		
+				
 		return form;
 	}
 	
@@ -222,6 +251,18 @@ public class ChildCareStatistics extends ChildCareBlock {
 			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		if (iwc.isParameterSet(PARAMETER_AREA))
 			_areaID = Integer.parseInt(iwc.getParameter(PARAMETER_AREA));
+		if (iwc.isParameterSet(PARAMETER_FROM_DATE)) {
+			String s = iwc.getParameter(PARAMETER_FROM_DATE);
+			if (s.length() > 0) {
+				_fromDate = Date.valueOf(s);
+			}
+		}
+		if (iwc.isParameterSet(PARAMETER_TO_DATE)) {
+			String s = iwc.getParameter(PARAMETER_TO_DATE);
+			if (s.length() > 0) {
+				_toDate = Date.valueOf(s);
+			}
+		}
 	}
 	
 	/**
