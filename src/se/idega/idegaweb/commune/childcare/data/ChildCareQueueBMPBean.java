@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.1 2003/04/11 09:33:19 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.2 2003/04/14 10:12:44 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import com.idega.user.data.User;
  */
 public class ChildCareQueueBMPBean extends AbstractCaseBMPBean 
 	implements ChildCareQueue,	Case {
-	private final static String ENTITY_NAME = "queue_childcare";
+	private final static String ENTITY_NAME = "comm_childcare_queue";
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Queue for child care";
 	
@@ -47,6 +47,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	protected final static String SCHOOL_AREA_NAME = "school_area_name";
 	protected final static String SCHOOL_AREA_ID = "school_area_id";
 	protected final static String QUEUE_DATE = "queue_date";
+	protected final static String START_DATE = "start_date";
 
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -87,6 +88,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		addAttribute(SCHOOL_AREA_NAME,"",true,true,java.lang.String.class,1000);
 		addAttribute(SCHOOL_AREA_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,SchoolArea.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
+		addAttribute(START_DATE,"",true,true,java.sql.Date.class);
 		//TODO cleanup code not needed
 /*		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
@@ -140,6 +142,10 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		return (Date)getColumnValue(QUEUE_DATE);	
 	}
 	
+	public Date getStartDate() {
+		return (Date)getColumnValue(START_DATE);	
+	}
+	
 
 
 	public void setContractId(int id) {
@@ -180,6 +186,10 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	
 	public void setQueueDate(Date date) {
 		setColumn(QUEUE_DATE,date);	
+	}
+
+	public void setStartDate(Date sDate) {
+		setColumn(START_DATE,sDate);	
 	}
 
 	//TODO update these to sokmething usefull

@@ -15,6 +15,7 @@ public interface ChildCareQueue extends com.idega.data.IDOEntity,com.idega.block
  public java.sql.Date getQueueDate();
  public java.lang.String getSchoolAreaId();
  public java.lang.String getSchoolAreaName();
+ public java.sql.Date getStartDate();
  public void initializeAttributes();
  public void setChildId(int p0);
  public void setChoiceNumber(int p0);
@@ -25,4 +26,5 @@ public interface ChildCareQueue extends com.idega.data.IDOEntity,com.idega.block
  public void setQueueDate(java.sql.Date p0);
  public void setSchoolAreaId(int p0);
  public void setSchoolAreaName(java.lang.String p0);
+ public void setStartDate(java.sql.Date p0);
 }
