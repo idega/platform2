@@ -72,7 +72,6 @@ import com.idega.xml.XMLException;
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
-import dori.jasper.engine.JRExporterParameter;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
 /**

@@ -34,7 +34,6 @@ import dori.jasper.engine.JasperManager;
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.JasperReport;
 import dori.jasper.engine.design.JasperDesign;
-import dori.jasper.engine.export.JRHtmlExporter;
 import dori.jasper.engine.export.JRXlsExporter;
 import dori.jasper.engine.export.JRXlsExporterParameter;
 
