@@ -4069,7 +4069,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			if(showClubs) {
 				ReportableData rdClub = new ReportableData();
 				rdClub.addData(regionalUnionName, regionalUnionIdentifier);
-				regData.addData(orderField, "b");
+				rdClub.addData(orderField, "b");
 				rdClub.addData(clubName, cName);
 				rdClub.addData(memberCount, new Integer(members));
 				rdClub.addData(playerCount, new Integer(players));
