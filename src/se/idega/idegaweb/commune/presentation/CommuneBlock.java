@@ -7,6 +7,7 @@ import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.InterfaceObject;
 
 /**
  * Title:
@@ -18,227 +19,237 @@ import com.idega.presentation.text.Text;
  */
 
 public class CommuneBlock extends com.idega.presentation.Block {
-  public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
-  private final static String STYLENAME_TEXT = "Text";
-  private final static String STYLENAME_SMALL_TEXT = "SmallText";
-  private final static String STYLENAME_HEADER = "Header";
-  private final static String STYLENAME_SMALL_HEADER = "SmallHeader";
-  private final static String STYLENAME_LINK = "Link";
-  private final static String STYLENAME_LIST_HEADER = "ListHeader";
-  private final static String STYLENAME_LIST_TEXT = "ListText";
-  private final static String STYLENAME_LIST_LINK = "ListLink";
-  private final static String STYLENAME_ERROR_TEXT = "ErrorText";
-  private final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
- 
-  private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
-  private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
-  private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
-  private final static String DEFAULT_HEADER_FONT_STYLE = "font-weight:bold;";
-  private final static String DEFAULT_SMALL_HEADER_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
-  private final static String DEFAULT_LINK_FONT_STYLE = "color:#0000cc;";
-  private final static String DEFAULT_LIST_HEADER_FONT_STYLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
-  private final static String DEFAULT_LIST_FONT_STYLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
-  private final static String DEFAULT_LIST_LINK_FONT_STYLE = "font-style:normal;color:#0000cc;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
-  private final static String DEFAULT_ERROR_TEXT_FONT_STYLE = "font-weight:plain;color:#ff0000;";
-  private final static String DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE = "font-style:normal;color:#ff0000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";;
+	private final static String STYLENAME_TEXT = "Text";
+	private final static String STYLENAME_SMALL_TEXT = "SmallText";
+	private final static String STYLENAME_HEADER = "Header";
+	private final static String STYLENAME_SMALL_HEADER = "SmallHeader";
+	private final static String STYLENAME_LINK = "Link";
+	private final static String STYLENAME_LIST_HEADER = "ListHeader";
+	private final static String STYLENAME_LIST_TEXT = "ListText";
+	private final static String STYLENAME_LIST_LINK = "ListLink";
+	private final static String STYLENAME_ERROR_TEXT = "ErrorText";
+	private final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
+	private final static String STYLENAME_INTERFACE = "Interface";
 
-  private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
-  private String textFontStyle = DEFAULT_TEXT_FONT_STYLE;
-  private String smallTextFontStyle = DEFAULT_SMALL_TEXT_FONT_STYLE;
-  private String linkFontStyle = DEFAULT_LINK_FONT_STYLE;
-  private String headerFontStyle = DEFAULT_HEADER_FONT_STYLE;
-  private String smallHeaderFontStyle = DEFAULT_SMALL_HEADER_FONT_STYLE;
-  private String listHeaderFontStyle = DEFAULT_LIST_HEADER_FONT_STYLE;
-  private String listFontStyle = DEFAULT_LIST_FONT_STYLE;
-  private String listLinkFontStyle = DEFAULT_LIST_LINK_FONT_STYLE;
-  private String errorTextFontStyle = DEFAULT_ERROR_TEXT_FONT_STYLE;
-  private String smallErrorTextFontStyle = DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE;
+	private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
+	private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
+	private final static String DEFAULT_SMALL_TEXT_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+	private final static String DEFAULT_HEADER_FONT_STYLE = "font-weight:bold;";
+	private final static String DEFAULT_SMALL_HEADER_FONT_STYLE = "font-style:normal;color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
+	private final static String DEFAULT_LINK_FONT_STYLE = "color:#0000cc;";
+	private final static String DEFAULT_LIST_HEADER_FONT_STYLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
+	private final static String DEFAULT_LIST_FONT_STYLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+	private final static String DEFAULT_LIST_LINK_FONT_STYLE = "font-style:normal;color:#0000cc;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+	private final static String DEFAULT_ERROR_TEXT_FONT_STYLE = "font-weight:plain;color:#ff0000;";
+	private final static String DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE = "font-style:normal;color:#ff0000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:plain;";
+	private final static String DEFAULT_INTERFACE_STYLE = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1;border-style:solid;border-color:#000000;";
 
-  private IWResourceBundle iwrb = null;
-  private IBPage formResponsePage;
+	private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
+	private String textFontStyle = DEFAULT_TEXT_FONT_STYLE;
+	private String smallTextFontStyle = DEFAULT_SMALL_TEXT_FONT_STYLE;
+	private String linkFontStyle = DEFAULT_LINK_FONT_STYLE;
+	private String headerFontStyle = DEFAULT_HEADER_FONT_STYLE;
+	private String smallHeaderFontStyle = DEFAULT_SMALL_HEADER_FONT_STYLE;
+	private String listHeaderFontStyle = DEFAULT_LIST_HEADER_FONT_STYLE;
+	private String listFontStyle = DEFAULT_LIST_FONT_STYLE;
+	private String listLinkFontStyle = DEFAULT_LIST_LINK_FONT_STYLE;
+	private String errorTextFontStyle = DEFAULT_ERROR_TEXT_FONT_STYLE;
+	private String smallErrorTextFontStyle = DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE;
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+	private IWResourceBundle iwrb = null;
+	private IBPage formResponsePage;
 
-  public void setResourceBundle(IWResourceBundle iwrb){
-    this.iwrb = iwrb;
-  }
+	private String _width = "600";
 
-  public IWResourceBundle getResourceBundle(){
-    return this.iwrb;
-  }
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 
-  public String getBackgroundColor(){
-    return backgroundColor;
-  }
+	public void setResourceBundle(IWResourceBundle iwrb) {
+		this.iwrb = iwrb;
+	}
 
-  public String getTextFontStyle(){
-    return textFontStyle;
-  }
+	public IWResourceBundle getResourceBundle() {
+		return this.iwrb;
+	}
 
-  public String getSmallTextFontStyle(){
-    return smallTextFontStyle;
-  }
+	public String getBackgroundColor() {
+		return backgroundColor;
+	}
 
-  public String getLinkFontStyle(){
-    return linkFontStyle;
-  }
+	public String getTextFontStyle() {
+		return textFontStyle;
+	}
 
-  public String getHeaderFontStyle(){
-    return headerFontStyle;
-  }
+	public String getSmallTextFontStyle() {
+		return smallTextFontStyle;
+	}
 
-  public String getSmallHeaderFontStyle(){
-    return smallHeaderFontStyle;
-  }
+	public String getLinkFontStyle() {
+		return linkFontStyle;
+	}
 
-  public String getListHeaderFontStyle(){
-    return listHeaderFontStyle;
-  }
+	public String getHeaderFontStyle() {
+		return headerFontStyle;
+	}
 
-  public String getListFontStyle(){
-    return listFontStyle;
-  }
+	public String getSmallHeaderFontStyle() {
+		return smallHeaderFontStyle;
+	}
 
-  public String getListLinkFontStyle(){
-    return listLinkFontStyle;
-  }
+	public String getListHeaderFontStyle() {
+		return listHeaderFontStyle;
+	}
 
-  public String getErrorTextFontStyle(){
-    return errorTextFontStyle;
-  }
+	public String getListFontStyle() {
+		return listFontStyle;
+	}
 
-  public String getSmallErrorTextFontStyle(){
-    return smallErrorTextFontStyle;
-  }
+	public String getListLinkFontStyle() {
+		return listLinkFontStyle;
+	}
 
-  public void setBackroundColor(String color){
-    this.backgroundColor = color;
-  }
+	public String getErrorTextFontStyle() {
+		return errorTextFontStyle;
+	}
 
-  public void setTextFontStyle(String fontStyle){
-    this.textFontStyle = fontStyle;
-  }
+	public String getSmallErrorTextFontStyle() {
+		return smallErrorTextFontStyle;
+	}
 
-  public void setSmallTextFontStyle(String fontStyle){
-    this.smallTextFontStyle = fontStyle;
-  }
+	public void setBackroundColor(String color) {
+		this.backgroundColor = color;
+	}
 
-  public void setLinkFontStyle(String fontStyle){
-    this.linkFontStyle = fontStyle;
-  }
+	public void setTextFontStyle(String fontStyle) {
+		this.textFontStyle = fontStyle;
+	}
 
-  public void setHeaderFontStyle(String fontStyle){
-    this.headerFontStyle = fontStyle;
-  }
+	public void setSmallTextFontStyle(String fontStyle) {
+		this.smallTextFontStyle = fontStyle;
+	}
 
-  public void setSmallHeaderFontStyle(String fontStyle){
-    this.smallHeaderFontStyle = fontStyle;
-  }
+	public void setLinkFontStyle(String fontStyle) {
+		this.linkFontStyle = fontStyle;
+	}
 
-  public void setListHeaderFontStyle(String fontStyle){
-    this.listHeaderFontStyle = fontStyle;
-  }
+	public void setHeaderFontStyle(String fontStyle) {
+		this.headerFontStyle = fontStyle;
+	}
 
-  public void setListFontStyle(String fontStyle){
-    this.listFontStyle = fontStyle;
-  }
+	public void setSmallHeaderFontStyle(String fontStyle) {
+		this.smallHeaderFontStyle = fontStyle;
+	}
 
-  public void setListLinkFontStyle(String fontStyle){
-    this.listLinkFontStyle = fontStyle;
-  }
+	public void setListHeaderFontStyle(String fontStyle) {
+		this.listHeaderFontStyle = fontStyle;
+	}
 
-  public void setErrorTextFontStyle(String fontStyle){
-    this.errorTextFontStyle = fontStyle;
-  }
+	public void setListFontStyle(String fontStyle) {
+		this.listFontStyle = fontStyle;
+	}
 
-  public void setSmallErrorTextFontStyle(String fontStyle){
-    this.smallErrorTextFontStyle = fontStyle;
-  }
+	public void setListLinkFontStyle(String fontStyle) {
+		this.listLinkFontStyle = fontStyle;
+	}
 
-  public String localize(String textKey, String defaultText){
-    if(iwrb==null){
-      return defaultText;
-    }
-    return iwrb.getLocalizedString(textKey, defaultText);
-  }
+	public void setErrorTextFontStyle(String fontStyle) {
+		this.errorTextFontStyle = fontStyle;
+	}
 
-  public Text getText(String s){
-    return getStyleText(s,this.STYLENAME_TEXT);
-  }
+	public void setSmallErrorTextFontStyle(String fontStyle) {
+		this.smallErrorTextFontStyle = fontStyle;
+	}
 
-  public Text getLocalizedText(String s, String d){
-    return getText(localize(s,d));
-  }
+	public String localize(String textKey, String defaultText) {
+		if (iwrb == null) {
+			return defaultText;
+		}
+		return iwrb.getLocalizedString(textKey, defaultText);
+	}
 
-  public Text getSmallText(String s){
-    return getStyleText(s,this.STYLENAME_SMALL_TEXT);
-  }
+	public Text getText(String s) {
+		return getStyleText(s, this.STYLENAME_TEXT);
+	}
 
-  public Text getLocalizedSmallText(String s, String d){
-    return getSmallText(localize(s,d));
-  }
+	public Text getLocalizedText(String s, String d) {
+		return getText(localize(s, d));
+	}
 
-  public Text getHeader(String s){
-    return getStyleText(s,this.STYLENAME_HEADER);
-  }
+	public Text getSmallText(String s) {
+		return getStyleText(s, this.STYLENAME_SMALL_TEXT);
+	}
 
-  public Text getLocalizedHeader(String s, String d){
-    return getHeader(localize(s,d));
-  }
+	public Text getLocalizedSmallText(String s, String d) {
+		return getSmallText(localize(s, d));
+	}
 
-  public Text getSmallHeader(String s){
-    return getStyleText(s,this.STYLENAME_SMALL_HEADER);
-  }
+	public Text getHeader(String s) {
+		return getStyleText(s, this.STYLENAME_HEADER);
+	}
 
-  public Text getLocalizedSmallHeader(String s, String d){
-    return getSmallHeader(localize(s,d));
-  }
+	public Text getLocalizedHeader(String s, String d) {
+		return getHeader(localize(s, d));
+	}
 
-  public Link getLink(String s){
-    return getStyleLink(new Link(s),this.STYLENAME_LINK);
-  }
+	public Text getSmallHeader(String s) {
+		return getStyleText(s, this.STYLENAME_SMALL_HEADER);
+	}
 
-  public Link getLocalizedLink(String s, String d){
-    return getLink(localize(s,d));
-  }
+	public Text getLocalizedSmallHeader(String s, String d) {
+		return getSmallHeader(localize(s, d));
+	}
 
-  public Text getErrorText(String s){
-    return getStyleText(s,this.STYLENAME_ERROR_TEXT);
-  }
+	public Link getLink(String s) {
+		return getStyleLink(new Link(s), this.STYLENAME_LINK);
+	}
 
-  public Text getSmallErrorText(String s){
-    return getStyleText(s,this.STYLENAME_SMALL_ERROR_TEXT);
-  }
+	public Link getLocalizedLink(String s, String d) {
+		return getLink(localize(s, d));
+	}
 
-  public IBPage getResponsePage(){
-    return this.formResponsePage;
-  }
+	public Text getErrorText(String s) {
+		return getStyleText(s, this.STYLENAME_ERROR_TEXT);
+	}
 
-  public void setResponsePage(IBPage page){
-    this.formResponsePage = page;
-  }
-	
+	public Text getSmallErrorText(String s) {
+		return getStyleText(s, this.STYLENAME_SMALL_ERROR_TEXT);
+	}
+
+	public InterfaceObject getStyledInterface(InterfaceObject obj) {
+		return (InterfaceObject) setStyle(obj, this.STYLENAME_INTERFACE);
+	}
+
+	public IBPage getResponsePage() {
+		return this.formResponsePage;
+	}
+
+	public void setResponsePage(IBPage page) {
+		this.formResponsePage = page;
+	}
+
 	/**
 	 * @see com.idega.presentation.Block#getStyleNames()
 	 */
 	public Map getStyleNames() {
-  	HashMap map = new HashMap();
-  	String[] styleNames = {STYLENAME_TEXT,STYLENAME_SMALL_TEXT,STYLENAME_HEADER,STYLENAME_SMALL_HEADER,
-  												 STYLENAME_LINK,STYLENAME_LIST_HEADER,STYLENAME_LIST_TEXT,STYLENAME_LIST_LINK,
-  												 STYLENAME_ERROR_TEXT,STYLENAME_SMALL_ERROR_TEXT};
-  	String[] styleValues = {DEFAULT_TEXT_FONT_STYLE,DEFAULT_SMALL_TEXT_FONT_STYLE,DEFAULT_HEADER_FONT_STYLE,
-  													DEFAULT_SMALL_HEADER_FONT_STYLE,DEFAULT_LINK_FONT_STYLE,DEFAULT_LIST_HEADER_FONT_STYLE,
-  													DEFAULT_LIST_FONT_STYLE,DEFAULT_LIST_LINK_FONT_STYLE,DEFAULT_ERROR_TEXT_FONT_STYLE,
-  													DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE};
-  		
-  	for ( int a = 0; a < styleNames.length; a++ ) {
-  		map.put(styleNames[a], styleValues[a]);	
-  	}
-  	
-  	return map;	
+		HashMap map = new HashMap();
+		String[] styleNames = { STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE };
+		String[] styleValues = { DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE };
+
+		for (int a = 0; a < styleNames.length; a++) {
+			map.put(styleNames[a], styleValues[a]);
+		}
+
+		return map;
 	}
 
+	public void setWidth(String width) {
+		_width = width;
+	}
+
+	public String getWidth() {
+		return _width;
+	}
 }
