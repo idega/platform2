@@ -80,12 +80,6 @@ public class NewsTable extends PresentationObjectContainer {
     table.setWidth("100%");
 		table.setCellpadding(cellPadding);
 		table.setCellspacing(cellSpacing);
-		if(firstColor != null && secondColor !=null){
-		  table.setVerticalZebraColored(firstColor,secondColor);
-		}
-		else if(firstColor != null && secondColor == null){
-		  table.setColor(firstColor);
-		}
     table.setResizable(true);
     //table.setBorder(1);
   }
@@ -97,6 +91,12 @@ public class NewsTable extends PresentationObjectContainer {
       table.setWidth(i,percent+"%");
       table.setColumnVerticalAlignment(i,"top");
     }
+		if(firstColor != null){
+		  if( secondColor !=null)
+		    table.setVerticalZebraColored(firstColor,secondColor);
+			else
+		    table.setColor(firstColor);
+		}
   }
 
   public void add(PresentationObject Mo,boolean useSetDivison,String sAlign){

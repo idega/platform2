@@ -95,7 +95,7 @@ public class NewsFormatter {
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,locale);
 		DateFormat dt = DateFormat.getTimeInstance(DateFormat.SHORT,locale);
     String NewsDate = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
-		String NewsTime = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
+		String NewsTime = content.getLastUpdated()!=null?dt.format((java.util.Date)content.getLastUpdated()):null;
     StringBuffer info = new StringBuffer();
     String spacer = " | ";
     if(showOnlyDates && NewsDate != null){
@@ -120,14 +120,16 @@ public class NewsFormatter {
       }
       if(!"".equals(NewsDate)){
         info.append(NewsDate);
+				if(showTime)
         info.append(spacer);
       }
-			if(!"".equals(NewsDate)){
-        info.append(NewsDate);
-        //info.append(spacer);
+			if(showTime && !"".equals(NewsTime)){
+        info.append(NewsTime);
       }
     }
+
 		String inf = TextSoap.findAndReplace(info.toString(), " ","&nbsp;");
+		System.err.println(inf);
     return inf;
 
   }
