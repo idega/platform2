@@ -108,7 +108,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		
 		table.add(menuTable, 1, 1);
 
-		add(table);
+		add(table,iwc);
 
 		//add the main content
 		if (action != null) {

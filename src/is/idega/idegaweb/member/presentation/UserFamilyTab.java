@@ -86,6 +86,7 @@ public class UserFamilyTab extends UserTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Link attachLink = new Link(iwrb.getLocalizedString("usr_fam_attach","Attach"));
+		attachLink.setStyleClass("styledLink"); //added for the styles in UserApplicationStyle.css
 		attachLink.setWindowToOpen(FamilyConnector.class);
 		attachLink.addParameter(FamilyConnector._PARAM_USER_ID, getUserId());
 		attachLink.addParameter(FamilyConnector._PARAM_METHOD, FamilyConnector._METHOD_ATTACH);

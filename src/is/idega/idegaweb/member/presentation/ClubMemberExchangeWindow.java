@@ -2,6 +2,7 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,8 +11,6 @@ import java.util.Vector;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -25,6 +24,7 @@ import com.idega.user.business.GroupComparator;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.user.presentation.UserChooserBrowser;
 import com.idega.util.IWTimestamp;
 /**
