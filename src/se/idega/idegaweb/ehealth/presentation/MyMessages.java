@@ -49,9 +49,10 @@ public class MyMessages extends EHealthBlock {
 	private String prmSender = prefix + "sender";
 	private String prmCareUnit = prefix + "care_unit";
 	
-	private String prmReply = prefix + "reply";
+	//private String prmReply = prefix + "reply";
 	private String prmClear = prefix + "clear";
-	private String prmSend = prefix + "send";
+	//private String prmSend = prefix + "send";
+	private String prmDelete = prefix + "delete";
 	
 	private String prmFrom = prefix + "from";
 	private String prmTo = prefix + "to";
@@ -595,7 +596,7 @@ public class MyMessages extends EHealthBlock {
 		table.setWidth(4, 1, "10");
 		
 		//GenericButton reply = getButton(new GenericButton("reply", localize(prmReply, "Reply")));
-		GenericButton clear = getButton(new GenericButton("clear", localize(prmClear, "Clear")));
+		GenericButton clear = getButton(new GenericButton("delete", localize(prmDelete, "Delete")));
 		//GenericButton send = getButton(new GenericButton("send", localize(prmSend, "Send")));
 				
 		//table.add(reply, 1, 1);

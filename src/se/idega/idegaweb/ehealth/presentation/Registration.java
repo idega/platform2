@@ -210,10 +210,10 @@ public class Registration extends EHealthBlock {
 		
 		
 		
-		Text date = getLocalizedText(prmDate,"Date");
-		Text careUnit = getLocalizedText(prmCareUnit,"Care unit");
-		Text respDr = getLocalizedText(prmResponsibleDr,"Responsible Dr");
-		Text regReason = getLocalizedText(prmReason,"Reason for registration");
+		Text date = getLocalizedSmallHeader(prmDate,"Date");
+		Text careUnit = getLocalizedSmallHeader(prmCareUnit,"Care unit");
+		Text respDr = getLocalizedSmallHeader(prmResponsibleDr,"Responsible Dr");
+		Text regReason = getLocalizedSmallHeader(prmReason,"Reason for registration");
 		
 		table.add(date, 1, 1);
 		table.add(careUnit, 3, 1);
