@@ -45,6 +45,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
+import com.idega.core.data.PhoneType;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
@@ -293,6 +294,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
   
   public WorkReportDivisionBoard createWorkReportDivisionBoard(int reportId, Group clubDivision, WorkReportGroup league) throws CreateException {
+    // get group business
+    GroupBusiness groupBusiness = null;
+    try {
+      groupBusiness = getGroupBusiness();
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve GroupBusiness or an address. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness or an address.");
+    } 
     WorkReportDivisionBoard workReportDivisionBoard = getWorkReportDivisionBoardHome().create();
     workReportDivisionBoard.setReportId(reportId);
     // corresponding division board group
@@ -310,25 +323,29 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
     // address
     try {
-      // street and number
-      Address address = getGroupBusiness().getGroupMainAddress(clubDivision);
-      String streetAndNumber = address.getStreetAddress();
-      if (streetAndNumber != null)  {
-        workReportDivisionBoard.setStreetName(streetAndNumber);
-      }
-      // postal code id
-      PostalCode postalCode = address.getPostalCode();
-      if (postalCode != null)   {
-        workReportDivisionBoard.setPostalCode(postalCode);
+      Address address = groupBusiness.getGroupMainAddress(clubDivision);
+      if (address != null) {
+        // street and number
+        String streetAndNumber = address.getStreetAddress();
+        if (streetAndNumber != null)  {
+          workReportDivisionBoard.setStreetName(streetAndNumber);
+        }
+        // postal code id
+        PostalCode postalCode = address.getPostalCode();
+        if (postalCode != null)   {
+          workReportDivisionBoard.setPostalCode(postalCode);
+        }
       }
     }
     catch (RemoteException ex) {
       System.err.println(
-        "[WorkReportBusiness]: Can't retrieve GroupBusiness or an address. Message is: "
+        "[WorkReportBusiness]: Can't retrieve Address. Message is: "
           + ex.getMessage());
       ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness or an address.");
-    } 
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
+    }
+    
+
     // first phone and second phone
     Collection phones = clubDivision.getPhones();
     Iterator phoneIterator = phones.iterator();
@@ -347,7 +364,27 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       index++;
     }
     // fax
+    try {
+      Phone fax = groupBusiness.getGroupPhone(clubDivision, PhoneType.FAX_NUMBER_ID);
+      if (fax != null) {
+        String number = fax.getNumber();
+        if (number != null)   {
+          workReportDivisionBoard.setFax(number);
+        }
+      }
+    }      
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve Address. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
+    }  
     // email
+    String eMail = workReportDivisionBoard.getEmail();
+    if (eMail != null) {
+      workReportDivisionBoard.setEmail(eMail);
+    }
     workReportDivisionBoard.store();
     return workReportDivisionBoard;
   }
