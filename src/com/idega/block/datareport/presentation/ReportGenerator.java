@@ -269,6 +269,18 @@ public class ReportGenerator extends Block {
 			int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
 			//TMP
 			//TODO get page Margins (20) and add them to pageWidth;
+	  	// does the width fit the page width?
+			if (columnsWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4) {
+  		// change to landscape!
+  		designTemplate.setOrientationLandscape();
+  		// does the the width now fit the page width?
+  		int landscapeWidth = (columnsWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_LANDSCAPE_A4) ?
+					columnsWidth + DynamicReportDesign.PAGE_LEFT_MARGIN + DynamicReportDesign.PAGE_RIGHT_MARGIN :
+					DynamicReportDesign.PAGE_WIDTH_LANDSCAPE_A4;
+  		designTemplate.setPageWidth(landscapeWidth);
+  		designTemplate.setPageHeight(DynamicReportDesign.PAGE_HEIGHT_LANDSCAPE_A4);
+  	}
+			
 			// do not change the width of the page!! prior: designTemplate.setPageWidth(columnsWidth + 20 + 20);
 			designTemplate.setColumnWidth(columnsWidth);
 
