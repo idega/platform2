@@ -1,5 +1,6 @@
 package com.idega.block.book.presentation;
 
+import com.idega.builder.data.IBPage;
 import com.idega.data.IDOException;
 import java.text.NumberFormat;
 import com.idega.presentation.text.*;
@@ -42,6 +43,7 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   private String _headingStyle;
   private String _informationStyle;
   private String _ratingStyle;
+  private int _numberOfShown = 2;
 
   private String _linkStyle;
   private String _linkHoverStyle;
@@ -49,6 +51,7 @@ public class BookViewer extends CategoryBlock implements IWBlock {
 
   private BookBusiness _bookBusiness;
   private Image _divider;
+  private IBPage _page;
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.book";
   protected IWResourceBundle _iwrb;
@@ -108,6 +111,9 @@ public class BookViewer extends CategoryBlock implements IWBlock {
 	break;
       case BookBusiness.BOOK_CATEGORY_COLLECTION:
 	table = getBookCategoryCollection(iwc);
+	break;
+      case BookBusiness.NEWEST_BOOKS:
+	table = getNewestBooksCollection(iwc);
 	break;
       //* todo: implement later *//
       case BookBusiness.REVIEW_VIEW:
@@ -339,6 +345,40 @@ public class BookViewer extends CategoryBlock implements IWBlock {
     }
     else {
       return null;
+    }
+  }
+
+  private Table getNewestBooksCollection(IWContext iwc) throws FinderException,RemoteException {
+    Collection collection = _bookBusiness.getBookHome().findAllNewestBooks(getCategoryIds(),_numberOfShown);
+
+    if ( collection != null && collection.size() > 0 ) {
+      Table table = new Table();
+	table.setWidth(Table.HUNDRED_PERCENT);
+      int row = 1;
+
+      Iterator iter = collection.iterator();
+      while (iter.hasNext()) {
+	Book book = (Book) iter.next();
+
+	table.add(formatText(book.getName(),this._headerStyle),1,row++);
+	if ( book.getImage() != -1 ) {
+	  Image image = _bookBusiness.getImage(book.getImage());
+	    image.setBorder(1);
+	    image.setAlignment(Image.ALIGNMENT_RIGHT);
+	    image.setHorizontalSpacing(4);
+	  table.add(image,1,row);
+	}
+	String desc = book.getDescription();
+	if ( desc.length() > 512 ) desc = desc.substring(0,512) + "...";
+	table.add(formatText(TextFormatter.formatText(desc,1,Table.HUNDRED_PERCENT)),1,row++);
+	table.add(getMoreLink(((Integer)book.getPrimaryKey()).intValue()),1,row++);
+	table.setHeight(row++,"8");
+      }
+
+      return table;
+    }
+    else {
+      return new Table();
     }
   }
 
@@ -581,6 +621,16 @@ public class BookViewer extends CategoryBlock implements IWBlock {
     return link;
   }
 
+  private Link getMoreLink(int bookID) {
+    Link link = new Link(_iwrb.getLocalizedString("more","More"));
+      link.addParameter(BookBusiness.PARAMETER_STATE,BookBusiness.BOOK_VIEW);
+      link.addParameter(BookBusiness.PARAMETER_BOOK_ID,bookID);
+      if ( _page != null )
+	link.setPage(_page);
+      link.setStyle(_linkName);
+    return link;
+  }
+
   private Table getAdminButtons(Class classToOpen,String idName,int id) {
     Table table = new Table(2,1);
     table.setCellpaddingAndCellspacing(0);
@@ -672,6 +722,14 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   public void setLayout(int layout) {
     _state = layout;
     _initialState = layout;
+  }
+
+  public void setPage(IBPage page) {
+    _page = page;
+  }
+
+  public void setNumberOfShown(int numberOfShown) {
+    _numberOfShown = numberOfShown;
   }
 
   private void setDefaultValues() {

@@ -100,8 +100,23 @@ public class BookBMPBean extends GenericEntity implements Book {
     setColumn(getColumnDate(),date);
   }
 
-  public Collection ejbFindAllNewestBooks(int numberOfReturns)throws FinderException{
-    return super.idoFindIDsBySQL("select * from "+this.getEntityTableName()+" order by "+getColumnDate()+" desc",numberOfReturns);
+  public Collection ejbFindAllNewestBooks(int[] categories,int numberOfReturns)throws FinderException{
+    StringBuffer sql = new StringBuffer();
+    sql.append("select b.* from ");
+    sql.append(getEntityTableName()+" b,"+getTableNameBookCategory()+" bc");
+    sql.append(" where ");
+    sql.append("b."+getIDColumnName()+" = bc."+getIDColumnName());
+    sql.append(" and bc.IC_CATEGORY_ID");
+    sql.append(" in (");
+    for ( int a = 0; a < categories.length; a++ ) {
+      if ( a > 0 )
+	sql.append(",");
+      sql.append(categories[a]);
+    }
+    sql.append(") order by ");
+    sql.append(getColumnDate());
+    sql.append(" desc");
+    return super.idoFindIDsBySQL(sql.toString());
   }
 
   public Collection ejbFindAllBooksByPublisher(int publisherID)throws FinderException{

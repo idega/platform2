@@ -8,7 +8,7 @@ public interface BookHome extends com.idega.data.IDOHome
  public java.util.Collection findAllBooksContaining(java.lang.String p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findAllBooksByPublisher(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findAllBooksByAuthor(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection findAllNewestBooks(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection findAllNewestBooks(int[] p0,int p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findAllBooksByCategory(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findNewestBookByCategory(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findAllBooksByYear(int p0)throws javax.ejb.FinderException, java.rmi.RemoteException;

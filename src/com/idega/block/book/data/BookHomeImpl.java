@@ -34,9 +34,9 @@ public java.util.Collection findAllBooksByAuthor(int p0)throws javax.ejb.FinderE
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllNewestBooks(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllNewestBooks(int[] p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((BookBMPBean)entity).ejbFindAllNewestBooks(p0);
+	java.util.Collection ids = ((BookBMPBean)entity).ejbFindAllNewestBooks(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

@@ -23,6 +23,7 @@ public class BookBusiness {
   public static final int BOOK_CATEGORY_COLLECTION = 6;
   public static final int REVIEW_VIEW = 7;
   public static final int SEARCH = 8;
+  public static final int NEWEST_BOOKS = 9;
 
   public static final String PARAMETER_AUTHOR_ID = "bo_a_id";
   public static final String PARAMETER_BOOK_ID = "bo_b_id";

@@ -1,5 +1,5 @@
 /*
- * $Id: BookLayoutHandler.java,v 1.1 2002/05/10 11:07:51 laddi Exp $
+ * $Id: BookLayoutHandler.java,v 1.2 2002/05/10 12:09:51 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,6 +42,7 @@ public class BookLayoutHandler implements PropertyHandler {
     menu.addMenuElement("","Select:");
     menu.addMenuElement(BookBusiness.BOOK_CATEGORY_COLLECTION,"Book categories");
     menu.addMenuElement(BookBusiness.CATEGORY_COLLECTION,"Categories");
+    menu.addMenuElement(BookBusiness.NEWEST_BOOKS,"Newest books");
     menu.setSelectedElement(value);
     return(menu);
   }
