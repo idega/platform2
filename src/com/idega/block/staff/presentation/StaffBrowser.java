@@ -352,18 +352,18 @@ private Table _myTable;
         tableRow++;
       }
 
-      Text mailPhone = new Text(_iwrb.getLocalizedString("email","E-mail")+":");
-        mailPhone.setFontStyle(_headlineStyle);
-      Text mailPhoneText = new Text("");
+      Text mail = new Text(_iwrb.getLocalizedString("email","E-mail")+":");
+        mail.setFontStyle(_headlineStyle);
+      Text mailText = new Text("");
         if ( holder.getEmail() != null )
-          mobilePhoneText.setText(holder.getMobilePhone());
-        mobilePhoneText.setFontStyle(_textStyle);
-      Link mailLink = new Link(mailPhoneText);
+          mailText.setText(holder.getEmail());
+        mailText.setFontStyle(_textStyle);
+      Link mailLink = new Link(mailText);
         if ( holder.getEmail() != null )
           mailLink.setURL("mailto:"+holder.getEmail());
 
       if ( _showEmail ) {
-        textTable.add(mobilePhone,column,tableRow);
+        textTable.add(mail,column,tableRow);
         textTable.add(mailLink,column+1,tableRow);
         tableRow++;
       }
