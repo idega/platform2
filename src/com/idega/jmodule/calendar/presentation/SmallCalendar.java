@@ -103,7 +103,6 @@ public class SmallCalendar extends JModuleObject{
 
     for (int i = 1; i < daynr; i++) {
       T.setColor(i,ypos,inactiveCellColor);
-      //System.err.println(i+","+ypos+","+inactiveCellColor);
     }
 
 
@@ -114,7 +113,6 @@ public class SmallCalendar extends JModuleObject{
       t.setFontColor(textColor);
       t.setFontSize(1);
       T.setAlignment(xpos,ypos,"center");
-      //if (colorToday) ?
       if(n == today.getDay() && shadow )
         T.setColor(xpos,ypos,headerColor);
 
@@ -132,7 +130,6 @@ public class SmallCalendar extends JModuleObject{
       }
 
       if (T.getColor(xpos,ypos) == null) {
-          //System.err.println("...LITA BODYCOLOR x= "+xpos+", y="+ypos);
           setDayColor(year,month,n,bodyColor);
       }
 
@@ -286,7 +283,40 @@ public class SmallCalendar extends JModuleObject{
         this.setDayColor(stamp.getYear() ,stamp.getMonth(),stamp.getDate() ,color);
     }
 
+    public void setDayOfWeekColor(int dayOfWeek, String color) {
+        int startingY = 1;
+        if (showNameOfDays) {
+            ++startingY;
+        }
+        for (int i = startingY; i <= this.getMaxYPos(); i++) {
+          T.setColor(dayOfWeek,i,color);
+        }
+
+    }
 
 
+    private int getMaxYPos() {
+        int day = cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear());
+        int daynr = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth() ,1);
+
+        int startingX = 1;
+        int startingY = 1;
+        if (showNameOfDays) {
+            ++startingY;
+        }
+
+        int x = ((daynr-1) + day ) % 7;
+        int y = (((daynr-1) + day ) / 7) +1;
+            if (x == 0) {
+                x=7;
+                --y;
+            }
+
+        x += (startingX -1);
+        y += (startingY -1);
+
+
+        return y;
+    }
 
 }
