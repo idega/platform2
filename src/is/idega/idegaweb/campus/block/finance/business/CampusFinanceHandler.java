@@ -216,6 +216,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 	 */
 	public double getFactor(ContractAccountApartment con, IWTimestamp start, IWTimestamp end) {
 		double ret = 0;
+		start.setTime(0,0,0);
+		end.setTime(23,59,59);
 		long begin = start.getTimestamp().getTime();
 		long endin = end.getTimestamp().getTime();
 		long del = endin - begin;
@@ -237,26 +239,28 @@ public class CampusFinanceHandler implements FinanceHandler {
 		*/
 
 		// if contract begins and ends within period
-		if (begin <= valfr && valto <= endin) {
+		//if (begin <= valfr && valto <= endin) {
 			//System.out.println("begins and ends  within period");
-			begin = valfr;
-			endin = valto;
-		}
+		//	begin = valfr;
+		//	endin = valto;
+		//}
 		// if contract ends within period
-		else if (begin <= valto && valto <= endin) {
+		//else
+		 if (begin <= valto && valto <= endin) {
 			//System.out.println("ends within period");
 			endin = valto;
 		}
 		// if contract begins within period
-		else if (begin <= valfr && valfr <= endin) {
+		//else 
+		if (begin <= valfr && valfr <= endin) {
 			//System.out.println("begins within period");
 			begin = valfr;
 		}
 		// if contract begins and ends outside period
-		else if (valfr < begin && endin < valto) {
+		//else if (valfr < begin && endin < valto) {
 			//System.out.println("begins and ends  outside period");
 			// donothing
-		}
+		//}
 
 		double diff = endin - begin;
 		ret = (diff) / del;
