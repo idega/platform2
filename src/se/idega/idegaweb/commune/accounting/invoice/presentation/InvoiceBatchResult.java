@@ -131,7 +131,6 @@ public class InvoiceBatchResult extends AccountingBlock{
 	 * @param iwc
 	 */
 	private void handleAction(IWContext iwc) {
-		System.out.println("WARNING, program should not reach this point...");
 		iwc.toString();	//Dummy line to remove warning
 	}
 	
