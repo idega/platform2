@@ -82,7 +82,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   private String serviceDayHashtableSessionName = "serviceDayHashtable";
 
   protected Timeframe timeframe;
-	private HashMap maxDaysMap = new HashMap();
+	private static HashMap maxDaysMap = new HashMap();
 
   public TravelStockroomBusinessBean() {
   }
@@ -1301,10 +1301,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
 //			Cacheing disabled for a while // erm re-enabled			
 //			HashMap subMap = null;
+			String stmpString = null;
+			if (stamp != null) {
+				stmpString = stamp.toSQLDateString();
+			}
 			if (subMap == null) {
 				subMap = new HashMap();
 			}
-			Integer returner = (Integer) subMap.get(stamp.toSQLDateString()); 
+			Integer returner = (Integer) subMap.get(stmpString); 
 			if ( returner == null ) {
 				if (stamp != null) {
 					if (supportsSupplyPool()) {
@@ -1346,12 +1350,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 					    returner = new Integer(sDay.getMax());
 					  }
 				  }
-					subMap.put(stamp.toSQLDateString(), returner);
+					subMap.put(stmpString, returner);
 					maxDaysMap.put((Integer) product.getPrimaryKey(), subMap);
 			  }
-				//System.out.println("Getting max for product = "+product.getPrimaryKey()+" stamp = "+stamp.toSQLString()+" = MAX = "+returner.intValue());
+//				System.out.println("Getting max for product = "+product.getPrimaryKey()+" stamp = "+stmpString+" = MAX = "+returner.intValue());
 			} else {
-				//System.out.println("Found max for product = "+product.getPrimaryKey()+" stamp = "+stamp.toSQLString()+" = MAX = "+returner.intValue());
+//				System.out.println("Found max for product = "+product.getPrimaryKey()+" stamp = "+stmpString+" = MAX = "+returner.intValue());
 			}
 			return returner.intValue();
 
