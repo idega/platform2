@@ -34,13 +34,6 @@ public java.util.Collection findAll()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndNotInStatus(java.lang.Integer p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findAllCasesByProviderAndNotInStatus(java.lang.Integer p0,int p1,java.sql.Date p2,java.sql.Date p3,java.lang.String[] p4,int p5,int p6)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3,p4,p5,p6);
@@ -48,9 +41,16 @@ public java.util.Collection findAllCasesByProviderAndNotInStatus(java.lang.Integ
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndStatus(java.lang.Integer p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderAndNotInStatus(java.lang.Integer p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllCasesByProviderAndStatus(java.lang.Integer p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -69,21 +69,21 @@ public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.scho
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndStatus(java.lang.Integer p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderAndStatus(java.lang.Integer p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1,p2,p3);
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderStatus(java.lang.Integer p0,java.lang.String[] p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderStatus(java.lang.Integer p0,java.lang.String[] p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -181,16 +181,16 @@ public AfterSchoolChoice findApplicationByChildAndProviderAndStatus(java.lang.In
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findApplicationsByProviderAndDate(java.lang.Integer p0,java.sql.Date p1)throws javax.ejb.FinderException{
+public java.util.Collection findApplicationsByProvider(java.lang.Integer p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProviderAndDate(p0,p1);
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProvider(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findApplicationsByProviderAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
+public java.util.Collection findApplicationsByProviderAndStatus(java.lang.Integer p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1);
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -209,9 +209,9 @@ public java.util.Collection findApplicationsByProviderAndStatus(java.lang.Intege
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findApplicationsByProviderAndStatus(java.lang.Integer p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
+public java.util.Collection findApplicationsByProviderAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1,p2,p3);
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -230,20 +230,6 @@ public java.util.Collection findByChildAndSeason(java.lang.Integer p0,java.lang.
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public AfterSchoolChoice findNewestApplication(java.lang.Integer p0,java.sql.Date p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((AfterSchoolChoiceBMPBean)entity).ejbFindNewestApplication(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
-public AfterSchoolChoice findOldestApplication(java.lang.Integer p0,java.sql.Date p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((AfterSchoolChoiceBMPBean)entity).ejbFindOldestApplication(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
  public AfterSchoolChoice findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (AfterSchoolChoice) super.findByPrimaryKeyIDO(pk);
  }
@@ -252,13 +238,6 @@ public AfterSchoolChoice findOldestApplication(java.lang.Integer p0,java.sql.Dat
 public int getNumberOfActiveApplications(java.lang.Integer p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetNumberOfActiveApplications(p0);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfApplications(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetNumberOfApplications(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -273,6 +252,13 @@ public int getNumberOfApplications(java.lang.Integer p0,java.lang.String[] p1)th
 public int getNumberOfApplications(java.lang.Integer p0,java.lang.String[] p1,int p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetNumberOfApplications(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfApplications(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetNumberOfApplications(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -308,62 +294,6 @@ public int getNumberOfApplicationsForChildNotInStatus(java.lang.Integer p0,java.
 public int getNumberOfPlacedApplications(java.lang.Integer p0,java.lang.Integer p1,java.lang.String[] p2)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetNumberOfPlacedApplications(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getPositionInQueue(java.sql.Date p0,java.lang.Integer p1,java.lang.String[] p2)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetPositionInQueue(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getPositionInQueue(java.sql.Date p0,java.lang.Integer p1,java.lang.String p2)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetPositionInQueue(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getPositionInQueueByDate(java.lang.Integer p0,java.sql.Date p1,java.lang.Integer p2,java.lang.String[] p3)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetPositionInQueueByDate(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getPositionInQueueByDate(java.lang.Integer p0,java.sql.Date p1,java.lang.Integer p2,java.lang.String p3)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetPositionInQueueByDate(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getQueueSizeByAreaInStatus(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetQueueSizeByAreaInStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getQueueSizeByAreaNotInStatus(java.lang.Integer p0,java.lang.String[] p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetQueueSizeByAreaNotInStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getQueueSizeInStatus(java.lang.Integer p0,java.lang.String p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetQueueSizeInStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getQueueSizeNotInStatus(java.lang.Integer p0,java.lang.String[] p1)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AfterSchoolChoiceBMPBean)entity).ejbHomeGetQueueSizeNotInStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
