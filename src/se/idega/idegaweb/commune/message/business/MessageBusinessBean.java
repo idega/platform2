@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.16 2002/10/08 22:16:29 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.17 2002/11/04 09:39:46 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -20,11 +20,14 @@ import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
+import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.data.Email;
 import com.idega.core.data.ICFile;
 import com.idega.data.IDOCreateException;
@@ -66,10 +69,19 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			return (MessageHome) this.getIDOHome(SystemArchivationMessage.class);
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
-			return (MessageHome) this.getIDOHome(PrintedLetterMessage.class);
+			return getPrintedLetterMessageHome();
 		}
 		else {
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
+		}
+	}
+	
+	protected PrintedLetterMessageHome getPrintedLetterMessageHome(){
+		try{
+			return (PrintedLetterMessageHome) this.getIDOHome(PrintedLetterMessage.class);
+		}
+		catch(RemoteException rme){
+			throw new IBORuntimeException(rme);	
 		}
 	}
 	
@@ -191,14 +203,24 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	/**	 * @return Collection of PrintedLetterMessage that have already been printed	 */
-	public Collection getPrintedLetterMessages(){
-		throw new UnsupportedOperationException("getPrintedLetterMessages() not implemented");	
+	public Collection getPrintedLetterMessages()throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findAllPrintedLetters();	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
 	}
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */	
-	public Collection getUnPrintedLetterMessages(){
-		throw new UnsupportedOperationException("getPrintedLetterMessages() not implemented");	
+	public Collection getUnPrintedLetterMessages()throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findAllUnPrintedLetters();	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
 	}
 	/**
 	 * Mark the status of the message so that it is printed.

@@ -41,7 +41,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
     this.addAttribute(COLUMN_BODY,"Message body",String.class,1000);
     this.addAttribute(COLUMN_MESSAGE_TYPE,"Message type",String.class,20);
     this.addManyToOneRelationship(COLUMN_MESSAGE_DATA,"Message data",ICFile.class);
-    
+
     //this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
     //this.addAttribute(COLUMN_SENDER,"Test data column",String.class);//temp
 	//this.addManyToManyRelationShip(SampleEntity.class);
@@ -58,7 +58,8 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
   public void insertStartData(){
     try{
       super.insertStartData();
-      UserMessageHome home = (UserMessageHome)com.idega.data.IDOLookup.getHome(UserMessage.class);
+      /*
+	  UserMessageHome home = (UserMessageHome)com.idega.data.IDOLookup.getHome(UserMessage.class);
       User administrator = (User)com.idega.data.IDOLookup.findByPrimaryKey(User.class,1);
 
       Message msg = home.create();
@@ -84,6 +85,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
       //msg.setSenderNameX("Lars Karlsson");
       msg.setOwner(administrator);
       msg.store();
+	  */
     }
     catch(Exception e){
       e.printStackTrace(System.out);
@@ -110,14 +112,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
     return this.getStringColumnValue(COLUMN_MESSAGE_TYPE);
   }
 
-  public void setMessageType(String type)throws java.rmi.RemoteException{ 
+  public void setMessageType(String type)throws java.rmi.RemoteException{
     this.setColumn(COLUMN_MESSAGE_TYPE,type);
   }
 
   public ICFile getMessageData()throws java.rmi.RemoteException{
     return (ICFile)this.getColumnValue(COLUMN_MESSAGE_DATA);//Replace this later
   }
-  
+
    public int getMessageDataFileID()throws java.rmi.RemoteException{
     return this.getIntColumnValue(COLUMN_MESSAGE_DATA);
   }
@@ -129,7 +131,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
   public void setMessageData(int fileID)throws java.rmi.RemoteException{ //Temp (test) method
     this.setColumn(COLUMN_MESSAGE_DATA,fileID);
   }
-  
+
   public String getSenderName(){
   	try
 	{
@@ -138,18 +140,35 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	catch (RemoteException e)
 	{
 		return "";
-	}	
+	}
   }
 
   public String getDateString(){
   	/**
   	 * @todo: implement
   	 */
-  	return "";	
+  	return "";
   }
 
 
   public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
     return super.ejbFindAllCasesByUser(user);
   }
+
+  public Collection ejbFindAllUnPrintedLetters()throws FinderException,java.rmi.RemoteException{
+    return super.ejbFindAllCasesByStatus(super.getCaseStatusOpen());
+  }
+
+  public Collection ejbFindAllPrintedLetters()throws FinderException,java.rmi.RemoteException{
+    return super.ejbFindAllCasesByStatus(super.getCaseStatusReady());
+  }
+
+  public int ejbHomeGetNumberOfPrintedLetters()throws java.rmi.RemoteException{
+    return super.ejbHomeCountCasesWithStatus(getCaseStatusReady());
+  }
+
+  public int ejbHomeGetNumberOfUnPrintedLetters()throws java.rmi.RemoteException{
+    return super.ejbHomeCountCasesWithStatus(getCaseStatusOpen());
+  }
+
 }

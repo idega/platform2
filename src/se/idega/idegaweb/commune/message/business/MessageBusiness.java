@@ -38,11 +38,11 @@ public interface MessageBusiness extends com.idega.business.IBOService
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */
-	public Collection getPrintedLetterMessages()throws RemoteException;
+	public Collection getPrintedLetterMessages()throws FinderException,RemoteException;
 	/**
 	 * @return Collection of PrintedLetterMessage that have already been printed
 	 */	
-	public Collection getUnPrintedLetterMessages()throws RemoteException;
+	public Collection getUnPrintedLetterMessages()throws FinderException,RemoteException;
 	/**
 	 * Mark the status of the message so that it is printed.
 	 * @param performer The User that makes the change
