@@ -122,7 +122,7 @@ public class WorkReportMultiEditor extends Block {
         report.setStatus((String)entityPathValueContainerFromDropDownMenu.getValue());
       }
       
-			boolean isChecked = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc).contains(primaryKey);
+			boolean isChecked = CheckBoxConverter.isEntityCheckedUsingDefaultKey(iwc,primaryKey);
 			
 			if(isChecked){
 				report.setAsInactive();
