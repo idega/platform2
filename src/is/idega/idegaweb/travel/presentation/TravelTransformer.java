@@ -15,7 +15,7 @@ public class TravelTransformer extends TravelBlock {
 	
 	public void main(IWContext iwc) throws Exception{
 		super.main(iwc);
-		if (super.isSuperAdmin) {
+//		if (super.isSuperAdmin) {
 			List supplierManagers = getSupplierManagerBusiness(iwc).getSupplierManagerGroup().getChildGroups();
 			DropdownMenu menu = new DropdownMenu(supplierManagers, "managerID");
 			
@@ -32,7 +32,7 @@ public class TravelTransformer extends TravelBlock {
 			showSuppliers(null);
 			showResellers(null);
 			showSearchEngines(null);
-		}
+//		}
 	}
 	
 	private void runFix(String managerID) {
