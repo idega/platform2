@@ -30,6 +30,10 @@ import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecordHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -46,6 +50,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -234,35 +239,35 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 			if (schoolCategory.equals(childCare.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("N24IFS_BOM_HVD_");
+				fileName1.append("n24_ifs_hvd_bom_");
 				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("N24IFS_BOM_LEV_");
+				fileName2.append("n24_ifs_lev_bom_");
 				StringBuffer fileName3 = new StringBuffer(folder);
-				fileName3.append("N24IFS_BOM_KND_");
-				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
-				fileName3.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName3.append("n24_ifs_knd_bom_");
+				fileName1.append(now.getDateString("yyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyMMdd_hhmm"));
+				fileName3.append(now.getDateString("yyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
-				createInvoiceFiles(fileName3.toString(), schoolCategory);
+				createInvoiceFiles(fileName3.toString(), schoolCategory, now, paymentDate, currentLocale, periodText);
 			}
 			else if (schoolCategory.equals(school.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("N24IFS_GSK_HVD_");
+				fileName1.append("n24_ifs_hvd_gsk_");
 				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("N24IFS_GSK_LEV_");
-				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName2.append("n24_ifs_lev_gsk_");
+				fileName1.append(now.getDateString("yyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
 			else if (schoolCategory.equals(highSchool.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
-				fileName1.append("N24IFS_GYM_HVD_");
+				fileName1.append("n24_ifs_hvd_gym_");
 				StringBuffer fileName2 = new StringBuffer(folder);
-				fileName2.append("N24IFS_GYM_LEV_");
-				fileName1.append(now.getDateString("yyyyMMdd_hhmm"));
-				fileName2.append(now.getDateString("yyyyMMdd_hhmm"));
+				fileName2.append("n24_ifs_lev_gym_");
+				fileName1.append(now.getDateString("yyMMdd_hhmm"));
+				fileName2.append(now.getDateString("yyMMdd_hhmm"));
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, now, paymentDate, currentLocale);
 			}
@@ -397,13 +402,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
+					bWriter.write(Integer.toString(Math.round(-pRec.getTotalAmount())));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
+					bWriter.write(Integer.toString(Math.round(-pRec.getTotalAmount())));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -555,21 +560,53 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							bWriter.write(Integer.toString(row));
 							row++;
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Konto"));
+							String tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Konto");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Ansvar"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Ansvar");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Resurs"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Resurs");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Verksamhet"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Verksamhet");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Aktivitet"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Aktivitet");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Projekt"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Projekt");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Objekt"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Objekt");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
-							bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(), "Motpart"));
+							tmp = pb.findFieldInStringByName(pRec.getOwnPosting(), "Motpart");
+							if ("".equals(tmp))
+								bWriter.write("-");
+							else
+								bWriter.write(tmp);
 							bWriter.write(";");
 							//anlaggningsnummer
 							bWriter.write("-");
@@ -610,9 +647,211 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 	}
 
-	private void createInvoiceFiles(String fileName, String schoolCategory) {
-		System.out.println("fileName = " + fileName);
-		System.out.println("schoolCategory = " + schoolCategory);
+	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale, String periodText)
+		throws FinderException, IOException, StudyPathException, RemoteException {
+		Collection iHeaders = ((InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class)).findByMonth(null);
+
+		if (iHeaders != null && !iHeaders.isEmpty()) {
+			NumberFormat format = NumberFormat.getInstance(currentLocale);
+			format.setMaximumFractionDigits(2);
+			format.setMinimumFractionDigits(2);
+			format.setMinimumIntegerDigits(11);
+			format.setMaximumIntegerDigits(11);
+			format.setGroupingUsed(false);
+			NumberFormat format2 = NumberFormat.getInstance(currentLocale);
+			format.setMaximumFractionDigits(0);
+			format.setMinimumFractionDigits(0);
+			format.setMinimumIntegerDigits(10);
+			format.setMaximumIntegerDigits(10);
+			format.setGroupingUsed(false);
+			FileWriter writer = new FileWriter(fileName.toString());
+			BufferedWriter bWriter = new BufferedWriter(writer);
+
+			PostingBusiness pb = getPostingBusiness();
+
+			//Posttyp
+			bWriter.write("10");
+			//Rutinkod + kundkod
+			for (int i = 0; i < 8; i++)
+				bWriter.write(' ');
+			//Rutinkod for avsandande rutin	
+			bWriter.write("BUN");
+			//Framstallandedatum
+			bWriter.write(executionDate.getDateString("yyMMDD"));
+			//Klockslag + Kommentar
+			for (int i = 0; i < 231; i++)
+				bWriter.write(' ');
+			bWriter.newLine();
+
+			int numberOfHeaders = 0;
+
+			Iterator ihIt = iHeaders.iterator();
+			while (ihIt.hasNext()) {
+				InvoiceHeader iHead = (InvoiceHeader) ihIt.next();
+				Collection rec = ((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead);
+
+				if (rec != null && !rec.isEmpty()) {
+					Iterator irIt = rec.iterator();
+					//					Iterator sumIt = rec.iterator();
+					//
+					//					float sum = 0;
+					//					while (sumIt.hasNext()) {
+					//						PaymentRecord r = (PaymentRecord) sumIt.next();
+					//						sum += r.getTotalAmount();
+					//					}
+
+					//Posttyp
+					bWriter.write("60");
+					//Filler etc
+					for (int i = 0; i < 22; i++)
+						bWriter.write(' ');
+					//Perioden
+					if (periodText.length() < 20) {
+						StringBuffer p = new StringBuffer(periodText);
+						while (p.length() < 20)
+							p.insert(0,' ');
+							
+						periodText = p.toString();
+					}	
+					else if (periodText.length() > 20) {
+						periodText = periodText.substring(0,20);
+					}
+					bWriter.write(periodText);
+					//Kundnrtyp
+					bWriter.write('P');
+					//Kundnr
+					String pnr = iHead.getCustodian().getPersonalID();
+					if (pnr.length() < 10) {
+							StringBuffer p = new StringBuffer(pnr);
+							while (p.length() < 10)
+								p.insert(0,' ');
+							
+							pnr = p.toString();
+					}
+					else if (pnr.length() > 10) {
+						pnr = pnr.substring(2);
+					}
+					bWriter.write(pnr);
+					//Kundnamn
+					String name = iHead.getCustodian().getNameLastFirst(false);
+					if (name.length() < 25) {
+							StringBuffer p = new StringBuffer(name);
+							while (p.length() < 25)
+								p.insert(0,' ');
+							
+							name = p.toString();
+					}
+					else if (name.length() > 25) {
+						name = name.substring(0,25);
+					}
+					bWriter.write(name);
+					//Kundadress
+					String address = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getName();
+					if (address.length() < 27) {
+							StringBuffer p = new StringBuffer(address);
+							while (p.length() < 27)
+								p.insert(0,' ');
+							
+							address = p.toString();
+					}
+					else if (address.length() > 27) {
+						address = address.substring(0,27);
+					}
+					bWriter.write(address);
+					//Kundpostnr
+					String po = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getPostalCode().getPostalCode();
+					if (po.length() < 5) {
+							StringBuffer p = new StringBuffer(po);
+							while (p.length() < 5)
+								p.insert(0,' ');
+							
+							po = p.toString();
+					}
+					else if (po.length() > 5) {
+						po = po.substring(0,5);
+					}
+					bWriter.write(po);
+					//Kundort
+					String poName = getUserBusiness().getUsersMainAddress(iHead.getCustodian()).getPostalCode().getName();
+					if (poName.length() < 13) {
+							StringBuffer p = new StringBuffer(poName);
+							while (p.length() < 13)
+								p.insert(0,' ');
+							
+							poName = p.toString();
+					}
+					else if (poName.length() > 13) {
+						poName = poName.substring(0,13);
+					}
+					bWriter.write(poName);
+					//C/O address
+					String co = getUserBusiness().getUsersCoAddress(iHead.getCustodian()).getName();
+					if (co.length() < 25) {
+							StringBuffer p = new StringBuffer(co);
+							while (p.length() < 25)
+								p.insert(0,' ');
+							
+							co = p.toString();
+					}
+					else if (co.length() > 25) {
+						co = co.substring(0,25);
+					}
+					bWriter.write(co);
+					//Filler
+					for (int i = 0; i < 8; i++)
+						bWriter.write(' ');
+					//Er referens
+					StringBuffer bun = new StringBuffer("Kundvalgsgruppen Tel: 718 00 00");
+					while (bun.length() < 40) {
+						bun.append(' ');
+					}
+					bWriter.write(bun.toString());
+					//Avsertyp
+					bWriter.write("Barnomsorg");
+					//Filler
+					for (int i = 0; i < 25; i++)
+						bWriter.write(' ');
+					//Verksamhetskod
+					bWriter.write("BO");
+					//Filler
+					for (int i = 0; i < 15; i++)
+						bWriter.write(' ');
+											
+					bWriter.newLine();
+
+/*					while (irIt.hasNext()) {
+						InvoiceRecord iRec = (InvoiceRecord) irIt.next();
+						String tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Konto");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Ansvar");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Resurs");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Verksamhet");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Aktivitet");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Projekt");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Objekt");
+						tmp = pb.findFieldInStringByName(iRec.getOwnPosting(), "Motpart");
+					}*/
+
+					numberOfHeaders++;
+				}
+
+//				iHead.setStatus('L');
+//				iHead.store();
+			}
+
+			//Posttyp
+			bWriter.write("50");
+			//Filler
+			for (int i = 0; i < 94; i++)
+				bWriter.write(' ');
+			//Antal poster posttyp 60	
+			bWriter.write(format2.format(numberOfHeaders));
+			//Filler, etc...
+			for (int i = 0; i < 144; i++)
+				bWriter.write(' ');
+			bWriter.newLine();
+
+			bWriter.close();
+		}
 	}
 
 	/**
@@ -655,37 +894,37 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			if (phInCommune != null && !phInCommune.isEmpty()) {
 				Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
 				Iterator it = rec.iterator();
-				
+
 				while (it.hasNext()) {
-					PaymentRecord pRec = (PaymentRecord)it.next();
+					PaymentRecord pRec = (PaymentRecord) it.next();
 					pRec.setStatus('P');
 					pRec.store();
 				}
-				
+
 				Iterator itor = phInCommune.iterator();
 				while (itor.hasNext()) {
 					PaymentHeader head = (PaymentHeader) itor.next();
 					head.setStatus('P');
 					head.store();
-				}				
+				}
 			}
 
 			if (phOutsideCommune != null && !phOutsideCommune.isEmpty()) {
 				Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phOutsideCommune);
 				Iterator it = rec.iterator();
-				
+
 				while (it.hasNext()) {
-					PaymentRecord pRec = (PaymentRecord)it.next();
+					PaymentRecord pRec = (PaymentRecord) it.next();
 					pRec.setStatus('P');
 					pRec.store();
 				}
-				
+
 				Iterator itor = phOutsideCommune.iterator();
 				while (itor.hasNext()) {
 					PaymentHeader head = (PaymentHeader) itor.next();
 					head.setStatus('P');
 					head.store();
-				}				
+				}
 			}
 
 			//Delete files in folder A. Must get folder info from ExportMappingBean!!!
@@ -753,6 +992,15 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	public ExportBusiness getExportBusiness() {
 		try {
 			return (ExportBusiness) getServiceInstance(ExportBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	public UserBusiness getUserBusiness() {
+		try {
+			return (UserBusiness) getServiceInstance(UserBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
