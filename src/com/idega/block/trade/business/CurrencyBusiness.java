@@ -27,6 +27,7 @@ import com.idega.block.trade.data.CurrencyValues;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -158,10 +159,21 @@ public class CurrencyBusiness {
 	}
 
 	public static CurrencyHolder getCurrencyHolder(String currencyName) {
+		if (currencyMap == null) {
+			try {
+				System.out.println("[CurrencyBusiness] currencyMap == null, trying to get a new one...");
+				getCurrencyMap(IWContext.getInstance().getApplication().getBundle(IW_BUNDLE_IDENTIFIER));
+				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) done...");
+			} catch (RemoteException e) {
+				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) FAILED...");
+				e.printStackTrace(System.err);
+			}
+		}
 		if (currencyMap != null) {
 			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currencyName);
-			if (holder != null)
+			if (holder != null) {
 				return holder;
+			}
 			return null;
 		}
 		return null;
