@@ -271,8 +271,8 @@ public class LIDataInsert extends Window implements InvoiceDataInsert {
 	private String signIn(int groupId) {
 		BankFileManager bfm = new BankInvoiceFileManager();
 		LI_Innskra innskra = new LI_Innskra();
-		innskra.setNotandanafn(bfm.getUsername(groupId));//"l710100b2b");
-		innskra.setLykilord(bfm.getPassword(groupId));//"idegatest01");
+		innskra.setNotandanafn(bfm.getUsername(groupId));
+		innskra.setLykilord(bfm.getPassword(groupId));
 		innskra.setVersion(new BigDecimal("1.1"));
 		LIInnskraSvar svar = new LIInnskraSvar();
 		
@@ -298,9 +298,7 @@ public class LIDataInsert extends Window implements InvoiceDataInsert {
 		utskra.setSeta(sessionId);
 		try {
 			utskra.marshal(new FileWriter(SIGN_OUT), SIGN_OUT_SCHEMA);
-			System.out.println("in utskra, before sendReq");
 			sendRequest(SIGN_OUT);
-			System.out.println("in utskra, after sendReq");
 		}
 		catch (MarshalException e) {
 			e.printStackTrace();
@@ -325,7 +323,7 @@ public class LIDataInsert extends Window implements InvoiceDataInsert {
 		try {
 			post.setRequestBody(new FileInputStream(fileName));
 			client.executeMethod(post);
-		System.out.println("responseString: " + post.getResponseBodyAsString());
+//		System.out.println("responseString: " + post.getResponseBodyAsString());
 		}
 		catch (FileNotFoundException e1) {
 			e1.printStackTrace();
