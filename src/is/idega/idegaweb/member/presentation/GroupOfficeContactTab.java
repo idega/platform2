@@ -53,9 +53,11 @@ public class GroupOfficeContactTab extends UserGroupTab {
     this.setName("Contact");
   }
 
-  public GroupOfficeContactTab(int groupId){
+  public GroupOfficeContactTab(Group group){
     this();
-    this.setGroupId(groupId);
+    // do not store the group because this tab instance will be also used by other groups
+    // (see setGroupId() !)
+    setGroupId(((Integer)group.getPrimaryKey()).intValue());
   }
 
   public void initializeFieldNames(){
