@@ -244,7 +244,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		}
 
-		Map workReportsByLeagues = new HashMap();
+		Map workReportsByLeagues = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
@@ -275,7 +275,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					data.addData(menUnderAgeLimit, new Integer(0));
 					data.addData(menOverOrEqualAgeLimit, new Integer(playerCount));
 					//for the page separations
-					data.addData(leagueString, league.getPrimaryKey().toString());
+					StringBuffer leagueBuf = new StringBuffer();
+					leagueBuf.append( (league.getNumber()!=null)? league.getNumber() : "" )
+					.append("  ")
+					.append( (league.getShortName()!=null)? league.getShortName() : "")
+					.append("  ")
+					.append( (league.getName()!=null)? league.getName() : "");
+					String leagueText=league.toString();
+					
+					data.addData(leagueString, leagueText);
 					//TODO order by the number
 					//data.addData(leagueString, league.getNumber());
 

@@ -239,6 +239,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		}
 	}
 	
+	
 
 	
 	public Collection getLeaguesForMember() throws IDOException {
