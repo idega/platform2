@@ -275,7 +275,7 @@ public class SupplyPoolEditor extends TravelBlock {
 
 					String countString = iwc.getParameter(PARAMETER_EST_MONTH + n); 
 					IWTimestamp date = new IWTimestamp(n, stamp.getMonth(), stamp.getYear());
-					if(countString != null && !countString.equals("") && !countString.equals(" ")) {
+					if(countString != null && !countString.trim().equals("")) {
 						int count = Integer.parseInt(countString);
 						DayInfo dayInfo = null;
 						try {
@@ -292,6 +292,18 @@ public class SupplyPoolEditor extends TravelBlock {
 						dayInfo.setSupplyPoolId(poolPK.intValue());
 						dayInfo.setDate(date.getDate());
 						dayInfo.store();
+					} else { // Removing
+						try {
+							DayInfo dayInfo = getDayInfoHome().findBySupplyPoolIdAndDate(poolPK.intValue(), date.getDate());
+							try {
+								dayInfo.remove();
+							}
+							catch (RemoveException e2) {
+								e2.printStackTrace();
+							}
+						} catch (FinderException e1) {
+							// Not logging FinderException because I dont care if nothing is here to delete
+						}						
 					}
 				}
 				catch (NumberFormatException e) {
@@ -369,6 +381,11 @@ public class SupplyPoolEditor extends TravelBlock {
 			} catch (FinderException f) {
 			} catch (NumberFormatException n) {}
 		
+			Link moreLink = new Link(iwrb.getLocalizedImageButton("travel.day_by_day", "Day by day"));
+			moreLink.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
+			moreLink.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
+			moreLink.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
+			
 			IWCalendar calendar = new IWCalendar();
 			form.add(table);
 			form.maintainParameter(PARAMETER_POOL_ID);
@@ -423,23 +440,21 @@ public class SupplyPoolEditor extends TravelBlock {
 			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), ACTION_PARAMETER, PARAMETER_SAVE_POOL_DAYS);
 			SubmitButton back = new SubmitButton(iwrb.getLocalizedImageButton("back", "Back"));
 
-			table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.add(back, 1, row);
-			table.add(save, 5, row);
+			table.mergeCells(2, row, 5, row);
+			table.add(moreLink, 2, row);
+			table.add(Text.NON_BREAKING_SPACE, 2, row);
+			table.add(save, 2, row);
 			table.setRowColor(row, TravelManager.GRAY);
 		}
 		catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
+		
 
 		getProductsUsingPool(iwc, form, pool);
 		
-		Link moreLink = new Link(iwrb.getLocalizedImageButton("more", "More"));
-		moreLink.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
-		moreLink.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
-		moreLink.addParameter(InitialData.dropdownView,InitialData.PARAMETER_SUPPLY_POOL);
-		form.add(moreLink);
-				
 		return form;
 	}
 
@@ -477,7 +492,9 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.setRowColor(row, TravelManager.GRAY);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.add(getLastMonthsLink(iwrb, pool, timeStamp), 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(new Text(stamp.getDateString("MMMMMMMM yyyy",iwc.getCurrentLocale())), 1, row); 
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(getNextMonthsLink(iwrb, pool, timeStamp), 1, row++); 
 		
 		for(int i=1; i<=7; i++) {
@@ -495,7 +512,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			}
 			table.add(getText(calendar.getDayName(i, iwc.getCurrentLocale(),IWCalendar.SHORT)), i, row);
 			if(max != -1) {
-				table.add("(" + max +")", i, row);
+				table.add(" (" + max +")", i, row);
 			}
 			table.setAlignment(i, row, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setRowColor(row, TravelManager.GRAY);
