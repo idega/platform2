@@ -56,7 +56,11 @@ public class ProductItemImages extends ProductItem {
   private void drawObject() {
     List images = null;
     try {
-      images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+      if (_product != null) {
+        images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+      }else {
+        images = new Vector();
+      }
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
       images = new Vector();
