@@ -11,10 +11,12 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -28,6 +30,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private boolean allowAlter = true;
 	private boolean _requiresPrognosis;
 	private int allowedFutureContracts = 2;
+	private boolean showCreateGroupBtn = true;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -39,9 +42,9 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.setCellpadding(getCellpadding());
 			table.setCellspacing(getCellspacing());
 			if (allowAlter)
-				table.setColumns(8);
+				table.setColumns(9);
 			else
-				table.setColumns(7);
+				table.setColumns(8);
 			if (useStyleNames()) {
 				table.setRowStyleClass(1, getHeaderRowClass());
 			}
@@ -62,8 +65,10 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+						
 			if(isCommuneAdministrator(iwc))
 				table.add(getLocalizedSmallHeader("child_care.invoice_receiver","Invoice Receiver"), column++, row);
+			
 			row++;
 	
 			boolean showComment = false;
@@ -84,6 +89,15 @@ public class ChildCareContracts extends ChildCareBlock {
 				boolean isNotYetActive;
 				boolean hasComment = false;
 				String name = null;
+				int provider = -1;
+				Link delete;
+				Link childInfo;
+				IWTimestamp registered;
+				boolean showNotStartedComment = false;
+				boolean hasComments = false;
+				IWTimestamp stamp = new IWTimestamp();
+				SchoolClassMember student;
+				Collection students;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
@@ -91,6 +105,10 @@ public class ChildCareContracts extends ChildCareBlock {
 					application = (ChildCareApplication) iter.next();
 					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
+					provider = application.getProviderId();
+					
+					student = contract.getSchoolClassMember();
+					
 					hasComment = true;
 
 					if (useStyleNames()) {
@@ -152,6 +170,30 @@ public class ChildCareContracts extends ChildCareBlock {
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 						
+						/////////
+						if (validFrom.isLaterThan(stamp)) {
+							showComment = true;
+							showNotStartedComment = true;
+							hasComments = true;
+							table.add(getSmallErrorText("*"), column, row);
+
+							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+							delete.setWindowToOpen(ChildCareWindow.class);
+							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+						}
+						else {
+							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+							delete.setWindowToOpen(ChildCareWindow.class);
+							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+						}
+											
+						/////////
+						
+						
 						if (!isCancelled){						
 						
 						if (isNotYetActive) {
@@ -194,6 +236,8 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 						column++;
 						table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
+						
+						
 						if(isCommuneAdministrator(iwc)){
 							if(contract.getInvoiceReceiverID()>0){
 								table.add(getSmallText(contract.getInvoiceReceiver().getName()),column++,row);
@@ -214,6 +258,11 @@ public class ChildCareContracts extends ChildCareBlock {
 							else
 								table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 						}
+						
+						if (student.getRemovedDate() == null)
+							table.add(delete, column++, row);
+						
+						
 						row++;
 					}
 						
@@ -255,6 +304,19 @@ public class ChildCareContracts extends ChildCareBlock {
 				}
 			}
 	
+			String localized = "";
+			if (getSession().getGroupID() != -1)
+				localized = localize("child_care.change_group", "Change group");
+			else
+				localized = localize("child_care.create_group", "Create group");
+			if (showCreateGroupBtn){
+				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
+				createGroup.setWindowToOpen(ChildCareWindow.class);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				table.setHeight(1, row++, "10");
+				table.add(createGroup, 1, row++);
+			}
 			add(table);		
 		}
 		else {
@@ -293,5 +355,13 @@ public class ChildCareContracts extends ChildCareBlock {
 	 */
 	public void setAllowedFutureContracts(int allowedFutureContracts) {
 		this.allowedFutureContracts = allowedFutureContracts;
+	}
+	
+
+	/**
+	 * @param showCreateGroupBtn The showCreateGroupBtn to set.
+	 */
+	public void setShowCreateGroupBtn(boolean showCreateGroupBtn) {
+		this.showCreateGroupBtn = showCreateGroupBtn;
 	}
 }
