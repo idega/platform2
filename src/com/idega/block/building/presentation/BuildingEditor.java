@@ -989,7 +989,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
       Frame.setWidth("100%");
       Frame.setWidth(1,1,"100%");
       Frame.setHeight("100%");
-    Table T = new Table(1,6);
+    Table T = new Table(2,11);
       T.setCellpadding(2);
       T.setAlignment("center");
       T.setWidth("100%");

@@ -624,6 +624,9 @@ public class TariffEditor extends Finance{
         priceInput.setContent(String.valueOf(iPrice));
 
         //drpAtt.setSelectedElement(tariff.getTariffAttribute());
+				System.out.println("i = " + i);
+				System.out.println("String.valueOf(tariff.getAccountKeyId())" + String.valueOf(tariff.getAccountKeyId()));
+        
         drpAK.setSelectedElement(String.valueOf(tariff.getAccountKeyId()));
 
 
