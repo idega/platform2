@@ -91,6 +91,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       userPanel = new Panel();
       userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      userPanel.setBackground(Color.red);
+      userPanel.show();
+
       this.add(userPanel);
 
       threadSleep = 1000*checkTimer;
