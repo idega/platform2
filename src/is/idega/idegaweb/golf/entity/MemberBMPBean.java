@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -46,7 +47,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addOneToOneRelationship(COLUMNNAME_IC_USER_ID,User.class);
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_member");
 
-
+    addIndex("IDX_MEMBER_1", getSocialSecurityNumberColumnName());
   }
 
   public String getEntityName(){
@@ -620,4 +621,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
 		return idoFindOnePKByColumnBySQL(getSocialSecurityNumberColumnName(), ssn);
 	}
 	
+	public Collection ejbFindAll() throws FinderException {
+		return idoFindAllIDsBySQL();
+	}
 }

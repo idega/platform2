@@ -28,9 +28,9 @@ public interface Member extends com.idega.data.IDOLegacyEntity
  public java.lang.String getSSN();
  public is.idega.idegaweb.golf.entity.Scorecard[] getScorecards()throws java.sql.SQLException;
  public java.lang.String getSocialSecurityNumber();
- public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(java.lang.String p0,java.lang.String p1)throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(int p0)throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(java.lang.String p0)throws java.sql.SQLException;
+ public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(int p0)throws java.sql.SQLException;
+ public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(java.lang.String p0,java.lang.String p1)throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.Union[] getUnions()throws java.sql.SQLException;
  public java.lang.String getWorkPlace();
  public boolean isMemberIn(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException;
