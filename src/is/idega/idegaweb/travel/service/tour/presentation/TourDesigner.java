@@ -576,9 +576,11 @@ public class TourDesigner extends TravelManager implements DesignerForm{
         if ( arrAddress != null ) {
           arrival_at.setContent( arrAddress.getStreetName() );
         }
-        tempStamp = new IWTimestamp( service.getArrivalTime() );
-        arrival_time.setHour( tempStamp.getHour() );
-        arrival_time.setMinute( tempStamp.getMinute() );
+        if ( service.getArrivalTime() != null) {
+        		tempStamp = new IWTimestamp( service.getArrivalTime() );
+            arrival_time.setHour( tempStamp.getHour() );
+            arrival_time.setMinute( tempStamp.getMinute() );
+        }
 
         Collection hppService = hppHome.findHotelPickupPlaces(this.service);
         PickupPlace hpp;
