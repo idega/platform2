@@ -1782,14 +1782,17 @@ public class ReportQueryBuilder extends Block {
 		}
 		catch (ClassNotFoundException ex) {
 			log(ex);
+			ex.printStackTrace();
 			logError("[ReportQueryBuilder] Could not retrieve handler class");
 		}
 		catch (InstantiationException ex) {
 			log(ex);
+			ex.printStackTrace();
 			logError("[ReportQueryBuilder] Could not instanciate handler class");
 		}
 		catch (IllegalAccessException ex) {
 			log(ex);
+			ex.printStackTrace();
 			logError("[ReportQueryBuilder] Could not instanciate handler class");
 		}
 		return inputHandler;
