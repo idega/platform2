@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.44 2003/04/07 11:20:46 palli Exp $
+ * $Id: CampusApprover.java,v 1.45 2003/04/10 12:41:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -239,6 +239,7 @@ public class CampusApprover extends Block {
 							wl.setApplicantId(Appli.getID());
 							wl.setOrder(0);
 							wl.setChoiceNumber(applied.getOrder());
+							wl.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
 							wl.insert();
 							wl.setOrder(wl.getID());
 							String level = CA.getPriorityLevel();
