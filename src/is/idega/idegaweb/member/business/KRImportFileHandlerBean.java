@@ -68,7 +68,8 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
   
   private Gender male;
   private Gender female;
-
+	
+	public KRImportFileHandlerBean(){}
   
   public boolean handleRecords() throws RemoteException{
     //transaction =  this.getSessionContext().getUserTransaction();
