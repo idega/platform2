@@ -1,15 +1,11 @@
 /*
- * $Id: FavoritesBusiness.java,v 1.1 2004/10/08 07:08:34 laddi Exp $
- * Created on 7.10.2004
+ * Created on Oct 26, 2004
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.idega.block.favorites.business;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
@@ -20,19 +16,63 @@ import com.idega.block.favorites.data.Favorite;
 import com.idega.business.IBOService;
 import com.idega.user.data.User;
 
-
 /**
- * Last modified: $Date: 2004/10/08 07:08:34 $ by $Author: laddi $
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @author Anna
  */
 public interface FavoritesBusiness extends IBOService {
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#getFavorite
+     */
+    public Favorite getFavorite(Object primaryKey) throws FinderException,
+            java.rmi.RemoteException;
+    
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#getFavorite
+     */
+    public Favorite getFavorite(User user, String name) throws FinderException, 
+    				java.rmi.RemoteException;
 
-	public Collection getFavorites(User user) throws FinderException, RemoteException;
-	public Collection getQuickLinkFavorites(User user) throws FinderException, RemoteException;
-	
-	public void storeFavorite(User user, String URL, String name, boolean quickLink) throws CreateException, RemoteException;
-	public void deleteFavorite(Favorite favorite) throws RemoveException, RemoteException;
-	
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#getFavorites
+     */
+    public Collection getFavorites(User user) throws FinderException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#getQuickLinkFavorites
+     */
+    public Collection getQuickLinkFavorites(User user) throws FinderException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#storeFavorite
+     */
+    public void storeFavorite(User user, String URL, String name,
+            boolean quickLink) throws CreateException, java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#storeFavorite
+     */
+    public void storeFavorite(Object pk, String URL, String name,
+            boolean quickLink) throws CreateException, java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#storeFavorite
+     */
+    public void storeFavorite(Object favoriteID, User user, String URL,
+            String name, boolean quickLink) throws CreateException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#deleteFavorite
+     */
+    public void deleteFavorite(Favorite favorite) throws RemoveException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see com.idega.block.favorites.business.FavoritesBusinessBean#hasURLAsFavorite
+     */
+    public boolean hasURLAsFavorite(User user, String URL)
+            throws FinderException, java.rmi.RemoteException;
+
 }
