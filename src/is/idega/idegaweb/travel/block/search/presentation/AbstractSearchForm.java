@@ -141,6 +141,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected Image headerImage;
 	protected Table formTable = new Table();
 	protected int row = 1;
+	protected boolean useSecureServer = true;
 	int tmpPriceID;
 	
 	protected Product definedProduct;
@@ -207,6 +208,18 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		form.add(getText());
 		formTable.add(Text.NON_BREAKING_SPACE, 1, row);
 		++row;
+		
+		if (useSecureServer && !iwc.isSecure()) {
+			String URI = iwc.getRequest().getRequestURI();
+			String serverName = bundle.getProperty(LinkGenerator.PROPERTY_SERVER_NAME);
+			if (URI.indexOf("nat.sidan.is") > 0 && serverName != null) {
+				URI.replaceFirst("nat.sidan.is",  serverName);
+			}
+			Link secureLink = new Link(getErrorText(iwrb.getLocalizedString("travel.click_here", "CLICK HERE")), URI+"?"+iwc.getQueryString());
+			secureLink.setHttps(true);
+			form.add(getErrorText(iwrb.getLocalizedString("travel.click_here_to_switch_to_secure_mode","You are not using our secure form. To switch to secure mode please")+" "));
+			form.add(secureLink);
+		}
 
 		setupPresentation();
 		form.add(formTable);
