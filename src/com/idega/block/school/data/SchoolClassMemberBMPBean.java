@@ -9,7 +9,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOCompositPrimaryKeyException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOException;
@@ -534,7 +534,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 					
 			return idoGetNumberOfRecords(query);
-		} catch (IDOCompositPrimaryKeyException e) {
+		} catch (IDOCompositePrimaryKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 

@@ -12,7 +12,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.data.IDOCompositPrimaryKeyException;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOException;
@@ -133,7 +133,7 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			System.out.println("SQL -> "+this.getClass()+":"+query);
 			return idoFindPKsByQuery(query); 
 		  	
-		} catch (IDOCompositPrimaryKeyException e) {
+		} catch (IDOCompositePrimaryKeyException e) {
 			e.printStackTrace();
 			return ListUtil.getEmptyList();
 		}
@@ -265,7 +265,7 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			return idoFindPKsByQuery(query);
 			//Temp debug
 			//return idoFindPKsByQuery(query,100);
-		} catch (IDOCompositPrimaryKeyException e) {
+		} catch (IDOCompositePrimaryKeyException e) {
 			e.printStackTrace();
 		} 
 		return ListUtil.getEmptyList();
