@@ -89,14 +89,14 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
         logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_out.gif"));
-    }
-    catch (Exception ex) {
+      }
+      catch (Exception ex) {
         ex.printStackTrace(System.err);
-    }
-
+      }
+/*
     userPanel = new Panel();
     userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-    add(userPanel);
+    add(userPanel);*/
 
   }
 
@@ -346,7 +346,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
 
-      /*SingleLineItem item = new SingleLineItem(this);
+      SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
@@ -360,7 +360,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       userPanel.add(item);
       userPanel.repaint();
       item.repaint();
-      repaint();*/
+      repaint();
 
   }
 
@@ -397,16 +397,135 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     System.out.println("MessengerApplet: action command was :"+action);
     //debug
-    Component[] comps = getComponents();
+  /*  Component[] comps = getComponents();
     for (int i = 0; i < comps.length; i++) {
         comps[i].repaint();
-    }
+    }*/
 
 
     repaint();
   }
 
-      /*
+  /**
+   *  Reads a text response from the servlet.
+   */
+  protected void readServletResponse(URLConnection servletConnection)
+  {
+      BufferedReader inFromServlet = null;
+
+      try
+      {
+              // now, let's read the response from the servlet.
+              // this is simply a confirmation string
+              inFromServlet = new BufferedReader(new InputStreamReader(servletConnection.getInputStream()));
+
+          String str;
+          while (null != ((str = inFromServlet.readLine())))
+          {
+              System.out.println("Reading servlet response: " + str);
+          }
+
+          inFromServlet.close();
+      }
+      catch (IOException e)
+      {
+        System.out.println(e.toString());
+      }
+  }
+
+
+  /*public void update(Graphics g){
+    super.paint(g);
+    g.drawString("test",150,150);
+    System.out.println("IN UPDATE");
+  }
+
+  public void paint(Graphics g){
+  //use the update method
+  }*/
+
+
+
+  /**Start the applet*/
+  public void start() {
+    runThread = true;
+
+    if ( t == null ){
+      t = new Thread(this);
+      t.start();
+    }
+
+    if(cycler==null){
+     cycler = new MessageListener(this,checkTimer);
+    }
+
+    cycler.start();
+
+    run();
+
+
+
+  }
+  /**Stop the applet*/
+  public void stop() {
+    if ( t != null ){
+      runThread = false;
+    }
+
+    if(cycler!=null){
+     cycler.stop();
+    }
+
+  }
+
+  /**Destroy the applet*/
+  public void destroy() {
+    stop();
+    Graphics g = getGraphics();
+    if(g != null) {
+        g.dispose(); // crucial
+        g = null;
+    }
+
+    t=null;
+
+    if(cycler!=null){
+     cycler.destroy();
+    }
+
+    dialogs.clear();
+    dialogs=null;
+/**@todo travers through hashtable and do this
+      messageDialog.setVisible(false);
+      messageDialog.cancel();
+      messageDialog.dispose();
+      messageDialog = null;
+*/
+  }
+
+  /**Get Applet information*/
+  public String getAppletInfo() {
+    return FRAME_NAME;
+  }
+
+
+  /**Get a parameter value*/
+  public String getParameter(String key, String def) {
+    return (getParameter(key) != null ? getParameter(key) : def);
+  }
+
+  /**Get parameter info*/
+  public String[][] getParameterInfo() {
+    String[][] pinfo =
+      {
+      {"session_id", "String", "The users sessionId"},
+      {"user_id", "String", "The users memberId"},
+      {"servlet_url", "String", "The clientServers url"},
+      };
+    return pinfo;
+  }
+
+        /*
   public boolean keyDown(Event e, int key){
 
     switch (key) {
@@ -511,125 +630,5 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     return true;
   }
 */
-
-
-  /**
-   *  Reads a text response from the servlet.
-   */
-  protected void readServletResponse(URLConnection servletConnection)
-  {
-      BufferedReader inFromServlet = null;
-
-      try
-      {
-              // now, let's read the response from the servlet.
-              // this is simply a confirmation string
-              inFromServlet = new BufferedReader(new InputStreamReader(servletConnection.getInputStream()));
-
-          String str;
-          while (null != ((str = inFromServlet.readLine())))
-          {
-              System.out.println("Reading servlet response: " + str);
-          }
-
-          inFromServlet.close();
-      }
-      catch (IOException e)
-      {
-        System.out.println(e.toString());
-      }
-  }
-
-
-  /*public void update(Graphics g){
-    super.paint(g);
-    g.drawString("test",150,150);
-    System.out.println("IN UPDATE");
-  }
-
-  public void paint(Graphics g){
-  //use the update method
-  }*/
-
-
-
-  /**Start the applet*/
-  public void start() {
-    runThread = true;
-
-    if ( t == null ){
-      t = new Thread(this);
-      t.start();
-    }
-
-    run();
-
-
-    if(cycler==null){
-     cycler = new MessageListener(this,checkTimer);
-    }
-
-    cycler.start();
-
-
-  }
-  /**Stop the applet*/
-  public void stop() {
-    if ( t != null ){
-      runThread = false;
-    }
-
-    if(cycler!=null){
-     cycler.stop();
-    }
-
-  }
-
-  /**Destroy the applet*/
-  public void destroy() {
-    stop();
-    Graphics g = getGraphics();
-    if(g != null) {
-        g.dispose(); // crucial
-        g = null;
-    }
-
-    t=null;
-
-    if(cycler!=null){
-     cycler.destroy();
-    }
-
-    dialogs.clear();
-    dialogs=null;
-/**@todo travers through hashtable and do this
-      messageDialog.setVisible(false);
-      messageDialog.cancel();
-      messageDialog.dispose();
-      messageDialog = null;
-*/
-  }
-
-  /**Get Applet information*/
-  public String getAppletInfo() {
-    return FRAME_NAME;
-  }
-
-
-  /**Get a parameter value*/
-  public String getParameter(String key, String def) {
-    return (getParameter(key) != null ? getParameter(key) : def);
-  }
-
-  /**Get parameter info*/
-  public String[][] getParameterInfo() {
-    String[][] pinfo =
-      {
-      {"session_id", "String", "The users sessionId"},
-      {"user_id", "String", "The users memberId"},
-      {"servlet_url", "String", "The clientServers url"},
-      };
-    return pinfo;
-  }
 
 }
