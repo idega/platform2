@@ -4,6 +4,7 @@
 package is.idega.idegaweb.member.business;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -136,6 +137,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
 			    if (groupsRecursiveFilter != null && groupsRecursiveFilter.equals("checked")) {
 				    groups = getGroupBusiness().getChildGroupsRecursiveResultFiltered(group, groupTypesFilter, true);
 				} else {
+				    groups = new ArrayList();
 				    groups.add(group);
 				}
 			}
