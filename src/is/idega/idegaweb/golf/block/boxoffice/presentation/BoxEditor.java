@@ -3,8 +3,11 @@ package is.idega.idegaweb.golf.block.boxoffice.presentation;
 import is.idega.idegaweb.golf.block.boxoffice.data.Content;
 import is.idega.idegaweb.golf.block.boxoffice.data.Issues;
 import is.idega.idegaweb.golf.block.boxoffice.data.IssuesCategory;
+import is.idega.idegaweb.golf.block.boxoffice.data.IssuesCategoryHome;
+import is.idega.idegaweb.golf.block.boxoffice.data.IssuesHome;
 import is.idega.idegaweb.golf.block.boxoffice.data.IssuesIssuesCategory;
 import is.idega.idegaweb.golf.block.boxoffice.data.Subject;
+import is.idega.idegaweb.golf.block.boxoffice.data.SubjectHome;
 import is.idega.idegaweb.golf.block.file.data.FileEntity;
 import is.idega.idegaweb.golf.block.file.data.FileEntityHome;
 
@@ -15,6 +18,7 @@ import javax.ejb.FinderException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -132,10 +136,10 @@ public BoxEditor(boolean isAdmin){
 			subject_id = Integer.parseInt(subject_id2);
 		}
 
-		Subject subject = new Subject();
+		Subject subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).createLegacy();
 
 		if ( subject_id != -1 ) {
-			subject = new Subject(subject_id);
+			subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(subject_id);
 		}
 
 		outerTable = new Table(1,3);
@@ -317,9 +321,9 @@ public BoxEditor(boolean isAdmin){
 
                 String subject_author = request.getParameter("subject_author");
 
-		Subject subject = new Subject();
+		Subject subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).createLegacy();
 
-		if ( update ) { subject = new Subject(Integer.parseInt(subject_id)); }
+		if ( update ) { subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(Integer.parseInt(subject_id)); }
 
 		subject.setIssueId( Integer.parseInt(issue_id) );
 		subject.setIssueCategoryId( Integer.parseInt(issue_category_id) );
@@ -363,7 +367,7 @@ public BoxEditor(boolean isAdmin){
 
 		String subject_id = modinfo.getRequest().getParameter("subject_id");
 
-		Subject subject = new Subject(Integer.parseInt(subject_id));
+		Subject subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(Integer.parseInt(subject_id));
 
 		outerTable = new Table(1,3);
 			outerTable.setCellpadding(3);
@@ -391,7 +395,7 @@ public BoxEditor(boolean isAdmin){
 
 		String subject_id = modinfo.getRequest().getParameter("subject_id");
 
-		Subject subject = new Subject(Integer.parseInt(subject_id));
+		Subject subject = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(Integer.parseInt(subject_id));
 
 		subject.delete();
 
@@ -411,7 +415,7 @@ public BoxEditor(boolean isAdmin){
 
 	private DropdownMenu createContentMenu(int subject_id) throws IOException,SQLException {
 
-		Content[] content = (Content[]) (new Content()).findAllOrdered("content_id");
+		Content[] content = (Content[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(Content.class)).findAllOrdered("content_id");
 
 		DropdownMenu content_menu = new DropdownMenu("content_id");
 
@@ -421,7 +425,7 @@ public BoxEditor(boolean isAdmin){
 		}
 
 		if ( update ) {
-			content_menu.setSelectedElement(String.valueOf(new Subject(subject_id).getContentId()));
+			content_menu.setSelectedElement(String.valueOf(((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(subject_id).getContentId()));
 		}
 
 		return content_menu;
@@ -437,13 +441,13 @@ public BoxEditor(boolean isAdmin){
 
 		if ( isGolf ) {
 
-			issue_menu.addMenuElement(String.valueOf(unionID),new Issues(unionID).getIssueName());
+			issue_menu.addMenuElement(String.valueOf(unionID),((IssuesHome)IDOLookup.getHomeLegacy(Issues.class)).findByPrimaryKeyLegacy(unionID).getIssueName());
 
 		}
 
 		else {
 
-			Issues[] issues = (Issues[]) (new Issues()).findAll();
+			Issues[] issues = (Issues[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(Issues.class)).findAll();
 
 			for ( int a = 0; a < issues.length; a++ ) {
 
@@ -455,7 +459,7 @@ public BoxEditor(boolean isAdmin){
 		}
 
 		if ( update ) {
-			issue_menu.setSelectedElement(String.valueOf(new Subject(subject_id).getIssueId()));
+			issue_menu.setSelectedElement(String.valueOf(((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(subject_id).getIssueId()));
 		}
 
 		return issue_menu;
@@ -471,11 +475,11 @@ public BoxEditor(boolean isAdmin){
 
 		if ( isGolf ) {
 
-			IssuesIssuesCategory[] issues_category = (IssuesIssuesCategory[]) (new IssuesIssuesCategory()).findAllByColumn("issue_id",String.valueOf(unionID));
+			IssuesIssuesCategory[] issues_category = (IssuesIssuesCategory[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(IssuesIssuesCategory.class)).findAllByColumn("issue_id",String.valueOf(unionID));
 
 			for ( int a = 0; a < issues_category.length; a++ ) {
 
-				category_menu.addMenuElement(issues_category[a].getIssueCategoryId(),new IssuesCategory(issues_category[a].getIssueCategoryId()).getCategoryName());
+				category_menu.addMenuElement(issues_category[a].getIssueCategoryId(),((IssuesCategoryHome)IDOLookup.getHomeLegacy(IssuesCategory.class)).findByPrimaryKeyLegacy(issues_category[a].getIssueCategoryId()).getCategoryName());
 			}
 
 				category_menu.setSelectedElement(issue_category_id);
@@ -483,7 +487,7 @@ public BoxEditor(boolean isAdmin){
 
 		else {
 
-			IssuesCategory[] issues_category = (IssuesCategory[]) (new IssuesCategory()).findAll();
+			IssuesCategory[] issues_category = (IssuesCategory[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(IssuesCategory.class)).findAll();
 
 			for ( int a = 0; a < issues_category.length; a++ ) {
 
@@ -494,7 +498,7 @@ public BoxEditor(boolean isAdmin){
 		}
 
 		if ( update ) {
-			category_menu.setSelectedElement(String.valueOf(new Subject(subject_id).getIssueCategoryId()));
+			category_menu.setSelectedElement(String.valueOf(((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(subject_id).getIssueCategoryId()));
 		}
 
 		return category_menu;

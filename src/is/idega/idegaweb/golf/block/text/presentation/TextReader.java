@@ -17,7 +17,7 @@ public class TextReader extends Block{
 
 private String text_id = null;
 private boolean isAdmin=false;
-private TextModule text;
+private TextModuleBMPBean text;
 private Table myTable = new Table(2,2);
 private String adminURL = "/text/textadmin.jsp";
 
@@ -44,7 +44,7 @@ public TextReader(String text_id){
 	this.text_id=text_id;
   //eiki
   try{
-    text = new TextModule(Integer.parseInt(text_id));
+    text = new TextModuleBMPBean(Integer.parseInt(text_id));
   }
   catch(SQLException e){
 
@@ -55,7 +55,7 @@ public TextReader(int text_id){
   this.text_id = String.valueOf(text_id);
   //eiki
   try{
-    text = new TextModule(text_id);
+    text = new TextModuleBMPBean(text_id);
   }
   catch(SQLException e){
 
@@ -98,7 +98,7 @@ public void main(IWContext modinfo) throws Exception {
 
 		else {
 //EIKI þetta mætti allt hreinsa til og gera þennan hlut í constructornum
-			text = new TextModule(Integer.parseInt(text_id));
+			text = new TextModuleBMPBean(Integer.parseInt(text_id));
 
 			textTable();
 			add(myTable);
@@ -207,7 +207,7 @@ public void main(IWContext modinfo) throws Exception {
 
 	public void noTextID() throws IOException,SQLException {
 
-		TextModule[] texts = (TextModule[]) (new TextModule()).findAll();
+		TextModuleBMPBean[] texts = (TextModuleBMPBean[]) (new TextModuleBMPBean()).findAll();
 
 		myTable = new Table(2,texts.length+1);
 			myTable.mergeCells(1,1,2,1);

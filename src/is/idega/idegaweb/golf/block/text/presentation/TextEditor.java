@@ -1,6 +1,6 @@
 package is.idega.idegaweb.golf.block.text.presentation;
 
-import is.idega.idegaweb.golf.block.text.data.TextModule;
+import is.idega.idegaweb.golf.block.text.data.TextModuleBMPBean;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -113,10 +113,10 @@ public TextEditor(boolean isAdmin){
 			text_id = Integer.parseInt(text_id2);
 		}
 
-		TextModule text = new TextModule();
+		TextModuleBMPBean text = new TextModuleBMPBean();
 
 		if ( text_id != -1 ) {
-			text = new TextModule(text_id);
+			text = new TextModuleBMPBean(text_id);
 		}
 
 		HttpSession Session = modinfo.getSession();
@@ -218,9 +218,9 @@ public TextEditor(boolean isAdmin){
 
 		IWTimestamp date = new IWTimestamp();
 
-		TextModule text = new TextModule();
+		TextModuleBMPBean text = new TextModuleBMPBean();
 
-		if ( update ) { text = new TextModule(Integer.parseInt(text_id)); }
+		if ( update ) { text = new TextModuleBMPBean(Integer.parseInt(text_id)); }
 
 		text.setTextHeadline( text_headline );
 		text.setTextBody( text_body );
@@ -243,7 +243,7 @@ public TextEditor(boolean isAdmin){
 
 		String text_id = modinfo.getRequest().getParameter("text_id");
 
-		TextModule text = new TextModule(Integer.parseInt(text_id));
+		TextModuleBMPBean text = new TextModuleBMPBean(Integer.parseInt(text_id));
 
 		//outerTable = new Table(1,2);
 			outerTable.setCellpadding(3);
@@ -271,7 +271,7 @@ public TextEditor(boolean isAdmin){
 
 		String text_id = modinfo.getRequest().getParameter("text_id");
 
-		TextModule text = new TextModule(Integer.parseInt(text_id));
+		TextModuleBMPBean text = new TextModuleBMPBean(Integer.parseInt(text_id));
 
 		text.delete();
 

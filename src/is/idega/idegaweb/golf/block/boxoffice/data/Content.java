@@ -1,60 +1,13 @@
-//idega 2000 - Laddi
-
 package is.idega.idegaweb.golf.block.boxoffice.data;
 
-import java.sql.*;
-import com.idega.data.*;
 
-public class Content extends GenericEntity{
-
-	public Content(){
-		super();
-	}
-
-	public Content(int id)throws SQLException{
-		super(id);
-	}
-
-	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-		addAttribute("content_value", "Flokkur", true, true, "java.lang.String");
-		addAttribute("image_id", "ImageID", true, true, "java.lang.Integer");
-	}
-
-	public String getIDColumnName(){
-		return "content_id";
-	}
-
-	public String getEntityName(){
-		return "Content";
-	}
-
-	public String getValue(){
-		return getContentValue();
-	}
-
-	public String getName(){
-		return getContentValue();
-	}
-
-	public String getContentValue(){
-		return getStringColumnValue("content_value");
-	}
-
-	public void setContentValue(String content_value){
-			setColumn("content_value", content_value);
-	}
-
-	public int getImageId(){
-		return getIntColumnValue("image_id");
-	}
-
-	public void setImageId(Integer image_id){
-			setColumn("image_id", image_id);
-	}
-
-	public void setImageId(int image_id){
-			setColumn("image_id", image_id);
-	}
-
+public interface Content extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.String getContentValue();
+ public int getImageId();
+ public java.lang.String getName();
+ public java.lang.String getValue();
+ public void setContentValue(java.lang.String p0);
+ public void setImageId(int p0);
+ public void setImageId(java.lang.Integer p0);
 }

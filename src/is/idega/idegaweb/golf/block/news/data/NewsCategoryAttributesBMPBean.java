@@ -10,7 +10,6 @@ public class NewsCategoryAttributesBMPBean extends GenericEntity{
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
-		//addAttribute("news_category_id","Category",true,true, "java.lang.Integer","many-to-one","com.idega.jmodule.image.data.ImageCatagory");
     addManyToOneRelationship("news_category_id", NewsCategory.class);
                 addAttribute("attribute_name","Attribute Name",true,true, "java.lang.String");
                 addAttribute("attribute_id","Attribute Id",true,true, "java.lang.Integer");

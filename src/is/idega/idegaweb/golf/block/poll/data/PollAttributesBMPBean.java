@@ -19,9 +19,9 @@ public class PollAttributesBMPBean extends GenericEntity implements PollAttribut
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
-		addAttribute("poll_id","númer auglýsingu",true,true, "java.lang.Integer","one-to-many","com.idega.jmodule.poll.data.Poll");
-                addAttribute("attribute_name","nafn einkennis",true,true, "java.lang.String");
-                addAttribute("attribute_id","númer einkennis",true,true, "java.lang.Integer");
+		addAttribute("poll_id","númer auglýsingu",true,true, Integer.class,"one-to-many",Poll.class);
+                addAttribute("attribute_name","nafn einkennis",true,true, String.class);
+                addAttribute("attribute_id","númer einkennis",true,true, Integer.class);
 
         }
 

@@ -2,8 +2,11 @@ package is.idega.idegaweb.golf.block.boxoffice.presentation;
 
 import is.idega.idegaweb.golf.block.boxoffice.data.Issues;
 import is.idega.idegaweb.golf.block.boxoffice.data.IssuesCategory;
+import is.idega.idegaweb.golf.block.boxoffice.data.IssuesCategoryHome;
+import is.idega.idegaweb.golf.block.boxoffice.data.IssuesHome;
 import is.idega.idegaweb.golf.block.boxoffice.data.IssuesIssuesCategory;
 import is.idega.idegaweb.golf.block.boxoffice.data.Subject;
+import is.idega.idegaweb.golf.block.boxoffice.data.SubjectHome;
 import is.idega.idegaweb.golf.block.news.data.NewsBMPBean;
 
 import java.io.IOException;
@@ -12,6 +15,8 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpSession;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -142,7 +147,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 			}
 
 		if ( issue_id == null ) {
-			issues = (Issues[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.Issues")).findAll();
+			issues = (Issues[]) (GenericEntity.getStaticInstance(Issues.class)).findAll();
 
 			if ( isAdmin ) {
 
@@ -155,7 +160,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 
 			if ( issues.length > 0 ) {
 				// Ná í fjölda flokka undir þessum málaflokki;
-				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesCategory")).findAllByColumnOrdered("issue_id",String.valueOf(issues[0].getID()),"issue_category_id");
+				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance(IssuesCategory.class)).findAllByColumnOrdered("issue_id",String.valueOf(issues[0].getID()),"issue_category_id");
 
 				// Búa til töflu
 				createBoxTable(numberOfColumns);
@@ -183,7 +188,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 			}
 
 			if ( boxOnly ) {
-				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
+				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance(IssuesIssuesCategory.class)).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
 				// Búa til töflu
 				createBoxTable(numberOfColumns);
 				// Setja töflu í síðu
@@ -191,19 +196,19 @@ public BoxReader(String issue_id, int numberOfColumns){
 			}
 			else {
 				if ( (issue_category_id != null) && (subject_id == null) ) {
-					issues_category = new IssuesCategory(Integer.parseInt(issue_category_id));
-					subject = (Subject[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.Subject")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
+					issues_category = ((IssuesCategoryHome)IDOLookup.getHomeLegacy(IssuesCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(issue_category_id));
+					subject = (Subject[]) (GenericEntity.getStaticInstance(Subject.class)).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
 					createCategoryTable(issue_category_id);
 					add(myTable);
 				}
 				else if ( (subject_id != null) && (issue_category_id == null) ) {
-					subject2 = new Subject(Integer.parseInt(subject_id));
+					subject2 = ((SubjectHome)IDOLookup.getHomeLegacy(Subject.class)).findByPrimaryKeyLegacy(Integer.parseInt(subject_id));
 					createSubjectTable();
 					add(myTable);
 				}
 				else if ( subject_id == null && issue_category_id == null ) {
 					// Ná í fjölda flokka undir þessum málaflokki;
-					categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
+					categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance(IssuesIssuesCategory.class)).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
 					// Búa til töflu
 					createBoxTable(numberOfColumns);
 					// Setja töflu í síðu
@@ -327,7 +332,7 @@ public BoxReader(String issue_id, int numberOfColumns){
 
 	public String getIssueName() throws IOException,SQLException {
            if( (issue_id!=null) && (!issue_id.equalsIgnoreCase("")) ){
-            Issues issues = new Issues(Integer.parseInt(issue_id));
+            Issues issues = ((IssuesHome)IDOLookup.getHomeLegacy(Issues.class)).findByPrimaryKeyLegacy(Integer.parseInt(issue_id));
             return issues.getIssueName();
            }
            else return "";
@@ -753,8 +758,8 @@ public BoxReader(String issue_id, int numberOfColumns){
 
                 if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) {
 
-		Subject[] subject = (Subject[]) (new Subject()).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
-		IssuesCategory issueCategory = new IssuesCategory(Integer.parseInt(issue_category_id));
+		Subject[] subject = (Subject[]) ((IDOLegacyEntity)IDOLookup.instanciateEntity(Subject.class)).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
+		IssuesCategory issueCategory = ((IssuesCategoryHome)IDOLookup.getHomeLegacy(IssuesCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(issue_category_id));
 
                 if ( issueCategory!=null  ) issueName = issueCategory.getName();
 
