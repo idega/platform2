@@ -71,15 +71,15 @@ public PollAdminWindow(){
       _userID = -1;
     }
 
-    editImage = iwrb.getImage("edit.gif");
-      editImage.setHorizontalSpacing(4);
-      editImage.setVerticalSpacing(3);
+    editImage = iwb.getImage("shared/edit.gif");
+      editImage.setHorizontalSpacing(1);
+      editImage.setVerticalSpacing(0);
     createImage = iwrb.getImage("create.gif");
       createImage.setHorizontalSpacing(4);
       createImage.setVerticalSpacing(3);
-    deleteImage = iwrb.getImage("delete.gif");
-      deleteImage.setHorizontalSpacing(4);
-      deleteImage.setVerticalSpacing(3);
+    deleteImage = iwb.getImage("shared/delete.gif");
+      deleteImage.setHorizontalSpacing(1);
+      deleteImage.setVerticalSpacing(0);
 
     String sLocaleId = iwc.getParameter(prmLocale);
 
@@ -259,15 +259,15 @@ public PollAdminWindow(){
       questionDeleteLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
       questionDeleteLink.addParameter(PollBusiness._PARAMETER_DELETE,PollBusiness._PARAMETER_TRUE);
 
-    Table questionTable = new Table(2,2);
+    Table questionTable = new Table(3,1);
       questionTable.setCellpadding(0);
       questionTable.setCellspacing(0);
-      questionTable.mergeCells(1,1,2,1);
       questionTable.add(questionText,1,1);
       if ( pollQuestionID != -1 && _pollQuestion != null ) {
         if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
-          questionTable.add(questionEditLink,1,2);
-          questionTable.add(questionDeleteLink,2,2);
+          questionTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,1);
+          questionTable.add(questionEditLink,3,1);
+          questionTable.add(questionDeleteLink,3,1);
         }
       }
 
@@ -291,7 +291,8 @@ public PollAdminWindow(){
           answerTable.add("<li>",1,row);
           answerTable.add(formatText(pollAnswers[a],true),1,row);
           if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
-            answerTable.add(editAnswerLink,2,row);
+            answerTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+            answerTable.add(editAnswerLink,3,row);
             answerTable.add(deleteAnswerLink,3,row);
           }
           row++;
