@@ -717,11 +717,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 		
 		String[] posting = new String[]{"",""};
-		String postingError = null;
+		PostingException postingException = null;
 		try{
 			posting = searchPanel.getPosting();
 		}catch (PostingException ex){
-			postingError = ex.getMessage();
+			postingException = ex;
 		}
 		if (reg != null){
 			entry = getNotStoredEntry(iwc, reg, posting);
@@ -783,8 +783,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			table.add(getErrorText((String) errorMessages.get(ERROR_POSTING)), 2, row++);			
 		} else if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
-		} else if (postingError != null){
-			table.add(getErrorText(postingError), 2, row++);				
+		} else if (postingException != null){
+			table.add(getLocalizedException(postingException), 2, row++);				
 		}
 		
 		table.mergeCells(1, row, 10, row);
