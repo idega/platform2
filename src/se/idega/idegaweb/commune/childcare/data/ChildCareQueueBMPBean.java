@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.2 2003/04/14 10:12:44 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.3 2003/04/15 15:17:40 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 public class ChildCareQueueBMPBean extends AbstractCaseBMPBean 
-	implements ChildCareQueue,	Case {
+	implements ChildCareQueue,Case {
 	private final static String ENTITY_NAME = "comm_childcare_queue";
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Queue for child care";
@@ -48,6 +48,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	protected final static String SCHOOL_AREA_ID = "school_area_id";
 	protected final static String QUEUE_DATE = "queue_date";
 	protected final static String START_DATE = "start_date";
+	protected final static String QUEUE_TYPE = "queue_type";
 
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
@@ -89,6 +90,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		addAttribute(SCHOOL_AREA_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,SchoolArea.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(START_DATE,"",true,true,java.sql.Date.class);
+		addAttribute(QUEUE_TYPE,"",true,true,java.lang.Integer.class);
 		//TODO cleanup code not needed
 /*		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
@@ -146,7 +148,10 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		return (Date)getColumnValue(START_DATE);	
 	}
 	
-
+	public int getQueueType() {
+		return getIntColumnValue(QUEUE_TYPE);
+	}
+	
 
 	public void setContractId(int id) {
 		setColumn(CONTRACT_ID,id);	
@@ -192,6 +197,10 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		setColumn(START_DATE,sDate);	
 	}
 
+	public void setQueueType(int type) {
+		setColumn(QUEUE_TYPE,type);	
+	}
+	
 	//TODO update these to sokmething usefull
 	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
 		return ejbFindQueueByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);
