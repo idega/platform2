@@ -1,6 +1,6 @@
 /*
 
- * $Id: ReferenceNumberInfo.java,v 1.8 2002/02/28 16:47:14 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.9 2002/03/01 14:05:51 aron Exp $
 
  *
 
@@ -561,10 +561,12 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
       debug("Handling display of ssn lookup "+iwc.getParameter("cam_ref_number"));
       java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
 
-      if (li == null ){
+      if (li == null || li.size() == 0 ){
           add(new Text("Það er enginn notandi skráður á þessa kennitölu "));
       }
-      else if(li.size() == 1){
+      else{
+
+        if(li.size() == 1){
         if(iwc.isParameterSet("allow") && iwc.isParameterSet("usrid")){
           clearLoginChanged( Integer.parseInt( iwc.getParameter("usrid") ) ) ;
             add(new Text("Opnað aftur fyrir kennitölu"));
@@ -572,126 +574,64 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
         else{
            add(new Text("Það er  búið að ná í lykilorð fyrir kennitölu"));
             if( iwc.hasEditPermission(this) ){
-            Form f = new Form();
-            f.add(new SubmitButton("allow","Leyfa innskráningu á ný"));
-            f.addParameter("usrid",((Integer)li.get(0)).intValue());
-            add(f);
+              Form f = new Form();
+              f.add(new SubmitButton("allow","Leyfa innskráningu á ný"));
+              f.addParameter("usrid",((Integer)li.get(0)).intValue());
+              add(f);
             }
+          }
         }
-
-
+        else if(li.size()==3){
+          String userid = (String)li.get(1);
+          String passwd = (String)li.get(2);
+          Text headerText = new Text(_iwrb.getLocalizedString("user_login","User login"));
+          headerText.setFontColor(CampusColors.WHITE);
+          headerText.setBold();
+          Text idText = new Text(_iwrb.getLocalizedString("userid","Userid"));
+          idText.setBold();
+          //add(idText);
+          //add(userid);
+          //add(Text.getBreak());
+          Text passwdText = new Text(_iwrb.getLocalizedString("password","Password"));
+          passwdText.setBold();
+          //add(passwdText);
+          //add(passwd);
+          Text msg = new Text(_iwrb.getLocalizedString("change_password","Change your password by clicking your name when logged in"));
+          Table dummyTable = new Table(3,3);
+          dummyTable.setWidth("100%");
+          dummyTable.setAlignment(2,2,"center");
+          dummyTable.setHeight(1,"100");
+          Table table = new Table();
+            table.setCellspacing(1);
+            table.setCellpadding(3);
+            table.mergeCells(1,1,2,1);
+            //table.setWidth("100%");
+            table.add(headerText,1,1);
+            table.add(idText,1,2);
+            table.add(passwdText,1,3);
+            table.add(userid,2,2);
+            table.add(passwd,2,3);
+            table.setHorizontalZebraColored(CampusColors.WHITE,CampusColors.LIGHTGREY);
+            table.setColumnColor(1,CampusColors.DARKGREY);
+            table.setColor(1,1,CampusColors.DARKBLUE);
+            table.setColumnVerticalAlignment(1,"top");
+            table.setColumnVerticalAlignment(2,"top");
+            table.mergeCells(1,4,2,4);
+            Image image = table.getTransparentCell(iwc);
+            image.setHeight(6);
+            table.add(image,1,4);
+            table.setColor(1,4,CampusColors.DARKRED);
+            table.mergeCells(1,5,2,5);
+            table.add(msg,1,5);
+            table.setRowColor(5,CampusColors.WHITE);
+          dummyTable.add(table,2,2);
+          add(dummyTable);
+          iwc.removeSessionAttribute("DUMMY_LOGIN");
+          iwc.removeSessionAttribute("referenceNumber");
+        }
       }
-
-      else if(li.size()==3){
-
-        String userid = (String)li.get(1);
-
-        String passwd = (String)li.get(2);
-
-        Text headerText = new Text(_iwrb.getLocalizedString("user_login","User login"));
-
-        headerText.setFontColor(CampusColors.WHITE);
-
-        headerText.setBold();
-
-        Text idText = new Text(_iwrb.getLocalizedString("userid","Userid"));
-
-        idText.setBold();
-
-        //add(idText);
-
-        //add(userid);
-
-        //add(Text.getBreak());
-
-        Text passwdText = new Text(_iwrb.getLocalizedString("password","Password"));
-
-        passwdText.setBold();
-
-        //add(passwdText);
-
-        //add(passwd);
-
-        Text msg = new Text(_iwrb.getLocalizedString("change_password","Change your password by clicking your name when logged in"));
-
-
-
-        Table dummyTable = new Table(3,3);
-
-        dummyTable.setWidth("100%");
-
-        dummyTable.setAlignment(2,2,"center");
-
-        dummyTable.setHeight(1,"100");
-
-
-
-        Table table = new Table();
-
-          table.setCellspacing(1);
-
-          table.setCellpadding(3);
-
-          table.mergeCells(1,1,2,1);
-
-          //table.setWidth("100%");
-
-
-
-          table.add(headerText,1,1);
-
-          table.add(idText,1,2);
-
-          table.add(passwdText,1,3);
-
-          table.add(userid,2,2);
-
-          table.add(passwd,2,3);
-
-
-
-          table.setHorizontalZebraColored(CampusColors.WHITE,CampusColors.LIGHTGREY);
-
-          table.setColumnColor(1,CampusColors.DARKGREY);
-
-          table.setColor(1,1,CampusColors.DARKBLUE);
-
-          table.setColumnVerticalAlignment(1,"top");
-
-          table.setColumnVerticalAlignment(2,"top");
-
-          table.mergeCells(1,4,2,4);
-
-          Image image = table.getTransparentCell(iwc);
-
-          image.setHeight(6);
-
-          table.add(image,1,4);
-
-          table.setColor(1,4,CampusColors.DARKRED);
-
-          table.mergeCells(1,5,2,5);
-
-          table.add(msg,1,5);
-
-          table.setRowColor(5,CampusColors.WHITE);
-
-
-
-        dummyTable.add(table,2,2);
-
-        add(dummyTable);
-
-        iwc.removeSessionAttribute("DUMMY_LOGIN");
-
-        iwc.removeSessionAttribute("referenceNumber");
-
-      }
-
     }
-
   }
-
 
 
   /**
@@ -739,6 +679,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
    */
 
   public void main(IWContext iwc) {
+    debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     control(iwc);
   }
