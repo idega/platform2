@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.data.EntityControl;
 import com.idega.data.GenericEntity;
@@ -72,7 +73,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		String pathElement = (String) pathElements.get(listIndex);
 		String sourcePath = targetPath;
 		// new target 
-		targetPath = new StringBuffer(targetPath).append("#").append(pathElement).toString();
+		targetPath = new StringBuffer(targetPath).append(QueryConstants.ENTITY_PATH_DELIMITER).append(pathElement).toString();
 		IDOEntityDefinition targetDefinition =
 			lookForTargetEntityAmongManyToManyRelations(sourceDefinition, pathElement);
 		if (targetDefinition == null)	{
