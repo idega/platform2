@@ -264,17 +264,28 @@ public class FieldOverview extends GolfBlock {
 		contentTable.setHeight(row, 40);
 		contentTable.add(formTable, 1, row++);
 		contentTable.add(myTable, 1, row++);
+		
+		Table infoTable = new Table();
+		infoTable.setCellpadding(0);
+		infoTable.setCellspacing(0);
+		infoTable.setWidth(Table.HUNDRED_PERCENT);
+		contentTable.add(infoTable, 1, row);
+		int column = 1;
+
+		contentTable.setCellpaddingLeft(1,row,"10%");
+		contentTable.setCellpaddingRight(1,row,"10%");
+		contentTable.setCellpaddingBottom(1,row,25);
+		contentTable.setCellpaddingTop(1,row,10);
 
 		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
 		if (fieldImage.length != 0) {
 			Image fieldMynd = new Image(fieldImage[0].getImageID());
 			fieldMynd.setHorizontalSpacing(6);
-			fieldMynd.setAlignment(Image.ALIGNMENT_LEFT);
 			if (iMaxImageWidth > 0) {
 				fieldMynd.setMaxImageWidth(iMaxImageWidth);
 			}
 
-			contentTable.add(fieldMynd, 1, row);
+			infoTable.add(fieldMynd, column++, 1);
 		}
 
 		TextReader fieldText = null;
@@ -293,12 +304,8 @@ public class FieldOverview extends GolfBlock {
 		}
 
 		if (fieldText != null) {
-			contentTable.add(fieldText, 1, row);
+			infoTable.add(fieldText, column, 1);
 		}
-		contentTable.setCellpaddingLeft(1,row,"10%");
-		contentTable.setCellpaddingRight(1,row,"10%");
-		contentTable.setCellpaddingBottom(1,3,25);
-		contentTable.setCellpaddingTop(1,3,10);
 	}
 
 	public Form getHoleChooser(String field_id) throws IOException {
@@ -318,7 +325,10 @@ public class FieldOverview extends GolfBlock {
 		}
 
 		Table myTable = new Table();
-		myTable.setAlignment("right");
+		myTable.setCellpadding(0);
+		myTable.setCellspacing(0);
+		myTable.setCellpaddingRight(1, 1, 5);
+		myTable.setCellpaddingRight(2, 1, 5);
 
 		Text holeText = new Text(getResourceBundle().getLocalizedString("field.select_hole", "Select hole"));
 		holeText.setBold();
