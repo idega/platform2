@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleReportBusinessBean.java,v 1.2 2004/10/13 10:47:40 gummi Exp $
+ * $Id: SimpleReportBusinessBean.java,v 1.3 2004/10/14 09:09:28 sigtryggur Exp $
  * Created on 21.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.business.IBOServiceBean;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/13 10:47:40 $ by $Author: gummi $
+ *  Last modified: $Date: 2004/10/14 09:09:28 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleReportBusiness {
 
@@ -49,7 +49,13 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 			nameOfReport = "Report";
 		}
 		HSSFWorkbook wb = new HSSFWorkbook();
-	    HSSFSheet sheet = wb.createSheet(nameOfReport);
+		HSSFSheet sheet = null;
+		if (nameOfReport.length() > 31) {
+	        sheet = wb.createSheet(nameOfReport.substring(0,31));
+		} 
+	    else {
+	        sheet = wb.createSheet(nameOfReport);
+	    }
 	    int rowIndex = 0;
 
 	    
