@@ -26,7 +26,8 @@ public class CalendarWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#getButtonImage(com.idega.presentation.IWContext)
 	 */
 	public Image getButtonImage(IWContext iwc) {
-		return null;
+		IWBundle bundle = iwc.getApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		return bundle.getImage("cal_icon.gif");
 	}
 
 	public String getName(IWContext iwc) {
