@@ -95,12 +95,7 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	}
 	private boolean processRecord(String record) throws RemoteException {
 	    record = TextSoap.findAndCut(record, "-");
-		try {
-		    record = TextSoap.removeWhiteSpace(record);
-		}
-		catch (Exception e) {
-		    System.out.println(e.getMessage());
-		}
+		record = TextSoap.removeWhiteSpace(record);
 		record = (record.length() == 9) ? "0" + record : record;
 		
 		userProperties = file.getValuesFromRecordString(record);
