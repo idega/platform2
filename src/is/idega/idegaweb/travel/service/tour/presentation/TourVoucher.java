@@ -16,6 +16,7 @@ import java.rmi.RemoteException;
  */
 
 public class TourVoucher extends Voucher{
+
   public TourVoucher(Booking booking) throws Exception{
     super(booking);
   }
@@ -26,6 +27,8 @@ public class TourVoucher extends Voucher{
   }
   protected void setupVoucher(IWContext iwc) throws RemoteException {
     IWResourceBundle iwrb = super.getResourceBundle(iwc);
-    super.addToClientInfo(iwrb.getLocalizedString("travel.email_lg","E-MAIL")+" : "+_booking.getEmail());
+    super.addToClientInfo(iwrb.getLocalizedString("travel.address_lg","Address")+" : "+_booking.getAddress()+", "+_booking.getPostalCode()+" "+_booking.getCity()+", "+_booking.getCountry());
+    super.addToClientInfo(iwrb.getLocalizedString("travel.telephone_lg","Telephone number")+" : "+_booking.getTelephoneNumber());
+    super.addToClientInfo(iwrb.getLocalizedString("travel.email_lg","E-mail")+" : "+_booking.getEmail());
   }
 }

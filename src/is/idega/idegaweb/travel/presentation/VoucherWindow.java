@@ -43,7 +43,7 @@ public class VoucherWindow extends Window {
 
   public VoucherWindow() {
     super.setWidth(Voucher.width+40);
-    super.setHeight(500);
+    super.setHeight(540);
     super.setTitle("Voucher");
     super.setResizable(true);
     super.setMenubar(true);
@@ -65,8 +65,6 @@ public class VoucherWindow extends Window {
     if (sBookingId != null) {
       GeneralBooking gBooking = (GeneralBooking) ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKeyIDO(new Integer(sBookingId));
       Voucher voucher = sh.getVoucher(gBooking);
-//      Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
-//      table.add(voucher.getVoucher(iwc));
       table.add(voucher);
     }else if (searchAction != null){
       if (searchAction.equals(searchMethodReferenceNumber)) {
@@ -75,8 +73,6 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
           if (gBooking.length > 0) {
             Voucher voucher = sh.getVoucher(gBooking[0]);
-            //Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-//            table.add(voucher.getVoucher(iwc));
             table.add(voucher);
           }else {
             error = true;
@@ -90,8 +86,6 @@ public class VoucherWindow extends Window {
           GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
           if (gBooking.length > 0) {
             Voucher voucher = sh.getVoucher(gBooking[0]);
-//            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-//            table.add(voucher.getVoucher(iwc));
             table.add(voucher);
           }else {
             error = true;
