@@ -149,7 +149,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 
 	protected DropdownMenu getEmploymentTypes(String parameterName, int selectedType) throws RemoteException {
 		SelectorUtility util = new SelectorUtility();
-		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(parameterName), getBusiness().findAllEmploymentTypes(), "getLocalizationKey", getResourceBundle());
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(parameterName), getBusiness().findAllEmploymentTypes(), "getLocalizationKey", getResourceBundle()));
 		menu.addMenuElementFirst("-1", "");
 		if (selectedType != -1)
 			menu.setSelectedElement(selectedType);
