@@ -313,7 +313,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")+ personalIdUserName));
-				contentTable.add(getPlaceInGroupForm(iwc));
+				contentTable.add(getPlaceInGroupForm());
 				break;
 			case METHOD_MOVE_TO_GROUP :
 				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group")+ personalIdUserName));
@@ -333,7 +333,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_ALTER_CARE_TIME :
 				//headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
 				headerTable.add(getHeader(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.") + personalIdUserName));
-				contentTable.add(getAlterCareTimeForm(iwc));
+				contentTable.add(getAlterCareTimeForm());
 				break;
 			case METHOD_CANCEL_CONTRACT :
 				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract") + personalIdUserName));
@@ -668,7 +668,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getPlaceInGroupForm(IWContext iwc) throws RemoteException {
+	private Table getPlaceInGroupForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -780,7 +780,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getAlterCareTimeForm(IWContext iwc) throws RemoteException {
+	private Table getAlterCareTimeForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
