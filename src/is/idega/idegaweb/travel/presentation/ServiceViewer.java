@@ -263,7 +263,11 @@ public class ServiceViewer extends Window {
         //name
           Text desc = (Text) text.clone();
           desc.setText(ProductBusiness.getProductName(prod, iLocaleID));
-          content.add(desc,++x,y);
+//          content.add(desc,++x,y);
+            Link more = new Link(desc);
+            more.setWindowToOpen(ServiceViewer.class);
+            more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
+            content.add(more,++x,y);
 
         //active days
           Text days = (Text) text.clone();
@@ -280,7 +284,7 @@ public class ServiceViewer extends Window {
 
           content.add(price,++x,y);
         //Info and buy buttons
-          if( showMoreButton){
+/*          if( showMoreButton){
             iwc.setSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+prod.getID(),String.valueOf(showMoreButton));
 
             Link more = new Link(iwrb.getLocalizedString("travel.more.button","more"));
@@ -288,14 +292,13 @@ public class ServiceViewer extends Window {
             more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
             more.setAsImageButton(true);
             content.add(more,++x,y);
-          }
+          }*/
 
           if( showBuyButton){
             iwc.setSessionAttribute(IW_TRAVEL_ADD_BUY_BUTTON+prod.getID(),String.valueOf(showBuyButton));
-
             Link buy = LinkGenerator.getLink(iwc,prod.getID());
-            buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
-            buy.setAsImageButton(true);
+            buy.setImage(iwrb.getImage("buttons/book_nat.gif"));
+//            buy.setAsImageButton(true);
             content.add(buy,++x,y);
           }
 
