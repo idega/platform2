@@ -39,8 +39,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void alterValidFromDate(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.sql.Date p1,int p2,java.util.Locale p3,com.idega.user.data.User p4)throws java.rmi.RemoteException,se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException, java.rmi.RemoteException;
  public boolean assignApplication(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
  public boolean assignApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;
- public boolean assignContractToApplication(int p0,int p1,com.idega.util.IWTimestamp p2,int p3,com.idega.user.data.User p4,java.util.Locale p5,boolean p6,boolean createNewClassMember,int schoolTypeId,int schoolClassId) throws java.rmi.RemoteException;
- public boolean assignContractToApplication(int p0,int p1,com.idega.util.IWTimestamp p2,int p3,com.idega.user.data.User p4,java.util.Locale p5,boolean p6) throws java.rmi.RemoteException;
+ public boolean assignContractToApplication(int p0,int p1,int archiveID,com.idega.util.IWTimestamp p2,int p3,com.idega.user.data.User p4,java.util.Locale p5,boolean p6,boolean createNewClassMember,int schoolTypeId,int schoolClassId) throws java.rmi.RemoteException;
+ public boolean assignContractToApplication(int p0,int p1,int archiveID,com.idega.util.IWTimestamp p2,int p3,com.idega.user.data.User p4,java.util.Locale p5,boolean p6) throws java.rmi.RemoteException;
  public boolean assignContractToApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.util.Locale p2) throws java.rmi.RemoteException;
  public boolean canCancelContract(int p0) throws java.rmi.RemoteException;
  public boolean cancelContract(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,boolean p1,com.idega.util.IWTimestamp p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,com.idega.user.data.User p6) throws java.rmi.RemoteException;

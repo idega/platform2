@@ -734,7 +734,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
 		if(archive.getCareTime()>0)
 			textInput.setContent(String.valueOf(archive.getCareTime()));
-		
+		table.add(new HiddenInput("ccc_old_archive_id",archive.getPrimaryKey().toString()));
 
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
@@ -1524,6 +1524,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int schoolClassId = -1;
 		if(iwc.isParameterSet(PARAMETER_SCHOOL_CLASS))
 			schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		int oldArchiveId = -1;
+		if(iwc.isParameterSet("ccc_old_archive_id"))
+			oldArchiveId = Integer.parseInt(iwc.getParameter("ccc_old_archive_id"));
 		/*
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
@@ -1536,7 +1539,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				classMember = getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,validFrom,iwc.getCurrentUser());
 			}
 		}*/
-		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false,true,schoolTypeId,schoolClassId);
+		getBusiness().assignContractToApplication(_applicationID,oldArchiveId, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false,true,schoolTypeId,schoolClassId);
 		close();
 	}
 
@@ -1607,13 +1610,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close();
 	}
 	
 	private void createContractForBankID(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		close();
 	}
