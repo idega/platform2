@@ -1206,7 +1206,9 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 						for (int i = 0; i < startingTimes.size(); i++) {
 							sTime = (Startingtime) startingTimes.get(i);
 							sTime.removeFrom(tRounds[j]);
-							sTime.removeFrom((Tournament) IDOLookup.instanciateEntity(Tournament.class));
+//							try {
+//								sTime.removeFrom((Tournament) IDOLookup.instanciateEntity(Tournament.class));
+//							} catch (Exception ignore) {}
 							sTime.delete();
 						}
 					}
