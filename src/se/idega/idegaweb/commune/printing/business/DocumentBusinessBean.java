@@ -781,7 +781,7 @@ public class DocumentBusinessBean
 				tagmap.putAll(getMessageTagMap(msg,locale));
 				
 				XmlPeer image = new XmlPeer(ElementTags.IMAGE, "signature");
-				image.addValue("url", iwrb.getImage("signature.gif").getMediaURL(getIWApplicationContext()));
+				image.addValue("url", iwrb.getImage("signature.gif").getURL());
 				tagmap.put(image.getAlias(), image);
 				System.out.println("Image tag: " + image.getTag());
 				
