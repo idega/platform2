@@ -275,7 +275,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					data.addData(menUnderAgeLimit, new Integer(0));
 					data.addData(menOverOrEqualAgeLimit, new Integer(playerCount));
 					//for the page separations
-					data.addData(leagueString, league.getPrimaryKey());
+					data.addData(leagueString, league.getPrimaryKey().toString());
 					//TODO order by the number
 					//data.addData(leagueString, league.getNumber());
 
@@ -297,9 +297,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//		iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = workReportsByLeagues.keySet().iterator();
 		while (statsDataIter.hasNext()) {
-			ReportableData data = (ReportableData) statsDataIter.next();
+			
+			List datas = (List) workReportsByLeagues.get(statsDataIter.next());
 			//			don't forget to add the row to the collection
-			reportCollection.add(data);
+			reportCollection.addAll(datas);
 		}
 
 		//finished return the collection
