@@ -1335,6 +1335,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public Collection findSubGroupPlacements(int studentID, int schoolID, int seasonID) throws FinderException {
+		return getSchoolClassMemberHome().findAllSubGroupPlacements(studentID, schoolID, seasonID);
+	}
 
 	public Collection findClassMemberInSchool(int studentID, int schoolID) {
 		try {
@@ -2051,6 +2055,15 @@ public void storeSchoolDepartment(String description, String phone, int schoolID
 		try {
 			int placings = getSchoolClassMemberHome().getNumberOfPlacings(userID);
 			return placings > 0;
+		}
+		catch (IDOException ie) {
+			return false;
+		}
+	}
+	
+	public boolean hasGroupPlacement(int userID, int groupID) {
+		try {
+			return getSchoolClassMemberHome().getNumberOfPlacingsAtSchool(userID, groupID) > 0;
 		}
 		catch (IDOException ie) {
 			return false;

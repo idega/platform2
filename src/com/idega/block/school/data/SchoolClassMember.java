@@ -40,7 +40,6 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public boolean getSpeciallyPlaced();
  public com.idega.user.data.User getStudent();
  public int getStudyPathId();
- public void initializeAttributes();
  public void setClassMemberId(int p0);
  public void setHasCompensationByAgreement(boolean p0);
  public void setInvoiceInterval(java.lang.String p0);
