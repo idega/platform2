@@ -69,7 +69,7 @@ public class ProductBusiness {
   }
 
   static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return createProduct(productId, supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return createProduct(productId, supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId, -1);
   }
 
   static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId, int localeId) throws Exception{
