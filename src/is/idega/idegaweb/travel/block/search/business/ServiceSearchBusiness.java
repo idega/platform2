@@ -149,4 +149,7 @@ public interface ServiceSearchBusiness extends IBOService, ActionListener {
 	 * @see is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean#actionPerformed
 	 */
 	public void actionPerformed(ActionEvent event);
+	
+	public void clearAllEngineCache();
+
 }

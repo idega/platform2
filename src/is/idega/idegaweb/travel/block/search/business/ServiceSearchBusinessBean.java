@@ -564,9 +564,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 	public void actionPerformed(ActionEvent event) {
 		if (event != null) {
 			if (event.getActionCommand().equals(ProductBusinessBean.COMMAND_CLEAR_CACHE)) {
-				resultMap = new HashMap();
-				getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
-				System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
+				clearAllEngineCache();
 			}
 		}
 	}
@@ -597,4 +595,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionL
 		}
   }
   
+  public void clearAllEngineCache() {
+	resultMap = new HashMap();
+	getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
+	System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
+  }
 }
