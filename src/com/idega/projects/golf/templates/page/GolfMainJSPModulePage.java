@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.12 2001/06/22 09:41:38 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.13 2001/06/22 15:24:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -631,7 +631,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			Link four = new Link(iwrb.getImage("/banners/toyota.gif"),"http://www.toyota.is");
 			Link six = new Link(iwrb.getImage("/banners/samvinn.gif"),"http://www.samvinn.is");
 			Link five = new Link(iwrb.getImage("/banners/ecco.gif"),"http://www.ecco.com");
-			Link three = new Link(iwrb.getImage("/banners/opinkerfi.gif"),"http://www.opinkerfi.is");
+			Link three = new Link(iwrb.getImage("/banners/opinkerfi.gif"),"http://www.ok.is");
 			Link seven = new Link(iwrb.getImage("/banners/euro.gif"),"http://www.europay.is");
 			Link eight = new Link(iwrb.getImage("/banners/syn.gif"),"http://www.syn.is");
 
