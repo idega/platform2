@@ -23,6 +23,8 @@ import com.idega.presentation.ui.Window;
  */
 public class CentralPlacementProviderEditor extends Window {
 
+	private static final String IW_BUNDLE_NAME = "se.idega.idegaweb.commune";
+
 	// *** Localization keys ***
 	private static final String KP = "central_placement_floating_windows.";
 	private static final String KEY_WINDOW_HEADING_1 = KP + "edit_window_opened_from";
@@ -44,15 +46,24 @@ public class CentralPlacementProviderEditor extends Window {
 			+ "font-size:10px;font-family:Verdana,Arial,Helvetica;font-weight:normal;";
 	
 	public CentralPlacementProviderEditor() {
-		this.setWidth(750);
+		this.setWidth(650);
 		this.setHeight(400);
 		this.setScrollbar(true);
 		this.setResizable(true);	
 		this.setAllMargins(0);
 	}
 	
+	/*
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_NAME;
+	}
+
 	private Table getMainTable() {
 		Table mainTable = new Table();
+		mainTable.setWidth(Table.HUNDRED_PERCENT);
+		mainTable.setHeight(Table.HUNDRED_PERCENT);
 		mainTable.setColumns(4);
 		mainTable.setRows(3);
 		mainTable.setBorder(0);
@@ -106,6 +117,12 @@ public class CentralPlacementProviderEditor extends Window {
 		int col = 2;
 		int row = 2;
 		mainTable.add(obj, col, row);
+		// Fill out bottom space and press editor to the top
+		mainTable.add(Text.getBreak(), col, row);
+		Table bottomTable = new Table();
+		bottomTable.setWidthAndHeightToHundredPercent();
+		bottomTable.setBorder(0);
+		mainTable.add(bottomTable, col ,row);
 	}
 	
 	/**

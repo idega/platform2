@@ -23,13 +23,15 @@ import com.idega.presentation.ui.Window;
  */
 public class CentralPlacementRegularPaymentEntriesList extends Window {
 
+	private static final String IW_BUNDLE_NAME = "se.idega.idegaweb.commune";
+
 	// *** Localization keys ***
 	private static final String KP = "central_placement_floating_windows.";
 	private static final String KEY_WINDOW_HEADING_1 = KP + "edit_window_opened_from";
 	private static final String KEY_WINDOW_HEADING_2 = KP + "CENTRAL_PLACEMENT_EDITOR";
 	private static final String KEY_WINDOW_HEADING_RELOAD_MSG = KP + "close_reload_msg";
 	private static final String KEY_BUTTON_CLOSE_AND_RELOAD = KP + "button.close_and_reload";
-	private static final String KEY_INNER_TABLE_HEADING = KP + "inner_table_heading";
+	private static final String KEY_HEADING_REG_PAY = KP + "heading_reg_pay_entries_list";
 
 	private static final String PARAM_CLOSE_AND_RELOAD = "close_and_reload";
 
@@ -66,6 +68,13 @@ public class CentralPlacementRegularPaymentEntriesList extends Window {
 		this.setAllMargins(0);
 	}
 	
+	/*
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_NAME;
+	}
+
 	private Table getMainTable() {
 		Table mainTable = new Table();
 		mainTable.setWidth(Table.HUNDRED_PERCENT);
@@ -136,7 +145,7 @@ public class CentralPlacementRegularPaymentEntriesList extends Window {
 		int row = 1;
 		
 		//  *** TABLE HEADING ***
-		Text heading = new Text(iwrb.getLocalizedString(KEY_INNER_TABLE_HEADING, 
+		Text heading = new Text(iwrb.getLocalizedString(KEY_HEADING_REG_PAY, 
 																				 "Regular payment entries list"));
 		heading.setFontStyle(STYLE_SMALL_HEADER);		
 
