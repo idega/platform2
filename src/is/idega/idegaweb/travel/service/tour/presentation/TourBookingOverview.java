@@ -192,11 +192,14 @@ public class TourBookingOverview extends AbstractBookingOverview {
 //                }else {
 //                  iCount = _tour.getTotalSeats();
 //                }
-	            	if (iCount < 1) {
-	            		iCount = _tour.getTotalSeats();
-	            	}
+//	            	if (iCount < 1) {
+//	            		iCount = _tour.getTotalSeats();
+//	            	}
 	            	
 //                iCount = _tour.getTotalSeats();
+//	            	if (iCount == BookingForm.UNLIMITED_AVAILABILITY) {
+//	            		iCount = 0;
+//	            	}
 
                 iBooked = getTourBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp, -1);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
@@ -255,7 +258,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
               table.add(assignedTextBold,4,row);
               table.add(inqTextBold,5,row);
               table.add(bookedTextBold,6,row);
-              if (iCount > 0) {
+              if (iCount != BookingForm.UNLIMITED_AVAILABILITY) {
                 table.add(countTextBold,3,row);
                 table.add(availableTextBold,7,row);
               }
@@ -374,9 +377,12 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
     if (_supplier != null) {
     	seats = getTourBusiness(iwc).getMaxBookings(product, stamp);
-    	if (seats < 1) {
-    		seats = _tour.getTotalSeats();
-    	}
+//    	if (seats < 1) {
+//    		seats = _tour.getTotalSeats();
+//    	}
+//    	if (seats == BookingForm.UNLIMITED_AVAILABILITY) {
+//    		seats = 0;
+//    	}
 //      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //      ServiceDay sDay;// = sDayHome.create();
 //      sDay = sDayHome.findByServiceAndDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
@@ -425,7 +431,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
     table.add(assignedTextBold,4,row);
     table.add(inqTextBold,5,row);
     table.add(bookedTextBold,6,row);
-    if (seats > 0) {
+    if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
       table.add(countTextBold,3,row);
       table.add(availableTextBold,7,row);
     }
@@ -647,7 +653,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
       table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
       table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
       table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
-      if (seats > 0) {
+      if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
         travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
         // TODO Mismunandi eftir hvort supplier eda reseller...
         tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{}, travelAddressIds );
@@ -669,7 +675,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
     Text Tavail = (Text) super.theSmallBoldText.clone();
     Tavail.setFontColor(super.BLACK);
     Tavail.setText(_iwrb.getLocalizedString("travel.available_seats","Available seats"));
-    if (seats > 0) {
+    if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
       table.add(Tavail, 1, row);
       table.add(availableTextBold, 7, row);
     }

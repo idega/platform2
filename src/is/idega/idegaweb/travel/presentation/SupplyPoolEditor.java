@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,9 +45,9 @@ import com.idega.util.IWTimestamp;
  */
 public class SupplyPoolEditor extends TravelBlock {
 	
-  protected static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
-
-  private static final String ACTION_PARAMETER = "a_p";
+	protected static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
+	
+	private static final String ACTION_PARAMETER = "a_p";
 	private static final String PARAMETER_EDIT_POOL = "ae_p";
 	private static final String PARAMETER_EDIT_POOL_DAYS = "ae_pd";
 	private static final String PARAMETER_SAVE_POOL = "as_p";
@@ -84,7 +85,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		iwrb = getResourceBundle(iwc);
 		
 		String action = iwc.getParameter(ACTION_PARAMETER);
-
+		
 		if (super.getSupplier() == null) {
 			Form form = new Form();
 			form.add("error");
@@ -113,7 +114,7 @@ public class SupplyPoolEditor extends TravelBlock {
 					String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 					String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
 					String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
-
+					
 					if(month != null && !month.equals("") &&
 							day != null && !day.equals("") &&
 							year != null && !year.equals("")) {
@@ -128,7 +129,7 @@ public class SupplyPoolEditor extends TravelBlock {
 				String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 				String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
 				String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
-
+				
 				if(month != null && !month.equals("") &&
 						day != null && !day.equals("") &&
 						year != null && !year.equals("")) {
@@ -139,7 +140,7 @@ public class SupplyPoolEditor extends TravelBlock {
 				}
 				savePoolMonthDays(iwc, timeStamp);
 				form = getPoolMonthEditor(iwc, timeStamp);
-			
+				
 			}
 			return form;
 		}
@@ -205,26 +206,26 @@ public class SupplyPoolEditor extends TravelBlock {
 				} catch (FinderException e1) {
 					spDay = getSupplyPoolDayHome().create(new SupplyPoolDayPK(poolPK, new Integer(i)));
 				}
-        
+				
 				sMax = iwc.getParameter(PARAMETER_MAX+i);
 				sMin = iwc.getParameter(PARAMETER_MIN+i);
 				sEst = iwc.getParameter(PARAMETER_ESTIMATED+i);
 				isUsed = iwc.isParameterSet(PARAMETER_USE+i);
-        if (!isUsed) {
-	      	spDay.remove();
-	      }	else {
-	      	try {
+				if (!isUsed) {
+					spDay.remove();
+				}	else {
+					try {
 						iMax = Integer.parseInt(sMax);
 					} catch (NumberFormatException n) {
-						iMax = -1;
+						iMax = BookingForm.UNLIMITED_AVAILABILITY;
 					}
-
+					
 					try {
 						iMin = Integer.parseInt(sMin);
 					} catch (NumberFormatException n) {
 						iMin = -1;
 					}
-
+					
 					try {
 						iEst = Integer.parseInt(sEst);
 					} catch (NumberFormatException n) {
@@ -235,16 +236,16 @@ public class SupplyPoolEditor extends TravelBlock {
 					spDay.setMin(iMin);
 					spDay.setEstimated(iEst);
 					spDay.store();
-        } 
-
+				} 
 				
-			
+				
+				
 			}
 			
 			super.getTravelStockroomBusiness(iwc).removeServiceDayHashtable(iwc);
 			super.getTravelStockroomBusiness(iwc).removeDepartureDaysApplication(iwc, null);
 			super.getTravelStockroomBusiness(iwc).invalidateMaxDayCache(pool);
-
+			
 		}
 		catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -267,7 +268,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		String sPoolID = iwc.getParameter(PARAMETER_POOL_ID);
 		SupplyPool pool = null;
 		Integer poolPK = null;
-
+		
 		if(sPoolID != null && !sPoolID.equals("")) {
 			try {
 				pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
@@ -276,14 +277,14 @@ public class SupplyPoolEditor extends TravelBlock {
 				e.printStackTrace();
 			}
 		} 
-
+		
 		IWCalendar calendar = new IWCalendar();
 		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear()); 
 		int n = 1;
 		if(pool != null && poolPK != null) {
 			while(n <= daycount) {
 				try {
-
+					
 					String countString = iwc.getParameter(PARAMETER_EST_MONTH + n); 
 					IWTimestamp date = new IWTimestamp(n, stamp.getMonth(), stamp.getYear());
 					if(countString != null && !countString.trim().equals("")) {
@@ -370,7 +371,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.add(back, 1, row);
 		table.add(save, 2, row);
 		table.setRowColor(row++, TravelManager.GRAY);
-
+		
 		return form;
 	}
 	
@@ -381,7 +382,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.setWidth("400");
 		table.setColor(TravelManager.WHITE);
 		table.setCellspacing(1);
-
+		
 		SupplyPool pool = null;
 		int row = 1;
 		try {
@@ -391,7 +392,7 @@ public class SupplyPoolEditor extends TravelBlock {
 				poolPK = pool.getPrimaryKey();
 			} catch (FinderException f) {
 			} catch (NumberFormatException n) {}
-		
+			
 			Link moreLink = new Link(iwrb.getLocalizedImageButton("travel.day_by_day", "Day by day"));
 			moreLink.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_DAYS_INFO);
 			moreLink.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
@@ -413,28 +414,28 @@ public class SupplyPoolEditor extends TravelBlock {
 			CheckBox use;
 			SupplyPoolDay spDay;
 			for (int i = SupplyPoolDayBMPBean.SUNDAY; i <= SupplyPoolDayBMPBean.SATURDAY; i++) {
-	      max = new TextInput(PARAMETER_MAX+i);
-	      min = new TextInput(PARAMETER_MIN+i);
-	      est = new TextInput(PARAMETER_ESTIMATED+i);
-	      use = new CheckBox(PARAMETER_USE+i);
-	      
-	      max.setSize(4);
-	      min.setSize(4);
-	      est.setSize(4);
-	      try {
-	      	if (poolPK != null) {
+				max = new TextInput(PARAMETER_MAX+i);
+				min = new TextInput(PARAMETER_MIN+i);
+				est = new TextInput(PARAMETER_ESTIMATED+i);
+				use = new CheckBox(PARAMETER_USE+i);
+				
+				max.setSize(4);
+				min.setSize(4);
+				est.setSize(4);
+				try {
+					if (poolPK != null) {
 						spDay = getSupplyPoolDayHome().findByPrimaryKey(new SupplyPoolDayPK(poolPK, new Integer(i)));
 						use.setChecked(true);
-					  if (spDay.getMax() > -1) {
-					  	max.setContent(Integer.toString(spDay.getMax()));
-					  }
-					  if (spDay.getMin() > -1) {
-					  	min.setContent(Integer.toString(spDay.getMin()));
-					  }
-					  if (spDay.getEstimated() > -1) {
-					  	est.setContent(Integer.toString(spDay.getEstimated()));
-					  }
-	      	}
+						if (spDay.getMax() > -1) {
+							max.setContent(Integer.toString(spDay.getMax()));
+						}
+						if (spDay.getMin() > -1) {
+							min.setContent(Integer.toString(spDay.getMin()));
+						}
+						if (spDay.getEstimated() > -1) {
+							est.setContent(Integer.toString(spDay.getEstimated()));
+						}
+					}
 				}
 				catch (FinderException e1) {
 					//e1.printStackTrace();
@@ -450,7 +451,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			}
 			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), ACTION_PARAMETER, PARAMETER_SAVE_POOL_DAYS);
 			SubmitButton back = new SubmitButton(iwrb.getLocalizedImageButton("back", "Back"));
-
+			
 			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.add(back, 1, row);
 			table.mergeCells(2, row, 5, row);
@@ -463,12 +464,12 @@ public class SupplyPoolEditor extends TravelBlock {
 			e.printStackTrace();
 		}
 		
-
+		
 		getProductsUsingPool(iwc, form, pool);
 		
 		return form;
 	}
-
+	
 	private Form getPoolMonthEditor(IWContext iwc, IWTimestamp stamp) {
 		Form form = new Form();
 		IWCalendar calendar = new IWCalendar();
@@ -494,7 +495,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		} catch (FinderException f) {
 		} catch (NumberFormatException n) {
 		}
-				
+		
 		table.mergeCells(1,row,7,row);
 		table.add(getHeaderText(pool.getName()), 1, row);
 		table.setRowColor(row++, TravelManager.backgroundColor);
@@ -513,16 +514,16 @@ public class SupplyPoolEditor extends TravelBlock {
 			try {
 				if(poolPK != null) {
 					poolDay = getSupplyPoolDayHome().findByPrimaryKey(new SupplyPoolDayPK(poolPK, new Integer(i)));
-				  if (poolDay.getMax() > -1) {
-				  		max = poolDay.getMax();
-				  }
+					if (poolDay.getMax() > -1) {
+						max = poolDay.getMax();
+					}
 				}
 			}
 			catch (FinderException e) {
 //				e.printStackTrace();
 			}
 			table.add(getText(calendar.getDayName(i, iwc.getCurrentLocale(),IWCalendar.SHORT)), i, row);
-			if(max != -1) {
+			if(max > -1) {
 				table.add(" (" + max +")", i, row);
 			}
 			table.setAlignment(i, row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -545,7 +546,7 @@ public class SupplyPoolEditor extends TravelBlock {
 				dayInfo = null;
 			}
 			input.setSize(4);
-			if(dayInfo != null) {
+			if(dayInfo != null && dayInfo.getCount() != BookingForm.UNLIMITED_AVAILABILITY) {
 				input.setContent(Integer.toString(dayInfo.getCount()));
 			}
 			
@@ -567,7 +568,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.add(back, 1, row); 
 		table.setAlignment(7, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(save, 7, row); 
-
+		
 		getProductsUsingPool(iwc,form,pool);
 		
 		form.maintainParameter(PARAMETER_POOL_ID);
@@ -617,7 +618,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private Table getPoolList(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setWidth("400");
@@ -650,7 +651,7 @@ public class SupplyPoolEditor extends TravelBlock {
 					delete = getLink(getText(iwrb.getLocalizedString("delete", "Delete")));
 					delete.addParameter(ACTION_PARAMETER, PARAMETER_DELETE_POOL);
 					delete.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
-
+					
 					table.add(link, 1, row);
 					table.add(getText(pool.getDescription()), 2, row);
 					table.add(edit, 3, row);
@@ -661,7 +662,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			Link link = getLink(getText("New Pool"));
 			link.setImage(iwrb.getLocalizedImageButton("new", "New"));
 			link.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_POOL);
-
+			
 			table.add(link, 1, row);
 			table.setRowColor(row, TravelManager.GRAY);
 		} catch (FinderException e) {
@@ -738,7 +739,7 @@ public class SupplyPoolEditor extends TravelBlock {
 	}
 	private static IWTimestamp getTimestamp(String day, String month, String year) {
 		IWTimestamp stamp = new IWTimestamp();
-
+		
 		if (day != null) {
 			stamp.setDay(Integer.parseInt(day));
 		}
@@ -748,11 +749,11 @@ public class SupplyPoolEditor extends TravelBlock {
 		if (year != null) {
 			stamp.setYear(Integer.parseInt(year));
 		}
-
+		
 		stamp.setHour(0);
 		stamp.setMinute(0);
 		stamp.setSecond(0);
-
+		
 		return stamp;
 	}
 	public void addParameter(String name, String value) {
@@ -767,7 +768,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			throw new IDORuntimeException(e);
 		}
 	}
-
+	
 	public SupplyPoolDayHome getSupplyPoolDayHome() {
 		try {
 			return (SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class);
@@ -785,5 +786,5 @@ public class SupplyPoolEditor extends TravelBlock {
 			throw new IDORuntimeException(e);
 		}
 	}
-
+	
 }

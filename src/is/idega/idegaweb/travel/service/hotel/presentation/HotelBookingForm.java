@@ -1647,8 +1647,8 @@ public class HotelBookingForm extends BookingForm {
 						if (cont != null) {
 							totalRooms = cont.getAlotment();
 							if (totalRooms < 1) {
-								totalRooms = hotel.getNumberOfUnits();
-								if (totalRooms < 1) {
+//								totalRooms = hotel.getNumberOfUnits();
+//								if (totalRooms < 1) {
 //									ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //									ServiceDay sDay;// = sDayHome.create();
 //									sDay = sDayHome.findByServiceAndDay(_product.getID() , fromStamp.getDayOfWeek());
@@ -1656,14 +1656,14 @@ public class HotelBookingForm extends BookingForm {
 //									if (sDay != null) {
 //										totalRooms = sDay.getMax();
 //									}
-		            	totalRooms = getHotelBusiness(iwc).getMaxBookings(_product, fromStamp);
-								}
+								totalRooms = getHotelBusiness(iwc).getMaxBookings(_product, fromStamp);
+//								}
 							}
 						}	
 					}
 					else {
-						totalRooms = hotel.getNumberOfUnits();
-						if (totalRooms < 1) {
+//						totalRooms = hotel.getNumberOfUnits();
+//						if (totalRooms < 1) {
 //							ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //							ServiceDay sDay;// = sDayHome.create();
 //							sDay = sDayHome.findByServiceAndDay(_product.getID() , fromStamp.getDayOfWeek());
@@ -1671,22 +1671,22 @@ public class HotelBookingForm extends BookingForm {
 //							if (sDay != null) {
 //								totalRooms = sDay.getMax();
 //							}
-            	totalRooms = getHotelBusiness(iwc).getMaxBookings(_product, fromStamp);
-						}
+						totalRooms = getHotelBusiness(iwc).getMaxBookings(_product, fromStamp);
+//						}
 					}
 
-					if (totalRooms > 0) {
+					if (totalRooms != UNLIMITED_AVAILABILITY) {
 		    		//		    iAvailable = totalRooms - heildarbokanir;
-				    iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
+						iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
 	
 						//System.out.println("[HotelBookingform] date : "+fromStamp+", totalRooms : "+totalRooms+", iAvailable = "+iAvailable+" ("+totalRooms+" + "+bookingTotal+" - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null )+")");
 	
 						//System.out.println("iAvail = totalRooms + bookingTotal - heildarbokanir ....."+iAvailable+" = "+totalRooms+" + " +bookingTotal+ " - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null ));
-				    if (iMany > iAvailable) {
+						if (iMany > iAvailable) {
 		//			  if (iAvailable <= 0 ) {
-				    	tooMany = true;
-				    	errorDays.add(new IWTimestamp(fromStamp));
-				    }
+					    	tooMany = true;
+					    	errorDays.add(new IWTimestamp(fromStamp));
+					    }
 					}
 	    	}
 		    
@@ -1729,10 +1729,10 @@ public class HotelBookingForm extends BookingForm {
 				max = cont.getAlotment();
 			}	
 		}else { //if (supplier != null) {
-			max = hotel.getNumberOfUnits();
-			if (max < 1) {
+//			max = hotel.getNumberOfUnits();
+//			if (max < 1) {
 				max = getHotelBusiness(iwc).getMaxBookings(product, stamp);
-			}
+//			}
 		}
 	
 		if (max > 0) {

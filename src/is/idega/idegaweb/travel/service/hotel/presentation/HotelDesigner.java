@@ -13,6 +13,7 @@ import is.idega.idegaweb.travel.service.hotel.data.HotelType;
 import is.idega.idegaweb.travel.service.hotel.data.HotelTypeHome;
 import is.idega.idegaweb.travel.service.hotel.data.RoomType;
 import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.presentation.DesignerForm;
 
 import java.rmi.RemoteException;
@@ -177,7 +178,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       }
     }
 
-    int iNumberOfUnits = 0;
+    int iNumberOfUnits = BookingForm.UNLIMITED_AVAILABILITY;
     if (numberOfUnits != null) {
       try {
         iNumberOfUnits = Integer.parseInt(numberOfUnits);
@@ -345,7 +346,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
 					} catch (IDORelationshipException e) {
 						logWarning("HotelDesigner : no room types found for hotel");
 					}
-					if (iNoUnits >= 0 ) {
+					if (iNoUnits != BookingForm.UNLIMITED_AVAILABILITY ) {
 	          numberOfUnits.setContent(Integer.toString(iNoUnits));
           }
           if (iMaxPerUnit >= 0 ) {

@@ -220,6 +220,10 @@ public class TravelBlock extends Block {
     return (Inquirer) IBOLookup.getServiceInstance(iwac, Inquirer.class);
   }
 
+  protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwc, Product product) throws RemoteException, FinderException {
+	return getServiceHandler(iwc).getServiceBusiness(product);
+  }
+  
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
   }

@@ -104,13 +104,14 @@ import com.idega.util.SendMail;
 
 public abstract class BookingForm extends TravelManager{
 	
+	public static final int UNLIMITED_AVAILABILITY = -9876;
+	
 	private String PARAMETER_POSTAL_CODE_ICELAND = "post_ice";
 	private String PARAMETER_POSTAL_CODE_REYKJAVIK = "post_rey";
 	private String PARAMETER_POSTAL_CODE_REYKJAVIK_AREA = "post_reya";
 	private String PARAMETER_POSTAL_CODE_WEST_ICELAND = "post_wice";
 	private String PARAMETER_POSTAL_CODE_WEST_FJORDS = "post_fjo";
-	//private String PARAMETER_POSTAL_CODE_NORTH_WEST_ICELAND = "post_nwice";
-	//private String PARAMETER_POSTAL_CODE_NORTH_EAST_ICELAND = "post_neice";
+
 	private String PARAMETER_POSTAL_CODE_NORTH_ICELAND = "post_nice";
 	private String PARAMETER_POSTAL_CODE_EAST_ICELAND = "post_eice";
 	private String PARAMETER_POSTAL_CODE_SOUTH_ICELAND = "post_sice";
@@ -1671,7 +1672,6 @@ public abstract class BookingForm extends TravelManager{
 		int betw = getNumberOfDays(from);
 		IWTimestamp to = new IWTimestamp(from);
 		to.addDays(betw);
-		
 		Supplier supplier = null;
 		try {
 			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
@@ -4548,20 +4548,9 @@ public abstract class BookingForm extends TravelManager{
 			}	
 		} else {//if (supplier != null) {
 			max = getServiceHandler(iwc).getServiceBusiness(product).getMaxBookings(product, stamp);
-//			ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-//			ServiceDay sDay;// = sDayHome.create();
-//			try {
-//				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-//				
-//				if (sDay != null) {
-//					max = sDay.getMax();
-//				}
-//			} catch (Exception e) {
-//				logDebug("ServiceDay not found for product : "+product.getID());
-//			}
 		}
 		
-		if (max > 0 ) {
+		if (max != UNLIMITED_AVAILABILITY ) {
 			List addresses;
 			try {
 				addresses = product.getDepartureAddresses(false);

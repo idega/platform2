@@ -7,21 +7,19 @@ import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.presentation.ServiceDesigner;
 import is.idega.idegaweb.travel.presentation.TravelManager;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.presentation.DesignerForm;
 import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourType;
 import is.idega.idegaweb.travel.service.tour.data.TourTypeHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.ProductEditorBusiness;
 import com.idega.block.trade.stockroom.data.Product;
@@ -596,7 +594,9 @@ public class TourDesigner extends TravelManager implements DesignerForm{
             hotelPickupNo.setSelected();
           }
 
-          numberOfSeats.setContent( Integer.toString( tour.getTotalSeats() ) );
+          if (tour.getTotalSeats() != BookingForm.UNLIMITED_AVAILABILITY) {
+          	numberOfSeats.setContent( Integer.toString( tour.getTotalSeats() ) );
+          }
           minNumberOfSeats.setContent( Integer.toString( tour.getMinimumSeats() ) );
           number_of_days.setContent( Integer.toString( tour.getNumberOfDays() ) );
           estSeats.setContent( Integer.toString( tour.getEstimatedSeatsUsed() ) );
@@ -725,10 +725,10 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       try {
         iNumberOfSeats = new Integer( numberOfSeats );
       } catch ( NumberFormatException n ) {
-        iNumberOfSeats = new Integer( 0 );
+        iNumberOfSeats = new Integer( BookingForm.UNLIMITED_AVAILABILITY );
       }
     } else {
-      iNumberOfSeats = new Integer( 0 );
+      iNumberOfSeats = new Integer( BookingForm.UNLIMITED_AVAILABILITY );
     }
 
     Integer iMinNumberOfSeats = null;

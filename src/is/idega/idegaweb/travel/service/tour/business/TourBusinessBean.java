@@ -8,16 +8,14 @@ import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.data.TourHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
@@ -522,24 +520,22 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   }
 
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
-		int returner = tour.getTotalSeats();
-		if (returner > 0) {
-			return returner;
-		}else {
-			return super.getMaxBookings(product, stamp);
+		int max = super.getMaxBookings(product, stamp);
+		if (max == BookingForm.UNLIMITED_AVAILABILITY) {
+			Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+			return tour.getTotalSeats();
 		}
+		return max;
 	}
 
 
 	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
-		int returner = tour.getMinimumSeats();
-		if (returner > 0) {
-			return returner;
-		}else {
-			return super.getMinBookings(product, stamp);
+		int min = super.getMinBookings(product, stamp);
+		if (min <= 0) {
+			Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+			return tour.getMinimumSeats();
 		}
+		return min;
 	}
 
 

@@ -11,6 +11,7 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.BookingDeleterWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.AbstractBookingOverview;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -218,7 +219,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
               table.add(assignedTextBold,4,row);
               table.add(inqTextBold,5,row);
               table.add(bookedTextBold,6,row);
-              if (iCount > 0) {
+              if (iCount != BookingForm.UNLIMITED_AVAILABILITY) {
                 table.add(countTextBold,3,row);
                 table.add(availableTextBold,7,row);
               }
@@ -398,7 +399,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 		table.add(inqTextBold,5,row);
 		table.add(bookedTextBold,6,row);
 //		table.add(guestsTextBold, 7, row);
-		if (seats > 0) {
+		if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
 			table.add(countTextBold,3,row);
 			table.add(availableTextBold,7,row);
 		}
@@ -603,7 +604,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 //			table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
 //			table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
 //			table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
-			if (seats > 0) {
+			if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
 //				travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
 //				tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), stamp, null, -1, new int[]{} );
 //				table.add(getHeaderText(Integer.toString(tempAvail)), 7, tempRow);
@@ -622,7 +623,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 		Text Tavail = (Text) super.theSmallBoldText.clone();
 		Tavail.setFontColor(super.BLACK);
 		Tavail.setText(_iwrb.getLocalizedString("travel.available_seats","Available seats"));
-		if (seats > 0) {
+		if (seats != BookingForm.UNLIMITED_AVAILABILITY) {
 			table.add(Tavail, 1, row);
 			table.add(availableTextBold, 7, row);
 		}

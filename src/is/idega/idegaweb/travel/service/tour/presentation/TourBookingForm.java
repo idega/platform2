@@ -602,18 +602,18 @@ public class TourBookingForm extends BookingForm{
     int addressId = super.getAddressIDToUse(iwc, addresses);
     
   		int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp, addressId);
-    int max = 0;
+    int max = super.UNLIMITED_AVAILABILITY;
     int min = 0;
 
     try {
     	max = getTourBusiness(iwc).getMaxBookings(_product, _stamp);
     	min = getTourBusiness(iwc).getMaxBookings(_product, _stamp);
-	    if (max < 1) {
-		    max = _tour.getTotalSeats();
-		  }
-		  if (min < 1) {
-		    min = _tour.getMinimumSeats();
-		  }
+//	    if (max < 1) {
+//		    max = _tour.getTotalSeats();
+//		  }
+//		  if (min < 1) {
+//		    min = _tour.getMinimumSeats();
+//		  }
 //      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //      ServiceDay sDay;// = sDayHome.create();
 //        sDay = sDayHome.findByServiceAndDay(this._productId, _stamp.getDayOfWeek());
@@ -635,9 +635,10 @@ public class TourBookingForm extends BookingForm{
     }
 
     /** ef ferd er fullbokud eda ef ferd er vanbokud */
-    if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
+    if ((max != UNLIMITED_AVAILABILITY && max <= bookings) || (min > 0 && min > bookings) ){
       _useInquiryForm = true;
     }
+
     try {
       return getPublicBookingFormPrivate(iwc, product);
     }catch (ServiceNotFoundException snfe) {
@@ -1352,7 +1353,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     IWTimestamp fromStamp = null;
     IWTimestamp toStamp = null;
     int betw = 1;
-    int totalSeats = 0;
+    int totalSeats = UNLIMITED_AVAILABILITY;
 
     try {
       fromStamp = new IWTimestamp(fromDate);
@@ -1387,7 +1388,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     iMany -= previousBookings;
 
     int iAvailable;
-    if (totalSeats > 0) {
+    if (totalSeats != UNLIMITED_AVAILABILITY) { // && totalSeats > 0) {
       if (betw == 1) {
         iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
 //        iAvailable = totalSeats - getTourBooker(iwc).getNumberOfBookings(serviceId, _stamp);
@@ -1954,9 +1955,10 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 			Contract cont = getContractBusiness(iwc).getContract(_reseller, product);
 			max = cont.getAlotment();
 		} else {//if (supplier != null) {
-			max = tour.getTotalSeats();
-			if ( max < 1) {
-				max = getTourBusiness(iwc).getMaxBookings(product, stamp);
+			max = getTourBusiness(iwc).getMaxBookings(product, stamp);
+//			max = tour.getTotalSeats();
+//			if ( max == UNLIMITED_AVAILABILITY) {
+//				max = getTourBusiness(iwc).getMaxBookings(product, stamp);
 //				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //				ServiceDay sDay;// = sDayHome.create();
 //				sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
@@ -1965,40 +1967,41 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 //					max = sDay.getMax();
 //				}
 				
-			}
+//			}
 		}
-		if (max > 0) {
-	    List addresses;
-	    try {
-	      addresses = product.getDepartureAddresses(false);
-	    }catch (IDOFinderException ido) {
-	      ido.printStackTrace(System.err);
-	      addresses = new Vector();
-	    }
-	    
-	    int addressId = super.getAddressIDToUse(iwc, addresses);
+		if (max != UNLIMITED_AVAILABILITY) {
+		    List addresses;
+		    try {
+		      addresses = product.getDepartureAddresses(false);
+		    }catch (IDOFinderException ido) {
+		      ido.printStackTrace(System.err);
+		      addresses = new Vector();
+		    }
+		    
+		    int addressId = super.getAddressIDToUse(iwc, addresses);
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
 			if (currentBookings >= max) {
 				_useInquiryForm = true;
 				return true;	
 			}
 		}
-		return super.isFullyBooked( iwc, product, stamp);
+		return false;
+//		return super.isFullyBooked( iwc, product, stamp);
 	}
 
 	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
 		int min = tour.getMinimumSeats();
 		if (min > 0) {
-	    List addresses;
-	    try {
-	      addresses = product.getDepartureAddresses(false);
-	    }catch (IDOFinderException ido) {
-	      ido.printStackTrace(System.err);
-	      addresses = new Vector();
-	    }
-	    
-	    int addressId = super.getAddressIDToUse(iwc, addresses);
+		    List addresses;
+		    try {
+		      addresses = product.getDepartureAddresses(false);
+		    }catch (IDOFinderException ido) {
+		      ido.printStackTrace(System.err);
+		      addresses = new Vector();
+		    }
+		    
+		    int addressId = super.getAddressIDToUse(iwc, addresses);
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
 			if (currentBookings < min) {
 				_useInquiryForm = true;

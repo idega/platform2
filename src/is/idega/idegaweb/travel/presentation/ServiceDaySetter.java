@@ -5,6 +5,7 @@ import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.data.ServiceDayPK;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -263,7 +264,7 @@ public class ServiceDaySetter extends TravelWindow {
 					try {
 						iMax = Integer.parseInt(max);
 					}catch (NumberFormatException n) {
-						iMax = -1;
+						iMax = BookingForm.UNLIMITED_AVAILABILITY;
 					}
 					try {
 						iMin = Integer.parseInt(min);
@@ -462,7 +463,7 @@ public class ServiceDaySetter extends TravelWindow {
 							iMax = sDay.getMax();
 							iMin = sDay.getMin();
 							iEst = sDay.getEstimated();
-							if (iMax != -1) {
+							if (iMax != BookingForm.UNLIMITED_AVAILABILITY) {
 								max.setContent(Integer.toString(iMax));
 							}
 							if (iMin != -1) {
@@ -490,7 +491,7 @@ public class ServiceDaySetter extends TravelWindow {
 					iMax = poolDay.getMax();
 					iMin = poolDay.getMin();
 					iEst = poolDay.getEstimated();
-					if (iMax != -1) {
+					if (iMax != BookingForm.UNLIMITED_AVAILABILITY) {
 						max.setContent(Integer.toString(iMax));
 					}
 					if (iMin != -1) {
