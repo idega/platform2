@@ -420,8 +420,8 @@ public class ParticipantList extends AbstractContentList {
 
         // Save
 
-        System.out.println("----------------------------");
-        System.out.println("users: "+iwc.getParameterValues(_USERS_RELATED));
+        //System.out.println("----------------------------");
+        //System.out.println("users: "+iwc.getParameterValues(_USERS_RELATED));
 
         UserGroupBusiness.updateUsersInGroup(groupId,iwc.getParameterValues(_USERS_RELATED));
 

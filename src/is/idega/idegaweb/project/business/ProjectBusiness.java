@@ -367,26 +367,14 @@ public class ProjectBusiness {
       //System.out.println("collecting subpages");
       this.collectSubpages(v,rootPage);
 
-
-      // debug
-      System.out.println("rootPage: "+rootPage.getNodeID());
-      System.out.print("projectpages: ");
-      Iterator outIter = v.iterator();
-      while (outIter.hasNext()) {
-        PageTreeNode item = (PageTreeNode)outIter.next();
-        System.out.print(item.getNodeID()+", ");
-      }
-      System.out.println();
-      // debug ends
-
       Set s = new HashSet();
       Set pages = new HashSet();
       Iterator setIter = v.iterator();
       while (setIter.hasNext()) {
         PageTreeNode item = (PageTreeNode)setIter.next();
         pages.add(Integer.toString(item.getNodeID()));
-        System.out.println("----------------------------------");
-        System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
+        //System.out.println("----------------------------------");
+        //System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
         //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
         Set set = logic.getInstanceIdsOnPage(item.getNodeID());
 
@@ -394,30 +382,6 @@ public class ProjectBusiness {
           s.addAll(set);
         }
       }
-
-
-      // debug
-      System.out.print("s: ");
-      Iterator out2Iter = s.iterator();
-      while (out2Iter.hasNext()) {
-        String item = (String)out2Iter.next();
-        System.out.print(item+", ");
-      }
-      System.out.println();
-      // debug ends
-
-      // debug
-      System.out.print("pages: ");
-      Iterator out3Iter = pages.iterator();
-      while (out3Iter.hasNext()) {
-        String item = (String)out3Iter.next();
-        System.out.print(item+", ");
-      }
-      System.out.println();
-      // debug ends
-
-
-
 
       Iterator iter = participantGroups.iterator();
       while (iter.hasNext()) {
@@ -437,18 +401,12 @@ public class ProjectBusiness {
 
         //Instances
         List permissions = AccessControl.getGroupsPermissionsForInstances(oldGroup,s);
-        System.err.println("oldGroup: "+oldGroup.getID());
-        System.err.println("newGroup: "+newGroup.getID());
-        System.err.println("s: "+s);
-        System.err.println("Permissions: "+permissions);
         if(permissions != null){
           Iterator permissionIter = permissions.iterator();
           while (permissionIter.hasNext()) {
             ICPermission item = (ICPermission)permissionIter.next();
-            System.out.print(item.getID()+", ");
             AccessControl.replicatePermissionForNewGroup(item, newGroup);
           }
-          System.out.println();
         }
 
       }
