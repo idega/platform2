@@ -187,7 +187,7 @@ public class Medication extends EHealthBlock {
 				
 		for (theRow = 1; theRow <= 5; theRow++) {
 			
-			for (theColumn = 1; theColumn <= 11; theColumn++) {
+			for (theColumn = 1; theColumn <= 9; theColumn++) {
 				Layer layers = (Layer) layer.clone();
 				layers.setID("lay" + theRow + "_"+ theColumn);
 				if (theColumn % 2 == 0){

@@ -239,11 +239,11 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		table.setBorder(0);
 		T.add(table, 1, 1);
 		T.setWidth(2, 1, "20");
-		T.add(getLayerTempAddressString(), 3, 1);
-		T.add(getLayerCOAddress(iwc), 3, 1);
+		//T.add(getLayerTempAddressString(), 3, 1);
+		T.add(getTableCOAddress(iwc), 3, 1);
 		
 		T.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		T.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
+		T.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
 		
 		int row = 1;
 
@@ -255,24 +255,31 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		String personalID = PersonalIDFormatter.format(user.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		
 		table.add(getSmallText(userName), 1, row);
-
+		table.mergeCells(1, row, 3, row);
+		table.setHeight(1, row, "20");
 		row++;
+		
 		Address mainAddress = ub.getUsersMainAddress(user);
 		String addressStreetText = "";
 		if (mainAddress != null) {
 			addressStreetText = mainAddress.getStreetAddress();
 		}
 		table.add(getSmallText(addressStreetText), 1, row);
-		
+		table.mergeCells(1, row, 3, row);
+		table.setHeight(1, row, "20");
 		row++;
+		
 		String addressCityText = "";
 		if (mainAddress != null) {
 			addressCityText = mainAddress.getPostalAddress();
 		}
 		table.add(getSmallText(addressCityText), 1, row);
+		table.mergeCells(1, row, 3, row);
+		table.setHeight(1, row, "20");
 		
 		row++;
-		table.add(new Break(2), 1, row);
+		//table.add(new Break(2), 1, row);
+		table.setHeight(1, row, "40");
 		table.add(getSmallHeader(localize(KEY_PID, DEFAULT_PID)), 1, row);
 		
 		if (user.getPersonalID() != null) {
@@ -507,27 +514,29 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		add(form);
 	}
 	
-	private Layer getLayerTempAddressString(){
-		Layer layer = new Layer(Layer.DIV);
-		layer.setVisibility("visible");
-		layer.setOverflow("hidden");
-		layer.setPositionType("relative");
-		layer.setWidth("300");
-		layer.setMarkupAttribute("class", "ehealth_div_no_border");
-		layer.add(getSmallText(localize(KEY_TEMP_ADDRESS, DEFAULT_TEMP_ADDRESS)));;
+	
+	private Table getTableCOAddress(IWContext iwc) {
+		Table tableOuter = new Table();
+		tableOuter.setCellpadding(2);
+		tableOuter.setCellspacing(2);
+		tableOuter.setBorder(0);
 		
-		return layer;
-	}
-	
-	
-	private Layer getLayerCOAddress(IWContext iwc) {
+		tableOuter.setHeight(1, 1, "60");
+		tableOuter.setHeight(1, 2, "40");
+		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("visible");
 		layer.setOverflow("hidden");
 		layer.setPositionType("relative");
 		layer.setWidth("300");
-		layer.setHeight("240");
+		//layer.setHeight("240");
 		layer.setMarkupAttribute("class", "ehealth_div");
+		
+		//tableOuter.add(new Break(2), 1, 2);
+		tableOuter.add(getSmallHeader(localize(KEY_TEMP_ADDRESS, DEFAULT_TEMP_ADDRESS)), 1, 2);
+		tableOuter.add(layer, 1, 3);
+		tableOuter.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
+		tableOuter.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_TOP);
 		
 		Table table = new Table();
 		table.setCellpadding(2);
@@ -539,7 +548,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		
 		
 		
-		String valueCOAddressSelect = iwc.getParameter(PARAMETER_CO_ADDRESS_SELECT);
+		//String valueCOAddressSelect = iwc.getParameter(PARAMETER_CO_ADDRESS_SELECT);
 		Address coAddress = getCOAddress(iwc);
 		String valueCOStreetAddress = iwc.getParameter(PARAMETER_CO_STREET_ADDRESS);
 		if (valueCOStreetAddress == null) {
@@ -569,8 +578,8 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 			}
 		}
 		
-		Text tCOAddressInfo = getSmallText(" " + localize(KEY_CO_ADDRESS_INFO, DEFAULT_CO_ADDRESS_INFO));
-		Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT));
+		//Text tCOAddressInfo = getSmallText(" " + localize(KEY_CO_ADDRESS_INFO, DEFAULT_CO_ADDRESS_INFO));
+		//Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT));
 		Text tCOStreetAddress = getSmallHeader(localize(KEY_CO_STREET_ADDRESS, DEFAULT_CO_STREET_ADDRESS));
 		Text tCOPostalCode = getSmallHeader(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
 		Text tCOCity = getSmallHeader(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
@@ -601,7 +610,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		diTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 		
 		
-		CheckBox cbCOAddressSelect = getCheckBox(PARAMETER_CO_ADDRESS_SELECT, "true");
+		/*CheckBox cbCOAddressSelect = getCheckBox(PARAMETER_CO_ADDRESS_SELECT, "true");
 		if (valueCOAddressSelect != null) {
 			if (valueCOAddressSelect.length() > 0)
 				cbCOAddressSelect.setChecked(true);
@@ -618,6 +627,7 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 		
 		table.mergeCells(1, row, 2, row);
 		table.add(tCOAddressInfo, 1, row);
+		*/
 		row++;
 		table.setHeight(row, 12);
 		
@@ -649,10 +659,10 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
 
 		row++;
 		table.mergeCells(1, row, 2, row);
-		table.add(cbCOAddressSelect, 1, row);
-		table.add(tCOAddressSelect, 1, row);
+		//table.add(cbCOAddressSelect, 1, row);
+		//table.add(tCOAddressSelect, 1, row);
 		
-		return layer;
+		return tableOuter;
 	}
 	
 	private void updatePreferences(IWContext iwc)  throws Exception {

@@ -128,7 +128,8 @@ public class MyHealthCentre extends EHealthBlock {
 			
 			table.add(doctorInfo,3,1);
 			GenericButton message = getButton(new GenericButton("message", localize(prmMessage, "Send message")));
-			message.setPageToOpen(121);			
+			if (_messagePage != null) 
+				message.setPageToOpen(_messagePage);		
 						
 			table.add(message, 3, 2);
 			table.setHeight(3,2,"25");
@@ -141,8 +142,7 @@ public class MyHealthCentre extends EHealthBlock {
 			SubmitButton smb = new SubmitButton();
 			smb.setStyleClass("ehealth_InterfaceButton");
 			smb.setValue("Skicka meddelande >");
-			if (_messagePage != null) 
-				smb.setPageToOpen(_messagePage);
+			
 		
 			table.add(visitbooking, 3, 3);
 				
