@@ -373,8 +373,9 @@ public class BookingRefunder extends TravelBlock {
 	    System.out.println("Starting CreditCard test : "+IWTimestamp.RightNow().toString());
 	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
 	    //booking.setCreditcardAuthorizationNumber(heimild);
-	    booking.setIsValid(false);
-	    booking.store();
+//	    booking.setIsValid(false);
+	    getBooker(iwc).deleteBooking(booking, true);
+//	    booking.store();
 	    System.out.println("Ending CreditCard test : "+IWTimestamp.RightNow().toString());
 	
 	    table.add(getText(iwrb.getLocalizedString("travel.success","Success")),1,row);
