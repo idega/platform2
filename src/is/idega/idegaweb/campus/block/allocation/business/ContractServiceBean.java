@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.11 2004/06/14 15:54:55 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.12 2004/06/15 06:53:31 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,15 +27,14 @@ import is.idega.idegaweb.campus.data.SystemPropertiesBMPBean;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.ejb.CreateException;
@@ -46,13 +45,11 @@ import javax.transaction.UserTransaction;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
-import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.business.IBOServiceBean;
-import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
