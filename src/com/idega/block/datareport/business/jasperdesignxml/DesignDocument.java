@@ -35,6 +35,8 @@ import com.idega.xml.XMLOutput;
  */
 public class DesignDocument extends XMLDocument {
 	
+	private static final String NAME = "jasperReport";
+	
 	private static final String ATTRIBUTE_NAME = "name"; //NMTOKEN #REQUIRED
 	private static final String ATTRIBUTE_COLUMN_COUNT = "columnCount"; //NMTOKEN "1"
 	
@@ -83,12 +85,12 @@ public class DesignDocument extends XMLDocument {
 	 */
 	private DesignDocument(XMLElement element) {
 		super(element);
-		DocType docType = new DocType("jasperReport","-//JasperReports//DTD Report Design//EN","http://jasperreports.sourceforge.net/dtds/jasperreport.dtd");
+		DocType docType = new DocType(NAME,"-//JasperReports//DTD Report Design//EN","http://jasperreports.sourceforge.net/dtds/jasperreport.dtd");
 		this.setDocType(docType);
 	}
 	
 	public DesignDocument(String name){
-		this(new XMLElement("jasperReport"));
+		this(new XMLElement(NAME));
 		setReportName(name);
 	}
 
@@ -410,7 +412,7 @@ public class DesignDocument extends XMLDocument {
 		auxiliaryFile = new File(path);
 		
 		//	TODO remove check  TMP
-		if(auxiliaryFile != null && !auxiliaryFile.exists()){
+		//if(auxiliaryFile != null && !auxiliaryFile.exists()){
 			try {
 	//			boolean dirsCreated = auxiliaryFile.mkdirs();
 	//			System.out.println("Directories were created: "+dirsCreated);
@@ -445,7 +447,7 @@ public class DesignDocument extends XMLDocument {
 			outputStream.close();
 			// writing finished
 		
-		}
+		//}
 				
 		return auxiliaryFile;
 

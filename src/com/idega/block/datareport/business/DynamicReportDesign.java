@@ -62,7 +62,7 @@ public class DynamicReportDesign {
 	private int _pageHeaderHeight = 20;
 	
 	
-	private static String DYNAMIC_DESIGN_FOLDER = "dynamicDesignes";
+	private static String DYNAMIC_DESIGN_FOLDER = "dynamicDesigns";
 	private static String TEMP_DESIGN_NAME = "tmpDesigne";
 	private static String REPORT_FOLDER = "reports";
 	private static char DOT = '.';
@@ -387,17 +387,12 @@ public class DynamicReportDesign {
 		_headerParametersXCoordinate += _extraspaceBetweenParameterGroupsInHeader;
 	}
 	
-	
-
-
-	
 
 	private static synchronized int getNextTempFileNumber(){
 		if(_tempFileCounter == _TEMP_FILE_COUNTER_MAX){
 		 _tempFileCounter=1;
 		}
-		//return _tempFileCounter++;
-		return _tempFileCounter;  //TODO add 1,  TEP++;
+		return _tempFileCounter++;
 	}
 	
 	private int getTempFileNumber(){

@@ -145,9 +145,12 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   private String getURIToReport(String reportName, String extension) {
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
     String separator = FileUtil.getFileSeparator();
-    StringBuffer uri = new StringBuffer(mainApp.getApplicationContextURI());
-    uri.append(separator)
-      .append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
+    String appContextURI = mainApp.getApplicationContextURI();
+    StringBuffer uri = new StringBuffer(appContextURI);
+    if(!appContextURI.endsWith(separator)){
+			uri.append(separator);
+    }
+      uri.append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
       .append(separator)
       .append(REPORT_FOLDER)
       .append(separator)

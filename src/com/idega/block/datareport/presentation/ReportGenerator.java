@@ -7,6 +7,7 @@
 package com.idega.block.datareport.presentation;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -355,7 +356,18 @@ public class ReportGenerator extends Block {
 					MethodFinder mf = MethodFinder.getInstance();
 						
 					Method method = mf.getMethodWithNameAndParameters(mainClass,methodName,paramTypes);
-					_dataSource = (JRDataSource)method.invoke(forInvocationOfMethod,prmVal);
+					
+					try {
+						_dataSource = (JRDataSource)method.invoke(forInvocationOfMethod,prmVal);
+					} catch (InvocationTargetException e) {
+						Throwable someException = e.getCause();
+						if(someException != null && someException instanceof Exception){
+							throw (Exception)someException;
+						} else {
+							throw e;
+						}
+						
+					}
 					
 					if(_dataSource!= null && _dataSource instanceof ReportableCollection){
 						_extraHeaderParameters = ((ReportableCollection)_dataSource).getExtraHeaderParameters();
@@ -596,21 +608,23 @@ public class ReportGenerator extends Block {
 	}
 	
 	private Object getParameterObject(IWContext iwc,String prmValue, Class prmClassType) throws ParseException{
-		if(prmClassType.equals(Integer.class)) {
-			return Integer.decode(prmValue);
-		} else if(prmClassType.equals(Time.class)){
-			DateFormat df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-			java.util.Date current = df.parse(prmValue);
-			return new Time(current.getTime());
-		} else if(prmClassType.equals(Date.class)) {
-			DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-			java.util.Date current = df.parse(prmValue);
-			return new Date(current.getTime());
-		} else if(prmClassType.equals(Timestamp.class)) {
-			DateFormat df = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT,SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
-			java.util.Date current = df.parse(prmValue);
-			return new Timestamp(current.getTime());
-		} 
+		if(prmValue != null){
+			if(prmClassType.equals(Integer.class)) {
+				return Integer.decode(prmValue);
+			} else if(prmClassType.equals(Time.class)){
+				DateFormat df = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
+				java.util.Date current = df.parse(prmValue);
+				return new Time(current.getTime());
+			} else if(prmClassType.equals(Date.class)) {
+				DateFormat df = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
+				java.util.Date current = df.parse(prmValue);
+				return new Date(current.getTime());
+			} else if(prmClassType.equals(Timestamp.class)) {
+				DateFormat df = SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT,SimpleDateFormat.SHORT,iwc.getCurrentLocale()); 
+				java.util.Date current = df.parse(prmValue);
+				return new Timestamp(current.getTime());
+			} 
+		}
 		//else {
 		return prmValue;
 		//}	
