@@ -51,7 +51,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   private static char DOT = '.';
   
   public JasperPrint getReport(JRDataSource dataSource, Map parameterMap, JasperDesign design) throws JRException {
-    System.out.println("JASPERREPORT: "+parameterMap.toString());
+    //System.out.println("JASPERREPORT: "+parameterMap.toString());
     JasperReport report = JasperManager.compileReport(design);
     return JasperFillManager.fillReport(report, parameterMap, dataSource);
   }

@@ -59,6 +59,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
@@ -423,10 +424,25 @@ public class ReportGenerator extends Block {
 				submForm.add(_fieldTable);
 				this.add(submForm);
 			} else {
+				System.out.println("\n[ReportGenerator]: starts generating...");
+				System.out.println("[ReportGenerator]: parsing xml...");
+				long time1 = System.currentTimeMillis();
 				parseMethodInvocationXML();
+				long time2 = System.currentTimeMillis();
+				System.out.println("[ReportGenerator]: took "+(time2-time1)+"ms, total of "+(time2-time1)+"ms");
+				System.out.println("[ReportGenerator]: generating datasource...");
 				generateDataSource(iwc);
+				long time3 = System.currentTimeMillis();
+				System.out.println("[ReportGenerator]: took "+(time3-time2)+"ms, total of "+(time3-time1)+"ms");
+				System.out.println("[ReportGenerator]: generating layout...");
 				generateLayout(iwc);
+				long time4 = System.currentTimeMillis();
+				System.out.println("[ReportGenerator]: took "+(time4-time3)+"ms, total of "+(time4-time1)+"ms");
+				System.out.println("[ReportGenerator]: generating report...");
 				generateReport(iwc);
+				long time5 = System.currentTimeMillis();
+				System.out.println("[ReportGenerator]: took "+(time5-time4)+"ms, total of "+(time5-time1)+"ms");
+				System.out.println("[ReportGenerator]: ...finished\n");
 				this.add(getReportLink(iwc));
 
 			}
@@ -504,6 +520,7 @@ public class ReportGenerator extends Block {
 		nameInput.setDisabled(!_canChangeReportName);
 		nameInput.setValue(_reportName);
 		_fieldTable.add(nameInput,2,row);
+		_fieldTable.add(new HiddenInput(PRM_DR_GEN_STATE,"2"),2,row);
 
 		//TODO Let Reportable field and ClassDescription impliment the same interface (IDODynamicReportableField) to decrease code duplications
 		if(_queryPK != null){
