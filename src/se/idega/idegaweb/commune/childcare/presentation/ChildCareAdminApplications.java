@@ -38,17 +38,17 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 		applicationTable.setWidth(getWidth());
 		applicationTable.setCellpadding(getCellpadding());
 		applicationTable.setCellspacing(getCellspacing());
-		applicationTable.setColumns(5);
+		applicationTable.setColumns(7);
 		applicationTable.setRowColor(1, getHeaderColor());
-		applicationTable.setWidth(5, 12);
+		applicationTable.setWidth(7, 12);
 		int row = 1;
 		int column = 1;
 		
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row++);
-		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
+		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row++);
 		
 		Collection applications = getApplicationCollection();
