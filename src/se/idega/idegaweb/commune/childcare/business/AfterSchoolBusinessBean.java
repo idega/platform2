@@ -25,8 +25,6 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
@@ -272,18 +270,19 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 				if (earliestDate != null) {
 					date = new Date(earliestDate.getTime());
 				}
-				if (!application.getHasDateSet()) {
-					SchoolClassMember placement = null;
-					try {
-						SchoolClassMemberHome home = getSchoolBusiness().getSchoolClassMemberHome();
-						placement = home.findNotTerminatedByStudentSchoolAndCategory(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
-					} catch (Exception e) {}
-					if (placement != null) {
-						Date placementDate = new Date(placement.getRegisterDate().getTime());
-						if (placementDate.getTime() > date.getTime()) {
-							date = placementDate;
-						}
-					}
+				if (application.getFromDate() == null) {
+					continue;
+//					SchoolClassMember placement = null;
+//					try {
+//						SchoolClassMemberHome home = getSchoolBusiness().getSchoolClassMemberHome();
+//						placement = home.findNotTerminatedByStudentSchoolAndCategory(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
+//					} catch (Exception e) {}
+//					if (placement != null) {
+//						Date placementDate = new Date(placement.getRegisterDate().getTime());
+//						if (placementDate.getTime() > date.getTime()) {
+//							date = placementDate;
+//						}
+//					}
 				} else {
 					if (application.getFromDate().getTime() > date.getTime()) {
 						date = application.getFromDate();
