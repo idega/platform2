@@ -1,9 +1,11 @@
 package com.idega.block.dataquery.data;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 
 /**
@@ -23,6 +25,33 @@ public class QueryResult {
     
   private SortedMap fields = new TreeMap();
   private SortedMap cells = new TreeMap();
+  
+  public static QueryResult getInstanceForDocument(XMLDocument document)  {
+    QueryResult instance = new QueryResult(); 
+    XMLElement root = document.getRootElement();
+    // definition 
+    XMLElement definition = root.getChild(DEFINITION);
+    List fields = QueryResultField.getInstancesForELement(definition);
+    Iterator fieldIterator = fields.iterator();
+    while (fieldIterator.hasNext()) {
+      QueryResultField field = (QueryResultField) fieldIterator.next();
+      if (field != null) {
+        instance.addField(field);
+      }
+    }
+    // content
+    XMLElement content = root.getChild(CONTENT);
+    List cells = QueryResultCell.getInstancesForELement(content);
+    Iterator cellIterator = cells.iterator();
+    while (cellIterator.hasNext()) {
+      QueryResultCell cell = (QueryResultCell) cellIterator.next();
+      if (cell != null) {
+        instance.addCell(cell);
+      }
+    }    
+    return instance;
+  }
+       
  
   public void addField(QueryResultField field) {
     fields.put(field.getId(), field);
@@ -63,4 +92,5 @@ public class QueryResult {
     
     return queryResult;
   }
+  
 }

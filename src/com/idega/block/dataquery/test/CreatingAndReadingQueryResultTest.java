@@ -1,7 +1,5 @@
 package com.idega.block.dataquery.test;
 
-import java.text.NumberFormat;
-
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.presentation.Block;
