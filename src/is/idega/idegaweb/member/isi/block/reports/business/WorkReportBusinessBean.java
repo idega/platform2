@@ -738,6 +738,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
 			}
 			catch(FinderException e) {
+				e.printStackTrace();
 				return false;
 			}
 
@@ -764,6 +765,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
+						e.printStackTrace();
 						return false;
 					}
 				}				
@@ -786,6 +788,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
 			}
 			catch(FinderException e) {
+				e.printStackTrace();
 				return false;
 			}
 
@@ -808,6 +811,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
+						e.printStackTrace();
 						return false;
 					}
 				}				
@@ -830,6 +834,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
 			}
 			catch(FinderException e) {
+				e.printStackTrace();
 				return false;
 			}
 
@@ -852,6 +857,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
+						e.printStackTrace();
 						return false;
 					}
 				}				
@@ -874,6 +880,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
 			}
 			catch(FinderException e) {
+				e.printStackTrace();
 				return false;
 			}
 
@@ -896,6 +903,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						getWorkReportById(workReportId).addLeague(league);
 					}
 					catch(Exception e) {
+						e.printStackTrace();
 						return false;
 					}
 				}				
