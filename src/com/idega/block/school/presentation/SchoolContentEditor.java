@@ -61,6 +61,7 @@ public class SchoolContentEditor extends IWAdminWindow{
   public final static String PARAMETER_SCHOOL_ID = SchoolContentBusinessBean.PARAMETER_SCHOOL_ID;
   
   private String PARAMETER_INFORMATION = "scr_inf";
+  private String PARAMETER_LOCALIZED_TEXT_ID = "scr_ltid";
   private String PARAMETER_IMAGE_ID = "scr_img";
   private String PARAMETER_USE_IMAGE = "scr_usimg";
   private String PARAMETER_SCHOOL_NAME = "scr_schn";
@@ -180,6 +181,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				if (body != null) {
 					information.setContent(body);	
 				}
+				this.addHiddenInput(new HiddenInput(PARAMETER_LOCALIZED_TEXT_ID, text.getPrimaryKey().toString()));
 			}
 			
 			if ( _school.getName() != null) {
@@ -324,8 +326,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 					}
 				}
 				
-				LocalizedText text = _school.getLocalizedText(iwc.getCurrentLocaleId());
-				if (text == null) {
+				String ltId = iwc.getParameter(PARAMETER_LOCALIZED_TEXT_ID);
+				LocalizedText text = null;
+				if (ltId != null) {
+					text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHome(LocalizedText.class)).findByPrimaryKey(new Integer(ltId));
+				} else {
 					text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHome(LocalizedText.class)).create();
 					text.setLocaleId( iwc.getCurrentLocaleId() );
 				}
@@ -397,7 +402,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		SubmitButton button = new SubmitButton(text);
 		form.setWindowToOpen( SchoolContentEditor.class );
 		form.addParameter(PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
-		System.out.println("styleClass : "+styleClass);
+		///debug("[SchoolContentEditor] styleClass : "+styleClass);
 		if (styleClass != null) {
 			button.setStyleClass(styleClass);	
 		}

@@ -1,8 +1,11 @@
 package com.idega.block.school.data;
 
+import com.idega.block.text.business.TextBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextHome;
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.data.TxTextHome;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
 import com.idega.data.*;
@@ -14,6 +17,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 /**
@@ -73,8 +77,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		this.addManyToManyRelationShip(SchoolType.class);
 		this.addManyToManyRelationShip(SchoolYear.class);
 		// Grimur 16.10.2002
-		this.addManyToManyRelationShip(LocalizedText.class);
+		this.addManyToManyRelationShip(LocalizedText.class); // in for backwards compatability
 		this.addManyToManyRelationShip(ICFile.class);
+		// Gimmi 27.12.2002
+		this.addManyToManyRelationShip(TxText.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -310,18 +316,81 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException {
-		LocalizedText text = TextFinder.getLocalizedText(this, localeId);
-		if (text == null)
-			text = TextFinder.getLocalizedText(this, 1);
+	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException{
+		Collection coll = getText();
+		TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
+		if (coll != null && !coll.isEmpty()) {
+			Iterator iter = coll.iterator();
+			TxText text;
+			try {
+				text = textHome.findByPrimaryKey(iter.next());
+				/* May want to use this...
+				if (iter.hasNext()) {
+					System.out.println("[SchoolBMPBean] Found too many localizedTexts, removing this one ("+text.getID()+") and trying again..");
+					TextBusiness.deleteText(text.getID());
+					return getLocalizedText(localeId);
+				}*/
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+				return null;
+			}
+			LocalizedText lText = TextFinder.getContentHelper(text.getID(), localeId).getLocalizedText();
+			if (lText == null) {
+				debug("[SchoolBMPBean] : lText == NULL");
+			}else {
+				debug("[SchoolBMPBean] : lText.getID() = "+lText.getID());
+			}
+			return lText;
+		}else {
+			/** trying backwards compatability */
+			try {
+				LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+				if (text != null) {
+					int lTextId = text.getID();
+					TxText txText = TextBusiness.saveText(-1, lTextId, localeId, -1, -1, null, null, text.getHeadline(), text.getTitle(), text.getBody(), null, null);
+					setText(txText);
+					System.out.println("[SchoolBMPBean] : Backwards compatability for localized text (School = '"+getSchoolName()+"')");
+					return TextFinder.getContentHelper(txText.getID(), localeId).getLocalizedText();
+				}else {
+					return TextFinder.getLocalizedText(this, localeId);
+				}
+//				return TextFinder.getLocalizedText(text, localeId);
+			} catch (Exception e) {
+				System.out.println("[SchoolBMPBean] : Backwards compatability for localized text (School = '"+getSchoolName()+"') - FAILED !!");
+				e.printStackTrace(System.err);
+				return TextFinder.getLocalizedText(this, localeId);
+			}
+		}
 
-		return text;
+	}
+	
+	private Collection getText() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(TxText.class);	
+	}
+	
+	private void setText(TxText text) throws IDOAddRelationshipException {
+		this.idoAddTo(text);	
 	}
 
 	public void setLocalizedText(LocalizedText text) throws IDORelationshipException {
-		/** Supports only one locale, if a new one in inserted it will overwrite the old one... */
-		this.idoRemoveFrom(LocalizedText.class);
-		this.idoAddTo(text);
+		Collection coll= getText();
+		if (coll != null && !coll.isEmpty()) {
+			try {
+				Iterator iter = coll.iterator();
+				TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
+				TxText txText = textHome.findByPrimaryKey(iter.next());
+				TextBusiness.saveText(txText.getID(), text.getID(), text.getLocaleId(), -1, -1, null, null, text.getHeadline(), text.getTitle(), text.getBody(), null, null);
+				debug("[SchoolBMPBean] trying to set txText_id = "+txText.getID()+", locTxtId = "+text.getID());
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}else {
+			System.out.println("[SchoolBMPBean] : setLocalizedText : backwards compatability");
+			TxText txText = TextBusiness.saveText(-1, text.getID(), text.getLocaleId(), -1, -1, null, null, text.getHeadline(), text.getTitle(), text.getBody(), null, null);
+			idoAddTo(txText);
+			this.idoRemoveFrom(LocalizedText.class);
+		}
+		//this.idoAddTo(text);
 	}
 
 	public String getSchoolFax() {
