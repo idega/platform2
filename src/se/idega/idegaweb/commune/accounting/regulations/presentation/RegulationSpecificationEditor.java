@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.11 2003/10/02 22:42:17 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.12 2003/10/03 00:31:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/10/02 22:42:17 $
+ * $Date: 2003/10/03 00:31:26 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -78,6 +78,8 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 	private final static String KEY_MAIN_RULE_DROP_HEADER= KP + "main_rule_drop_header";
 	private final static String KEY_SELECT_MAIN_RULE_ERROR = KP + "select_main_rule_error";
 	private final static String DEFAULT_SELECT_MAIN_RULE_ERROR = KP + "Var god välj en huvudregel!";
+	private final static String KEY_SELECT_SPEC_TYPE_EMPTY = KP + "select_spec_type_empty";
+	private final static String DEFAULT_SELECT_SPEC_TYPE_EMPTY = KP + "Var god ange en regelspecificeringstyp!";
 	
 
 	/**
@@ -189,6 +191,10 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		String errorMessage = null;
 
 		try {
+			if(iwc.getParameter(PARAMETER_REGULATION_SPEC_TYPE)	.length() == 0) {
+				throw new RegulationException(KEY_SELECT_SPEC_TYPE_EMPTY, DEFAULT_SELECT_SPEC_TYPE_EMPTY);
+			}
+
 			if (getIntParameter(iwc, PARAMETER_MAIN_RULE_ID) == 0) {
 				throw new RegulationException(KEY_SELECT_MAIN_RULE_ERROR, DEFAULT_SELECT_MAIN_RULE_ERROR);
 			}

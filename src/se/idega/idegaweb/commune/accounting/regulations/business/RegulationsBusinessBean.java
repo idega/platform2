@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.32 2003/10/02 23:20:40 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.33 2003/10/03 00:31:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -75,7 +75,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
 	public final static String KEY_ERROR_PARAM_MAIN_OPERATION = "main_op_error";
-
+	public final static String KEY_ERROR_PARAM_REG_SPEC_EMPTY = "reg_spec_empty";
 
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.accounting.presentation.AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER;
@@ -455,6 +455,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		RegulationSpecTypeHome home = null;
 		RegulationSpecType rst = null;
 		
+		if (regSpecTypeKey.length() == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_REG_SPEC_EMPTY, "Regelspecifikcationstyp saknas!");			
+		}
+	
 		try {
 			home = getRegulationSpecTypeHome();
 			rst = home.findByPrimaryKey(new Integer(regSpecTypeId));
