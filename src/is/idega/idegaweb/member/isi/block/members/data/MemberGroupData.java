@@ -85,14 +85,17 @@ public class MemberGroupData {
 	private void processStatus(UserStatus status) {
 		Group group = status.getGroup();
 		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
-		String statusName = getStatusLocalizedName(status.getStatus().getStatusKey());
+		String statusKey = status.getStatus().getStatusKey();
+		String statusName = getStatusLocalizedName(statusKey);
 		_buf.setLength(0);
 		processGroup(group, _buf, true);
+		String groupLongName = _buf.toString();
 		if(_buf.length()>0) {
 			IWTimestamp begin = new IWTimestamp(status.getDateFrom());
 			IWTimestamp end = status.getDateTo()==null?null:(new IWTimestamp(status.getDateTo()));
 			addGroupInfo(_buf.toString(), groupTypeName, statusName, begin, end);
 		}
+		System.out.println("Processesed status for group " + group.getName() + "(" + _buf.toString() +  "), status is " + statusName + "(" + statusKey + ")");
 	}
 	
 	/**
@@ -204,7 +207,7 @@ public class MemberGroupData {
 		String[] result = new String[5];
 		result[0] = _buf.toString();
 		result[1] = type;
-		result[2] = "";
+		result[2] = status;
 		result[3] = begin.getDateString("dd.MM.yyyy");
 		if(end!=null) {
 			result[4] = end.getDateString("dd.MM.yyyy");
