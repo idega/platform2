@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.17 2004/06/07 18:41:06 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.18 2004/06/21 16:49:13 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,14 +79,14 @@ public class CampusReferenceNumberInfoHelper {
     }
   }
 
-  public static List getUserLogin(IWContext iwc) {
-    String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
+  public static List getUserLogin(String ssn) {
+    String ref = ssn;
     Vector l = new Vector();
 
 
     try {
       ApplicantHome aHome = (ApplicantHome) IDOLookup.getHome(Applicant.class);
-      Applicant applicant = aHome.create();
+      Applicant applicant ;
       Collection li = aHome.findBySSN(ref);
       if (li != null && !li.isEmpty()) {
         Iterator it = li.iterator();
@@ -141,7 +141,7 @@ public class CampusReferenceNumberInfoHelper {
 
     }
     catch(Exception ex) {
-
+    		ex.printStackTrace();
     }
 
     return(l);
