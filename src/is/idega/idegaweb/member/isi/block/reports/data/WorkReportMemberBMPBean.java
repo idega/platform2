@@ -191,7 +191,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		sql.append("Select e.* from ").append(ENTITY_NAME).append(" e ,").append(middleTableName).append(" middle")
 		.append(" where ").append("e."+COLUMN_NAME_REPORT_ID).append("=").append(reportId)
 		.append(" and ").append("( middle."+primaryKeyName).append("=").append((Integer)wrGroup.getPrimaryKey()).append(" ) ")
-		.append(" and ").append("( e."+this.getIDColumnName()).append("=").append("member."+this.getIDColumnName()).append(" ) ");		
+		.append(" and ").append("( e."+this.getIDColumnName()).append("=").append(" middle."+this.getIDColumnName()).append(" ) ");		
 
 		
 		return idoFindIDsBySQL(sql.toString());
