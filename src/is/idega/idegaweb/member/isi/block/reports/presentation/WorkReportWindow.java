@@ -100,7 +100,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			paramWorkReportYear = (String) iwc.getSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
 		}
 		
-		if(paramWorkReportYear!=null) {
+		if(paramWorkReportYear!=null && !paramWorkReportYear.equals("")) {
 			year  = Integer.parseInt(paramWorkReportYear);
 		}
 		

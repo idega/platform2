@@ -104,6 +104,7 @@ public class WorkReportMultiEditor extends Block {
     form.add(pres);
     //HACK!
     form.maintainParameter(WorkReportWindow.ACTION);
+	form.maintainParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
     add(form);
     add(new PrintButton(iwrb.getLocalizedImageButton("workreportsender.print","print")));
   }
@@ -478,7 +479,7 @@ public class WorkReportMultiEditor extends Block {
 				moreLink.setAsImageButton(true);
 				moreLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW_CLOSE_VIEW);
 				moreLink.addParameter(WorkReportOverViewCloseView.CLOSE_VIEW_WORK_REPORT_ID,report.getPrimaryKey().toString());
-				
+				moreLink.addParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,iwc.getParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR));
 				return moreLink;
 			}
 		

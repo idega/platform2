@@ -27,7 +27,7 @@
     <initialValueExpression></initialValueExpression>
   </variable>
   <variable name="AllsSum" class="java.lang.Integer" resetType="None" calculation="Nothing">
-    <variableExpression>new Integer($V{underAllSum}.intValue() + $V{overAllSum}.intValue()) </variableExpression>
+    <variableExpression>new Integer($V{underAllSum}.intValue() + $V{overAllSum}.intValue())</variableExpression>
     <initialValueExpression></initialValueExpression>
   </variable>
   <group name="regionalgroup">
@@ -38,28 +38,28 @@
     <groupFooter>
       <band height="25">
         <textField>
-          <reportElement positionType="Float" mode="Transparent" x="226" y="0" width="22" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="37" height="15" />
           <textElement textAlignment="Center">
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{AllsSum}</textFieldExpression>
         </textField>
         <textField>
-          <reportElement positionType="Float" mode="Transparent" x="120" y="0" width="53" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{underAllSum}</textFieldExpression>
         </textField>
         <textField>
-          <reportElement positionType="Float" mode="Transparent" x="173" y="0" width="53" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
           <textFieldExpression class="java.lang.Integer">$V{overAllSum}</textFieldExpression>
         </textField>
         <staticText>
-          <reportElement positionType="Float" mode="Transparent" x="40" y="0" width="80" height="15" />
+          <reportElement positionType="Float" mode="Transparent" x="68" y="0" width="80" height="15" />
           <textElement>
             <font fontName="Helvetica" size="10" isBold="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
           </textElement>
@@ -73,7 +73,7 @@
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
         <reportElement mode="Opaque" x="0" y="0" width="500" height="19" backcolor="#9eb400" />
         <textElement textAlignment="Center">
-          <font fontName="sansserif" size="16" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="16" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{ReportTitle}</textFieldExpression>
       </textField>
@@ -84,42 +84,42 @@
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="93" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{label_workReportYear}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="93" y="0" width="25" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{workReportYear}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="128" y="0" width="88" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{label_regUnions}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="216" y="0" width="20" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{regUnions}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="246" y="0" width="67" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{workreportreport}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true">
         <reportElement positionType="Float" mode="Transparent" x="313" y="0" width="125" height="16" />
         <textElement>
-          <font fontName="sansserif" size="9" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{label}</textFieldExpression>
       </textField>
@@ -128,30 +128,30 @@
   <columnHeader>
     <band height="20">
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="120" height="14" />
+        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="149" height="14" />
         <textElement>
-          <font fontName="sansserif" size="9" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{regional_union_name}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="120" y="0" width="53" height="14" />
+        <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
         <textElement>
-          <font fontName="sansserif" size="9" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{bothGendersUnderAge}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="174" y="0" width="53" height="15" />
+        <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
         <textElement>
-          <font fontName="sansserif" size="9" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{bothGendersEqualOverAge}</textFieldExpression>
       </textField>
       <staticText>
-        <reportElement positionType="Float" mode="Transparent" x="227" y="0" width="23" height="13" />
+        <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="36" height="15" />
         <textElement textAlignment="Center">
-          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <text>Alls</text>
       </staticText>
@@ -160,28 +160,28 @@
   <detail>
     <band height="15">
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="120" height="15" />
+        <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="149" height="15" />
         <textElement>
-          <font fontName="sansserif" size="8" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$F{regional_union_name}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="120" y="0" width="53" height="15" />
+        <reportElement positionType="Float" mode="Transparent" x="150" y="0" width="53" height="15" />
         <textElement>
-          <font fontName="sansserif" size="8" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.Integer">$F{bothGendersUnderAge}</textFieldExpression>
       </textField>
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="173" y="0" width="53" height="15" />
+        <reportElement positionType="Float" mode="Transparent" x="203" y="0" width="53" height="15" />
         <textElement>
-          <font fontName="sansserif" size="8" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.Integer">$F{bothGendersEqualOverAge}</textFieldExpression>
       </textField>
       <textField isBlankWhenNull="true">
-        <reportElement positionType="Float" mode="Transparent" x="227" y="0" width="20" height="15" />
+        <reportElement positionType="Float" mode="Transparent" x="256" y="0" width="37" height="15" />
         <textElement textAlignment="Center">
           <font fontName="Helvetica" size="10" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
@@ -197,7 +197,7 @@
       <staticText>
         <reportElement positionType="Float" mode="Transparent" x="0" y="0" width="40" height="15" />
         <textElement />
-        <text>Page:</text>
+        <text>bls.</text>
       </staticText>
       <textField>
         <reportElement positionType="Float" mode="Transparent" x="40" y="0" width="80" height="15" />

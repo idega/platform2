@@ -4,6 +4,7 @@ import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -128,6 +129,7 @@ public class WorkReportOverViewCloseView extends Block {
 	Link backLink = new Link(iwrb.getLocalizedString("workreportmultieditor.back_button","back"));
 	backLink.setAsImageButton(true);			
 	backLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW);
+	backLink.addParameter(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR,Integer.toString(year));
 	add(backLink);
 	
   }
@@ -194,6 +196,7 @@ public class WorkReportOverViewCloseView extends Block {
     List params = new ArrayList();
     params.add(WorkReportWindow.ACTION);
     params.add(CLOSE_VIEW_WORK_REPORT_ID);
+    params.add(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_YEAR);
     form.maintainParameters(params);
     
     // define path short keys and map corresponding converters
@@ -238,7 +241,7 @@ public class WorkReportOverViewCloseView extends Block {
 			HAS_MEMBERS, new HasSomeDataConverter(),
 			HAS_ACCOUNT, new HasSomeDataConverter(),
 			HAS_BOARD, new HasSomeDataConverter(),
-			"back",new BackButtonConverter(resourceBundle),
+			//"back",new BackButtonConverter(resourceBundle),
 		};
       
       
@@ -286,7 +289,6 @@ public class WorkReportOverViewCloseView extends Block {
 		return reportBiz;
 	}
 	
-	//TODO Make the year choosable
 	protected int getYear(){
 		return year;
 	}
