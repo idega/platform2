@@ -57,6 +57,9 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	public final static String TYPE_MANUAL = "M";
 	public final static String TYPE_PAYMENT = "P";
 	
+	public final static String ENTRY_OPEN_YES = "Y";
+	public final static String ENTRY_OPEN_NO = "N";
+
 	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
 	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";
 	protected static final String STRING_TYPE_PAYMENT = "isi_acc_fin_entry_pay_type";
@@ -457,11 +460,13 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	}
 
 	/**
+	 * @param club
+	 * @param types
 	 * @param dateFrom
 	 * @param dateTo
 	 * @param divisions
 	 * @param groups
-	 * @return
+	 * @return Collection
 	 * @throws FinderException
 	 */
 	public Collection ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(
@@ -477,6 +482,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
 			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
 		if (club != null)
@@ -485,6 +491,48 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		System.out.println(sql.toString());
+		return idoFindIDsBySQL(sql.toString());
+	}
+	
+	/**
+	 * @param club
+	 * @param types
+	 * @param dateFrom
+	 * @param dateTo
+	 * @param divisions
+	 * @param groups
+	 * @return Collection
+	 * @throws FinderException
+	 */
+	public Collection ejbFindAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+			Group club,
+			String[] types,
+			Timestamp paymentDate,
+			Collection divisions,
+			Collection groups)
+	throws FinderException {
+		IDOUtil util = IDOUtil.getInstance();
+		IDOQuery sql = idoQuery();
+		
+		final String F_ = "f."; // sql alias for finance records
+		final String A_ = "a."; // sql alias for assessment round 
+		final String [] tableNames = { ENTITY_NAME, AssessmentRoundBMPBean.ENTITY_NAME };
+		final String [] tableAliases = { "f", "a" };
+				
+		sql.appendSelect().append(F_).appendStar().appendFrom(tableNames, tableAliases);
+		sql.appendWhereEquals(F_ + COLUMN_ASSESSMENT_ROUND_ID, A_ + "ISI_ASS_ROUND_ID" );
+		sql.appendAnd().append(A_ + AssessmentRoundBMPBean.COLUMN_PAYMENT_DATE).appendLessThanOrEqualsSign().append(paymentDate);
+		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
+		if  (types != null && types.length>0)
+			sql.appendAnd().append(F_ + COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
+		if (club != null)
+			sql.appendAndEquals(F_ + COLUMN_CLUB_ID, club.getPrimaryKey());
+		if  (divisions != null && divisions.size()>0)
+			sql.appendAnd().append(F_ + COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
+		if  (groups != null && groups.size()>0)
+			sql.appendAnd().append(F_ + COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		System.out.println(sql.toString());
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
