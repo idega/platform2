@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/06 14:38:56 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/06 16:23:05 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.99 $
+ * @version $Revision: 1.100 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -128,24 +128,33 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public void removePreliminaryInvoice(CalendarMonth month, String category) throws FinderException, RemoveException, BatchAlreadyRunningException, SchoolCategoryNotFoundException, IDOLookupException {
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		if (sch.findChildcareCategory().getCategory().equals(category)) {
-			if(BatchRunSemaphore.getChildcareRunSemaphore()){
-				removePreliminaryInvoiceSub(month, category);
-				BatchRunSemaphore.releaseChildcareRunSemaphore();
-			}else{
+			if (BatchRunSemaphore.getChildcareRunSemaphore()) {
+				try {
+					removePreliminaryInvoiceSub(month, category);
+				} finally {
+					BatchRunSemaphore.releaseChildcareRunSemaphore();
+				}
+			} else {
 				throw new BatchAlreadyRunningException("Childcare");
 			}
 		} else if (sch.findElementarySchoolCategory().getCategory().equals(category)) {
-			if(BatchRunSemaphore.getElementaryRunSemaphore()){
-				removePreliminaryInvoiceSub(month, category);
-				BatchRunSemaphore.releaseElementaryRunSemaphore();
-			}else{
+			if (BatchRunSemaphore.getElementaryRunSemaphore()) {
+				try {
+					removePreliminaryInvoiceSub(month, category);
+				} finally {
+					BatchRunSemaphore.releaseChildcareRunSemaphore();
+				}
+			} else {
 				throw new BatchAlreadyRunningException("ElementarySchool");
 			}
 		} else if (sch.findHighSchoolCategory().getCategory().equals(category)) {
-			if(BatchRunSemaphore.getHighRunSemaphore()){
-				removePreliminaryInvoiceSub(month, category);
-				BatchRunSemaphore.releaseHighRunSemaphore();
-			}else{
+			if (BatchRunSemaphore.getHighRunSemaphore()) {
+				try {
+					removePreliminaryInvoiceSub(month, category);
+				} finally {
+					BatchRunSemaphore.releaseChildcareRunSemaphore();
+				}
+			} else {
 				throw new BatchAlreadyRunningException("HighSchool");
 			}
 		} else {
