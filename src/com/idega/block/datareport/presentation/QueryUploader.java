@@ -209,7 +209,7 @@ public class QueryUploader extends Block {
 	private DropdownMenu getDropDownOfQueries(String key, IWContext iwc) throws RemoteException, FinderException {
 		SortedMap sortedMap = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		DropdownMenu drp = new DropdownMenu(key);
-		Iterator iterator = ReportQueryOverview.getOwnQueries(iwc).iterator();
+		Iterator iterator = ReportQueryOverview.getQueries(iwc).iterator();
 		while (iterator.hasNext()) {
 			EntityRepresentation userQuery = (EntityRepresentation) iterator.next();
 			String name = (String) userQuery.getColumnValue(ReportQueryOverview.NAME_KEY);
