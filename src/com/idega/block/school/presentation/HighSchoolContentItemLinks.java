@@ -10,9 +10,7 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolDepartment;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneHome;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
@@ -356,31 +354,22 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 		
 		if (emails != null) {
 			Iterator eIter = emails.iterator();
-			EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
 			Email email;
 			Link link;
 			int emSize = emails.size();
 			if (emSize == 1) {
-				try {
-					email = eHome.findByPrimaryKey(eIter.next());
-					link = new Link(getText(name + userType), "mailto:"+email.getEmailAddress());
-					table.add(link, 1, row);
-				} catch (FinderException e) {
-					e.printStackTrace(System.err);
-				}
+				email = (Email) eIter.next();
+				link = new Link(getText(name + userType), "mailto:"+email.getEmailAddress());
+				table.add(link, 1, row);
 			}else if (emSize < 1) {
 				table.add(name, 1, row);
 			}else if (emSize > 1) {
 				table.add(name, 1, row);
 				while (eIter.hasNext()) {
-					try {
-						email = eHome.findByPrimaryKey(eIter.next());
-						link = new Link(getText(email.getEmailAddress()), "mailto:"+email.getEmailAddress());
-						++row;
-						table.add(link, 1, row);
-					} catch (FinderException e) {
-						e.printStackTrace(System.err);
-					}
+					email = (Email) eIter.next();
+					link = new Link(getText(email.getEmailAddress()), "mailto:"+email.getEmailAddress());
+					++row;
+					table.add(link, 1, row);
 				}
 			}
 		}
@@ -388,7 +377,6 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 		Collection phones = user.getPhones();
 		if (phones != null && phones.size() > 0) {
 			Iterator pIter = phones.iterator();	
-			PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 			Phone uPhone;
 			int phCounter = 1;
 			int phMobCounter = 1;
@@ -408,8 +396,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 			}
 			pIter = phones.iterator();	
 			while (pIter.hasNext()) {
-			try {
-				uPhone = pHome.findByPrimaryKey(pIter.next());	
+				uPhone = (Phone) pIter.next();	
 
 				if (uPhone.getPhoneTypeId() == mobilePhoneType){
 					++row;
@@ -421,10 +408,6 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 					}
 					phMobCounter++;
 				} 
-
-			} catch (FinderException e) {
-				e.printStackTrace(System.err);
-			}
 			}
 		}
 		return row;
