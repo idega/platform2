@@ -578,8 +578,8 @@ private IWResourceBundle iwrb;
         if(content.getPublishTo()!=null){
           publishTo.setTimestamp(content.getPublishTo());
         }
-        if(content.getCreated()!=null){
-        	newsDate.setTimestamp(content.getCreated());
+        if(content.getLastUpdated()!=null){
+        	newsDate.setTimestamp(content.getLastUpdated());
         }
       }
       catDrop.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
