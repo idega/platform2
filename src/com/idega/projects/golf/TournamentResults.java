@@ -227,6 +227,9 @@ public class TournamentResults extends JModuleObject {
             totalBrutto = totalScore + handicap;
           }
           int firstNine = totalScore - lastNine;
+          if ( this.tournamentType_ == ResultComparator.TOTALSTROKESWITHHANDICAP ) {
+            firstNine = totalBrutto - lastNine;
+          }
 
           lastNineText.setText(Integer.toString(lastNine));
           firstNineText.setText(Integer.toString(firstNine));

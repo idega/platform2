@@ -156,6 +156,10 @@ public class ResultComparator implements Comparator {
     if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
       result = 0;
 
+    if ( result == 0 ) {
+      result = this.totalStrokesHandicapCompare(r1,r2);
+    }
+
     return result;
   }
 
