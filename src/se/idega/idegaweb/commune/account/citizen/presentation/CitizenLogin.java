@@ -25,6 +25,8 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 
 /**
@@ -53,6 +55,17 @@ public class CitizenLogin extends Login {
 	 * @see com.idega.block.login.presentation.Login#isLoggedOn(com.idega.presentation.IWContext)
 	 */
 	protected void isLoggedOn(IWContext iwc) throws Exception {
+		if (sendUserToHomePage && LoginBusinessBean.isLogOnAction(iwc)) {
+			User newUser = iwc.getCurrentUser();
+			Group newGroup = newUser.getPrimaryGroup();
+			if (newUser.getHomePageID() != -1) {
+				iwc.forwardToIBPage(this.getParentPage(), newUser.getHomePage());
+			}
+			if (newGroup != null && newGroup.getHomePageID() != -1) {
+				iwc.forwardToIBPage(this.getParentPage(), newGroup.getHomePage());
+			}
+		}
+
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
