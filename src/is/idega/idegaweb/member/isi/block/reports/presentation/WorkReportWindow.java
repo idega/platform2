@@ -705,7 +705,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_5_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_4_reportname", "Regional unions"), false));
 		b12_5_4.addParameter(ACTION, ACTION_STATISTICS);
 		b12_5_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.4.xml");
-		//b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
+//		b12_5_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.4.xml");
 		b12_5_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_4_reportname");
 		b12_5_4.setStyleClass(styledLink);
 
@@ -716,7 +716,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_5_5.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_5_reportname", "Regional union, comparison"), false));
 		b12_5_5.addParameter(ACTION, ACTION_STATISTICS);
 		b12_5_5.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.5.xml");
-		//b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
+		b12_5_5.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.5.xml");
 		b12_5_5.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_5_reportname");
 		b12_5_5.setStyleClass(styledLink);
 
