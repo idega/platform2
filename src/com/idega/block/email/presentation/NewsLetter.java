@@ -218,25 +218,26 @@ public class NewsLetter extends CategoryBlock {
 				cancel = new SubmitButton(iwrb.getLocalizedImageButton("unsubscribe", "Unsubscribe"), "nl_stop");
 			}
 			
-			if(!_submitBelowTopics) {
+			 
 				if ( _submitBelow ) {
 					T.add(email, 1, 1);
 					T.setHeight(1, 2, _spaceBetween);
-					T.add(send, 1, 3);
-					if (_showCancelImage)
-						T.add(cancel, 1, 3);
+					if(!_submitBelowTopics) {
+						T.add(send, 1, 3);
+						if (_showCancelImage)
+							T.add(cancel, 1, 3);
+					}
+					
 				}
 				else {
 					T.add(email, 1, 1);
 					T.setWidth(2, 1, _spaceBetween);
-					T.add(send, 3, 1);
-					if (_showCancelImage)
-						T.add(cancel, 3, 1);
+					if(!_submitBelowTopics) {
+						T.add(send, 3, 1);
+						if (_showCancelImage)
+							T.add(cancel, 3, 1);
+					}
 				}
-			}
-
-			
-			
 			return T;
 	}
 
