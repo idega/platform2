@@ -112,6 +112,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return PostingParameters
 	 * @author Kjell
 	 */
+/*
 	public Object findPostingParameter(int id) throws FinderException {
 		try {
 			PostingParametersHome home = getPostingParametersHome();
@@ -122,6 +123,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			return null;
 		}
 	}
+*/
 	
 	/**
 	 * Pads the string according to the rules in Posting field
