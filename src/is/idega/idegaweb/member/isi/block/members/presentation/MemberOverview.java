@@ -118,18 +118,19 @@ public class MemberOverview extends Block {
 		row = insertRegistrationInfoIntoTable(table, row, true);
 
 		Date usersDOB = user.getDateOfBirth();
-		if(isUserOverEighteen(usersDOB)) {
-			String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
-			String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
-			String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
-			String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
-			String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
-			String[] financeOverviewHeaderAlignments = { null, null, "right" };
-			row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
-			row = insertFinanceInfoIntoTable(table, row, true, iwc);
-			mainTable.add(table, 1, 4);
+		if(usersDOB != null) {
+			if(isUserOverEighteen(usersDOB)) {
+				String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
+				String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
+				String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
+				String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
+				String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
+				String[] financeOverviewHeaderAlignments = { null, null, "right" };
+				row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
+				row = insertFinanceInfoIntoTable(table, row, true, iwc);
+				mainTable.add(table, 1, 4);
+			}
 		}
-		
 		add(mainTable);
 	}
 
