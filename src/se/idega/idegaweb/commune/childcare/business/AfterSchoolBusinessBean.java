@@ -21,11 +21,14 @@ import se.idega.idegaweb.commune.childcare.data.AfterSchoolChoiceHome;
 
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -200,11 +203,25 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			trans.begin();
 			CaseStatus first = super.getCaseStatusPreliminary();
 			CaseStatus other = super.getCaseStatusInactive();
+			CaseStatus status = null;
+			boolean firstIsFamilyFreetime = false;
 			AfterSchoolChoice choice = null;
 			for (int i = 0; i < caseCount; i++) {
 				if (providerIDs[i] != null && providerIDs[i].intValue() > 0) {
 					stamp = new IWTimestamp(placementDates[i]);
-					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, i == 0 ? first : other, choice, stamp.getDate(), season, subject, body);
+					if (i == 0) {
+						status = first;
+						firstIsFamilyFreetime = isFamilyFreetime(providerIDs[i]);
+					}
+					else {
+						if (i == 1 && firstIsFamilyFreetime) {
+							status = first;
+						}
+						else {
+							status = other;
+						}
+					}
+					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, status, choice, stamp.getDate(), season, subject, body);
 					returnList.add(choice);
 				}
 			}
@@ -222,5 +239,26 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			ex.printStackTrace();
 			throw new IDOCreateException(ex);
 		}
+	}
+	
+	private boolean isFamilyFreetime(Integer providerID) {
+		try {
+			School provider = getSchoolBusiness().getSchool(providerID);
+			Collection types = provider.findRelatedSchoolTypes();
+			Iterator iter = types.iterator();
+			while (iter.hasNext()) {
+				SchoolType element = (SchoolType) iter.next();
+				if (element.getIsFamilyFreetimeType()) {
+					return true;
+				}
+			}
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		catch (IDORelationshipException ire) {
+			log(ire);
+		}
+		return false;
 	}
 }
