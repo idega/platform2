@@ -608,7 +608,9 @@ public class Member extends com.idega.data.genericentity.Member {
             try {
                 java.util.List members = com.idega.data.EntityFinder.findAllByColumn(new com.idega.projects.golf.entity.Member(),"SOCIAL_SECURITY_NUMBER",socialSecurityNumber);
                 if (members != null) {
-                    if (members.size()  > 0) returner = (com.idega.data.genericentity.Member) members.get(0);
+                    if (members.size()  > 0) {
+                        returner = (com.idega.data.genericentity.Member) members.get( (members.size() -1));
+                    }
                 }
             }
             catch (SQLException sq) {
