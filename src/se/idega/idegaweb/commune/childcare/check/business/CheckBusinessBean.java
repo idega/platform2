@@ -1,17 +1,21 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
-import java.util.Collection;
-
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.message.data.UserMessage;
-import se.idega.idegaweb.commune.message.data.UserMessageHome;
-
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.school.business.SchoolTypeBusiness;
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
+
+import java.util.Collection;
+import javax.ejb.EJBException;
+
 
 /**
  * Title:
@@ -32,8 +36,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	private boolean rule5Verified = false;
 	private boolean allRulesVerified = false;
 
-	public CheckBusinessBean() {
-	}
+	public CheckBusinessBean() {}
 
 	private CheckHome getCheckHome() throws java.rmi.RemoteException {
 		return (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
@@ -75,7 +78,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return this.allRulesVerified;
 	}
 
-	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, int managerId, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws Exception {
+	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws Exception {
 		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
 		Check check = home.create();
 		check.setChildCareType(childCareType);
@@ -88,7 +91,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.setMethod(method);
 		check.setAmount(amount);
 		check.setCheckFee(checkFee);
-		check.setManagerId(managerId);
+		check.setOwner(user);
 		check.setNotes(notes);
 		check.setRule1(checkRule1);
 		check.setRule2(checkRule2);
@@ -100,60 +103,78 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.store();
 	}
 
-	public void sendMessageToCitizen(String subject, String body, int managerId) throws Exception {
-		UserMessageHome home = (UserMessageHome) com.idega.data.IDOLookup.getHome(UserMessage.class);
-		UserMessage msg = (UserMessage) home.create();
-		msg.setSubject(subject);
-		msg.setBody(body);
-		//    msg.setSenderId(managerId);
-		msg.store();
+	public void sendMessageToCitizen(IWContext iwc, String subject, String body) throws Exception {
+		try {
+			User user = getCurrentCheck().getOwner();
+			int userID = -1;
+			if (user != null)
+				userID = ((Integer) user.getPrimaryKey()).intValue();
+
+			Message message = getMessageBusiness(iwc).createUserMessage(userID, subject, body);
+			message.setParentCase(getCurrentCheck());
+			message.store();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 
 	public void verifyCheckRules(int checkId, String[] selectedRules, String notes, int managerId) throws Exception {
-		currentCheck = getCheck(checkId);
-		currentCheck.setManagerId(managerId);
-		rule1Verified = false;
-		rule2Verified = false;
-		rule3Verified = false;
-		rule4Verified = false;
-		rule5Verified = false;
+		this.currentCheck = getCheck(checkId);
+		this.currentCheck.setManagerId(managerId);
+		this.rule1Verified = false;
+		this.rule2Verified = false;
+		this.rule3Verified = false;
+		this.rule4Verified = false;
+		this.rule5Verified = false;
 		if (selectedRules == null) {
-			allRulesVerified = false;
-		}
-		else {
+			this.allRulesVerified = false;
+		} else {
 			for (int i = 0; i < selectedRules.length; i++) {
 				int rule = Integer.parseInt(selectedRules[i]);
 				switch (rule) {
 					case 1 :
-						rule1Verified = true;
+						this.rule1Verified = true;
 						break;
 					case 2 :
-						rule2Verified = true;
+						this.rule2Verified = true;
 						break;
 					case 3 :
-						rule3Verified = true;
+						this.rule3Verified = true;
 						break;
 					case 4 :
-						rule4Verified = true;
+						this.rule4Verified = true;
 						break;
 					case 5 :
-						rule5Verified = true;
+						this.rule5Verified = true;
 						break;
 				}
 			}
 			// Rule 5 overrides all other rules
-			allRulesVerified = ((selectedRules.length == 4) && !rule5Verified) || rule5Verified;
+			this.allRulesVerified = ((selectedRules.length == 4) && !rule5Verified) || rule5Verified;
 		}
-		currentCheck.setNotes(notes);
-		currentCheck.setRule1(rule1Verified);
-		currentCheck.setRule2(rule2Verified);
-		currentCheck.setRule3(rule3Verified);
-		currentCheck.setRule4(rule4Verified);
-		currentCheck.setRule5(rule5Verified);
+		this.currentCheck.setNotes(notes);
+		this.currentCheck.setRule1(this.rule1Verified);
+		this.currentCheck.setRule2(this.rule2Verified);
+		this.currentCheck.setRule3(this.rule3Verified);
+		this.currentCheck.setRule4(this.rule4Verified);
+		this.currentCheck.setRule5(this.rule5Verified);
+	}
+
+	public SchoolType getSchoolType(IWContext iwc, int schoolTypeId) throws Exception {
+		try {
+			SchoolTypeBusiness schoolTypeBusiness = (SchoolTypeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolTypeBusiness.class);
+			return schoolTypeBusiness.getSchoolType(new Integer(schoolTypeId));
+		} catch (EJBException e) {
+			return null;
+		}
 	}
 
 	public User getUserById(IWContext iwc, int userId) throws Exception {
-		return getUserBusiness(iwc).getUser(userId);
+		try {
+			return getUserBusiness(iwc).getUser(userId);
+		} catch (EJBException e) {
+			return null;
+		}
 	}
 
 	public User getUserByPersonalId(IWContext iwc, String personalID) throws Exception {
@@ -163,8 +184,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public Address getUserAddress(IWContext iwc, User user) {
 		try {
 			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -172,30 +192,32 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public String getUserPostalCode(IWContext iwc, User user) {
 		try {
 			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue()).getPostalCode().getPostalCode();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return "";
 		}
 	}
 
 	public void commit() throws Exception {
-		currentCheck.store();
+		this.currentCheck.store();
 	}
 
 	public void approveCheck() throws Exception {
-		System.out.println("Status: " + getCaseStatusGranted().toString());
-		currentCheck.setCaseStatus(getCaseStatusGranted());
+		this.currentCheck.setCaseStatus(this.getCaseStatusGranted());
 	}
 
 	public void retrialCheck() throws Exception {
-		currentCheck.setCaseStatus(getCaseStatusReview());
+		this.currentCheck.setCaseStatus(this.getCaseStatusReview());
 	}
 
 	public void saveCheck() throws Exception {
-		currentCheck.setCaseStatus(getCaseStatusOpen());
+		this.currentCheck.setCaseStatus(this.getCaseStatusOpen());
 	}
 
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+	}
+
+	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
 	}
 }
