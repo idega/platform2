@@ -111,13 +111,16 @@ public class TourDesigner extends TravelManager {
           number.keepStatusOnAction();
       DropdownMenu locales = ProductBusiness.getLocaleDropDown(iwc);
 
+      int currentYear = idegaTimestamp.RightNow().getYear();
+
       DateInput active_from = new DateInput("active_from");
           active_from.setDate(stamp.getSQLDate());
-//          active_from.setYearRange(2001,);
+          active_from.setYearRange(2001, currentYear+5);
          active_from.keepStatusOnAction();
       DateInput active_to = new DateInput("active_to");
           stamp.addDays(92);
           active_to.setDate(stamp.getSQLDate());
+          active_to.setYearRange(2001, currentYear+5);
           active_to.keepStatusOnAction();
       BooleanInput active_yearly = new BooleanInput("active_yearly");
         active_yearly.setSelected(false);

@@ -133,6 +133,8 @@ public class TimeframeAdder extends TravelWindow {
       table.add(tfDeleteText, 4, row);
       table.setRowColor(row, TravelManager.backgroundColor);
 
+      int currentYear = idegaTimestamp.RightNow().getYear();
+
       for (int i = 0; i < timeframes.length; i++) {
         ++row;
         ++counter;
@@ -140,7 +142,9 @@ public class TimeframeAdder extends TravelWindow {
         toStamp = new idegaTimestamp(timeframes[i].getTo());
 
         from = new DateInput(this._parameterTimeframeFrom+counter);
+          from.setYearRange(2001, currentYear+5);
         to = new DateInput(this._parameterTimeframeTo+counter);
+          to.setYearRange(2001, currentYear+5);
         yearly = new BooleanInput(this._parameterTimeframeYearly+counter);
         delete = new CheckBox(this._parameterTimeframeDelete+timeframes[i].getID());
 
@@ -165,7 +169,9 @@ public class TimeframeAdder extends TravelWindow {
         ++row;
         ++counter;
         from = new DateInput(this._parameterTimeframeFrom+counter);
+          from.setYearRange(2001, currentYear+5);
         to = new DateInput(this._parameterTimeframeTo+counter);
+          to.setYearRange(2001, currentYear+5);
         yearly = new BooleanInput(this._parameterTimeframeYearly+counter);
 
         table.add(from, 1,row);
