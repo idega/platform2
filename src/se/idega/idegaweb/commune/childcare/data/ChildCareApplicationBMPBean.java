@@ -462,19 +462,28 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, -1, -1);
 	}	
 	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, caseCode, -1, -1);
+	}	
+	
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
 		String[] status = { caseStatus };
 		return ejbFindApplicationsByProviderAndStatus(providerID, status, numberOfEntries, startingEntry);
 	}	
 	
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, null, numberOfEntries, startingEntry);
+	}	
+	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode, int numberOfEntries, int startingEntry) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
 		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (caseCode != null)
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 
 		if (numberOfEntries == -1)

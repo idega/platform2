@@ -52,7 +52,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 	
 	public Collection findChoicesByProvider(int providerID) {
 		try {
-			return getAfterSchoolChoiceHome().findAllCasesByProviderAndStatus(providerID, getCaseStatusPreliminary());
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusReady().getStatus() };
+			return getAfterSchoolChoiceHome().findAllCasesByProviderAndNotInStatus(providerID, caseStatus);
 		}
 		catch (FinderException e) {
 			return new ArrayList();
