@@ -34,6 +34,13 @@ public class ParticipantList extends AbstractContentList {
   }
 
 
+  public synchronized Object clone(){
+    ParticipantList obj = (ParticipantList)super.clone();
+
+    obj.groupIdsToList = (int[])this.groupIdsToList.clone();
+
+    return obj;
+  }
 
   public List getEntityList(IWContext iwc) throws java.lang.Exception {
     List l = null;
