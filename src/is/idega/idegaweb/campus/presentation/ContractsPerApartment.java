@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.presentation;
 
-import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
@@ -97,12 +97,12 @@ public class ContractsPerApartment extends Block {
 		else if (iwc.getSessionAttribute(sessConPrm) != null) {
 			this.sGlobalStatus = ((String) iwc.getSessionAttribute(sessConPrm));
 		}
-	
-		if (iwc.isParameterSet("apartment")) 
+
+		if (iwc.isParameterSet("apartment"))
 			aprtName = iwc.getParameter("apartment");
 		else
 			aprtName = null;
-			
+
 		if (isAdmin) {
 			add(statusForm());
 			add(getContractTable(iwc));
@@ -170,31 +170,31 @@ public class ContractsPerApartment extends Block {
 /*		System.out.println("complex = " + sValues[0]);
 		System.out.println("building  = " + sValues[1]);
 		System.out.println("apartment = " + aprtName);*/
-		
+
 		String complex = sValues[0];
 		String building = sValues[1];
-		
+
 		if (complex == null || complex.equals("-1")) {
 			DataTable err1 = new DataTable();
 			err1.add("Þú verður að velja Garð");
-			
-			return err1;	
+
+			return err1;
 		}
 
 		if (building == null || building.equals("-1")) {
 			DataTable err1 = new DataTable();
 			err1.add("Þú verður að velja Hús");
-			
-			return err1;	
+
+			return err1;
 		}
 
 		if (aprtName == null) {
 			DataTable err1 = new DataTable();
 			err1.add("Þú verður að velja Íbúð");
-			
-			return err1;	
+
+			return err1;
 		}
-		
+
 //		List L = ContractFinder.listOfContracts(sValues[0], sValues[1], sValues[2], sValues[3], sValues[4], sGlobalStatus, order);
 		List L = ContractFinder.listOfContracts(complex,building,aprtName);
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
