@@ -15,13 +15,13 @@ import com.idega.user.data.User;
  *
  */
 public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader {
-	private static final String ENTITY_NAME = "cacc_invoice_record";
+	private static final String ENTITY_NAME = "cacc_payment_header";
 
 	private static final String COLUMN_SCHOOL_ID = "";
 	private static final String COLUMN_SCHOOL_CATEGORY_ID = "";
 	private static final String COLUMN_SIGNATURE = "";
 	private static final String COLUMN_DATE_ATTESTED = "date_attested";
-	private static final String COLUMN_STATUS = "staaus";
+	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_PERIOD = "period";
 	
 
@@ -34,7 +34,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_SIGNATURE, User.class);
-		addAttribute(COLUMN_STATUS, "", true, true, java.lang.Character.class);
+		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class,1);
 		addAttribute(COLUMN_DATE_ATTESTED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 	}

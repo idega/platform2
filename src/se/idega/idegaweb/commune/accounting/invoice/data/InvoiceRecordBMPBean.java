@@ -1,11 +1,16 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Joakim
@@ -226,4 +231,25 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setVATType(int i) {
 		setColumn(COLUMN_VAT_TYPE, i);
 	}
+	
+	public Collection ejbFindByMonth(Date month) throws FinderException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		return idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindByInvoiceHeader(InvoiceHeader invoiceHeader) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_INVOICE_HEADER,invoiceHeader.getPrimaryKey());
+		return idoFindPKsByQuery(sql);
+	}
+
 }

@@ -30,8 +30,8 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public void setDoublePosting(java.lang.String p0);
  public void setNotes(java.lang.String p0);
  public void setOwnPosting(java.lang.String p0);
- public void setPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0);
  public void setPaymentHeader(int p0);
+ public void setPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0);
  public void setPaymentText(java.lang.String p0);
  public void setPeriod(java.sql.Date p0);
  public void setPieceAmount(float p0);

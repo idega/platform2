@@ -1,13 +1,15 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
-import com.idega.user.data.*;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * The databean for the "Fakturahuvud" in the C&P Req spec. The invoice header holds all the 
@@ -131,5 +133,19 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
+	
+	public Collection ejbFindByMonth(Date month) throws FinderException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		return idoFindPKsByQuery(sql);
+	}
+	
 }
 

@@ -1,18 +1,20 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Joakim
  *
  */
 public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecord {
-	private static final String ENTITY_NAME = "cacc_invoice_record";
+	private static final String ENTITY_NAME = "cacc_payment_record";
 
 	private static final String COLUMN_PAYMENT_HEADER = "payment_header";
 	private static final String COLUMN_STATUS = "status";
@@ -40,7 +42,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_PAYMENT_HEADER, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_STATUS, "", true, true, java.lang.Character.class);
+		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_PAYMENT_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
@@ -180,4 +182,19 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendWhereEquals(COLUMN_RULE_SPEC_TYPE, ruleSpecType);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
+	
+	public Collection ejbFindByMonth(Date month) throws FinderException {
+		IWTimestamp start = new IWTimestamp(month);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		System.out.println(sql.toString());
+		return idoFindPKsByQuery(sql);
+	}
+
 }

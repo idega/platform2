@@ -1,5 +1,9 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 
 /**
@@ -14,7 +18,7 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 	private static final String ENTITY_NAME = "cacc_batch_run_error";
 
 	private static final String COLUMN_BATCH_RUN_ID = "batch_run_id";
-	private static final String COLUMN_ORDER = "order";
+	private static final String COLUMN_ORDER = "order_nr";
 	private static final String COLUMN_RELATED = "related";
 	private static final String COLUMN_DESCRIPTION = "description";
 
@@ -61,6 +65,10 @@ public class BatchRunErrorBMPBean extends GenericEntity implements BatchRunError
 	}
 	public void setDescription(String s) {
 		setColumn(COLUMN_DESCRIPTION, s);
+	}
+
+	public Collection ejbFindAllOrdered() throws FinderException {
+		return idoFindAllIDsOrderedBySQL(COLUMN_ORDER);
 	}
 }
 

@@ -13,6 +13,13 @@ public class PaymentRecordHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByMonth(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public PaymentRecord findByPaymentHeaderAndRuleSpecType(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPaymentHeaderAndRuleSpecType(p0,p1);

@@ -1,6 +1,9 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
@@ -43,8 +46,8 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 	public int getOperationID() {
 		return getIntColumnValue(COLUMN_OPERATION);
 	}
-	public int getOrder() {
-		return getIntColumnValue(COLUMN_PERIOD);
+	public Date getPeriod() {
+		return getDateColumnValue(COLUMN_PERIOD);
 	}
 	public Date getStart() {
 		return getDateColumnValue(COLUMN_START);
@@ -57,13 +60,17 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 	public void setOperationID(int i) {
 		setColumn(COLUMN_OPERATION, i);
 	}
-	public void setOrder(int i) {
-		setColumn(COLUMN_PERIOD, i);
+	public void setPeriod(Date d) {
+		setColumn(COLUMN_PERIOD, d);
 	}
 	public void setStart(Date d) {
 		setColumn(COLUMN_START, d);
 	}
 	public void setEnd(Date d) {
 		setColumn(COLUMN_STOP, d);
+	}
+	
+	public Collection ejbFindAllOrderByStart() throws FinderException {
+		return (Collection)idoFindAllIDsOrderedBySQL(COLUMN_START);
 	}
 }
