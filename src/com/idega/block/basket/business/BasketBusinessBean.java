@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2004 Idega software. All Rights Reserved.
- *
- * This software is the proprietary information of Idega software.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega software. Use is
+ * subject to license terms.
+ *  
  */
 package com.idega.block.basket.business;
 
@@ -25,13 +25,8 @@ public class BasketBusinessBean extends IBOSessionBean implements
 
     protected boolean isCookieBased = false; //Is the basket cookie or session
 
-    /**
-     * 
-     * @uml.property name="basket"
-     * @uml.associationEnd multiplicity="(0 1)" qualifier="getItemID:com.idega.data.IDOPrimaryKey
-     * entry:com.idega.block.basket.data.BasketEntry"
-     */
     // based.
+
     protected Map basket = null; //A map to hold the
 
     // com.idega.block.basket.data.BasketEntry
@@ -41,8 +36,8 @@ public class BasketBusinessBean extends IBOSessionBean implements
      * Increments the quantity of the specified item in the basket by one.
      * 
      * @param item
-     *            The com.idega.block.basket.data.BasketItem that is being
-     *            added to the basket.
+     *            The com.idega.block.basket.data.BasketItem that is being added
+     *            to the basket.
      */
     public void addItem(BasketItem item) {
         addItem(item, 1);
@@ -117,9 +112,9 @@ public class BasketBusinessBean extends IBOSessionBean implements
     }
 
     /**
-     * Perform a checkout function on the current basket. Will call the
-     * checkout method in the BasketCheckoutBusiness implementation sent into
-     * the method with the basket as a parameter.
+     * Perform a checkout function on the current basket. Will call the checkout
+     * method in the BasketCheckoutBusiness implementation sent into the method
+     * with the basket as a parameter.
      * 
      * @param checkoutBusiness
      */
@@ -138,4 +133,20 @@ public class BasketBusinessBean extends IBOSessionBean implements
         return basket;
     }
 
+    /**
+     * Check to see if a BasketItem is in the basket.
+     * 
+     * @param item
+     *            The BasketItem we are looking for in the basket.
+     * 
+     * @return True, if an BasketItem with the same ID as the one sent in exists
+     *         in the basket. False otherwise.
+     */
+    public boolean checkForItemInBasket(BasketItem item) {
+        if (basket.containsKey(item.getItemID())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

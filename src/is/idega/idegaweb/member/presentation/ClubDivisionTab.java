@@ -1,8 +1,9 @@
- /*
- * Created on Mar 11, 2003
+/*
+ * Copyright (C) 2003 Idega software. All Rights Reserved.
  *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * This software is the proprietary information of Idega software.
+ * Use is subject to license terms.
+ *
  */
 package is.idega.idegaweb.member.presentation;
 
@@ -36,326 +37,380 @@ import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ClubDivisionTab extends UserGroupTab {
-	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
-	
-	private static final String TAB_NAME = "cdiv_tab_name";
-	private static final String DEFAULT_TAB_NAME = "Club Division";
-	
-	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	private static final String HELP_TEXT_KEY = "club_division_tab";
-	
-	
-	private TextInput _numberField;
-	private TextInput _ssnField;
-	private DateInput _foundedField;
-	private DropdownMenu _connectionToSpecialField;
-	private GroupChooser _boardGroupField;	
 
-	private Text _numberText;
-	private Text _ssnText;
-	private Text _foundedText;
-	private Text _connectionToSpecialText;	
-	private Text _boardGroupText;
+    private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
-	private String _numberFieldName;
-	private String _ssnFieldName;
-	private String _foundedFieldName;
-	private String _connectionToSpecialFieldName;
-	private String _boardGroupFieldName;
-	
-	public ClubDivisionTab() {
-		super();
-		IWContext iwc = IWContext.getInstance();
-		IWResourceBundle iwrb = getResourceBundle(iwc);
+    private static final String TAB_NAME = "cdiv_tab_name";
 
-		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
-	}
+    private static final String DEFAULT_TAB_NAME = "Club Division";
 
-	public ClubDivisionTab(Group group) {
-		this();
-		setGroupId(((Integer) group.getPrimaryKey()).intValue());
-	}
+    private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
-	}
+    private static final String HELP_TEXT_KEY = "club_division_tab";
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
-	 */
-	public void initializeFieldNames() {
-		_numberFieldName = "cdiv_number";
-		_ssnFieldName = "cdiv_ssn";
-		_foundedFieldName = "cdiv_founded";
-		_connectionToSpecialFieldName = "cdiv_special";
-		_boardGroupFieldName = "cdiv_board";
-	}
+    private TextInput numberField;
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
-	 */
-	public void initializeFieldValues() {
-		fieldValues = new Hashtable();
-		fieldValues.put(_numberFieldName, "");
-		fieldValues.put(_ssnFieldName, "");
-		fieldValues.put(_foundedFieldName, new IWTimestamp().getDate().toString());
-		fieldValues.put(_connectionToSpecialFieldName, "");
-		fieldValues.put(_boardGroupFieldName,"");		
-	}
+    private TextInput ssnField;
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
-	 */
-	public void updateFieldsDisplayStatus() {
-		_numberField.setContent((String) fieldValues.get(_numberFieldName));
-		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
-		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
-		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-		_connectionToSpecialField.setSelectedElement(connection);
-		if (connection != null && !connection.equals(""))
-			_connectionToSpecialField.setDisabled(true);
-		try {
-			GroupHome home = (GroupHome) com.idega.data.IDOLookup.getHome(Group.class);
-			String groupId = (String) fieldValues.get(_boardGroupFieldName);
+    private DateInput foundedField;
 
-			if (groupId != null && !groupId.equals("")) {
-				try {
-					int index = groupId.indexOf("_");
-					groupId = groupId.substring(index+1);	
-				}
-				catch(Exception e) {
-					e.printStackTrace();
-				}
-				
-				Group group = (Group) (home.findByPrimaryKey(new Integer(groupId)));
-				_boardGroupField.setSelectedGroup(groupId,group.getName());
-			}
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}		
-	}
+    private DropdownMenu connectionToSpecialField;
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
-	 */
-	public void initializeFields() {
-		_numberField = new TextInput(_numberFieldName);
-		_ssnField = new TextInput(_ssnFieldName);
-//		_ssnField.setAsIcelandicSSNumber("Vart�lupr�fun stemmir ekki");
-		_foundedField = new DateInput(_foundedFieldName);
-		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);	
-		
-		Collection special = null;
-		try {
-			special = ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType("iwme_league");
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		
-		if (special != null) {
-			Iterator it = special.iterator();
-			while (it.hasNext()) {
-				Group spec = (Group)it.next();
-				_connectionToSpecialField.addMenuElement(((Integer)spec.getPrimaryKey()).intValue(),spec.getName());
-			}
-		}		
-		
-		_boardGroupField = new GroupChooser(_boardGroupFieldName);
-	}
+    private GroupChooser boardGroupField;
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
-	 */
-	public void initializeTexts() {
-		IWContext iwc = IWContext.getInstance();
-		IWResourceBundle iwrb = getResourceBundle(iwc);
+    private Text numberText;
 
-		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
-		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
-		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
-		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
-		_boardGroupText = new Text(iwrb.getLocalizedString(_boardGroupFieldName, "Board") + ":");
-	}
+    private Text ssnText;
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
-	 */
-	public void lineUpFields() {
-		Table t = new Table(2, 6);
-		t.add(_numberText, 1, 1);
-		t.add(_numberField, 2, 1);
-		t.add(_ssnText, 1, 2);
-		t.add(_ssnField, 2, 2);
-		t.add(_foundedText, 1, 3);
-		t.add(_foundedField, 2, 3);
-		t.add(_connectionToSpecialText, 1, 4);
-		t.add(_connectionToSpecialField, 2, 4);
-		t.add(_boardGroupText, 1, 5);
-		t.add(_boardGroupField, 2, 5);
-		Help help = getHelpButton();
-		t.add(help,1,6);
+    private Text foundedText;
 
-		add(t);
-	}
+    private Text connectionToSpecialText;
 
-	/* (non-Javadoc)
-	 * @see com.idega.util.datastructures.Collectable#collect(com.idega.presentation.IWContext)
-	 */
-	public boolean collect(IWContext iwc) {
-		if (iwc != null) {
-			String number = iwc.getParameter(_numberFieldName);
-			String ssn = iwc.getParameter(_ssnFieldName);
-			String founded = iwc.getParameter(_foundedFieldName);
-			String connection = iwc.getParameter(_connectionToSpecialFieldName);
-			String boardGroup = iwc.getParameter(_boardGroupFieldName);
+    private Text boardGroupText;
 
-			if (number != null)
-				fieldValues.put(_numberFieldName, number);
-			else
-				fieldValues.put(_numberFieldName, "");
-			if (ssn != null)
-				fieldValues.put(_ssnFieldName, ssn);
-			else
-				fieldValues.put(_ssnFieldName, "");
-			if (founded != null)
-				fieldValues.put(_foundedFieldName, founded);
-			else
-				fieldValues.put(_foundedFieldName, "");
-			if (connection != null)
-				fieldValues.put(_connectionToSpecialFieldName, connection);
-			else
-				fieldValues.put(_connectionToSpecialFieldName, "");
-			if (boardGroup != null)
-				fieldValues.put(_boardGroupFieldName, boardGroup);
-			else
-				fieldValues.put(_boardGroupFieldName, "");
-				
-			updateFieldsDisplayStatus();
-		}
+    private String numberFieldName;
 
-		return true;
-	}
+    private String ssnFieldName;
 
-	/* (non-Javadoc)
-	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
-	 */
-	public boolean store(IWContext iwc) {
-		Group group;
-		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+    private String foundedFieldName;
 
-			String number = (String) fieldValues.get(_numberFieldName);
-			String ssn = (String) fieldValues.get(_ssnFieldName);
-			String founded = (String) fieldValues.get(_foundedFieldName);
-			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-			String board = (String) fieldValues.get(_boardGroupFieldName);
-			
-			group.setMetaData("CLUBDIV_NUMBER", number);
-			group.setMetaData("CLUBDIV_SSN", ssn);
-			group.setMetaData("CLUBDIV_FOUNDED", founded);
-//			group.setMetaData("CLUBDIV_CONN", connection);
-				String oldConnection = group.getMetaData("CLUBDIV_CONN");
-				if (oldConnection == null && connection != null) {
-					String clubName = null; 
-					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
-					if (club != null)
-						clubName = club.getName();
-					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), clubName, iwc);
-					group.setMetaData("CLUBDIV_CONN", connection);
-				}
+    private String connectionToSpecialFieldName;
 
-			
+    private String boardGroupFieldName;
 
-			group.setMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD, board);
-			
-			group.store();
-		}
-		catch (RemoteException e) {
-			e.printStackTrace(System.err);
-			return false;
-		}
-		catch (FinderException e) {
-			e.printStackTrace(System.err);
-			return false;
-		}
-		return true;
-	}
+    public ClubDivisionTab() {
+        super();
+        IWContext iwc = IWContext.getInstance();
+        IWResourceBundle iwrb = getResourceBundle(iwc);
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.presentation.UserGroupTab#initFieldContents()
-	 */
-	public void initFieldContents() {
-		Group group;
-		try {
-			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+        setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+    }
 
-			String number = group.getMetaData("CLUBDIV_NUMBER");
-			String ssn = group.getMetaData("CLUBDIV_SSN");
-			String founded = group.getMetaData("CLUBDIV_FOUNDED");
-			String connection = group.getMetaData("CLUBDIV_CONN");
-			String board = group.getMetaData("CLUBDIV_BOARD");
+    public ClubDivisionTab(Group group) {
+        this();
+        setGroupId(((Integer) group.getPrimaryKey()).intValue());
+    }
 
-			if (number != null)
-				fieldValues.put(_numberFieldName, number);
-			if (ssn != null)
-				fieldValues.put(_ssnFieldName, ssn);
-			if (founded != null)
-				fieldValues.put(_foundedFieldName, founded);
-			if (connection != null)
-				fieldValues.put(_connectionToSpecialFieldName, connection);
-			if (board != null)
-				fieldValues.put(_boardGroupFieldName, board);
-				
-			updateFieldsDisplayStatus();
-		}
-		catch (RemoteException e) {
-			e.printStackTrace(System.err);
-		}
-		catch (FinderException e) {
-			e.printStackTrace(System.err);
-		}
-	}
+    public String getBundleIdentifier() {
+        return IW_BUNDLE_IDENTIFIER;
+    }
 
-	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
-		ClubInformationPluginBusiness business = null;
-		if (business == null) {
-			try {
-				business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ClubInformationPluginBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return business;
-	}
-	
-	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
-		MemberUserBusiness business = null;
-		try {
-			business = (MemberUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberUserBusiness.class);
-		}
-		catch (java.rmi.RemoteException rme) {
-			throw new RuntimeException(rme.getMessage());
-		}
-		return business;
-	}
-	public Help getHelpButton() {
-		IWContext iwc = IWContext.getInstance();
-		IWBundle iwb = getBundle(iwc);
-		Help help = new Help();
-		Image helpImage = iwb.getImage("help.gif");
-		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
-		help.setHelpTextKey(HELP_TEXT_KEY);
-		help.setImage(helpImage);
-		return help;
-		
-	}
-	
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
+     */
+    public void initializeFieldNames() {
+        numberFieldName = "cdiv_number";
+        ssnFieldName = "cdiv_ssn";
+        foundedFieldName = "cdiv_founded";
+        connectionToSpecialFieldName = "cdiv_special";
+        boardGroupFieldName = "cdiv_board";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#initializeFieldValues()
+     */
+    public void initializeFieldValues() {
+        fieldValues = new Hashtable();
+        fieldValues.put(numberFieldName, "");
+        fieldValues.put(ssnFieldName, "");
+        fieldValues.put(foundedFieldName, new IWTimestamp().getDate()
+                .toString());
+        fieldValues.put(connectionToSpecialFieldName, "");
+        fieldValues.put(boardGroupFieldName, "");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
+     */
+    public void updateFieldsDisplayStatus() {
+        numberField.setContent((String) fieldValues.get(numberFieldName));
+        ssnField.setContent((String) fieldValues.get(ssnFieldName));
+        foundedField.setContent((String) fieldValues.get(foundedFieldName));
+        String connection = (String) fieldValues
+                .get(connectionToSpecialFieldName);
+        connectionToSpecialField.setSelectedElement(connection);
+        if (connection != null && !connection.equals(""))
+                connectionToSpecialField.setDisabled(true);
+        try {
+            GroupHome home = (GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class);
+            String groupId = (String) fieldValues.get(boardGroupFieldName);
+
+            if (groupId != null && !groupId.equals("")) {
+                try {
+                    int index = groupId.indexOf("_");
+                    groupId = groupId.substring(index + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Group group = (Group) (home.findByPrimaryKey(new Integer(
+                        groupId)));
+                boardGroupField.setSelectedGroup(groupId, group.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#initializeFields()
+     */
+    public void initializeFields() {
+        numberField = new TextInput(numberFieldName);
+        ssnField = new TextInput(ssnFieldName);
+        //		_ssnField.setAsIcelandicSSNumber("Vart�lupr�fun stemmir ekki");
+        foundedField = new DateInput(foundedFieldName);
+        connectionToSpecialField = new DropdownMenu(
+                connectionToSpecialFieldName);
+
+        Collection special = null;
+        try {
+            special = ((GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class)).findGroupsByType("iwme_league");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        if (special != null) {
+            Iterator it = special.iterator();
+            while (it.hasNext()) {
+                Group spec = (Group) it.next();
+                connectionToSpecialField.addMenuElement(((Integer) spec
+                        .getPrimaryKey()).intValue(), spec.getName());
+            }
+        }
+
+        boardGroupField = new GroupChooser(boardGroupFieldName);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
+     */
+    public void initializeTexts() {
+        IWContext iwc = IWContext.getInstance();
+        IWResourceBundle iwrb = getResourceBundle(iwc);
+
+        numberText = new Text(iwrb.getLocalizedString(numberFieldName,
+                "Number")
+                + ":");
+        ssnText = new Text(iwrb.getLocalizedString(ssnFieldName, "SSN") + ":");
+        foundedText = new Text(iwrb.getLocalizedString(foundedFieldName,
+                "Founded")
+                + ":");
+        connectionToSpecialText = new Text(iwrb.getLocalizedString(
+                connectionToSpecialFieldName, "Connection to special")
+                + ":");
+        boardGroupText = new Text(iwrb.getLocalizedString(
+                boardGroupFieldName, "Board")
+                + ":");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
+     */
+    public void lineUpFields() {
+        Table t = new Table(2, 6);
+        t.add(numberText, 1, 1);
+        t.add(numberField, 2, 1);
+        t.add(ssnText, 1, 2);
+        t.add(ssnField, 2, 2);
+        t.add(foundedText, 1, 3);
+        t.add(foundedField, 2, 3);
+        t.add(connectionToSpecialText, 1, 4);
+        t.add(connectionToSpecialField, 2, 4);
+        t.add(boardGroupText, 1, 5);
+        t.add(boardGroupField, 2, 5);
+        Help help = getHelpButton();
+        t.add(help, 1, 6);
+
+        add(t);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.util.datastructures.Collectable#collect(com.idega.presentation.IWContext)
+     */
+    public boolean collect(IWContext iwc) {
+        if (iwc != null) {
+            String number = iwc.getParameter(numberFieldName);
+            String ssn = iwc.getParameter(ssnFieldName);
+            String founded = iwc.getParameter(foundedFieldName);
+            String connection = iwc.getParameter(connectionToSpecialFieldName);
+            String boardGroup = iwc.getParameter(boardGroupFieldName);
+
+            if (number != null)
+                fieldValues.put(numberFieldName, number);
+            else
+                fieldValues.put(numberFieldName, "");
+            if (ssn != null)
+                fieldValues.put(ssnFieldName, ssn);
+            else
+                fieldValues.put(ssnFieldName, "");
+            if (founded != null)
+                fieldValues.put(foundedFieldName, founded);
+            else
+                fieldValues.put(foundedFieldName, "");
+            if (connection != null)
+                fieldValues.put(connectionToSpecialFieldName, connection);
+            else
+                fieldValues.put(connectionToSpecialFieldName, "");
+            if (boardGroup != null)
+                fieldValues.put(boardGroupFieldName, boardGroup);
+            else
+                fieldValues.put(boardGroupFieldName, "");
+
+            updateFieldsDisplayStatus();
+        }
+
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
+     */
+    public boolean store(IWContext iwc) {
+        Group group;
+        try {
+            group = (Group) (((GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class)).findByPrimaryKey(new Integer(
+                    getGroupId())));
+
+            String number = (String) fieldValues.get(numberFieldName);
+            String ssn = (String) fieldValues.get(ssnFieldName);
+            String founded = (String) fieldValues.get(foundedFieldName);
+            String connection = (String) fieldValues
+                    .get(connectionToSpecialFieldName);
+            String board = (String) fieldValues.get(boardGroupFieldName);
+
+            group.setMetaData("CLUBDIV_NUMBER", number);
+            group.setMetaData("CLUBDIV_SSN", ssn);
+            group.setMetaData("CLUBDIV_FOUNDED", founded);
+            //			group.setMetaData("CLUBDIV_CONN", connection);
+            String oldConnection = group.getMetaData("CLUBDIV_CONN");
+            if (oldConnection == null && connection != null) {
+                String clubName = null;
+                Group club = getMemberUserBusiness(iwc).getClubForGroup(group,
+                        iwc);
+                if (club != null) {
+                    clubName = club.getName();
+                }
+                group.setMetaData("CLUBDIV_CONN", connection);
+                group.store();
+                getClubInformationPluginBusiness(iwc).createSpecialConnection(
+                        connection, getGroupId(), clubName, iwc);
+            }
+
+            group
+                    .setMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD,
+                            board);
+
+            group.store();
+        } catch (RemoteException e) {
+            e.printStackTrace(System.err);
+            return false;
+        } catch (FinderException e) {
+            e.printStackTrace(System.err);
+            return false;
+        }
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.idega.user.presentation.UserGroupTab#initFieldContents()
+     */
+    public void initFieldContents() {
+        Group group;
+        try {
+            group = (Group) (((GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class)).findByPrimaryKey(new Integer(
+                    getGroupId())));
+
+            String number = group.getMetaData("CLUBDIV_NUMBER");
+            String ssn = group.getMetaData("CLUBDIV_SSN");
+            String founded = group.getMetaData("CLUBDIV_FOUNDED");
+            String connection = group.getMetaData("CLUBDIV_CONN");
+            String board = group.getMetaData("CLUBDIV_BOARD");
+
+            if (number != null) {
+                fieldValues.put(numberFieldName, number);
+            }
+            if (ssn != null) {
+                fieldValues.put(ssnFieldName, ssn);
+            }
+            if (founded != null) {
+                fieldValues.put(foundedFieldName, founded);
+            }
+            if (connection != null) {
+                fieldValues.put(connectionToSpecialFieldName, connection);
+            }
+            if (board != null) {
+                fieldValues.put(boardGroupFieldName, board);
+            }
+
+            updateFieldsDisplayStatus();
+        } catch (RemoteException e) {
+            e.printStackTrace(System.err);
+        } catch (FinderException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public ClubInformationPluginBusiness getClubInformationPluginBusiness(
+            IWApplicationContext iwc) {
+        ClubInformationPluginBusiness business = null;
+        if (business == null) {
+            try {
+                business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup
+                        .getServiceInstance(iwc,
+                                ClubInformationPluginBusiness.class);
+            } catch (java.rmi.RemoteException rme) {
+                throw new RuntimeException(rme.getMessage());
+            }
+        }
+        return business;
+    }
+
+    public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
+        MemberUserBusiness business = null;
+        try {
+            business = (MemberUserBusiness) com.idega.business.IBOLookup
+                    .getServiceInstance(iwc, MemberUserBusiness.class);
+        } catch (java.rmi.RemoteException rme) {
+            throw new RuntimeException(rme.getMessage());
+        }
+        return business;
+    }
+
+    public Help getHelpButton() {
+        IWContext iwc = IWContext.getInstance();
+        IWBundle iwb = getBundle(iwc);
+        Help help = new Help();
+        Image helpImage = iwb.getImage("help.gif");
+        help.setHelpTextBundle(MEMBER_HELP_BUNDLE_IDENTIFIER);
+        help.setHelpTextKey(HELP_TEXT_KEY);
+        help.setImage(helpImage);
+        return help;
+
+    }
+
 }

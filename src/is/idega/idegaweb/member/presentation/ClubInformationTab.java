@@ -316,8 +316,6 @@ public class ClubInformationTab extends UserGroupTab {
         _foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName,
                 "Founded")
                 + ":");
-        //		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName, "Type")
-        // + ":");
         _memberUMFIText = new Text(iwrb.getLocalizedString(
                 _memberUMFIFieldName, "UMFI membership")
                 + ":");
@@ -355,8 +353,6 @@ public class ClubInformationTab extends UserGroupTab {
         t.add(_ssnField, 2, 2);
         t.add(_foundedText, 1, 3);
         t.add(_foundedField, 2, 3);
-        //		t.add(_typeText, 1, 7);
-        //		t.add(_typeField, 2, 7);
         t.add(_memberUMFIText, 1, 4);
         t.add(_memberUMFIField, 2, 4);
         t.add(_makeText, 1, 5);
@@ -479,32 +475,37 @@ public class ClubInformationTab extends UserGroupTab {
                         .getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
 
                 if (oldConnection == null && connection != null) {
+                    group.setMetaData(
+                            IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION,
+                            connection);
+                    group.store();
                     getClubInformationPluginBusiness(iwc)
                             .createSpecialConnection(connection, getGroupId(),
                                     group.getName(), iwc);
                 }
-
-                group.setMetaData(
-                        IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION,
-                        connection);
-            } else
+            } else {
                 group.setMetaData(
                         IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, "");
+            }
+
             group.setMetaData(IWMemberConstants.META_DATA_CLUB_STATUS, status);
-            if (inOperation != null)
+
+            if (inOperation != null) {
                 group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION,
                         inOperation.toString());
-            else
+            } else {
                 group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION,
                         Boolean.FALSE.toString());
-            if (usingSystem != null)
+            }
+            if (usingSystem != null) {
                 group.setMetaData(
                         IWMemberConstants.META_DATA_CLUB_USING_SYSTEM,
                         usingSystem.toString());
-            else
+            } else {
                 group.setMetaData(
                         IWMemberConstants.META_DATA_CLUB_USING_SYSTEM,
                         Boolean.FALSE.toString());
+            }
 
             group.store();
         } catch (RemoteException e) {
@@ -538,8 +539,9 @@ public class ClubInformationTab extends UserGroupTab {
                 while (it.hasNext()) {
                     Group parent = (Group) it.next();
                     if (parent.getGroupType().equals(
-                            IWMemberConstants.GROUP_TYPE_REGIONAL_UNION))
-                            regional = parent.getName();
+                            IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)) {
+                        regional = parent.getName();
+                    }
                 }
             }
 
@@ -565,17 +567,31 @@ public class ClubInformationTab extends UserGroupTab {
             String using = group
                     .getMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM);
 
-            if (number != null) fieldValues.put(_numberFieldName, number);
-            if (ssn != null) fieldValues.put(_ssnFieldName, ssn);
-            if (founded != null) fieldValues.put(_foundedFieldName, founded);
-            if (type != null) fieldValues.put(_typeFieldName, type);
+            if (number != null) {
+                fieldValues.put(_numberFieldName, number);
+            }
+            if (ssn != null) {
+                fieldValues.put(_ssnFieldName, ssn);
+            }
+            if (founded != null) {
+                fieldValues.put(_foundedFieldName, founded);
+            }
+            if (type != null) {
+                fieldValues.put(_typeFieldName, type);
+            }
             fieldValues.put(_memberUMFIFieldName, new Boolean(member));
-            if (make != null) fieldValues.put(_makeFieldName, make);
-            if (connection != null)
-                    fieldValues.put(_connectionToSpecialFieldName, connection);
-            if (regional != null)
-                    fieldValues.put(_regionalUnionFieldName, regional);
-            if (status != null) fieldValues.put(_statusFieldName, status);
+            if (make != null) {
+                fieldValues.put(_makeFieldName, make);
+            }
+            if (connection != null) {
+                fieldValues.put(_connectionToSpecialFieldName, connection);
+            }
+            if (regional != null) {
+                fieldValues.put(_regionalUnionFieldName, regional);
+            }
+            if (status != null) {
+                fieldValues.put(_statusFieldName, status);
+            }
             fieldValues.put(_inOperationFieldName, new Boolean(inOperation));
             fieldValues.put(_usingMemberSystemFieldName, new Boolean(using));
 
@@ -619,7 +635,7 @@ public class ClubInformationTab extends UserGroupTab {
         help.setHelpTextBundle(MEMBER_HELP_BUNDLE_IDENTIFIER);
         help.setHelpTextKey(HELP_TEXT_KEY);
         help.setImage(helpImage);
-        return help;
 
+        return help;
     }
 }

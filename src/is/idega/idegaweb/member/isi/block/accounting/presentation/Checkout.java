@@ -31,6 +31,9 @@ public class Checkout extends CashierSubWindowTemplate {
 		super();
 	}
 
+	/**
+	 * 
+	 */
 	public void main(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
