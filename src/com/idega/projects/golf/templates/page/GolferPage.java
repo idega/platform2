@@ -205,7 +205,7 @@ public class GolferPage extends Page{
     innerLeftTable.add(objectToAdd,1,2);
   }
 
-  public void addUpperLeftLink(ModuleObject objectToAdd){
+ /* public void addUpperLeftLink(ModuleObject objectToAdd){
     tempSideMenuTable.add(objectToAdd,1,1);
   }
 
@@ -219,6 +219,10 @@ public class GolferPage extends Page{
 
   public void addLowerLeftLink(String stringToAdd){
     tempSideMenuTable.add(stringToAdd,1,2);
+  }*/
+
+  public void addLeftLink(ModuleObject objectToAdd){
+    innerLeftTable.add(objectToAdd,1,1);
   }
 
   public void addCornerLogo(ModuleObject objectToAdd){
@@ -263,8 +267,8 @@ public class GolferPage extends Page{
     topTable.setHeight("101");
 
     Image iInfo = iwrb.getImage("/golferpage/navbar_01.gif");
-    Image iRecord = iwrb.getImage("/golferpage/navbar_02.gif");
-    Image iInterviews = iwrb.getImage("/golferpage/navbar_03.gif");
+    Image iRecord = iwrb.getImage("/golferpage/navbar_03.gif");
+    Image iInterviews = iwrb.getImage("/golferpage/navbar_02.gif");
     Image iStatistics = iwrb.getImage("/golferpage/navbar_04.gif");
     Image iPictures = iwrb.getImage("/golferpage/navbar_05.gif");
     Image iHome = iwrb.getImage("/golferpage/navbar_06.gif");
@@ -418,15 +422,15 @@ public class GolferPage extends Page{
 
     setTopPicture(false);
     NewsReader news = new NewsReader();
-    news.setConnectionAttributes("golfer_page", 227);
+    news.setConnectionAttributes("golfer_page", 228);
     news.setNewsEditorURL("/golfers/newsIndex.jsp");
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");
     news.setWidth("100%");
     news.setNewsReaderURLAsSamePage(modinfo);
-    news.setNumberOfExpandedNews(3);
-    news.setNumberOfDisplayedNews(3);
-    news.setNumberOfLetters(250);
+    news.setNumberOfExpandedNews(8);
+    news.setNumberOfDisplayedNews(8);
+    news.setNumberOfLetters(200);
     news.getTextProxy().setFontSize(1);
     news.getHeadlineProxy().setFontSize(1);
     news.showNewsCollectionButton(false);
@@ -444,7 +448,7 @@ public class GolferPage extends Page{
     pictureTable.setCellpadding(10);
     pictureTable.setCellspacing(0);
     pictureTable.add(golferImage,1,1);
-    TextReader text = new TextReader(753);
+    TextReader text = new TextReader(818);
       text.setEnableDelete(false);
     text.setWidth("100%");
     text.setTableTextSize(1);
@@ -525,7 +529,7 @@ public class GolferPage extends Page{
     Image iWelcomeLogo = iwrb.getImage("/golferpage/upplysingar.gif");
     this.addLeftLogo(iWelcomeLogo);
 //    this.addLeftLink("Arrrrrg");
-    TextReader golfbagText = new TextReader(755);
+    TextReader golfbagText = new TextReader(819);
     golfbagText.setWidth("100%");
     golfbagText.setTableTextSize(1);
     golfbagText.setTextSize(1);
@@ -540,8 +544,8 @@ public class GolferPage extends Page{
     setTopPicture(false);
     Image iRecordLogo = iwrb.getImage("/golferpage/ferill.gif");
     this.addLeftLogo(iRecordLogo);
-    TextReader recordText = new TextReader(756);
-    add(recordText);
+    /*TextReader recordText = new TextReader(756);
+    add(recordText);*/
   }
 
   //Stuðningsaðilar
@@ -549,8 +553,8 @@ public class GolferPage extends Page{
     setTopPicture(false);
     Image iInterviewsLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iInterviewsLogo);
-    TextReader interviewText = new TextReader(757);
-    add(interviewText);
+    /*TextReader interviewText = new TextReader(757);
+    add(interviewText);*/
   }
 
   //STATISTICS_VIEW
@@ -572,7 +576,8 @@ public class GolferPage extends Page{
     this.addLeftLogo(iWelcomeLogo);
     sidemenu.setConnectionAttributes(sideMenuAttributeName,2);
     sidemenu.addParameter(sTopMenuParameterName, sPicturesParameterValue);
-    this.addUpperLeftLink(sidemenu);
+   // this.addUpperLeftLink(sidemenu);
+
   }
 
  private void getSideMenuViewType(ModuleInfo modinfo){
