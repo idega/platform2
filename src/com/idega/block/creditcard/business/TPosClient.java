@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.9 2004/11/04 13:48:12 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.10 2004/11/10 22:36:03 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -281,7 +281,7 @@ public class TPosClient implements CreditCardClient{
   	String yearExpires = expires.substring(2, 4);
   	String authIDRsp = (String) map.get(TPOS3Client.PN_AUTHORIDENTIFYRSP);
 
-    doAuth(cardnumber, monthExpires, yearExpires, Double.parseDouble(amount) / (double) amountMultiplier, currency, "5", null, authIDRsp);
+    doAuth(cardnumber, monthExpires, yearExpires, Double.parseDouble(amount) / (double) amountMultiplier, currency, "1", null, authIDRsp);
   }
   
 	private HashMap parseProperties(String response) {
