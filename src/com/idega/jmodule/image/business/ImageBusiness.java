@@ -39,26 +39,17 @@ public static Properties getBundleProperties(ModuleInfo modinfo) throws FileNotF
   //IWMainApplication application = getApplication();
   String fileSeperator = System.getProperty("file.separator");
   //FileInputStream fin = new FileInputStream(new File( application.getRealPath("/")+fileSeperator+"image"+fileSeperator+"properties"+fileSeperator+"bundle.properties" ));
-  FileInputStream fin = new FileInputStream(new File( modinfo.getServletContext().getRealPath("/")+fileSeperator+"image"+fileSeperator+"properties"+fileSeperator+"bundle.properties" ));
+  FileInputStream fin = new FileInputStream(new File( modinfo.getServletContext().getRealPath("/")+fileSeperator+"image"+fileSeperator+"properties"+fileSeperator+"image.properties" ));
   Properties prop = new Properties();
   prop.load(fin);
   fin.close();
   return prop;
 }
 
-private static Properties getBundleProperties( HttpServlet servlet ) throws FileNotFoundException,IOException{
-  String fileSeperator = System.getProperty("file.separator");
-  FileInputStream fin = new FileInputStream(new File( servlet.getServletContext().getRealPath("/")+fileSeperator+"image"+fileSeperator+"properties"+fileSeperator+"bundle.properties" ));
-  Properties prop = new Properties();
-  prop.load(fin);
-  fin.close();
-  return prop;
-}
 
 public static void saveImageToCatagories(int imageId, String[] categoryId)throws SQLException {
-//debug eiki parent id?? fix this
   ImageEntity image = new ImageEntity(imageId);
-  image.setParentId(-1);
+  image.setParentId(-1);//only top level images saved to categories
   image.update();
 
   for (int i = 0; i < categoryId.length; i++) {
@@ -68,38 +59,9 @@ public static void saveImageToCatagories(int imageId, String[] categoryId)throws
       cat.addTo(image);
     }
     catch(NumberFormatException e){
-      System.err.println("ImageBusiness: categoryId is not a number");
+      System.err.println("ImageBusiness : categoryId is not a number");
     }
   }
-}
-
-
-/**
- * unfinished change to entities
- */
-public static String getImageID(Connection Conn)throws SQLException{
-
-  String dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
-
-  Statement Stmt = Conn.createStatement();
-  ResultSet RS;
-  String ImageId;
-
-  if( !(dataBaseType.equals("oracle")) ) {
-	RS = Stmt.executeQuery("select gen_id(image_gen,1) from rdb$database");
-  }
-  else{		//oracle
-	RS = Stmt.executeQuery("select image_seq.nextval from dual");
-  }
-
-  RS.next();
-  ImageId = RS.getString(1);
-
-  Stmt.close();
-  RS.close();
-  //debug getSession().setAttribute("image_id",ImageId);
-
-return ImageId;
 }
 
 
@@ -117,11 +79,11 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws E
         else if ( action.equalsIgnoreCase("Invert") ) handler.invertModifiedImage();
         else if ( action.equalsIgnoreCase("Sharpen") ) handler.sharpenModifiedImage();
         else if( action.equalsIgnoreCase("Save") ){
-          System.out.println("ImageBusiness: Saving");
+          //System.out.println("ImageBusiness: Saving");
           handler.writeModifiedImageToDatabase(true);
         }
         else if( action.equalsIgnoreCase("Savenew") ){
-          System.out.println("ImageBusiness: Saving new image");
+          //System.out.println("ImageBusiness: Saving new image");
           handler.writeModifiedImageToDatabase(false);
         }
         else if( action.equalsIgnoreCase("Undo") || action.equalsIgnoreCase("Revert") ){
@@ -200,23 +162,14 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws E
 }
 
 
-
-
-/**
- * unimplemented
- */
-public void makeDefaultSizes(){
-
-
-
-
-//  try{
-//   Properties prop = getBundleProperties(getModuleInfo());
-//
-//  add(prop.getProperty("image1.width"));
-//  }
-//  catch(Exception ex){}
-
+public static void makeDefaultSizes(ModuleInfo modinfo){
+  try{
+    Properties prop = getBundleProperties(modinfo);
+    System.out.println(prop.getProperty("image1.width"));
+    System.out.println(prop.getProperty("image2.width"));
+    System.out.println(prop.getProperty("image3.width"));
+  }
+  catch(Exception ex){}
 }
 
 
@@ -423,6 +376,8 @@ public static void setImageDimensions(ImageProperties ip) {
       int imageId = SaveImage(ip);
       ip.setId(imageId);
       setImageDimensions(ip);//adds width height and size in bytes to database
+
+      makeDefaultSizes(modinfo);
 
       try{
         ImageEntity image = new ImageEntity(imageId);

@@ -59,6 +59,7 @@ private KernelJAI kernel;
 private float sum = 9.0F;
 private String modifiedImageURL="";
 private int modifiedsize = 0;
+private int modifiedImageCounter=1;
 
 public ImageHandler( int imageId ) throws Exception{
   setImageId(imageId);
@@ -86,7 +87,7 @@ public ImageHandler( ImageEntity imageEntity ) throws Exception{
   setModifiedImageAsOriginal();
 }
 
-public void getImageFromFile(String fileName) throws Exception{
+private void getImageFromFile(String fileName) throws Exception{
 
   File f = new File(fileName);
 
@@ -142,7 +143,7 @@ private void getImageFromDatabase() throws Exception{
 
 }
 
-public void updateOriginalInfo() throws SQLException{
+protected void updateOriginalInfo() throws SQLException{
   ImageEntity imageInfo = new ImageEntity( imageId , false);
   setContentType( imageInfo.getContentType() );
   setImageName( imageInfo.getName() );
@@ -164,7 +165,7 @@ private synchronized PlanarImage getPlanarImageFromStream(MemoryCacheSeekableStr
   return (JAI.create("stream", memStream));
 }
 
-public void setOriginalImage(PlanarImage originalImage){
+protected void setOriginalImage(PlanarImage originalImage){
   this.originalImage = originalImage;
   setWidth(originalImage.getWidth());
   setHeight(originalImage.getHeight());
@@ -174,15 +175,15 @@ private void setImageId( int imageId ){
   this.imageId = imageId;
 }
 
-public int getImageId(){
+protected int getImageId(){
   return this.imageId;
 }
 
-public int getOriginalImageId(){
+protected int getOriginalImageId(){
   return getImageId();
 }
 
-public void setBrightness( int brightness ){
+protected void setBrightness( int brightness ){
   this.brightness = brightness;
 }
 
@@ -198,60 +199,66 @@ public int getModifiedImageId(){
   return this.modifiedImageId;
 }
 
-private void setContentType( String contentType ){
+protected void setContentType( String contentType ){
   this.contentType = contentType;
 }
 
-private String getContentType(){
+protected String getContentType(){
   return this.contentType;
 }
 
-public void setImageName( String imageName ){
+protected void setImageName( String imageName ){
   this.imageName = imageName;
 }
 
-private String getImageName(){
+protected String getImageName(){
   return this.imageName;
 }
 
 
-private void setWidth( int width ){
+protected void setWidth( int width ){
   this.width = width;
 }
 
-public int getWidth(){
+protected int getWidth(){
   return this.width;
 }
 
-private void setHeight( int height ){
+protected void setHeight( int height ){
   this.height = height;
 }
 
-public int getHeight(){
+protected int getHeight(){
   return this.height;
 }
 
-public void setModifiedWidth( int modifiedWidth ){
+protected void setModifiedWidth( int modifiedWidth ){
   this.modifiedWidth = modifiedWidth;
 }
 
+/*
+*@todo make this protected and fix in ImageViewer
+*/
 public int getModifiedWidth(){
   return this.modifiedWidth;
 }
 
-public void setModifiedHeight( int modifiedHeight ){
+protected void setModifiedHeight( int modifiedHeight ){
   this.modifiedHeight = modifiedHeight;
 }
 
+/*
+*@todo make this protected and fix in ImageViewer
+*/
 public int getModifiedHeight(){
   return this.modifiedHeight;
 }
 
-public boolean keepProportions(){
+protected boolean keepProportions(){
   return this.keepProportions;
 }
 
-public void keepProportions(boolean keepProportions){
+protected void keepProportions(boolean keepProportions){
   this.keepProportions = keepProportions;
 }
 
@@ -286,7 +293,7 @@ private void setModifiedImageAttributes(){
 }
 
 
-public void resizeImage() throws Exception{
+protected void resizeImage() throws Exception{
   ParameterBlock pb = new ParameterBlock();
   //pb.addSource(originalImage);
   pb.addSource(getModifiedImage());
@@ -303,99 +310,76 @@ public void resizeImage() throws Exception{
 
 }
 
-public void convertModifiedImageToGrayscale(){
+protected void convertModifiedImageToGrayscale(){
   setModifiedImage(convertColorToGray(getModifiedImage(), getBrightness() ));
 }
 
-public void convertModifiedImageToColor(){
+protected void convertModifiedImageToColor(){
   setModifiedImage(convertGrayToColor(getModifiedImage(), getBrightness() ));
 }
 
-private int getScale(){
+protected int getScale(){
   return this.scale;
 }
 
-public void setScale(int scale){
+protected void setScale(int scale){
   this.scale = scale;
 }
 
-public void setModifiedImage( PlanarImage modifiedImage ){
+protected void setModifiedImage( PlanarImage modifiedImage ){
   this.modifiedImage = modifiedImage;
   setModifiedWidth(modifiedImage.getWidth());
   setModifiedHeight(modifiedImage.getHeight());
 }
 
-public void setModifiedImageAsOriginal(){
+protected void setModifiedImageAsOriginal(){
   this.setModifiedImage(originalImage);
   setModifiedWidth(originalImage.getWidth());
   setModifiedHeight(originalImage.getHeight());
 }
 
-public PlanarImage getModifiedImage(){
+protected PlanarImage getModifiedImage(){
   return this.modifiedImage;
 }
 
-public PlanarImage getOriginalImage(){
+protected PlanarImage getOriginalImage(){
   return this.originalImage;
 }
 /*
 *  1.0 best quality 0.75 high quality 0.5  medium quality  0.25 low quality 0.10 crappy quality
 *
 */
-public void setQuality(float quality){
+protected void setQuality(float quality){
   this.quality = quality;
 }
 
-private float getQuality(){
+protected float getQuality(){
   return this.quality;
 }
 
 public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Exception{
+  if( modifiedImageCounter != 1 ) ImageBusiness.deleteImageFile(modifiedImageURL);
   String seperator = System.getProperty("file.separator");
-  modifiedImageURL = modinfo.getServletContext().getRealPath(seperator)+seperator+"pics"+seperator+modinfo.getSession().getId()+"ModifiedImagetemp.jpg";
+  modifiedImageURL = modinfo.getServletContext().getRealPath(seperator)+seperator+"pics"+seperator+modinfo.getSession().getId()+"ModifiedImagetemp"+modifiedImageCounter+".jpg";
   writeModifiedImageToFile(modifiedImageURL);//temporary storage
-  //InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
-return new com.idega.jmodule.object.Image("/pics/"+modinfo.getSession().getId()+"ModifiedImagetemp.jpg",getImageName(),getModifiedWidth(),getModifiedHeight());
-
+  com.idega.jmodule.object.Image image = new com.idega.jmodule.object.Image(modifiedImageURL,getImageName(),getModifiedWidth(),getModifiedHeight());
+  modifiedImageCounter++;
+return image;
 }
 
 
 
-public void writeModifiedImageToDatabase(boolean update) throws Exception{
-  Connection Conn=null;
+protected void writeModifiedImageToDatabase(boolean update) throws Exception{
   writeModifiedImageToFile(modifiedImageURL);//temporary storage
-
-  try{
-    InputStream input = new FileInputStream(modifiedImageURL);
-    modifiedsize = input.available();
-
-    String dataBaseType = "";
-    Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
-    if (Conn!=null) dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);
-    else dataBaseType="oracle";
-
-    if( dataBaseType.equals("oracle") ) {
-      if(update){
-        ImageSave.saveImageToOracleDB(getImageId(),-1,input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), false);
-      }
-      else ImageSave.saveImageToOracleDB(-1,getImageId(),input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), true);
-    }
-    else {
-      if(update){
-        ImageSave.saveImageToDB(getImageId(),-1,input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), false);
-      }
-      else ImageSave.saveImageToDB(-1,getImageId(),input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), true);
-    }
+  InputStream input = new FileInputStream(modifiedImageURL);
+  modifiedsize = input.available();
+  if(update){
+    ImageSave.saveImageToDataBase(getImageId(),-1,input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), false);
   }
-  catch(SQLException e){
-    e.printStackTrace(System.err);
-  }
-  finally{
-    if(Conn != null ) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
-  }
+  else ImageSave.saveImageToDataBase(-1,getImageId(),input,getContentType(),getImageName(),Integer.toString(getModifiedWidth()),Integer.toString(getModifiedHeight()), true);
 }
 
-public void writeModifiedImageToFile(String filename) throws Exception{
+protected void writeModifiedImageToFile(String filename) throws Exception{
 
   if ( filename.equalsIgnoreCase("")) filename = getImageName();
   OutputStream output = new FileOutputStream(filename);
@@ -421,7 +405,7 @@ public void writeModifiedImageToFile(String filename) throws Exception{
 }
 
 
-public static PlanarImage convertColorToGray(PlanarImage src, int brightness) {
+protected static PlanarImage convertColorToGray(PlanarImage src, int brightness) {
    PlanarImage dst = null;
    double b = (double) brightness;
    double[][] matrix = {
@@ -443,7 +427,7 @@ public static PlanarImage convertColorToGray(PlanarImage src, int brightness) {
 }
 
  /** produce a 3 band image from a single band gray scale image */
- public static PlanarImage convertGrayToColor(PlanarImage src, int brightness) {
+ protected static PlanarImage convertGrayToColor(PlanarImage src, int brightness) {
    PlanarImage dst = null;
    double b = (double) brightness;
    double[][] matrix = {
@@ -469,56 +453,61 @@ public static PlanarImage convertColorToGray(PlanarImage src, int brightness) {
    return dst;
 }
 
-public void embossModifiedImage(){
-  loadKernel(8);
-  setModifiedImage( convolve(getModifiedImage(),8));
-}
+  protected void embossModifiedImage(){
+    loadKernel(8);
+    setModifiedImage( convolve(getModifiedImage(),8));
+  }
 
-public void sharpenModifiedImage(){
-  loadKernel(2);
-  setModifiedImage( convolve(getModifiedImage(),2));
-}
+  protected void blurModifiedImage(){
+    loadKernel(9);
+    setModifiedImage( convolve(getModifiedImage(),9));
+  }
 
-public void invertModifiedImage(){
-  setModifiedImage( invert(getModifiedImage()));
-}
+  protected void sharpenModifiedImage(){
+    loadKernel(2);
+    setModifiedImage( convolve(getModifiedImage(),2));
+  }
 
-public PlanarImage invert(PlanarImage source) {
+  protected void invertModifiedImage(){
+    setModifiedImage( invert(getModifiedImage()));
+  }
 
-  ParameterBlock pb = new ParameterBlock();
-  pb.addSource(source);
-  RenderableImage ren = JAI.createRenderable("renderable", pb);
+  protected PlanarImage invert(PlanarImage source) {
 
-  pb = new ParameterBlock();
-  pb.addSource(ren);
-  RenderableImage inv = JAI.createRenderable("invert", pb);
+    ParameterBlock pb = new ParameterBlock();
+    pb.addSource(source);
+    RenderableImage ren = JAI.createRenderable("renderable", pb);
 
-  PlanarImage dst = (PlanarImage)inv.createScaledRendering(source.getWidth(), source.getHeight(), null);
+    pb = new ParameterBlock();
+    pb.addSource(ren);
+    RenderableImage inv = JAI.createRenderable("invert", pb);
 
- return dst;
-}
+    PlanarImage dst = (PlanarImage)inv.createScaledRendering(source.getWidth(), source.getHeight(), null);
 
-public PlanarImage convolve(PlanarImage source, int k) {
-   ParameterBlock pb = new ParameterBlock();
-   pb.addSource(source);
-   pb.add(kernel);
-   PlanarImage target = JAI.create("convolve", pb, null);
-    // emboss (special case)
-   if ( k == 8 ) {
-       double[] constants = new double[3];
-       constants[0] = 128.0;
-       constants[1] = 128.0;
-       constants[2] = 128.0;
-       pb = new ParameterBlock();
-       pb.addSource(target);
-       pb.add(constants);
-       target = JAI.create("addconst", pb, null);
-   }
+   return dst;
+  }
 
-  return target;
-}
+  private PlanarImage convolve(PlanarImage source, int k) {
+     ParameterBlock pb = new ParameterBlock();
+     pb.addSource(source);
+     pb.add(kernel);
+     PlanarImage target = JAI.create("convolve", pb, null);
+      // emboss (special case)
+     if ( k == 8 ) {
+         double[] constants = new double[3];
+         constants[0] = 128.0;
+         constants[1] = 128.0;
+         constants[2] = 128.0;
+         pb = new ParameterBlock();
+         pb.addSource(target);
+         pb.add(constants);
+         target = JAI.create("addconst", pb, null);
+     }
 
- public void loadKernel(int choice) {
+    return target;
+  }
+
+ private void loadKernel(int choice) {
 
         float[] data = new float[9];
 
@@ -571,39 +560,24 @@ public PlanarImage convolve(PlanarImage source, int k) {
                 data[6] = 1.0F; data[7] = 2.0F; data[8] = 1.0F;
             break;
 //emboss
-            case 8:
+            case 9:
                 data[0] =-1.0F; data[1] =-2.0F; data[2] = 0.0F;
                 data[3] =-2.0F; data[4] = 0.0F; data[5] = 2.0F;
                 data[6] = 0.0F; data[7] = 2.0F; data[8] = 1.0F;
             break;
-
-         /*   case 9:
-                //get text for custom kernel
-                for ( int i = 0; i < 3; i++ ) {
-                    for ( int j = 0; j < 3; j++ ) {
-                        try {
-                            data[3*i+j] = Float.parseFloat(krn[i][j].getText());
-                        } catch( NumberFormatException e ) {
-                            data[3*i+j] = 0.0F;
-                        }
-                    }
-                }
+//tilraun til blurs
+            case 8:
+              data[0] = 1/9F; data[1] = 1/9F; data[2] = 1/9F;
+              data[3] = 1/9F; data[4] = 1/9F; data[5] = 1/9F;
+              data[6] = 1/9F; data[7] = 1/9F; data[8] = 1/9F;
             break;
-        }
-
-        for ( int i = 0; i < 3; i++ ) {
-            for ( int j = 0; j < 3; j++ ) {
-                krn[i][j].setText("" + data[3*i+j]);
-            }
-        }
-*/
 
         }
         normalize(data);
         kernel = new KernelJAI(3, 3, data);
 }
 
-public void normalize(float[] data) {
+private void normalize(float[] data) {
    sum = 0.0F;
     for ( int i = 0; i < data.length; i++ ) {
        sum += data[i];
