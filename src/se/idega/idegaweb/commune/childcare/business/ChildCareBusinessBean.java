@@ -3069,7 +3069,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setFromDate(fromDate.getDate());
 			if (toDate != null)
 				application.setRejectionDate(toDate.getDate());
-			application.setCareTime(careTime);
+			if (careTime != -1)
+				application.setCareTime(careTime);
 			application.setOwner(parent);
 			application.setChoiceNumber(1);
 			application.setMessage(comment);
@@ -3090,6 +3091,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (extraContractOtherMessage != null)
 				application.setExtraContractMessageOther(extraContractOtherMessage);
 			
+			if (!isUpdate || finalize) {
+				Timestamp removedDate = null;
+				if (toDate != null)
+					removedDate = toDate.getTimestamp();
+				
+				if (groupID == -1) {
+					groupID = createDefaultGroup(providerID);
+					if (groupID == -1)
+						return false;
+				}
+				if (schoolTypeID == -1)
+					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), comment);
+			}
+
 			if (finalize) {
 				alterValidFromDate(application, fromDate.getDate(), employmentTypeID, locale, admin);
 			}
@@ -3127,21 +3143,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 				
-			if (!isUpdate || finalize) {
-				Timestamp removedDate = null;
-				if (toDate != null)
-					removedDate = toDate.getTimestamp();
-					
-				if (groupID == -1) {
-					groupID = createDefaultGroup(providerID);
-					if (groupID == -1)
-						return false;
-				}
-				if (schoolTypeID == -1)
-					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), comment);
-			}
-
 			t.commit();
 			return true;
 		}
