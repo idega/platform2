@@ -297,13 +297,13 @@ public abstract class BillingThread extends Thread{
 			System.out.println("logger stored");
 		}
 		batchRunLogger.setPeriod(startPeriod.getDate());
-		batchRunLogger.setStart(currentDate);
+		batchRunLogger.setStart(IWTimestamp.getTimestampRightNow());
 		batchRunLogger.setEnd(null);
 		batchRunLogger.store();
 	}
 	
 	protected void finalizeBatchRunLogger(){
-		batchRunLogger.setEnd(new Date(System.currentTimeMillis()));
+		batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
 	}
 
 	protected RegulationsBusiness getRegulationsBusiness() throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.69 2003/11/24 14:07:43 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.70 2003/11/24 17:51:19 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -442,11 +442,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			String condition = param.getCondition();
 
 			//Checking each type of condition
-			if (condition.equals(IntervalConstant.ACTIVITY)) {
+			if (condition.equals(RuleTypeConstant.CONDITION_ID_OPERATION)) {
 				String value = (String) param.getInterval();
 				Iterator i = cond.iterator();
 				boolean match = true;
-				while (i.hasNext() && !match) {
+				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_OPERATION)) {
 						int id = regCond.getIntervalID();
@@ -469,11 +469,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-			else if (condition.equals(IntervalConstant.AGE)) {
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
 				boolean match = true;
-				while (i.hasNext() && !match) {
+				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 						int id = regCond.getIntervalID();
@@ -506,11 +506,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-			else if (condition.equals(IntervalConstant.HOURS)) {
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_HOURS)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
 				boolean match = true;
-				while (i.hasNext() && !match) {
+				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
 						int id = regCond.getIntervalID();
@@ -551,11 +551,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-			else if (condition.equals(IntervalConstant.SIBLING_NUMBER)) {
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_SIBLINGS)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
 				boolean match = true;
-				while (i.hasNext() && !match) {
+				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SIBLINGS)) {
 						int id = regCond.getIntervalID();
