@@ -1,0 +1,570 @@
+package com.idega.block.datareport.presentation;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.idega.block.dataquery.business.QueryHelper;
+import com.idega.block.dataquery.business.QueryService;
+import com.idega.block.dataquery.business.QueryToSQLBridge;
+import com.idega.block.dataquery.data.QueryResult;
+import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.datareport.business.JasperReportBusiness;
+import com.idega.block.entity.business.EntityToPresentationObjectConverter;
+import com.idega.block.entity.data.EntityPath;
+import com.idega.block.entity.data.EntityPathValueContainer;
+import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converter.ButtonConverter;
+import com.idega.block.entity.presentation.converter.CheckBoxConverter;
+import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
+import com.idega.block.entity.presentation.converter.editable.OptionProvider;
+import com.idega.business.IBOLookup;
+import com.idega.core.data.ICTreeNode;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
+import com.idega.data.EntityRepresentation;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+
+import dori.jasper.engine.JasperPrint;
+import dori.jasper.engine.design.JasperDesign;
+
+
+/**
+ * <p>Title: idegaWeb</p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2003</p>
+ * <p>Company: idega Software</p>
+ * @author <a href="thomas@idega.is">Thomas Hilbig</a>
+ * @version 1.0
+ * Created on Oct 13, 2003
+ */
+public class ReportOverview extends Block {
+	
+  // special init parameters
+  public static final String SET_ID_OF_QUERY_FOLDER_KEY = "id_query_fold";
+  public static final String SET_ID_OF_DESIGN_FOLDER_KEY = "id_design_fold";
+  
+  public static final String DELETE_KEY = "delete_key";
+  public static final String PDF_KEY = "pdf_key";
+  public static final String EXCEL_KEY = "excel_key";
+  public static final String HTML_KEY = "html_key";
+  public static final String EXECUTE_QUERY_KEY = "execute_key";
+  public static final String NEW_ITEM_KEY = "new_item_key";
+  public static final String DELETE_ITEMS_KEY = "delete_items_key";
+  public static final String CLOSE_KEY = "close_key";
+  
+  public static final String DESIGN_LAYOUT_KEY = "design_layout_key";
+  public static final String NAME_KEY = "name_key";
+  
+  public static final String VALUES_COMMITTED_KEY = "value_committed_key";
+  public static final String SHOW_LIST_KEY = "show_list_key";
+  
+  public static final String SHOW_SINGLE_QUERY = "show_single_query";
+  
+  public static final String SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC = "show_single_query_check_if_dynamic";
+  
+	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
+	
+	private ICFile queryFolder;
+	private ICFile designFolder;
+	
+	private Map parameterMap = new HashMap();
+	
+	// values of the parameter map
+	private static final String CURRENT_QUERY_ID = "current_query_id";
+	private static final String CURRENT_LAYOUT_ID = "current_layout_id";
+	private static final String CURRENT_OUTPUT_FORMAT = "current_output_format";
+	
+  public void main(IWContext iwc) throws Exception {
+  	IWBundle bundle = getBundle(iwc);
+    IWResourceBundle resourceBundle = getResourceBundle(iwc);
+    String action = parseAction(iwc);
+    if (SHOW_SINGLE_QUERY.equals(action) || SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action))	{
+    	getSingleQueryView(bundle, resourceBundle, action, iwc);
+    }
+    else {
+    	getListOfQueries(bundle, resourceBundle);
+    }
+  }
+
+	private String parseAction(IWContext iwc)	{
+		String action = "";
+		// get the file id of the query folder
+		if (iwc.isParameterSet(SET_ID_OF_QUERY_FOLDER_KEY))	{
+			String queryFolderKey = iwc.getParameter(SET_ID_OF_QUERY_FOLDER_KEY);
+			parameterMap.put(SET_ID_OF_QUERY_FOLDER_KEY, queryFolderKey);
+			queryFolder = getFileForId(queryFolderKey);
+		}
+		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
+			String designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
+			parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
+			designFolder = getFileForId(designFolderKey);
+		}
+		// check html, pdf and excel buttons
+		EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
+		if (executeContainer.isValid())	{
+			
+			// get the chosen query 
+			try {
+				parameterMap.put(CURRENT_QUERY_ID, executeContainer.getEntityIdConvertToInteger());
+			}
+			catch (NumberFormatException ex) {
+				String message =
+					"[ReportOverview]: Can't retrieve id of query";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return "";
+			}
+			// get the chosen layout
+			EntityPathValueContainer layoutContainer = 
+				DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(parameterMap.get(CURRENT_QUERY_ID), DESIGN_LAYOUT_KEY, iwc); 
+			if (layoutContainer.isValid())	{
+				try {
+					parameterMap.put(CURRENT_LAYOUT_ID,  new  Integer(layoutContainer.getValue().toString()));
+				}
+				catch (NumberFormatException ex) {
+					String message = "[ReportOverview]: Can't retrieve id of layout";
+					System.err.println(message + " Message is: " + ex.getMessage());
+					ex.printStackTrace(System.err);
+					return "";
+				}
+			}
+			// get the chosen output format
+			parameterMap.put(CURRENT_OUTPUT_FORMAT,executeContainer.getEntityPathShortKey());
+			return SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC;
+		}
+		
+		// dynamic field values were committed
+		
+		else if (iwc.isParameterSet(VALUES_COMMITTED_KEY))	{
+			try {
+				String id = iwc.getParameter(CURRENT_QUERY_ID);
+				parameterMap.put(CURRENT_QUERY_ID, new Integer(id));
+			}
+			catch (NumberFormatException ex) {
+				String message =
+					"[ReportOverview]: Can't retrieve query id.";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return "";
+			}
+			try {
+				String id = iwc.getParameter(CURRENT_LAYOUT_ID);
+				parameterMap.put(CURRENT_LAYOUT_ID, new Integer(id));
+			}
+			catch (NumberFormatException ex) {
+				String message =
+					"[ReportOverview]: Can't retrieve layout id.";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return "";
+			}
+			String format = iwc.getParameter(CURRENT_OUTPUT_FORMAT);
+			parameterMap.put(CURRENT_OUTPUT_FORMAT, format);
+			return SHOW_SINGLE_QUERY;
+		}
+		return action;
+	}
+    
+		
+		    
+    
+    
+  private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle) {
+  	List queryRepresentations = new ArrayList();
+  	Iterator iterator = queryFolder.getChildren();
+  	while (iterator.hasNext())	{
+  		ICTreeNode node = (ICTreeNode) iterator.next();
+  		String name = node.getNodeName();
+  		int id = node.getNodeID();
+  		QueryRepresentation representation = new QueryRepresentation(id, name);
+  		queryRepresentations.add(representation);
+  	}
+  	Form form = new Form();
+  	EntityBrowser browser = getBrowser(queryRepresentations, bundle, resourceBundle, form);
+  	addParametersToBrowser(browser);
+  	addParametersToForm(form);
+  	Table table = new Table(1,2);
+  	table.add(browser, 1,1);
+  	table.add(getButtonBar(resourceBundle), 1,2);
+  	form.add(table);
+  	add(form);
+  }
+  	
+	private PresentationObject getButtonBar(IWResourceBundle resourceBundle )	{
+		Table table = new Table(3,1);
+		// new button
+		String newText = resourceBundle.getLocalizedString("ro_create", "New");
+		Link newLink = new Link(newText);
+		newLink.addParameter(NEW_ITEM_KEY, NEW_ITEM_KEY);
+		newLink.setAsImageButton(true);
+		// delete button
+		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
+  	Link delete = new Link(deleteText);
+  	delete.addParameter(DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
+  	addParametersToLink(delete);
+  	delete.setAsImageButton(true);
+  	// close button
+  	String closeText = resourceBundle.getLocalizedString("ro_cancel", "Cancel");
+  	Link close = new Link(closeText);
+  	close.addParameter(CLOSE_KEY, CLOSE_KEY);
+  	close.setAsImageButton(true);
+  	table.add(newLink,1,1);
+  	table.add(delete,2,1);
+  	table.add(close, 3,1);
+  	return table;
+	}
+
+		
+  	
+	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, IWResourceBundle resourceBundle, Form form)	{
+		EntityBrowser browser = new EntityBrowser();
+		browser.setAcceptUserSettingsShowUserSettingsButton(false, false);
+		browser.setUseExternalForm(true);
+		browser.setUseEventSystem(false);
+		// browser gets confused because of some new children windows, therefore set artificial compoundId
+		browser.setArtificialCompoundId("report_overview", null);
+		browser.setLeadingEntityIsUndefined();
+		// browser.setShowAllEntities("", queryRepresentations);
+		browser.setEntities("", queryRepresentations, 10);
+		// define some converters
+		// drop down menu converter
+		DropDownMenuConverter dropDownLayoutConverter = new DropDownMenuConverter(form);
+		dropDownLayoutConverter.setOptionProvider(getLayoutOptionProvider());
+		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
+		// button converter
+		String display = resourceBundle.getLocalizedString("ro_execute_query", "Execute query");
+		ButtonConverter buttonConverter = new ButtonConverter(display);
+		// checkbox converter
+		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
+		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
+		ButtonConverter excelConverter = new ButtonConverter(bundle.getImage("/shared/xls.gif"));
+
+		browser.setMandatoryColumnWithConverter(1, DELETE_KEY, new CheckBoxConverter(DELETE_KEY));
+		browser.setMandatoryColumn(2, NAME_KEY);
+		browser.setMandatoryColumnWithConverter(3, DESIGN_LAYOUT_KEY, dropDownLayoutConverter);
+		
+		browser.setMandatoryColumnWithConverter(4, HTML_KEY, htmlConverter);
+		browser.setMandatoryColumnWithConverter(5, PDF_KEY, pdfConverter);
+		browser.setMandatoryColumnWithConverter(6, EXCEL_KEY, excelConverter);
+		
+		browser.setMandatoryColumnWithConverter(7, EXECUTE_QUERY_KEY, buttonConverter);
+		return browser;
+	}		
+  		
+	private OptionProvider getLayoutOptionProvider()	{
+		OptionProvider optionProvider = new OptionProvider() {
+			
+			Map optionMap = null;
+			
+			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
+				if (optionMap == null) {
+					optionMap = new HashMap();
+  				Iterator iterator = designFolder.getChildren();
+  				while (iterator.hasNext())	{
+  					ICTreeNode node = (ICTreeNode) iterator.next();
+  					String name = node.getNodeName();
+  					int id = node.getNodeID();
+  					String idAsString = Integer.toString(id);
+  					optionMap.put(idAsString, name);
+  				}
+				}
+				return optionMap;
+			}
+		};
+		return optionProvider;
+	}			
+		
+  	
+    
+  private ICFile getFileForId( String idString)  {
+    if (idString.length() == 0) {
+      return null;
+    }
+    Integer id = null;
+    try {
+      id = new Integer(idString);
+    }  
+    catch (NumberFormatException ex)  {
+      System.err.println("[ReportLayoutChooser] Can't parse integer. Message is: "+ ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    }
+    return getFile(id);
+  }
+
+  private ICFile getFile(Integer fileId)  {
+    try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByPrimaryKey(fileId);
+      return file;
+    }
+    // FinderException, RemoteException
+    catch(Exception ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+  }     
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+  
+  // some business methods
+	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
+		QueryService queryService = getQueryService();
+		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
+    QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
+    QueryToSQLBridge bridge = getQueryToSQLBridge();
+    QuerySQL query = bridge.createQuerySQL(queryHelper);
+    if (query.isDynamic()) {
+    	Map identifierValueMap = query.getIdentifierValueMap();
+    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action)) {
+    		// show input fields
+				showInputFields(query, identifierValueMap, resourceBundle);
+    	}
+    	else {
+    		// get the values of the input fields
+    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
+    		query.setIdentifierValueMap(modifiedValues);
+    		// show result of query
+    		executeQuery(query, bridge);
+    		// show again the input fields
+    		showInputFields(query, modifiedValues, resourceBundle);	
+    	}
+    }
+    else {
+    	executeQuery(query, bridge);
+    	getListOfQueries(bundle, resourceBundle);	
+    }
+	}
+	
+	private void showInputFields(QuerySQL query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
+    Map identifierDescriptionMap = query.getIdentifierDescriptionValueMap();
+    PresentationObject presentationObject = getInputFields(identifierValueMap, identifierDescriptionMap, resourceBundle);
+    Form form = new Form();
+    addParametersToForm(form);
+    form.add(presentationObject);
+    add(form);
+	}
+
+	
+	private void executeQuery(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
+    // get the sql statement
+    String sqlStatement = query.getSQLStatement();
+    // get the desired display names
+    List displayNames = query.getDisplayNames();
+    // get the result of the query
+    QueryResult queryResult = null;
+    try {
+    	queryResult = bridge.executeStatement(sqlStatement, displayNames);
+    }
+    catch (SQLException ex) {
+			String message =
+				"[ReportOverview]: Can't execute SQl statement: " + sqlStatement;
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+    // get the design of the report 
+    JasperReportBusiness reportBusiness = getReportBusiness();
+    int designId = ((Integer) parameterMap.get(CURRENT_LAYOUT_ID)).intValue();
+    JasperDesign design = reportBusiness.getDesign(designId);
+    // synchronize design and result
+    Map designParameters = new HashMap();
+    //  designParameters.put(REPORT_HEADLINE_KEY, parameterMap.get(REPORT_HEADLINE_KEY));
+    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, design);
+    // create html report
+    String uri;
+    String format = (String) parameterMap.get(CURRENT_OUTPUT_FORMAT);
+    if (PDF_KEY.equals(format)) {
+    	uri = reportBusiness.getPdfReport(print, "report");
+    }
+    else if (EXCEL_KEY.equals(format))	{
+    	uri = reportBusiness.getExcelReport(print, "report");
+    }
+    else {
+    	uri = reportBusiness.getHtmlReport(print, "report");
+    }
+    getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=400, height=400')");
+	}
+    
+    
+    			
+    	
+    	
+	private Map getModifiedIdentiferValueMap(Map identifierValueMap, IWContext iwc)	{
+		Map result = new HashMap();
+		Iterator iterator = identifierValueMap.keySet().iterator();
+		while (iterator.hasNext()) {
+			String key = (String) iterator.next();
+			if (iwc.isParameterSet(key))	{
+				String value = (String) iwc.getParameter(key);
+				result.put(key, value);
+			}
+		}
+		return result;
+	}
+			
+					    	
+    	
+    	
+  private PresentationObject getInputFields(Map identifierValueMap, Map identifierDescriptionMap, IWResourceBundle resourceBundle)	{
+  	Table table = new Table (2, identifierValueMap.size() + 1);
+  	Iterator iterator = identifierValueMap.entrySet().iterator();
+  	int i = 1;
+  	while (iterator.hasNext())	{
+  		Map.Entry entry = (Map.Entry) iterator.next();
+  		String key = (String) entry.getKey();
+  		String description = (String) identifierDescriptionMap.get(key);
+  		String value = (String) identifierValueMap.get(key);
+  		TextInput textInput = new TextInput(key, value);
+  		table.add(description, 1, i);
+  		table.add(textInput, 2, i++);
+  	}
+  	String okayText = resourceBundle.getLocalizedString("ro_okay", "Okay");
+  	SubmitButton okayButton = new SubmitButton(okayText, VALUES_COMMITTED_KEY, "default_value");
+  	okayButton.setAsImageButton(true);
+  	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
+  	Link goBack = new Link(goBackText);
+  	goBack.addParameter(SHOW_LIST_KEY, SHOW_LIST_KEY);
+  	addParametersToLink(goBack);
+  	goBack.setAsImageButton(true);
+   	table.add(goBack, 1, i);
+  	table.add(okayButton, 1, i);
+  	return table;
+  }
+  		
+	private void addParametersToForm(Form form)	{
+		Iterator iterator = parameterMap.entrySet().iterator();
+		while (iterator.hasNext())	{
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			String value = entry.getValue().toString(); 
+			form.addParameter(key, value);
+		}
+	}
+	
+	private void addParametersToLink(Link link)	{
+		Iterator iterator = parameterMap.entrySet().iterator();
+		while (iterator.hasNext())	{
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			String value = entry.getValue().toString(); 
+			link.addParameter(key, value);
+		}
+	}
+
+	private void addParametersToBrowser(EntityBrowser browser)	{
+		Iterator iterator = parameterMap.entrySet().iterator();
+		while (iterator.hasNext())	{
+			Map.Entry entry = (Map.Entry) iterator.next();
+			String key = (String) entry.getKey();
+			String value = entry.getValue().toString(); 
+			browser.addMandatoryParameter(key, value);
+		}
+	}
+
+
+  public QueryService getQueryService() {
+    try {
+      return (QueryService) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryService.class);
+    }
+    catch (RemoteException ex)  {
+      System.err.println("[ReportlayoutChooser]: Can't retrieve QueryService. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve QueryService");
+    }
+  }
+
+
+
+  public QueryToSQLBridge getQueryToSQLBridge() {
+    try {
+      return (QueryToSQLBridge) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryToSQLBridge.class);
+    }
+    catch (RemoteException ex)  {
+      System.err.println("[ReportlayoutChooser]: Can't retrieve QueryToSqlBridge. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve QueryToSQLBridge");
+    }
+  }
+
+  public JasperReportBusiness getReportBusiness() {
+    try {
+      return (JasperReportBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), JasperReportBusiness.class);
+    }
+    catch (RemoteException ex) {
+      System.err.println("[ReportLayoutChooser]: Can't retrieve JasperReportBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve ReportBusiness");
+    }
+  }
+ 
+  
+  // a representation of the query
+  class QueryRepresentation implements EntityRepresentation {
+  	
+  	private int id;
+  	private String name;
+  	
+  	public QueryRepresentation(int id, String name)	{
+  		this.id = id;
+  		this.name = name;
+  	}
+  	
+		public Object getColumnValue(String columnName) {
+			return name;
+		}
+  
+ 		public Object getPrimaryKey() {
+ 			return new Integer(id);
+ 		}
+  }
+  
+  class  OutputLinkConverter implements EntityToPresentationObjectConverter	{
+  	
+  	private Image image;
+  	
+  	public void setImage(Image image)	{
+  		this.image = image;
+  	}
+
+		public PresentationObject getHeaderPresentationObject(
+			EntityPath entityPath,
+			EntityBrowser browser,
+			IWContext iwc) {
+			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+		}
+
+		/* (non-Javadoc)
+	 	* @see com.idega.block.entity.business.EntityToPresentationObjectConverter#getPresentationObject(java.lang.Object, com.idega.block.entity.data.EntityPath, com.idega.block.entity.presentation.EntityBrowser, com.idega.presentation.IWContext)
+	 	*/
+		public PresentationObject getPresentationObject(
+			Object value,
+			EntityPath path,
+			EntityBrowser browser,
+			IWContext iwc) {
+			String shortKeyPath = path.getShortKey();
+			EntityRepresentation idoEntity = (EntityRepresentation) value;
+			Link link = new Link(image);
+			link.addParameter(shortKeyPath, idoEntity.getPrimaryKey().toString());
+			return link;
+		}
+  }
+ 	
+
+
+}
+
+
