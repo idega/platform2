@@ -73,6 +73,21 @@ public abstract class PhoneFinder {
     }
   }
 
+  public static List listOfAccountWithPhoneNumber(){
+    StringBuffer sql = new StringBuffer("Select a.* from ");
+    sql.append(Account.getEntityTableName());
+    sql.append(" a ,");
+    sql.append(AccountPhone.getEntityTableName());
+    sql.append(" p where a.fin_account_id = ap.fin_account_id");
+    try {
+      return EntityFinder.findAll(new Account(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+
   public static Map mapOfAccountIdsByPhoneNumber(){
     Hashtable H = null;
     List L = listOfAccountPhones();
@@ -83,6 +98,41 @@ public abstract class PhoneFinder {
       while(I.hasNext()){
         A = (AccountPhone) I.next();
         H.put(A.getPhoneNumber(),A.getAccountId());
+      }
+    }
+    return H;
+  }
+
+  public static Map mapOfAccountsByPhoneNumber(){
+     Hashtable H = null;
+    List L = listOfAccountPhones();
+    Map M= mapOfAccountsWithPhoneNumber();
+    if(L!=null && M!=null){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      AccountPhone A;
+      Account a;
+      Integer id;
+      while(I.hasNext()){
+        A = (AccountPhone) I.next();
+        id = A.getAccountId();
+        if(M.containsKey(id))
+          H.put(A.getPhoneNumber(),M.get(id));
+      }
+    }
+    return H;
+  }
+
+  public static Map mapOfAccountsWithPhoneNumber(){
+    Hashtable H = null;
+    List L = listOfAccountWithPhoneNumber();
+    if(L!=null){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      Account A;
+      while(I.hasNext()){
+        A = (Account) I.next();
+        H.put(new Integer(A.getID()),A);
       }
     }
     return H;

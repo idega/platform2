@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.5 2001/08/30 01:31:32 laddi Exp $
+ * $Id: Title.java,v 1.6 2001/10/04 13:40:34 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ public class Title extends JModuleObject{
     try{
 
       if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
+        if ( modinfo.getSessionAttribute(strAction) != null ) {
           sAct = (String) modinfo.getSessionAttribute(strAction);
           try {
             iAct = Integer.parseInt(sAct);

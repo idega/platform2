@@ -118,7 +118,7 @@ public class PhoneFileHandler {
 
   public void process(File PhoneFile){
 
-    Map M = PhoneFinder.mapOfAccountIdsByPhoneNumber();
+    Map M = PhoneFinder.mapOfAccountsByPhoneNumber();
     // If we can assess something
     if( M != null ){
       try{
@@ -144,6 +144,7 @@ public class PhoneFileHandler {
           Hashtable phoneNumbers = new Hashtable();
           AccountPhoneEntry ape;
           Integer iAccountId;
+          Account eAccount;
           boolean cont = false;
           while( (line = lin.readLine()) != null ){//&& count != 0){
             cont = false;
@@ -190,11 +191,13 @@ public class PhoneFileHandler {
                 }
 
                 if(M!=null && M.containsKey(number)){
-                  iAccountId = (Integer) M.get(number);
-                  ape.setAccountId(iAccountId);
+                  //iAccountId = (Integer) M.get(number);
+                  eAccount = (Account) M.get(number);
+                  ape.setAccountId(eAccount.getID());
                   ape.setStatus(ape.statusRead);
-
+                  eAccount.addAmount(new Float(ape.getPrice()));
                   ape.insert();
+                  eAccount.update();
                   totPrice += ape.getPrice();
                 }
                 // account for phonenumber doesn´t exist
@@ -211,6 +214,8 @@ public class PhoneFileHandler {
                  sbError.append("\n");
                  errorCount++;
               }
+
+
             }
             else{
               System.err.println("error in line "+linecount +" : too few columns");
