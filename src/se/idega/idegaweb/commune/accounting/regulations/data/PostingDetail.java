@@ -31,7 +31,7 @@ public class PostingDetail {
 		if(vatRuleRegulationId!=-1){
 			setVatRuleRegulationId(vatRuleRegulationId);
 		}
-		setOrderID(999);	//TODO (JJ) Check with Lotta if she want somethng else here...
+		setOrderID(999);
 	}
 	
 	public PostingDetail(String t, float amount, float vatPercent, int vatRuleRegulationID, String rst){

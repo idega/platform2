@@ -399,10 +399,10 @@ public class InvoiceChildcareThread extends BillingThread{
 
 							errorRelated.append("Posting detail "+postingDetail);
 							// **Create the invoice record
-							//TODO (JJ) get these strings from the postingDetail instead.
+							//maybe get these strings from the postingDetail instead.
 							errorRelated.append("Regspectyp from posting detail: "+postingDetail.getRuleSpecType());
 							errorRelated.append("Regspectyp from regulation: "+regulation.getRegSpecType().getLocalizationKey());
-							postingDetail.setRuleSpecType(regulation.getRegSpecType().getLocalizationKey());		//TODO (JJ) This is a patch, Pallis func should probably return the right one in the first place.
+							postingDetail.setRuleSpecType(regulation.getRegSpecType().getLocalizationKey());		//This is a patch, Pallis func should probably return the right one in the first place.
 							errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,calculationDate);
