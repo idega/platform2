@@ -4,6 +4,7 @@
  * QueryBuilder is a wizard that constructs a ReportQuery from the user input.
  */
 package com.idega.block.dataquery.presentation;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,15 +12,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.dataquery.data.Query;
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
 import com.idega.core.IWTreeNode;
+import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -35,6 +40,7 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: </p>
@@ -52,17 +58,22 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_STEP = "step";
 	private static final String PARAM_NEXT = "next";
 	private static final String PARAM_LAST = "last";
+	private static final String PARAM_SAVE = "save";
 	private static final String PARAM_SOURCE = "source_entity";
 	private static final String PARAM_RELATED = "related_entity";
 	private static final String PARAM_FIELDS = "entity_fields";
+	private static final String PARAM_CONDITION = "field_pattern";
 	private int step = 1;
+	private int queryFolderID = -1;
 	private int relationDepth = 4;
 	private int investigationLevel = 3;
+	private boolean allowEmptyConditions = true;
+	private QuerySession sessionBean;
 	public void control(IWContext iwc) {
 		if (hasPermission) {
 			try {
-				QuerySession session = (QuerySession) IBOLookup.getSessionInstance(iwc, QuerySession.class);
-				helper = session.getQueryHelper();
+				sessionBean = (QuerySession) IBOLookup.getSessionInstance(iwc, QuerySession.class);
+				helper = sessionBean.getQueryHelper();
 				// if not moving around we stay at entity tree
 				if (iwc.isParameterSet("tree_action"))
 					step = 2;
@@ -90,12 +101,15 @@ public class QueryBuilder extends Block {
 			catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		else {
 			add(iwrb.getLocalizedString("no_permission", "You don't have permission !!"));
 		}
 	}
-	private void processForm(IWContext iwc) throws ClassNotFoundException {
+	private void processForm(IWContext iwc) throws ClassNotFoundException,IOException {
 		if (iwc.isParameterSet(PARAM_NEXT)) {
 			boolean proceed = processNextStep(iwc);
 			if (proceed) {
@@ -105,8 +119,16 @@ public class QueryBuilder extends Block {
 			else
 				System.out.println(" do not proceed to next step");
 		}
-		else if (iwc.isParameterSet(PARAM_LAST))
-			processLastStep(iwc);
+		else if (iwc.isParameterSet(PARAM_LAST)){
+			processPreviousStep(iwc);
+		}
+		else if(iwc.isParameterSet(PARAM_SAVE)){
+			ICFile q  = sessionBean.storeQuery(queryFolderID);
+			if(q!=null)
+				add("Query was saved "+q.getPrimaryKey().toString()  );
+			else
+				add("Query was not saved");
+		}
 	}
 	private boolean processNextStep(IWContext iwc) throws ClassNotFoundException {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
@@ -142,6 +164,7 @@ public class QueryBuilder extends Block {
 				if (iwc.isParameterSet(PARAM_FIELDS)) {
 					fields = iwc.getParameterValues(PARAM_FIELDS);
 				}
+				// allow to select from the left box only ( no ordering ), shortcut !
 				else if(iwc.isParameterSet(PARAM_FIELDS+"_left")){
 					fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
 				}
@@ -154,10 +177,31 @@ public class QueryBuilder extends Block {
 					return helper.hasFields();
 				}
 				break;
+				case 4:
+				helper.clearConditions();
+				String[] conditions = iwc.getParameterValues(PARAM_CONDITION);;
+				if (conditions!=null) {
+					List listOfFields  = helper.getListOfFields();
+					if(listOfFields.size() == conditions.length){
+						conditions = iwc.getParameterValues(PARAM_CONDITION);
+						for (int i = 0; i < conditions.length; i++) {
+							if(conditions[i].length()>0){
+								QueryFieldPart fieldPart = (QueryFieldPart) listOfFields.get(i);
+								QueryConditionPart part = new QueryConditionPart(fieldPart.getName(),fieldPart.getTypeClass(),conditions[i]);
+								helper.addCondition(part);
+							}
+						}						
+					}
+					else{
+						System.out.println("field count and condition count dont match !");
+						return false;
+					}
+				}
+				return helper.hasConditions() || this.allowEmptyConditions;
 		}
 		return false;
 	}
-	private void processLastStep(IWContext iwc) {
+	private void processPreviousStep(IWContext iwc) {
 		switch (step) {
 			case 2 :
 				//helper.clearRelatedEntities();
@@ -186,6 +230,8 @@ public class QueryBuilder extends Block {
 				return getStep3(iwc);
 			case 4 :
 				return getStep4(iwc);
+			case 5 :
+				return getStep5(iwc);
 			default :
 				return getStep1(iwc);
 		}
@@ -262,11 +308,11 @@ public class QueryBuilder extends Block {
 		return table;
 	}
 	private void fillFieldSelectionBox(QueryService service,QueryEntityPart entityPart, Map fieldMap,SelectionDoubleBox box)throws RemoteException {
-		System.out.println("filling box with fields from " + entityPart.getName());
+		//System.out.println("filling box with fields from " + entityPart.getName());
 		Iterator iter = service.getListOfFieldParts(iwrb, entityPart).iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
-			System.out.println(" " + part.getName());
+			//System.out.println(" " + part.getName());
 			if (fieldMap.containsKey(part.encode())) {
 				box.getRightBox().addElement(
 					part.encode(),
@@ -283,8 +329,9 @@ public class QueryBuilder extends Block {
 	public PresentationObject getStep4(IWContext iwc) {
 		Table table = new Table();
 		table.setWidth(table.HUNDRED_PERCENT);
-		table.mergeCells(1, 1, 2, 1);
+		
 		table.add(iwrb.getLocalizedString("step_4_msg", "Define field conditions"), 1, 1);
+		table.mergeCells(1, 1, 5, 1);
 		int row = 2;
 		table.add(iwrb.getLocalizedString("field_display", "Display"), 2, row);
 		table.add(iwrb.getLocalizedString("field_entity", "Entity"), 3, row);
@@ -297,18 +344,27 @@ public class QueryBuilder extends Block {
 			table.add(part.getDisplay(), 2, row);
 			table.add(iwrb.getLocalizedString(part.getEntity(), part.getEntity()), 3, row);
 			table.add(iwrb.getLocalizedString(part.getTypeClass(), part.getTypeClass()), 4, row);
-			table.add(new TextInput("field_value"), 5, row);
+			table.add(new TextInput(PARAM_CONDITION), 5, row);
 			row++;
 		}
 		return table;
 	}
+	
+	public PresentationObject getStep5(IWContext iwc) {
+			Table table = new Table();
+			table.setWidth(table.HUNDRED_PERCENT);
+			table.add(iwrb.getLocalizedString("step_5_msg", "Take proper action"), 1, 1);
+			
+			return table;
+	}
+	
 	private Table getLastAndNext(int currentStep) {
 		Table T = new Table(2, 1);
 		T.setWidth(getWidth());
 		T.setAlignment(1, 1, T.HORIZONTAL_ALIGN_RIGHT);
 		T.setAlignment(2, 1, T.HORIZONTAL_ALIGN_LEFT);
 		//T.setAlignment(T.HORIZONTAL_ALIGN_CENTER);
-		if (currentStep < 4) {
+		if (currentStep <= 4) {
 			SubmitButton next =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_next", "next >>"), PARAM_NEXT, "true");
 			T.add(next, 2, 1);
@@ -317,6 +373,10 @@ public class QueryBuilder extends Block {
 			SubmitButton last =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_previous", "<< previous"), PARAM_LAST, "true");
 			T.add(last, 1, 1);
+		}
+		if(currentStep > 4){
+			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("btn_save","Save"),PARAM_SAVE,"true");
+			T.add(save, 2, 1);
 		}
 		return T;
 	}

@@ -64,13 +64,13 @@ public class QueryFieldPart implements QueryPart {
 		el.setAttribute(QueryXMLConstants.NAME,name);
 		el.setAttribute(QueryXMLConstants.ENTITY,entity);
 		el.setAttribute(QueryXMLConstants.PROPERTIES,this.columns);
-	  	if(this.function!=null)
+	  	if(this.function!=null && !this.function.equalsIgnoreCase("null"))
 	  		el.setAttribute(QueryXMLConstants.FUNCTION,function);
-	  	if(this.typeClass!=null)
+	  	if(this.typeClass!=null && !this.typeClass.equalsIgnoreCase("null"))
 	  		el.setAttribute(QueryXMLConstants.TYPE,typeClass);
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
-	  	el.addContent(display);
+	  	el.addContent(xmlDisplay);
 		return el;
 	}
 

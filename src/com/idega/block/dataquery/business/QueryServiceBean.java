@@ -42,6 +42,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 		return new QueryHelper();
 	}
 	
+		
+	
 	public Collection getSourceQueryEntityParts(){
 		Collection coll = new ArrayList(2);
 		GenericEntity ent1 = getEntity(com.idega.user.data.User.class);

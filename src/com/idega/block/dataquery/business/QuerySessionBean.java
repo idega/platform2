@@ -1,15 +1,16 @@
 /*
  * Created on May 27, 2003
  *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code Template
  */
 package com.idega.block.dataquery.business;
-
+import java.io.IOException;
 import java.rmi.RemoteException;
 
+import com.idega.block.dataquery.data.Query;
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOSessionBean;
-
+import com.idega.core.data.ICFile;
+import com.idega.util.xml.XMLData;
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: </p>
@@ -18,28 +19,23 @@ import com.idega.business.IBOSessionBean;
  * @author aron 
  * @version 1.0
  */
-
-public class QuerySessionBean extends IBOSessionBean implements QuerySession{
-	private QueryHelper query = null;
+public class QuerySessionBean extends IBOSessionBean implements QuerySession {
+	private QueryHelper helper = null;
 	private int xmlFileID = -1;
-	
-	public QueryService getQueryService() throws RemoteException{
-		return (QueryService)this.getServiceInstance(QueryService.class);
+	public QueryService getQueryService() throws RemoteException {
+		return (QueryService) this.getServiceInstance(QueryService.class);
 	}
-	
-	public void createNewQuery() throws RemoteException{
-		query = getQueryService().getQueryHelper();
+	public void createNewQuery() throws RemoteException {
+		helper = getQueryService().getQueryHelper();
 	}
-	
-	public void createQuery(int XMLFileID)throws RemoteException{
-		query = getQueryService().getQueryHelper( XMLFileID);
+	public void createQuery(int XMLFileID) throws RemoteException {
+		helper = getQueryService().getQueryHelper(XMLFileID);
+		this.xmlFileID = XMLFileID;
 	}
-
-	
-	public QueryHelper getQueryHelper(){
-		if(query==null){
+	public QueryHelper getQueryHelper() {
+		if (helper == null) {
 			try {
-				if(xmlFileID>0)
+				if (xmlFileID > 0)
 					createQuery(xmlFileID);
 				else
 					createNewQuery();
@@ -48,13 +44,25 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession{
 				e.printStackTrace();
 			}
 		}
-		return query;
+		return helper;
 	}
 	/**
 	 * @param i
 	 */
-	public void setXmlFileID(int i) {
+	public void setXmlFileID(int i){
 		xmlFileID = i;
 	}
-
+	public ICFile storeQuery(int folderID)  throws IOException{
+		XMLData data = XMLData.getInstanceWithoutExistingFile();
+		if(xmlFileID>0){
+			data.setXmlFileId(xmlFileID);
+		}
+		data.setDocument(helper.createDocument());
+		
+		ICFile query =  data.store();
+		if(folderID>0 && query !=null)
+			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(),folderID);
+		return query;
+	
+	}
 }
