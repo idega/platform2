@@ -12,6 +12,7 @@ import javax.ejb.RemoveException;
 
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORemoveRelationshipException;
@@ -182,7 +183,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public Collection ejbFindAllWorkReportMembersByWorkReportIdAndWorkReportGroup(int reportId,WorkReportGroup wrGroup) throws FinderException{
 		StringBuffer sql = new StringBuffer();
 		String middleTableName = this.getNameOfMiddleTable(this,wrGroup);
-		String primaryKeyName = wrGroup.getEntityDefinition().getPrimaryKeyDefinition().toString();
+		String primaryKeyName = "ISI_WR_GROUP_ID";
 		
 		sql.append("Select e.* from ").append(ENTITY_NAME).append(" e ,").append(middleTableName).append(" middle")
 		.append(" where ").append("e."+COLUMN_NAME_REPORT_ID).append("=").append(reportId)
@@ -205,17 +206,17 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		IDOQuery sql = idoQuery();
 		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
-		String leagueIDColumnName = league.getEntityDefinition().getPrimaryKeyDefinition().toString();
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
 		
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
-		.append(getNameOfMiddleTable(this,league)).append(" middle, ")
+		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
 		.appendAnd()
 		.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 		.appendLessThanOrEqualsSign()
-		.append(stamp.toSQLString())
+		.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
 		.appendAnd()
 		.append("memb.")
 		.append(IDColumnName)
@@ -223,7 +224,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		.append("middle.")
 		.append(IDColumnName)
 		.appendAnd()
-		.append("memb.")
+		.append("middle.")
 		.append(leagueIDColumnName)
 		.appendEqualSign()
 		.append(league.getPrimaryKey());
