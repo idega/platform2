@@ -4,6 +4,7 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 public interface WorkReportBusiness extends com.idega.business.IBOService,is.idega.idegaweb.member.business.MemberUserBusiness
 {
  public boolean addWorkReportGroupToEntity(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0,com.idega.data.IDOEntity p1) throws java.rmi.RemoteException;
+ public boolean addWorkReportGroupToEntity(java.lang.String p0,int p1,com.idega.data.IDOEntity p2) throws java.rmi.RemoteException;
  public boolean changeWorkReportGroupOfEntity(java.lang.String p0,int p1,java.lang.String p2,int p3,com.idega.data.IDOEntity p4) throws java.rmi.RemoteException;
  public boolean changeWorkReportGroupOfEntity(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1,com.idega.data.IDOEntity p2) throws java.rmi.RemoteException;
  public boolean createWorkReportBoardData(int p0) throws java.rmi.RemoteException;
@@ -28,4 +29,6 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public boolean importAccountPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
  public boolean importBoardPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
  public boolean importMemberPart(int p0,int p1)throws is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException, java.rmi.RemoteException;
+ public boolean removeWorkReportGroupFromEntity(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0,com.idega.data.IDOEntity p1) throws java.rmi.RemoteException;
+ public boolean removeWorkReportGroupFromEntity(java.lang.String p0,int p1,com.idega.data.IDOEntity p2) throws java.rmi.RemoteException;
 }

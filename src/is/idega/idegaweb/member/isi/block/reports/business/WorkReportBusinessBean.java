@@ -1166,6 +1166,48 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   public boolean addWorkReportGroupToEntity(WorkReportGroup newGroup, IDOEntity entity) {
     return changeWorkReportGroupOfEntity(null, newGroup, entity);
   }
+
+   /**
+   * Removes the specified WorkReportGroup from the specified entity. 
+   * If the secified WorkReportGroup is null nothing happens and true is returned.
+   * If the complete operation was successful true is returned else false.
+   * @param newGroup
+   * @param entity
+   * @return true if successful else false.
+   */
+  public boolean removeWorkReportGroupFromEntity(WorkReportGroup oldGroup, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(oldGroup, null, entity);
+  }
+
+   /**
+   * Adds the specified WorkReportGroup to the specified entity. 
+   * The entity is specified by the name and the year.
+   * If the secified WorkReportGroup is null nothing happens and true is returned.
+   * If the complete operation was successful true is returned else false.
+   * @param newGroup
+   * @param year
+   * @param entity
+   * @return true if successful else false.
+   */
+  public boolean addWorkReportGroupToEntity(String nameNewGroup, int year, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(null, year, nameNewGroup, year, entity);
+  }
+
+   /**
+   * Removes the specified WorkReportGroup from the specified entity. 
+   * The entity is specified by the name and the year.
+   * If the secified WorkReportGroup is null nothing happens and true is returned.
+   * If the complete operation was successful true is returned else false.
+   * @param newGroup
+   * @param year
+   * @param entity
+   * @return true if successful else false.
+   */
+  public boolean removeWorkReportGroupFromEntity(String nameOldGroup, int year, IDOEntity entity) {
+    return changeWorkReportGroupOfEntity(nameOldGroup, year, null, year, entity);
+  }
+
+
   
   public boolean createWorkReportBoardData(int workReportId) {
     // get year and club id from work report
