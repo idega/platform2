@@ -26,14 +26,15 @@ import com.idega.presentation.ui.Form;
  * Created on Jul 3, 2003
  */
 public class WorkReportBoardMemberEditor extends WorkReportSelector {
+	
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardmembereditor.step_name";
   
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
     
-    if (this.getWorkReportId() == -1) {
-      add("Nothing found...");
-    }
-    else {
+    if (this.getWorkReportId() != -1) {
+			//sets this step as bold, if another class calls it this will be overridden
+			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
       //parseAction(iwc);
       Form form = new Form();
       PresentationObject pres = getContent(iwc);
@@ -94,6 +95,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
   }
     
+	/**
+	 * 
+	 */
+	public WorkReportBoardMemberEditor() {
+		super();
+		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+	}
+
   public WorkReportBusiness getWorkReportBusiness() {
     try {
       return (WorkReportBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), WorkReportBusiness.class);
