@@ -75,6 +75,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolType getSchoolType(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolTypeHome getSchoolTypeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.business.SchoolUserBusiness getSchoolUserBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getSchoolUsers(com.idega.block.school.data.School school) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYear getSchoolYear(java.lang.Object p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearHome getSchoolYearHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolYearPlaces getSchoolYearPlaces(java.lang.Object p0) throws java.rmi.RemoteException;
