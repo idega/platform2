@@ -3593,17 +3593,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField email = new ReportableField(FIELD_NAME_EMAIL, String.class);
 		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		reportCollection.addField(email);
-		
-		
-		ReportableData regData = new ReportableData();
-		regData.addData(personName, "Birna Spyrna");
-		
-		regData.addData(phone, "123-4567");
-		regData.addData(address, "Spyrnugata 1234564322434");
-		regData.addData(postalCode, "2");
-		regData.addData(email, "birna@spyrna.is");
-		
-		reportCollection.add(regData);
+
 
 		//finished return the collection
 		return reportCollection;
@@ -3639,22 +3629,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(address);
 		
 		ReportableField postalCode = new ReportableField(FIELD_NAME_POSTALCODE, String.class);
-		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Multi Division Players"), currentLocale);
+		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Postal Code"), currentLocale);
 		reportCollection.addField(postalCode);
 		
 		ReportableField email = new ReportableField(FIELD_NAME_EMAIL, String.class);
-		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Single Division Players"), currentLocale);
+		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		reportCollection.addField(email);
 		
-		ReportableData regData = new ReportableData();
-		regData.addData(personName, "Birna Spyrna");
+
 		
-		regData.addData(address, "Spyrnugata 1234564322434b");
-		regData.addData(postalCode, "2");
-		regData.addData(email, "birna@spyrna.is");
-		
-		reportCollection.add(regData);
-		
+
 		//finished return the collection
 		return reportCollection;
 	}
