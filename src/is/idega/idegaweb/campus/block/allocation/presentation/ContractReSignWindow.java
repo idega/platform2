@@ -121,8 +121,9 @@ public class ContractReSignWindow extends Window{
         Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
         Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
         User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-        boolean isContractUser = user.getID() == eUser.getID();
+        
         if(user !=null){
+		boolean isContractUser = user.getID() == eUser.getID();
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
           T.add(new HiddenInput("us_id",String.valueOf(eContract.getUserId().intValue())),1,row);
           if(iwc.isParameterSet(prmAdmin)){
