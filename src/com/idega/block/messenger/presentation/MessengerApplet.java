@@ -187,7 +187,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     cycle();
   }
 
-  private URLConnection getURLConnection(){
+  private synchronized URLConnection getURLConnection(){
     URLConnection servletConnection = null;
 
     try{
