@@ -8,10 +8,10 @@ import javax.ejb.FinderException;
 import java.util.Collection;
 
 /**
- * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/23 08:25:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public interface Viewpoint extends IDOEntity, Case {
     String CASE_CODE_KEY = "SYMESYN";
@@ -22,9 +22,11 @@ public interface Viewpoint extends IDOEntity, Case {
     String getSubject () throws RemoteException;
     String getMessage () throws RemoteException;
     String getAnswer () throws RemoteException;
-    int getUserId () throws RemoteException;
+    Integer getUserId () throws RemoteException;
     boolean isAnswered () throws RemoteException;
     Integer getRoadResponsibleId ();
+    String getUserEmail ();
+    String getUserName ();
 
     void setHandlerGroupId (int handlerGroupId) throws RemoteException;
     void setUser (User user) throws RemoteException;
@@ -35,6 +37,8 @@ public interface Viewpoint extends IDOEntity, Case {
     void setHandler (User user) throws RemoteException;
     void unsetHandler () throws RemoteException;
     void setRoadResponsibleId (int id);
+    void setUserEmail (String email);
+    void setUserName (String name);
 
     Collection ejbFindUnhandledViewpointsInGroups (Group [] groups)
         throws FinderException, RemoteException;

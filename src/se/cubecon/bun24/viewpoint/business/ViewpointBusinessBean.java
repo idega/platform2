@@ -12,10 +12,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/23 08:25:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -63,9 +63,43 @@ public class ViewpointBusinessBean extends CaseBusinessBean
                 = (MessageBusiness) IBOLookup.getServiceInstance
                 (getIWApplicationContext(), MessageBusiness.class);
 		final Message message = messageBusiness.createUserMessage
-                (viewpoint.getUserId (), messageSubject, messageBody);
+                (viewpoint.getUserId ().intValue (), messageSubject,
+                 messageBody);
 		message.setParentCase(viewpoint);
 		message.store();
+    }
+
+    public void createViewpoint (final String userName, final String userEmail,
+                                 final String subject, final String body,
+                                 final String category,
+                                 final int handlerGroupId,
+                                 final int roadResponsibleId)
+        throws CreateException, RemoteException {
+		final Viewpoint viewpoint = getViewpointHome ().create ();
+        
+		viewpoint.setUserName (userName);
+		viewpoint.setUserEmail (userEmail);
+		viewpoint.setSubject (subject);
+		viewpoint.setMessage (body);
+		viewpoint.setCategory (category);
+  		viewpoint.setHandlerGroupId (handlerGroupId);
+        if (roadResponsibleId >= 0) {
+            viewpoint.setRoadResponsibleId (roadResponsibleId);
+        }
+		viewpoint.store();
+
+        final String messageBody
+                = getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
+                                      CONFIRMENTERVIEWPOINT_DEFAULT)
+                + "\n\n-------------------------------------------------------"
+                + "-----\n\n" + category + "\n\n" + subject + "\n\n" + body
+                + "\n";
+        final String messageSubject
+                = getLocalizedString (CONFIRMSUBJECT_KEY,
+                                      CONFIRMSUBJECT_DEFAULT);
+        System.err.println ("\nTo: " + userEmail);
+        System.err.println ("Subject: " + messageSubject);
+        System.err.println ('\n' + messageBody + '\n');
     }
 
     public Viewpoint [] findUnhandledViewpointsInGroups
@@ -112,15 +146,22 @@ public class ViewpointBusinessBean extends CaseBusinessBean
                  ORIGINALVIEWPOINT_DEFAULT).toUpperCase () + " ----\n\n"
                 + viewpoint.getMessage ();
         final String messageBody = categoryLine + "\n\n" + answerLine + "\n\n"
-                + questionLine + "\n";
-		final MessageBusiness messageBusiness
-                = (MessageBusiness) IBOLookup.getServiceInstance
-                (getIWApplicationContext(), MessageBusiness.class);
-		final Message message = messageBusiness.createUserMessage
-                (viewpoint.getUserId (), "Re: " + viewpoint.getSubject (),
-                 messageBody);
-		message.setParentCase(viewpoint);
-		message.store();
+                + (questionLine.length () > 400
+                   ? (questionLine.substring (0, 397) + "...")
+                   : questionLine) + "\n";
+        final Integer userId = viewpoint.getUserId ();
+        if (null != userId) {
+            final MessageBusiness messageBusiness
+                    = (MessageBusiness) IBOLookup.getServiceInstance
+                    (getIWApplicationContext(), MessageBusiness.class);
+            final Message message = messageBusiness.createUserMessage
+                    (userId.intValue (), "Re: " + viewpoint.getSubject (),
+                     messageBody);
+            message.setParentCase(viewpoint);
+            message.store();
+        } else {
+            // todo: implement answer to email
+        }
 
         // 3. save answer and set 'closed' status on case
         viewpoint.setAnswer (answer);

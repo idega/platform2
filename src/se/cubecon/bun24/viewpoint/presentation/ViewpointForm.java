@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/21 14:14:02 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/23 08:25:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -207,7 +207,17 @@ public class ViewpointForm extends CommuneBlock {
                 showTopCategoriesForm (context);
             }
         } catch (final Exception exception) {
-            add(new ExceptionWrapper(exception, this));
+            System.err.println ("Exception caught in " + getClass ().getName ()
+                                + " " + (new Date ()).toString ());
+            System.err.println ("Parameters:");
+            final Enumeration enum = context.getParameterNames ();
+            while (enum.hasMoreElements ()) {
+                final String key = (String) enum.nextElement ();
+                System.err.println ('\t' + key + "='"
+                                    + context.getParameter (key) + "'");
+            }
+            exception.printStackTrace ();
+            add ("Det inträffade ett fel. Försök igen senare.");
 		}
 	}
 
@@ -404,8 +414,9 @@ public class ViewpointForm extends CommuneBlock {
         final Group handlerGroup = viewpoint.getHandlerGroup ();
         final boolean isCurrentUserHandler = handler != null && currentUserId
                 == ((Integer) handler.getPrimaryKey ()).intValue ();
+        final Integer userId = viewpoint.getUserId ();
         final boolean isCurrentUserOriginator
-                = currentUserId == viewpoint.getUserId ();
+                = null != userId && userId.intValue () == currentUserId;
         final boolean isCurrentUserPotentialHandler
                 = handler == null && currentUsersGroups.contains (handlerGroup);
         if (isCurrentUserPotentialHandler) {
@@ -623,6 +634,7 @@ public class ViewpointForm extends CommuneBlock {
             table.add (homeLink, 1, row++);
         }
     }
+
 	private void registerViewpoint(final IWContext context)
         throws RemoteException, CreateException, FinderException {
 		final ViewpointBusiness viewpointBusiness
@@ -637,15 +649,21 @@ public class ViewpointForm extends CommuneBlock {
                 = ((Integer) handlerGroup.getPrimaryKey()).intValue();
 		final int roadId = new Integer
                 (context.getParameter (PARAM_ROAD_ID)).intValue();
+        final String subject = context.getParameter (PARAM_SUBJECT);
+        final String message = context.getParameter (PARAM_MESSAGE);
         final User user = getCurrentUser (context);
         if (null != user) {
             viewpointBusiness.createViewpoint
-                    (user, context.getParameter (PARAM_SUBJECT),
-                     context.getParameter (PARAM_MESSAGE),
+                    (user, subject, message, topCategory.getName () + "/"
+                     + subCategory.getName (), handlerGroupId, roadId);
+        } else if (isUserIdentifiedByEmailAndName (context)) {
+            final HttpSession session = context.getSession ();
+            final String userName = (String) session.getAttribute (NAME_KEY);
+            final String userEmail = (String) session.getAttribute (EMAIL_KEY);
+            viewpointBusiness.createViewpoint
+                    (userName, userEmail, subject, message,
                      topCategory.getName () + "/" + subCategory.getName (),
                      handlerGroupId, roadId);
-        } else {
-            add ("--- den här funktionen är inte implementerad ännu ---");
         }
 		final Text text1
                 = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
@@ -881,10 +899,16 @@ public class ViewpointForm extends CommuneBlock {
 		table.add (getLocalizedSmallHeader (FROMCITIZEN_KEY,
                                             FROMCITIZEN_DEFAULT), 1, row);
 		table.add (new Break (), 1, row);
-		final UserBusiness userBusiness = (UserBusiness) IBOLookup
-                .getServiceInstance (context, UserBusiness.class);
-		final User user = userBusiness.getUser (viewpoint.getUserId ());
-		table.add (new Text (user.getName  ()), 1, row++);
+        final Integer userId = viewpoint.getUserId ();
+        if (null != userId) {
+            final UserBusiness userBusiness = (UserBusiness) IBOLookup
+                    .getServiceInstance (context, UserBusiness.class);
+            final User user = userBusiness.getUser (viewpoint.getUserId ());
+            table.add (new Text (user.getName  ()), 1, row++);
+        } else {
+            table.add (new Text (viewpoint.getUserName () + " ("
+                                 + viewpoint.getUserEmail () + ")"), 1, row++);
+        }
 		table.add (getLocalizedSmallHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1,
                    row);
 		table.add (new Break (), 1, row);

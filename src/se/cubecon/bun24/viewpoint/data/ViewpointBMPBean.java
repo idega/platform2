@@ -8,10 +8,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/05/19 11:32:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/23 08:25:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -28,6 +28,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     private static final String COLUMN_ANSWER = "ANSWER";
     private static final String COLUMN_ROADRESPONSIBLE_ID
         = "ROADRESPONSIBLE_ID";
+    private static final String COLUMN_USERNAME = "INITIATERNAME";
+    private static final String COLUMN_USEREMAIL = "INITIATEREMAIL";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -66,6 +68,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 		addAttribute (COLUMN_ANSWER, "Answer", String.class, 10000);
        	addAttribute (COLUMN_ROADRESPONSIBLE_ID, "RoadResponsible", true, true,
                       Integer.class, "many-to-one", RoadResponsible.class);
+		addAttribute (COLUMN_USEREMAIL, "UserEmail", String.class);
+		addAttribute (COLUMN_USERNAME, "UserName", String.class);
     }
 
     public Group getHandlerGroup () {
@@ -88,8 +92,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         return getStringColumnValue (COLUMN_ANSWER);
     }
 
-    public int getUserId () {
-        return getIntegerColumnValue (COLUMN_USER_ID).intValue ();
+    public Integer getUserId () {
+        return getIntegerColumnValue (COLUMN_USER_ID);
     }
 
     public boolean isAnswered () throws RemoteException {
@@ -98,6 +102,14 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public Integer getRoadResponsibleId () {
         return getIntegerColumnValue (COLUMN_ROADRESPONSIBLE_ID);
+    }
+
+    public String getUserEmail () {
+        return getStringColumnValue (COLUMN_USEREMAIL);
+    }
+
+    public String getUserName () {
+        return getStringColumnValue (COLUMN_USERNAME);
     }
 
     public void setHandlerGroupId (final int handlerGroupId) {
@@ -136,6 +148,15 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     public void setRoadResponsibleId (final int id) {
         setColumn (COLUMN_ROADRESPONSIBLE_ID, new Integer (id));
     }
+
+    public void setUserEmail (final String email) {
+        setColumn (COLUMN_USEREMAIL, email);
+    }
+
+    public void setUserName (final String name) {
+        setColumn (COLUMN_USERNAME, name);
+    }
+
 
     public Collection ejbFindUnhandledViewpointsInGroups
         (final Group [] groups) throws FinderException, RemoteException {
