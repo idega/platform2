@@ -15,12 +15,15 @@ public class SchoolContentItemEditButton extends SchoolContentItem {
 	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
 	 */
 	protected PresentationObject getObject() throws RemoteException {
+//		System.out.println("SchoolContentItemEditButton : hasContentEdit = "+super.getSchoolContentBusiness(_iwc).hasEditPermission(_school, super._iwc));
+		
+		
 		Link link = SchoolContentEditor.getLink(_school);
 		if (super.hasEditPermission()) {
 			return link;
-		}//else if (super.getSchoolContentBusiness(_iwc).hasEditPermission(_school)) {
-			
-		//}
+		}else if (super.getSchoolContentBusiness(_iwc).hasEditPermission(_school, _iwc)) {
+			return link;
+		}
 		return null;
 	}
 

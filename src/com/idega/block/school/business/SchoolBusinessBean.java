@@ -19,13 +19,16 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.*;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.GroupType;
 import com.idega.user.data.GroupTypeHome;
 import com.idega.user.data.User;
@@ -39,6 +42,13 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness {
+	
+	public static final String GROUP_TYPE_SCHOOL_GROUP = "school_staff_group";
+	public static String MANAGEMENT_TYPE_PRIVATE = "school_man_type_private";
+	public static final int MANAGEMENT_TYPE_PRIVATE_ID = 1;
+	public static String MANAGEMENT_TYPE_PUBLIC = "school_man_type_public";
+	public static final int MANAGEMENT_TYPE_PUBLIC_ID = 2;
+	
 	public SchoolHome getSchoolHome() throws java.rmi.RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
@@ -291,6 +301,82 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection getSchoolGroups(User user) throws RemoteException {
+/*		GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupBusiness.class);
+		try {
+//			Collection schoolGroups = gBus.getGroups(new String[]{GROUP_TYPE_SCHOOL_GROUP}, true, this.getIWApplicationContext());
+			Collection schoolGroups = null;
+			Group group;
+			if (schoolGroups != null) {
+				System.out.println("SchoolBusiness.getSchoolGroup : shouldGroup.size = "+schoolGroups.size());	
+				Iterator iter = schoolGroups.iterator();
+				while (iter.hasNext()) {
+					System.out.println("SchoolBusiness.getSchoolGroup : shouldGroup ID = "+iter.next().toString());	
+				}	
+			}else {
+				System.out.println("SchoolBusiness.getSchoolGroup : shouldGroup == null");	
+			}
+			Collection groupsContained = gBus.getGroupsContained( ((Integer)user.getPrimaryKey()).intValue() );
+			if (groupsContained != null) {
+				Iterator iter = groupsContained.iterator();
+				System.out.println("SchoolBusiness.getSchoolGroup : groupsContained.size = "+groupsContained.size());	
+				while (iter.hasNext()) {
+					System.out.println("SchoolBusiness.getSchoolGroup : groupsContained ID = "+iter.next().toString());	
+				}	
+			}else {
+				System.out.println("SchoolBusiness.getSchoolGroup : groupsContained == null");	
+			}
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
+//		gBus.geta */
+		Collection userSchoolGroups = getUserBusiness().getUserGroups(user, new String[]{GROUP_TYPE_SCHOOL_GROUP}, true);
+		if (userSchoolGroups != null) {
+			System.out.println("SchooBusiness.getSchoolGroup : found schoolGroups...");
+			return userSchoolGroups;	
+		}else {
+			System.out.println("SchooBusiness.getSchoolGroup : schoolGroups NOT FOUND...");
+			/** backwards compatabilit, ... finna betri leid ?? */
+			Collection userGroups = getUserBusiness().getUserGroups(user);
+			Collection schools = this.findAllSchools();
+			
+			if (schools != null && userGroups != null) {
+				System.out.println("SchooBusiness.getSchoolGroup : schools != null && userGroups != null...");
+				Collection returner = new Vector();
+				
+				School school;
+				Group group;
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
+
+				Iterator itSchools = schools.iterator();
+				Iterator itGroups = userGroups.iterator();
+				while (itSchools.hasNext()) {
+					try {
+						school = getSchoolHome().findByPrimaryKey(itSchools.next());
+
+						while (itGroups.hasNext()) {
+							group = gHome.findByPrimaryKey(itGroups.next());
+							if (group.getName().equals(school.getName()) ) {
+								System.out.println("SchooBusiness.getSchoolGroup : group.getName().equals(school.getName()) ...");
+								group.setGroupType(GROUP_TYPE_SCHOOL_GROUP);
+								group.store();
+								
+								returner.add(group.getPrimaryKey());
+							}
+						}
+					} catch (FinderException e) {
+						e.printStackTrace(System.err);
+					}
+				}
+				
+				return returner;					
+			}
+			
+		}
+		
+		return null;
+	}
+
 	protected UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) this.getServiceInstance(UserBusiness.class);
 	}
@@ -330,6 +416,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection getHeadmasters(School school) throws RemoteException, FinderException {
+		return getUserBusiness().getGroupBusiness().getUsersContained(school.getHeadmasterGroupId());
+	}
+	
+	public void addHeadmaster(School school, User user) throws RemoteException {
+		getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);	
+	}
+
 	public Collection findAllSchoolsByType(int type) {
 		try {
 			SchoolHome shome = getSchoolHome();
@@ -350,4 +444,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public String getSchoolManagementTypeString(int managementTypeId) {
+		switch (managementTypeId) {
+			case MANAGEMENT_TYPE_PRIVATE_ID :
+				return MANAGEMENT_TYPE_PRIVATE;
+			case MANAGEMENT_TYPE_PUBLIC_ID :
+				return MANAGEMENT_TYPE_PUBLIC;
+		}	
+		return null;
+	}
+	
 }

@@ -7,6 +7,7 @@ import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
 import com.idega.data.*;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -39,6 +40,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
   public final static String KEYCODE = "key_kode";
   public final static String LONGITUDE = "longitude";
   public final static String LATITUDE = "latitude";
+  /** Gimmi 04.11.2002 */
+  public final static String FAX = "fax_nr";
+  public final static String WEB_PAGE = "web_page";
+  public final static String MANAGEMENT_TYPE = "managment_type";
 
 
   public void initializeAttributes() {
@@ -55,6 +60,9 @@ public class SchoolBMPBean extends GenericEntity implements School {
     this.addAttribute(LATITUDE,"latitude",true,true,String.class,20);
     this.addAttribute(LONGITUDE,"longitude",true,true,String.class,20);
     this.addAttribute(HEADMASTER,"Headmaster",true,true,Integer.class,this.MANY_TO_ONE,Group.class);
+    this.addAttribute(FAX,"fax",true,true,String.class,20);
+    this.addAttribute(WEB_PAGE,"web_page",true,true,String.class,50);
+    this.addAttribute(MANAGEMENT_TYPE,"management_type",true,true,Integer.class);
     this.addManyToManyRelationShip(SchoolType.class);
     this.addManyToManyRelationShip(SchoolYear.class);
     // Grimur 16.10.2002
@@ -124,9 +132,15 @@ public class SchoolBMPBean extends GenericEntity implements School {
   public int getHeadmasterGroupId(){
     return this.getIntColumnValue(HEADMASTER);
   }
+  
+  public Group getHeadmasterGroup() throws RemoteException, FinderException{
+  	return ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getHeadmasterGroupId()));	
+  }
+  
   public void setHeadmasterGroupId(int masterGroupId ){
     this.setColumn(HEADMASTER,masterGroupId);
   }
+
 
   public String getSchoolKeyCode(){
     return this.getStringColumnValue(KEYCODE);
@@ -243,19 +257,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
     if (text == null) text = TextFinder.getLocalizedText(this, 1);
 
 		return text;
-
-/*
-		Collection coll = this.idoGetRelatedEntities( LocalizedText.class);
-		if (coll != null && coll.size() > 0) {
-			Iterator iter = coll.iterator();
-			try {
-				return ((LocalizedTextHome) IDOLookup.getHome(LocalizedText.class)).findByPrimaryKey(iter.next());
-			} catch (FinderException e) {
-				e.printStackTrace(System.err);
-			}
-		}
-		return null;
-*/		
 	}
 
    
@@ -263,6 +264,30 @@ public class SchoolBMPBean extends GenericEntity implements School {
   	/** Supports only one locale, if a new one in inserted it will overwrite the old one... */
 		this.idoRemoveFrom( LocalizedText.class);	
   	this.idoAddTo(text);	
+  }
+  
+  public String getSchoolFax() {
+  	return getStringColumnValue(FAX);	
+  }
+  
+  public void setSchoolFax(String fax) {
+  	setColumn(FAX, fax);	
+  }
+  
+  public String getSchoolWebPage() {
+  	return getStringColumnValue(WEB_PAGE);	
+  }
+  
+  public void setSchoolWebPage(String webPage) {
+  	setColumn(WEB_PAGE, webPage);	
+  }
+  
+  public int getSchoolManagermentType() {
+  	return getIntColumnValue(MANAGEMENT_TYPE);	
+  }
+  
+  public void setSchoolManagementType(int managementType) {
+  	setColumn(MANAGEMENT_TYPE, managementType);	
   }
   
   public Collection getImages() throws IDORelationshipException {
