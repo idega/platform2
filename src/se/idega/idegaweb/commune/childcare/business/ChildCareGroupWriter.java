@@ -26,12 +26,12 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -77,12 +77,12 @@ public class ChildCareGroupWriter implements MediaWritable {
 	public ChildCareGroupWriter() {
 	}
 	
-	public void init(HttpServletRequest req, IWMainApplication iwma) {
+	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-			locale = iwma.getIWApplicationContext().getApplicationSettings().getApplicationLocale();
-			business = getChildCareBusiness(iwma.getIWApplicationContext());
-			userBusiness = getCommuneUserBusiness(iwma.getIWApplicationContext());
-			iwrb = iwma.getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			locale = iwc.getApplicationSettings().getApplicationLocale();
+			business = getChildCareBusiness(iwc);
+			userBusiness = getCommuneUserBusiness(iwc);
+			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null && req.getParameter(PARAMETER_GROUP_ID) != null) {
 				int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));

@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Cell;
@@ -53,7 +53,7 @@ public class ReportWriter implements MediaWritable {
 	public final static String TXT = "txt";
 	public ReportWriter() {
 	}
-	public void init(HttpServletRequest req, IWMainApplication iwma) {
+	public void init(HttpServletRequest req, IWContext iwma) {
 		if (req.getParameter(prmReportId) != null) {
 			eReport = ReportFinder.getReport(Integer.parseInt(req.getParameter(prmReportId)));
 			if (req.getParameter(prmReportInfoId) != null) {

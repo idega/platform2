@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.10 2004/05/12 19:19:38 sigtryggur Exp $
+/* $Id: ControlListWriter.java,v 1.11 2004/05/24 20:10:41 laddi Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -12,10 +12,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-import java.sql.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,14 +29,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import se.idega.idegaweb.commune.accounting.invoice.presentation.ControlList;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
-import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.presentation.IWContext;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Cell;
 import com.lowagie.text.Document;
@@ -51,7 +50,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.10 2004/05/12 19:19:38 sigtryggur Exp $
+ * $Id: ControlListWriter.java,v 1.11 2004/05/24 20:10:41 laddi Exp $
  *
  * @author Kelly
  */
@@ -75,14 +74,14 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 	
 	}
 	
-	public void init(HttpServletRequest req, IWMainApplication iwma) {
+	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-			locale = iwma.getIWApplicationContext().getApplicationSettings().getApplicationLocale();
+			locale = iwc.getApplicationSettings().getApplicationLocale();
 			//TODO The correnct bundle_ident variable is called IW_ACCOUNTING_BUNDLE_IDENTIFER and this
 			//     one points to CommuneBlock.IW_BUNDLE_IDENTIFIER and therefore this class is using the
 			//     wrong resourceBundle. Remember that, when fixing this, whoever you are ....
-			iwrb = iwma.getBundle(AccountingBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-			ControlListBusiness business = getControlListBusiness(iwma.getIWApplicationContext());
+			iwrb = iwc.getIWMainApplication().getBundle(AccountingBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			ControlListBusiness business = getControlListBusiness(iwc.getIWMainApplication().getIWApplicationContext());
 			
 			String type = req.getParameter(prmPrintType);
 			Date cDate = parseDate(req.getParameter(compareDate));

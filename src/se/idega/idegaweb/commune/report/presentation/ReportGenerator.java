@@ -10,19 +10,19 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 
 import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.data.Report;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.presentation.IWContext;
 
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2004/02/03 08:30:27 $ by $Author: staffan $
+ * Last modified: $Date: 2004/05/24 20:10:41 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -33,7 +33,7 @@ public class ReportGenerator implements MediaWritable
     private Report reportInfo = null;
 
     public void init (final HttpServletRequest request,
-                      final IWMainApplication not_used) {
+                      final IWContext not_used) {
         final String reportIdString = request.getParameter (REPORT_ID);
         if (reportIdString != null) {
             try {
