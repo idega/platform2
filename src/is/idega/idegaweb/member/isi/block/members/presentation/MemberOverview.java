@@ -6,7 +6,6 @@
  */
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
-import is.idega.idegaweb.golf.entity.PhoneBMPBean;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
