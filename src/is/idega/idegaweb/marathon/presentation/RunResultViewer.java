@@ -293,4 +293,10 @@ public class RunResultViewer extends Block {
 		return _groupBiz;
 	}
 
+	/**
+	 * @param run The run to set.
+	 */
+	public void setRun(Group run) {
+		this.run = run;
+	}
 }
