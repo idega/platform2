@@ -155,6 +155,20 @@ public class QueryFieldPart implements QueryPart {
 		columns = stringArrayToCommaList(columnStrings);
 	}
 	
+	public void addColumn(String column){
+		if(getColumns()!=null && getColumns().length>0){
+			this.columns+=","+column;
+		}
+		else
+			this.columns = column;
+	}
+	
+	public void addColumn(String[] columns){
+		if(columns!=null){
+			addColumn(stringArrayToCommaList(columns));
+		}
+	}
+	
 	public String stringArrayToCommaList(String[] array){
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < array.length; i++) {

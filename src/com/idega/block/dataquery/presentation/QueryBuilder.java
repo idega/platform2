@@ -23,6 +23,7 @@ import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.dataquery.business.QueryXMLConstants;
 import com.idega.block.media.presentation.FileChooser;
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
@@ -84,6 +85,8 @@ public class QueryBuilder extends Block {
 	private static final String PERM_TEMPL_EDIT = "template";
 	private static final String PERM_CREATE = "create";
 	private static final String PARAM_LOCK = "lock";
+	private static final String PARAM_FUNCTION = "mkfunction";
+	private static final String PARAM_FUNC_TYPE = "mkfunctype";
 	private int heightOfStepTable = 300;
 	private int step = 1;
 	private int queryFolderID = -1;
@@ -97,6 +100,7 @@ public class QueryBuilder extends Block {
 	private boolean allowEmptyConditions = true;
 	private boolean showSourceEntityInSelectBox = true;
 	private boolean closeParentWindow = false;
+	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
 	public void control(IWContext iwc) {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
@@ -192,6 +196,9 @@ public class QueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_FINAL)) {
 			processNextStep(iwc);
 			step = 5;
+		}
+		else if (iwc.isParameterSet(PARAM_FUNCTION)){
+			processFunction(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_ADD)) {
 			String name = iwc.getParameter(PARAM_COND_FIELD);
@@ -357,6 +364,67 @@ public class QueryBuilder extends Block {
 		}
 		return false;
 	}
+	
+	private boolean processFunction(IWContext iwc){
+		String type = iwc.getParameter(PARAM_FUNCTION);
+		String[] fields = iwc.getParameterValues(PARAM_FIELDS+"_left");
+		String display = iwc.getParameter("display");
+		if(fields !=null ){
+			Vector dfields = new Vector();
+			for (int i = 0; i < fields.length; i++) {
+				String field = fields[i];
+				System.out.println(field);
+				QueryFieldPart part = QueryFieldPart.decode(field);
+				dfields.add(part);
+			}
+			if(!dfields.isEmpty()){
+				
+				QueryFieldPart newPart = (QueryFieldPart) dfields.get(0);
+				// concat fields
+				if(type.equalsIgnoreCase(QueryXMLConstants.FUNC_CONCAT)){
+					String partDisplay = newPart.getDisplay();
+					for(int i=1;i<dfields.size();i++){
+						QueryFieldPart part = (QueryFieldPart) dfields.get(i);
+						// if from same entity, allow concat
+						if(newPart.getEntity().equals(part.getEntity())){
+							newPart.addColumn(part.getColumns());
+							partDisplay+=","+ part.getDisplay();
+						}
+					}
+					newPart.setFunction(type);
+					if(display!=null && display.length()>0){
+						newPart.setDisplay(display);
+					}
+					else{
+						newPart.setDisplay(type+"("+partDisplay+")");
+					}
+					helper.addField(newPart);
+					
+				}
+				// other functions
+				else{
+					newPart.setFunction(type);
+					if(display!=null && display.length()>0){
+						newPart.setDisplay(display);
+					}
+					else{
+						newPart.setDisplay(type+"("+newPart.getDisplay()+")");
+					}
+					helper.addField(newPart);
+					
+				}
+				// if another display name
+				
+				
+			}
+			else{
+				System.out.println("is empty");
+			}
+		}
+		
+		return false;
+	}
+	
 	private void processPreviousStep(IWContext iwc) {
 		switch (step) {
 			case 2 :
@@ -522,16 +590,50 @@ public class QueryBuilder extends Block {
 			entityPart = (QueryEntityPart) iterator.next();
 			fillFieldSelectionBox(service, entityPart, fieldMap, box);
 		}
+		if(!fieldMap.isEmpty()){
+			Iterator iter = fieldMap.values().iterator();
+			while(iter.hasNext()){
+				QueryFieldPart part = (QueryFieldPart) iter.next();
+				box.getRightBox().addElement(part.encode(),iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+			}
+		}
 		table.add(box, 2, row);
+		
 		row++;
+		if(allowFunctions){
+			table.add(getFunctionTable(),2,row);
+		}
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
 			lockCheck.setChecked(helper.isFieldsLock());
-			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 1, row);
-			table.add(lockCheck, 1, row);
+			table.add(getMsgText(iwrb.getLocalizedString("lock_fields", "Lock fields")), 2, row);
+			table.add(lockCheck, 2, row);
 		}
+		
+		
 		return table;
 	}
+	
+	private PresentationObject getFunctionTable(){
+		Table table = new Table(7,2);
+		int col = 1;
+		table.mergeCells(1,1,7,1);
+		table.add(getMsgText(iwrb.getLocalizedString("step_3_choose_function","Select function to apply on selected fields in the left box, and new display name if required")),1,1);
+		TextInput display = new TextInput("display");
+		SubmitButton count = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.count","Count"),PARAM_FUNCTION,QueryXMLConstants.FUNC_COUNT);
+		SubmitButton concat = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.concat","Concat"),PARAM_FUNCTION,QueryXMLConstants.FUNC_CONCAT);
+		SubmitButton max = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.max","Max"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MAX);
+		SubmitButton min = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.min","Min"),PARAM_FUNCTION,QueryXMLConstants.FUNC_MIN);
+		SubmitButton alias = new SubmitButton(iwrb.getLocalizedImageButton("btn_func.alias","Alias"),PARAM_FUNCTION,QueryXMLConstants.FUNC_ALIAS);
+		table.add(display,col++,2);
+		table.add(count,col++,2);
+		table.add(concat,col++,2);
+		table.add(max,col++,2);
+		table.add(min,col++,2);
+		table.add(alias,col++,2);
+		return table;
+	}
+	
 	private void fillFieldSelectionBox(
 		QueryService service,
 		QueryEntityPart entityPart,
@@ -543,10 +645,12 @@ public class QueryBuilder extends Block {
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
-			if (fieldMap.containsKey(part.encode())) {
+			String enc = part.encode();
+			if (fieldMap.containsKey(enc)) {
 				box.getRightBox().addElement(
 					part.encode(),
 					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+					fieldMap.remove(enc);
 			}
 			else {
 				box.getLeftBox().addElement(
@@ -583,7 +687,7 @@ public class QueryBuilder extends Block {
 		return table;
 	}
 
-	public PresentationObject getStep4(IWContext iwc) {
+	public PresentationObject getStep4(IWContext iwc) throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
 		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 2, row);
@@ -626,7 +730,7 @@ public class QueryBuilder extends Block {
 		table.add(Text.getBreak(), 1, row++);
 
 		DropdownMenu equators = getConditionTypeDropdown();
-		DropdownMenu chosenFields = getFieldDropdown();
+		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
 		table.add(chosenFields, 3, row);
 		table.add(equators, 4, row);
 		TextInput pattern = new TextInput(PARAM_CONDITION);
@@ -864,6 +968,32 @@ public class QueryBuilder extends Block {
 			}
 		}
 		return drp;
+	}
+	
+	private DropdownMenu getAvailableFieldsDropdown(IWContext iwc)throws RemoteException {
+		QueryService service = getQueryService(iwc);
+		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
+		QueryEntityPart entityPart = helper.getSourceEntity();
+		List entities = helper.getListOfRelatedEntities();
+		if (entities == null)
+			entities = new Vector();
+		Iterator iterator = entities.iterator();
+		
+		filldropdown(service, entityPart,drp);
+		while (iterator.hasNext()) {
+			entityPart = (QueryEntityPart) iterator.next();
+			filldropdown(service, entityPart,drp);
+		}
+		return drp;
+	}
+	
+	private void filldropdown(QueryService service,QueryEntityPart entityPart,DropdownMenu drp)throws RemoteException {
+		Iterator iter = service.getListOfFieldParts(iwrb, entityPart).iterator();
+		while (iter.hasNext()) {
+		QueryFieldPart part = (QueryFieldPart) iter.next();
+		//System.out.println(" " + part.getName());
+		drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+		}
 	}
 
 	private Text getStepText(String string) {
