@@ -119,7 +119,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
 			String sPostal = bundle.getProperty(PROPERTY_NAME_POSTAL_CODE_FIX);
 			String sGroupID = bundle.getProperty(PROPERTY_NAME_GROUP_ID_FIX);
-			
+			affectedFamilies = new HashSet();
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
 			if (sGroupID != null) {
 				try {
@@ -266,6 +266,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			User oldestPerson = null;
 			FamilyMember member;
 			
+			//This iteration sets the spouse, parent, custodian, child and sibling relations.
+			//The relations variables hold the relations that yet not have been found in the import file
+			//If there are any relations left in these variables after the new relations have been set, 
+			//They have to be removed
+			Relations oldRelations1 = new Relations();
+			Relations newRelations1 = new Relations();
+			
+			Relations oldRelations2 = new Relations();
+			Relations newRelations2 = new Relations();
+			
+			HashMap oldrelations = new HashMap();
+			HashMap newrelations = new HashMap();
+
 			//Loop through all family members to figure out what the relations are
 			while (iter.hasNext()) {
 				member = (FamilyMember) iter.next();
@@ -286,7 +299,27 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				if (spouseSSN != null && !"".equals(spouseSSN)) {
 					parents.add(user);
 					try {
-						parents.add(uHome.findByPersonalID(spouseSSN));
+						User spouse = uHome.findByPersonalID(spouseSSN);
+
+						newRelations1 = new Relations();
+						newRelations1.setUser(user);
+						newRelations1.setSpouse(spouse);
+						oldRelations1 = new Relations();
+						oldRelations1.setForUser(user);
+
+						newrelations.put(user, newRelations1);
+						oldrelations.put(user, oldRelations1);
+
+						newRelations2 = new Relations();
+						newRelations2.setUser(spouse);
+						newRelations2.setSpouse(user);
+						oldRelations2 = new Relations();
+						oldRelations2.setForUser(spouse);
+												
+						newrelations.put(spouse, newRelations2);
+						oldrelations.put(spouse, oldRelations2);
+						
+						parents.add(spouse);
 						break;
 					} catch (FinderException e) {
 						//System.out.println("NationalRegisterHandler processed family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
@@ -298,19 +331,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				parents.add(oldestPerson);
 			}
 			
-			//This iteration sets the spouse, parent, custodian, child and sibling relations.
-			//The relations variables hold the relations that yet not have been found in the import file
-			//If there are any relations left in these variables after the new relations have been set, 
-			//They have to be removed
-			Relations oldRelations1 = new Relations();
-			Relations newRelations1 = new Relations();
-			
-			Relations oldRelations2 = new Relations();
-			Relations newRelations2 = new Relations();
-			
-			HashMap oldrelations = new HashMap();
-			HashMap newrelations = new HashMap();
-
 			iter = coll.iterator();
 			FamilyMember member2;
 			while (iter.hasNext()) {
@@ -378,7 +398,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 
 				Relations newR = (Relations) newrelations.get(tmpuser);
 				Relations oldR = (Relations) oldrelations.get(tmpuser);
-
+				/*
+				System.out.println("NEW");
+				newR.dumpInfo();
+				System.out.println("OLD");
+				oldR.dumpInfo();
+				*/
 				try {
 					Relations newToAdd = newR.inANotB(newR, oldR);
 					addNewRelations(memFamLog, tmpuser, newToAdd);
@@ -409,7 +434,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private void removeTerminatedRelations(FamilyLogicBean memFamLog, User user, Relations rel) throws RemoteException, RemoveException {
 //		NationalRegisterBusiness natRegBus;
 		//remove spouse
-		//rel.dumpInfo();
+//		System.out.println("REMOVING");
+//		rel.dumpInfo();
 		if(null!=rel.spouse){
 			memFamLog.removeAsSpouseFor(user, rel.spouse);
 		}
@@ -448,7 +474,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private void addNewRelations(FamilyLogicBean memFamLog, User user, Relations rel) throws RemoveException, RemoteException, CreateException {
 	//	NationalRegisterBusiness natRegBus;
 		//remove spouse
-		//rel.dumpInfo();
+//		System.out.println("ADDING");
+//		rel.dumpInfo();
 		if(null!=rel.spouse){
 			memFamLog.setAsSpouseFor(user, rel.spouse);
 		}
@@ -611,17 +638,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			} else {
 				c.user = a.user;
 			}
-			if (a.spouse == b.spouse) {
-				if (a.spouse == null) {
-//					System.out.println("     - removing spouse for "+c.user.getName() +" - "+c.user.getPersonalID()+ "a="+a.spouse+", b="+b.spouse);
-				}
-				c.spouse = null;
-			}
+			c.spouse = a.spouse;
 			c.child = new ArrayList(a.child);
 			c.hasCustodian = new ArrayList(a.hasCustodian);
 			c.isCustodianFor = new ArrayList(a.isCustodianFor);
 			c.parent = new ArrayList(a.parent);
 			c.sibling = new ArrayList(a.sibling);
+			
+
+			if (a.spouse != null && a.spouse.equals(b.spouse)) {
+				c.spouse = null;
+			}
 			
 			Iterator iter = b.child.iterator();
 			while (iter.hasNext()) {
