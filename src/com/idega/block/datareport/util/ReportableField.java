@@ -135,6 +135,10 @@ public class ReportableField implements IDOReportableField, JRField {
 		_customMadeValueClass = valClass;
 	}
 
+	public String getValueClassName() {
+		return getValueClass().getName();
+	}
+
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOReportableField#getLocalizedName(java.util.Locale)
 	 */
