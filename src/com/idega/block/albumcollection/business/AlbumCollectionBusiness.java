@@ -1,6 +1,7 @@
 package com.idega.block.albumcollection.business;
 
 import com.idega.data.EntityFinder;
+import com.idega.business.GenericEntityComparator;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.presentation.text.Text;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Hashtable;
+import java.util.Collections;
 
 
 /**
@@ -468,7 +470,11 @@ public class AlbumCollectionBusiness {
   }
 
   public static List getLyrics() throws SQLException {
-    return EntityFinder.findAllOrdered(Lyric.getStaticInstance(Lyric.class),Lyric._COLUMNNAME_NAME);
+    List l = EntityFinder.findAllOrdered(Lyric.getStaticInstance(Lyric.class),Lyric._COLUMNNAME_NAME);
+    if(l != null){
+      Collections.sort(l,new GenericEntityComparator(Lyric._COLUMNNAME_NAME));
+    }
+    return l;
   }
 
   public static Album getAlbum(int albumId) {
