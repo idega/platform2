@@ -524,7 +524,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 
 		boolean sendEmail = true;
 		String sSendEmail = this.getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_SEND_EMAILS);
-		sendEmail = "yes".equalsIgnoreCase(sSendEmail);
+		if ("no".equalsIgnoreCase(sSendEmail)) {
+			sendEmail = false;
+		}
 		
 		if (sendEmail) {
 			String mailServer = DEFAULT_SMTP_MAILSERVER;
