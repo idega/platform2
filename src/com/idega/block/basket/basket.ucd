@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="basket" id="com.idega.block.basket" metadata="nsuml-1.4" initialized="true" scrolledX="-2" scrolledY="-9" tag="10">
+  <children xsi:type="editmodel:PackageEditModel" name="com.idega.block.basket.business" location="3,-4" size="399,339" id="com.idega.block.basket.business">
+    <children xsi:type="editmodel:InterfaceEditModel" name="BasketBusinessHome" location="71,110" size="151,67" id="com.idega.block.basket.business/BasketBusinessHome" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="48,18">
+        <children xsi:type="editmodel:MethodEditModel" name="create" id="com.idega.block.basket.business/BasketBusinessHome#create()"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="com.idega.business/IBOHome&lt;-com.idega.block.basket.business/BasketBusinessHome" source="//@children.0/@children.0" target="//@children.0/@children.1" targetEnd="//@children.0/@children.0/@sourceConnections.0/@children.1" sourceEnd="//@children.0/@children.0/@sourceConnections.0/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+        <children xsi:type="editmodel:AssociationEndEditModel" location="100,-1" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <sourceConnections xsi:type="editmodel:DependencyEditModel" id="com.idega.block.basket.business/BasketBusinessHome->com.idega.block.basket.business/BasketBusiness" source="//@children.0/@children.0" target="//@children.0/@children.2" targetEnd="//@children.0/@children.0/@sourceConnections.1/@children.2" label="//@children.0/@children.0/@sourceConnections.1/@children.0" sourceEnd="//@children.0/@children.0/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan" anchorType="ChopBox">
+        <children xsi:type="editmodel:WireLabelEditModel" name="«use»" size="21,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="151,0" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.0/@children.0/@sourceConnections.0" name="IBOHome" location="21,52" size="200,29" id="com.idega.business/IBOHome" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.0/@children.0/@sourceConnections.1" name="BasketBusiness" location="252,48" size="126,193" id="com.idega.block.basket.business/BasketBusiness" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="103,144">
+        <children xsi:type="editmodel:MethodEditModel" name="addItem" id="com.idega.block.basket.business/BasketBusiness#addItem(Lcom.idega.block.basket.data.BasketItem;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="addItem" id="com.idega.block.basket.business/BasketBusiness#addItem(Lcom.idega.block.basket.data.BasketItem;I)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="changeQuantity" id="com.idega.block.basket.business/BasketBusiness#changeQuantity(Lcom.idega.block.basket.data.BasketItem;I)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="checkForItemInBasket" id="com.idega.block.basket.business/BasketBusiness#checkForItemInBasket(Lcom.idega.block.basket.data.BasketItem;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="checkout" id="com.idega.block.basket.business/BasketBusiness#checkout(Lcom.idega.block.basket.business.BasketCheckoutBusiness;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="emptyBasket" id="com.idega.block.basket.business/BasketBusiness#emptyBasket()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getBasket" id="com.idega.block.basket.business/BasketBusiness#getBasket()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="removeItem" id="com.idega.block.basket.business/BasketBusiness#removeItem(Lcom.idega.block.basket.data.BasketItem;)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="com.idega.business/IBOSession&lt;-com.idega.block.basket.business/BasketBusiness" source="//@children.0/@children.2" target="//@children.0/@children.3" targetEnd="//@children.0/@children.2/@sourceConnections.0/@children.1" sourceEnd="//@children.0/@children.2/@sourceConnections.0/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+        <children xsi:type="editmodel:AssociationEndEditModel" location="100,-1" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <sourceConnections xsi:type="editmodel:DependencyEditModel" id="com.idega.block.basket.business/BasketBusiness->com.idega.block.basket.data/BasketItem" source="//@children.0/@children.2" target="//@children.1/@children.1" targetEnd="//@children.0/@children.2/@sourceConnections.1/@children.2" label="//@children.0/@children.2/@sourceConnections.1/@children.0" sourceEnd="//@children.0/@children.2/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan" anchorType="ChopBox">
+        <children xsi:type="editmodel:WireLabelEditModel" name="«use»" size="21,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="0,57" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.0/@children.2/@sourceConnections.0" name="IBOSession" location="20,202" size="212,85" id="com.idega.business/IBOSession" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="80,36">
+        <children xsi:type="editmodel:MethodEditModel" name="getUserContext" id="com.idega.business/IBOSession#getUserContext()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setUserContext" id="com.idega.business/IBOSession#setUserContext(Lcom.idega.idegaweb.IWUserContext;)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <children xsi:type="editmodel:PackageEditModel" name="com.idega.block.basket.data" location="429,-1" size="301,299" id="com.idega.block.basket.data">
+    <children xsi:type="editmodel:ClassEditModel" name="BasketEntry" location="170,25" size="102,175" id="com.idega.block.basket.data/BasketEntry" runTimeClassModel="item,quantity">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="68,126">
+        <children xsi:type="editmodel:MethodEditModel" name="BasketEntry" id="com.idega.block.basket.data/BasketEntry#BasketEntry(Lcom.idega.block.basket.data.BasketItem;I)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="BasketEntry" id="com.idega.block.basket.data/BasketEntry#BasketEntry(Lcom.idega.block.basket.data.BasketItem;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="BasketEntry" id="com.idega.block.basket.data/BasketEntry#BasketEntry()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getItem" id="com.idega.block.basket.data/BasketEntry#getItem()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getQuantity" id="com.idega.block.basket.data/BasketEntry#getQuantity()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setItem" id="com.idega.block.basket.data/BasketEntry#setItem(Lcom.idega.block.basket.data.BasketItem;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="setQuantity" id="com.idega.block.basket.data/BasketEntry#setQuantity(I)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <sourceConnections xsi:type="editmodel:AssociationEditModel" id="com.idega.block.basket.data/BasketItem@item+com.idega.block.basket.data/BasketEntry@" source="//@children.1/@children.0" target="//@children.1/@children.1" targetEnd="//@children.1/@children.0/@sourceConnections.0/@children.2" label="//@children.1/@children.0/@sourceConnections.0/@children.0" sourceEnd="//@children.1/@children.0/@sourceConnections.0/@children.1" connectionRouterKind="Manhattan" anchorType="ChopBox">
+        <children xsi:type="editmodel:WireLabelEditModel" size="1,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="100,-1" id="com.idega.block.basket.data/BasketItem@item+com.idega.block.basket.data/BasketEntry@|com.idega.block.basket.data/BasketEntry#" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" name="item" id="com.idega.block.basket.data/BasketItem@item+com.idega.block.basket.data/BasketEntry@|com.idega.block.basket.data/BasketItem#item" multiplicityLabel="//@children.1/@children.0/@sourceConnections.0/@children.2/@children.1" roleLabel="//@children.1/@children.0/@sourceConnections.0/@children.2/@children.0" navigable="true">
+          <children xsi:type="editmodel:LabelEditModel" name=" ~ item" size="24,9" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+          <children xsi:type="editmodel:LabelEditModel" name="1" size="5,9" fontInfo="Arial-8-0" anchorKind="LastPart"/>
+        </children>
+      </sourceConnections>
+      <sourceConnections xsi:type="editmodel:DependencyEditModel" id="com.idega.block.basket.data/BasketEntry->com.idega.block.basket.data/BasketItem" source="//@children.1/@children.0" target="//@children.1/@children.1" targetEnd="//@children.1/@children.0/@sourceConnections.1/@children.2" label="//@children.1/@children.0/@sourceConnections.1/@children.0" sourceEnd="//@children.1/@children.0/@sourceConnections.1/@children.1" connectionRouterKind="Manhattan" anchorType="ChopBox">
+        <children xsi:type="editmodel:WireLabelEditModel" name="«use»" size="21,9" fontInfo="Arial-8-0" anchorKind="MiddlePart"/>
+        <children xsi:type="editmodel:AssociationEndEditModel" location="100,-1" attachSource="true"/>
+        <children xsi:type="editmodel:AssociationEndEditModel"/>
+      </sourceConnections>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.1/@children.0/@sourceConnections.0 //@children.1/@children.0/@sourceConnections.1 //@children.0/@children.2/@sourceConnections.1" name="BasketItem" location="26,0" size="114,121" id="com.idega.block.basket.data/BasketItem" runTimeClassModel="">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="91,72">
+        <children xsi:type="editmodel:MethodEditModel" name="getItemDescription" id="com.idega.block.basket.data/BasketItem#getItemDescription()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getItemID" id="com.idega.block.basket.data/BasketItem#getItemID()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getItemName" id="com.idega.block.basket.data/BasketItem#getItemName()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="getItemPrice" id="com.idega.block.basket.data/BasketItem#getItemPrice()"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <children xsi:type="editmodel:PackageEditModel" name="com.idega.block.basket.presentation" location="425,321" size="243,210" id="com.idega.block.basket.presentation">
+    <children xsi:type="editmodel:ClassEditModel" name="SimpleBasketView" location="9,59" size="136,103" id="com.idega.block.basket.presentation/SimpleBasketView" runTimeClassModel="biz">
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <children xsi:type="editmodel:CompartmentEditModel" size="91,54">
+        <children xsi:type="editmodel:MethodEditModel" name="SimpleBasketView" id="com.idega.block.basket.presentation/SimpleBasketView#SimpleBasketView()"/>
+        <children xsi:type="editmodel:MethodEditModel" name="_main" id="com.idega.block.basket.presentation/SimpleBasketView#_main(Lcom.idega.presentation.IWContext;)"/>
+        <children xsi:type="editmodel:MethodEditModel" name="main" id="com.idega.block.basket.presentation/SimpleBasketView#main(Lcom.idega.presentation.IWContext;)"/>
+      </children>
+      <children xsi:type="editmodel:CompartmentEditModel"/>
+      <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true"/>
+    </children>
+    <packagePreferences xsi:type="editmodel:UMLClassDiagramPackagePreference" showStereotype="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" autoName="false"/>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" showInterfaceStereotype="true" showClassStereotype="true" showPackageStereotype="true"/>
+</editmodel:ClassDiagramEditModel>
