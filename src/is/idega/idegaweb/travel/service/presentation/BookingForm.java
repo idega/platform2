@@ -4284,7 +4284,6 @@ public abstract class BookingForm extends TravelManager{
 		++row;
 
 		SubmitButton yes = new SubmitButton(bundle.getImage("images/book_01.jpg"));
-		yes.setToDisableOnClick(yes, true);
 
 		BackButton no = new BackButton(bundle.getImage("images/back_01.jpg"));
 		
