@@ -27,6 +27,10 @@ import java.util.HashMap;
 public class NewsBundleStarter implements IWBundleStartable{
 
   public void start(IWBundle bundle){
+    start();
+  }
+
+  public void start(){
     if(!testNews()){
       System.err.println("News bundle starter: Making categories");
       Map map = makeICCategories();
@@ -37,10 +41,11 @@ public class NewsBundleStarter implements IWBundleStartable{
           moveDataToCategory(map);
       }
     }
+    else
+      System.err.println("did not need to do anything ");
   }
 
   private Map makeICCategories(){
-
     Hashtable hash = new Hashtable();
 
     String sql = "select * from nw_news_cat ";
@@ -145,17 +150,22 @@ public class NewsBundleStarter implements IWBundleStartable{
     String sql = "select ic_category_id from nw_news where ic_category_id < -3";
     String sql2 = "select ic_category_id from nw_news where ic_category_id is null";
     try {
-      if(SimpleQuerier.execute(sql)){
-        String[] s = SimpleQuerier.executeStringQuery(sql2);
+      return SimpleQuerier.execute(sql);
+      /*  String[] s = SimpleQuerier.executeStringQuery(sql2);
         return !(s!=null && s.length > 0);
       }
-
+*/
     }
     catch (Exception ex) {
-      return false;
+
       //ex.printStackTrace();
     }
     return false;
+  }
+
+  public static void main(String[] args) {
+    System.out.println("Fixing News!"); //Display the string.
+    new NewsBundleStarter().start();
   }
 
 
