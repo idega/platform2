@@ -6,12 +6,15 @@ import is.idega.idegaweb.travel.business.TravelSessionManager;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
@@ -33,6 +36,20 @@ public class ServiceSearch extends Block {
 	
 	public static final String PARAMETER_SERVICE_SEARCH_FORM = "p_ssf";
 	
+	public final static String STYLENAME_INTERFACE = "Interface";
+	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
+	public final static String STYLENAME_CHECKBOX = "CheckBox";
+	public final static String STYLENAME_TEXT = "Text";
+	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
+	public final static String STYLENAME_LINK = "Link";
+	public final static String STYLENAME_CLICKED_LINK = "ClickedLink";
+	public final static String STYLENAME_BLUE_BACKGROUND_COLOR = "BackgroundColorBlue";
+	public final static String STYLENAME_HEADER_BACKGROUND_COLOR = "BackgroundHeaderColor";
+	public final static String STYLENAME_BACKGROUND_COLOR = "BackgroundColor";
+	public final static String STYLENAME_HEADER_TEXT = "HeaderText";
+	public final static String STYLENAME_SMALL_TEXT = "SmallText";
+	
+	
 	protected String textFontStyle;
 	protected String headerFontStyle;
 	protected String linkFontStyle;
@@ -43,9 +60,17 @@ public class ServiceSearch extends Block {
 	protected String linkBackgroundColor;
 	protected String backgroundColor;
 	
+	protected String searchPartTopBorderColor = null;
+	protected String searchPartTopBorderWidth = null;
+	protected String searchPartBottomBorderColor = null;
+	protected String searchPartBottomBorderWidth = null;
+	protected String searchPartColor = null;
+	protected String interfaceObjectStyle = null;
+
 	protected String width;
 	protected String formInputStyle;
 	protected int engineID = -1;
+	protected int resultsPerPage = -1;
 	
 	private Image headerImage;
 	private Image headerTiler;
@@ -54,24 +79,32 @@ public class ServiceSearch extends Block {
 	private IWResourceBundle iwrb;
 	private List searchForms2 = null; 
 	private AbstractSearchForm currentSearchForm = null;
+	private ICPage targetPage = null;
 
 	public ServiceSearch() {
+		super();
 	}
 	
-	public synchronized Object clone() {
-		ServiceSearch obj = (ServiceSearch) super.clone();
-		/*
-		obj.searchForms2 = searchForms2;
-		
-		if (currentSearchForm != null) {
-			obj.currentSearchForm = (AbstractSearchForm) currentSearchForm.clone();
-		} else {
-			obj.currentSearchForm = null;
-		}*/
-		
-		return obj;
+	public Map getStyleNames() {
+		Map map = super.getStyleNames();
+		if (map == null) {
+			map = new HashMap();
+		}
+		map.put(STYLENAME_TEXT, "");
+		map.put(STYLENAME_LINK, "");
+		map.put(STYLENAME_CLICKED_LINK, "");
+		map.put(STYLENAME_CHECKBOX, "");
+		map.put(STYLENAME_INTERFACE, "");
+		map.put(STYLENAME_INTERFACE_BUTTON, "");
+		map.put(STYLENAME_HEADER_BACKGROUND_COLOR, "");
+		map.put(STYLENAME_BACKGROUND_COLOR, "");
+		map.put(STYLENAME_HEADER_TEXT, "");
+		map.put(STYLENAME_SMALL_TEXT, "");
+		map.put(STYLENAME_BLUE_BACKGROUND_COLOR, "");
+		map.put(STYLENAME_ERROR_TEXT, "");
+		return map;
 	}
-	
+
 	public void main(IWContext iwc) throws Exception {
 		if (engineID > 0) {
 			init(iwc);
@@ -148,6 +181,15 @@ public class ServiceSearch extends Block {
 			ss.setFormInputStyle(formInputStyle);
 			ss.setWindowHeaderImage(windowHeaderImage);
 			ss.setSearchForms(searchForms);
+			ss.setSearchPartBottomBorderColor(searchPartBottomBorderColor);
+			ss.setSearchPartBottomBorderWidth(searchPartBottomBorderWidth);
+			ss.setSearchPartColor(searchPartColor);
+			ss.setSearchPartTopBorderColor(searchPartTopBorderColor);
+			ss.setSearchPartTopBorderWidth(searchPartTopBorderWidth);
+			ss.setTargetPage(targetPage);
+			if (resultsPerPage > 0) {
+				ss.setResultsPerPage(resultsPerPage);
+			}
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
@@ -210,6 +252,34 @@ public class ServiceSearch extends Block {
 	
 	public void setSearchEngine(int engineID) {
 		this.engineID = engineID;
+	}
+	
+	public void setSearchPartBottomBorderColor(String color) {
+		searchPartBottomBorderColor = color;
+	}
+	
+	public void setSearchPartBottomBorderWidth(String width) {
+		searchPartBottomBorderWidth = width;
+	}
+	
+	public void setSearchPartTopBorderColor(String color) {
+		searchPartTopBorderColor = color;
+	}
+	
+	public void setSearchPartTopBorderWidth(String width) {
+		searchPartTopBorderWidth = width;
+	}
+	
+	public void setSearchPartColor(String color) {
+		searchPartColor = color;
+	}
+	
+	public void setTargetPage(ICPage page) {
+		this.targetPage = page;
+	}
+	
+	public void setResultsPerPage(int resultsPerPage) {
+		this.resultsPerPage = resultsPerPage;
 	}
 	
 	/**

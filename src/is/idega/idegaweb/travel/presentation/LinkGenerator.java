@@ -36,7 +36,7 @@ public class LinkGenerator extends TravelWindow {
   }
 
   public static boolean getIsHttps() {
-  	return http.equals("https");
+  		return http.equals("https");
   }
   
   public void main(IWContext iwc) throws Exception{
@@ -86,7 +86,7 @@ public class LinkGenerator extends TravelWindow {
 		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
 		IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
 	
-		String pageID = null;
+		String pageID = "-1";
 		if (bundleParameterToPage != null) {
 			pageID = iwb.getProperty(bundleParameterToPage);
 		}
@@ -104,7 +104,9 @@ public class LinkGenerator extends TravelWindow {
 		try {
 			bs = BuilderServiceFactory.getBuilderService(iwc);
 			text.append(bs.getPageURI(pageID));
-		} catch (RemoteException e) {
+		} catch (NumberFormatException e) {
+			
+		}	catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		if (pageID != null) {
@@ -159,6 +161,7 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
   		Window window = new Window(text.getText(), 400, 500, url.toString());
   		
 		Link link = new Link(text, window);
+  		//Link link = new Link(text, window);
 		if (pageID != null) {
 			link.setPage(Integer.parseInt(pageID));
 		}

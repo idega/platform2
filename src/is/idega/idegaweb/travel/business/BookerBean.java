@@ -9,8 +9,10 @@ import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
 import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +56,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
   private  String bookingEntryPriceApplication = "bookingEntryPriceApplication_";
 
   private GeneralBookingHome gbHome;
+  
+  private List cacheKeys = new ArrayList();
 
   public BookerBean() {
   }
@@ -151,6 +155,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
         TravelAddress tAddress = taHome.findByPrimaryKey(addressId);
         temp.addTravelAddress(tAddress);
       }
+      
+      invalidateCache();
   //    temp.addTo(TravelAddress.class, addressId);
     }catch (FinderException fe) {
       throw new CreateException(fe.getMessage());
@@ -768,7 +774,20 @@ public class BookerBean extends IBOServiceBean implements Booker{
     }
     return -1;
   }
+  
+  private void invalidateCache() {
+    Iterator iter = cacheKeys.iterator();
+    while (iter.hasNext()) {
+    		getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache((String) iter.next());
+    }
+  }
 
+  public void addCacheKeyToInvalidateOnSave(String key) {
+		if (!cacheKeys.contains(key)) {
+			cacheKeys.add(key);
+		}
+  }
+ 
   private TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException{
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
   }

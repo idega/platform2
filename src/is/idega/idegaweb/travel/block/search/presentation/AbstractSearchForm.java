@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
+import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.GeneralBooking;
@@ -16,8 +17,8 @@ import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -27,7 +28,11 @@ import javax.mail.MessagingException;
 
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
+import com.idega.block.text.business.ContentFinder;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
+import com.idega.block.text.presentation.TextEditorWindow;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductComparator;
@@ -38,17 +43,22 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
-import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
-import com.idega.core.location.data.Address;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneType;
+import com.idega.core.file.data.ICFile;
+import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -72,6 +82,7 @@ import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 
@@ -83,13 +94,15 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
 	protected String ACTION_BOOKING_FORM = "bsf_bf";
+	protected String ACTION_PRODUCT_DETAILS = "bsf_pd";
 	protected String ACTION_CONFIRM = "bsf_cm";
 
 	protected static final int STATE_SHOW_SEARCH_FORM = 0;
 	protected static final int STATE_SHOW_SEARCH_RESULTS = 1;
 	protected static final int STATE_SHOW_BOOKING_FORM = 2;
 	protected static final int STATE_CHECK_BOOKING = 3;
-	protected int STATE = STATE_SHOW_SEARCH_FORM;
+	protected static final int STATE_SHOW_DETAILED_PRODUCT = 4;
+	protected static final int STATE_DEFINED_PRODUCT = 5;
 
 	protected String PARAMETER_TYPE = "hs_pt";
 	protected String PARAMETER_TYPE_COUNT = "hs_ptc";
@@ -119,7 +132,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	public static String PARAMETER_CC_CVC = BookingForm.parameterCCCVC;
 	public static String PARAMETER_COMMENT = BookingForm.PARAMETER_COMMENT;//"hs_comm";
 	public static String PARAMETER_REFERER_URL = PublicBooking.PARAMETER_REFERRAL_URL;
+	public static String PARAMETER_PHONE_NUMBER = BookingForm.PARAMETER_PHONE;
+	public static String PARAMETER_NAME_ON_CARD = "hs_noc";
+	public static String PARAMETER_SORT_BY = "asf_p_sb"; 
 
+	public static String PARAMETER_NEW_SEARCH = "asf_p_ns";
+	public static String PARAMETER_PAGE_NR = "asf_p_nr";
+	
 	private IWContext iwc;
 
 	protected String textFontStyle;
@@ -132,54 +151,67 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected String backgroundColor;
 	protected String width;
 	protected String formInputStyle;
+	protected String searchPartTopBorderColor = null;
+	protected String searchPartTopBorderWidth = null;
+	protected String searchPartBottomBorderColor = null;
+	protected String searchPartBottomBorderWidth = null;
+	protected String searchPartColor = null;
 	protected Image windowHeaderImage;
 	protected boolean cvcIsUsed = true;
 	protected IWResourceBundle iwrb;
 	protected IWBundle bundle;
 	protected ServiceSearchEngine engine = null;
+	protected int resultsPerPage = 5;
+	private int currentPageNumber = 1;
 	
 	protected Image headerImage;
 	protected Image headerImageTiler;
 	protected Table formTable = new Table();
+	protected Table currentSearchPart = null;
+	protected int currentSearchPartRow = 1;
 	protected int row = 1;
 	protected boolean useSecureServer = true;
 	int tmpPriceID;
 	
 	protected Product definedProduct;
+	private boolean isAlwaysSearchForm = false;
+	protected ICPage targetPage = null;
 	
 	private List errorFields = null;
 	private List searchForms = null;
+	protected DecimalFormat currencyFormat;
+	protected int localeID = -1;
 	
 	public AbstractSearchForm() {
-		super();
+		setCacheable(getCacheKey(),0);
 	}
 
-	public synchronized Object clone() {
-		AbstractSearchForm obj = (AbstractSearchForm) super.clone();
-		obj.searchForms = searchForms;
 
-		return obj;
-	}
+	protected abstract String 			getServiceName(IWResourceBundle iwrb);
+	protected abstract void 				setupSearchForm() throws RemoteException ;
+	protected abstract void 				setupSpecialFieldsForBookingForm(Table table, int row, List errorFields);
+	protected abstract Collection 	getResults() throws RemoteException, InvalidSearchException;
+	protected abstract Image 				getHeaderImage(IWResourceBundle iwrb);
+	protected abstract String 			getPriceCategoryKey();
+	protected abstract String 			getUnitName();
+	protected abstract List 				getErrorFormFields();
+	protected abstract Collection 	getParametersInUse();
+	protected abstract String 			getParameterTypeCountName();
 	
-	protected abstract String getServiceName(IWResourceBundle iwrb);
-	protected abstract void setupSearchForm();
-	protected abstract void setupSpecialFieldsForBookingForm(List errorFields);
-	protected abstract void getResults() throws RemoteException, InvalidSearchException;
-	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
-	protected abstract String getPriceCategoryKey();
-	protected abstract String getUnitName();
-	protected abstract List getErrorFormFields();
-	
-	
-	protected abstract String getParameterTypeCountName();
+	protected void addProductInfoDetailed(Product product, Table table, int row) {}
+	protected void addProductInfo(Product product, Table table, int column, int row) {}
 
 	private void init(IWContext iwc) throws RemoteException {
 		this.iwc = iwc;
+		getBooker(iwc).addCacheKeyToInvalidateOnSave(getCacheKey());
+		
 		iwrb = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWResourceBundle();
 		bundle = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWBundle();
+		localeID = iwc.getCurrentLocaleId();
+		currencyFormat = new DecimalFormat("0.00");
 		formTable.setWidth("100%");
 		formTable.setCellpadding(0);
-		formTable.setCellspacing(3);
+		formTable.setCellspacing(0);
 		if (backgroundColor != null) {
 			formTable.setColor(backgroundColor);
 		}
@@ -188,49 +220,43 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		if (definedProduct != null) {
 			cvcIsUsed = getCreditCardBusiness(iwc).getUseCVC(definedProduct.getSupplier(), IWTimestamp.RightNow());
 		}
+		
+		try {
+			currentPageNumber = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_NR));
+		} catch (NumberFormatException ignore) {}
+	}
+	
+	public void _main(IWContext iwc) throws Exception {
+		super._main(iwc);
+		handleSubmit(iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		init(iwc);
+		handleSubmit(iwc);
+		System.out.println("[AbstractSearchFrom] Engine code = "+this.engine.getCode());
 		
 		Table outTable = new Table();
 		if (width != null) {
 			outTable.setWidth(width);
 		}
 		//outTable.setBorder(1);
+		//outTable.setBorderColor("GREEN");
+		outTable.setCellpaddingAndCellspacing(0);
 		
-		handleSubmit(iwc);
 		
 		Form form = new Form();
-		form.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM);
-		form.addParameter(BookingForm.PARAMETER_CODE, engine.getCode());
-		form.addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
-		form.add(getHeader());
-		form.add(getLinks());
-		form.add(getText());
-		formTable.add(Text.NON_BREAKING_SPACE, 1, row);
-		++row;
-		
-		if (useSecureServer && !iwc.isSecure()) {
-			String URL = iwc.getRequest().getRequestURL().toString();
-			String serverName = bundle.getProperty(LinkGenerator.PROPERTY_SERVER_NAME);
-			if (URL.indexOf("nat.sidan.is") >= 0 && serverName != null) {
-				URL = URL.replaceFirst("nat.sidan.is",  serverName);
-			}
-			URL = URL.replaceFirst("http", "https");
-			
-			Link secureLink = new Link(getErrorText(iwrb.getLocalizedString("travel.click_here", "CLICK HERE")), URL+"?"+iwc.getQueryString());
-			form.add(getErrorText(iwrb.getLocalizedString("travel.click_here_to_switch_to_secure_mode","You are not using our secure form. To switch to secure mode please")+" "));
-			form.add(secureLink);
-		}
+		form.setMethod("GET");
+		form = (Form) addParameters(form, -1, true);
 
-		setupPresentation();
+		setupPresentation(form);
 		form.add(formTable);
-		form.add(getButtons());
+		form.add(getButtons(form));
 		outTable.add(form);
-		outTable.add(Text.BREAK);
+/*		outTable.add(Text.BREAK);
 		outTable.add(addTermsAndConditionsAndVerisign());
+		*/
 		if (definedProduct != null && (isInPermissionGroup(iwc) || isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
@@ -238,7 +264,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		super.add(outTable);
 	}
-	
+		
 	protected Link getVerisign() {
 		Image image = bundle.getImage("verisignseals/verisign_logo.gif");
 		image.setWidth(100);
@@ -291,23 +317,37 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		formTable.add(po);
 	}
 
-	protected Table getButtons() {
+	protected Table getButtons(Form form) throws RemoteException {
 
 		Table table = new Table();
 		table.setWidth("100%");
 		
-		if (STATE == STATE_SHOW_SEARCH_FORM) {
+		if (isAlwaysSearchForm) {
 
-			if (definedProduct == null) {
-				SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
-				table.add(search);
-			} else {
+//			if (definedProduct == null) {
+				Link resetLink = new Link(getLinkText(iwrb.getLocalizedString("reset", "Reset"), false));
+				resetLink.setToFormReset(form);
+				
+				Link searchLink = new Link(getLinkText(iwrb.getLocalizedString("search","Search"), false));
+				if (hasDefinedProduct()) {
+					form.addParameter(ACTION, ACTION_PRODUCT_DETAILS);
+				} else {
+					form.addParameter(ACTION, ACTION_SEARCH);
+					form.addParameter(PARAMETER_NEW_SEARCH,"true");
+				}
+				searchLink.setToFormSubmit(form);
+				table.add(resetLink, 1, 1);
+				table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+				table.add(searchLink, 2, 1);
+				//SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
+//				table.add(search, 2, 1);
+/*			} else {
 				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString()));
 				SubmitButton book = new SubmitButton(iwrb.getLocalizedImageButton("book","Book"), ACTION, ACTION_BOOKING_FORM);
+				table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 				table.add(book);
 			}
-			
-			table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+*/		
 		}
 		
 		return table;	
@@ -390,11 +430,28 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return table;
 		
 	}
+	
+	protected boolean isCacheable(IWContext iwc) {
+		return false; // Layout testing
+/*
+		try {
+			handleSubmit(iwc);
+			return (STATE_CHECK_BOOKING != getSession(iwc).getState());
+		} catch (Exception e) {
+			return super.isCacheable(iwc);
+		}
+*/
+	}
 
 	protected void handleSubmit(IWContext iwc) throws RemoteException {
 		String action = iwc.getParameter(this.ACTION);
+		String pId = iwc.getParameter(this.PARAMETER_PRODUCT_ID);
+		int STATE = -1;
 		if (action == null) {
 			STATE = STATE_SHOW_SEARCH_FORM;
+			if (pId != null) {
+				STATE = STATE_DEFINED_PRODUCT;
+			}
 		} else if ( action.equals(this.ACTION_SEARCH)) {
 			STATE = STATE_SHOW_SEARCH_RESULTS;
 		} else if ( action.equals(this.ACTION_BOOKING_FORM)) {
@@ -411,28 +468,70 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			} else {
 				STATE = STATE_SHOW_BOOKING_FORM;
 			}
+		} else if (action.equals(ACTION_PRODUCT_DETAILS)) {
+			STATE = STATE_SHOW_DETAILED_PRODUCT;
 		}
+		
+		getSession(iwc).setState(STATE);
 	}
-
-	protected void setupPresentation() throws RemoteException {
-		switch (STATE) {
-			case 0 :
-				setupSearchForm();
+	
+	protected void setupPresentation(Form form) throws RemoteException {
+		if (isAlwaysSearchForm) {
+			if (getSession(iwc).getState() != STATE_DEFINED_PRODUCT && getSession(iwc).getState() != STATE_SHOW_SEARCH_RESULTS) {
+				getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
+			}
+//			else {
+//				System.out.println("Not setting state as search");
+//			}
+		} 
+		/*
+		else if ( (getSession(iwc).getState() == STATE_SHOW_SEARCH_FORM || getSession(iwc).getState() == 0) && definedProduct != null) {
+			getSession(iwc).setState(STATE_SHOW_DETAILED_PRODUCT);
+		}
+		*/
+		switch (getSession(iwc).getState()) {
+			case STATE_DEFINED_PRODUCT :
+				if (isAlwaysSearchForm) {
+					setupSearchForm();
+					addHiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString());
+				} else {
+					definedProductInformation();
+				}
+				break;
+			case STATE_SHOW_SEARCH_FORM :
+				if (isAlwaysSearchForm) {
+					setupSearchForm();
+				} else {
+					unsearched();
+				}
 				break;
 			case STATE_SHOW_SEARCH_RESULTS :
 				try {
-					getResults();
+					Collection coll = getAndHandleResults();
+					if (!isAlwaysSearchForm) {
+						handleResults(coll);
+					} else {
+						setupSearchForm();
+					}
 				} catch (InvalidSearchException i) {
-					System.out.println("AbstractSearchForm : InvalidSearchException : "+i.getMessage());
-					errorFields = i.getErrorFields();
-					STATE = STATE_SHOW_SEARCH_FORM;
-					addErrorWarning();
+					//System.out.println("AbstractSearchForm : InvalidSearchException : "+i.getMessage());
+					if (isAlwaysSearchForm) {
+						errorFields = i.getErrorFields();
+						getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
+						addErrorWarning(formTable, row);
+						setupSearchForm();
+					} else {
+						unsearched();
+					}
+				} catch (FinderException f) {
+					getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
+					addErrorWarning(formTable, row);
 					setupSearchForm();
 				}
 				break;
 			case STATE_SHOW_BOOKING_FORM :
 				try {
-					setupBookingForm();
+					add(getBookingForm(form));
 				}catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
@@ -440,17 +539,125 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			case STATE_CHECK_BOOKING :
 				checkBooking();
 				break;
+			case STATE_SHOW_DETAILED_PRODUCT :
+				add(getProductDetails(iwc));
+				break;
 		}
+	}	
+	
+	protected void unsearched() {
+		Table table = new Table(1, 2);
+		table.add(getText(iwrb.getLocalizedString("travel.search.please_search", "Please fill in the form on the left.")), 1, 1);
+		table.add(getSmallText(iwrb.getLocalizedString("travel.search.please_search_detailed", "To execute a search you must fill in the form on the left and click search.")), 1, 2);
+		this.add(table);
 	}
 	
+	protected void definedProductInformation() throws RemoteException {
+		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+				
+		Table table = new Table(1, 2);
+		table.add(getText(iwrb.getLocalizedString("travel.search.defined_product_explained_header", "Check availability.")), 1, 1);
+		table.add(getSmallText(iwrb.getLocalizedString("travel.search.defined_product_explained", "In order to check availability for the desired product, you must fill in the form on the left and click search.")), 1, 2);
+
+		frame.add(table);
+		
+		this.add(frame);
+	}
 	
-	private void addErrorWarning() {
+	/**
+	 * @param iwc
+	 * @param cacheStatePrefix
+	 * @return
+	 */
+	private StringBuffer getUniqueKey(IWContext iwc, boolean includeSortAndPageNR) {
+		StringBuffer key = new StringBuffer();
+		Collection params = getParametersInUse();
+		key.append("asf_")
+		.append(iwc.getParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM)).append("_")
+		.append(iwc.getParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME)).append("_")
+		.append(iwc.getParameter(PARAMETER_FROM_DATE)).append("_")
+		.append(iwc.getParameter(PARAMETER_TO_DATE)).append("_")
+		.append(iwc.getParameter(PARAMETER_MANY_DAYS)).append("_")
+		.append(iwc.getParameter(PARAMETER_PRODUCT_ID)).append("_")
+		.append(iwc.getParameter(PARAMETER_POSTAL_CODE)).append("_")
+		.append(iwc.getParameter(ACTION)).append("_");
+		if (includeSortAndPageNR) {
+			key.append(iwc.getParameter(PARAMETER_SORT_BY)).append("_")
+			.append(iwc.getParameter(PARAMETER_PAGE_NR));
+		}
+		key.append(isAlwaysSearchForm);
+		try {
+			key.append(getSession(iwc).getState()).append("_");
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		if (params != null) {
+			Iterator iter = params.iterator();
+			while (iter.hasNext()) {
+				key.append(iwc.getParameter((String) iter.next())).append("_");
+			}
+		}
+		return key;
+	}
+
+	protected Collection getAndHandleResults() throws RemoteException, InvalidSearchException, FinderException {
+		String key = getUniqueKey(iwc, false).toString();
+		String keyWithSort = getUniqueKey(iwc, true).toString();
+		boolean sorted = false;
+		
+		//System.out.println("resultsKey+S = "+keyWithSort);
+		Collection coll = getSearchBusiness(iwc).getSearchResults(keyWithSort);
+		if (coll == null) {
+			//System.out.println("resultsKey   = "+key);
+			coll = getSearchBusiness(iwc).getSearchResults(key);
+		} 
+		else {
+			sorted = true;
+		}
+		
+		if (coll == null) {
+			System.out.println("Getting new results");
+			coll = getResults();
+			coll = getSearchBusiness(iwc).checkResults(iwc, coll);
+			getSearchBusiness(iwc).addSearchResults(key, coll);
+		} else {
+			System.out.println("Getting cached results");
+		}
+		
+		if (!sorted){
+			coll = filterResults(coll);
+			getSearchBusiness(iwc).addSearchResults(keyWithSort, coll);
+			System.out.println("Sorting results...");
+		} else {
+			System.out.println("Getting old sorted results");
+		}
+		return coll;
+	}
+
+	public String getCacheKey() {
+		return ServiceSearchBusiness.SEARCH_FORM_CACHE_KEY;
+	}
+
+	 protected String getCacheState(IWContext iwc, String cacheStatePrefix){
+		StringBuffer key = getUniqueKey(iwc, true);
+		//System.out.println("cacheState = "+cacheStatePrefix+key.toString());
+		return  cacheStatePrefix+key.toString();
+ }
+		
+	private int addErrorWarning(Table table, int row) {
 		if (errorFields != null && !errorFields.isEmpty()) {
+			Table sTable = setSearchPart(table, -1, true);
+			sTable.setCellpaddingLeft(1, 1, 10);
+			sTable.setCellpaddingTop(1, 1, 5);
+			sTable.setCellpaddingBottom(1, 1, 5);
 			Text error = getErrorText(iwrb.getLocalizedString("travek.search.fields_must_be_filled","Fields marked with * must be filled"));
-			formTable.add(error, 1, row);
-			formTable.mergeCells(1, row, 3, row);
+			sTable.add(error, 1, row);
+			//table.mergeCells(1, row, 3, row);
+			//table.setBorder(1);
 			++row;
 		}
+		return row;
 	}
 	
 	private Table addTermsAndConditionsAndVerisign() throws RemoteException {
@@ -482,7 +689,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return table;
 	}
 	
-	protected void setupBookingForm() throws RemoteException {
+	protected TravelBlock getBookingForm(Form form) throws RemoteException {
+		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+
+		
+		Table table = new Table();
+		table.setBorder(0);
+		table.setCellpaddingAndCellspacing(0);
+		int row = 1;
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
 		int betw = getNumberOfDays(from);
@@ -505,47 +719,30 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		catch (Exception e2) {
 			e2.printStackTrace();
 		}
-		
-		formTable.mergeCells(1, row, 3, row);
-		formTable.add(getHeaderText(supplier.getName()), 1, row);
-		try {
-		  Address a = supplier.getAddress();
-		  if (a != null) {
-		  		formTable.add(getHeaderText(", "+a.getStreetName()), 1, row);
-		  		if (a.getStreetNumber() != null) {
-		  			formTable.add(getHeaderText(" "+a.getStreetNumber()), 1, row);
-		  		}
-		  }
-		} catch (Exception e) {}
-		
-		++row;
-		formTable.mergeCells(1, row, 3, row);
-		formTable.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
-		++row;
-		formTable.mergeCells(1, row, 3, row);
-		if (betw > 0) {
-			formTable.add(getHeaderText(from.getLocaleDate(iwc)+" - "+to.getLocaleDate(iwc)), 1, row);
-		} else {
-			formTable.add(getHeaderText(from.getLocaleDate(iwc)), 1, row);
+
+		setSearchPart(table, row, false);
+		if (errorFields != null && !errorFields.isEmpty()) {
+			addErrorWarning(currentSearchPart, currentSearchPartRow);
+			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 8);
+			++row;
+			++currentSearchPartRow;
 		}
-		++row;
-		++row;
-		addErrorWarning();
 
 		if (isProductValid) {
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)});
-			formTable.mergeCells(2, (row-1), 3, (row-1));
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.first_name","First name"), iwrb.getLocalizedString("travel.search.last_name","Last name")}, new PresentationObject[]{new TextInput(PARAMETER_FIRST_NAME), new TextInput(PARAMETER_LAST_NAME)}, false, false, table, row);
+			//table.mergeCells(2, (row-1), 3, (row-1));
 	
 			TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
 			postalC.setSize(6);
 			TextInput city = new TextInput(PARAMETER_CITY);
-			city.setSize(18);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,city});
+			//city.setSize(18);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.address","Address"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC}, false, false, table, row);
 	
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
-			formTable.mergeCells(2, (row-1), 3, (row-1));
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.city","City"), iwrb.getLocalizedString("travel.search.country","Country")}, new PresentationObject[]{city, new TextInput(PARAMETER_COUNTRY)}, false, false, table, row);
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.email","Email"), iwrb.getLocalizedString("travel.search.phone", "Telephone number")}, new PresentationObject[]{new TextInput(PARAMETER_EMAIL), new TextInput(PARAMETER_PHONE_NUMBER)}, false, false, table, row);
+//			table.mergeCells(2, (row-1), 3, (row-1));
 	
-			setupSpecialFieldsForBookingForm(errorFields);
+			setupSpecialFieldsForBookingForm(table, row, errorFields);
 			
 			TextInput expMonth = new TextInput(PARAMETER_CC_MONTH);
 			expMonth.setSize(3);
@@ -557,28 +754,49 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			expCVC.setSize(5);
 			expCVC.setMaxlength(4);
 	
-			if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
-				formTable.add(getErrorText("* "), 1, row);
-			}
-			formTable.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
-			++row;
-			formTable.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
-			
+			//if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
+			//	table.add(getErrorText("* "), 1, row);
+			//}
+			//table.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
+			//++row;
+			//table.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
+
+			TextArea comment = new TextArea(PARAMETER_COMMENT);
+			comment.setWidth("300");
+			comment.setHeight("50");
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment}, false, false, table, row);
+			currentSearchPart.mergeCells(1, currentSearchPartRow-1, 2, currentSearchPartRow-1);
+
+
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"), iwrb.getLocalizedString("travel.search.name_on_card", "Name as it appears on card")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), new TextInput(PARAMETER_NAME_ON_CARD)}, false, false, table, row);
+
 			++row;
 			Table ccTable = new Table();
 			ccTable.setCellpaddingAndCellspacing(0);
 			if ( errorFields != null && errorFields.contains(PARAMETER_CC_MONTH)) {
 				ccTable.add(getErrorText("* "), 1, 1);
 			}
-			ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_month","Expires month")), 1, 1);
+			ccTable.add(getText(iwrb.getLocalizedString("travel.search.month","Month")), 1, 1);
+			ccTable.add(getText("/"), 2, 1);
 			if ( errorFields != null && errorFields.contains(PARAMETER_CC_YEAR)) {
 				ccTable.add(getErrorText("* "), 3, 1);
 			}
-			ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_year","Expires year")), 3, 1);
+			ccTable.add(getText(iwrb.getLocalizedString("travel.search.year","Year")), 3, 1);
 			ccTable.add(expMonth, 1, 2);
+			ccTable.add(getText("/"), 2, 2);
 			ccTable.add(expYear, 3, 2);
 			ccTable.setColumnWidth(2, "8");
-			formTable.add(ccTable, 1, row);
+			ccTable.setBorder(0);
+			ccTable.setCellpaddingLeft(2, 1, 5);
+			ccTable.setCellpaddingLeft(2, 2, 5);
+			//table.add(ccTable, 1, row);
+			currentSearchPart.add(ccTable, 1, currentSearchPartRow);
+			//currentSearchPart.setCellpaddingTop(1, currentSearchPartRow, 6);
+			currentSearchPart.setCellpaddingLeft(1, currentSearchPartRow, 10);
+			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 9);
+			//currentSearchPart.setCellpaddingTop(2, currentSearchPartRow, 6);
+			currentSearchPart.setCellpaddingLeft(2, currentSearchPartRow, 10);
+			currentSearchPart.setCellpaddingBottom(2, currentSearchPartRow, 9);
 			
 			
 			if (cvcIsUsed) {
@@ -593,22 +811,23 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				if (cvcLink != null) {
 					ccTable2.add(cvcLink, 1, 2);
 				}
-				formTable.mergeCells(2, row, 3, row);
-				formTable.add(ccTable2, 2, row);
+				//table.mergeCells(2, row, 3, row);
+				
+				//ccTable.add(ccTable2, 4, 1);
+				currentSearchPart.add(ccTable2, 2, currentSearchPartRow);
 			}
 			++row;
 			
-			//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER)});
-			//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC});
 	
-			TextArea comment = new TextArea(PARAMETER_COMMENT);
-			comment.setWidth("350");
-			comment.setHeight("50");
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment});
-			formTable.mergeCells(1, (row-1), 3, (row-1));
+
+			//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC}, false, false, table, row);
+			//table.mergeCells(1, (row-1), 3, (row-1));
 	
 			String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-			String sAddressId = "-1";
+			String sAddressId = iwc.getParameter(PARAMETER_ADDRESS_ID);
+			if (sAddressId == null) {
+				sAddressId = "-1";
+			}
 			String sTimeframeId = "-1";
 			
 			if (productPriceId == null) {
@@ -622,18 +841,19 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				}
 			}
 			
-			formTable.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
-			formTable.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
-			formTable.add(new HiddenInput(PARAMETER_ONLINE, "true"));
-			formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
-			formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
-			formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
-			formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
-			formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
+			table.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
+			table.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
+			table.add(new HiddenInput(PARAMETER_ONLINE, "true"));
+			table.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
+			table.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
+			table.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
+			table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
+			table.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
 			
 	//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
-			formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
+			table.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
 			
+			/*
 			try {
 				ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
 				int addressId = -1;
@@ -645,20 +865,51 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				if (sTimeframeId != null) {
 					tFrameID = Integer.parseInt(sTimeframeId);
 				}
-				formTable.mergeCells(1, row, 3, row);
-				formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice, betw)), 1, row);
+				table.mergeCells(1, row, 3, row);
+				table.add(getHeaderText(oldGetPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice, betw)), 1, row);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 			
 			++row;
-			SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("travel.search.confirm","Confirm"), ACTION, ACTION_CONFIRM);
-			formTable.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-			formTable.add(submit, 3, row);
-			//formTable.setBorder(1);
+			Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.back", "Back"), false));
+			backLink.setAsBackLink();
+
+			Link submitLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.proceed_to_check_out", "Proceed to check out"), false));
+			submitLink.setToFormSubmit(form);
+			form.addParameter(ACTION, ACTION_CONFIRM);
+
+			Table linkTable = new Table();
+			linkTable.setCellpaddingAndCellspacing(0);
+			linkTable.setCellpaddingRight(1, 1, 5);
+			linkTable.setCellpaddingLeft(2, 1, 5);
+			linkTable.setWidth("100%");
+			linkTable.add(backLink, 1, 1);
+			linkTable.add(submitLink, 2, 1);
+			linkTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			frame.addBottom(linkTable);
+			
+			
+//			currentSearchPart.setRowHeight(currentSearchPartRow, "10");
+//			++currentSearchPartRow;
+			
+//			currentSearchPart.add(backLink, 1, currentSearchPartRow);
+//			currentSearchPart.add(submitLink, 2, currentSearchPartRow);
+//			currentSearchPart.setAlignment(2, currentSearchPartRow, Table.HORIZONTAL_ALIGN_RIGHT);
+
+//			currentSearchPart.setCellpaddingLeft(1, currentSearchPartRow, 10);
+//			currentSearchPart.setCellpaddingLeft(2, currentSearchPartRow, 10);
+//			currentSearchPart.setBorderColor("BLUE");
+//			currentSearchPart.setBorder(1);
+			
+//			SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("travel.search.confirm","Confirm"), ACTION, ACTION_CONFIRM);
+//			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+//			table.add(submit, 1, row);
+//			//formTable.setBorder(1);
 	
 			++row;
 			Table logoTable = new Table();
+			logoTable.setCellpaddingAndCellspacing(0);
 			Collection imgs = null;
 			try {
 				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
@@ -667,22 +918,28 @@ public abstract class AbstractSearchForm extends TravelBlock{
 					int col = 0;
 					while (iter.hasNext()) {
 						logoTable.add((Image)iter.next(), ++col, 1);
+						logoTable.setCellpaddingTop(col, 1, 10);
+						logoTable.setCellpaddingRight(col, 1, 5);
 					}
 					//addInputLine(new String[]{"", "", ""}, new PresentationObject[]{null, null, logoTable});
-					formTable.add(logoTable, 1, row);
+					//table.add(logoTable, 1, row);
+					frame.addLeft(logoTable);
 				}
 			}catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
 		else {
-			formTable.mergeCells(1, row, 3, row);
-			formTable.add(getErrorText(iwrb.getLocalizedString("search_product_not_available", "This product is not available on the selected days.")), 1, row);
+			table.mergeCells(1, row, 3, row);
+			table.add(getErrorText(iwrb.getLocalizedString("search_product_not_available", "This product is not available on the selected days.")), 1, row);
 			++row;
 			++row;
 			BackButton back = new BackButton(iwrb.getLocalizedImageButton("travelSearch.try_again", "Try again"));
-			formTable.add(back, 1, row);
+			table.add(back, 1, row);
 		}
+
+		frame.add(table);
+		return frame;
 	}
 	
 	/**
@@ -707,6 +964,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 
 	protected void checkBooking() throws RemoteException {
+		ProductDetailFrame frame = new ProductDetailFrame(iwc, 2);
+	  Table table = new Table();
+	  table.setCellpaddingAndCellspacing(0);
+	  table.setCellpaddingLeft(1, 1, 5);
+	  
+	  frame.add(table);
+		add(frame);
+		
 		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
 		try {
 			Product product = productHome.findByPrimaryKey( new Integer(iwc.getParameter(PARAMETER_PRODUCT_ID)) );
@@ -721,66 +986,73 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				gBooking.setCode(this.engine.getCode());
 			}
 			
+
 			if (gBooking != null) {
 			  boolean sendEmail = PublicBooking.sendEmails(iwc, gBooking, iwrb);
-
-			  formTable.add(getText(gBooking.getName()));
-			  formTable.add(getText(", "));
-			  formTable.add(getText(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
-			  formTable.add(Text.BREAK);
-			  formTable.add(Text.BREAK);
+			  
+			  table.add(getText(gBooking.getName()));
+			  table.add(getText(", "));
+			  table.add(getText(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
+			  table.add(Text.BREAK);
+			  table.add(Text.BREAK);
 			  if (sendEmail) {
-					formTable.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
-					formTable.add(Text.BREAK);
-					formTable.add(Text.BREAK);
+					table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
+					table.add(Text.BREAK);
+					table.add(Text.BREAK);
 			  }
-			  formTable.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
-			  formTable.add(getText(" : "));
-			  formTable.add(getText(gBooking.getCreditcardAuthorizationNumber()));
-			  formTable.add(Text.BREAK);
-			  formTable.add(getText(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
-			  formTable.add(getText(" : "));
-			  formTable.add(getText(gBooking.getReferenceNumber()));
-			  formTable.add(Text.BREAK);
+			  table.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+			  table.add(getText(" : "));
+			  table.add(getText(gBooking.getCreditcardAuthorizationNumber()));
+			  table.add(Text.BREAK);
+			  table.add(getText(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
+			  table.add(getText(" : "));
+			  table.add(getText(gBooking.getReferenceNumber()));
+			  table.add(Text.BREAK);
 			  //table.add(getText(gBooking.getReferenceNumber()));
 			  //table.add(Text.BREAK);
-			  formTable.add(Text.BREAK);
-			  formTable.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
+			  table.add(Text.BREAK);
+			  table.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
 
 			  Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
 				printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
 				printVoucher.setWindowToOpen(VoucherWindow.class);
 
-			  formTable.add(printVoucher,1,3);
-			  formTable.setAlignment(1,1,"left");
-			  formTable.setAlignment(1,2,"right");
-			  formTable.setAlignment(1,3,"right");
+			  table.add(printVoucher,1,3);
+			  table.setAlignment(1,1,"left");
+			  table.setAlignment(1,2,"right");
+			  table.setAlignment(1,3,"right");
 			}else if (inquirySent) {
-				formTable.add(getText(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
-				formTable.add(Text.BREAK);
-				formTable.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
+				table.add(getText(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
+				table.add(Text.BREAK);
+				table.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
 			}else {
-				formTable.add(getText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")));
-				formTable.add(getText(Text.BREAK));
+				table.add(getText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")));
+				table.add(getText(Text.BREAK));
 				if (bookingId == BookingForm.errorTooMany) {
-					formTable.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+					table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
 				} else	if (bookingId == BookingForm.errorTooFew) {
-					formTable.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+					table.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
 				}
 			  if (gBooking == null) {
 					debug("gBooking == null");
 			  }
 			}
 		} catch (Exception e) {
-			formTable.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
-			formTable.add(Text.BREAK);
-			formTable.add(Text.BREAK);
-			formTable.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")));
-			e.printStackTrace(System.err);
+			table.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
+			Link backLink = new Link(getLinkText(iwrb.getLocalizedString("travel.back", "Back"), false));
+			backLink.setAsBackLink(1);
+			frame.addBottom(backLink);
+			//table.add(Text.BREAK);
+			//table.add(Text.BREAK);
+			//table.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")));
+			//e.printStackTrace(System.err);
 		}
-	}
 		
-	protected void listResults(IWContext iwc, Collection products, HashMap availability) throws RemoteException{
+	}
+
+	
+	protected void listResults(IWContext iwc, Collection products) throws RemoteException{
+		//Collection products = availability.keySet();
 		if (products != null && !products.isEmpty()) {
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
@@ -789,6 +1061,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			int days = getNumberOfDays(stamp);
 			TravelStockroomBusiness bus;
 			Product product;
+			int productId;
 			Supplier supplier;
 			Link link;
 			List addresses;
@@ -796,106 +1069,110 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			ProductPrice[] prices;
 			Currency currency;
 			Timeframe[] timeframes;
+			Image image;
 			boolean available;
 			Iterator iter = products.iterator();
 			int productsSize = products.size();
+			//int mapSize = availability.size();
 			Vector tmp = new Vector(products);
-			for (int i = (productsSize-1); i >= 0 ; i--) {
-			//while (iter.hasNext()) {
+			Table table = new Table();
+			table.setWidth("100%");
+			table.setCellpaddingAndCellspacing(0);
+			table.setBorder(0);
+			add(table);
+			
+			Table innerTable;
+			int resultsRow = 1;
+			int topProduct = productsSize -1;
+			int bottomProduct = 0;
+			if (currentPageNumber > 0) {
+				//topProduct = 0 + ( (currentPageNumber-1) * resultsPerPage);
+				//topProduct -= topProduct - ((currentPageNumber - 1) * resultsPerPage);
+				topProduct = topProduct - ( (currentPageNumber -1) * resultsPerPage);
+				
+				if ( (topProduct - resultsPerPage + 1) >= 0 ) {
+				//bottomProduct = topProduct + resultsPerPage;
+					bottomProduct= topProduct - resultsPerPage + 1;
+				//bottomProduct = (productsSize);
+				}
+			}
+			for (int i = (topProduct); i >= bottomProduct ; i--) {
 				try {
-					product = pHome.findByPrimaryKey(tmp.get(i));
-					Boolean productAvailability = ((Boolean)availability.get(product.getPrimaryKey()));
-					if (productAvailability != null) {
-						supplier = sHome.findByPrimaryKey(product.getSupplierId());
-						bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
-						addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true, getPriceCategoryKey());
-	
-						Table table = new Table();
-						table.setWidth("100%");
-						int row = 1;
-						table.add(getHeaderText(supplier.getName()), 1, row);
-						table.mergeCells(1, row, 2, row);
-						++row;
-						available = productAvailability.booleanValue();
-						table.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
-						table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-						if (available) {
-							table.add(getText(iwrb.getLocalizedString("travel.search.available","Available")), 2, row);
-						} else {
-							table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 2, row);
-						}
-						//description
-						++row;
-						TxText descriptionText = product.getText();
-						if (descriptionText != null) {
-						  TextReader textReader = new TextReader(descriptionText.getID());
-						  if (headerFontStyle != null) {
-							textReader.setHeadlineStyle(headerFontStyle);
-						  }
-						  
-						  if (textFontStyle != null) {
-							textReader.setTextStyle(textFontStyle);
-						  }
-							textReader.setCacheable(false);
-						  table.add(textReader,1,row);
-						  table.mergeCells(1, row, 2, row);
-						} else {
-							/*
-							try {
-								sendErrorEmail(product);
-							} catch (TPosException t) {
-								System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail NOT sent : error = "+t.getMessage()+")");
-							}
-							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail sent)");
-							*/
-						}
+					product = (Product)tmp.get(i);
+					productId = product.getID();
+					supplier = sHome.findByPrimaryKey(product.getSupplierId());
+					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
+					addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true, getPriceCategoryKey());
+
+					//Boolean productAvailability = ((Boolean)availability.get(product.getPrimaryKey()));
+					
+					//new result listing
+					//if (productAvailability != null && productAvailability.booleanValue()) {
 						
+						resultsRow = addResultProductHeader(product, supplier, table, resultsRow);
+
+						innerTable = new Table(4, 1);
+						++resultsRow;
+						table.add(innerTable, 1, resultsRow);
+						table.mergeCells(1, resultsRow, 3, resultsRow);
+						innerTable.setWidth("100%");
+						innerTable.setBorder(0);
+						innerTable.setWidth(1, 1, 50);
+						innerTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+						innerTable.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
+						innerTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+						innerTable.setWidth(4, 1, 70);
+						innerTable.setVerticalAlignment(4, 1, Table.VERTICAL_ALIGN_TOP);
+						innerTable.setAlignment(4, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+
+						if (product.getFileId() != -1) {
+				      image = new Image(product.getFileId());
+				      image.setMaxImageWidth(50);
+				      innerTable.add(image, 1, 1);
+				      innerTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+				    }
+				    int addressCount = 0;
 						if (addresses == null || addresses.isEmpty()) {
-							++row;
 							int addressId = -1;
 							timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
 							int timeframeId = -1;
 							if (timeframe != null) {
 								timeframeId = timeframe.getID();
 							}
-							row = getPrices(iwc, stamp, bus, product, days, table, row, addressId, timeframeId);
-							link = getBookingLink(product.getID());
-							link.addParameter(PARAMETER_ADDRESS_ID, -1);
-							//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
-							if (available) {
-								table.add(link, 1, row);
-							} else {
-								table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
-							}
-						} else {
+							addPrices(innerTable, 2, 1, bus, product, timeframeId, addressId, days, Text.NON_BREAKING_SPACE);
+						}
+						else {
 							TravelAddress address;
 							Iterator addressesIter = addresses.iterator();
 							while (addressesIter.hasNext()) {
+								++addressCount;
 								address = (TravelAddress) addressesIter.next();
 								timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getID());
 								int timeframeId = -1;
 								if (timeframe != null) {
 									timeframeId = timeframe.getID();
 								}
-								
-								++row;
-								table.add(getText(address.getName()), 1, row);
-								++row;
-								row =getPrices(iwc, stamp, bus, product, days, table, row, address.getID(), timeframeId);
-								link = getBookingLink(product.getID());
-								link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
-								if (available) {
-									table.add(link, 1, row);
-								} else {
-									table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
-								}
+								addPrices(innerTable, 2, 1, bus, product, timeframeId, address.getID(), days, Text.NON_BREAKING_SPACE);
 							}
-							
 						}
 						
-						add(table);
-						add(Text.BREAK);
-					}
+						addProductInfo(product, innerTable, 3, 1);
+				    innerTable.add(getDetailsLink(productId), 4, 1);
+				    if (addressCount <= 1) {
+				    		innerTable.add(Text.BREAK, 4, 1);
+				    		Link bLink = getBookingLink(productId);
+				    		if (addressCount == 1) {
+				    			bLink.addParameter(PARAMETER_ADDRESS_ID, ((TravelAddress) addresses.get(0)).getPrimaryKey().toString());
+				    		}
+				    		innerTable.add(bLink, 4, 1);
+				    }
+				    
+						++resultsRow;
+						
+					
+					//}
+					
+					//oldResultListing(iwc, sHome, stamp, days, product, productAvailability);
 				}catch(Exception e) {
 					e.printStackTrace();
 				} 
@@ -904,28 +1181,293 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 	
+	private int addProductHeader(Product product, Supplier supplier, Table table, int resultsRow) throws RemoteException {
+		table.add(getHeaderText(supplier.getName()), 1, resultsRow);
+		table.add(getSmallText(product.getProductName(localeID)), 3, resultsRow);
+		table.setAlignment(3, resultsRow, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingLeft(1, resultsRow, 10);
+		//table.setCellpadding(2, resultsRow, 5);
+		table.setCellpaddingRight(3, resultsRow, 10);
+		table.setHeight(resultsRow, 28);
+		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		++resultsRow;
+		table.setHeight(1, resultsRow, 1);
+		++resultsRow;
+		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+		table.setHeight(1, resultsRow, 1);
+
+		++resultsRow;
+		table.setHeight(1, resultsRow, 3);
+
+//		table.setRowStyleClass(++resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+//		table.setHeight(1, resultsRow, 3);
+		
+		return ++resultsRow;
+	}
+	
+	private int addResultProductHeader(Product product, Supplier supplier, Table table, int resultsRow) throws RemoteException {
+		table.setHeight(1, resultsRow, 1);
+		table.setRowStyleClass(resultsRow, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		++resultsRow;
+		table.setHeight(1, resultsRow, 1);
+		++resultsRow;
+		table.add(getHeaderText(supplier.getName()), 1, resultsRow);
+		table.add(getSmallText(product.getProductName(localeID)), 3, resultsRow);
+		table.setAlignment(3, resultsRow, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setCellpaddingLeft(1, resultsRow, 10);
+		//table.setCellpadding(2, resultsRow, 5);
+		table.setCellpaddingRight(3, resultsRow, 10);
+		table.setHeight(resultsRow, 28);
+		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+		++resultsRow;
+		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setHeight(1, resultsRow, 1);
+		++resultsRow;
+		table.setHeight(1, resultsRow, 2);
+		++resultsRow;
+		table.setRowStyleClass(resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+		table.setHeight(1, resultsRow, 3);
+
+//		++resultsRow;
+//		table.setHeight(1, resultsRow, 3);
+
+//		table.setRowStyleClass(++resultsRow, super.getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+//		table.setHeight(1, resultsRow, 3);
+		
+		return ++resultsRow;
+	}
+
+	/**
+	 * @param iwc
+	 * @param sHome
+	 * @param stamp
+	 * @param days
+	 * @param product
+	 * @param productAvailability
+	 * @throws FinderException
+	 * @throws RemoteException
+	 * @throws IDOFinderException
+	 * @throws SQLException
+	 */
+	private void oldResultListing(IWContext iwc, SupplierHome sHome, IWTimestamp stamp, int days, Product product, Boolean productAvailability) throws FinderException, RemoteException, IDOFinderException, SQLException {
+		TravelStockroomBusiness bus;
+		Supplier supplier;
+		Link link;
+		List addresses;
+		Timeframe timeframe;
+		boolean available;
+		if (productAvailability != null) {
+			supplier = sHome.findByPrimaryKey(product.getSupplierId());
+			bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
+			addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true, getPriceCategoryKey());
+
+			Table table = new Table();
+			table.setWidth("100%");
+			int row = 1;
+			table.add(getHeaderText(supplier.getName()), 1, row);
+			table.mergeCells(1, row, 2, row);
+			++row;
+			available = productAvailability.booleanValue();
+			table.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
+			table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			if (available) {
+				table.add(getText(iwrb.getLocalizedString("travel.search.available","Available")), 2, row);
+			} else {
+				table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 2, row);
+			}
+			//description
+			++row;
+			TxText descriptionText = product.getText();
+			if (descriptionText != null) {
+			  TextReader textReader = new TextReader(descriptionText.getID());
+			  if (headerFontStyle != null) {
+				textReader.setHeadlineStyle(headerFontStyle);
+			  }
+			  
+			  if (textFontStyle != null) {
+				textReader.setTextStyle(textFontStyle);
+			  }
+				textReader.setCacheable(false);
+			  table.add(textReader,1,row);
+			  table.mergeCells(1, row, 2, row);
+			} else {
+				/*
+				try {
+					sendErrorEmail(product);
+				} catch (TPosException t) {
+					System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail NOT sent : error = "+t.getMessage()+")");
+				}
+				System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail sent)");
+				*/
+			}
+			
+			if (addresses == null || addresses.isEmpty()) {
+				++row;
+				int addressId = -1;
+				timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
+				int timeframeId = -1;
+				if (timeframe != null) {
+					timeframeId = timeframe.getID();
+				}
+				row = oldGetPrices(iwc, stamp, bus, product, days, table, row, addressId, timeframeId);
+				link = getBookingLink(product.getID());
+				link.addParameter(PARAMETER_ADDRESS_ID, -1);
+				//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
+				if (available) {
+					table.add(link, 1, row);
+				} else {
+					table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
+				}
+			} else {
+				TravelAddress address;
+				Iterator addressesIter = addresses.iterator();
+				while (addressesIter.hasNext()) {
+					address = (TravelAddress) addressesIter.next();
+					timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getID());
+					int timeframeId = -1;
+					if (timeframe != null) {
+						timeframeId = timeframe.getID();
+					}
+					
+					++row;
+					table.add(getText(address.getName()), 1, row);
+					++row;
+					row =oldGetPrices(iwc, stamp, bus, product, days, table, row, address.getID(), timeframeId);
+					link = getBookingLink(product.getID());
+					link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
+					if (available) {
+						table.add(link, 1, row);
+					} else {
+						table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
+					}
+				}
+				
+			}
+			
+			add(table);
+			add(Text.BREAK);
+		}
+	}
+	
+	protected Link addParameters(Link po, int productId) {
+		if (po instanceof Link) {
+			((Link)po).maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
+			((Link)po).addParameter(ACTION, ACTION_BOOKING_FORM);
+			((Link)po).maintainParameter(PARAMETER_FROM_DATE, iwc);
+			((Link)po).maintainParameter(PARAMETER_MANY_DAYS, iwc);
+			((Link)po).maintainParameter(PARAMETER_TO_DATE, iwc);
+			((Link)po).addParameter(getParameterTypeCountName(), getCount());
+			if (productId > 0) {
+				((Link)po).addParameter(PARAMETER_PRODUCT_ID, productId);
+			}
+			//((Link)po).addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+			((Link)po).addParameter(BookingForm.PARAMETER_CODE, engine.getCode());
+			((Link)po).addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
+			maintainEngineSpecificParameters(((Link)po));
+		}
+		
+		return po;
+	}
+	protected Form addParameters(Form po, int productId, boolean isSearchForm) {
+		if ( po instanceof Form ) {
+			if (targetPage != null) {
+				((Form)po).setPageToSubmitTo(targetPage);
+			}
+			((Form)po).maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM);
+			((Form)po).addParameter(BookingForm.PARAMETER_CODE, engine.getCode());
+			((Form)po).addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
+			//((Form)po).addParameter(ACTION, ACTION_BOOKING_FORM);
+			
+			if (!isSearchForm) {
+				po.maintainParameter(ACTION);
+				po.maintainParameter(AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
+				((Form)po).maintainParameter(PARAMETER_FROM_DATE);
+				((Form)po).maintainParameter(PARAMETER_MANY_DAYS);
+				((Form)po).maintainParameter(PARAMETER_TO_DATE);
+				((Form)po).addParameter(getParameterTypeCountName(), getCount());
+				if (iwc.isParameterSet(PARAMETER_ADDRESS_ID)) {
+					po.maintainParameter(PARAMETER_ADDRESS_ID);
+				}
+				if (productId > 0) {
+					((Form)po).addParameter(PARAMETER_PRODUCT_ID, productId);
+				}
+				//((Form)po).addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+				po.maintainParameter(PARAMETER_POSTAL_CODE);
+				
+				Collection coll = getParametersInUse();
+				if (coll != null && !coll.isEmpty()) {
+					Iterator iter = coll.iterator();
+					while (iter.hasNext()) {
+						po.maintainParameter(iter.next().toString());
+					}
+				}
+			}
+			
+		}
+		
+		return po;
+	}
+
 	protected Link getBookingLink(int productId) {
-		Link link = new Link(iwrb.getLocalizedImageButton("travel.book","Book"));
+		Link link = new Link(getLinkText( iwrb.getLocalizedString("travel.book","Book"), false ));
+		return addParameters(link, productId);
+	}
+	
+	protected Link getNextOrPreviousLink(boolean next) {
+		Link link = new Link();
+		if (next) {
+			return getPageLink(iwrb.getLocalizedString("travel.search.next", "Next"), currentPageNumber+1);
+		} else {
+			return getPageLink(iwrb.getLocalizedString("travel.search.previous", "Previous"), currentPageNumber-1);
+		}
+	}
+
+	protected Link getPageLink(String content, int pageNumber) {
+		Link link = new Link(getLinkText(content, false));
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
-		link.addParameter(ACTION, ACTION_BOOKING_FORM);
+		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
+		link.maintainParameter(ACTION, iwc);
+		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+		link.maintainParameter(PARAMETER_TO_DATE, iwc);
+		link.maintainParameter(PARAMETER_SORT_BY, iwc);
+		link.addParameter(PARAMETER_PAGE_NR, pageNumber);
+		maintainEngineSpecificParameters(link);
+		return link;
+	}
+	
+	protected Link getDetailsLink(int productId) {
+		Link link = new Link(getLinkText(iwrb.getLocalizedString("travel.search.view_details","View details"), false));
+		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
+		link.addParameter(ACTION, ACTION_PRODUCT_DETAILS);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
 		link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.addParameter(getParameterTypeCountName(), getCount());
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
-		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
-
+		//link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+		link.maintainParameter(PARAMETER_ADDRESS_ID, iwc);
+		maintainEngineSpecificParameters(link);
 		return link;
 	}
+	
+	private void maintainEngineSpecificParameters(Link link) {
+		Collection coll = this.getParametersInUse();
+		if (coll != null && !coll.isEmpty()) {
+			Iterator iter = coll.iterator();
+			while (iter.hasNext() ) {
+				link.maintainParameter((String) iter.next(), iwc);
+			}
+		}
+	}
 
-	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, int days, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
+	private int oldGetPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, int days, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
 		ProductPrice[] prices;
 		Currency currency;
 		prices = getProductPrices(usedProduct, addressId, timeframeId);
 		//prices = ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
-			table.add(getText(getPriceString(bus, usedProduct.getID(), timeframeId, prices[i], days)), 1, row++);
+			table.add(getText(oldGetPriceString(bus, usedProduct.getID(), timeframeId, prices[i], days)), 1, row++);
 		}
 		return row;
 	}
@@ -934,15 +1476,74 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 	}
 	
-	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
-		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, Product product, int timeframeId, int addressId, int days, String seperator) throws SQLException, RemoteException {
+		ProductPrice[] prices = getProductPrices(product, addressId, timeframeId);
+		for (int i = 0; i < prices.length; i++) {
+			tmpPriceID = prices[i].getID();
+			addPrices(table, column, row, bus, product.getID(), timeframeId, addressId, prices[i], days, seperator);
+		}
+	}
 
+	
+	private void addPrices(Table table, int column, int row, TravelStockroomBusiness bus, int productId, int timeframeId, int travelAddressId, ProductPrice pPrice, int days, String seperator) throws SQLException, RemoteException {
+		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+		float total = -1;
+		String returner = "";
+
+		int count = getCount();
+		Currency currency;
+		String currAbbr = "";
+		try {
+			currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHome(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId());
+			currAbbr = currency.getCurrencyAbbreviation();
+		}catch (Exception e) {
+			currency = null;
+		}
+		TravelAddress tAddress = null;
+		try {
+			if (travelAddressId > 0) {
+				tAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).findByPrimaryKey(travelAddressId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+
+		if (days == 0) {
+			days = 1;
+		}
+		if (count == 0) {
+			count = 1;
+		}
+		
+		total = price * days * count;
+		if (tAddress != null) {
+			table.add(getText(tAddress.getName()+Text.BREAK), column, row);
+		}
+		table.add(getText(iwrb.getLocalizedString("travel.price","Price")+":"+seperator),column, row);
+		table.add(getSmallText(currencyFormat.format(price*count)+Text.NON_BREAKING_SPACE+currAbbr), column, row);
+		if (days > 1) {
+			table.add(getSmallText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
+		}
+		if (count > 1) {
+			table.add(getSmallText(" ("+currencyFormat.format(price)+Text.NON_BREAKING_SPACE+currAbbr+" per "+getUnitName()+")"), column, row);
+		}
+		table.addBreak(column, row);
+		table.add(getText(iwrb.getLocalizedString("travel.search.total","Total")+":"+seperator), column, row);
+		table.add(getSmallText(currencyFormat.format(total)+Text.NON_BREAKING_SPACE+currAbbr+seperator), column, row);
+		table.addBreak(column, row);
+	
+	}
+	
+	private String oldGetPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
+		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+/*
 		Currency currency;
 		try {
 			currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId());
 		}catch (Exception e) {
 			currency = null;
-		}
+		}*/
 		float total = -1;
 		String returner = "";
 
@@ -956,41 +1557,93 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}*/
 		
 		total = price * days * count;
-		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+(price*count)+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+currencyFormat.format(price*count);
+//		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+(price*count)+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
 		if (days > 1) {
 			returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night");
 		}
 		if (count > 1) {
-			returner += " ("+price+" per "+getUnitName()+")";
+			returner += " ("+currencyFormat.format(price)+" per "+getUnitName()+")";
 		}
-		returner += Text.BREAK+iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		returner += Text.BREAK+iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+currencyFormat.format(total);
 		return returner;
 	}
 
 	protected int getCount() {
 		String sCount = iwc.getParameter(getParameterTypeCountName());
-		int count = Integer.parseInt(sCount);
+		int count = 0;
+		try {
+			count = Integer.parseInt(sCount);
+		} catch (NumberFormatException ignore){}
 		return count;
 	}
 
+	public Table setSearchPart(Table table, int tableRow, boolean createNew) {
+		if (createNew || currentSearchPart == null) {
+			//table.setBorder(1);
+
+			currentSearchPart = new Table();
+			if (searchPartTopBorderColor != null && searchPartTopBorderWidth != null) {
+				currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartTopBorderWidth), searchPartTopBorderColor, "solid");
+			}
+			if (searchPartBottomBorderColor != null && searchPartBottomBorderWidth != null) {
+				currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartBottomBorderWidth), searchPartBottomBorderColor, "solid");
+			}
+			String darkBackground = this.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR);
+			String lightBackground = this.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR);
+			
+			if (lightBackground != null) {
+				currentSearchPart.setStyleClass(lightBackground);
+			}
+			currentSearchPart.setBorder(0);
+			//currentSearchPart.setBorderColor("#F0C0FF");
+			currentSearchPart.setCellspacing(0);
+			currentSearchPart.setCellpadding(0);
+			currentSearchPart.setWidth("100%");
+			currentSearchPartRow = 1;
+			
+			if (tableRow > 0) {
+				table.add(currentSearchPart, 1, tableRow);
+			} else {
+				table.add(currentSearchPart, 1, row++);
+				table.setHeight(row++, 2);
+			}
+		}
+		
+		return currentSearchPart;
+	}
+	
 	protected void addInputLine(String[] text, PresentationObject[] object) {
-		addInputLine(text, object, false);
+		addInputLine(text, object, false, false, formTable, -1);
 	}	
-	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText) {
+	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart) {
+		addInputLine(text, object, useHeaderText, newSearchPart, formTable, -1);
+	}	
+	protected void addHiddenInput(String name, String value) {
+		formTable.add(new HiddenInput(name, value));
+	}
+	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, Table table, int row) {
+		setSearchPart(table, row, newSearchPart);
 		for (int i = 0; i < text.length; i++) {
 			if ( errorFields != null && errorFields.contains(object[i].getName())) {
-				formTable.add(getErrorText("* "), i+1, row);
+				currentSearchPart.add(getErrorText("* "), i+1, currentSearchPartRow);
 			}
 			if (useHeaderText) {
-				formTable.add(getHeaderText(text[i]), i+1, row);
+				currentSearchPart.add(getHeaderText(text[i]), i+1, currentSearchPartRow);
 			} else {
-				formTable.add(getText(text[i]), i+1, row);
+				currentSearchPart.add(getText(text[i]), i+1, currentSearchPartRow);
 			}
-			formTable.setNoWrap(i+1, row);
+			currentSearchPart.setNoWrap(i+1, currentSearchPartRow);
+			if (currentSearchPartRow == 1) {
+				currentSearchPart.setCellpaddingTop(i+1, currentSearchPartRow, 9);
+			}
+			currentSearchPart.setCellpaddingLeft(i+1, currentSearchPartRow, 10);
+			//currentSearchPart.setCellpaddingBottom(i+1, currentSearchPartRow, 8);
 		}
-		++row;
+		++currentSearchPartRow;
 		String value;
-		for (int i = 0; i < object.length; i++) {
+		int objectLength = object.length;
+		for (int i = 0; i < objectLength; i++) {
 			if ( object[i] != null) {
 				if (object[i]  instanceof Table ) {
 					value = null;
@@ -1029,16 +1682,23 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				if (formInputStyle != null) {
 					object[i].setStyleAttribute(formInputStyle);
 				}
-				formTable.add(object[i], i+1, row);
+				getStyleObject((PresentationObject) object[i], ServiceSearch.STYLENAME_INTERFACE);
+				currentSearchPart.add(object[i], i+1, currentSearchPartRow);
+				currentSearchPart.setCellpaddingTop(i+1, currentSearchPartRow, 6);
+				currentSearchPart.setCellpaddingLeft(i+1, currentSearchPartRow, 10);
+				currentSearchPart.setCellpaddingBottom(i+1, currentSearchPartRow, 9);
 			}
 		}
-		++row;
-	}
+		++currentSearchPartRow;
+}
 	
 	
 	protected Text getText(String content) {
 		Text text = new Text(content);
-		if (textFontStyle != null) {
+		if (getStyleName(ServiceSearch.STYLENAME_TEXT) != null) {
+			text = getStyleText(text, ServiceSearch.STYLENAME_TEXT);
+		}
+		else if (textFontStyle != null) {
 			text.setFontStyle(textFontStyle);
 		}
 		return text;
@@ -1046,27 +1706,54 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected Text getHeaderText(String content) {
 		Text text = new Text(content);
-		if (headerFontStyle != null) {
+		if (getStyleName(ServiceSearch.STYLENAME_HEADER_TEXT) != null) {
+			text = getStyleText(text, ServiceSearch.STYLENAME_HEADER_TEXT);
+		}
+		else if (headerFontStyle != null) {
 			text.setFontStyle(headerFontStyle);
+		}
+		
+		return text;
+	}
+	
+	protected Text getSmallText(String content) {
+		Text text = new Text(content);
+		if (getStyleName(ServiceSearch.STYLENAME_SMALL_TEXT) != null) {
+			text = getStyleText(text, ServiceSearch.STYLENAME_SMALL_TEXT);
 		}
 		return text;
 	}
 	
 	protected Text getLinkText(String content, boolean clicked) {
 		Text text = new Text(content);
-		if (clicked && clickedLinkFontStyle != null) {
-			text.setFontStyle(clickedLinkFontStyle);
-		} else if (linkFontStyle != null) {
-			text.setFontStyle(linkFontStyle);
-		} 
+		if (clicked) {
+			if (getStyleName(ServiceSearch.STYLENAME_CLICKED_LINK) != null) {
+				text = getStyleText(text, ServiceSearch.STYLENAME_CLICKED_LINK);
+			}
+			else if (clickedLinkFontStyle != null) {
+				text.setFontStyle(clickedLinkFontStyle);
+			}
+		}
+		else {
+			if (getStyleName(ServiceSearch.STYLENAME_LINK) != null) {
+				text = getStyleText(text, ServiceSearch.STYLENAME_LINK);
+			}
+			else if (linkFontStyle != null) {
+				text.setFontStyle(linkFontStyle);
+			}
+		}
+		
 		return text;
 	}
 
 	protected Text getErrorText(String content) {
 		Text text = new Text(content);
-		if (errorFontStyle != null) {
-			text.setFontStyle(errorFontStyle);
+		if (getStyleName(ServiceSearch.STYLENAME_ERROR_TEXT) != null) {
+			text = getStyleText(text, ServiceSearch.STYLENAME_ERROR_TEXT);
 		}
+		else if (errorFontStyle != null) {
+			text.setFontStyle(errorFontStyle);
+		} 
 		return text;
 	}
 	
@@ -1126,6 +1813,34 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		this.searchForms = searchForms;
 	}
 	
+	public void setSearchPartBottomBorderColor(String color) {
+		searchPartBottomBorderColor = color;
+	}
+	
+	public void setSearchPartBottomBorderWidth(String width) {
+		searchPartBottomBorderWidth = width;
+	}
+	
+	public void setSearchPartTopBorderColor(String color) {
+		searchPartTopBorderColor = color;
+	}
+	
+	public void setSearchPartTopBorderWidth(String width) {
+		searchPartTopBorderWidth = width;
+	}
+	
+	public void setSearchPartColor(String color) {
+		searchPartColor = color;
+	}
+	
+	public void setTargetPage(ICPage page) {
+		if (page != null) {
+			this.targetPage = page;
+			this.isAlwaysSearchForm = true;
+		}
+	}
+
+	
 	protected Product getProduct() {
 		try {
 			ProductHome home = (ProductHome) IDOLookup.getHome(Product.class);
@@ -1135,11 +1850,20 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 	}
 	
+	protected boolean hasDefinedProduct() throws RemoteException {
+		return (getSession(iwc).getState() == this.STATE_DEFINED_PRODUCT && definedProduct != null);
+	}
 	
 	public void addAreaCodeInput() {
 		try {
 			DropdownMenu menu = getSearchBusiness(iwc).getPostalCodeDropdown(iwrb);
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu});
+			try {
+				if (hasDefinedProduct()) {
+					menu.setSelectedElement(definedProduct.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
+				}
+			} catch (Exception e) {}
+			
+			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu}, false, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
@@ -1150,12 +1874,17 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		for (int i = startNumber; i <= endNumber; i++) {
 			menu.addMenuElement(i, Integer.toString(i));
 		}		
+		menu.setSelectedElement(startNumber);
 		return menu;
 	}
 
 
 	public void setServiceSearchEngine(ServiceSearchEngine engine) {
 		this.engine = engine;
+	}
+	
+	public void setResultsPerPage(int resultsPerPage) {
+		this.resultsPerPage = resultsPerPage;
 	}
 	
 	public ServiceSearchBusiness getSearchBusiness(IWApplicationContext iwac) throws RemoteException {
@@ -1210,39 +1939,102 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return ProductComparator.PRICE;
 	}
 
-	protected void handleResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
+	private void handleResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
+
+		int collSize = coll.size();
+		
+		String results = iwrb.getLocalizedString("travel.search.results", "results");
+		if (collSize == 1) {
+			results = iwrb.getLocalizedString("travel.search.result", "result");
+		}
+		Form form = new Form();
+		form = (Form) addParameters(form, -1, false);
+		Table table = new Table(3, 4);
+		table.setWidth("100%");
+		table.setCellspacing(0);
+		table.setCellpadding(0);
+		table.setWidth(1, "33%");
+		table.setWidth(2, "34%");
+		table.setWidth(3, "33%");
+		table.setCellpaddingLeft(1, 1, 10);
+		table.setCellpaddingRight(2, 1, 10);
+		table.setHeight(33);
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.search.sort_by", "Sort by")+":"+Text.NON_BREAKING_SPACE), 1, 1);
+		table.add(getSortMenu(), 1, 1);
+		
+		int totalPages = (int )Math.ceil((double) collSize / (double) resultsPerPage); 
+		//int totalPages = 1 + ( (collSize - 1) / resultsPerPage);
+		//System.out.println(totalPages +" = " +collSize+"/"+resultsPerPage);
+		
+		if (currentPageNumber > 1) {
+			table.add(getNextOrPreviousLink(false), 2, 1);
+		}
+		for (int i = 1; i <= totalPages; i++) {
+			table.add(getPageLink(" "+Integer.toString(i)+" ", i), 2, 1);
+		}
+		//table.add(""+totalPages, 2, 1);
+		if (currentPageNumber < totalPages) {
+			table.add(getNextOrPreviousLink(true), 2, 1);
+		}
+		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_CENTER);
+		
+		table.add(getHeaderText(collSize+Text.NON_BREAKING_SPACE+results), 3, 1);
+		table.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+//		table.add("gimmi", 1, 1);
+		table.setRowStyleClass(1, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		
+		table.setHeight(2, 1);
+		table.setHeight(3, 1);
+		table.setHeight(4, 3);
+		table.setRowStyleClass(3, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
+		form.add(table);
+		add(form);
+		
+		listResults(iwc, coll);
+
+	}
+	
+	
+	private DropdownMenu getSortMenu() {
+		DropdownMenu menu = new DropdownMenu(PARAMETER_SORT_BY);
+		menu.addMenuElement(ProductComparator.NAME, iwrb.getLocalizedString("travel.name", "Name"));
+		menu.addMenuElement(ProductComparator.PRICE, iwrb.getLocalizedString("travel.price", "Price"));
+		menu.addMenuElement(ProductComparator.SUPPLIER, iwrb.getLocalizedString("travel.supplier", "Supplier"));
+		menu.setSelectedElement(getSortMethod());
+		menu.setToSubmit(true);
+		if (formInputStyle != null) {
+			menu.setStyleAttribute(formInputStyle);
+		} else {
+			menu.setStyleClass(getStyleName(ServiceSearch.STYLENAME_INTERFACE));
+		}
+		return menu;
+	}
+	/**
+	 * @param coll
+	 * @return
+	 * @throws IDOLookupException
+	 * @throws FinderException
+	 * @throws RemoteException
+	 */
+	private Collection filterResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
 		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 		PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
 		PriceCategory priceCat = pcHome.findByKey(getPriceCategoryKey());
-		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate), getDefaultSortMethod());
-
-		HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
-		int mapSize = map.size();
-		String foundString = "";
-		if (map != null) {
-			foundString = "Found "+mapSize+" match";
-			if (mapSize != 1) foundString += "es !<br>";
-		} else {
-			foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
-		}
-		
-		if (mapSize > 0) {
-			add(foundString);
-		}
-		listResults(iwc, coll, map);
-		add(foundString);
-
-		if (coll != null) {
-			if (coll.isEmpty()) {
-				STATE = 0;
-				setupSearchForm();
-			}
-		} else {
-			STATE = 0;
-			setupSearchForm();
-		}
+		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate), getSortMethod());
+		return coll;
 	}
 	
+	private int getSortMethod() {
+		String sSortBy = this.iwc.getParameter(PARAMETER_SORT_BY);
+		try {
+			if (sSortBy != null) {
+				return Integer.parseInt(sSortBy);
+			}
+		} catch (NumberFormatException ignore) {}
+		
+		return getDefaultSortMethod();
+	}
+
 	protected Object[] getSupplierIDs() {
 		Object[] suppIds = new Object[]{};
 		String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
@@ -1265,10 +2057,405 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	
 	protected CreditCardBusiness getCreditCardBusiness(IWContext iwc) {
 		try {
-				return (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
-			} catch (IBOLookupException e) {
+			return (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
+		} catch (IBOLookupException e) {
 			throw new IBORuntimeException();
+		}
+	}
+	
+	
+	protected ServiceSearchSession getSession(IWContext iwc) {
+		try {
+			return (ServiceSearchSession) IBOLookup.getSessionInstance(iwc, ServiceSearchSession.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException();
+		}
+	}
+	
+	
+	protected TravelBlock getProductDetails(IWContext iwc) throws RemoteException {
+		ProductDetailFrame frame = new ProductDetailFrame(iwc);
+
+		Vector vector = new Vector();
+		vector.add(definedProduct);
+		Collection coll = getSearchBusiness(iwc).checkResults(iwc, vector);
+		
+		if ( coll != null && coll.contains(definedProduct) ) {
+			Table table = new Table(1, 4);
+			int row = 1;
+			if (frame.ch != null) {
+				LocalizedText text = frame.ch.getLocalizedText();
+				List images = frame.ch.getFiles();
+				if (text.getHeadline() != null) {
+					table.setCellpaddingLeft(1, row, 5);
+					table.setCellpaddingTop(1, row, 5);
+					table.add(this.getText(text.getHeadline()), 1, row);
+				}
+				++row;
+				if (text.getBody() != null) {
+					table.setCellpaddingLeft(1, row, 5);
+					table.setCellpaddingBottom(1, row, 20);
+					table.add(this.getSmallText(text.getBody()), 1, row);
+				}
+				if (images != null && !images.isEmpty()) {
+					++row;
+					table.setCellpaddingLeft(1, row, 5);
+					table.setCellpaddingBottom(1, row, 5);
+					table.add(getText(iwrb.getLocalizedString("travel.search.view_more_photos", "View more photos")), 1, row);
+
+					++row;
+					table.setCellpaddingLeft(1, row, 5);
+
+					Iterator iter = images.iterator();
+					ICFile file;
+					Image image;
+					Window window;
+					Link link;
+					while (iter.hasNext()) {
+						file = (ICFile) iter.next();
+						try {
+							image = new Image(Integer.parseInt(file.getPrimaryKey().toString()));
+							image.setMaxImageWidth(35);
+							window = new Window(new Image(Integer.parseInt(file.getPrimaryKey().toString())));
+							link = new Link(image);
+							link.setWindow(window);
+							table.add(link, 1, row);
+							table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
 			}
+			table.setCellpaddingAndCellspacing(0);
+			table.setBorder(0);
+			table.setWidth("100%");
+			table.setHeight(1, 2, "100%");
+			
+			frame.add(table);
+			frame.addBottom(getDetailLinks(frame.product, frame.depAddresses));
+		} 
+		else {
+			Table table = new Table(1, 1);
+			table.add(iwrb.getLocalizedString("travel.search.product_unavailable", "The product you have selected is unavailable for the selected days."));
+			frame.add(table);
+		}
+			
+		
+		return frame;
+	}
+	
+	private Form getDetailLinks(Product product, Collection departureAddresses) throws RemoteException {
+		Form form = new Form();
+		form = addParameters(form, product.getID(), false);
+		Table linkTable = new Table(3, 1);
+		form.add(linkTable);
+		try {
+			if (departureAddresses != null && !departureAddresses.isEmpty()) {
+				DropdownMenu addresses = new DropdownMenu(PARAMETER_ADDRESS_ID);
+				addresses.addMenuElements(departureAddresses);
+				addresses.setStyleClass(getStyleName(ServiceSearch.STYLENAME_INTERFACE));
+				//linkTable.add( getSmallText(iwrb.getLocalizedString("travel.search.departure_from", "Departure from")+" : "), 3 ,1);
+				linkTable.add( addresses, 2, 1);
+				linkTable.add( Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
+				/*Iterator iter = depAddresses.iterator();
+				TravelAddress ta;
+				while (iter.hasNext()) {
+					ta = (TravelAddress) iter.next();
+				}*/
+			}
+		} catch (Exception e) {
+			
+		}
+		linkTable.setCellpaddingAndCellspacing(0);
+		linkTable.setCellpaddingLeft(1, 1, 5);
+		linkTable.setCellpaddingRight(2, 1, 5);
+		linkTable.setCellpaddingRight(3, 1, 5);
+		linkTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_MIDDLE);
+		linkTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_MIDDLE);
+		linkTable.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_MIDDLE);
+		linkTable.setWidth("100%");
+		linkTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		linkTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		linkTable.setWidth(3, 1, "20");
+		Link back = new Link(getLinkText(iwrb.getLocalizedString("travel.search.back_to_results","Back to results"), false));
+		back.setAsBackLink();
+		linkTable.add(back, 1, 1);
+		Link bookingLink = getBookingLink(product.getID());
+		//bookingLink.setImage(bundle.getImage("images/book_01.jpg"));
+		SubmitButton button = new SubmitButton(bundle.getImage("images/book_01.jpg"));
+		form.addParameter(ACTION, ACTION_BOOKING_FORM);
+		//bookingLink.setToFormSubmit(form);
+		//linkTable.add(bookingLink, 3, 1);
+		linkTable.add(button, 3, 1);
+		return form;
+	
+	}	
+	public class ProductDetailFrame extends TravelBlock {
+
+		Product product = null;
+		Supplier supplier = null;
+		TxText descriptionText = null;
+		ContentHelper ch = null;
+		Table contTable;
+		String leftWidth = "200";
+		IWTimestamp fromDate = null;
+		List depAddresses = null;
+		int columns = 3;
+		public ProductDetailFrame(IWContext iwc) throws RemoteException {
+			this(iwc, 3);
+		}
+		
+		public ProductDetailFrame(IWContext iwc, int columns) throws RemoteException {
+			String sProductId = iwc.getParameter(PARAMETER_PRODUCT_ID);
+			this.columns = columns;
+			if (sProductId != null) {
+				try {
+					ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+					SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+					product = pHome.findByPrimaryKey(new Integer(sProductId));
+					supplier = sHome.findByPrimaryKey(product.getSupplierId());
+
+					descriptionText = product.getText();
+					if (descriptionText != null) {
+						ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
+					}
+				} catch (Exception e ) {
+					e.printStackTrace();
+				}
+			}
+
+			contTable = new Table(columns, 10);
+			contTable.setBorder(0);
+			//contTable.setBorderColor("GREEN");
+
+			contTable.setCellpaddingAndCellspacing(0);
+			contTable.setWidth("100%");
+			contTable.setWidth(1, 1, leftWidth);
+			if (columns == 3) {
+				contTable.setWidth(columns, 1, "22");
+			} else {
+				contTable.setWidth(2, 1, "100%");
+			}
+			
+			super.add(getProductDetailFrame(iwc));
+		}
+		
+		public void add(PresentationObject po) {
+			contTable.add(po, 2, 1);
+		}
+		
+		public void addBottom(PresentationObject po) {
+			contTable.add(po, 2, 7);
+		}
+		
+		public void addLeft(PresentationObject po) {
+			contTable.add(po, 1, 6);
+		}
+		
+		protected Table getProductDetailFrame(IWContext iwc) throws RemoteException {
+
+			Table table = new Table();
+			table.setCellspacing(0);
+			table.setCellpadding(0);
+			table.setWidth("100%");
+			table.setBorder(0);
+			int row = 1;
+			ContentHelper ch;
+			LocalizedText locText = null;
+			List files;
+			Image image = null;
+			Timeframe timeframe;
+			if (product != null) {
+				TravelStockroomBusiness bus = null;
+				try {
+					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
+				}
+				catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+				//IWTimestamp fromDate = null;
+				try {
+					fromDate = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
+				} catch (NullPointerException n) {}
+				try {
+					depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true);
+				} catch (Exception e) {}
+
+				String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+				String sAddressId = iwc.getParameter(PARAMETER_ADDRESS_ID);
+				int addressId = -1;
+				if (sAddressId != null) {
+					try {
+						addressId = Integer.parseInt(sAddressId);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, fromDate, addressId);
+				int timeframeId = -1;
+				if (timeframe != null) {
+					timeframeId = timeframe.getID();
+				}
+							
+				row = addProductHeader(product, supplier, table, row);
+				
+				table.mergeCells(1, row, 3, row);
+				table.add(contTable, 1, row++);
+				try {
+					TxText descriptionText = product.getText();
+					if (descriptionText != null) {
+						ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
+						if (ch != null) {
+							locText = ch.getLocalizedText();
+							files = ch.getFiles();
+							if (files != null && !files.isEmpty()) {
+								ICFile imagefile = (ICFile) files.get(0);
+								String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
+		
+								image = new Image(((Integer)imagefile.getPrimaryKey()).intValue());
+								image.setMaxImageWidth(200);
+								if (att != null) {
+									image.addMarkupAttributes(getAttributeMap(att));
+								}
+							}
+						}
+					}
+					else {
+						ch = null;
+						locText = null;
+						files = null;
+						image = null;
+					}
+					
+					if (image != null) {
+						contTable.add(image, 1, 1);
+					}
+					/*
+					if (locText != null) {
+						if (locText.getHeadline() != null) {
+							contTable.add(getText(locText.getHeadline()), 2, 1);
+							contTable.addBreak(2, 1);
+						}
+						if (locText.getBody() != null) {
+							contTable.add(getSmallText(locText.getBody()), 2, 1);
+						}
+						contTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+						contTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+						//contTable.setCellpaddingTop(1, 1, 5);
+						contTable.setCellpadding(2, 1, 5);
+					}
+					*/
+					contTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+					contTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+					contTable.setHeight(1, 2, 2);
+					contTable.setStyleClass(1, 3, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+					contTable.setCellpadding(1, 3, 5);
+					
+					contTable.add(getSupplierInfo(product), 1, 3);
+					
+					contTable.setStyleClass(1, 4, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+					contTable.setHeight(1, 5, 2);
+
+					contTable.setStyleClass(1, 6, getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR));
+					contTable.setCellpadding(1, 6, 5);
+					contTable.setVerticalAlignment(1, 6, Table.VERTICAL_ALIGN_TOP);
+					addProductInfoDetailed(product, contTable, 6);
+					if (depAddresses != null && !depAddresses.isEmpty() && addressId < 1) {
+						Iterator iter = depAddresses.iterator();
+						while (iter.hasNext()) {
+							addPrices(contTable, 1, 6, bus, product, timeframeId, ((TravelAddress) iter.next()).getID(), getNumberOfDays(fromDate), Text.BREAK);
+						}
+					} else {
+						addPrices(contTable, 1, 6, bus, product, timeframeId, addressId, getNumberOfDays(fromDate), Text.BREAK);
+					}
+
+					contTable.setStyleClass(1, 7, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+					contTable.setHeight(1, 8, 2);
+					contTable.setStyleClass(1, 9, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+					contTable.setHeight(1, 9, 2);
+					
+					contTable.mergeCells(2, 1, 2, 6);
+					if (columns == 3) {
+						contTable.mergeCells(3, 1, 3, 6);
+						contTable.mergeCells(2, 7, 3, 10);
+					}	else {
+						contTable.mergeCells(2, 7, 2, 10);
+					}
+					contTable.setVerticalAlignment(2, 7, Table.VERTICAL_ALIGN_BOTTOM);
+					contTable.setCellpaddingLeft(2, 7, 10);
+					
+					//contTable.add(getDetailLinks(product), 2, 7);
+					
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				add("product == null");
+			}
+			
+			return table;
+		}
+		
+		
+
+
+		protected Table getSupplierInfo(Product product) {
+			Table table = new Table();
+			table.setCellspacing(0);
+			table.setCellpadding(1);
+			int row = 1;
+			Supplier supplier;
+			try {
+				supplier = product.getSupplier();
+				table.add(getText(iwrb.getLocalizedString("travel.search.address", "Address")), 1, row++);
+				table.add(getSmallText(supplier.getAddress().getStreetAddress()), 1, row++);
+				List phones = supplier.getPhones();
+				if (phones != null) {
+					Iterator iter = phones.iterator();
+					Phone phone;
+					while (iter.hasNext()) {
+						phone = (Phone) iter.next();
+						if (!"".equals(phone.getNumber())) {
+							switch (phone.getPhoneTypeId()) {
+								case PhoneType.FAX_NUMBER_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.fax", "Fax")), 1, row++);
+									break;
+								case PhoneType.HOME_PHONE_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.telephone", "Telephone number")), 1, row++);
+									break;
+								case PhoneType.MOBILE_PHONE_ID :
+									table.add(getText(iwrb.getLocalizedString("travel.search.mobile", "Mobile")), 1, row++);
+									break;
+								
+							} 
+							table.add(getSmallText(phone.getNumber()), 1, row++);
+						}
+					}
+				}
+				
+				List emails = supplier.getEmails();
+				if (emails != null) {
+					Iterator iter = emails.iterator();
+					Email email;
+					while (iter.hasNext()) {
+						email = (Email) iter.next();
+						if (!"".equals(email.getEmailAddress())) {
+							table.add(getText(iwrb.getLocalizedString("travel.search.email", "Email")), 1, row++);
+							table.add(getSmallText(email.getEmailAddress()), 1, row++);
+						}
+					}
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return table;
+		}
 	}
 	
 }

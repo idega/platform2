@@ -1,16 +1,21 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
-import java.util.List;
-
 import is.idega.idegaweb.travel.service.tour.data.TourCategory;
 
+import java.util.List;
+
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Table;
 
 /**
  * @author gimmi
  */
 public class TransportationSearch extends TourSearch {
 
+	public TransportationSearch() {
+		super();
+	}
+	
 	protected String getTourCategory() {
 		return TourCategory.CATEGORY_TRANSPORTATION;
 	}
@@ -19,7 +24,7 @@ public class TransportationSearch extends TourSearch {
 		return iwrb.getLocalizedString("travel.search.transportation","Transportation");		
 	}
 
-	protected void setupSpecialFieldsForBookingForm(List errorFields) {
+	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {
 	}
 
 	protected List getErrorFormFields() {

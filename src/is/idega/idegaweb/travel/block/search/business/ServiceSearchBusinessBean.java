@@ -13,6 +13,8 @@ import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -25,6 +27,8 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.transaction.UserTransaction;
 
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ProductBusinessBean;
 import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
@@ -34,6 +38,8 @@ import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -61,7 +67,7 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness {
+public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
 
 	private String PARAMETER_POSTAL_CODE_ICELAND = "post_ice";
 	private String PARAMETER_POSTAL_CODE_REYKJAVIK = "post_rey";
@@ -77,12 +83,18 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	private String PARAMETER_POSTAL_CODE_SPACER = "post_space";
 	
 	private static DropdownMenu staticPostalCode = null;
+	private HashMap resultMap = new HashMap();
+	
 	
 	private String SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION = "Search Engine administator group";
 	private String permissionGroupNameExtention = " - admins";
 
 	public ServiceSearchBusinessBean() {
 		super();
+	}
+	
+	public void initializeBean() {
+		getProductBusiness().addActionListener(this);
 	}
 
 	public DropdownMenu getPostalCodeDropdown(IWResourceBundle iwrb) throws RemoteException, FinderException {
@@ -118,6 +130,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					menu.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode() + "  "+pc.getName());
 				}
 			}
+			menu.setSelectedElement(PARAMETER_POSTAL_CODE_ICELAND);
 		}
 		staticPostalCode = menu;
 		return menu;
@@ -208,6 +221,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		String ccMon = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_MONTH);
 		String ccYear = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_YEAR);
 		String ccCVC = iwc.getParameter(AbstractSearchForm.PARAMETER_CC_CVC);
+		String ccName = iwc.getParameter(AbstractSearchForm.PARAMETER_NAME_ON_CARD);
 		
 		if (firstName == null || firstName.equals("")) {
 			list.add(AbstractSearchForm.PARAMETER_FIRST_NAME);
@@ -242,6 +256,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		if (useCVC && (ccCVC == null || ccCVC.equals(""))) {
 			list.add(AbstractSearchForm.PARAMETER_CC_CVC);
 		}
+		if (ccName == null || ccName.equals("")) {
+			list.add(AbstractSearchForm.PARAMETER_NAME_ON_CARD);
+		}
 		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);
 		
 		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(Integer.parseInt(productId), -1, -1, true, categoryKey);
@@ -268,19 +285,22 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				productComparator.setPriceCategoryValues(priceCat, -1, bookingDate);
 			//}
 			/** Gera betra */
-			Collection tmp = getProductInstanceCollection(productsToSort);
-			Collections.sort( (Vector) tmp, productComparator);
+			//Collection tmp = getProductInstanceCollection(productsToSort);
+			Collections.sort( (Vector) productsToSort, productComparator);
 			
-			return getPKCollectionFromInstances(tmp);
+			return productsToSort;
+			//return getPKCollectionFromInstances(tmp);
 		}catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
-		return getPKCollectionFromInstances(productsToSort);
+		return productsToSort;//getProductInstanceCollection(productsToSort);
+		//return getPKCollectionFromInstances(productsToSort);
 //		return productsToSort;		 
 	}
 
-	public HashMap checkResults(IWContext iwc, Collection results) throws RemoteException {
+	public Collection checkResults(IWContext iwc, Collection results) throws RemoteException {
 		if (results != null && !results.isEmpty()) {
+			results = getProductInstanceCollection(results);
 			HashMap map = new HashMap();
 			Collection coll = new Vector();
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
@@ -315,21 +335,25 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			BookingForm bf;
 			ProductPrice[] prices;
 			Iterator iter = results.iterator();
+			Collection toRemove = new Vector(); 
 			boolean productIsValid = true;
 			while (iter.hasNext() && from != null && to != null) {
 				try {
-					product =  pHome.findByPrimaryKey(iter.next());
+					product = (Product) iter.next();
 					productIsValid = getIsProductValid(iwc, product, from, to);
 					if (productIsValid) {
-						map.put(product.getPrimaryKey(), new Boolean(productIsValid));
+						map.put(product, new Boolean(productIsValid));
+					}	else {
+						toRemove.add(product);
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
-			return map;
+			results.removeAll(toRemove);
+			return results;
 		}
-		return new HashMap();
+		return new Vector();
 	}
 
 	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws Exception {
@@ -583,19 +607,18 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	  ServiceSearchEngineStaffGroup sGroup = null;
 	  List listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), name);
 	  if (listi != null) {
-		if (listi.size() > 0) {
-		  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
-		}
+			if (listi.size() > 0) {
+			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+			}
 	  }
 	  if (listi == null) {
-		listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), engine.getName());
-		if (listi != null)
-		if (listi.size() > 0) {
-		  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
-		}
+		  	listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), engine.getName());
+			if (listi != null && listi.size() > 0) {
+			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+			}
 	  }
 	  if (sGroup == null) {
-	  	System.err.println("searchEngineStaffGroup == null");
+	  		System.err.println("searchEngineStaffGroup == null");
 	  }
 	  return sGroup;
 	}
@@ -662,6 +685,14 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return false;
 	}
 	
+	public Collection getSearchResults(String key) {
+		return (Collection) resultMap.get(key);
+	}
+	
+	public void addSearchResults(String key, Collection results) {
+		resultMap.put(key, results);
+	}
+	
 	
 	public ServiceSearchEngineHome getSearchEngineHome() throws IDOLookupException {
 		return (ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class);
@@ -675,8 +706,27 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return getServiceHandler().getServiceBusiness(product);
 	}
 	
+	public ProductBusiness getProductBusiness() {
+		try {
+			return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 	public ServiceHandler getServiceHandler() throws RemoteException {
 		return (ServiceHandler) IBOLookup.getServiceInstance(getIWApplicationContext(), ServiceHandler.class);
+	}
+
+	public void actionPerformed(ActionEvent event) {
+		if (event != null) {
+			if (event.getActionCommand().equals(ProductBusinessBean.COMMAND_CLEAR_CACHE)) {
+				resultMap = new HashMap();
+				getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(SEARCH_FORM_CACHE_KEY);
+				System.out.println("[ServiceSearchBusinessBean] Invalidating stored search results");
+			}
+		}
 	}
 
 }

@@ -45,6 +45,10 @@ public abstract class TourSearch extends AbstractSearchForm {
 	
 	protected abstract String getTourCategory();
 	
+	public TourSearch() {
+		super();
+	}
+	
 	public String getUnitName() {
 		return "seat";
 	}
@@ -58,16 +62,12 @@ public abstract class TourSearch extends AbstractSearchForm {
 		return ProductComparator.NAME;
 	}
 
-	protected void setupSearchForm() {
-		if (super.definedProduct == null) {
+	protected void setupSearchForm() throws RemoteException {
+		
+		boolean defined = hasDefinedProduct();
+		
+		if (!defined) {
 			addAreaCodeInput();
-		} else {
-			try {
-				addInputLine(new String[]{definedProduct.getSupplier().getName()}, new PresentationObject[]{}, true);
-				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentLocaleId())}, new PresentationObject[]{}, true);
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -79,7 +79,8 @@ public abstract class TourSearch extends AbstractSearchForm {
 		manySeats.setContent("1");
 		manySeats.setSize(3);
 		manySeats.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_seats", "Invalid number of seats"));
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date"), iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{fromDate, manySeats});
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.date","Date")}, new PresentationObject[]{fromDate}, false, true);
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.number_of_seats","Number of seats")}, new PresentationObject[]{manySeats}, false, true);
 		
 		SelectPanel tourTypes = new SelectPanel(PARAMETER_TOUR_TYPE_ID );
 		try {
@@ -87,7 +88,7 @@ public abstract class TourSearch extends AbstractSearchForm {
 			SelectorUtility su = new SelectorUtility();
 			tourTypes = (SelectPanel) su.getSelectorFromIDOEntities(tourTypes, categories, "getLocalizationKey", iwrb);
 
-			if (super.definedProduct != null) {
+			if (super.hasDefinedProduct()) {
 				Collection coll = getTourTypes(definedProduct);
 				if (coll != null && !coll.isEmpty()) {
 					TourType tourType;
@@ -115,12 +116,27 @@ public abstract class TourSearch extends AbstractSearchForm {
 		return PARAMETER_MANY_SEATS;
 	}
 
-	protected void getResults() throws RemoteException, InvalidSearchException {
+	protected Collection getResults() throws RemoteException, InvalidSearchException {
 		String sManySeats = iwc.getParameter(PARAMETER_MANY_SEATS);
 		String sTourType[] = iwc.getParameterValues(PARAMETER_TOUR_TYPE_ID);
 		
 		InvalidSearchException ie = null;
 		try {
+			try {
+				int tmp = Integer.parseInt(sManySeats);
+				if (tmp < 1) {
+					if (ie == null) {
+						ie = new InvalidSearchException("Error in search");
+						ie.addErrorField(PARAMETER_MANY_SEATS);
+					}
+				}
+			} catch (Exception e) {
+				if (ie == null) {
+					ie = new InvalidSearchException("Error in search");
+					ie.addErrorField(PARAMETER_MANY_SEATS);
+				}
+			}
+			
 			Object[] tourTypeIds = null;
 			if (sTourType != null && sTourType.length > 0) {
 				tourTypeIds = new Object[sTourType.length];
@@ -131,8 +147,8 @@ public abstract class TourSearch extends AbstractSearchForm {
 			} else {
 				if (ie == null) {
 					ie = new InvalidSearchException("Error in search");
-					ie.addErrorField(PARAMETER_TOUR_TYPE_ID);
 				}
+				ie.addErrorField(PARAMETER_TOUR_TYPE_ID);
 			}
 
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
@@ -150,14 +166,14 @@ public abstract class TourSearch extends AbstractSearchForm {
 				coll = tHome.find(null, null, tourTypeIds, postalCodeIds, suppIds);
 			}
 			
-
-			handleResults(coll);
+			return coll;
+			//handleResults(coll);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 
 	protected int getNumberOfDays(IWTimestamp fromDate) {
@@ -189,6 +205,12 @@ public abstract class TourSearch extends AbstractSearchForm {
 		}
 	}
 	
+	protected Collection getParametersInUse() {
+		Vector coll = new Vector();
+		coll.add(PARAMETER_MANY_SEATS);
+		coll.add(PARAMETER_TOUR_TYPE_ID);
+		return coll;
+	}
 	
 	
 }

@@ -408,7 +408,7 @@ public class HotelBookingForm extends BookingForm {
                 pPriceCatNameText = (Text) theText.clone();
                   pPriceCatNameText.setText(category.getName());
 
-	              if (pricesLength == 1) {
+	              if (pricesLength == 1 && i < pricesLength) {
 	                pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(price));
 	                pPriceText.setSize(8);
 	                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"1");

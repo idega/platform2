@@ -17,6 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
@@ -55,16 +56,12 @@ public class CarRentalSearch extends AbstractSearchForm {
 
 	
 	
-	protected void setupSearchForm() {
-		if (super.definedProduct == null) {
+	protected void setupSearchForm() throws RemoteException {
+
+		boolean defined = hasDefinedProduct();
+		
+		if (!defined) {
 			addAreaCodeInput();
-		} else {
-			try {
-				addInputLine(new String[]{definedProduct.getSupplier().getName()}, new PresentationObject[]{}, true);
-				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentLocaleId())}, new PresentationObject[]{}, true);
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
@@ -83,11 +80,11 @@ public class CarRentalSearch extends AbstractSearchForm {
 		manyDays.setSize(3);
 		manyDays.setAsPositiveIntegers(iwrb.getLocalizedString("travel.search.invalid_number_of_days", "Invalid number of days"));
 //		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup"), iwrb.getLocalizedString("travel.search.no_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate});
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate});
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.pickup","Pickup")}, new PresentationObject[]{fromDate}, false, true);
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.dropoff","Drop off")}, new PresentationObject[]{toDate}, false, false);
 	}
 
-	protected void getResults() throws RemoteException, InvalidSearchException {
+	protected Collection getResults() throws RemoteException, InvalidSearchException {
 		try {
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
@@ -98,11 +95,12 @@ public class CarRentalSearch extends AbstractSearchForm {
 //			coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
 				coll = crHome.find(null, null, postalCodeIds, suppIds);
 			}
-			
-			handleResults(coll);
+			return coll;
+			//handleResults(coll);
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	protected Image getHeaderImage(IWResourceBundle iwrb) {
@@ -128,7 +126,7 @@ public class CarRentalSearch extends AbstractSearchForm {
 		return 1;
 	}
 
-	protected void setupSpecialFieldsForBookingForm(List errorFields) {
+	protected void setupSpecialFieldsForBookingForm(Table table, int row, List errorFields) {
 		CarRental carRental = null;
 		if (definedProduct != null) {
 			try {
@@ -176,33 +174,33 @@ public class CarRentalSearch extends AbstractSearchForm {
 				
 					if ( errorFields != null) {
 						if (errorFields.contains(PARAMETER_PICKUP_PLACE)) {
-							formTable.add(getErrorText("* "), 1, row);
+							table.add(getErrorText("* "), 1, row);
 						}
 						if (errorFields.contains(PARAMETER_PICKUP_TIME)) {
-							formTable.add(getErrorText("* "), 2, row);
+							table.add(getErrorText("* "), 2, row);
 						}
 						if (errorFields.contains(PARAMETER_DROPOFF_PLACE)) {
-							formTable.add(getErrorText("* "), 1, row+2);
+							table.add(getErrorText("* "), 1, row+2);
 						}
 						if (errorFields.contains(PARAMETER_DROPOFF_TIME)) {
-							formTable.add(getErrorText("* "), 2, row+2);
+							table.add(getErrorText("* "), 2, row+2);
 						}
 					}
-					super.formTable.add(getText(iwrb.getLocalizedString("travel.search.pickup","Pickup")), 1, row);
-					super.formTable.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
+					table.add(getText(iwrb.getLocalizedString("travel.search.pickup","Pickup")), 1, row);
+					table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
 					++row;
-					super.formTable.add(pickupPlaces, 1, row);
-					super.formTable.add(pickupTime, 2, row);
-					super.formTable.mergeCells(2, row, 3, row);
+					table.add(pickupPlaces, 1, row);
+					table.add(pickupTime, 2, row);
+					table.mergeCells(2, row, 3, row);
 					++row;
 //				} 
 //				if (bDrop) {
-					super.formTable.add(getText(iwrb.getLocalizedString("travel.search.dropoff","Dropoff")), 1, row);
-					super.formTable.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
+					table.add(getText(iwrb.getLocalizedString("travel.search.dropoff","Dropoff")), 1, row);
+					table.add(getText(iwrb.getLocalizedString("travel.search.time","Time")), 2, row);
 					++row;
-					super.formTable.add(dropoffPlaces, 1, row);
-					super.formTable.add(dropoffTime, 2, row);
-					super.formTable.mergeCells(2, row, 3, row);
+					table.add(dropoffPlaces, 1, row);
+					table.add(dropoffTime, 2, row);
+					table.mergeCells(2, row, 3, row);
 					++row;
 //				}
 			} catch (Exception e) {
@@ -251,6 +249,19 @@ public class CarRentalSearch extends AbstractSearchForm {
 			}
 		}		return new String[] {PARAMETER_PICKUP_PLACE, PARAMETER_DROPOFF_PLACE, PARAMETER_PICKUP_TIME, PARAMETER_DROPOFF_TIME};
 		*/
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm#getParametersInUse()
+	 */
+	protected Collection getParametersInUse() {
+		Vector coll = new Vector();
+		coll.add(PARAMETER_DROPOFF_PLACE);
+		coll.add(PARAMETER_DROPOFF_TIME);
+		coll.add(PARAMETER_PICKUP_PLACE);
+		coll.add(PARAMETER_PICKUP_TIME);
+		coll.add(PARAMETER_TYPE_COUNT);
+		return coll;
 	}
 	
 }

@@ -522,9 +522,11 @@ public class PublicBooking extends TravelBlock  {
   }
 
 
-
-
   public static boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb) {
+  		return sendEmails(iwc, gBooking, iwrb, false);
+  }
+
+  public static boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb, boolean isRefund) {
 	boolean sendEmail = false;
 	try {
 	  DecimalFormat df = new DecimalFormat("0.00");
@@ -551,7 +553,12 @@ public class PublicBooking extends TravelBlock  {
 	    try {
 	      sendEmail = true;
 	      StringBuffer mailText = new StringBuffer();
-	      mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
+	      if (isRefund) {
+	      		mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation_refund","This email is to confirm that a refund has been made to your creditcard."));
+	      } 
+	      else {
+		      mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
+	      }
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.supplier",   "Supplier    ")).append(" : ").append(suppl.getName());
 	      if (addresses != null) {
 	      		Address addr;
@@ -588,14 +595,29 @@ public class PublicBooking extends TravelBlock  {
 				String cardType = null;
 				if (ccAuthNumber != null) {
 					CreditCardAuthorizationEntry entry = ccBus.getAuthorizationEntry(suppl, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
-					cardType = entry.getBrandName();
-					double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
-		      mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_paid","Amount paid   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
+					if ( isRefund ) {
+						try {
+							CreditCardAuthorizationEntry child = entry.getChild();
+							cardType = child.getBrandName();
+							double fAmount = child.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
+							mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_refunded","Amount refunded   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
+						} 
+						catch (FinderException f) {
+							
+						}
+					}
+					else {
+						cardType = entry.getBrandName();
+						double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
+						mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_paid","Amount paid   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
+					}
 				}
 	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.comment",  "Comment   ")).append(" : ").append(gBooking.getComment());
 	      
-	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
+	      if (!isRefund) {
+	      		mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
+	      		mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
+	      }
 	      
 	      SendMail sm = new SendMail();
 	        sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
@@ -611,7 +633,12 @@ public class PublicBooking extends TravelBlock  {
 	      String subject = "Booking";
 	
 	      StringBuffer mailText = new StringBuffer();
-	      mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
+	      if ( isRefund ) {
+	      		mailText.append(iwrb.getLocalizedString("travel.email_after_online_refund","You have just received a cancellation through travel.idega.is."));
+	      }
+	      else {
+		      mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through travel.idega.is."));
+	      }
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
