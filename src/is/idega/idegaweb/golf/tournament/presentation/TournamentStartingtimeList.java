@@ -85,7 +85,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 		
 		String cacheString = "tournament_startingtime_" + tournament.getID() + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 
-		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
+		Form cachedForm = null;//(Form) modinfo.getApplicationAttribute(cacheString);
 		if (cachedForm != null && !onlineRegistration) {
 			//EIKI: TODO ENABLE CACHING FOR ONLINE ALSO
 			//THE PROBLEM IS THAT THE form.maintainParameter("action") is causing a
@@ -188,11 +188,11 @@ public class TournamentStartingtimeList extends GolfBlock {
 				table.add(cepText, 1, row);
 				table.add(tepText, 4, row);
 				table.mergeCells(1, row, 3, row);
-				table.mergeCells(4, row, 8, row);
+				table.mergeCells(4, row, 7, row);
 				table.setAlignment(4, row, "right");
 			}
 			else {
-				table.mergeCells(1, row, 8, row);
+				table.mergeCells(1, row, 7, row);
 				table.setAlignment(1, row, "right");
 				table.setCellpaddingRight(1, row, 5);
 				table.add(rounds, 1, row);
@@ -206,31 +206,29 @@ public class TournamentStartingtimeList extends GolfBlock {
 			Text dMemberHand;
 			Text dMemberUnion;
 
-			Text tim = getSmallHeader(getResourceBundle().getLocalizedString("tournament.time", "Time"));
-			Text sc = getSmallHeader(getResourceBundle().getLocalizedString("tournament.social_security_number", "Social security number"));
-			Text name = getSmallHeader(getResourceBundle().getLocalizedString("tournament.name", "Name"));
-			Text club = getSmallHeader(getResourceBundle().getLocalizedString("tournament.club", "Club"));
-			Text hc = getSmallHeader(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap"));
+			Text tim = new Text(getResourceBundle().getLocalizedString("tournament.time", "Time"));
+			Text sc = new Text(getResourceBundle().getLocalizedString("tournament.social_security_number", "Social security number"));
+			Text name = new Text(getResourceBundle().getLocalizedString("tournament.name", "Name"));
+			Text club = new Text(getResourceBundle().getLocalizedString("tournament.club", "Club"));
+			Text hc = new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap"));
 
 			table.add(tim, 1, row);
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
-			table.add(sc, 3, row);
-			table.add(name, 4, row);
-			table.add(club, 5, row);
-			table.add(hc, 6, row);
+			table.add(sc, 2, row);
+			table.add(name, 3, row);
+			table.add(club, 4, row);
+			table.add(hc, 5, row);
 
 			if (viewOnly || onlineRegistration) {
-				table.mergeCells(6, row, 8, row);
+				table.mergeCells(5, row, 7, row);
 			}
 			else {
-				Text paid = getSmallHeader(getResourceBundle().getLocalizedString("tournament.paid", "Paid"));
-				table.add(paid, 7, row);
-				Text del = getSmallHeader(getResourceBundle().getLocalizedString("tournament.remove", "Remove"));
-				table.add(del, 8, row);
+				Text paid = new Text(getResourceBundle().getLocalizedString("tournament.paid", "Paid"));
+				table.add(paid, 6, row);
+				Text del = new Text(getResourceBundle().getLocalizedString("tournament.remove", "Remove"));
+				table.add(del, 7, row);
 			}
-			table.setRowPadding(row, getCellpadding());
-			table.setCellpadding(2, row, 0);
-			table.setRowColor(row, headerColor);
+			table.setRowStyleClass(row, getHeaderRowClass());
 
 			java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
 			java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
@@ -241,7 +239,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			Image removeImage = getBundle().getImage("/shared/tournament/de.gif", getResourceBundle().getLocalizedString("tournament.remove_from_tournament", "Remove from tournament"));
 			removeImage.setToolTip(getResourceBundle().getLocalizedString("tournament.remove_from_tournament", "Remove from tournament"));
 			//Flash time;
-			Text tTime = getBigText("");
+			Text tTime = new Text("");
 			/*if (forPrinting) {
 				tTime.setFontStyle("letter-spacing:1px;font-family:Arial,Helvetica,sans-serif;font-size:28px;color:#000000;font-weight:bold;");
 			}
@@ -282,13 +280,12 @@ public class TournamentStartingtimeList extends GolfBlock {
 				if (displayTee) {
 					++row;
 					table.setHeight(row, 1);
-					table.mergeCells(1, row, 8, row);
+					table.mergeCells(1, row, 7, row);
 					table.setRowColor(row++, this.getLineSeperatorColor());
-					Text startTee = getSmallHeader(getResourceBundle().getLocalizedString("tournament.starting_tee", "Starting tee") + " : " + tee_number);
+					Text startTee = new Text(getResourceBundle().getLocalizedString("tournament.starting_tee", "Starting tee") + " : " + tee_number);
 					table.add(startTee, 1, row);
-					table.setRowColor(row, headerColor);
-					table.mergeCells(1, row, 8, row);
-					table.setRowPadding(row, getCellpadding());
+					table.mergeCells(1, row, 7, row);
+					table.setRowStyleClass(row, getHeaderRowClass());
 					table.setAlignment(1, row, "center");
 				}
 
@@ -329,10 +326,8 @@ public class TournamentStartingtimeList extends GolfBlock {
 						table.setVerticalAlignment(1, row, "middle");
 					}
 					//				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
-					table.mergeCells(1, row, 1, row + ((numberInGroup * 2) - 2));
-					table.mergeCells(2, row, 2, row + ((numberInGroup * 2) - 2));
-					table.setWidth(2, row, 1);
-					table.setColor(2, row, getLineSeperatorColor());
+					table.mergeCells(1, row, 1, row + (numberInGroup - 1));
+					table.setStyleClass(1, row, getBigRowClass());
 					//				table.setVerticalAlignment(1,row,"top");
 
 					sView = TournamentController.getStartingtimeView(tournamentRound.getID(), "", "", "grup_num", groupCounter + "", tee_number, "");
@@ -347,26 +342,17 @@ public class TournamentStartingtimeList extends GolfBlock {
 					// +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
 					startInGroup = sView.length;
 
+					String styleClass = null;
 					for (int i = 0; i < sView.length; i++) {
 						if (zebraRow % 2 != 0) {
-							activeColor = lightColor;
+							styleClass = getLightRowClass();
 						}
 						else {
-							activeColor = darkColor;
+							styleClass = getDarkRowClass();
 						}
 						zebraRow++;
 						
 						table.setHeight(row, 14);
-						table.setColor(1, row, lightColor);
-						//table.setColor(2, row, activeColor);
-						table.setColor(3, row, activeColor);
-						table.setColor(4, row, activeColor);
-						table.setColor(5, row, activeColor);
-						table.setColor(6, row, activeColor);
-						table.setColor(7, row, activeColor);
-						table.setColor(8, row, activeColor);
-						table.setRowPadding(row, getCellpadding());
-						table.setCellpadding(2, row, 0);
 						++numberOfMember;
 						if (i != 0) table.add(tooMany, 1, row);
 
@@ -376,22 +362,26 @@ public class TournamentStartingtimeList extends GolfBlock {
 							dMemberHand = null;
 							dMemberUnion = null;
 							if (sView[i].getMemberId() != 1) {
-								dMemberSsn = getSmallText(sView[i].getSocialSecurityNumber());
-								dMemberName = getSmallText(sView[i].getName());
-								dMemberUnion = getSmallText(sView[i].getAbbrevation());
-								dMemberHand = getSmallText(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
+								dMemberSsn = new Text(sView[i].getSocialSecurityNumber());
+								dMemberName = new Text(sView[i].getName());
+								dMemberUnion = new Text(sView[i].getAbbrevation());
+								dMemberHand = new Text(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
 							}
 							else {
-								dMemberSsn = getSmallText("-");
-								dMemberName = getSmallText(getResourceBundle().getLocalizedString("tournament.reserved", "Frátekið"));
-								dMemberUnion = getSmallText("-");
-								dMemberHand = getSmallText("-");
+								dMemberSsn = new Text("-");
+								dMemberName = new Text(getResourceBundle().getLocalizedString("tournament.reserved", "Frátekið"));
+								dMemberUnion = new Text("-");
+								dMemberHand = new Text("-");
 							}
 
-							table.add(dMemberSsn, 3, row);
-							table.add(dMemberName, 4, row);
-							table.add(dMemberUnion, 5, row);
-							table.add(dMemberHand, 6, row);
+							table.add(dMemberSsn, 2, row);
+							table.setStyleClass(2, row, styleClass);
+							table.add(dMemberName, 3, row);
+							table.setStyleClass(3, row, styleClass);
+							table.add(dMemberUnion, 4, row);
+							table.setStyleClass(4, row, styleClass);
+							table.add(dMemberHand, 5, row);
+							table.setStyleClass(5, row, styleClass);
 							//table.add(sView[i].getSocialSecurityNumber(),2,row);
 							//abbrevation = sView[i].getAbbrevation();
 							//table.add(sView[i].getName() ,3,row);
@@ -401,46 +391,38 @@ public class TournamentStartingtimeList extends GolfBlock {
 								if (!onlineRegistration) {
 									paid = getCheckBox("paid", Integer.toString(sView[i].getMemberId()));
 									paid.setChecked(sView[i].getPaid());
-									table.add(paid, 7, row);
+									table.add(paid, 6, row);
+									table.setStyleClass(6, row, styleClass);
 									delete = getCheckBox("deleteMember", Integer.toString(sView[i].getMemberId()));
-									table.add(delete, 8, row);
+									table.add(delete, 7, row);
+									table.setStyleClass(7, row, styleClass);
 								}
 								else {
-									table.mergeCells(6, row, 8, row);
+									table.mergeCells(5, row, 7, row);
 								}
 							}
 							else {
-								table.mergeCells(6, row, 8, row);
+								table.mergeCells(5, row, 7, row);
+								table.setStyleClass(5, row, styleClass);
 							}
 						}
 						else {
-							table.mergeCells(3, row, 8, row);
+							table.mergeCells(2, row, 7, row);
+							table.setStyleClass(2, row, styleClass);
 						}
 						row++;
-						table.setHeight(row, 1);
-						table.mergeCells(3, row, 8, row);
-						table.setRowColor(row++, getLineSeperatorColor());
 					}
 
 					for (int i = startInGroup; i < (numberInGroup); i++) {
 						if (zebraRow % 2 != 0) {
-							activeColor = lightColor;
+							styleClass = getLightRowClass();
 						}
 						else {
-							activeColor = darkColor;
+							styleClass = getDarkRowClass();
 						}
 						zebraRow++;
 
 						table.setHeight(row, 14);
-						table.setColor(1, row, lightColor);
-						table.setColor(3, row, activeColor);
-						table.setColor(4, row, activeColor);
-						table.setColor(5, row, activeColor);
-						table.setColor(6, row, activeColor);
-						table.setColor(7, row, activeColor);
-						table.setColor(8, row, activeColor);
-						table.setRowPadding(row, getCellpadding());
-						table.setCellpadding(2, row, 0);
 						if ((!viewOnly) && (roundNumber == 1)) {
 							if (tee_number == 10) {
 								socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter + "_"));
@@ -452,23 +434,19 @@ public class TournamentStartingtimeList extends GolfBlock {
 							socialNumber.setMaxlength(10);
 							table.add(socialNumber, 2, row);
 						}
-						table.mergeCells(3, row, 8, row);
-						table.setHeight(++row, 1);
-						table.mergeCells(3, row, 8, row);
-						table.setRowColor(row++, getLineSeperatorColor());
+						table.mergeCells(2, row, 7, row);
+						table.setStyleClass(2, row++, styleClass);
 					}
 					startHour.addMinutes(minutesBetween);
 
 					if (forPrinting) {
-						table.mergeCells(1, row, 8, row);
+						table.mergeCells(1, row, 7, row);
 						table.setHeight(1, row, "1");
 						table.add(hr, 1, row);
 					}
 					else {
 						--row;
 					}
-					table.setHeight(row, 1);
-					table.setRowColor(row, getLineSeperatorColor());
 				}
 			}
 
@@ -480,7 +458,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			table.add(many, 1, row);
 			table.setWidth(2, 1);
 
-			table.mergeCells(4, row, 8, row);
+			table.mergeCells(4, row, 7, row);
 			if (!viewOnly) {
 				SubmitButton submitButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("tournament.save", "Save")));
 				table.add(new HiddenInput("sub_action", "saveDirectRegistration"), 4, row);
