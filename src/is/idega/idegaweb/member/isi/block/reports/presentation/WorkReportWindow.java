@@ -237,8 +237,11 @@ public class WorkReportWindow extends IWAdminWindow {
 		}
 		
 		//B.3
-		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
-		//B.4
+    LinkContainer editAccountList = new LinkContainer();
+		editAccountList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
+		editAccountList.addParameter(ACTION, ACTION_EDIT_ACCOUNT);
+    editList.add(editAccountList);
+    //B.4
     LinkContainer editBoardList = new LinkContainer();
     editBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
     editBoardList.addParameter(ACTION,ACTION_EDIT_BOARD);
