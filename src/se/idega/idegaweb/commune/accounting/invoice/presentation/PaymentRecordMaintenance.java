@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/10 21:45:58 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/12 09:28:54 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -490,68 +490,35 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final PdfPTable summaryTable
 				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
 		summaryTable.getDefaultCell ().setBorder (0);
-
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-		final SchoolClassMemberHome placementHome
-				= schoolBusiness.getSchoolClassMemberHome ();
-		final InvoiceRecordHome home
-				= getInvoiceBusiness (context).getInvoiceRecordHome ();
-
-		// initialize conters
-		int placementCount = 0;
-		final Set individuals = new HashSet ();
-		long totalAmountVatExcluded = 0;
-		long totalAmountVat = 0;
-		
-		// count values for summary
-		for (int i = 0; i < records.length; i++) {
-			final PaymentRecord paymentRecord = records [i];
-			placementCount += paymentRecord.getPlacements ();
-			totalAmountVatExcluded += roundAmount (paymentRecord.getTotalAmount () - paymentRecord.getTotalAmountVAT ());
-			totalAmountVat += roundAmount (paymentRecord.getTotalAmountVAT ());
-			final Collection invoiceRecords
-					= home.findByPaymentRecord (paymentRecord);
-			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
-				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
-				try {
-					final Integer placementId = new Integer
-							(invoiceRecord.getSchoolClassMemberId ());
-					final SchoolClassMember placement
-							= placementHome.findByPrimaryKey (placementId);
-					final User user = placement.getStudent ();
-					individuals.add (user.getPrimaryKey ());
-				} catch (Exception e) {
-					e.printStackTrace ();
-				}
-			}
-		}
-
+		final PaymentSummary summary = new PaymentSummary (context, records);
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_PLACEMENTS_KEY,
 												 TOTAL_AMOUNT_PLACEMENTS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, integerFormatter.format (placementCount));
+		addPhrase (summaryTable, integerFormatter.format (summary.placementCount));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_INDIVIDUALS_KEY,
 												 TOTAL_AMOUNT_INDIVIDUALS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, integerFormatter.format (individuals.size ()));
+		addPhrase (summaryTable, integerFormatter.format
+							 (summary.individuals.size ()));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 												 TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, getFormattedAmount (totalAmountVatExcluded));
+		addPhrase (summaryTable, getFormattedAmount
+							 (summary.totalAmountVatExcluded));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_VAT_KEY, TOTAL_AMOUNT_VAT_DEFAULT)
 							 + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, getFormattedAmount (totalAmountVat));
+		addPhrase (summaryTable, getFormattedAmount (summary.totalAmountVat));
 		addPhrase (summaryTable, "");
 		return summaryTable;
 	}
@@ -868,8 +835,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									 columnCount, 2);
 				table.add (getPaymentRecordListTable (context, records), 1, row++);
 				table.mergeCells (1, row, columnCount, row);
-				table.add (getPaymentSummaryTable (context, records, business),
-									 1, row++);
+				table.add (getPaymentSummaryTable (context, records), 1, row++);
 				if (null != providerAuthorizationPage) {
 					buttonPanel.addLocalizedButton
 							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
@@ -1032,46 +998,61 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, dateChanged);
 		addSmallText (table, col++, row, changedBy);
 	}
-	
-	private Table getPaymentSummaryTable
-		(final IWContext context, final PaymentRecord [] records,
-		 final InvoiceBusiness business)
-		throws RemoteException, FinderException {
-		// get home objects
-		final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-		final SchoolClassMemberHome placementHome
-				= schoolBusiness.getSchoolClassMemberHome ();
-		final InvoiceRecordHome home = business.getInvoiceRecordHome ();
-		
-		// initialize conters
+
+	private class PaymentSummary {
 		int placementCount = 0;
-		final Set individuals = new HashSet ();
+		Set individuals = new HashSet ();
 		long totalAmountVatExcluded = 0;
 		long totalAmountVat = 0;
-		
-		// count values for summary
-		for (int i = 0; i < records.length; i++) {
-			final PaymentRecord paymentRecord = records [i];
-			placementCount += paymentRecord.getPlacements ();
-			totalAmountVatExcluded += roundAmount	(paymentRecord.getTotalAmount () - paymentRecord.getTotalAmountVAT ());
-			totalAmountVat += roundAmount (paymentRecord.getTotalAmountVAT ());
-			final Collection invoiceRecords
-					= home.findByPaymentRecord (paymentRecord);
-			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
-				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
-				try {
-					final Integer placementId = new Integer
-							(invoiceRecord.getSchoolClassMemberId ());
-					final SchoolClassMember placement
-							= placementHome.findByPrimaryKey (placementId);
-					final User user = placement.getStudent ();
-					individuals.add (user.getPrimaryKey ());
-				} catch (Exception e) {
-					e.printStackTrace ();
+
+		PaymentSummary (final IWContext context, final PaymentRecord [] records)
+			throws RemoteException, FinderException {
+			// get home objects
+			final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+			final SchoolClassMemberHome placementHome
+					= schoolBusiness.getSchoolClassMemberHome ();
+			final InvoiceRecordHome home
+					= getInvoiceBusiness (context).getInvoiceRecordHome ();
+
+			for (int i = 0; i < records.length; i++) {
+				final PaymentRecord paymentRecord = records [i];
+				placementCount += paymentRecord.getPlacements ();
+				final String ruleSpecType = paymentRecord.getRuleSpecType ();
+				final long amountVat = roundAmount (paymentRecord.getTotalAmountVAT ());
+				final long amountIncl = roundAmount (paymentRecord.getTotalAmount ());
+				final long amountExcl = amountIncl - amountVat;
+				if (null != ruleSpecType
+						&& ruleSpecType.equals("cacc_reg_spec_type.moms")) {
+					totalAmountVat += amountIncl;
+				} else {
+					totalAmountVatExcluded += amountExcl;
+					totalAmountVat += amountVat;
 				}
-			}
+				final Collection invoiceRecords
+						= home.findByPaymentRecord (paymentRecord);
+				for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
+					final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
+					try {
+						final Integer placementId = new Integer
+								(invoiceRecord.getSchoolClassMemberId ());
+						final SchoolClassMember placement
+								= placementHome.findByPrimaryKey (placementId);
+						final User user = placement.getStudent ();
+						individuals.add (user.getPrimaryKey ());
+					} catch (Exception e) {
+						e.printStackTrace ();
+					}
+				}
+			}		
 		}
-		
+	}
+	
+	private Table getPaymentSummaryTable (final IWContext context,
+																				final PaymentRecord [] records)
+		throws RemoteException, FinderException {
+		final PaymentSummary summary
+				= new PaymentSummary (context, records);
+
 		// render
 		final Table table = createTable (3);
 		table.setColumnWidth (3, "50%");
@@ -1080,25 +1061,25 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 										TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									integerFormatter.format (placementCount));
+									integerFormatter.format (summary.placementCount));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
 										TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									integerFormatter.format (individuals.size ()));
+									integerFormatter.format (summary.individuals.size ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 										TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									getFormattedAmount (totalAmountVatExcluded));
+									getFormattedAmount (summary.totalAmountVatExcluded));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_KEY,
 										TOTAL_AMOUNT_VAT_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++, 
-									getFormattedAmount (totalAmountVat));
+									getFormattedAmount (summary.totalAmountVat));
 		return table;
 	}
 	
@@ -1918,7 +1899,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private String getFormattedAmount (final float f) {
-		return integerFormatter.format (roundAmount (f));
+		return f == -1.0f ? "0" : integerFormatter.format (roundAmount (f));
 	}
 	
 	public ICPage getProviderAuthorizationPage () {
