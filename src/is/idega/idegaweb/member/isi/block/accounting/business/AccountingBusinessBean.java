@@ -55,8 +55,29 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			}
 		}
 		
-		Thread assRoundThread = new AssessmentRoundThread(name, club, division, group, null, user, useParent, includeChildren, getIWApplicationContext());
+		IWTimestamp now = IWTimestamp.RightNow();
+		AssessmentRound round = null;
+		try {
+			round = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
+			round.setName(name);
+			round.setClub(club);
+			round.setDivision(division);
+			round.setGroup(group);
+			round.setStartTime(now.getTimestamp());
+			round.setExecutedBy(user);
+			round.setUseParentTariff(useParent);
+			round.setIncludeChildren(includeChildren);
+			
+			round.store();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
 		
+		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext());		
 		assRoundThread.start();
 		
 		return true;
@@ -195,13 +216,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				div = gHome.findByPrimaryKey(new Integer(division));
 			}
 			catch (IDOLookupException e) {
-				e.printStackTrace();
 			}
 			catch (NumberFormatException e) {
-				e.printStackTrace();
 			}
 			catch (FinderException e) {
-				e.printStackTrace();
 			}
 		}
 		

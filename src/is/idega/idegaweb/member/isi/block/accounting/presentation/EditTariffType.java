@@ -31,9 +31,9 @@ import com.idega.presentation.ui.TextInput;
 public class EditTariffType extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "ett_submit";
 
-	protected static final String LABEL_TARIFF_TYPE = "ett_tariff_type";
-	protected static final String LABEL_NAME = "ett_name";
-	protected static final String LABEL_LOC_KEY = "ett_loc_key";
+	protected static final String LABEL_TARIFF_TYPE = "isi_acc_ett_tariff_type";
+	protected static final String LABEL_NAME = "isi_acc_ett_name";
+	protected static final String LABEL_LOC_KEY = "isi_acc_ett_loc_key";
 
 	/**
 	 *  
@@ -64,19 +64,30 @@ public class EditTariffType extends CashierSubWindowTemplate {
 
 		Form f = new Form();
 		Table t = new Table();
+		Table inputTable = new Table();
 		t.setCellpadding(5);
+		inputTable.setCellpadding(5);
 
 		int row = 1;
 		Text labelType = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
 		labelType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
 		labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelLocKey = new Text(iwrb.getLocalizedString(LABEL_LOC_KEY, "Localization key"));
-		labelLocKey.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
+		inputTable.add(labelType, 1, row);
+		inputTable.add(labelName, 2, row++);
+		
+		TextInput typeInput = new TextInput(LABEL_TARIFF_TYPE);
+		TextInput nameInput = new TextInput(LABEL_NAME);
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
+
+		inputTable.add(typeInput, 1, row);
+		inputTable.add(nameInput, 2, row);
+		inputTable.add(submit, 3, row);
+		
+		row = 1;
 		t.add(labelType, 2, row);
-		t.add(labelName, 3, row);
-		t.add(labelLocKey, 4, row++);
+		t.add(labelName, 3, row++);
 
 		Collection col = null;
 		try {
@@ -94,26 +105,15 @@ public class EditTariffType extends CashierSubWindowTemplate {
 				ClubTariffType type = (ClubTariffType) it.next();
 				t.add(type.getTariffType(), 2, row);
 				t.add(type.getName(), 3, row);
-				t.add(type.getLocalizedKey(), 4, row++);
+				row++;
 			}
 		}
-
-		row += 6;
-
-		TextInput typeInput = new TextInput(LABEL_TARIFF_TYPE);
-		TextInput nameInput = new TextInput(LABEL_NAME);
-		TextInput locKeyInput = new TextInput(LABEL_LOC_KEY);
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-
-		t.add(typeInput, 2, row);
-		t.add(nameInput, 3, row);
-		t.add(locKeyInput, 4, row);
-		t.add(submit, 5, row);
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-		
+
+		f.add(inputTable);
 		f.add(t);
 		add(f);
 	}

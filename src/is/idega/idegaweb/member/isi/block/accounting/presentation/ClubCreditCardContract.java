@@ -37,10 +37,10 @@ import com.idega.user.presentation.GroupChooser;
 public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
 
-	protected static final String LABEL_CLUB = "cccc_club";
-	protected static final String LABEL_DIVISION = "cccc_division";
-	protected static final String LABEL_CONTRACT_NUMBER = "cccc_cont_nr";
-	protected static final String LABEL_CARD_TYPE = "cccc_card_type";
+	protected static final String LABEL_CLUB = "isi_acc_cccc_club";
+	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
+	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
+	protected static final String LABEL_CARD_TYPE = "isi_acc_cccc_card_type";
 
 	/**
 	 *  
@@ -59,7 +59,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		}
 
 		try {
-			System.out.println("Inserting entry");
 			getAccountingBusiness(iwc).insertCreditCardContract(getClub(),div,number,type); 
 		}
 		catch (RemoteException e) { 
@@ -76,7 +75,9 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 		Form f = new Form();
 		Table t = new Table();
+		Table inputTable = new Table();
 		t.setCellpadding(5);
+		inputTable.setCellpadding(5);
 
 		int row = 1;
 		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
@@ -88,10 +89,10 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		Text labelCardType = new Text(iwrb.getLocalizedString(LABEL_CARD_TYPE, "Card type"));
 		labelCardType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-		t.add(labelClub, 2, row);
-		t.add(labelDivision, 3, row);
-		t.add(labelContractNumber, 4, row);
-		t.add(labelCardType, 5, row++);
+		inputTable.add(labelClub, 1, row);
+		inputTable.add(labelDivision, 2, row);
+		inputTable.add(labelContractNumber, 3, row);
+		inputTable.add(labelCardType, 4, row++);
 		
 		Collection col = null;
 		Collection types = null;
@@ -104,7 +105,28 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		GroupChooser divInput = new GroupChooser(LABEL_DIVISION);
+		TextInput numberInput = new TextInput(LABEL_CONTRACT_NUMBER);
+		DropdownMenu typeInput = new DropdownMenu(LABEL_CARD_TYPE);
+		SelectorUtility util = new SelectorUtility();
+		if (types != null && !types.isEmpty()) {
+			typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(typeInput, types, "getName");
+		}
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
+		inputTable.add(getClub().getName(), 1, row);
+		inputTable.add(divInput, 2, row);
+		inputTable.add(numberInput,3,row);
+		inputTable.add(typeInput, 4, row);
+		inputTable.add(submit, 5, row);
+		
+		row = 1;
+		t.add(labelClub, 2, row);
+		t.add(labelDivision, 3, row);
+		t.add(labelContractNumber, 4, row);
+		t.add(labelCardType, 5, row++);
+		
 		if (col != null && !col.isEmpty()) {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
@@ -118,26 +140,11 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 			}
 		}
 
-		row += 6;
-
-		GroupChooser divInput = new GroupChooser(LABEL_DIVISION);
-		TextInput numberInput = new TextInput(LABEL_CONTRACT_NUMBER);
-		DropdownMenu typeInput = new DropdownMenu(LABEL_CARD_TYPE);
-		SelectorUtility util = new SelectorUtility();
-		if (types != null && !types.isEmpty()) {
-			typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(typeInput, types, "getName");
-		}
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-
-		t.add(divInput, 3, row);
-		t.add(numberInput,4,row);
-		t.add(typeInput, 5, row);
-		t.add(submit, 6, row);
-
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-		
+
+		f.add(inputTable);
 		f.add(t);
 		add(f);
 	}

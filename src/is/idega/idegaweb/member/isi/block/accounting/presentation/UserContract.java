@@ -21,7 +21,7 @@ import com.idega.user.presentation.UserChooser;
 public class UserContract extends CashierSubWindowTemplate {
 	private final static String USER_CHOOSER_NAME = "uc_user_chooser_name";
 	
-	private final static String LABEL_SELECT_USER = "uc_select_user";
+	private final static String LABEL_SELECT_USER = "isi_acc_uc_select_user";
 	
 	/**
 	 * 

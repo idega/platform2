@@ -42,17 +42,17 @@ public class CashierWindow extends StyledIWAdminWindow {
 //	public static final String SELECTED_GROUP_PROVIDER_PRESENTATION_STATE_ID_KEY = "selected_group_mm_id_key";
 
 	public static final String ACTION = "cw_act";
-	private static final String ACTION_CONTRACT = "cw_act_contract";
-	private static final String ACTION_PAYMENT = "cw_act_payment";
-	private static final String ACTION_TARIFF = "cw_act_tariff";
-	private static final String ACTION_TARIFF_TYPE = "cw_act_tariff_type";
-	private static final String ACTION_MANUAL_ASSESSMENT = "cw_act_ass_man";
-	private static final String ACTION_AUTOMATIC_ASSESSMENT = "cw_act_ass_auto";
-	private static final String ACTION_CREDITCARD_COMPANY_CONTRACT = "cw_act_cc_contract";
-	private static final String ACTION_CANCEL = "cw_act_cc";
-	private static final String ACTION_SELECT_USER = "cw_act_sel_usr";
+	private static final String ACTION_CONTRACT = "isi_acc_cw_act_contract";
+	private static final String ACTION_PAYMENT = "isi_acc_cw_act_payment";
+	private static final String ACTION_TARIFF = "isi_acc_cw_act_tariff";
+	private static final String ACTION_TARIFF_TYPE = "isi_acc_cw_act_tariff_type";
+	private static final String ACTION_MANUAL_ASSESSMENT = "isi_acc_cw_act_ass_man";
+	private static final String ACTION_AUTOMATIC_ASSESSMENT = "isi_acc_cw_act_ass_auto";
+	private static final String ACTION_CREDITCARD_COMPANY_CONTRACT = "isi_acc_cw_act_cc_contract";
+	private static final String ACTION_CANCEL = "isi_acc_cw_act_cc";
+	private static final String ACTION_SELECT_USER = "isi_acc_cw_act_sel_usr";
 	private static final String ACTION_PAYMENT_HISTORY = "cw_act_pay_hist";
-	private static final String ACTION_MEMBER_CREDITCARD = "cw_act_memb_cc";
+	private static final String ACTION_MEMBER_CREDITCARD = "isi_acc_cw_act_memb_cc";
 
 	private String PARAMETER_PID = "cw_pid";
 	private String PARAMETER_STATUS = "cw_sta";
@@ -74,7 +74,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	public CashierWindow() {
 		setHeight(600);
-		setWidth(800);
+		setWidth(1024);
 		setResizable(true);
 		setScrollbar(true);
 	}
@@ -119,81 +119,81 @@ public class CashierWindow extends StyledIWAdminWindow {
 		menu.setCellpadding(3);
 		menu.setCellspacing(0);
 
-		Text clubOperations = formatText(_iwrb.getLocalizedString("cashierwindow.club_operations", "Club operations"), true);
+		Text clubOperations = formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.club_operations", "Club operations"), true);
 		Lists clubOpList = new Lists();
 
-		Text memberOperations = formatText(_iwrb.getLocalizedString("cashierwindow.member_operations", "Member operations"), true);
+		Text memberOperations = formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.member_operations", "Member operations"), true);
 		Lists memberOpList = new Lists();
 		
-		Text reports = formatText(_iwrb.getLocalizedString("cashierwindow.reports", "Reports"), true);
+		Text reports = formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.reports", "Reports"), true);
 		Lists reportsList = new Lists();
 		
 		LinkContainer editTariffType = new LinkContainer();
 		editTariffType.setStyleClass(styledLink);
-		editTariffType.add(formatText(_iwrb.getLocalizedString("cashierwindow.edit_tariff_type", "Edit club tariff type (A.12)")));
+		editTariffType.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff_type", "Edit club tariff type (A.12)")));
 		editTariffType.addParameter(ACTION, ACTION_TARIFF_TYPE);
 		editTariffType.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		clubOpList.add(editTariffType);
 		
 		LinkContainer editTariff = new LinkContainer();
 		editTariff.setStyleClass(styledLink);
-		editTariff.add(formatText(_iwrb.getLocalizedString("cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
+		editTariff.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
 		editTariff.addParameter(ACTION, ACTION_TARIFF);
 		editTariff.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		clubOpList.add(editTariff);
 
 		LinkContainer autoAss = new LinkContainer();
 		autoAss.setStyleClass(styledLink);
-		autoAss.add(formatText(_iwrb.getLocalizedString("cashierwindow.auto_assessment", "Automatic assessment (A.15)")));
+		autoAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.auto_assessment", "Automatic assessment (A.15)")));
 		autoAss.addParameter(ACTION, ACTION_AUTOMATIC_ASSESSMENT);
 		autoAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		clubOpList.add(autoAss);
 
 		LinkContainer ccContract = new LinkContainer();
 		ccContract.setStyleClass(styledLink);
-		ccContract.add(formatText(_iwrb.getLocalizedString("cashierwindow.cc_contract", "Edit creditcard company contract (A.24)")));
+		ccContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.cc_contract", "Edit creditcard company contract (A.24)")));
 		ccContract.addParameter(ACTION, ACTION_CREDITCARD_COMPANY_CONTRACT);
 		ccContract.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		clubOpList.add(ccContract);
 
 		LinkContainer selectUser = new LinkContainer();
 		selectUser.setStyleClass(styledLink);
-		selectUser.add(formatText(_iwrb.getLocalizedString("cashierwindow.select_user", "Select user to work with")));
+		selectUser.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.select_user", "Select user to work with")));
 		selectUser.addParameter(ACTION, ACTION_SELECT_USER);
 		selectUser.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(selectUser);
 
 		LinkContainer manAss = new LinkContainer();
 		manAss.setStyleClass(styledLink);
-		manAss.add(formatText(_iwrb.getLocalizedString("cashierwindow.manual_assessment", "Manual assessment (A.14)")));
+		manAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.manual_assessment", "Manual assessment (A.14)")));
 		manAss.addParameter(ACTION, ACTION_MANUAL_ASSESSMENT);
 		manAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(manAss);
 		
 		LinkContainer insertContract = new LinkContainer();
 		insertContract.setStyleClass(styledLink);
-		insertContract.add(formatText(_iwrb.getLocalizedString("cashierwindow.insert_contract", "Insert/edit member contract (new/A.10)")));
+		insertContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.insert_contract", "Insert/edit member contract (new/A.10)")));
 		insertContract.addParameter(ACTION, ACTION_CONTRACT);
 		insertContract.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(insertContract);
 
 		LinkContainer registerPayment = new LinkContainer();
 		registerPayment.setStyleClass(styledLink);
-		registerPayment.add(formatText(_iwrb.getLocalizedString("cashierwindow.payment", "Register payment (A.11)")));
+		registerPayment.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.payment", "Register payment (A.11)")));
 		registerPayment.addParameter(ACTION, ACTION_PAYMENT);
 		registerPayment.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(registerPayment);
 
 		LinkContainer paymentHistory = new LinkContainer();
 		paymentHistory.setStyleClass(styledLink);
-		paymentHistory.add(formatText(_iwrb.getLocalizedString("cashierwindow.paymentHistory", "Payment history (3.11)")));
+		paymentHistory.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.paymentHistory", "Payment history (3.11)")));
 		paymentHistory.addParameter(ACTION, ACTION_PAYMENT_HISTORY);
 		paymentHistory.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(paymentHistory);
 
 		LinkContainer memberCreditCard = new LinkContainer();
 		memberCreditCard.setStyleClass(styledLink);
-		memberCreditCard.add(formatText(_iwrb.getLocalizedString("cashierwindow.memberCreditCard", "Member credit card info (A.10)")));
+		memberCreditCard.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.memberCreditCard", "Member credit card info (A.10)")));
 		memberCreditCard.addParameter(ACTION, ACTION_MEMBER_CREDITCARD);
 		memberCreditCard.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(memberCreditCard);
@@ -220,13 +220,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		setTitle("Cashier window");
-		addTitle(_iwrb.getLocalizedString("cashier_window", "Cashier Window"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		addTitle(_iwrb.getLocalizedString("isi_acc_cashier_window", "Cashier Window"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 
 		String action = iwc.getParameter(ACTION);
-		System.out.println("ACTION = " + action);
+//		System.out.println("ACTION = " + action);
 		
 		String groupId = iwc.getParameter(PARAMETER_GROUP_ID);
-		System.out.println("GROUPID = " + groupId);
+//		System.out.println("GROUPID = " + groupId);
 
 		Table table = new Table(2, 1);
 		table.setWidthAndHeightToHundredPercent();
@@ -287,7 +287,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 
 			if (subWindow != null) {
-				System.out.println("_group = " + _group);
+//				System.out.println("_group = " + _group);
 				subWindow.setClub(_group);
 				table.add(subWindow, 2, 1);
 			}

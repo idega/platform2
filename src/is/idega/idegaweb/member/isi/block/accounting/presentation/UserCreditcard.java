@@ -21,7 +21,7 @@ import com.idega.user.presentation.UserChooser;
 public class UserCreditcard extends CashierSubWindowTemplate {
 	private final static String USER_CHOOSER_NAME = "ucc_user_chooser_name";
 	
-	private final static String LABEL_SELECT_USER = "ucc_select_user";
+	private final static String LABEL_SELECT_USER = "isi_acc_ucc_select_user";
 	
 	/**
 	 * 

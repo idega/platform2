@@ -32,16 +32,19 @@ import com.idega.user.presentation.GroupChooser;
  */
 public class AutomaticAssessment extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "aa_submit";
-
-	protected static final String LABEL_NAME = "aa_name";
-	protected static final String LABEL_CLUB = "aa_club";
-	protected static final String LABEL_DIVISION = "aa_div";
-	protected static final String LABEL_GROUP = "aa_group";
-	protected static final String LABEL_START = "aa_start";
-	protected static final String LABEL_END = "aa_end";
-	protected static final String LABEL_USER = "aa_user";
-	protected static final String LABEL_USE_PARENT = "aa_use_parent";
-	protected static final String LABEL_INCLUDE_CHILDREN = "aa_incl_children";
+	protected static final String ACTION_DELETE = "aa_delete";
+	
+	protected static final String LABEL_NAME = "isi_acc_aa_name";
+	protected static final String LABEL_CLUB = "isi_acc_aa_club";
+	protected static final String LABEL_DIVISION = "isi_acc_aa_div";
+	protected static final String LABEL_GROUP = "isi_acc_aa_group";
+	protected static final String LABEL_START = "isi_acc_aa_start";
+	protected static final String LABEL_END = "isi_acc_aa_end";
+	protected static final String LABEL_USER = "isi_acc_aa_user";
+	protected static final String LABEL_USE_PARENT = "isi_acc_aa_use_parent";
+	protected static final String LABEL_INCLUDE_CHILDREN = "isi_acc_aa_incl_children";
+	
+	protected static final String LABEL_DELETE = "isi_acc_aa_delete";
 	
 	public AutomaticAssessment() {
 		super();
@@ -71,9 +74,16 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		
 	}
 	
+	private void deleteAssessment(IWContext iwc) {
+		
+	}
+	
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
 			executeAssessment(iwc);
+		}
+		else if (iwc.isParameterSet(ACTION_DELETE)) {
+			deleteAssessment(iwc);
 		}
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -142,10 +152,15 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 
+		CheckBox show = new CheckBox();
+		show.setDisabled(true);
+		
 		if (col != null && !col.isEmpty()) {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				AssessmentRound round = (AssessmentRound) it.next();
+				CheckBox delete = new CheckBox(LABEL_DELETE, round.getPrimaryKey().toString());
+				t.add(delete, 1, row);
 				t.add(round.getName(), 2, row);
 				t.add(round.getClub().getName(), 3, row);
 				if (round.getDivision() != null)
@@ -156,8 +171,20 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 				if (round.getEndTime() != null)
 					t.add(round.getEndTime().toString(), 7, row);
 				t.add(round.getExecutedBy().getName(), 8, row);
+				CheckBox parent = (CheckBox)show.clone();
+				if (round.getUseParentTariff())
+					parent.setChecked(true);
+				t.add(parent, 9, row);
+				CheckBox children = (CheckBox)show.clone();
+				if (round.getIncludeChildren())
+					children.setChecked(true);
+				t.add(children, 10, row);
 				row++;
 			}
+			
+			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
+			t.add(delete, 10, row);
+			
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);
