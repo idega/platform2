@@ -359,9 +359,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 												category.getCategory(), //The ID that selects barnomsorg in the regulation
 												PaymentFlowConstant.OUT, //The payment flow is out
 												currentDate, //Current date to select the correct date range
-//												RuleTypeConstant.MANUAL, //The conditiontype
-												null, //The conditiontype
-												null,
+												RuleTypeConstant.DERIVED, //The conditiontype
+												RegSpecConstant.RESOURCE,
 												resourceConditions //The conditions that need to fulfilled
 											);
 
