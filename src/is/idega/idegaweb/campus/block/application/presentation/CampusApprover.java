@@ -628,7 +628,7 @@ public class CampusApprover extends Block{
 
     try{
       int iIncome = 0;
-      if(!"".equals(sIncome))
+      if(sIncome !=null && sIncome.length() >0)
        iIncome = Integer.parseInt(sIncome);
       int iBM = sBM!=null ?Integer.parseInt(sBM):0;
       int iEM = sEM!=null ?Integer.parseInt(sEM):0;
