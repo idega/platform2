@@ -115,21 +115,26 @@ public class CitizenChildren extends CommuneBlock {
 			ArrayList outOfRangeChilds = new ArrayList();
 			while (iter.hasNext()) {
 				child = (User) iter.next();
-				Age age = new Age(child.getDateOfBirth());
-				if(age.getYears() <= toAge && age.getYears() >=fromAge){
-					//rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
-					T.add(getChildLink(user), 1, row);
-					row++;
-				}
-				else{
+				if (child.getDateOfBirth() != null) {
+					Age age = new Age(child.getDateOfBirth());
+					if(age.getYears() <= toAge && age.getYears() >=fromAge){
+						//rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
+						T.add(getChildLink(user), 1, row);
+						row++;
+					}
+					else{
+						outOfRangeChilds.add(child);
+					}
+				}else {
 					outOfRangeChilds.add(child);
 				}
 			}
 			if(showOutOfRangeChildren && !outOfRangeChilds.isEmpty()){
 				T.add(getHeader(iwrb.getLocalizedString("citizen_children.out_of_range_childs","Children out of range:")),1,row);
 				Iterator iter2 = outOfRangeChilds.iterator();
-				while(iter.hasNext()){
-					child = (User) iter.next();
+				++row;
+				while(iter2.hasNext()){
+					child = (User) iter2.next();
 					T.add(child.getName(),1,row++);
 				}
 			}
