@@ -59,10 +59,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     protected static final String COLOR_LIGHTEST = "#EFEFEF";
 
-//    private static final String ACTION_CONTRACT = "isi_acc_cw_act_contract";
-
-//    private static final String ACTION_PAYMENT = "isi_acc_cw_act_payment";
-
     private static final String ACTION_TARIFF = "isi_acc_cw_act_tariff";
 
     private static final String ACTION_TARIFF_TYPE = "isi_acc_cw_act_tariff_type";
@@ -77,11 +73,7 @@ public class CashierWindow extends StyledIWAdminWindow {
     
     private static final String ACTION_CANCEL = "isi_acc_cw_act_cc";
 
-//    private static final String ACTION_SELECT_USER = "isi_acc_cw_act_sel_usr";
-
     private static final String ACTION_PAYMENT_HISTORY = "cw_act_pay_hist";
-
-//    private static final String ACTION_MEMBER_CREDITCARD = "isi_acc_cw_act_memb_cc";
 
     private static final String ACTION_SELECT_PAYMENTS = "isi_acc_cw_act_sel_pay";
 
@@ -154,7 +146,7 @@ public class CashierWindow extends StyledIWAdminWindow {
     }
 
     /*
-     * A initalization method. Gets all the parameters that are maintained and sets the 
+     * A initialization method. Gets all the parameters that are maintained and sets the 
      */
     private void init(IWContext iwc) {
         //Checks the group parameter and sets the eGroup variable accordingly.
@@ -203,13 +195,14 @@ public class CashierWindow extends StyledIWAdminWindow {
         }
 
         //Checks the user parameter and sets the eUser variable accordingly.
-        /**
-         * @todo Change this. Use a session variable instead. Mini shopping basket....
-         */
+        // @TODO Change this. Use a session variable instead. Mini shopping basket....
         String sUserId = iwc.getParameter(PARAMETER_USER_ID);
         if (sUserId != null && !"".equals(sUserId)) {
             try {
                 eUser = getUserBusiness(iwc).getUser(new Integer(sUserId));
+                
+//                Cookie cookie = new Cookie();
+                
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             } catch (RemoteException e) {
@@ -456,7 +449,9 @@ public class CashierWindow extends StyledIWAdminWindow {
             }
         }
 
-        if (iwc.isSuperAdmin()) return true;
+        if (iwc.isSuperAdmin()) {
+            return true;
+        }
 
         
         if (!iwc.isLoggedOn()) {
@@ -488,8 +483,7 @@ public class CashierWindow extends StyledIWAdminWindow {
             return false;
         }
 
-        //@TODO fix ef einhver er gjaldkeri � tveimur deildum en ekki
-        // f�lagi....
+        //@TODO what happens when someone is a cashier in two divisions, but not for the whole club -> will only see the first division
         boolean first = true;
         Iterator it = cashierGroupsInClubForUser.iterator();
         while (it.hasNext()) {
@@ -627,9 +621,6 @@ public class CashierWindow extends StyledIWAdminWindow {
                 subWindow = new UserPaymentHistory();
                 helpTextKey = ACTION_PAYMENT_HISTORY + "_help";
             } else if (action.equals(ACTION_SELECT_PAYMENTS)) {
-                /**
-                 * @todo FIX THIS!!!!!!
-                 */
                 actionTitle.append(iwrb.getLocalizedString(ACTION_SELECT_PAYMENTS,
                         "Select payments"));
                 subWindow = new SelectPayments();

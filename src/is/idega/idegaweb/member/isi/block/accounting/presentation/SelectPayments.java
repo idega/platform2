@@ -29,10 +29,9 @@ import com.idega.user.presentation.UserChooserBrowser;
  * @author palli
  */
 public class SelectPayments extends CashierSubWindowTemplate {
-	protected static final String ACTION_SUBMIT = "su_submit";
-	protected static final String PARAMETER_OLD_USER_ID = "cashier_old_user_id";
+	protected static final String ACTION_SUBMIT = "sp_submit";
 	
-	private final static String LABEL_SELECTED_USER = "isi_acc_se_selected_user";
+	private final static String LABEL_SELECTED_USER = "isi_acc_sp_selected_user";
 	
 	/**
 	 * 
@@ -48,9 +47,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 
 		//Has a new user been selected?
 		String selectedUser = iwc.getParameter(CashierWindow.PARAMETER_USER_ID);
-		String oldSelectedUser = iwc.getParameter(PARAMETER_OLD_USER_ID);
-		System.out.println("selectedUser = " + selectedUser);
-		System.out.println("old selectedUser = " + oldSelectedUser);
 			
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
@@ -73,15 +69,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		f.add(t);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		if (selectedUser == null || "".equals(selectedUser)) {
-		    if (oldSelectedUser != null && !"".equals(oldSelectedUser)) {
-		        f.add(new HiddenInput(CashierWindow.PARAMETER_USER_ID, oldSelectedUser));
-		    }
-		}
-		else {
-		    f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
-		    f.add(new HiddenInput(PARAMETER_OLD_USER_ID, selectedUser));
-		}
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
