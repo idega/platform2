@@ -206,6 +206,16 @@ public class TextFinder {
     }
   }
 
+  public static List listOfTextForObjectInstanceId(int instanceid){
+    try {
+      ICObjectInstance obj = new ICObjectInstance(instanceid );
+      return listOfTextForObjectInstanceId(obj);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
   public static List listOfTextForObjectInstanceId( ICObjectInstance obj){
     try {
       List L = EntityFinder.findRelated(obj,new TxText());

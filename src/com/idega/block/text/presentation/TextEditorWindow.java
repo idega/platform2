@@ -21,6 +21,15 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
+ */
+
 public class TextEditorWindow extends IWAdminWindow{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
@@ -97,7 +106,7 @@ public class TextEditorWindow extends IWAdminWindow{
     // Delete Request :
     else if(modinfo.getParameter(prmDelete)!=null){
       sTextId = modinfo.getParameter(prmDelete);
-      add(""+iObjInsId);
+      //add(""+iObjInsId);
       confirmDelete(sTextId,iObjInsId);
       doView = false;
     }

@@ -25,9 +25,10 @@ import com.idega.util.text.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.block.IWBlock;
 
 
-public class TextReader extends JModuleObject{
+public class TextReader extends JModuleObject implements IWBlock{
 
 private boolean isAdmin=false;
 private TextModule text;
@@ -243,6 +244,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setWidth("100%");
     return T;
 
+  }
+
+  public boolean deleteBlock(int instanceid){
+    return TextBusiness.deleteBlock(instanceid);
   }
 
   public void setAdmin(boolean isAdmin){

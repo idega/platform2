@@ -6,6 +6,7 @@ import com.idega.block.text.data.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
 import java.util.List;
+import java.util.Iterator;
 
 public class TextBusiness{
 
@@ -26,9 +27,25 @@ public class TextBusiness{
     return TX;
   }
 
+  public static boolean deleteBlock(int instanceid){
+    List L = TextFinder.listOfTextForObjectInstanceId(instanceid);
+    if(L!= null){
+      Iterator I = L.iterator();
+      while(I.hasNext()){
+        TxText T = (TxText) I.next();
+        deleteText(T.getID(),instanceid );
+      }
+      return true;
+    }
+    else
+      return false;
+  }
 
+  public static void deleteText(int iTextId){
+    deleteText(iTextId ,TextFinder.getObjectInstanceIdFromTextId(iTextId));
+  }
 
-  public static void deleteText(int iTextId) {
+  public static void deleteText(int iTextId , int instanceid) {
     int iObjectInstanceId = TextFinder.getObjectInstanceIdFromTextId(iTextId);
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
