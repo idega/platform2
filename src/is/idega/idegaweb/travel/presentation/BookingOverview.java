@@ -753,16 +753,20 @@ public class BookingOverview extends TravelManager {
               Temail.setFontColor(super.BLACK);
               Tbooked.setFontColor(super.BLACK);
 
-              bUser = new User(bookings[i].getUserId());
-              bReseller = ResellerManager.getReseller(bUser);
               TbookedBy = (Text) super.theSmallBoldText.clone();
                 TbookedBy.setFontColor(super.BLACK);
-                TbookedBy.setText(bUser.getName());
-                if (bReseller != null) {
-                  if (this.reseller != bReseller) {
-                    TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+              if (bookings[i].getUserId() != -1) {
+                bUser = new User(bookings[i].getUserId());
+                bReseller = ResellerManager.getReseller(bUser);
+                  TbookedBy.setText(bUser.getName());
+                  if (bReseller != null) {
+                    if (this.reseller != bReseller) {
+                      TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+                    }
                   }
-                }
+              }else {
+                  TbookedBy.setText(iwrb.getLocalizedString("travel.online","Online"));
+              }
 
               link = VoucherWindow.getVoucherLink(bookings[i]);
                 link.setText(Tname);
