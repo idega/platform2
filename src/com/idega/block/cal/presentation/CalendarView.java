@@ -557,7 +557,7 @@ public class CalendarView extends Block{
 				userID = (Integer) user.getPrimaryKey();
 			}
 			else {
-				userID = new Integer(-1);
+				userID = new Integer(-2);
 			}
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
