@@ -127,7 +127,6 @@ public abstract class BillingThread extends Thread{
 		//Get the payment header
 		PaymentHeader paymentHeader = getPaymentHeader(school);		
 		PaymentRecord paymentRecord;
-		System.out.println("About to create payment record");
 
 		//Update or create the payment record
 		String paymentText = postingDetail.getTerm();
@@ -187,7 +186,7 @@ public abstract class BillingThread extends Thread{
 				//Get the payment header
 				PaymentHeader paymentHeader = getPaymentHeader(school);		
 				PaymentRecord paymentRecord;
-				System.out.println("About to create VAT payment record");
+//				System.out.println("About to create VAT payment record");
 				Provider provider = new Provider(school);
 				String ruleSpecType = RegSpecConstant.MOMS;
 				RegulationSpecType regSpecType;
@@ -413,8 +412,7 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void createNewErrorMessage(String related, String desc){
 		try {
-			System.out.println("About to enter new error message "+related);
-			System.out.println("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+related+"  "+desc+"  "+errorOrder);
+//			System.out.println("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+related+"  "+desc+"  "+errorOrder);
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
 			error.setBatchRunID(((Integer)batchRunLogger.getPrimaryKey()).intValue());
 			if (related.length () > 990) related = related.substring (0, 990);
@@ -460,15 +458,13 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void createBatchRunLogger(SchoolCategory category) throws IDOLookupException, CreateException{
 		//First delete all old logging for this category
-		System.out.println("Entering createBatchRunLogger");
 		try {
 			batchRunLogger = ((BatchRunHome) IDOLookup.getHome(BatchRun.class)).findBySchoolCategory(category);
 			Iterator errorIter = ((BatchRunErrorHome) IDOLookup.getHome(BatchRunError.class)).findByBatchRun(batchRunLogger).iterator();
-			System.out.println("About to remove BatchRunErrors");
 			while (errorIter.hasNext()) {
 				BatchRunError error = (BatchRunError) errorIter.next();
 				try {
-					System.out.println("Removing BatchRunLogError");
+//					System.out.println("Removing BatchRunLogError");
 					error.remove();
 				} catch (EJBException e) {
 					createNewErrorMessage("batchrun","batchrun.cannotRemoveOldBatchrunDataEJBException");
@@ -482,12 +478,8 @@ public abstract class BillingThread extends Thread{
 			}
 		} catch (FinderException e1) {
 			//Excepiton OK We just create it instead
-			System.out.println("No logger found creating it instead");
 			batchRunLogger = (BatchRun) IDOLookup.create(BatchRun.class);
-			System.out.println("logger created");
 			batchRunLogger.setSchoolCategoryID(category);
-			
-			System.out.println("logger stored");
 		}
 		batchRunLogger.setPeriod(startPeriod.getDate());
 		batchRunLogger.setStart(IWTimestamp.getTimestampRightNow());

@@ -334,7 +334,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
-					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
+//					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
 		
 					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
@@ -377,7 +377,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						);
 
 					ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
-					log.info("Found "+regulationArray.size()+" regulations that apply.");
+//					log.info("Found "+regulationArray.size()+" regulations that apply.");
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
@@ -463,19 +463,16 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append("Total sum is:"+totalSum);
 					if(totalSum<0){
 						if(subventionToReduce!=null){
-							errorRelated.append("Sum too low, changing subvention from "+subventionToReduce.getAmount()+"...to "+(subventionToReduce.getAmount()-totalSum),1);
+							errorRelated.append("Sum too low, changing subvention from "+subventionToReduce.getAmount()+"...to "+(subventionToReduce.getAmount()-totalSum));
 							createNewErrorMessage(errorRelated,"invoice.Info_SubventionChangedToMakeSumZero");
 							subventionToReduce.setAmount(subventionToReduce.getAmount()-totalSum);
 							subventionToReduce.store();
 						} else {
-							errorRelated.append("Sum too low, but no subvention found. Creating error message",1);
+							errorRelated.append("Sum too low, but no subvention found.");
 							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
 						}
 					}
-					
-					log.info("calling regularInvoiceForChild");
 					regularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
-					log.info("done calling regularInvoiceForChild");
 					
 				}catch (NoSchoolClassMemberException e1) {
 					e1.printStackTrace();
@@ -847,7 +844,6 @@ public class InvoiceChildcareThread extends BillingThread{
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
 				try {
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
-					log.info("Regular Payment" + errorRelated);
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				} catch (IDOLookupException e) {
 					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
@@ -1010,7 +1006,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceText2(text2);
 		errorRelated.append("Created invoice for check "
 //				+header+","+text2+" "+postingDetail.getTerm()
-				+" Invoiceheader "+invoiceHeader.getPrimaryKey(),1);
+				+" Invoiceheader "+invoiceHeader.getPrimaryKey());
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
@@ -1063,7 +1059,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
-//		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);
+//		errorRelated.append("Order ID = "+postingDetail.getOrderID());
 		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		try {
 		    RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());

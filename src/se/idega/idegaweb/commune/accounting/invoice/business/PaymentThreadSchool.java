@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/13 13:19:11 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/13 13:40:45 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.103 $
+ * @version $Revision: 1.104 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -118,7 +118,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		School school;
 
 		try {
-			timerStart();
 			//Set the category parameter to ElementarySchool
 			categoryPosting = getCategoryPosting();
 			ProviderTypeHome providerTypeHome = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
@@ -134,7 +133,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Go through all elementary schools
 			for (Iterator i = getSchools().iterator(); i.hasNext();) {
 //			for (int i = 0; i < 1; i++) {
-				dispTime("Enter main loop");
 				try {
 					school = (School) i.next();
 //					school = getSchoolHome().findByPrimaryKey(new Integer(8));
@@ -250,8 +248,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						errorRelated = new ErrorLogger(errorRelated.toString().substring(1, 900));
 					createNewErrorMessage(errorRelated, "invoice.NullpointerException");
 				}
-				dispTime("Getting regulations for resource");
-				timerStart();
 			}
 		}
 		catch (RemoteException e) {
@@ -329,12 +325,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
-			log.info("About to create payment record");
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 			createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(), school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-			log.info("About to create invoice record");
 			createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
-			log.info("Done creating invoice record");
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {
@@ -523,8 +516,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 //				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
-				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType(),1);
-				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
+				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType());
+				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
 				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(
 						(getRegulationSpecTypeHome().findByRegulationSpecType(
 								postingDetail.getRuleSpecType())).getLocalizationKey())){
@@ -546,7 +539,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
-					errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName(),1);
+					errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
 					e1.printStackTrace();
@@ -589,7 +582,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName(),1);
+				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
 			catch (BruttoIncomeException e) {
@@ -650,7 +643,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
-				log.info("Looking at reg Payment " + regularPaymentEntry.getPrimaryKey());
 				errorRelated = new ErrorLogger("RegularPaymentEntry ID " + regularPaymentEntry.getPrimaryKey());
 				errorRelated.append("Placing " + regularPaymentEntry.getPlacing());
 				errorRelated.append("Amount " + regularPaymentEntry.getAmount());
@@ -660,7 +652,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
 				try {
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
-					log.info("Regular Payment" + errorRelated);
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				}
 				catch (IDOLookupException e) {
@@ -713,7 +704,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 		return conditions;
 	}
-
+/*
 	//Temporary code to meassure the performance of the batchrun
 	long start, stop, time;
 	private void timerStart() {
@@ -729,7 +720,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		log.info(s + "  total time:" + (tt / 1000f) + "  from last stop, time:" + (time / 1000f));
 		stop = t;
 	}
-
+*/
 	private ExportDataMapping getCategoryPosting() throws FinderException, IDOLookupException, EJBException {
 		return (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 	}
