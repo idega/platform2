@@ -14,29 +14,91 @@ import com.idega.data.*;
 
 public class AccountInfo extends GenericEntity {
 
+  /*
+  CREATE VIEW "FIN_ACCOUNT_INFO" (
+  "ACCOUNT_ID",
+  "CATEGORY_ID",
+  "USER_ID",
+  "NAME",
+  "LAST_UPDATED",
+  "BALANCE",
+  "ACCOUNT_TYPE",
+) AS
+
+select
+ac.fin_account_id account_id,
+ac.fin_category_id category_id,
+ac.ic_user_id user_id,
+ac.name,
+max(e.last_updated) last_updated,
+sum(e.total ) balance,
+ac.account_type
+from fin_account ass,fin_acc_entry e
+where e.fin_account_id = ass.fin_account_id
+group by
+ac.fin_account_id,
+ac.fin_category_id ,
+ac.ic_user_id,
+ac.name,
+as.account_type
+*/
+
   public AccountInfo() {
-    super();
+
   }
 
   public AccountInfo(int id)throws SQLException{
-    super(id);
+
   }
+
+  public static String getEntityTableName(){ return "FIN_ACCT_INFO";}
+  public static String getColumnAccountId(){return  "ACCOUNT_ID";}
+  public static String getColumnCategoryId(){return  "CAT_ID";}
+  public static String getColumnUserId(){ return "USER_ID";}
+  public static String getColumnCashierId(){ return "CASHIER_ID";}
+  public static String getColumnName(){ return "NAME";}
+  public static String getColumnLastUpdated(){ return "LAST_UPDATED";}
+  public static String getColumnBalance(){ return "BALANCE";}
+  public static String getColumnType(){return "ACCOUNT_TYPE";}
+
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getColumnAccountId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
+    addAttribute(getColumnAccountId(),"Accountid",true,true,Integer.class);
+    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class);
+    addAttribute(getColumnUserId(),"UserId",true,true,Integer.class);
+    addAttribute(getColumnCashierId(),"Cashier",true,true,Integer.class);
+    addAttribute(getColumnName(),"Name",true,true,String.class);
+    addAttribute(getColumnLastUpdated(),"LastUpdated",true,true,Timestamp.class);
+    addAttribute(getColumnBalance(),"Balance",true,true,Float.class);
+    addAttribute(getColumnType(),"Type",true,true,String.class);
   }
 
   public String getEntityName(){
     return getEntityTableName();
   }
 
-  public static String getEntityTableName(){ return "FIN_ACCT_INFO";}
-  public static String getColumnAccountId(){return  "FIN_ACCOUNT_ID";}
-
   public int getAccountId(){
     return getIntColumnValue( getColumnAccountId() );
   }
-  public void setAccountId(int iAccountId){
-    setColumn(getColumnAccountId(),iAccountId);
+  public int getCategoryId(){
+    return getIntColumnValue( getColumnCategoryId() );
+  }
+   public int getUserId(){
+    return getIntColumnValue( getColumnUserId() );
+  }
+   public int getCashierId(){
+    return getIntColumnValue( getColumnCashierId() );
+  }
+  public String getName(){
+    return getStringColumnValue(getColumnName());
+  }
+  public String getAccountType(){
+    return getStringColumnValue(getColumnType());
+  }
+  public Timestamp getLastUpdated(){
+    return (Timestamp) getColumnValue(getColumnLastUpdated());
+  }
+  public float getBalance(){
+    return getFloatColumnValue(getColumnBalance());
   }
 }

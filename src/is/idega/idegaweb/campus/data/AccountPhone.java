@@ -1,5 +1,5 @@
 /*
- * $Id: AccountPhone.java,v 1.2 2001/12/18 01:28:00 aron Exp $
+ * $Id: AccountPhone.java,v 1.3 2002/03/02 01:25:13 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,20 +13,26 @@ package is.idega.idegaweb.campus.data;
 
 import com.idega.data.GenericEntity;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
 
 /**
- *
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega.is
+ * @author 2000 - idega team - <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
+
 public class AccountPhone extends GenericEntity {
 
 /*
- create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ,VALID_FROM,VALID_TO)
+ create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ,VALID_FROM,VALID_TO,DELIVER_DATE,RETURN_DATE)
 as
-select ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ,con.valid_to
+select ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ,con.valid_to,
+cc.deliver_date,cc.return_date
 from cam_phone pho,cam_contract con, fin_account acc
 where pho.bu_apartment_id = con.bu_apartment_id
 and acc.ic_user_id = con.ic_user_id
@@ -38,6 +44,8 @@ order by pho.phone_number
   public static String getColumnNamePhoneNumber(){return  "CAM_PHONE_NUMBER";}
   public static String getColumnNameValidTo(){return "VALID_TO";}
   public static String getColumnNameValidFrom(){return "VALID_FROM";}
+  public static String getColumnDeliverDate(){return "DELIVER_DATE";}
+  public static String getColumnReturnDate(){return "RETURN_DATE";}
 
 
   public AccountPhone() {
@@ -50,6 +58,8 @@ order by pho.phone_number
     addAttribute(getColumnNamePhoneNumber(),"Phone number",true,true,java.lang.String.class);
     addAttribute(getColumnNameValidFrom(),"Valid from",true,true,java.sql.Date.class);
     addAttribute(getColumnNameValidTo(),"Valid to",true,true,java.sql.Date.class);
+    addAttribute(getColumnDeliverDate(),"Deliver time",true,true,java.sql.Timestamp.class);
+    addAttribute(getColumnReturnDate(),"Return time",true,true,java.sql.Timestamp.class);
 
   }
   public String getEntityName() {
@@ -70,6 +80,14 @@ order by pho.phone_number
 
   public Date getValidTo() {
     return((Date)getColumnValue(getColumnNameValidTo()));
+  }
+
+  public Timestamp getDeliverTime() {
+    return((Timestamp)getColumnValue(getColumnDeliverDate()));
+  }
+
+  public Timestamp getReturnTime() {
+    return((Timestamp)getColumnValue(getColumnReturnDate()));
   }
 
   public Integer getAccountId(){

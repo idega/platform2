@@ -8,6 +8,7 @@ import java.util.*;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
 import java.sql.SQLException;
 import com.idega.core.user.data.User;
 
@@ -173,6 +174,26 @@ public class FinanceFinder  {
     return null;
   }
 
+  public static List listOfAssessmentInfo(int iCategory,int iTariffGroupId){
+    try {
+      StringBuffer sql = new StringBuffer("select * from ");
+      sql.append(RoundInfo.getEntityTableName());
+      if(iCategory > 0 || iTariffGroupId >0 )
+      sql.append(" where ");
+      if(iCategory > 0)
+        sql.append(RoundInfo.getColumnCategoryId()).append(" = ").append(iCategory);
+      if(iTariffGroupId >0)
+        sql.append(" and ").append(RoundInfo.getColumnGroupId()).append(" = ").append(iTariffGroupId);
+
+      //System.err.println(sql.toString());
+      return EntityFinder.getInstance().findAll(RoundInfo.class,sql.toString());
+    }
+    catch (com.idega.data.IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
 
   public static Map mapOfTariffKeys(int iCategoryId){
     Hashtable h = new Hashtable();
@@ -327,7 +348,7 @@ public class FinanceFinder  {
       sql.append(type);
       sql.append("' ");
     }
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(new Account(),sql.toString());
     }
@@ -369,7 +390,7 @@ public class FinanceFinder  {
         sql.append("' ");
         isfirst = false;
       }
-      System.err.println(sql.toString());
+      //System.err.println(sql.toString());
       try {
         return EntityFinder.findAll(new User(),sql.toString());
       }
@@ -417,7 +438,7 @@ public class FinanceFinder  {
       sql.append(" order by ");
       sql.append(ti.getIDColumnName());
       sql.append(" desc ");
-      System.err.println(sql);
+      //System.err.println(sql);
       List L = EntityFinder.findAll(ti,sql.toString());
       if(L!= null)
         ti =  (TariffIndex) L.get(0);
@@ -513,6 +534,22 @@ public class FinanceFinder  {
     catch (SQLException ex) {
       return null;
     }
+  }
+
+  public static List listOfAssessmentAccountEntries(int iAccountId,int iAssessmentId){
+    try {
+      StringBuffer sql = new StringBuffer("select * from ");
+      sql.append(AccountEntry.getEntityTableName());
+      sql.append(" where ").append(AccountEntry.getAccountIdColumnName()).append(" = ").append(iAccountId);
+      sql.append(" and ").append(AccountEntry.getRoundIdColumnName()).append( " = " ).append(iAssessmentId);
+      return EntityFinder.getInstance().findAll(AccountEntry.class,sql.toString());
+
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
   }
 
 

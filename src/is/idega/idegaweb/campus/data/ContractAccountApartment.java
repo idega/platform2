@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartment.java,v 1.2 2001/12/05 21:57:25 aron Exp $
+ * $Id: ContractAccountApartment.java,v 1.3 2002/03/02 01:25:13 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.data;
 
 import com.idega.data.GenericEntity;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
 
@@ -34,6 +35,12 @@ public class ContractAccountApartment extends GenericEntity {
   "FIN_ACCOUNT_TYPE",
   "BALANCE",
   "ACCOUNT_NAME",
+  "VALID_FROM",
+  "VALID_TO",
+  "DELIVER_DATE",
+  "RETURN_DATE",
+  "STATUS",
+  "RENTED",
   "BU_APRT_TYPE_ID",
   "BU_APRT_CAT_ID",
   "BU_FLOOR_ID",
@@ -45,6 +52,7 @@ public class ContractAccountApartment extends GenericEntity {
 
  select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
 fa.fin_account_id,fa.account_type, fa.balance,fa.name,
+cc.valid_from,cc.valid_to,cc.deliver_date,cc.return_date,cc.status,cc.rented
 ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
 bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id
 from cam_contract cc,fin_account fa,bu_apartment ba,
@@ -56,11 +64,16 @@ and bf.bu_building_id = bb.bu_building_id
 and bb.bu_complex_id = bx.bu_complex_id
 and ba.bu_aprt_type_id = bt.bu_aprt_type_id
 and bt.bu_aprt_cat_id = bc.bu_aprt_cat_id
-and cc.status = 'S'
 ;
 */
   public static String getEntityTableName(){return "V_CONT_ACCT_APRT";}
   public static String getContractIdColumnName(){return "CAM_CONTRACT_ID";}
+  public static String getColumnValidFrom(){return "VALID_FROM";}
+  public static String getColumnValidTo(){return "VALID_TO";}
+  public static String getColumnReturnDate(){return "RETURN_DATE";}
+  public static String getColumnDeliverdate(){return "DELIVERDATE";}
+  public static String getColumnStatus(){return "STATUS";}
+  public static String getColumnRented(){return "RENTED";}
   public static String getUserIdColumnName(){return  "IC_USER_ID";}
   public static String getApartmentIdColumnName(){return "BU_APARTMENT_ID";}
   public static String getAccountIdColumnName(){return "FIN_ACCOUNT_ID";}
@@ -87,6 +100,14 @@ and cc.status = 'S'
     addAttribute(getAccountTypeColumnName(),"Account type",true,true,java.lang.String.class);
     addAttribute(getBalanceColumnName(),"Balance",true,true,java.lang.Integer.class);
     addAttribute(getAccountNameColumnName(),"Account name",true,true,java.lang.String.class);
+
+    addAttribute(getColumnValidFrom(),"Valid from",true,true,Date.class);
+    addAttribute(getColumnValidTo(),"Valid to",true,true,Date.class);
+    addAttribute(getColumnDeliverdate(),"Deliver date",true,true,Timestamp.class);
+    addAttribute(getColumnReturnDate(),"Return date",true,true,Timestamp.class);
+    addAttribute(getColumnStatus(),"status",true,true,String.class,1);
+    addAttribute(getColumnRented(),"rented",true,true,Boolean.class);
+
     addAttribute(getApartmentTypeIdColumnName(),"Apartmenttype id",true,true,java.lang.Integer.class);
     addAttribute(getApartmentCategoryIdColumnName(),"Apartmentcategory id",true,true,java.lang.Integer.class);
     addAttribute(getFloorIdColumnName(),"Floor id",true,true,java.lang.Integer.class);
@@ -133,6 +154,33 @@ and cc.status = 'S'
   public int getComplexId(){
     return getIntColumnValue(getComplexIdColumnName());
   }
+
+
+
+  public Date getValidFrom() {
+    return((Date)getColumnValue(getColumnValidFrom()));
+  }
+  public Date getValidTo() {
+    return((Date)getColumnValue(getColumnValidTo()));
+  }
+
+
+  public Timestamp getDeliverTime() {
+    return((Timestamp)getColumnValue(getColumnDeliverdate()));
+  }
+
+  public Timestamp getReturnTime() {
+    return((Timestamp)getColumnValue(getColumnReturnDate()));
+  }
+
+  public boolean  getIsRented(){
+    return getBooleanColumnValue( getColumnRented());
+  }
+
+  public String getStatus(){
+    return getStringColumnValue(getColumnStatus());
+  }
+
   public void insert()throws SQLException{
 
   }

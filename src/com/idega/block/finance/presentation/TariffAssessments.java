@@ -17,6 +17,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
@@ -39,12 +40,13 @@ import com.idega.util.idegaTimestamp;
 
 public class TariffAssessments extends Block {
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6;
+  protected static final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6,ACT7 = 7;
   public  String strAction = "tt_action";
   protected boolean isAdmin = false;
 
   private int iCashierId = 1;
   private static String prmGroup = "tass_grp";
+  private int iCategoryId = -1;
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
@@ -60,7 +62,7 @@ public class TariffAssessments extends Block {
 
   protected void control(IWContext iwc){
     if(isAdmin){
-      int iCategoryId = Finance.parseCategoryId(iwc);
+      iCategoryId = Finance.parseCategoryId(iwc);
       int iGroupId = -1;
       List groups = FinanceFinder.listOfTariffGroupsWithHandlers(iCategoryId);
       TariffGroup group = null;
@@ -99,6 +101,7 @@ public class TariffAssessments extends Block {
             case ACT4 : MO = getTableOfAssessmentAccounts( iwc);      break;
             case ACT5 : MO = doRollback(iwc,handler); break;
             case ACT6 : MO = getPreviewTable(handler,group); break;
+            case ACT7 : MO = getTableOfAssessmentAccountEntries(iwc); break;
             default: MO = getTableOfAssessments(iwc,iGroupId);           break;
           }
         }
@@ -166,6 +169,8 @@ public class TariffAssessments extends Block {
     PresentationObject MO = new Text("failed");
     if(iwc.getParameter("pay_date")!=null){
       String date = iwc.getParameter("pay_date");
+      String start = iwc.getParameter("start_date");
+      String end = iwc.getParameter("end_date");
       String roundName = iwc.getParameter("round_name");
       String accountKeyId = iwc.getParameter("account_key_id");
       //add(accountKeyId);
@@ -174,8 +179,10 @@ public class TariffAssessments extends Block {
           roundName = roundName == null?"":roundName;
           int iAccountKeyId = accountKeyId!=null?Integer.parseInt(accountKeyId):-1;
           idegaTimestamp paydate = new idegaTimestamp(date);
+          idegaTimestamp startdate = new idegaTimestamp(start);
+          idegaTimestamp enddate = new idegaTimestamp(end);
           //add(paydate.getISLDate());
-          boolean assessed = handler.executeAssessment(iCategoryId, iGroupId,roundName,1,iAccountKeyId,paydate);
+          boolean assessed = handler.executeAssessment(iCategoryId, iGroupId,roundName,1,iAccountKeyId,paydate,startdate,enddate);
           if(assessed)
             MO = new Text("done");
           else
@@ -230,7 +237,7 @@ public class TariffAssessments extends Block {
     Table T = new Table();
     int row = 2;
     //List L = Finder.listOfAssessments();
-    List L = FinanceFinder.listOfAssessments(iGroupId);
+    List L = FinanceFinder.listOfAssessmentInfo(iCategoryId,iGroupId);
     if(L!= null){
       int len = L.size();
 
@@ -242,27 +249,30 @@ public class TariffAssessments extends Block {
 
       int col = 1;
       row = 2;
-      AssessmentRound AR;
+      RoundInfo AR;
       java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+      float total = 0;
       for (int i = 0; i < len; i++) {
         col = 1;
-        AR = (AssessmentRound) L.get(i);
-        T.add(getRoundLink(AR.getName(),AR.getID(),iGroupId),col++,row);
+        AR = (RoundInfo) L.get(i);
+        T.add(getRoundLink(AR.getName(),AR.getRoundId(),iGroupId),col++,row);
         T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(iwc)),col++,row);
         T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
         Link R = new Link(iwb.getImage("rollback.gif"));
-        R.addParameter("rollback",AR.getID());
+        R.addParameter("rollback",AR.getRoundId());
         R.addParameter(strAction ,ACT5);
         R.addParameter(prmGroup,iGroupId);
         T.add(R,col++,row);
-
+        total+= AR.getTotals();
         row++;
       }
+      T.add(Edit.formatText(nf.format(total)),3,row);
       T.setWidth("100%");
       T.setCellpadding(2);
       T.setCellspacing(1);
       T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
       T.setRowColor(1,Edit.colorMiddle);
+      T.setColumnAlignment(3,"right");
       row++;
     }
     else
@@ -274,7 +284,7 @@ public class TariffAssessments extends Block {
     Table T = new Table();
     T.setWidth("100%");
     if(handler !=null && group !=null){
-      Collection L = handler.listOfAssessmentTariffPreviews(group.getID());
+      Collection L = handler.listOfAssessmentTariffPreviews(group.getID(),null,null);
       if(L!=null){
         int row = 1;
         float totals = 0;
@@ -307,33 +317,92 @@ public class TariffAssessments extends Block {
     Table T = new Table();
     String id = iwc.getParameter("ass_round_id");
     if(id != null){
-      List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
+      List L = Finder.listOfAccountsInfoInAssessmentRound(Integer.parseInt(id));
       //List L = null ;//CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
       if(L!= null){
         int len = L.size();
-        T.add(Edit.titleText(iwrb.getLocalizedString("account_name","Account name")),1,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("account_name","Account name")),1,1);
         //T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("apartment_name","Apartment")),2,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("totals","Balance")),3,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("last_updated","Last updated")),2,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("totals","Balance")),3,1);
 
         int col = 1;
         int row = 2;
-        Account A;
+        AccountInfo A;
         java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+        float total = 0;
         for (int i = 0; i < len; i++) {
           col = 1;
-          A = (Account) L.get(i);
-          T.add(Edit.formatText(A.getName()),col++,row);
+          A = (AccountInfo) L.get(i);
+          Link li = new Link(Edit.formatText(A.getName()));
+          li.addParameter("ass_round_id",id);
+          li.addParameter("ass_acc_id",A.getAccountId());
+          li.addParameter(strAction,ACT7);
+          T.add(li,col++,row);
 
           T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
+          total += A.getBalance();
           row++;
         }
+        T.add(Edit.formatText(nf.format(total)),3,row);
         T.setWidth("100%");
         T.setCellpadding(2);
         T.setCellspacing(1);
         T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
         T.setRowColor(1,Edit.colorMiddle);
+        T.setColumnAlignment(3,"right");
+        row++;
+      }
+      else
+        add("is empty");
+    }
+    return T;
+  }
+
+   private PresentationObject getTableOfAssessmentAccountEntries(IWContext iwc){
+    Table T = new Table();
+    String id = iwc.getParameter("ass_round_id");
+    String acc_id = iwc.getParameter("ass_acc_id");
+    if(id != null){
+      List L = FinanceFinder.listOfAssessmentAccountEntries(Integer.parseInt(acc_id),Integer.parseInt(id));
+
+      if(L!= null){
+        int len = L.size();
+        T.add(Edit.formatText(iwrb.getLocalizedString("entry_name","Entry name")),1,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("entry_info","Info name")),2,1);
+        //T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("payment_date","Payment day")),3,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("last_updated","Last updated")),4,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("totals","Balance")),5,1);
+
+
+        int col = 1;
+        int row = 2;
+        AccountEntry A;
+        float total = 0;
+        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+        for (int i = 0; i < len; i++) {
+          col = 1;
+
+          A = (AccountEntry) L.get(i);
+          T.add(Edit.formatText(A.getName()),col++,row);
+          if(A.getInfo()!=null)
+            T.add(Edit.formatText(A.getInfo()),col,row);
+          col++;
+          T.add(Edit.formatText(new idegaTimestamp(A.getPaymentDate()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(nf.format(A.getTotal())),col++,row);
+          total+= A.getTotal();
+          row++;
+        }
+        T.add(Edit.formatText(nf.format(total)),5,row);
+        T.setWidth("100%");
+        T.setCellpadding(2);
+        T.setCellspacing(1);
+        T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+        T.setRowColor(1,Edit.colorMiddle);
+        T.setColumnAlignment(5,"right");
         row++;
       }
       else
@@ -350,13 +419,27 @@ public class TariffAssessments extends Block {
     T.add(Edit.formatText(iwrb.getLocalizedString("number_of_accounts","Number of accounts")),1,row);
     T.add(String.valueOf(iAccountCount),2,row);
     row++;
-    T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
+
 
     DateInput di = new DateInput("pay_date",true);
     di.setStyleAttribute("type",Edit.styleAttribute);
     idegaTimestamp today = idegaTimestamp.RightNow();
     today.addMonths(1);
     di.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
+
+    DateInput start = new DateInput("start_date",true);
+    start.setStyleAttribute("type",Edit.styleAttribute);
+    idegaTimestamp today1 = idegaTimestamp.RightNow();
+    today1.addMonths(1);
+    start.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
+
+    DateInput end = new DateInput("end_date",true);
+    end.setStyleAttribute("type",Edit.styleAttribute);
+    idegaTimestamp today2 = idegaTimestamp.RightNow();
+    today2.addMonths(1);
+    idegaCalendar cal = new idegaCalendar();
+    int day = cal.getLengthOfMonth(today2.getMonth(),today2.getYear());
+    end.setDate(new idegaTimestamp(day,today2.getMonth(),today2.getYear()).getSQLDate());
 
     TextInput rn = new TextInput("round_name");
 
@@ -367,8 +450,18 @@ public class TariffAssessments extends Block {
     DropdownMenu drpAccountKeys = drpAccountKeys(Finder.getAccountKeys(),"account_key_id");
     Edit.setStyle(drpAccountKeys);
 
+    T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
     T.add(di,2,row);
     row++;
+
+    T.add(Edit.formatText(iwrb.getLocalizedString("start_date","Start date")),1,row);
+    T.add(start,2,row);
+    row++;
+
+    T.add(Edit.formatText(iwrb.getLocalizedString("end_date","End date")),1,row);
+    T.add(end,2,row);
+    row++;
+
     T.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),1,row);
     T.add(drpAccountKeys ,2,row);
     row++;

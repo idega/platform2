@@ -49,6 +49,66 @@ public class CampusAccountFinder  {
 
   }
 
+  /**
+   *  Returns a list of view entity ConatractAccountApartment
+   *  that have legal contracts in period specified
+   *  returns null if nothing found
+   */
+  public static List listOfContractAccounts(String type,idegaTimestamp startDate,idegaTimestamp endDate){
+    StringBuffer sql = new StringBuffer("select * from ").append(ContractAccountApartment.getEntityTableName());
+    sql.append(" where ").append(ContractAccountApartment.getAccountTypeColumnName());
+    sql.append(" = '").append(type).append("'");
+    String start = "'"+startDate.toSQLString()+"'";
+    String end = "'"+endDate.toSQLString()+"'";
+    String validto = ContractAccountApartment.getColumnValidTo();
+    String validfrom = ContractAccountApartment.getColumnValidFrom();
+    String less = " <= ";
+    String more = " >= ";
+    /*
+    1.  validfrom <= start and valid_to >= end
+    2.  validfrom <= start and valid_to <= end
+    3.  validfrom >= start and valid_to >= end
+    4.  validfrom >= start and valid_to <= end
+
+    i.  validfrom <= start and ((valid_to >= end ) or (valid_to <= end))
+    ii. validfrom >= start and ((valid_to >= end ) or (valid_to <= end))
+
+    or between
+    */
+    /*
+    sql.append(" and (");
+    sql.append("(").append(validfrom).append(less).append(start).append(" and ");
+    sql.append("(( ").append(validto).append(more).append(end).append(") or (").append(validto).append(less).append(end).append(")) ) ");;
+    sql.append(" or (").append(validfrom).append(more).append(start).append(" and ");
+    sql.append("(( ").append(validto).append(more).append(end).append(") or (").append(validto).append(less).append(end).append(")) ) ");;
+    sql.append(")");
+
+      (begin <= valto && valto <= endin) ||
+      (begin <= valfr && valfr <= endin) ||
+      (begin <= valfr && valto <= endin) ||
+      (valfr <= begin && endin <= valto)
+    */
+    sql.append(" and (");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
+    sql.append(" or ");
+    sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
+    sql.append(")");
+
+
+    //System.err.println(sql);
+    try {
+      return EntityFinder.getInstance().findAll(ContractAccountApartment.class,sql.toString());
+     }
+     catch (com.idega.data.IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
+     }
+  }
+
   public static List listOfRentingUserAccountsByType(String type){
    String sql = "select * from V_CONT_ACCT_APRT where fin_account_type = '"+type+"'";
    try {

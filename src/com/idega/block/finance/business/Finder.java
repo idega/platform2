@@ -9,6 +9,7 @@ import java.util.Vector;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
 import java.sql.SQLException;
 
 /**
@@ -146,6 +147,24 @@ public class Finder  {
       return null;
     }
   }
+
+  public static List listOfAccountsInfoInAssessmentRound(int roundid){
+    StringBuffer sql = new StringBuffer("select distinct a.* ");
+    sql.append(" from fin_account_info a,fin_acc_entry e,fin_assessment_round r ");
+    sql.append(" where a.account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(roundid);
+    try {
+      return EntityFinder.getInstance().findAll(AccountInfo.class,sql.toString());
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+
+  }
+
 
   public static List listOfAccountsInAssessmentRound(int roundid){
     StringBuffer sql = new StringBuffer("select distinct a.* ");

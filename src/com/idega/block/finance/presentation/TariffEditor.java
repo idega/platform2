@@ -64,13 +64,6 @@ public class TariffEditor extends Block{
   }
 
   protected void control(IWContext iwc){
-  /*
-    java.util.Enumeration E = iwc.getParameterNames();
-    while(E.hasMoreElements()){
-      String prm = (String) E.nextElement();
-      System.err.println("prm "+prm+" : "+iwc.getParameter(prm));
-    }
-*/
     int iCategoryId = Finance.parseCategoryId(iwc);
     int iGroupId = -1;
     List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
@@ -266,6 +259,211 @@ public class TariffEditor extends Block{
      *
      */
     return getChange(iwc,false,true,iCategoryId,group);
+  }
+
+  protected PresentationObject getSingleLineChange(IWContext iwc,int id,boolean ifnew,boolean factor,int iCategoryId,TariffGroup group){
+    Form myForm = new Form();
+    myForm.add(Finance.getCategoryParameter(iCategoryId));
+    boolean updateIndex = factor;
+    idegaTimestamp today = new idegaTimestamp();
+    List tariffs = FinanceFinder.listOfTariffs(group.getID());
+    List AK = FinanceFinder.listOfAccountKeys(iCategoryId);
+    List indices = Finder.listOfTypeGroupedIndices();
+    Map M = Finder.mapOfIndicesByTypes(indices);
+    FinanceHandler handler = null;
+    Map attributeMap = null;
+    DropdownMenu attDrp = null;
+    boolean ifAttributes = false;
+    boolean ifIndices = false;
+    if(group !=null){
+      ifIndices = group.getUseIndex();
+      if(group.getHandlerId() > 0){
+        handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+        if(handler !=null){
+          attributeMap = handler.getAttributeMap();
+          List list = handler.listOfAttributes();
+          ifAttributes = attributeMap !=null && list !=null;
+          attDrp = drpAttributes(list,attributeMap,"attdrp","");
+        }
+      }
+    }
+    ////////////////////////////
+    DataTable T = new DataTable();
+    T.setWidth("100%");
+    T.setTitlesHorizontal(true);
+    T.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"saveinfo"));
+    int row = 1;
+    int col = 1;
+    T.add(Edit.formatText("Nr"),col++,row);
+    if(ifAttributes){
+      T.add(Edit.formatText(iwrb.getLocalizedString("connection","Connection")),col++,row);
+    }
+    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("amount","Amount")),col++,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),col++,row);
+    if(ifIndices){
+      T.add(Edit.formatText(iwrb.getLocalizedString("index","Index")),col++,row);
+      T.add(Edit.formatText(iwrb.getLocalizedString("updated","Updated")),col++,row);
+    }
+    T.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),col++,row);
+    row++;
+
+    ////////////////////////////
+
+    TextInput nameInput  = new TextInput("te_nameinput");
+    TextInput priceInput = new TextInput("te_priceinput");
+    TextInput infoInput = new TextInput("te_infoinput");
+    DropdownMenu drpAK = drpAccountKeys(AK,("te_akdrp"));
+    DropdownMenu drpAtt = null,drpIx = null;
+
+    if(ifIndices)
+        drpIx = drpIndicesByType(indices,"te_ixdrp");
+    if(ifAttributes){
+        drpAtt = (DropdownMenu) attDrp.clone();
+        drpAtt.setName("te_attdrp");
+    }
+
+    CheckBox delCheck = new CheckBox("te_delcheck");
+    Edit.setStyle(delCheck);
+    nameInput.setSize(20);
+    priceInput.setSize(8);
+    infoInput.setSize(30);
+
+    Edit.setStyle(nameInput);
+    Edit.setStyle(priceInput);
+    Edit.setStyle(infoInput);
+    Edit.setStyle(drpAK);
+
+    Tariff tariff;
+    boolean formAdded = false;
+    if(tariffs!=null){
+      Iterator iter = tariffs.iterator();
+      int i = 1;
+      while(iter.hasNext()){
+        col = 1;
+        tariff = (Tariff) iter.next();
+        float iPrice = tariff.getPrice();
+        // form part:
+        T.add(Edit.formatText(i++),col++,row);
+        if(id == tariff.getID()){
+          if(ifAttributes)
+            drpAtt.setSelectedElement(tariff.getTariffAttribute());
+          if(ifIndices){
+            String ixType = tariff.getIndexType();
+            String ixDate = iwc.getParameter("te_ixdate");
+            idegaTimestamp ixdate = null;
+
+            if(ixDate != null){
+              ixdate = new idegaTimestamp(ixDate);
+            }
+            else if(tariff.getIndexUpdated() != null){
+              ixdate = new idegaTimestamp(tariff.getIndexUpdated());
+              T.add(new HiddenInput("te_ixdate",ixdate.toString()));
+            }
+
+            if(updateIndex && ixType != null && M != null && M.containsKey(ixType)){
+              TariffIndex ti = (TariffIndex) M.get(ixType);
+              java.sql.Timestamp stamp = ti.getDate();
+              if(ixdate != null){
+                if( !stamp.equals(ixdate.getTimestamp())){
+                  iPrice = iPrice * getAddFactor(ti.getNewValue(),ti.getOldValue());
+                }
+              }
+              else
+                iPrice = iPrice * getAddFactor(ti.getNewValue(),ti.getOldValue());
+            }
+            drpIx.setSelectedElement(ixType);
+
+            iPrice = new Float(TextSoap.decimalFormat((double)iPrice,iNumberOfDecimals)).floatValue();
+
+            if(bRoundAmounts)
+              iPrice = Math.round((double)iPrice);
+
+            nameInput.setContent(tariff.getName());
+            if(tariff.getInfo()!=null)
+            infoInput.setContent(tariff.getInfo());
+
+            priceInput.setContent(String.valueOf(iPrice));
+
+            //drpAtt.setSelectedElement(tariff.getTariffAttribute());
+            drpAK.setSelectedElement(String.valueOf(tariff.getAccountKeyId()));
+            delCheck.setValue(tariff.getID());
+
+            HiddenInput idInput = new HiddenInput("te_idinput",String.valueOf(tariff.getID() ));
+
+            if(ifAttributes){
+              T.add(drpAtt,col++,row);
+              Edit.setStyle(drpAtt);
+            }
+            T.add(nameInput,col++,row);
+            T.add(priceInput,col++,row);
+
+            T.add(drpAK,col++,row);
+            if(ifIndices){
+              Edit.setStyle(drpIx);
+              T.add(drpIx,col++,row);
+            }
+
+            T.add(idInput);
+          }
+        }
+        // nonform part:
+        else {
+
+            if(ifAttributes){
+              T.add(drpAtt,col++,row);
+              Edit.setStyle(drpAtt);
+            }
+            T.add(nameInput,col++,row);
+            T.add(priceInput,col++,row);
+
+            T.add(drpAK,col++,row);
+            if(ifIndices){
+              Edit.setStyle(drpIx);
+              T.add(drpIx,col++,row);
+            }
+
+        }
+        row++;
+      }
+    }
+    if(!formAdded){
+      col = 1;
+
+      if(ifAttributes){
+        T.add(drpAtt,col++,row);
+        Edit.setStyle(drpAtt);
+      }
+      T.add(nameInput,col++,row);
+      T.add(priceInput,col++,row);
+
+      T.add(drpAK,col++,row);
+      if(ifIndices){
+        Edit.setStyle(drpIx);
+        T.add(drpIx,col++,row);
+      }
+
+    }
+
+
+    Table T3 = new Table(8,1);
+    T3.setWidth("100%");
+    T3.setWidth(5,1,"100%");
+    T3.setColumnAlignment(6,"right");
+    T3.setColumnAlignment(7,"right");
+
+    if(ifIndices){
+      SubmitButton update = new SubmitButton("updateindex",iwrb.getLocalizedString("update","Update"));
+      Edit.setStyle(update);
+      T3.add(update,8,1);
+    }
+    SubmitButton save = new SubmitButton("savetariffs",iwrb.getLocalizedString("save","Save"));
+    Edit.setStyle(save);
+
+    myForm.add(new HiddenInput(prmGroup, String.valueOf(group.getID())));
+    myForm.add(T);
+
+    return (myForm);
   }
 
   protected PresentationObject getChange(IWContext iwc,boolean ifnew,boolean factor,int iCategoryId,TariffGroup group){
