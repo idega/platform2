@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.38 2002/12/19 15:50:50 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.39 2002/12/21 00:33:24 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,32 +9,39 @@
  */
 package se.idega.idegaweb.commune.account.citizen.business;
 
+import se.idega.idegaweb.commune.message.data.Message;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
+import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.data.*;
 import com.idega.data.*;
 import com.idega.user.data.*;
+import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.business.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
 import se.idega.idegaweb.commune.account.business.*;
 import se.idega.idegaweb.commune.account.citizen.data.*;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/19 15:50:50 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/21 00:33:24 $ by $Author: thomas $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
-    implements CitizenAccountBusiness, AccountBusiness {
+    {
 	private boolean acceptApplicationOnCreation = true;
 
 	/**
@@ -197,7 +204,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
             movingTo.setPropertyType (propertyType);
             movingTo.setLandlord (landlordName, landlordPhone, landlordAddress);
 			movingTo.store ();
-		}
+		} 
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -576,4 +583,105 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	{
 		return this.getLocalizedString("acc.app.citizen.rej.subj", "Your citizen account application has been rejected");
 	}
+  
+
+  /**
+   * Changes a password for CitizenAccount for a user and sends a letter and/or email.
+   * @param loginTable LoginTable of the user
+   * @param user User
+   * @param newPassword Password in plain text (not already encrypted)
+   * @param sendLetter True if a letter should be sent else false
+   * @param sendEmail True if an email should be sent else false
+   * @throws CreateException If changing of the password failed.
+   */  
+  public void changePasswordAndSendLetterOrEmail(
+    LoginTable loginTable, 
+    User user, 
+    String newPassword,
+    boolean sendLetter, 
+    boolean sendEmail) throws CreateException  {
+
+    UserTransaction trans=null;
+    try
+    {
+      trans = this.getSessionContext().getUserTransaction();
+      trans.begin();
+      createAndStoreNewPasswordAndSendLetterOrEmail(
+        loginTable, 
+        user, 
+        newPassword,
+        sendLetter, 
+        sendEmail);
+      trans.commit();
+    }
+    catch (Exception e) {
+      System.err.println(e.getMessage());
+//      e.printStackTrace();
+      if(trans!=null) {
+        try {
+          trans.rollback();
+        }
+        catch (SystemException se) {
+          se.printStackTrace();
+        } 
+      }
+      throw new CreateException("There was an error changing the password. Message was: "+e.getMessage());
+    }
+  }    
+    
+  protected void createAndStoreNewPasswordAndSendLetterOrEmail(
+    LoginTable loginTable, 
+    User user, 
+    String newPassword,
+    boolean sendLetter, 
+    boolean sendEmail) throws CreateException, RemoteException  {    
+    // encrypte new password
+    String encryptedPassword = Encrypter.encryptOneWay(newPassword);
+    // store new password
+    loginTable.setUserPassword(encryptedPassword, newPassword);
+    loginTable.store();
+    // set content of letter
+    String userName = user.getLastName();
+    String loginName = loginTable.getUserLogin();
+    String messageSubject = getNewPasswordWasCreatedSubject();
+    String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
+    // send letter or email to user
+    MessageBusiness messageBusiness = getMessageBusiness(); 
+    Message messageLetter = null;
+    Message messageEmail = null;
+    if (sendLetter) 
+      messageLetter = messageBusiness.createPrintedLetterMessage(user, messageSubject, messageBody);
+    if (sendEmail)
+      messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);   
+    if ((messageLetter == null && sendLetter) 
+        || (messageEmail == null && sendEmail)) {
+      //do something: email or letter was not sent!     
+      throw new CreateException("Email or letter could not be created"); 
+    } 
+  }
+
+
+  protected String getNewPasswordWasCreatedSubject()  {
+    return this.getLocalizedString("acc.app.acc.fp.subj", "New password for your account");
+  }
+
+  protected String getNewPasswordWasCreatedMessageBody(
+    String userName, 
+    String loginName, 
+    String password)
+    throws RemoteException  {
+    //int ownerID = ((Integer) theCase.getOwner().getPrimaryKey()).intValue();
+    String body = this.getLocalizedString("acc.app.acc.body1", "Dear mr./ms./mrs. ");
+    body += userName + "\n";
+    body += this.getLocalizedString("acc.app.acc.fp.body2", "A new password was created for your account.\n");
+    body += this.getLocalizedString("acc.app.acc.body3", "You have been given access to the system with username: ");
+    body += "\"" + loginName + "\"";
+    body += this.getLocalizedString("acc.app.acc.body4", " and password: ");
+    body += "\"" + password + "\"";
+    body += "\n\n";
+    body += this.getLocalizedString("acc.app.acc.body5", "You can log on via: ");
+    body += getApplicationLoginURL();
+    return body;
+   }  
+  
 }
