@@ -29,6 +29,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.User;
 import com.idega.util.Age;
@@ -39,12 +41,32 @@ import com.idega.util.IWTimestamp;
  *
  */
 
-public class InvoiceBusinessBean {
+public class InvoiceBusinessBean implements Runnable{
 
-	private static final String BATCH_TEXT = "Härledd uppgift";		//Localize this text in the user interface
+	private static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
 	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
+	private IWTimestamp startPeriod;
+	private IWTimestamp endPeriod;
 	
-	public void createInvoicingData(Date startPeriod, Date endPeriod, String createdBy){
+	/**
+	 * spawns a new thread and starts the execution of the posting calculation and then returns
+	 * @param startPeriod
+	 * @param endPeriod
+	 */
+	public void startPostingBatch(Date month){
+		//TODO (JJ) change this to use only month, not from and to.
+		startPeriod = new IWTimestamp(month);
+		startPeriod.setDay(1);
+		endPeriod = new IWTimestamp(startPeriod);
+		endPeriod.addMonths(1);
+		new Thread(this).start();
+	}
+	
+	/**
+	 * Does the acctual work on the batch process
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {		
 		
 		ChildCareContract contract;
 		Collection contractArray = new ArrayList();
@@ -52,8 +74,10 @@ public class InvoiceBusinessBean {
 		User custodian;
 		School provider;
 		Date currentDate = new Date( new java.util.Date().getTime());
+		Age age;
 		float months;
 		int days;
+		int hours;
 		float totalSum;
 		int childcare = 0;
 		int check = 0;
@@ -71,15 +95,10 @@ public class InvoiceBusinessBean {
 */	
 			// **Flag all contracts as 'not processed'
 
-			try {
-				contractArray = getChildCareContractHome().findByDateRange(startPeriod, endPeriod);
-			} catch (RemoteException e) {
-				// TODO (JJ) 
-				e.printStackTrace();
-			} catch (FinderException e) {
-				// TODO (JJ) create feedback that no contracts were found
-				e.printStackTrace();
-			}
+			SchoolCategory childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
+			
+			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
+			
 			Iterator contractIter = contractArray.iterator();
 	
 			//Loop through all contracts
@@ -93,23 +112,28 @@ public class InvoiceBusinessBean {
 				provider = contract.getApplication().getProvider();
 				// **Create the invoice header
 				//TODO (JJ) This should not always be done! Sometimes the header might already be created...
-				InvoiceHeader invoiceHeader = getInvoiceHeaderHome().create();
-				//Fill in all the field available at this time
-				//TODO (JJ) invoiceHeader.setMainActivity()
-				invoiceHeader.setPeriod(startPeriod);
-				invoiceHeader.setCustodianId(custodian);
-				invoiceHeader.setReference(provider);//TODO (JJ) Check if this is right. Supposed to be "Responcible person cenrally = BUN"...
-				invoiceHeader.setDateCreated(currentDate);
-				invoiceHeader.setCreatedBy(createdBy);
-				invoiceHeader.setCreatedBy(BATCH_TEXT);
-				//TODO (JJ) invoiceHeader.setOwnPosting();
-				//TODO (JJ) invoiceHeader.setDoublePosting();
-				invoiceHeader.setTotalAmountWithoutVAT(0);
-				invoiceHeader.setTotalVATAmount(0);
+				InvoiceHeader invoiceHeader;
+				try{
+					invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
+				} catch (FinderException e) {
+					//No header was found so we have to create it
+					invoiceHeader = getInvoiceHeaderHome().create();
+					//Fill in all the field available at this times
+					invoiceHeader.setSchoolCagtegoryID(childcareCategory);
+					invoiceHeader.setPeriod(startPeriod.getDate());
+					invoiceHeader.setCustodianId(custodian);
+					invoiceHeader.setReference(provider);//TODO (JJ) Check if this is right. Supposed to be "Responcible person cenrally = BUN"...
+					invoiceHeader.setDateCreated(currentDate);
+					invoiceHeader.setCreatedBy(BATCH_TEXT);
+					//TODO (JJ) invoiceHeader.setOwnPosting();
+					//TODO (JJ) invoiceHeader.setDoublePosting();
+				}
 				
 				// **Calculate how big part of time period this contract is valid for
-//				if(contract.getValidFromDate().before(startPeriod) && (contract.getValidFromDate().after(endPeriod))){
+//				if(contract.getValidFromDate().before(startPeriod) && 
+//						(contract.getTerminatedDate()==null || contract.getTerminatedDate().after(endPeriod))){
 //					months = 1;
+//					days = IWTimestamp.getDaysBetween(startPeriod, endPeriod);
 //				} else {
 					//first get the start date
 					startTime = new IWTimestamp(contract.getValidFromDate());
@@ -130,38 +154,33 @@ public class InvoiceBusinessBean {
 //				}
 
 
+				totalSum = 0;
 				//
 				//Get the check for the contract
 				//
 				RegulationsBusiness regBus = getRegulationsBusinessHome().create();
 				
 				//Get all the parameters needed to select the correct contract
-				//TODO (JJ) get the childcareID
-				String operationTypeChildcare = "";
-				String childcareType = "";
 				//TODO (JJ) Tryggvi, Goran and Anders trying to figure out how this should work!
-				//childcareType = cont.getApplication().getProvider().;
-//					childcareID = Operation.getChildcareID();
-				//int age = cont.getChild().get???
-				int hours = contract.getCareTime();
-				Age age = new Age(contract.getChild().getDateOfBirth());
+				String childcareType = "";
+				hours = contract.getCareTime();
+				age = new Age(contract.getChild().getDateOfBirth());
 				ArrayList conditions = new ArrayList();
 				conditions.add(new ConditionParameter(IntervalConstant.ACTIVITY,childcareType));
 				conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
 				conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
 
-				totalSum = 0;
 				//Select a specific row from the regulation, given the following restrictions
 				PostingDetail postingDetail = regBus.
 				getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-					operationTypeChildcare,										//The ID that selects barnomsorg in the regulation
-					PaymentFlowConstant.OUT, 							//The payment flow is out
-					new java.sql.Date(new java.util.Date().getTime()),	//The Should be for the currently valid daterange
-					RegSpecConstant.CHECK,								//The ruleSpecType shall be Check
-					RuleTypeConstant.DERIVED,							//The conditiontype
-					conditions,											//The conditions that need to fulfilled
-					totalSum,
-					contract);
+					childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+					PaymentFlowConstant.OUT, 		//The payment flow is out
+					currentDate,					//Current date to select the correct date range
+					RegSpecConstant.CHECK,			//The ruleSpecType shall be Check
+					RuleTypeConstant.DERIVED,		//The conditiontype
+					conditions,						//The conditions that need to fulfilled
+					totalSum,						//Sent in to be used for "Specialutrakning
+					contract);						//Sent in to be used for "Specialutrakning
 			
 				float checkAmount = postingDetail.getAmount();
 				totalSum += checkAmount;
@@ -176,7 +195,6 @@ public class InvoiceBusinessBean {
 				invoiceRecord.setRuleText(postingDetail.getTerm());
 				//TODO (JJ) get the "huvudverksamhet" object that laddi will create.
 				invoiceRecord.setDateCreated(currentDate);
-				invoiceRecord.setCreatedBy(createdBy);
 				invoiceRecord.setCreatedBy(BATCH_TEXT);
 				//TODO (JJ) set the reference to utbetalningsposten
 				//TODO (JJ) Some VAT stuff needed here...
@@ -190,11 +208,11 @@ public class InvoiceBusinessBean {
 				//Get all the rules for this contract
 				//TODO (JJ) This is a func that Thomas will provide.
 				regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-					operationTypeChildcare,										//The ID that selects barnomsorg in the regulation
-					PaymentFlowConstant.IN, 							//The payment flow is out
-					new java.sql.Date(new java.util.Date().getTime()),	//The Should be for the currently valid daterange
-					RuleTypeConstant.DERIVED,							//The conditiontype
-					conditions											//The conditions that need to fulfilled
+				childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+					PaymentFlowConstant.IN, 		//The payment flow is out
+					currentDate,					//Current date to select the correct date range
+					RuleTypeConstant.DERIVED,		//The conditiontype
+					conditions						//The conditions that need to fulfilled
 					);
 
 
@@ -217,7 +235,6 @@ public class InvoiceBusinessBean {
 					invoiceRecord.setDays(days);
 					//TODO (JJ) get the "huvudverksamhet" object that laddi will create.
 					invoiceRecord.setDateCreated(currentDate);
-					invoiceRecord.setCreatedBy(createdBy);
 					invoiceRecord.setCreatedBy(BATCH_TEXT);
 					invoiceRecord.setAmount(postingDetail.getAmount());
 					//TODO (JJ) Create a "utbetalningspost" waiting for description from Lotta
@@ -235,12 +252,15 @@ public class InvoiceBusinessBean {
 			}
 				
 		} catch (RemoteException e1) {
-			// TODO (JJ) Auto-generated catch block
+//			TODO (JJ) Auto-generated catch block
 			e1.printStackTrace();
 		} catch (CreateException e) {
 			// TODO (JJ) Auto-generated catch block
 			e.printStackTrace();
 		} catch (PostingParametersException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FinderException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
