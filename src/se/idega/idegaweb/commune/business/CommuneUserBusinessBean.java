@@ -928,6 +928,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		
 		Address userAddress = getUsersMainAddress(user);
 		Address otherUserAddress = getUsersMainAddress(compareUser);
+		return userAddress.isEqualTo(otherUserAddress);
+		/*
 		if (userAddress != null && otherUserAddress != null) {
 			if(userAddress.getStreetAddress().equalsIgnoreCase(otherUserAddress.getStreetAddress() )) {
 				PostalCode userPostal = null;
@@ -950,6 +952,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		
 		return false;
+		*/
 	}
 
 	private IWTimestamp getBirthDateFromPin(String pin){
