@@ -270,7 +270,8 @@ public class ProductEditorBusiness extends IBOServiceBean{
       }
     }else {
       CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(defaultCurrency);
-      _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
+      if (holder != null)
+      	_currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
     }
     return _currencies;
   }
