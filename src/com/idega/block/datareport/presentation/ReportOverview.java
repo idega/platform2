@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
@@ -209,9 +210,9 @@ public class ReportOverview extends Block {
     
   private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle) {
   	List queryRepresentations = new ArrayList();
-  	// pretty cool implementation:
-  	// if the children list is empty null is returned. Well done and thank you!
-  	//TODO: thi: change this nonsense
+  	// bad implementation:
+  	// if the children list is empty null is returned. 
+  	//TODO: thi: change the implementation
   	Iterator iterator = queryFolder.getChildren();
   	if (iterator == null) {
   		iterator = (new ArrayList(0)).iterator();
@@ -220,6 +221,7 @@ public class ReportOverview extends Block {
   		ICTreeNode node = (ICTreeNode) iterator.next();
   		String name = node.getNodeName();
   		int id = node.getNodeID();
+  		// show only the query with a specified id if desired 
   		if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
   			QueryRepresentation representation = new QueryRepresentation(id, name);
   			queryRepresentations.add(representation);
@@ -341,49 +343,81 @@ public class ReportOverview extends Block {
     
   
 	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
+		String errorMessage = null;
 		QueryService queryService = getQueryService();
 		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
     QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
-    QueryToSQLBridge bridge = getQueryToSQLBridge();
-    QuerySQL query = bridge.createQuerySQL(queryHelper);
-    if (query.isDynamic()) {
-    	Map identifierValueMap = query.getIdentifierValueMap();
-    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action)) {
-    		// show input fields
-				showInputFields(query, identifierValueMap, resourceBundle);
-    	}
-    	else {
-    		// get the values of the input fields
-    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
-    		query.setIdentifierValueMap(modifiedValues);
-    		// show result of query
-    	if (! executeQuery(query, bridge))	{
-    		String errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
-    		Text text = new Text(errorMessage);
-    		text.setBold();
-    		text.setFontColor("#FF0000");
-    		add(text);
-    		add(Text.getBreak());
-    	}	
-     		// show again the input fields
-    		showInputFields(query, modifiedValues, resourceBundle);	
-    	}
+    QueryToSQLBridge bridge = getQueryToSQLBridge(); 
+    QuerySQL query = null;
+    try {
+    	query = bridge.createQuerySQL(queryHelper, iwc);
     }
-    else {
-    	if (! executeQuery(query, bridge))	{
-    		String errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
-    		Text text = new Text(errorMessage);
-    		text.setBold();
-    		text.setFontColor("#FF0000");
-    		add(text);
-    		add(Text.getBreak());
-    	}	
-    	getListOfQueries(bundle, resourceBundle);	
-    }
+    catch (QueryGenerationException ex) {
+			String message =
+				"[ReportOverview]: Can't generate query.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			errorMessage = resourceBundle.getLocalizedString("ro_query_could not_be_created", "Query could not be created");
+		}
+		// execute query if the query was successfully created
+		if (errorMessage == null) { 
+			//
+			// query is dynamic
+			//
+	    if (query.isDynamic()) {
+	    	Map identifierValueMap = query.getIdentifierValueMap();
+	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action)) {
+	    		// show input fields
+					showInputFields(query, identifierValueMap, resourceBundle);
+	    	}
+	    	else {
+	    		// get the values of the input fields
+	    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
+	    		query.setIdentifierValueMap(modifiedValues);
+	    		// show result of query
+	    		if (! executeQueries(query, bridge))	{
+	    			errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
+	    		}	
+	     		// show again the input fields
+	     		if (errorMessage != null)	{
+	     			addErrorMessage(errorMessage);
+	     		}
+	    		showInputFields(query, modifiedValues, resourceBundle);	
+	    	}
+	    	//
+	    	// good bye - query is dynamic
+	    	//
+	    	return;
+	    }
+	    //
+	    // query is not dynamic
+	    //
+	    else {
+	    	boolean isOkay = executeQueries(query, bridge);
+	    	if (! isOkay)	{
+	    		errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
+	    	}
+	    }
+		}
+		// show list if query is not dynamic and if an error occurred
+		if (errorMessage != null) {
+			addErrorMessage(errorMessage);
+		}
+		getListOfQueries(bundle, resourceBundle);
 	}
 	
+	private void addErrorMessage(String errorMessage)	{
+		Text text = new Text(errorMessage);
+	  text.setBold();
+	  text.setFontColor("#FF0000");
+	  add(text);
+	  add(Text.getBreak());
+	}
+
+		
+	
 	private void showInputFields(QuerySQL query, Map identifierValueMap, IWResourceBundle resourceBundle)	{
-    Map identifierDescriptionMap = query.getIdentifierDescriptionValueMap();
+    Map identifierDescriptionMap = query.getIdentifierDescriptionMap();
     String name = query.getName();
     PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierDescriptionMap, resourceBundle);
     Form form = new Form();
@@ -393,25 +427,8 @@ public class ReportOverview extends Block {
 	}
 
 	
-	private boolean executeQuery(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
-    // get the sql statement
-    String sqlStatement = query.getSQLStatement();
-    //TODO: thi remove that command
-    add(new Text(sqlStatement));
-    // get the desired display names
-    List displayNames = query.getDisplayNames();
-    // get the result of the query
-    QueryResult queryResult = null;
-    try {
-    	queryResult = bridge.executeStatement(sqlStatement, displayNames);
-    }
-    catch (SQLException ex) {
-			String message =
-				"[ReportOverview]: Can't execute SQl statement: " + sqlStatement;
-			System.err.println(message + " Message is: " + ex.getMessage());
-			ex.printStackTrace(System.err);
-			return false;
-		}
+	private boolean executeQueries(QuerySQL query, QueryToSQLBridge bridge) throws RemoteException {
+		QueryResult queryResult = bridge.executeQueries(query);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do

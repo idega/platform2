@@ -345,12 +345,11 @@ public class ReportGenerator extends Block {
 
 	private void generateDataSource(IWContext iwc) throws XMLException, Exception {
 		Locale currentLocale = iwc.getCurrentLocale();
-		if (_queryPK != null) {
-			QueryService service = (QueryService) (IBOLookup.getServiceInstance(iwc, QueryService.class));
-			_dataSource = service.generateQueryResult(_queryPK);
+		if(_queryPK != null) {
+			QueryService service = (QueryService)(IBOLookup.getServiceInstance(iwc,QueryService.class));
+			_dataSource = service.generateQueryResult(_queryPK, iwc);
 		}
-		else
-			if (_methodInvokeDoc != null) {
+		else if (_methodInvokeDoc != null) {
 				List mDescs = _methodInvokeDoc.getMethodDescriptions();
 				if (mDescs != null) {
 					Iterator it = mDescs.iterator();
@@ -428,7 +427,6 @@ public class ReportGenerator extends Block {
 						else {
 							// prmVal = String[0];
 						}
-
 						Object forInvocationOfMethod = null;
 						if (ClassDescription.VALUE_TYPE_IDO_SESSION_BEAN.equals(type)) {
 							forInvocationOfMethod = IBOLookup.getSessionInstance(iwc, mainClass);
@@ -691,7 +689,7 @@ public class ReportGenerator extends Block {
 	 */
 	private void lineUpElements(IWResourceBundle iwrb, IWContext iwc) {
 		IWMainApplication iwma = iwc.getApplicationContext().getApplication();
-		IWBundle coreBundle = iwma.getBundle(this.IW_CORE_BUNDLE_IDENTIFIER);
+		IWBundle coreBundle = iwma.getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_fieldTable = new Table();
 		//_fieldTable.setBorder(1);
