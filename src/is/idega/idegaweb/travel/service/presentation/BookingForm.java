@@ -918,13 +918,13 @@ public abstract class BookingForm extends TravelManager{
               city.setSize(textInputSizeLg);
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
-
+/*
           DateInput fromDate = new DateInput(parameterFromDate);
             fromDate.setDay(_stamp.getDay());
             fromDate.setMonth(_stamp.getMonth());
             fromDate.setYear(_stamp.getYear());
             fromDate.setDisabled(true);
-
+*/
           TextInput manyDays = new TextInput(parameterManyDays);
             manyDays.setContent("1");
             manyDays.setSize(5);
@@ -957,7 +957,11 @@ public abstract class BookingForm extends TravelManager{
           }
           ++row;
           table.add(fromText, 1, row);
-          table.add(fromDate, 2, row);
+          table.add(new HiddenInput(parameterFromDate, _stamp.toSQLString()));
+          Text currDate = (Text) theText.clone();
+          currDate.setText(_stamp.getLocaleDate(iwc.getCurrentLocale()));
+          table.add(currDate,  2, row);//fromDate, 2, row);
+          //table.add(fromDate, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
           table.mergeCells(2,row,6,row);
