@@ -4,6 +4,7 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.Text;
+import com.idega.jmodule.object.textObject.Link;
 import com.idega.block.poll.business.*;
 import com.idega.block.poll.data.*;
 import com.idega.block.text.business.TextFinder;
@@ -12,6 +13,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
+import java.util.List;
 import java.sql.SQLException;
 
 /**
@@ -34,9 +36,12 @@ private boolean _showCollection = false;
 private boolean _save = false;
 private boolean _showVotes = true;
 private int _numberOfPolls = 3;
+private int _pollID = -1;
 private int _pollQuestionID = -1;
 private int _iLocaleID;
 private Image line;
+
+public static final String prmPollFirst = "i_poll_first";
 
 Table layoutTable;
 
@@ -50,7 +55,7 @@ public PollResult() {
   public void main(ModuleInfo modinfo) throws Exception {
     _iwrb = getResourceBundle(modinfo);
     _iwb = getBundle(modinfo);
-
+    setOnLoad("window.resize(\"239\",\"422\");");
     setAllMargins(0);
     setTitle(_iwrb.getLocalizedString("results","Results"));
 
@@ -60,6 +65,7 @@ public PollResult() {
     String collectionString = modinfo.getParameter(Poll._prmPollCollection);
     String showVotesString = modinfo.getParameter(Poll._prmShowVotes);
     String numberOfPollsString = modinfo.getParameter(Poll._prmNumberOfPolls);
+    String pollIDString = modinfo.getParameter(Poll._prmPollID);
 
     try {
       _pollQuestionID = Integer.parseInt(modinfo.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
@@ -74,7 +80,12 @@ public PollResult() {
       _showCollection = true;
     }
     if ( showVotesString != null ) {
-      _showVotes = true;
+      if ( showVotesString.equalsIgnoreCase(PollBusiness._PARAMETER_TRUE) ) {
+        _showVotes = true;
+      }
+      else {
+        _showVotes = false;
+      }
     }
     if ( numberOfPollsString != null ) {
       try {
@@ -84,26 +95,33 @@ public PollResult() {
         _numberOfPolls = 3;
       }
     }
+    if ( pollIDString != null ) {
+      try {
+        _pollID = Integer.parseInt(pollIDString);
+      }
+      catch (NumberFormatException e) {
+        _pollID = -1;
+      }
+    }
 
     if ( _showCollection ) {
-      showCollection();
+      System.out.println("ShowCollection");
+      System.out.println("PollID: "+_pollID);
+      showCollection(modinfo);
     }
     else {
       if (PollBusiness.thisObjectSubmitted(modinfo.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
-        System.out.println("ObjectSubmitted");
         PollBusiness.handleInsert(modinfo);
       }
 
       if ( _pollQuestionID != -1 )
         layoutTable.add(showResults(_pollQuestionID),1,3);
-      else
-        this.getParentPage().close();
     }
   }
 
   private void drawLayout() {
     layoutTable = new Table(1,5);
-    layoutTable.setWidth("100%");
+    layoutTable.setWidth(280);
     layoutTable.setCellpadding(0);
     layoutTable.setCellspacing(0);
     layoutTable.setHeight(2,"9");
@@ -149,9 +167,10 @@ public PollResult() {
         questionText.setBold();
       myTable.add(questionText,2,1);
 
-      if (answers != null) {
-        this.setOnLoad("window.resizeTo(290,600);");
+      int numberOfAnswers = PollBusiness.getNumberOfAnswers(question);
+      //setWindowHeight(numberOfAnswers);
 
+      if (answers != null) {
         if (answers.length > 0) {
           for ( int i = 0; i < answers.length; i++ ) {
             total += answers[i].getHits();
@@ -161,7 +180,9 @@ public PollResult() {
             if ( answerLocText != null ) {
               ++row;
 
-              float percent = ( (float) answers[i].getHits() / (float) total ) * 100;
+              float percent = 0;
+              if ( answers[i].getHits() > 0 )
+                percent = ( (float) answers[i].getHits() / (float) total ) * 100;
 
               Text answerText = new  Text(answerLocText.getHeadline());
                 answerText.setFontSize(1);
@@ -193,8 +214,120 @@ public PollResult() {
     return myTable;
   }
 
-  private void showCollection() {
+  private void showCollection(ModuleInfo modinfo) {
+    int pollSize = 0;
+    int first = 0;
+    int numberOfAnswers = 0;
+    List pollQuestions = PollBusiness.getPollQuestions(_pollID);
+    if ( pollQuestions != null ) {
+      pollSize = pollQuestions.size();
+    }
 
+    String first_string = modinfo.getParameter(prmPollFirst);
+    try {
+      first = Integer.parseInt(first_string);
+      if (first < 0 ) {
+        first = 0;
+      }
+      else {
+        if ( pollQuestions != null ) {
+          if ( first > pollSize - 1 ) {
+            first = pollSize - 1;
+          }
+        }
+      }
+    }
+    catch (NumberFormatException n) {
+      first = 0;
+    }
+
+    int row = 1;
+    int tableSize = _numberOfPolls * 2;
+    if ( pollSize < _numberOfPolls ) {
+      tableSize = pollSize * 2;
+    }
+
+    Table myTable = new Table(1,tableSize);
+      myTable.setWidth("100%");
+
+    if ( pollQuestions != null ) {
+      for (int i = first; i < pollSize; i++) {
+        if (i == first + _numberOfPolls) {
+          break;
+        }
+
+        PollQuestion pollQuestion = (PollQuestion) pollQuestions.get(i);
+        numberOfAnswers += PollBusiness.getNumberOfAnswers(pollQuestion);
+
+        myTable.add(showResults(pollQuestion.getID()),1,row);
+        row++;
+
+        if (this.line != null) {
+          if ( row < tableSize ) {
+            myTable.add(line,1,row);
+            row++;
+          }
+        }
+      }
+    }
+
+    //setWindowHeight(numberOfAnswers,pollSize);
+
+    Text nextText = new Text(_iwrb.getLocalizedString("next","Next")+" "+Integer.toString(_numberOfPolls));
+        nextText.setFontSize(1);
+    Text prevText = new Text(_iwrb.getLocalizedString("lst","Last")+" "+Integer.toString(_numberOfPolls));
+        prevText.setFontSize(1);
+
+    Link next = new Link(nextText);
+        next.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
+        next.addParameter(Poll._prmPollID,Integer.toString(_pollID));
+        next.addParameter(PollResult.prmPollFirst,Integer.toString(first + _numberOfPolls));
+    Link prev = new Link(prevText);
+        prev.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
+        prev.addParameter(Poll._prmPollID,Integer.toString(_pollID));
+        prev.addParameter(PollResult.prmPollFirst,Integer.toString(first - _numberOfPolls));
+
+
+    Table table = new Table(3,1);
+        table.setWidth("100%");
+        table.setBorder(0);
+        table.setAlignment(3,1,"right");
+        if (! (first - _numberOfPolls < 0)) {
+          table.add(prev,1,1);
+        }
+        else {
+          prevText.setFontColor("#999999");
+          table.add(prevText,1,1);
+        }
+
+        if ( !( first + _numberOfPolls >= pollSize ) ) {
+            table.add(next,3,1);
+        }
+        else {
+          nextText.setFontColor("#999999");
+          table.add(nextText,3,1);
+        }
+
+    myTable.add(table,1,tableSize);
+    layoutTable.add(myTable,1,3);
+  }
+
+  private void setWindowHeight(int numberOfAnswers) {
+    setWindowHeight(numberOfAnswers,1);
+  }
+
+  private void setWindowHeight(int numberOfAnswers,int numberOfQuestions) {
+    int questionHeight = 30;
+    int answerHeight = 26;
+    int height = 86;
+    if ( numberOfQuestions > 1 ) {
+      height += 20;
+    }
+
+    System.out.println("numberOfAnswers: "+numberOfAnswers);
+    int windowHeight = (numberOfAnswers * answerHeight) + (numberOfQuestions * questionHeight) + height;
+
+    setOnLoad("window.resize("+Integer.toString(this.getWidth())+","+windowHeight+");");
   }
 
   public String getBundleIdentifier(){
