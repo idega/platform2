@@ -204,8 +204,7 @@ public static final String _PARAMETER_CLOSE = "close";
 	}
 
 	public static void handleInsert(IWContext iwc, int pollQuestionID) {
-    String URI = iwc.getRequestURI();
-		boolean mayVote = true;
+    String URI = iwc.getServerName();
     String pollAnswerID = iwc.getParameter(_PARAMETER_POLL_ANSWER);
 
     PollAnswer answer = null;
@@ -221,21 +220,21 @@ public static final String _PARAMETER_CLOSE = "close";
     if ( answer != null && canVote(iwc, pollQuestionID) ) {
       increaseHits(answer);
 
-      Cookie cookie = new Cookie(URI+"idega_poll_"+Integer.toString(pollQuestionID),"vote");
-      cookie.setMaxAge(20000);
+      Cookie cookie = new Cookie(URI+"_idega_poll_"+Integer.toString(pollQuestionID),"vote");
+      cookie.setMaxAge(394200000);
       iwc.addCookies(cookie);
     }
 	}
 
   public static boolean canVote(IWContext iwc, int pollQuestionID) {
     Cookie[] cookies = (Cookie[]) iwc.getCookies();
-    String URI = iwc.getRequestURI();
+    String URI = iwc.getServerName();
     boolean returner = true;
 
     if (cookies != null) {
       if (cookies.length > 0) {
         for (int i = 0 ; i < cookies.length ; i++) {
-          if ( cookies[i].getName().equals(URI+"idega_poll_"+pollQuestionID) ) {
+          if ( cookies[i].getName().equals(URI+"_idega_poll_"+Integer.toString(pollQuestionID)) ) {
             returner = false;
             continue;
           }
