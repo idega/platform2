@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE invoke >
 <invoke>
-<method_description name="getMemberStatisticsForClubsByYearAndRegionalUnionsFiltering">
+<method_description name="getPlayerStatisticsForClubsByYearAndRegionalUnionsFiltering">
 <class_description class="is.idega.idegaweb.member.isi.block.reports.business.WorkReportStatsBusiness" default_display_name="WorkReportStatsBusiness" type="IBOSessionBean">
 </class_description>
 <input>
