@@ -146,15 +146,15 @@ public class InvoiceChildcareThread extends BillingThread{
 			while(contractIter.hasNext())
 			{
 				contract = (ChildCareContract)contractIter.next();
-				errorRelated = new StringBuffer();
-				errorRelated.append("ChildcareContract "+contract.getPrimaryKey()+"<br>");
-				errorRelated.append("Contract "+contract.getContractID()+"<br>");
+				errorRelated = new ErrorLogger();
+				errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
+				errorRelated.append("Contract "+contract.getContractID());
 				// **Fetch invoice receiver
 				custodian = contract.getApplication().getOwner();
-				errorRelated.append("Custodian "+custodian.getName()+"<br>");
+				errorRelated.append("Custodian "+custodian.getName());
 				//**Fetch the reference at the provider
 				school = contract.getApplication().getProvider();
-				errorRelated.append("School "+school.getName()+"<br>");
+				errorRelated.append("School "+school.getName());
 				log.info("School = "+school);
 				// **Get or create the invoice header
 				InvoiceHeader invoiceHeader;
@@ -176,7 +176,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						System.out.println("Databean: "+invoiceHeader);
 						invoiceHeader.store();
 					}
-					errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey()+"<br>");
+					errorRelated.append("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 				
 					// **Calculate how big part of time period this contract is valid for
 					placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
@@ -194,15 +194,15 @@ public class InvoiceChildcareThread extends BillingThread{
 					System.out.println("SchoolClassMmeberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType =schoolType.getLocalizationKey();
-					errorRelated.append("SchoolType "+schoolType.getName()+"<br>");
-					errorRelated.append("Child "+contract.getChild().getName()+"<br>");
+					errorRelated.append("SchoolType "+schoolType.getName());
+					errorRelated.append("Child "+contract.getChild().getName());
 
 					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
 					age = new Age(contract.getChild().getDateOfBirth());
 					ArrayList conditions = new ArrayList();
-					errorRelated.append("Hours "+contract.getCareTime()+"<br>");
-					errorRelated.append("Age "+contract.getChild().getDateOfBirth()+"<br>");
+					errorRelated.append("Hours "+contract.getCareTime());
+					errorRelated.append("Age "+contract.getChild().getDateOfBirth());
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
@@ -212,7 +212,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
 						employment = employmentType.getLocalizationKey();
-						errorRelated.append("EmploymentType "+employment+"<br>");
+						errorRelated.append("EmploymentType "+employment);
 					}
 					log.info("\n School type: "+childcareType+
 						"\n Hours "+hours+
@@ -254,7 +254,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
-					errorRelated.append("Regel Spec Typ "+regSpecType+"<br>");
+					errorRelated.append("Regel Spec Typ "+regSpecType);
 					
 					String[] postings = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
@@ -285,15 +285,15 @@ public class InvoiceChildcareThread extends BillingThread{
 						conditions								//The conditions that need to fulfilled
 						);
 
-					String tmpErrorRelated = errorRelated.toString();
+					ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
 					log.info("Found "+regulationArray.size()+" regulations that apply.");
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
-						errorRelated = new StringBuffer(tmpErrorRelated);
+						errorRelated = new ErrorLogger(tmpErrorRelated);
 						try {
 							Regulation regulation = (Regulation)regulationIter.next();
-							errorRelated.append("Regel "+regulation.getName()+"<br>");
+							errorRelated.append("Regel "+regulation.getName());
 							log.info("regulation "+regulation.getName());
 							postingDetail = regBus.getPostingDetailForContract(
 								totalSum,
@@ -312,7 +312,7 @@ public class InvoiceChildcareThread extends BillingThread{
 								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
 							}
 
-							errorRelated.append("Posting detail "+postingDetail+"<br>");
+							errorRelated.append("Posting detail "+postingDetail);
 							// **Create the invoice record
 							//TODO (JJ) get these strings from the postingDetail instead.
 							System.out.println("Regspectyp: "+postingDetail.getRuleSpecType());
@@ -337,43 +337,43 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 						catch (CreateException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.CreateException");
+							createNewErrorMessage(errorRelated,"invoice.CreateException");
 						}
 						catch (RegulationException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegulationWhenItWasExpected");
+							createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegulationWhenItWasExpected");
 						}
 						catch (PostingParametersException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.PostingParametersException");
+							createNewErrorMessage(errorRelated,"invoice.PostingParametersException");
 						}
 						catch (PostingException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.PostingException");
+							createNewErrorMessage(errorRelated,"invoice.PostingException");
 						}
 						catch (RemoteException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.RemoteException");
+							createNewErrorMessage(errorRelated,"invoice.RemoteException");
 						}
 						catch (MissingMandatoryFieldException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.MissingMandatoryFieldException");
+							createNewErrorMessage(errorRelated,"invoice.MissingMandatoryFieldException");
 						}
 						catch(MissingConditionTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingConditionType");
+							createNewErrorMessage(errorRelated,"invoice.ErrorFindingConditionType");
 						}
 						catch (MissingFlowTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingFlowType");
+							createNewErrorMessage(errorRelated,"invoice.ErrorFindingFlowType");
 						}
 						catch (MissingRegSpecTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegSpecType");
+							createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegSpecType");
 						}
 						catch (TooManyRegulationsException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated.toString(),"invoice.TooManyRegulationsFoundForQuery");
+							createNewErrorMessage(errorRelated,"invoice.TooManyRegulationsFoundForQuery");
 						}
 					}
 					//Make sure that the sum is not less than 0
@@ -385,55 +385,55 @@ public class InvoiceChildcareThread extends BillingThread{
 							subvention.store();
 						} else {
 							log.info("Sum too low, but no subvention found. Creating error message");
-							createNewErrorMessage(errorRelated.toString(),"invoice.noSubventionFoundAndSumLessThanZero");
+							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
 						}
 					}
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
+						createNewErrorMessage(errorRelated,"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
 					}
 				}catch (RegulationException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingCheckRegulation");
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingCheckRegulation");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingCheckRegulation");
 					}
 				} catch(MissingMandatoryFieldException e){
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.MissingMandatoryFieldInPostingParameter");
+						createNewErrorMessage(errorRelated,"invoice.MissingMandatoryFieldInPostingParameter");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.MissingMandatoryFieldInPostingParameter");
 					}
 				} catch (PostingParametersException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorInPostingParameter");
+						createNewErrorMessage(errorRelated,"invoice.ErrorInPostingParameter");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorInPostingParameter");
 					}
 				} catch (PostingException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.PostingParameterIncorrectlyFormatted");
+						createNewErrorMessage(errorRelated,"invoice.PostingParameterIncorrectlyFormatted");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.PostingParameterIncorrectlyFormatted");
 					}
 				} catch (CreateException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.DBProblem");
+						createNewErrorMessage(errorRelated,"invoice.DBProblem");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.DBProblem");
 					}
 				} catch (EJBException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.EJBError");
+						createNewErrorMessage(errorRelated,"invoice.EJBError");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
 					}
@@ -448,7 +448,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				catch (MissingFlowTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingFlowType");
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingFlowType");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingFlowType");
 					}
@@ -456,7 +456,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				catch (MissingConditionTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingConditionType");
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingConditionType");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingConditionType");
 					}
@@ -464,7 +464,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				catch (MissingRegSpecTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegSpecType");
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegSpecType");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingRegSpecType");
 					}
@@ -472,7 +472,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				catch (TooManyRegulationsException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingTooManyRegulations");
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingTooManyRegulations");
 					}
@@ -518,21 +518,21 @@ public class InvoiceChildcareThread extends BillingThread{
 					int custodianID = -1;
 					
 					regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-					StringBuffer errorRelated = new StringBuffer("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey()+"<br>");
+					ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
 					
 					//Get the child and then look up the custodian
 					childID = regularInvoiceEntry.getUserID();
-					errorRelated.append("Child "+childID+"<br>");
+					errorRelated.append("Child "+childID);
 					MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 					User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
-					errorRelated.append("Child name "+child.getName()+"<br>");
+					errorRelated.append("Child name "+child.getName());
 					Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
 					while (custodianIter.hasNext() && invoiceHeader == null) {
 						custodian = (User) custodianIter.next();
 						try{
 							invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
 							custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
-							errorRelated.append("Parent "+custodianID+"<br>");
+							errorRelated.append("Parent "+custodianID);
 						} catch (FinderException e) {
 							//That's OK, just keep looking
 						}
@@ -551,9 +551,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
-						createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
+						createNewErrorMessage(errorRelated,"invoice.CouldNotFindCustodianForRegularInvoice");
 					}
-					errorRelated.append("Note "+regularInvoiceEntry.getNote()+"<br>");
+					errorRelated.append("Note "+regularInvoiceEntry.getNote());
 				
 					placementTimes = calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
 							new Date(regularInvoiceEntry.getTo().getTime()));
@@ -581,10 +581,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.store();
 				} catch (RemoteException e) {
 					e.printStackTrace();
-					createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+					createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 				} catch (CreateException e) {
 					e.printStackTrace();
-					createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+					createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 				}
 			}
 		} catch (RemoteException e) {
@@ -610,10 +610,10 @@ public class InvoiceChildcareThread extends BillingThread{
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
-				StringBuffer errorRelated = new StringBuffer("RegularPaymentEntry ID "+regularPaymentEntry.getPrimaryKey()+"<br>");
-				errorRelated.append("Placing "+regularPaymentEntry.getPlacing()+"<br>");
-				errorRelated.append("Amount "+regularPaymentEntry.getAmount()+"<br>");
-				errorRelated.append("School "+regularPaymentEntry.getSchool()+"<br>");
+				StringBuffer errorRelated = new StringBuffer("RegularPaymentEntry ID "+regularPaymentEntry.getPrimaryKey());
+				errorRelated.append("Placing "+regularPaymentEntry.getPlacing());
+				errorRelated.append("Amount "+regularPaymentEntry.getAmount());
+				errorRelated.append("School "+regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
