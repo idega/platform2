@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/20 15:37:38 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/21 14:14:02 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -51,6 +51,8 @@ public class ViewpointForm extends CommuneBlock {
     public final static String PARAM_SSN = "vp_ssn";
 	public final static String PARAM_VIEWPOINT_ID = "vp_viewpoint_id";
 	public final static String PARAM_ROAD_ID = "vp_road_id";
+	public final static String PARAM_NAME = "vp_name";
+	public final static String PARAM_EMAIL = "vp_email";
 
 	private final static String SHOWTOPCATEGORIESFORM_ACTION
         = "vp_showtopcategoriesform_action";
@@ -103,6 +105,8 @@ public class ViewpointForm extends CommuneBlock {
         + "synpunkter på hur en enskild skola eller förskola fungerar så ska "
         + "du därför i första hand vända dig till personal, rektor eller "
         + "förskolechef.";
+	private final static String EMAIL_KEY = "viewpoint.email";
+	private final static String EMAIL_DEFAULT = "E-post";
 	private final static String ENTERSUBCATEGORY_KEY
         = "viewpoint.enterSubCategory";
 	private final static String ENTERSUBCATEGORY_DEFAULT
@@ -133,6 +137,8 @@ public class ViewpointForm extends CommuneBlock {
 	//private final static String LOGINNAME_DEFAULT = "Användarnamn";
 	private final static String MESSAGE_KEY = "viewpoint.message";
 	private final static String MESSAGE_DEFAULT = "Meddelande";
+	private final static String NAME_KEY = "viewpoint.name";
+	private final static String NAME_DEFAULT = "Namn";
     private final static String NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY
         = "viewpoint.notAuthorizedToShowViewpoint";
     private final static String NOTAUTHORIZEDTOSHOWVIEWPOINT_DEFAULT
@@ -153,10 +159,7 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String SUBMITVIEWPOINT_KEY
         = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
-	private final static String USER_KEY = "viewpoint.user";
 	private final static String USERID_KEY = "viewpoint.userId";
-	private final static String USE_SSN_INFO_KEY = "viewpoint.useSsnInfo";
-	private final static String USE_SSN_INFO_DEFAULT = "För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka så räcker det med att ange ditt personnummer nedan";
 	private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
 	private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
 	private final static String VIEWPOINT_KEY = "viewpoint.viewpoint";
@@ -174,64 +177,95 @@ public class ViewpointForm extends CommuneBlock {
 	 */
 	public void main(final IWContext context) {
 		setResourceBundle (getResourceBundle(context));
+        final boolean isLoggedOn = context.isLoggedOn ();
 
 		try {
-            if (!isAuthenticated (context)) {
-                showAuthenticationForm ();
+            if (!isUserIdentified (context)) {
+                showIdentificationForm ();
             } else if (context.isParameterSet (SHOWSUBCATEGORIESFORM_ACTION)) {
                 showSubCategoriesForm (context);
             } else if (context.isParameterSet (REGISTERVIEWPOINT_ACTION)) {
                 registerViewpoint (context);
-            } else if (context.isParameterSet
+            } else if (context.isParameterSet (CANCEL_ACTION)) {
+                add (getStartPageLink (context));
+            } else if (isLoggedOn && context.isParameterSet
                        (ACCEPTTOHANDLEVIEWPOINT_ACTION)) {
                 acceptToHandleViewpoint (context);
-            } else if (context.isParameterSet (ANSWERVIEWPOINT_ACTION)) {
+            } else if (isLoggedOn
+                       && context.isParameterSet (ANSWERVIEWPOINT_ACTION)) {
                 answerViewpoint (context);
-            } else if (context.isParameterSet (SHOWFORWARDFORM_ACTION)) {
+            } else if (isLoggedOn
+                       && context.isParameterSet (SHOWFORWARDFORM_ACTION)) {
                 showForwardForm (context);
-            } else if (context.isParameterSet (FORWARDVIEWPOINT_ACTION)) {
+            } else if (isLoggedOn
+                       && context.isParameterSet (FORWARDVIEWPOINT_ACTION)) {
                 forwardViewpoint (context);
-            } else if (context.isParameterSet (CANCEL_ACTION)) {
-                showHomepage (context);
-            } else if (context.isParameterSet (PARAM_VIEWPOINT_ID)) {
+            } else if (isLoggedOn
+                       && context.isParameterSet (PARAM_VIEWPOINT_ID)) {
                 showViewpoint (context);
-            } else if (isAuthenticated (context)) {
+            } else {
                 showTopCategoriesForm (context);
-            }                    
-        }
-        catch (final Exception exception) {
+            }
+        } catch (final Exception exception) {
             add(new ExceptionWrapper(exception, this));
 		}
 	}
 
-	private void showAuthenticationForm () {
+	private void showIdentificationForm () {
 		final Form form = new Form();
-
-		final Text text1 = new Text (getLocalizedString (DESCRIPTION1_KEY,
-                                                         DESCRIPTION1_DEFAULT));
-		final Text text2 = new Text (getLocalizedString (DESCRIPTION2_KEY,
-                                                         DESCRIPTION2_DEFAULT));
-		final Text text3 = new Text (getLocalizedString (USE_SSN_INFO_KEY,
-                                                         USE_SSN_INFO_DEFAULT));
+        final Text useSsnHeader = getSmallHeader ("Du som redan har medborgakonto");
+        final Text useSsnText = getSmallText ("Om du redan har ett medborgarkonto på Nacka24 så kan du lämna en synpunkt utan att logga in genom att ange ditt perssonnummer nedan:");
 		final TextInput ssnInput = (TextInput) getStyledInterface
                 (new TextInput (PARAM_SSN));
 		ssnInput.setLength (10);
 		final SubmitButton submit = getSubmitButton
                 (SHOWTOPCATEGORIESFORM_ACTION, CONTINUE_KEY, CONTINUE_DEFAULT);
+        final Text applyHeader = getSmallHeader ("Om du vill ansöka om medborgarkonto");
+        final Text applyText = getSmallText ("Om du bor i Nacka kommun, men ännu inte har skaffat medborgarkonto på Nacka24 så kan du göra en ansökan nu genom att klicka på ansökningslänken i övre marginalen.");
+        final Text submitNameAndEmailHeader = getSmallHeader ("Du som bara vill lämna en synpunkt");
+        final Text submitNameAndEmailText = getSmallText ("Du kan också lämna en synpunkt genom att ange ditt namn och din e-post nedan:");
+		final TextInput nameInput = (TextInput) getStyledInterface
+                (new TextInput (PARAM_NAME));
+		nameInput.setLength (40);
+		final TextInput emailInput = (TextInput) getStyledInterface
+                (new TextInput (PARAM_EMAIL));
+		nameInput.setLength (50);
+
 
 		final Table table = new Table ();
 		table.setWidth (getWidth ());
 		table.setCellpadding (0);
 		table.setCellspacing (0);
 		int row = 1;
-		table.add (text1, 1, row++);
+		table.add (useSsnHeader, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (text2, 1, row++);
+		table.add (useSsnText, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (text3, 1, row++);
+        final Table ssnTable = new Table (2, 1);
+        ssnTable.setWidth(1, 100);
+		ssnTable.add (getLocalizedHeader (SSN_KEY, SSN_DEFAULT), 1, 1);
+        ssnTable.add (ssnInput, 2, 1);
+        table.add (ssnTable, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (getLocalizedHeader (SSN_KEY, SSN_DEFAULT), 1, row++);
-        table.add (ssnInput, 1, row++);
+		table.add (submit, 1, row++);
+		table.setHeight (row++, 24);
+		table.add (applyHeader, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (applyText, 1, row++);
+		table.setHeight (row++, 24);
+		table.add (submitNameAndEmailHeader, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (submitNameAndEmailText, 1, row++);
+		table.setHeight (row++, 12);
+        final Table nameAndEmailTable = new Table (2, 2);
+        nameAndEmailTable.setWidth(1, 100);
+		nameAndEmailTable.add (getLocalizedHeader
+                               (NAME_KEY, NAME_DEFAULT), 1, 1);
+        nameAndEmailTable.add (nameInput, 2, 1);
+		nameAndEmailTable.add (getLocalizedHeader
+                               (EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
+        nameAndEmailTable.add (emailInput, 2, 2);
+        table.add (nameAndEmailTable, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (submit, 1, row++);
 		form.add (table);
@@ -265,8 +299,8 @@ public class ViewpointForm extends CommuneBlock {
 		table.setHeight (row++, 12);
 		table.add (text2, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (getLocalizedHeader (ENTERTOPCATEGORY_KEY,
-                                       ENTERTOPCATEGORY_DEFAULT), 1, row++);
+		table.add (getLocalizedSmallHeader (ENTERTOPCATEGORY_KEY,
+                                            ENTERTOPCATEGORY_DEFAULT), 1, row++);
 		table.setHeight (row++, 12);
 		table.add (categoryDropdown, 1, row++);
 		table.setHeight (row++, 12);
@@ -323,18 +357,22 @@ public class ViewpointForm extends CommuneBlock {
 		int row = 1;
 		table.add (getLocalizedSmallHeader
                    (ENTERSUBCATEGORY_KEY, ENTERSUBCATEGORY_DEFAULT), 1, row++);
+		table.setHeight (row++, 6);
 		table.add (categoryDropdown, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (getLocalizedSmallHeader (ENTERROAD_KEY, ENTERROAD_DEFAULT),
                    1, row++);
+		table.setHeight (row++, 6);
 		table.add (roadDropdown, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (getLocalizedSmallHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1,
                    row++);
+		table.setHeight (row++, 6);
 		table.add (textInput, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (getLocalizedSmallHeader (VIEWPOINTS_KEY, VIEWPOINTS_DEFAULT),
                    1, row++);
+		table.setHeight (row++, 6);
 		table.add (textArea, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (submit, 1, row++);
@@ -386,7 +424,7 @@ public class ViewpointForm extends CommuneBlock {
                 table.add (new Break (), 1, row);
                 table.add (new Text (viewpoint.getAnswer ()), 1, row++);
             }              
-            table.add(getUserHomepageLink (context), 1, row++);
+            table.add(getStartPageLink (context), 1, row++);
             add (table);
         } else {
             // user is not authorized to see this particular viewpoint
@@ -410,9 +448,11 @@ public class ViewpointForm extends CommuneBlock {
                 = getSubmitButton (ACCEPTTOHANDLEVIEWPOINT_ACTION,
                                    IACCEPTTOHANDLETHISVIEWPOINT_KEY,
                                    IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT);
-		table.add (submit, 1, 6);
+        int row = 6;
+		table.setHeight (row++, 12);
+		table.add (submit, 1, row++);
 		table.add (getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT),
-                   1, 7);
+                   1, row++);
 		form.add(table);
 		add(form);
 	}
@@ -441,7 +481,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding(14);
 		table.setColor(getBackgroundColor());
 		table.add(text, 1, row++);
-		table.add(getUserHomepageLink (context), 1, row++);
+		table.add(getStartPageLink (context), 1, row++);
 		add(table);
 	}
 
@@ -514,7 +554,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding(14);
 		table.setColor(getBackgroundColor());
 		table.add(text, 1, row++);
-		table.add(getUserHomepageLink (context), 1, row++);
+		table.add(getStartPageLink (context), 1, row++);
 		add(table);
 	}
 
@@ -534,7 +574,7 @@ public class ViewpointForm extends CommuneBlock {
                     (context.getParameter (PARAM_VIEWPOINT_ID));
             final ViewpointBusiness viewpointBusiness
                     = getViewpointBusiness (context);
-            homeLink = getUserHomepageLink (context);
+            homeLink = getStartPageLink (context);
             String receiverName = null;
             if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
                 // Login name entered
@@ -597,10 +637,16 @@ public class ViewpointForm extends CommuneBlock {
                 = ((Integer) handlerGroup.getPrimaryKey()).intValue();
 		final int roadId = new Integer
                 (context.getParameter (PARAM_ROAD_ID)).intValue();
-		viewpointBusiness.createViewpoint
-                (getCurrentUser (context), context.getParameter (PARAM_SUBJECT),
-                 context.getParameter (PARAM_MESSAGE), topCategory.getName ()
-                 + "/" + subCategory.getName (), handlerGroupId, roadId);
+        final User user = getCurrentUser (context);
+        if (null != user) {
+            viewpointBusiness.createViewpoint
+                    (user, context.getParameter (PARAM_SUBJECT),
+                     context.getParameter (PARAM_MESSAGE),
+                     topCategory.getName () + "/" + subCategory.getName (),
+                     handlerGroupId, roadId);
+        } else {
+            add ("--- den här funktionen är inte implementerad ännu ---");
+        }
 		final Text text1
                 = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
                                                 CONFIRMENTERVIEWPOINT_DEFAULT));
@@ -612,7 +658,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellpadding (0);
 		table.add (text1, 1, row++);
 		table.setHeight (row++, 12);
-		table.add (getUserHomepageLink (context), 1, row++);
+		table.add (getStartPageLink (context), 1, row++);
 		add (table);
 	}
 
@@ -632,7 +678,7 @@ public class ViewpointForm extends CommuneBlock {
         add (form);
         Link homeLink = null;
         try {
-            homeLink = getUserHomepageLink (context);
+            homeLink = getStartPageLink (context);
             if (null != forwardType && forwardType.equals (GROUPNAME_KEY)) {
                 // Group name entered
                 final String groupName = context.getParameter (GROUPNAME_KEY);
@@ -709,8 +755,8 @@ public class ViewpointForm extends CommuneBlock {
         User result = null;
         try {
             final LoginTable loginTable
-                    = LoginDBHandler.getUserLoginByUserName(loginName);
-            final int userId = loginTable.getUserId();
+                    = LoginDBHandler.getUserLoginByUserName (loginName);
+            final int userId = loginTable.getUserId ();
             final UserBusiness userBusiness = (UserBusiness)
                     IBOLookup.getServiceInstance (context, UserBusiness.class);
             result = userBusiness.getUser (userId);
@@ -766,12 +812,6 @@ public class ViewpointForm extends CommuneBlock {
         return result;
     }
 
-	private void showHomepage (final IWContext context) throws RemoteException {
-		final Table table = new Table ();
-		table.add (getUserHomepageLink (context), 1, 1);
-		add (table);
-	}
-
     private Table getRadioButtonTable (final String name,
                                        final String [][] labels) {
         final Table table = new Table (3, labels.length);
@@ -794,17 +834,29 @@ public class ViewpointForm extends CommuneBlock {
         return table;
     }
 
-    private Link getUserHomepageLink (final IWContext context)
-        throws RemoteException {
-		final Text userHomePageText
-                = new Text (getLocalizedString (GOBACKTOMYPAGE_KEY,
-                                                GOBACKTOMYPAGE_DEFAULT));
- 		final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (context, UserBusiness.class);
-        final User user = getCurrentUser (context);
-		final Link link = new Link (userHomePageText);
-        link.setPage (userBusiness.getHomePageIDForUser (user));
-        return link;
+    private Link getStartPageLink (final IWContext context) {
+        Link result = null;
+        try {
+            if (context.isLoggedOn ()) {
+                final Text userHomePageText = new Text
+                        (getLocalizedString (GOBACKTOMYPAGE_KEY,
+                                             GOBACKTOMYPAGE_DEFAULT));
+                final UserBusiness userBusiness = (UserBusiness)
+                        IBOLookup.getServiceInstance (context,
+                                                      UserBusiness.class);
+                final User user = context.getCurrentUser ();
+                final int homePageId = userBusiness.getHomePageIDForUser (user);
+                result = new Link (userHomePageText);
+                result.setPage (homePageId);
+            }
+        } catch (Exception e) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                result = new Link ("Tillbaka till Nacka24:s startsida", "/");
+            }
+        }
+        return result;
     }
 
     private SubmitButton getSubmitButton (final String action, final String key,
@@ -815,7 +867,8 @@ public class ViewpointForm extends CommuneBlock {
     }
 
     private Table createViewpointTable
-        (final Viewpoint viewpoint, final IWContext context) throws RemoteException{
+        (final Viewpoint viewpoint, final IWContext context)
+        throws RemoteException{
 		final Table table = new Table();
 		table.setWidth (getWidth ());
 		table.setCellspacing (0);
@@ -862,28 +915,56 @@ public class ViewpointForm extends CommuneBlock {
         return table;
     }
 
-	private boolean isAuthenticated (final IWContext context) {
+	private boolean isUserIdentified (final IWContext context) {
+        return context.isLoggedOn () || isUserIdentifiedBySsn (context)
+                || isUserIdentifiedByEmailAndName (context);
+    }
+
+	private boolean isUserIdentifiedBySsn (final IWContext context) {
         boolean result = false;
         final HttpSession session = context.getSession ();
-        if (context.isLoggedOn () || session.getAttribute (USER_KEY) != null) {
-            result = true;
-        } else {
-            final String ssn = getSsn (context, PARAM_SSN);
-            if (ssn != null) {
-                try {
-                    final UserBusiness userBusiness = (UserBusiness) IBOLookup
-                            .getServiceInstance (context, UserBusiness.class);
-                    final User user = userBusiness.getUser (ssn);
-                    if (user != null) {
-                        session.setAttribute (USER_KEY, user);
-                        result = true;
-                    }
-                } catch (final Exception e) {
-                    System.err.println ("ssn " + ssn + " not found: "
-                                        + e.getMessage ());
-                    result = false;
+        try {
+            if (null != session.getAttribute (SSN_KEY)) {
+                result = true;
+            } else {
+                final String ssn = getSsn (context, PARAM_SSN);
+                final UserBusiness userBusiness = (UserBusiness) IBOLookup
+                        .getServiceInstance (context, UserBusiness.class);
+                final User user = userBusiness.getUser (ssn);
+                final Integer userId = (Integer) user.getPrimaryKey ();
+                final LoginTable loginTable
+                        = LoginDBHandler.getUserLogin (userId.intValue ());
+                if (loginTable != null) {
+                    // user has a citizen account
+                    session.setAttribute (SSN_KEY, user);
+                    result = true;
                 }
             }
+        } catch (final Exception e) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean isUserIdentifiedByEmailAndName (final IWContext context) {
+        boolean result = false;
+        final HttpSession session = context.getSession ();
+        try {
+            if (null != session.getAttribute (EMAIL_KEY)) {
+                result = true;
+            } else {
+                final String email = context.getParameter (PARAM_EMAIL).trim ();
+                final String name = context.getParameter (PARAM_NAME).trim ();
+                if (email.length () > 0 && name.length () > 0) {
+                    System.err.println ("setting attributes");
+                    session.setAttribute (EMAIL_KEY, email);
+                    session.setAttribute (NAME_KEY, name);
+                    result = true;
+                }
+            }
+        } catch (final Exception e) {
+            result = false;
         }
 
         return result;
@@ -892,14 +973,13 @@ public class ViewpointForm extends CommuneBlock {
     private User getCurrentUser (final IWContext context) {
         User result = null;
         
-        if (isAuthenticated (context)) {
-            if (context.isLoggedOn ()) {
-                result = context.getCurrentUser ();
-            } else {
-                final HttpSession session = context.getSession ();
-                result = (User) session.getAttribute (USER_KEY);
-            }
+        if (context.isLoggedOn ()) {
+            result = context.getCurrentUser ();
+        } else if (isUserIdentifiedBySsn (context)) {
+            final HttpSession session = context.getSession ();
+            result = (User) session.getAttribute (SSN_KEY);
         }
+
         return result;
     }
 
