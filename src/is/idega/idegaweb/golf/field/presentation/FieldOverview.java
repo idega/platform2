@@ -247,7 +247,7 @@ public class FieldOverview extends GolfBlock {
 		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
 		if (fieldImage.length != 0) {
 			Image fieldMynd = new Image(fieldImage[0].getImageID());
-			fieldMynd.setHorizontalSpacing(6);
+			fieldMynd.setHorizontalSpacing(12);
 			if (iMaxImageWidth > 0) {
 				fieldMynd.setMaxImageWidth(iMaxImageWidth);
 			}

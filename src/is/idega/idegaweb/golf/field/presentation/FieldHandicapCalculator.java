@@ -22,6 +22,7 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -35,7 +36,7 @@ public class FieldHandicapCalculator extends GolfWindow {
 
 	public FieldHandicapCalculator() {
 		setWidth(300);
-		setHeight(300);
+		setHeight(230);
 		setTitle("Field handicap calculator");
 		add(new Calculator());
 	}
@@ -60,10 +61,8 @@ public class FieldHandicapCalculator extends GolfWindow {
 			contentTable.setWidth("100%");
 			contentTable.setCellpadding(0);
 			contentTable.setCellspacing(0);
+			contentTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
 
-			Text fieldText = getHeader(field.getName());
-			contentTable.add(fieldText, 1, 1);
-			
 			String gender = "none";
 
 			String handicap = modinfo.getParameter("handicap");
@@ -78,8 +77,10 @@ public class FieldHandicapCalculator extends GolfWindow {
 				gender = member.getGender();
 			}
 
-			Table myTable = new Table(2, 4);
-			myTable.mergeCells(1, 4, 2, 4);
+			Table myTable = new Table(2, 5);
+			myTable.mergeCells(1, 5, 2, 5);
+			myTable.setCellpadding(5);
+			myTable.setCellspacing(0);
 			Form myForm = new Form();
 			myForm.add(new HiddenInput("field_id", field_id));
 
@@ -129,31 +130,38 @@ public class FieldHandicapCalculator extends GolfWindow {
 
 				int leik = leikForgjof.getLeikHandicap((double) slope, (double) course_rating, (double) field_par);
 
-				myTable.add(getText(String.valueOf(leik)), 2, 3);
+				myTable.add(getText(String.valueOf(leik)), 2, 4);
 
 				handicapInput.setValue(handicap);
 
 			}
 
+			Text courseText = getHeader(localize("field.course", "Course"));
 			Text handicapText = getHeader(localize("field.base_handicap", "Handicap"));
 			Text teeText = getHeader(localize("field.tees", "Tees"));
 			Text gameHandText = getHeader(localize("field.play_handicap", "Play handicap"));
+			Text fieldText = getText(field.getName());			
 
-			myTable.add(handicapText, 1, 1);
-			myTable.add(teeText, 1, 2);
-			myTable.add(gameHandText, 1, 3);
+			myTable.add(courseText, 1, 1);
+			myTable.add(handicapText, 1, 2);
+			myTable.add(teeText, 1, 3);
+			myTable.add(gameHandText, 1, 4);
 
-			myTable.add(handicapInput, 2, 1);
-			myTable.add(tees, 2, 2);
-			myTable.add(new SubmitButton(localize("calculate", "Calculate")), 1, 4);
+			myTable.add(fieldText, 2, 1);
+			myTable.add(handicapInput, 2, 2);
+			myTable.add(tees, 2, 3);
+			myTable.add(new CloseButton(localize("close", "Close")), 1, 5);
+			myTable.add(Text.getNonBrakingSpace(), 1, 5);
+			myTable.add(new SubmitButton(localize("calculate", "Calculate")), 1, 5);
 
 			myTable.setAlignment(1, 1, "right");
 			myTable.setAlignment(1, 2, "right");
 			myTable.setAlignment(1, 3, "right");
 			myTable.setAlignment(1, 4, "right");
+			myTable.setAlignment(1, 5, "right");
 
 			myForm.add(myTable);
-			contentTable.add(myForm, 1, 3);
+			contentTable.add(myForm, 1, 1);
 
 			add(contentTable);
 
