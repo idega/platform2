@@ -20,9 +20,9 @@ public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllBySeasonAndInvoiceCompensation(int p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllCurrentInvoiceCompensationBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndInvoiceCompensation(p0);
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllCurrentInvoiceCompensationBySchoolType(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

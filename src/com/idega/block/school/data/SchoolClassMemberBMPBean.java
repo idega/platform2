@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/20 15:18:11 $ by $Author: laddi $
- * @version $Revision: 1.51 $
+ * Last modified: $Date: 2003/10/21 10:47:19 $ by $Author: staffan $
+ * @version $Revision: 1.52 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -462,36 +462,32 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindAllBySeasonAndInvoiceCompensation
-        (final int seasonId) throws FinderException {
+	public Collection ejbFindAllCurrentInvoiceCompensationBySchoolType
+        (final int schoolTypeId) throws FinderException {
 		final IDOQuery sql = idoQuery ();
         sql.appendSelectAllFrom (getTableName() + " m")
                 .append (',' + SchoolClassBMPBean.SCHOOLCLASS + " c")
                 .append (',' + SchoolBMPBean.SCHOOL + " s")
+                .append (',' + SchoolBMPBean.SCHOOL + '_'
+                         + SchoolTypeBMPBean.SCHOOLTYPE + " t")
                 .appendWhere ()
-                .append ("m." + SCHOOLCLASS)
-                .appendEqualSign ()
-                .append ("c." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+                .appendEquals ("m." + SCHOOLCLASS,
+                               "c." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+                .appendAndEquals ("c." + SchoolClassBMPBean.SCHOOL,
+                                  "s." + SchoolBMPBean.SCHOOL + "_id")
+                .appendAndEquals ("s." + SchoolBMPBean.SCHOOL + "_id",
+                                  "t." + SchoolBMPBean.SCHOOL + "_id")
+                .appendAndEquals ("t." + SchoolBMPBean.SCHOOLTYPE, schoolTypeId)
                 .appendAnd ()
-                .append ("c." + SchoolClassBMPBean.SCHOOL)
-                .appendEqualSign ()
-                .append ("s." + SchoolBMPBean.SCHOOL + "_id")
-                .appendAnd ()
-                .append ("s." + SchoolBMPBean.COMPENSATION_BY_INVOICE)
-                .appendEqualSign ()
-                .appendWithinSingleQuotes ("Y")
-                .appendAnd ()
-                .append ("c." + SchoolClassBMPBean.SEASON)
-                .appendEqualSign ()
-                .append (seasonId)
+                .append (REMOVED_DATE)
+                .appendNOTEqual ()
+                .append ("null")
                 .appendAnd ()
                 .appendLeftParenthesis ();
         
         for (Iterator i = ejbHomeGetInvoiceIntervalTypes ().iterator ();
              i.hasNext ();) {
-            sql.append ("m." + INVOICE_INTERVAL)
-                    .appendEqualSign ()
-                    .appendWithinSingleQuotes (i.next ().toString ());
+            sql.appendEqualsQuoted (INVOICE_INTERVAL, i.next ().toString ());
             if (i.hasNext ()) {
                 sql.appendOr ();
             }

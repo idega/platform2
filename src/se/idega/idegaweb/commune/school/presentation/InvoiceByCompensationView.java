@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/10/16 12:12:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/21 10:46:47 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -147,7 +147,7 @@ public class InvoiceByCompensationView extends CommuneBlock {
 
         // search the database for members to display
         final SchoolClassMember [] members
-                = communeBusiness.getCurrentMembersWithInvoiceInterval ();
+                = communeBusiness.getCurrentMembersWithInvoiceInterval (4);
 
         // display each member
         for (int i = 0; i < members.length; i++) {
