@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.6 2002/10/13 10:13:36 tryggvil Exp $
+ * $Id: ContractFinder.java,v 1.7 2002/10/15 15:16:54 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -220,7 +220,7 @@ public abstract class ContractFinder
 					com.idega.block.contract.data.ContractBMPBean.getColumnNameStatus(),
 					S,
 					com.idega.block.contract.data.ContractBMPBean.getColumnNameCategoryId(),
-					String.valueOf(iCategoryId)));
+					iCategoryId));
 		}
 		catch (SQLException e)
 		{
@@ -264,15 +264,17 @@ public abstract class ContractFinder
 			List L =
 				EntityFinder.findAllByColumn(
 					((com.idega.block.contract.data.ContractTagHome) com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class)).createLegacy(),
-					com.idega.block.contract.data.ContractTagBMPBean.getColumnNameCategoryId(),
-					String.valueOf(iCategoryId),
 					com.idega.block.contract.data.ContractTagBMPBean.getColumnNameInUse(),
-					"Y");
+					"Y",
+					com.idega.block.contract.data.ContractTagBMPBean.getColumnNameCategoryId(),
+					iCategoryId);
 			EntityFinder.debug = false;
+						
 			return L;
 		}
 		catch (SQLException ex)
 		{
+			ex.printStackTrace();
 		}
 		return null;
 	}
