@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -36,10 +37,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/03 10:09:21 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/04 13:47:27 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -82,23 +83,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
 			while(headerIter.hasNext()){
 				header = (InvoiceHeader)headerIter.next();
-				if(header.getStatus() == ConstantStatus.PRELIMINARY);{
-					recordIter = getInvoiceRecordHome().findByInvoiceHeader(header).iterator();
-					while(recordIter.hasNext()){
-						invoiceRrecord = (InvoiceRecord) recordIter.next();
-						if(invoiceRrecord.getRuleSpecType().equals(RegSpecConstant.CHECK)){
-							try {
-								paymentRecord = getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRrecord.getPaymentRecordId()));
-								//Remove this instance from the payment record
-								paymentRecord.setPlacements(paymentRecord.getPlacements()-1);
-								paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()-invoiceRrecord.getAmount());
-								paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()-invoiceRrecord.getAmountVAT());
-							} catch (FinderException e1) {}
-						}
-						invoiceRrecord.remove();
-					}
-					header.remove();
-				}
+				removePreliminaryInvoice(header);
 			}
 /*
 			//Remove payments... Probably shouldn't remove them since they can hold info that has 
@@ -115,6 +100,41 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
+	/**
+	 * Removes the invoice records and header and the related information in 
+	 * the payment records if the given header status was set to preliminary
+	 * 
+	 * @param header invoice to remove
+	 */
+	public void removePreliminaryInvoice (InvoiceHeader header) throws RemoveException {
+		PaymentRecord paymentRecord;
+		Iterator recordIter;
+		InvoiceRecord invoiceRrecord;
+        try {
+            if(header.getStatus() == ConstantStatus.PRELIMINARY);{
+                recordIter = getInvoiceRecordHome().findByInvoiceHeader(header).iterator();
+                while(recordIter.hasNext()){
+                    invoiceRrecord = (InvoiceRecord) recordIter.next();
+                    String ruleSpecType = invoiceRrecord.getRuleSpecType();
+                    if(null != ruleSpecType && RegSpecConstant.CHECK.equals (ruleSpecType)) {
+                        try {
+                            paymentRecord = getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRrecord.getPaymentRecordId()));
+                            //Remove this instance from the payment record
+                            paymentRecord.setPlacements(paymentRecord.getPlacements()-1);
+                            paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()-invoiceRrecord.getAmount());
+                            paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()-invoiceRrecord.getAmountVAT());
+                        } catch (FinderException e1) {}
+                    }
+                    invoiceRrecord.remove();
+                }
+                header.remove();
+            }
+        } catch (Exception e) {
+			e.printStackTrace();
+			throw new RemoveException("Could not remove the records.");
+		}
+	}
+
 	public boolean isHighShool(String category) throws IDOLookupException, FinderException{
 		SchoolCategory highSchool = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findHighSchoolCategory();
 		if(((String)highSchool.getPrimaryKey()).equals(category)){
