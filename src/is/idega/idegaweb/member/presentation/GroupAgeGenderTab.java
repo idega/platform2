@@ -132,10 +132,16 @@ public class GroupAgeGenderTab extends UserGroupTab {
     StringTokenizer keyDate = new StringTokenizer((String)fieldValues.get(keyDateForAgeFieldName)," -");  
 
     if(keyDate.hasMoreTokens()){
-      keyDateForAgeField.setMonth(Integer.parseInt(keyDate.nextToken()));
+      keyDateForAgeField.setMonth(keyDate.nextToken());
+    }
+    else {
+      keyDateForAgeField.setMonth(-1);
     }
     if(keyDate.hasMoreTokens()){
-      keyDateForAgeField.setDay(Integer.parseInt(keyDate.nextToken()));
+      keyDateForAgeField.setDay(keyDate.nextToken());
+    }
+    else {
+      keyDateForAgeField.setDay(-1);
     }
     // error fields
     lowerAgeTooSmallField.setText((String) fieldValues.get(lowerAgeTooSmallFieldName));
@@ -230,13 +236,24 @@ public class GroupAgeGenderTab extends UserGroupTab {
       String ageLimitIsStringentCondition = iwc.getParameter(ageLimitIsStringentConditionFieldName);
       
       String keyDate = iwc.getParameter(keyDateForAgeFieldName);
-      // only store key date if month and day is set by the user
-      // that is e.g: "-1 - 01 - 11"
-      if ( (keyDate != null) && (keyDate.length() != 0))   {
-        int i = keyDate.indexOf("-",1);
+      // only modify key date if month and day is set by the user.
+      // not selected is indicated by -1.
+      // key date = "year-month-day"
+      // year is always not selected.
+      // e.g: 
+      // "-1-03-11" changes to "03-11"
+      // "-1--1-12 (month is not selected) changes to ""
+      // "-1--09--23 changes to ""
+      // "-1-07--30 changes to "" 
+      if ( (keyDate != null) && (keyDate.length() != 0) && keyDate.indexOf("--") == -1)   {
+        // month and day are selected
+        int i = keyDate.indexOf("-", 1 ); // 1 in order to skip the year
         keyDate = keyDate.substring(++i);
-        fieldValues.put(keyDateForAgeFieldName, keyDate);
       }
+      else  {
+        keyDate = "";
+      }
+      fieldValues.put(keyDateForAgeFieldName, keyDate);
       
       fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition != null));
       
