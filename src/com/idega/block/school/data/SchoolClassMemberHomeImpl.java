@@ -1,5 +1,7 @@
 package com.idega.block.school.data;
 
+import com.idega.user.data.Group;
+
 
 public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory implements SchoolClassMemberHome
 {
@@ -172,9 +174,9 @@ public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ej
  }
 
 
-public int getNumberOfUsersNotAssignedToClassOnGivenDate(java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException{
+public int getNumberOfUsersNotAssignedToClassOnGivenDate(Group citizenGroup, java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(p0,p1,p2,p3);
+	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(citizenGroup,p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }

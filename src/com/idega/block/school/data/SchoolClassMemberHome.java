@@ -1,5 +1,7 @@
 package com.idega.block.school.data;
 
+import com.idega.user.data.Group;
+
 
 public interface SchoolClassMemberHome extends com.idega.data.IDOHome
 {
@@ -27,6 +29,6 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
- public int getNumberOfUsersNotAssignedToClassOnGivenDate(java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;
+ public int getNumberOfUsersNotAssignedToClassOnGivenDate(Group citizenGroup, java.sql.Date p0,java.util.Collection p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;
 
 }

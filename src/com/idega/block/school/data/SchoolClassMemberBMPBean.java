@@ -15,6 +15,8 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 
 /**
@@ -334,27 +336,81 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
-	public int ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException{
+	public int ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException{
 		try {
 			
 			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
 			String usrIdColumn = usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
+			IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+
+
 			IDOEntityField dateOfBirth = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
+
+			//relationStatus could be as parameter to this method
+			String[] relationStatus = new String[1];
+			relationStatus[0] = GroupRelation.STATUS_ACTIVE;
+		  	
+			String[] tables = new String[2];
+			String[] variables = new String[2];
+			//table name
+			tables[0] = usrDef.getSQLTableName();
+			//	as variable
+			variables[0] = "u";
+			//table name
+			tables[1] = grRelDef.getSQLTableName();
+			//	as variable
+			variables[1] = "gr_rel";
 
 			IDOQuery query = this.idoQuery();
 			
-			query.appendSelectCountFrom(usrDef.getSQLTableName());
+			query.appendSelectCount();
+			//from
+			query.appendFrom(tables,variables);
+			//where
 			query.appendWhere();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(citizenGroup.getPrimaryKey());
+			//and
+			query.appendAnd();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_RELATED_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(usrIdColumn);
+			
+			
+			//and if relationstatus
+			if(relationStatus!= null){
+				//and
+				query.appendAnd();
+				query.append(variables[1]);
+				query.append(".");
+				query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_STATUS).getSQLFieldName());
+				query.appendInArrayWithSingleQuotes(relationStatus);		
+			}
+			
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
 			query.append(dateOfBirth);
 			query.appendGreaterThanOrEqualsSign();
 			query.append(firstDateOfBirth);
 			
 			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
 			query.append(dateOfBirth);
 			query.appendLessThanOrEqualsSign();
 			query.append(lastDateOfBirth);
 			
 			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
 			query.append(usrIdColumn);
 			
 			IDOQuery subQuery = this.idoQuery();
