@@ -39,10 +39,10 @@ public class LinkGenerator extends TravelWindow {
       http = "https";
     }
 
-    add("&lt;a target=\"_blank\" href=\""+http+"://"+link+"\"&gt;Book&lt;/a&gt;");
+    add("&lt;a target=\"_blank\" href=\"https://"+link+"\"&gt;Book&lt;/a&gt;");
     add(Text.getBreak());
     add(Text.getBreak());
-    add("<a target=\"_blank\" href=\""+http+"://"+link+"\">Try link</a>");
+    add("<a target=\"_blank\" href=\"https://"+link+"\">Try link</a>");
   }
 
 }
