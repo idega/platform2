@@ -99,7 +99,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		underTable.setCellspacing(1);
 		underTable.setStyleClass(grayBackground);
 		Collection marks = getCalendarBusiness(iwc).getAllMarks();
-		Collection practices = getCalendarBusiness(iwc).getEntriesByLedgerID(ledID);
+		Collection practices = getCalendarBusiness(iwc).getPracticesByLedgerID(ledID);
 		
 		Table tpTable = new Table();
 		tpTable.setCellpadding(1);

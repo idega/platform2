@@ -115,8 +115,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 			else {
 				stamp = CalendarView.getTimestamp(day,month,year);
 			}
-		}
-		
+		}		
 	}
 	public void lineUp() {
 		table = new Table();

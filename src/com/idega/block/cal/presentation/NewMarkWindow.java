@@ -13,6 +13,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -96,13 +97,20 @@ public class NewMarkWindow extends StyledIWAdminWindow{
 		initializeTexts();
 		initializeFields();
 		lineUp();
-		add(form,iwc);
+		
+		String ledgerIDString = iwc.getParameter(LedgerWindow.LEDGER);
+		HiddenInput hi = new HiddenInput(LedgerWindow.LEDGER,ledgerIDString);
+		form.add(hi);
 		String mark = iwc.getParameter(markFieldParameterName);
 		String description = iwc.getParameter(markDescriptionFieldParameterName);
 		String save = iwc.getParameter("submit");
+		
+		add(form,iwc);
+		
 		if(save != null && !save.equals("")) {
 			getCalBusiness(iwc).createNewMark(mark,description);
 			Link l = new Link();
+			l.addParameter(LedgerWindow.LEDGER,ledgerIDString);
 			l.setWindowToOpen(LedgerWindow.class);
 			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
 			setOnLoad(script);

@@ -149,7 +149,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 * @param iwc - the context
 	 * @throws Exception
 	 */
-	public void saveLedger(IWContext iwc,int groupID,String coachName) throws Exception{
+	public void saveLedger(IWContext iwc,int groupID,String coachName,int coachGroupID) throws Exception{
 		CalBusiness calBiz = getCalBusiness(iwc);
 		GroupBusiness grBiz =getGroupBusiness(iwc);
 		
@@ -157,7 +157,9 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		String name = g.getName();
 		String date = iwc.getParameter(dateFieldParameterName);
 		
-		calBiz.createNewLedger(name + "_ledger",groupID,coachName,date);
+		
+		
+		calBiz.createNewLedger(name + "_ledger",groupID,coachName,date,coachGroupID);
 		
 	}
 	
@@ -177,6 +179,14 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 			Group group = getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue());
 			groupName = group.getName();
 		}
+		String coachGroupIDString = iwc.getParameter(otherCoachesFieldParameterName);
+		Integer coachGroupID =null;
+		if(coachGroupIDString == null || coachGroupIDString.equals(""))
+			coachGroupIDString = "";
+		else {
+			coachGroupIDString = coachGroupIDString.substring(coachGroupIDString.lastIndexOf("_")+1);
+			coachGroupID = new Integer(coachGroupIDString);
+		}
 			
 		String coach = iwc.getParameter(coachFieldParameterName);
 		
@@ -185,7 +195,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")) {
-			saveLedger(iwc,groupID.intValue(),coach);
+			saveLedger(iwc,groupID.intValue(),coach,coachGroupID.intValue());
 			int ledgerID = getCalBusiness(iwc).getLedgerIDByName(groupName + "_ledger");
 			Integer i = new Integer(ledgerID);
 			//the link is not displayed but contains the window to open

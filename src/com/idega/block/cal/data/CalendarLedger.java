@@ -11,6 +11,7 @@ public interface CalendarLedger extends com.idega.data.IDOEntity{
 	public Timestamp getDate();
 	public String getName();
 	public int getGroupID();
+	public int getCoachGroupID();
 	public Collection getUsers();
 	public int getCoachID();
 	public void setDate(Timestamp stamp);
@@ -18,5 +19,6 @@ public interface CalendarLedger extends com.idega.data.IDOEntity{
 	public void setGroupID(int groupID);
 	public void addUser(User user);
 	public void setCoachID(int coachID);
+	public void setCoachGroupID(int coachGroupID);
 
 }

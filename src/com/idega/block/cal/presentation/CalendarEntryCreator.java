@@ -213,8 +213,8 @@ public class CalendarEntryCreator extends Window{
 				
 		headlineField = new TextInput(headlineFieldParameterName);
 		
-		generalField =new SelectOption(generalText.toString(),generalFieldParameterName);
-		practiceField =new SelectOption(practiceText.toString(),practiceFieldParameterName);
+		generalField =new SelectOption(generalText.toString(),practiceFieldParameterName);
+		practiceField =new SelectOption(practiceText.toString(),generalFieldParameterName);
 		
 		typeField = new DropdownMenu(typeFieldParameterName);
 		
@@ -297,12 +297,12 @@ public class CalendarEntryCreator extends Window{
 		//if some entry is selected, data is printed in the fields
 		if(entryIDString != null && !entryIDString.equals("")) {
 			
-			deleteLink = new Link("Delete");
+			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
 			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 			deleteLink.addParameter(CalendarView.ACTION,"");
-			deleteLink.setAsImageTab(true,true);
+			deleteLink.setAsImageButton(true,true);
 						
 			
 			headlineField.setContent(entry.getName());
@@ -311,7 +311,7 @@ public class CalendarEntryCreator extends Window{
 			
 			Integer groupID = new Integer(entry.getGroupID());
 			try {
-				if(groupID.intValue() != 0) {
+				if(groupID.intValue() != -1) {
 					attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}
 			}catch (Exception e){
@@ -410,7 +410,7 @@ public class CalendarEntryCreator extends Window{
 		Table table = new Table();
 		table.setStyleClass(mainTableStyle);
 		table.setCellspacing(0);
-		table.setCellpadding(0);
+		table.setCellpadding(2);
 		table.mergeCells(1,1,4,1);
 //		table.setAlignment(1,1,"center");
 		table.setStyleClass(1,1,borderBottomStyle);
@@ -498,6 +498,7 @@ public class CalendarEntryCreator extends Window{
 
 		String entryHeadline = iwc.getParameter(headlineFieldParameterName);
 		String entryType = iwc.getParameter(typeFieldParameterName);
+		System.out.println("entryType: " + entryType);
 		String entryRepeat = iwc.getParameter(repeatFieldParameterName);
 		String entryDate = iwc.getParameter(dayFromFieldParameterName);
 		String entryTimeHour = iwc.getParameter(timeFromFieldParameterName + "_hour");
@@ -552,6 +553,10 @@ public class CalendarEntryCreator extends Window{
 //			initializeViewFields(iwc);
 //			add(lineUpView(iwc));
 //	}
+		String save = iwc.getParameter(saveButtonParameterName);
+		if(save != null) {			
+			saveEntry(iwc);	
+		}
 				
 	}
 	public String getBundleIdentifier() {

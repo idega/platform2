@@ -89,6 +89,18 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		return list;
 	}
+	public Collection getPracticesByLedgerID(int ledgerID) {
+		List list = new ArrayList();
+		List entries = (List) getEntriesByLedgerID(ledgerID);
+		Iterator entryIter = entries.iterator();
+		while(entryIter.hasNext()) {
+			CalendarEntry entry = (CalendarEntry) entryIter.next();
+			if(entry.getEntryTypeName().equals("practice")) {
+				list.add(entry);
+			}
+		}
+		return list;
+	}
 	
 	//GET methods for EntryTypes
 	/**
@@ -157,24 +169,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		
 	}
-//	public CalendarLedger getLedgerByUserID(int userID) {
-//		CalendarLedger ledger = null;
-//		List allLedgers = getAllLedgers();
-//		Iterator allLedgersIter = allLedgers.iterator();
-//		while(allLedgersIter.hasNext()) {
-//			ledger = (CalendarLedger) allLedgersIter.next();
-//			Collection users = ledger.getUsers();
-//			Iterator usersIter = users.iterator();
-//			while(usersIter.hasNext()) {
-//				User user = (User) usersIter.next();
-//				Integer usID = (Integer) user.getPrimaryKey();
-//				if(userID == usID.intValue()) {
-//					return ledger;
-//				}
-//			}
-//		}
-//		return null;
-//	}
+
 	/**
 	 * 
 	 */
@@ -353,6 +348,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				CalendarEntry entry = entryHome.create();
 				entry.setName(headline);
 				entry.setEntryTypeID(entryTypePK.intValue());
+				entry.setEntryType(entryType.getName());
 				entry.setRepeat(repeat);
 				entry.setDate(startTime);
 				entry.setEndDate(endTime);
@@ -432,7 +428,6 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			}
 			else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
 				startCal.add(Calendar.DAY_OF_MONTH,7);
-				System.out.println("day: " + startCal.get(Calendar.DAY_OF_MONTH));
 				start += week;
 			}
 			//if the last day of the month
@@ -645,7 +640,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		
 	}
-	public void createNewLedger(String name, int groupID, String coachName, String date) {
+	public void createNewLedger(String name, int groupID, String coachName, String date,int coachGroupID) {
 		IWContext iwc = IWContext.getInstance();
 		Collection users = null;
 		Group group = null;
@@ -668,6 +663,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			CalendarLedger ledger = ledgerHome.create();
 			ledger.setName(name);
 			ledger.setGroupID(groupID);
+			ledger.setCoachGroupID(coachGroupID);
 			ledger.setCoachID(coachID.intValue());
 			ledger.setDate(stamp);
 			ledger.store();

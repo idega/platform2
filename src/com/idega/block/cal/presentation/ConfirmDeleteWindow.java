@@ -9,6 +9,7 @@ import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
@@ -31,12 +32,14 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
   
   
+  private Form f;
+  
   private CalBusiness calBiz;
 
 
   public ConfirmDeleteWindow() {
     setWidth(250);
-    setHeight(135);
+    setHeight(250);
   }
 
  
@@ -58,26 +61,33 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
         String _entryID = iwc.getParameter(PRM_DELETE_ID);
         try {
           getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(_entryID));
+          
         }
         catch (Exception ex) {
           ex.printStackTrace();
         }
-        this.close();
-        this.setOnLoad("window.opener.parent.frames['iwb_main'].location.reload()");//
+        Link l = new Link();
+        l.setWindowToOpen(CalendarWindow.class);
+        l.addParameter(PRM_DELETE_ID, "");
+        String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+        setOnLoad(script);
+        close();
         
+//        this.setOnLoad("window.opener.parent.location.reload()");//frames['iwb_main'].
+//        this.close();        
       }
   }
 
   public PresentationObject getConfirmBox(IWContext iwc){
     Table t = new Table(1,2);
-    Form f = new Form();
+    f = new Form();
 
     IWBundle iwb = this.getBundle(iwc);
     IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
-
-
+    
     f.maintainParameter(PRM_DELETE);
     f.maintainParameter(PRM_DELETE_ID);
+    
     
     f.add(t);
     t.setWidth("100%");

@@ -3,6 +3,7 @@
  */
 package com.idega.block.cal.presentation;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,12 +35,14 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserPropertyWindow;
+import com.idega.util.IWTimestamp;
 
 /**
  * Description: <br>
@@ -74,13 +77,14 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	
 	//fields
 	private Text coachNameField;
-	private Text otherCoachesNameField;
-	private Text groupNameField;
-	private Text fromDateField;
+	private String otherCoachesNameField;
+	private String groupNameField;
+	private String fromDateField;
 	
 	//buttons
 	private SubmitButton saveButton;
 	private CloseButton closeButton;
+	private PrintButton printButton;
 	
 	private CalBusiness calBiz = null;
 	private GroupBusiness groupBiz = null;
@@ -123,23 +127,61 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
+		String lIDString = iwc.getParameter(LEDGER);
+		Integer lID = new Integer(lIDString);
+				
 		//The user logged in is set as the main coach for the ledger
 		if(iwc.isLoggedOn()) {
 			User user =iwc.getCurrentUser();
 			coachNameField = new Text(user.getName());
 		}
-		//TODO: make more than only the one other coaches
-		otherCoachesNameField = new Text(otherCoachesFieldParameterName);
+		
+		int coachGroupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getCoachGroupID();
+		Group coaches = null;
+		List trainers = null;
+		try {
+			coaches = getGroupBusiness(iwc).getGroupByGroupID(coachGroupID);
+			trainers = (List) getGroupBusiness(iwc).getUsers(coaches);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		if(trainers != null && trainers.size() != 0) {
+			StringBuffer buff = new StringBuffer();
+			Iterator trainersIter = trainers.iterator();		
+			while(trainersIter.hasNext()) {
+				User trainer = (User) trainersIter.next();
+				buff.append(trainer.getName());
+				buff.append("<br>");
+			}
+			otherCoachesNameField = buff.toString();
+			
+		}
+		else {
+			otherCoachesNameField = "";
+		}
+		
 		//
-		groupNameField = new Text(groupFieldParameterName);
+
+		
+		int groupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getGroupID();
+		try {
+			groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Timestamp fromD = getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate();
+		IWTimestamp iwFromD = new IWTimestamp(fromD);
 		//fromDate is the start date of the ledger
-		fromDateField =new Text(dateFieldParameterName);
+		fromDateField = iwFromD.getDateString("dd. MMMMMMM yyyy");
 
 		
 		//when save button is pushed the new ledger is created
-		saveButton = new SubmitButton(iwrb.getLocalizedString("save","Save"),saveButtonParameterName,saveButtonParameterValue);
+		saveButton = new SubmitButton(iwrb.getLocalizedString("ledgerwindow.save","Save"),saveButtonParameterName,saveButtonParameterValue);
 		//closes the window
-		closeButton = new CloseButton(iwrb.getLocalizedString("close","Close"));
+		closeButton = new CloseButton(iwrb.getLocalizedString("ledgerwindow.close","Close"));
+		
+		printButton = new PrintButton(iwrb.getLocalizedString("ledgerwindow.print","Print"));
 		
 	}
 
@@ -157,6 +199,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.setStyleClass(mainTableStyle);
 		mainTable.add(coachText,1,1);
 		mainTable.add(coachNameField,2,1);
+		mainTable.setVerticalAlignment(1,2,"top");
 		mainTable.add(otherCoachesText,1,2);
 		mainTable.add(otherCoachesNameField,2,2);
 		mainTable.add(groupText,1,3);
@@ -165,7 +208,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.add(fromDateField,2,4);
 		
 		mainTable.mergeCells(3,1,3,4);
-		mainTable.add(iwrb.getLocalizedString("ledgerW.allowed_marks", "Allowed marks") + " " ,3,1);
+		mainTable.add(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks") ,3,1);
 		mainTable.add("<br><br>",3,1);
 		Iterator markIter = marks.iterator();
 		while(markIter.hasNext()) {
@@ -177,10 +220,12 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.mergeCells(1,7,3,7);
 		mainTable.add(getUserList(iwc),1,7);
 	
-		mainTable.setAlignment(2,8,"right");
-		mainTable.add(saveButton,2,8);
-		mainTable.add(Text.NON_BREAKING_SPACE,2,8);
-		mainTable.add(closeButton,2,8);
+		mainTable.setAlignment(3,8,"right");
+		mainTable.add(saveButton,3,8);
+		mainTable.add(Text.NON_BREAKING_SPACE,3,8);
+		mainTable.add(closeButton,3,8);
+		mainTable.add(Text.NON_BREAKING_SPACE,3,8);
+		mainTable.add(printButton,3,8);
 		
 		form.add(mainTable);		
 	}
@@ -234,17 +279,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					aLink.setStyleClass("errorMessage");
 				}
 				else {
-					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
-						user.removeMetaData(NEW_USER_IN_LEDGER);
-						user.setMetaData(NEW_USER_IN_LEDGER,"");
-						try {
-							user.updateMetaData();
-						}catch(Exception e) {
-							e.printStackTrace();
-						}
-												
-//						user.store();
-					}				
+//					if(user.getMetaData(NEW_USER_IN_LEDGER) != null) {
+//						user.removeMetaData(NEW_USER_IN_LEDGER);
+//						user.setMetaData(NEW_USER_IN_LEDGER,"");
+//						try {
+//							user.updateMetaData();
+//						}catch(Exception e) {
+//							e.printStackTrace();
+//						}
+//												
+////						user.store();
+//					}				
 					aLink.setStyleClass(styledLinkUnderline);
 				}
 				
@@ -267,21 +312,22 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				List entryList = null;
 
 				try {
-					entryList = (List) getCalendarBusiness(iwc).getEntriesByLedgerID(ledgerID.intValue());
+					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedgerID(ledgerID.intValue());
 				}
 				catch (Exception ex) {
 					ex.printStackTrace(System.err);
 				}
 				
-	
 				Iterator entryIter = entryList.iterator();
 				int column = 2;
-				while(entryIter.hasNext()) {
+				while(entryIter.hasNext()) {					
 					entry = (CalendarEntry) entryIter.next();
-					attendanceDateTable.setWidth(column,1,20);
-					attendanceDateTable.add(Integer.toString(entry.getDay()),column,1);
-					
-					column++;
+						Timestamp date = entry.getDate();
+						int month = date.getMonth()+1;//date.getMonth() = 0 represents January!
+						String dateString = date.getDate() + "/" + month;
+						attendanceDateTable.setWidth(column,1,30);
+						attendanceDateTable.add(dateString,column,1);					
+						column++;
 				}
 				return attendanceDateTable;
 			}
@@ -292,7 +338,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				List entryList = null;
 				
 				try {
-					entryList = (List) getCalendarBusiness(iwc).getEntriesByLedgerID(ledgerID.intValue());
+					entryList = (List) getCalendarBusiness(iwc).getPracticesByLedgerID(ledgerID.intValue());
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
@@ -320,7 +366,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					
 					if(mark != null && !mark.equals("")) {
 						input.setValue(mark);
-					}				
+					}	
+					attendanceMarkTable.setWidth(i,1,30);
 					attendanceMarkTable.add(input,i,1);						
 				}
 				return attendanceMarkTable;
@@ -386,8 +433,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					DELETE_USERS_KEY);
 		deleteButton.setSubmitConfirm(confirmDeleting);
 		entityBrowser.addPresentationObjectToBottom(deleteButton);
-		
-		Link addUserLink = new Link("Add user");
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		Link addUserLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_user","Add user"));
 		addUserLink.setStyleClass(styledLink);
 		addUserLink.setParameter(LEDGER,ledgerString);
 		addUserLink.setWindowToOpen(CreateUserInLedger.class);
@@ -395,8 +442,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		statisticsLink.setStyleClass(styledLink);
 		statisticsLink.addParameter(LEDGER,ledgerString);
 		statisticsLink.setWindowToOpen(UserStatisticsWindow.class);
-		Link addNewMarkLink = new Link("Add mark");
+		Link addNewMarkLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_mark","Add mark"));
 		addNewMarkLink.setStyleClass(styledLink);
+		addNewMarkLink.addParameter(LEDGER,ledgerString);
 		addNewMarkLink.setWindowToOpen(NewMarkWindow.class);
 		
 		entityBrowser.addPresentationObjectToBottom(addUserLink);

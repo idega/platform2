@@ -30,6 +30,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 		addAttribute(getColumnNameLedgerName(),"Ledger name",true,true,String.class);
 		addAttribute(getColumnNameDate(),"Date",true,true,Timestamp.class);
 		addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
+		addAttribute(getColumnNameCoachGroupID(),"CoachGroupID",true,true,Integer.class);
 		addAttribute(getColumnNameUserID(), "Coach", true, true, Integer.class);
 //		addAttribute(getColumnNameUserID(), "User", true, true, Integer.class,"many-to-one",User.class);
 		addManyToManyRelationShip(User.class);
@@ -41,6 +42,7 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 	public static String getColumnNameDate() { return "CAL_LEDGER_DATE"; }
 	public static String getColumnNameGroupID() { return com.idega.user.data.GroupBMPBean.getColumnNameGroupID();}
 	public static String getColumnNameUserID() { return com.idega.user.data.UserBMPBean.getColumnNameUserID(); }
+	public static String getColumnNameCoachGroupID() { return "CAL_COACH_GROUP_ID"; }
 	
 	
 	//GET
@@ -58,6 +60,9 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 	}
 	public int getGroupID() {
 		return getIntColumnValue(getColumnNameGroupID());
+	}
+	public int getCoachGroupID() {
+		return getIntColumnValue(getColumnNameCoachGroupID());
 	}
 	public Collection getUsers() {
 		System.out.println("Getting users using relationship");
@@ -82,6 +87,9 @@ public class CalendarLedgerBMPBean extends GenericEntity implements com.idega.bl
 	}
 	public void setGroupID(int groupID) {
 		setColumn(getColumnNameGroupID(),groupID);
+	}
+	public void setCoachGroupID(int coachGroupID) {
+		setColumn(getColumnNameCoachGroupID(),coachGroupID);
 	}
 	//add a user to the middle table
 	public void addUser(User user) {

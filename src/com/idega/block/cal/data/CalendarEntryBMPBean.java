@@ -140,7 +140,7 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
       setColumn(getColumnNameEntryTypeID(),entryTypeID);
   }
   public void setEntryType(String entryType) {
-  	setColumn(getColumnNameEntryTypeID(),entryType);
+  	setColumn(getColumnNameEntryTypeName(),entryType);
   }
   public void setRepeat(String repeat) {
   	setColumn(getColumnNameRepeat(),repeat);
@@ -214,6 +214,7 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   	IDOQuery query = idoQueryGetSelect();
   	query.appendWhere();
   	query.appendWithinStamps("CAL_ENTRY_DATE",fromStamp,toStamp);
+  	System.out.println("query: "+query);
   	return super.idoFindPKsByQuery(query);
   }
   public Collection ejbFindEntryByLedgerID(int ledgerID) throws FinderException {
