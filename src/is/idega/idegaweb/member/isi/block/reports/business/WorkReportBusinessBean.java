@@ -1229,15 +1229,15 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
   
   public boolean createWorkReportData(int workReportId) {
-    // get year and club id from work report
+    // get year and group id from work report
     WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
     WorkReport workReport = getWorkReportById(workReportId);
     // has the data already been created?
     if (workReport.isCreationFromDatabaseDone())  {
       return true;
     }
-    // get the corresponding club 
-    int clubId = workReport.getGroupId().intValue();
+    // get the corresponding group 
+    int groupId = workReport.getGroupId().intValue();
     // get group business
     GroupBusiness groupBusiness;
     try {
@@ -1252,16 +1252,24 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
 
     // do we have to create the data at all?
+    boolean isLeague;
+    boolean isRegionalUnion;
     try {
-      Group club = groupBusiness.getGroupByGroupID(clubId);
-      if (! isClubUsingTheMemberSystem(club))  {
-        // the club does not use the member system. The data has to be imported by a file.
+      Group group = groupBusiness.getGroupByGroupID(groupId);
+      String groupType = group.getGroupType();
+      isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
+      isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
+      // !! assumption: leagues and regional unions use the member system !!
+      if (! ( isLeague ||
+              isRegionalUnion ||
+              isClubUsingTheMemberSystem(group)))  {
+        // the group does not use the member system. The data has to be imported by a file.
         // returns true because this is not an error.
         return true;
       }
     }
     catch (FinderException finderException) {
-      System.err.println("[WorkReportBusiness]: Can't find club. Message is: "
+      System.err.println("[WorkReportBusiness]: Can't find group. Message is: "
         + finderException.getMessage());
       return false;
     }
@@ -1281,8 +1289,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();
-      if (createWorkReportBoardDataWithoutAnyChecks(workReportId, year, clubId, groupBusiness) &&
-          createWorkReportMemberDataWithoutAnyChecks(workReportId, clubId, groupBusiness)) {
+      boolean boardDataCreated = 
+        createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
+      boolean memberDataCreated = (isLeague || isRegionalUnion) ? 
+        true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
+      if ( boardDataCreated && memberDataCreated ) {
         // mark the sucessfull creation
         workReport.setCreationFromDatabaseDone(true);
         workReport.store();
@@ -1311,7 +1322,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
   }
    
-  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int clubId, GroupBusiness groupBusiness)  {
+  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness)  {
     Map idExistingMemberMap = new HashMap();
     // find all existing work report members
     Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
@@ -1337,10 +1348,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       }
     }
     
-    // get all children of the club group (not recursively)
+    // get all children of the group group (not recursively)
     Collection childGroups;
     try {
-      childGroups = groupBusiness.getChildGroups(clubId);
+      childGroups = groupBusiness.getChildGroups(groupId);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -1358,11 +1369,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
     Iterator iterator = childGroups.iterator();
     while (iterator.hasNext())  {
+      boolean isDivision = false;
+      boolean isCommittee = false;
       Group group = (Group) iterator.next();
       String groupType = group.getGroupType();
-      boolean isCommittee = false;
-      boolean isDivision = false; 
-      if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType)) { 
+      if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType) || 
+          IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE.equals(groupType) ||
+          IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE.equals(groupType)) { 
         // go further down, we are looking for the main committee
         try {
           Collection committeeChildren = group.getChildGroups();
@@ -1370,7 +1383,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
           while (committeeChildrenIterator.hasNext()) {
             Group child = (Group) committeeChildrenIterator.next();
             String childGroupType = child.getGroupType();
-            if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType))  {
+            if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType)) {
               // change the value of the external loop variable group
               group = child;
               isCommittee = true;
