@@ -467,7 +467,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics", "Statistics"));
 
-		Table stats = new Table(2,15);
+		Table stats = new Table(2,12);
 		stats.setColumnWidth(1,"20");
 		stats.mergeCells(1,1,2,1);
 		stats.mergeCells(1,3,2,3);
@@ -735,37 +735,41 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_6_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_1_reportname");
 		b12_6_1.setStyleClass(styledLink);
 
-		stats.add(b12_6_1,2,12);		
+		stats.add(b12_6_1,2,12);	
+		stats.addBreak(2,12);	
 		
 		LinkContainer b12_6_2 = new LinkContainer();
 		b12_6_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_2_reportname", "League, age statistics"), false));
 		b12_6_2.addParameter(ACTION, ACTION_STATISTICS);
-//		b12_6_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.2.xml");
+  	b12_6_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.2.xml");
 //		b12_6_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.2.xml");
 		b12_6_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_2_reportname");
 		b12_6_2.setStyleClass(styledLink);
 
-		stats.add(b12_6_1,2,13);	
+		stats.add(b12_6_2,2,12);	
+		stats.addBreak(2,12);
 		
 		LinkContainer b12_6_3 = new LinkContainer();
 		b12_6_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_3_reportname", "Regional union"), false));
 		b12_6_3.addParameter(ACTION, ACTION_STATISTICS);
-//		b12_6_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.3.xml");
+		b12_6_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.3.xml");
 //		b12_6_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.3.xml");
 		b12_6_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_3_reportname");
 		b12_6_3.setStyleClass(styledLink);
 
-		stats.add(b12_6_1,2,14);	
+		stats.add(b12_6_3,2,12);	
+		stats.addBreak(2,12);
 		
 		LinkContainer b12_6_4 = new LinkContainer();
 		b12_6_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_6_4_reportname", "League"), false));
 		b12_6_4.addParameter(ACTION, ACTION_STATISTICS);
-//		b12_6_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.4.xml");
+		b12_6_4.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.6.4.xml");
 //		b12_6_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.6.4.xml");
 		b12_6_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_6_4_reportname");
 		b12_6_4.setStyleClass(styledLink);
 		
-		stats.add(b12_6_1,2,15);	
+		stats.add(b12_6_4,2,12);	
+		stats.addBreak(2,12);
 		
 		
 		
