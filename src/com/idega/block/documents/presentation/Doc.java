@@ -388,7 +388,7 @@ public class Doc extends FolderBlock implements IWBlock {
     private void getCategoryView(InformationFolder folder, InformationCategory[] categories, Table boxTable, IWContext iwc) {
 	int row = 1;
 
-	Table categoryTable = new Table(2, categories.length);
+	Table categoryTable = new Table();
 	categoryTable.setCellpadding(1);
 	categoryTable.setCellspacing(0);
 	categoryTable.setWidth(2, "100%");
@@ -439,7 +439,7 @@ public class Doc extends FolderBlock implements IWBlock {
 	    else
 	      documents = DocFinder.getNumberOfLinksInFolder(folder);
 
-	    Text documentText = new Text("("+String.valueOf(documents)+" documents)");
+	    Text documentText = new Text(Text.NON_BREAKING_SPACE+"("+String.valueOf(documents)+" "+_iwrb.getLocalizedString("documents","documents")+")");
 	      documentText.setFontStyle(_informationStyle);
 	    categoryTable.add(documentText,3,a + 1);
 	}
