@@ -8,6 +8,7 @@ import com.idega.builder.data.IBPage;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
+import com.idega.builder.business.PageTreeNode;
 
 /**
  * Title:
@@ -82,7 +83,16 @@ public class CampusTab extends Block implements Campus{
   public void main(IWContext iwc){
     iwb = getBundle(iwc);
     int sessId=BuilderLogic.getInstance().getCurrentIBPageID(iwc);
-    if(pageId == sessId){
+    boolean upTab = false;
+    if(pageId == sessId)
+      upTab = true;
+    else{
+      PageTreeNode node = new PageTreeNode(sessId,iwc);
+      if(node.getParentNode()!=null && node.getParentNode().getNodeID()== pageId)
+        upTab = true;
+    }
+
+    if(upTab){
       if(UpImage!=null){
         container.setBackgroundImage(UpImage);
         container.setWidth(upWidth);
