@@ -4,6 +4,8 @@
  */
 package is.idega.idegaweb.campus.business;
 
+import java.util.Locale;
+
 /**
  * CampusSettings to hold global settings for the campus application
  * @author aron 
@@ -19,6 +21,7 @@ public class CampusSettings {
 	protected final static String PROPERTY_FINANCE_CATEGORY = "FINANCE_CATEGORY";
 	protected final static String PROPERTY_SEND_EVENT_MAIL = "SEND_EVENT_MAIL";
 	protected final static String PROPERTY_TRANSFER_BGR_COLOR = "TRANSFER_BGR_COLOR";
+	protected final static String PROPERTY_SYSTEM_LOCALE = "SYSTEM_LOCALE";
 	
 	private Integer termOfNoticeDays = null;
 	private Integer tenantGroupID = null;
@@ -27,7 +30,21 @@ public class CampusSettings {
 	private Integer financeCategoryID = null;
 	private Boolean sendEventMail = null;
 	private String transferBackgroundColor = null;
+	private Locale systemLocale = null;
 	
+	/**
+	 * @return Returns the system locale.
+	 */
+	public Locale getSystemLocale() {
+		return systemLocale;
+	}
+	
+	/**
+	 * @param locale The locale to set.
+	 */
+	public void setSystemLocale(Locale locale) {
+		this.systemLocale = locale;
+	}
 	/**
 	 * @return Returns the adminEmail.
 	 */

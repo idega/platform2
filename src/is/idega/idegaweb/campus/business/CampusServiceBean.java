@@ -110,4 +110,8 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		return (FinanceService) getServiceInstance(FinanceService.class);
 	}
 	
+	public CampusUserService getUserService()throws RemoteException{
+		return (CampusUserService) getServiceInstance(CampusUserService.class);
+	}
+	
 }
