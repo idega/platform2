@@ -100,10 +100,10 @@ public class TextFormatter {
     }
 
     //Almenn hreinsun
-    textBody = TextSoap.findAndReplace(textBody,"*","<li>");
-    textBody = TextSoap.findAndReplace(textBody,".\r\n",".<br><br>");
-    textBody = TextSoap.findAndReplace(textBody,"?\r\n","?<br><br>");
-    textBody = TextSoap.findAndReplace(textBody,"!\r\n","!<br><br>");
+    //textBody = TextSoap.findAndReplace(textBody,"*","<li>");
+    //textBody = TextSoap.findAndReplace(textBody,".\r\n",".<br><br>");
+    //textBody = TextSoap.findAndReplace(textBody,"?\r\n","?<br><br>");
+    //textBody = TextSoap.findAndReplace(textBody,"!\r\n","!<br><br>");
 
     textBody = TextSoap.findAndReplace(textBody,"\r\n","<br>");
     textBody = TextSoap.findAndReplace(textBody,"\t","&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");

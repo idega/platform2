@@ -160,6 +160,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     String textBody = locText.getBody()!= null ? locText.getBody():"";
 
+    if ( reverse ) {
+      textBody = TextFormatter.textReverse(textBody);
+    }
+    if ( crazy ) {
+      textBody = TextFormatter.textCrazy(textBody);
+    }
+
+    textBody = TextFormatter.formatText(textBody,tableTextSize,"100%");
+
     Text body = new Text(textBody);
     body.setFontSize(textSize);
     body.setFontColor(textColor);
