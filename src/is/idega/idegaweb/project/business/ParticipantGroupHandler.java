@@ -10,6 +10,7 @@ import is.idega.idegaweb.project.data.IPCategoryType;
 import java.util.Iterator;
 import java.util.List;
 import java.sql.SQLException;
+import com.idega.core.data.GenericGroup;
 
 
 /**
@@ -46,12 +47,12 @@ public class ParticipantGroupHandler implements PropertyHandler {
       if (list != null) {
         Iterator iter = list.iterator();
         while (iter.hasNext()) {
-          IPCategoryType item = (IPCategoryType)iter.next();
+          GenericGroup item = (GenericGroup)iter.next();
           menu.addMenuElement(item.getID(),item.getName());
         }
       }
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     menu.setSelectedElement(stringValue);
