@@ -100,7 +100,6 @@ public class ClubPageIncluder extends PageIncluder {
 			  }*/
 		}
 		String strFinalUrl = finalUrl.toString();
-		System.out.println("ClubPageIncluder: finalized url is \"" + strFinalUrl + "\"");
 		return strFinalUrl;
 	}
 	
