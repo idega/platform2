@@ -190,7 +190,7 @@ public class PrintableLedgerWindow extends Window{
 		Table headerTable = new Table();
 		headerTable.setCellspacing(0);
 		headerTable.setCellpadding(0);
-		headerTable.setWidth(500);
+		headerTable.setWidth(300);
 		
 		headerTable.add(creatorText,1,1);
 		headerTable.add(creatorNameField,2,1);

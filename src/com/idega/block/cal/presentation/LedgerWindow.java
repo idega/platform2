@@ -825,7 +825,6 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		String close = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETED);
 		if(close != null) {
-			setOnUnLoad("window.opener.location.reload()");
 			close();
 		}
 		
