@@ -237,6 +237,28 @@ public String getNodeName(){
   return getName();
 }
 
+public List getMembersInUnion(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'A' and umi.membership_type = 'main' and umi.union_id = "+this.getID());
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
+public List getAllActiveMembers(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'A' and umi.membership_type = 'main'");
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
 public List getGroups(String group_type){
   List theReturn=null;
   try{
