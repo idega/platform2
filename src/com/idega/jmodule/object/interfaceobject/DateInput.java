@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.12 2001/07/24 15:35:40 aron Exp $
+ * $Id: DateInput.java,v 1.13 2001/08/07 10:57:37 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,10 +11,14 @@ package com.idega.jmodule.object.interfaceobject;
 
 import java.io.*;
 import java.util.*;
+
+import java.text.DateFormatSymbols;
+
 import com.idega.jmodule.object.*;
 import com.idega.util.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -127,6 +131,8 @@ private void doSomeShit(){
         */
 
         //theMonth.addMenuElement("",strMonth);
+
+        /*
 	theMonth.addMenuElement("01","jan");
 	theMonth.addMenuElement("02","feb");
 	theMonth.addMenuElement("03","mar");
@@ -139,6 +145,21 @@ private void doSomeShit(){
 	theMonth.addMenuElement("10","okt");
 	theMonth.addMenuElement("11","nóv");
 	theMonth.addMenuElement("12","des");
+        */
+
+
+	theMonth.addMenuElement("01");
+	theMonth.addMenuElement("02");
+	theMonth.addMenuElement("03");
+	theMonth.addMenuElement("04");
+	theMonth.addMenuElement("05");
+	theMonth.addMenuElement("06");
+	theMonth.addMenuElement("07");
+	theMonth.addMenuElement("08");
+	theMonth.addMenuElement("09");
+	theMonth.addMenuElement("10");
+	theMonth.addMenuElement("11");
+	theMonth.addMenuElement("12");
 
 	//theDay.addMenuElement("",strDay);
 	theDay.addMenuElement("01","1");
@@ -321,32 +342,62 @@ public void setYearRange(int fromYear,int toYear){
 
 //}
 public void main(ModuleInfo modinfo)throws Exception{
-  String dayString;
-  String monthString;
-  String yearString;
+  addLocalized(modinfo);
 
 
-  IWBundle iwb = this.getBundle(modinfo);
-  IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
-
-  if(inShort){
-    dayString = iwrb.getLocalizedString(DAY_KEY_S);
-    monthString = iwrb.getLocalizedString(MONTH_KEY_S);
-    yearString = iwrb.getLocalizedString(YEAR_KEY_S);
-  }
-  else{
-    dayString = iwrb.getLocalizedString(DAY_KEY);
-    monthString = iwrb.getLocalizedString(MONTH_KEY);
-    yearString = iwrb.getLocalizedString(YEAR_KEY);
-  }
-
-
-  theDay.addMenuElementFirst("",dayString);
-  theMonth.addMenuElementFirst("",monthString);
-  theYear.addMenuElementFirst("",yearString);
-  //doSomeShit(dayString,monthString,yearString);
 }
 
+
+
+  private void addLocalized(ModuleInfo modinfo){
+      Locale locale = modinfo.getCurrentLocale();
+      DateFormatSymbols symbols = new DateFormatSymbols(locale);
+      IWBundle iwb = this.getBundle(modinfo);
+      IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
+      String[] monthStrings;
+
+      String dayString;
+      String monthString;
+      String yearString;
+
+
+
+
+      if(inShort){
+        dayString = iwrb.getLocalizedString(DAY_KEY_S);
+        monthString = iwrb.getLocalizedString(MONTH_KEY_S);
+        yearString = iwrb.getLocalizedString(YEAR_KEY_S);
+        monthStrings = symbols.getShortMonths();
+      }
+      else{
+        dayString = iwrb.getLocalizedString(DAY_KEY);
+        monthString = iwrb.getLocalizedString(MONTH_KEY);
+        yearString = iwrb.getLocalizedString(YEAR_KEY);
+        monthStrings = symbols.getMonths();
+      }
+
+
+      theDay.addMenuElementFirst("",dayString);
+      theMonth.addMenuElementFirst("",monthString);
+      theYear.addMenuElementFirst("",yearString);
+
+
+      if(this.inShort){
+
+      }
+      else{
+        monthStrings = symbols.getMonths();
+      }
+
+      for(int i=1;i<=12;i++){
+        String value=Integer.toString(i);
+        if(i<10){
+          value="0"+value;
+        }
+        theMonth.setMenuElementDisplayString(value,monthStrings[i-1]);
+      }
+
+  }
 
 public void print(ModuleInfo modinfo)throws Exception{
 
