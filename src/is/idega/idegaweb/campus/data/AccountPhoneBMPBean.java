@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.15 2004/07/21 14:24:29 palli Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.15 2004/07/21 14:24:29 palli Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.15 2004/07/21 14:24:29 palli Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.14 2004/07/21 13:59:20 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.15 2004/07/21 14:24:29 palli Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -105,6 +105,7 @@ public class AccountPhoneBMPBean
 	public AccountPhoneBMPBean(int id) throws SQLException {
 	}
 	public void initializeAttributes() {
+	    addAttribute(getColumnNameContractId(), "Contract Id", true, true, java.lang.Integer.class);
 		addAttribute(getColumnNameAccountId(), "Account Id", true, true, java.lang.Integer.class);
 		addAttribute(getColumnNamePhoneNumber(), "Phone number", true, true, java.lang.String.class);
 		addAttribute(getColumnNameValidFrom(), "Valid from", true, true, java.sql.Date.class);
