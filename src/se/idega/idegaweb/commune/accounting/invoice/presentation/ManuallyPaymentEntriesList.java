@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/04 12:18:23 $ by $Author: laddi $
+ * Last modified: $Date: 2004/03/12 12:21:56 $ by $Author: staffan $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -407,7 +407,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			final String ruleSpecType = pay.getRuleSpecType ();
 			if (null != ruleSpecType && ruleSpecType.equals (RegSpecConstant.CHECK)) {
 				try {
-					getInvoiceBusiness (iwc).createVatPaymentRecord
+					getInvoiceBusiness (iwc).createOrUpdateVatPaymentRecord
 							(pay, /*placement.getSchoolType ()*/ null,
 							 /*placement.getSchoolYear ()*/ null, pay.getCreatedBy ());
 				} catch (Exception e) {	e.printStackTrace ();	}

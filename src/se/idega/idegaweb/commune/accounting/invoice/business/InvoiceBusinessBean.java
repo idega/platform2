@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/09 14:57:10 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/12 12:21:56 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.120 $
+ * @version $Revision: 1.121 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -684,7 +684,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
 					final SchoolClassMember placement = record.getSchoolClassMember ();
-					createVatPaymentRecord
+					createOrUpdateVatPaymentRecord
 							(paymentRecord, placement.getSchoolType (),
 							 placement.getSchoolYear (), createdBySignature);
 			}
@@ -694,25 +694,29 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return record;
 	}
 
-	public PaymentRecord createVatPaymentRecord
+	public PaymentRecord createOrUpdateVatPaymentRecord
 		(final PaymentRecord paymentRecord, final SchoolType schoolType,
 		 final SchoolYear schoolYear, final String createdBySignature)
 	throws RemoteException, CreateException {
 
-		// get vat regulation
+		// is school vat eligible?
+		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
+		final School school = paymentHeader.getSchool ();
+		if (!getVATBusiness ().isSchoolVATEligible (school)) return null;
+
+		// get vat regulation, if exists
 		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
 		if (null == vatRuleRegulation) return null;
 
 		// init some multiply used values
 		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
-		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
 		final Date period = paymentRecord.getPeriod ();
 		final char status = paymentHeader.getStatus ();
 
 		// get own and double postings
 		final int regSpecTypeId
 				= ((Number) regSpecType.getPrimaryKey ()).intValue ();
-		final Provider provider = new Provider (paymentHeader.getSchool ());
+		final Provider provider = new Provider (school);
 		final int schoolYearId = null == schoolYear ? -1
 				: ((Number) schoolYear.getPrimaryKey ()).intValue ();
 		String ownPosting = "";
@@ -736,9 +740,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus
 					(ownPosting, doublePosting, null, vatRuleRegulation.getName (),
 					 new CalendarMonth (period), status);
-			vatPaymentRecord.setTotalAmount
-					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
-																			 + paymentRecord.getTotalAmountVAT ()));
+			final float newAmount = vatPaymentRecord.getTotalAmount ()
+					+ paymentRecord.getTotalAmountVAT ();
+			vatPaymentRecord.setTotalAmount	(AccountingUtil.roundAmount (newAmount));
 			vatPaymentRecord.setChangedBy (createdBySignature);
 			vatPaymentRecord.setDateChanged (now ());
 			vatPaymentRecord.store ();
