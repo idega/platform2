@@ -1,10 +1,10 @@
-package com.idega.block.media.presentation;
+package com.idega.block.image.presentation;
 
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
-import com.idega.block.media.data.ImageEntity;
+import com.idega.block.image.data.ImageEntity;
 import com.idega.util.idegaTimestamp;
 import java.sql.*;
 

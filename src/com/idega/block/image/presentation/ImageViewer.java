@@ -1,4 +1,4 @@
-package com.idega.block.media.presentation;
+package com.idega.block.image.presentation;
 
 /**
  * Title: ImageViewer
@@ -18,8 +18,8 @@ import com.idega.util.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
-import com.idega.block.media.data.*;
-import com.idega.block.media.business.*;
+import com.idega.block.image.data.*;
+import com.idega.block.image.business.*;
 import com.idega.util.text.*;
 import com.idega.data.GenericEntity;
 import com.oreilly.servlet.MultipartRequest;

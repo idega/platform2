@@ -1,10 +1,10 @@
-package com.idega.block.media.presentation;
+package com.idega.block.image.presentation;
 
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.IWContext;
-import com.idega.block.media.data.*;
-import com.idega.block.media.business.ImageBusiness;
-import com.idega.block.media.business.ImageProperties;
+import com.idega.block.image.data.*;
+import com.idega.block.image.business.ImageBusiness;
+import com.idega.block.media.data.MediaProperties;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -203,7 +203,7 @@ public class EditWindow extends Window {
     upload.setVerticalAlignment(1,3,"top");
 
     try{
-      ImageProperties ip = ImageBusiness.doUpload(iwc);
+      MediaProperties ip = ImageBusiness.doUpload(iwc);
       iwc.setSessionAttribute("im_ip",ip);
       Image imagefile = new Image(ip.getWebPath());
 

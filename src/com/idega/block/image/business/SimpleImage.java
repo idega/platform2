@@ -1,4 +1,4 @@
-package com.idega.block.media.business;
+package com.idega.block.image.business;
 
 /**
  * Title:

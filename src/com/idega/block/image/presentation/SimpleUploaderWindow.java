@@ -1,10 +1,10 @@
-package com.idega.block.media.presentation;
+package com.idega.block.image.presentation;
 
-import com.idega.block.media.data.*;
+import com.idega.block.image.data.*;
 import com.idega.presentation.ui.Window;
-import com.idega.block.media.business.SimpleImage;
-import com.idega.block.media.business.ImageProperties;
-import com.idega.block.media.business.ImageBusiness;
+import com.idega.block.image.business.SimpleImage;
+import com.idega.block.media.data.MediaProperties;
+import com.idega.block.image.business.ImageBusiness;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.IWContext;
@@ -88,7 +88,7 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
     }
 
     public PresentationObject parse(IWContext iwc){
-      ImageProperties ip = null;
+      MediaProperties ip = null;
       try {
         ip = ImageBusiness.doUpload(iwc);
         iwc.setSessionAttribute("image_props",ip);
@@ -115,9 +115,9 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
     }
 
     public void save(IWContext iwc){
-      ImageProperties ip = null;
+      MediaProperties ip = null;
       if(iwc.getSessionAttribute("image_props")!=null){
-        ip = (ImageProperties) iwc.getSessionAttribute("image_props");
+        ip = (MediaProperties) iwc.getSessionAttribute("image_props");
         iwc.removeSessionAttribute("image_props");
       }
       if(ip !=null){
