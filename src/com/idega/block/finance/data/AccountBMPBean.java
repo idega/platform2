@@ -213,7 +213,7 @@ public class AccountBMPBean extends GenericEntity implements Account{
       sql.append("' ");
     }
     if(last !=null && !"".equals(last)){
-      sql.append(" and u.last like '");
+      sql.append(" and u.last_name like '");
       sql.append(last);
       sql.append("' ");
     }

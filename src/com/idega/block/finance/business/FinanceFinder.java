@@ -374,7 +374,7 @@ public class FinanceFinder  {
       if(last !=null && !"".equals(last )){
         if(!isfirst)
           sql.append(" and ");
-        sql.append(" u.last like '");
+        sql.append(" u.last_name like '");
         sql.append(last);
         sql.append("' ");
         isfirst = false;
