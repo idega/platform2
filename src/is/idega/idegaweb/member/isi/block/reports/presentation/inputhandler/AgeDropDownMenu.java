@@ -17,6 +17,8 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 	private static final int youngest = 1;
 
 	private static final int oldest = 123;
+	
+	protected int default_age = -1;
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -26,12 +28,17 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		addMenuElement(" ",iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages"));
+		if (default_age==-1) {
+			addMenuElement(" ",iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages"));
+		}
 		for (int i = youngest; i <= oldest; i++) {
 			addMenuElement(i, Integer.toString(i));
 		}
-		
-		setSelectedElement(" ");
+		if(default_age==-1) {
+			setSelectedElement(" ");
+		} else {
+			setSelectedElement(default_age);
+		}
 	}
 	/*
 	 * (non-Javadoc)
@@ -74,9 +81,13 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if (value != null) {
 			return value.toString();
+		} else {
+			if(default_age==-1) {
+				return iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages");
+			} else {
+				return "" + default_age;
+			}
 		}
-		else
-			return iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages");
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
