@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.6 2002/10/15 11:38:13 laddi Exp $
+ * $Id: ProviderAccountApplication.java,v 1.7 2002/11/01 03:51:32 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,8 +17,10 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.TextArea;
@@ -90,7 +92,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 	protected int[] schoolTypeIDs;
 	
 	protected static final String PARAM_APPLICATION_ID = "paa_appl_id";
-	int mainTableRows = 14;
+	int mainTableRows = 18;
 	int mainTableColumns = 2;
 	private Table inputTable = new Table(mainTableColumns, mainTableRows);
 
@@ -159,10 +161,10 @@ public class ProviderAccountApplication extends CommuneBlock {
 		Form accountForm = new Form();
 		inputTable.setCellspacing(2);
 		inputTable.setCellpadding(4);
-		inputTable.setAlignment(2, 6, "right");
+		inputTable.setAlignment(mainTableColumns, mainTableRows, "right");
 		inputTable.setColor(getBackgroundColor());
 		
-		String provType = localize(PARAM_PROV_TYPE,"Provider type");
+		String provType = localize(PARAM_PROV_TYPE,"Type");
 		String provName =
 			localize(PARAM_PROV_NAME, "Shool/ChildcareCenter name");
 		String schoolAreas = localize(PARAM_SCH_AREA,"School area:");
@@ -171,12 +173,24 @@ public class ProviderAccountApplication extends CommuneBlock {
 		String numPlaces = localize(PARAM_NUM_PLACES, "Number of places");
 		String postalCode = localize(PARAM_POSTAL_CODE, "Postal code");
 		String address = localize(PARAM_ADDR, "Address");
-		String manName = localize(PARAM_MAN_NAME, "Manager name");
+		String manName = localize(PARAM_MAN_NAME, "Name");
 		String addInfo = localize(PARAM_ADD_INFO, "Additional info");
-
+		String manager = localize("paa_manager","Manager:");
+		String provider = localize("paa_provider","Provider:");
+		
 		//new row
 		int currRow=1;
 		int currCol=1;
+		
+		//Text and formelement
+		Text textProvider = null;
+		textProvider = this.getSmallText(provider);
+		textProvider.setBold();
+		add(textProvider,currCol,currRow);
+		
+		//new row
+		currCol=1;
+		currRow+=1;
 		
 		//Text and formelement
 		Text schTypesText = null;
@@ -184,7 +198,9 @@ public class ProviderAccountApplication extends CommuneBlock {
 			schTypesText = getSmallText(provType);
 		else
 			schTypesText = getSmallErrorText(provType);
-		SelectionBox schTypesMenu = this.getSchoolTypesBox(iwc);
+		//SelectionBox schTypesMenu = this.getSchoolTypesBox(iwc);
+		PresentationObjectContainer schTypesMenu = this.getSchoolTypesCheckboxes(iwc);
+		
 		add(schTypesText,currCol,currRow);
 		add(schTypesMenu,currCol,currRow+1);
 		
@@ -209,18 +225,47 @@ public class ProviderAccountApplication extends CommuneBlock {
 		
 		//Text and formelement
 		currRow+=2;
-		Text textShoolAreas = null;
-			if (!_isSchoolAreaError)
-			textShoolAreas = getSmallText(schoolAreas);
-		else
-			textShoolAreas = getSmallErrorText(schoolAreas);
-		DropdownMenu menuShoolAreas = this.getSchoolAreasMenu(iwc);
-		add(textShoolAreas,currCol,currRow);
-		add(menuShoolAreas,currCol,currRow+1);
+		
+		//nothing in the second row
+		
+	
 		
 		//new row
 		currCol=1;
 		currRow+=2;
+		
+		
+		//Text and formelement
+		Text textAddress = null;
+			if (!_isAddressError)
+			textAddress = getSmallText(address);
+		else
+			textAddress = getSmallErrorText(address);
+		TextInput inputAddress = new TextInput(PARAM_ADDR);
+		inputAddress.setMaxlength(50);
+		inputAddress.setStyleClass(getSmallTextFontStyle());
+		if (addressString != null)
+			inputAddress.setContent(addressString);
+		add(textAddress,currCol,currRow);
+		add(inputAddress,currCol,currRow+1);
+		
+		//new column
+		currCol+=1;
+		
+		//Text and formelement
+		Text textPostalCode = null;
+			if (!_isPostalCodeError)
+			textPostalCode = getSmallText(postalCode);
+		else
+			textPostalCode = getSmallErrorText(postalCode);
+		DropdownMenu menuPostalCodes = this.getPostalCodesMenu(iwc);
+		add(textPostalCode,currCol,currRow);
+		add(menuPostalCodes,currCol,currRow+1);
+
+		//new row
+		currCol=1;
+		currRow+=2;
+		
 		
 		//Text and formelement
 		Text textPhone = null;
@@ -235,6 +280,25 @@ public class ProviderAccountApplication extends CommuneBlock {
 			inputPhone.setContent(phoneString);
 		add(textPhone,currCol,currRow);
 		add(inputPhone,currCol,currRow+1);
+
+
+		//new column
+		currCol+=1;
+		
+		Text textShoolAreas = null;
+			if (!_isSchoolAreaError)
+			textShoolAreas = getSmallText(schoolAreas);
+		else
+			textShoolAreas = getSmallErrorText(schoolAreas);
+		DropdownMenu menuShoolAreas = this.getSchoolAreasMenu(iwc);
+		add(textShoolAreas,currCol,currRow);
+		add(menuShoolAreas,currCol,currRow+1);
+
+		//new row
+		currCol=1;
+		currRow+=2;
+		
+		//Nothing in this cell
 		
 		//new column
 		currCol+=1;
@@ -261,39 +325,14 @@ public class ProviderAccountApplication extends CommuneBlock {
 		currRow+=2;
 		
 		//Text and formelement
-		Text textPostalCode = null;
-			if (!_isPostalCodeError)
-			textPostalCode = getSmallText(postalCode);
-		else
-			textPostalCode = getSmallErrorText(postalCode);
-		DropdownMenu menuPostalCodes = this.getPostalCodesMenu(iwc);
-		add(textPostalCode,currCol,currRow);
-		add(menuPostalCodes,currCol,currRow+1);
+		Text textManager = null;
+		textManager = this.getSmallText(manager);
+		textManager.setBold();
+		add(textManager,currCol,currRow);
 		
-
-		
-		
-		//new column
-		currCol+=1;
-		
-		//Text and formelement
-		Text textAddress = null;
-			if (!_isAddressError)
-			textAddress = getSmallText(address);
-		else
-			textAddress = getSmallErrorText(address);
-		TextInput inputAddress = new TextInput(PARAM_ADDR);
-		inputAddress.setMaxlength(50);
-		inputAddress.setStyleClass(getSmallTextFontStyle());
-		if (addressString != null)
-			inputAddress.setContent(addressString);
-		add(textAddress,currCol,currRow);
-		add(inputAddress,currCol,currRow+1);
-
-
 		//new row
 		currCol=1;
-		currRow+=2;
+		currRow+=1;
 
 		//Text and formelement
 		Text textManName = null;
@@ -419,6 +458,16 @@ public class ProviderAccountApplication extends CommuneBlock {
 		int numPlaces = -1;
 		String telephone = null;
 		_errorMsg = null;
+		schoolTypeIDs = new int[providerTypesString.length];
+		for (int i = 0; i < schoolTypeIDs.length; i++)
+		{
+			schoolTypeIDs[i]=Integer.parseInt(providerTypesString[i]);
+		}
+		try{
+			schoolAreaID = Integer.parseInt(schoolAreaString);
+		}
+		catch(NumberFormatException nme){}
+		
 		if (provNameString == null || provNameString.equals("")) {
 			_isProvNameError = true;
 			_isError = true;
@@ -429,15 +478,18 @@ public class ProviderAccountApplication extends CommuneBlock {
 			_isError = true;
 			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
 		}
-		if (phoneString == null || phoneString.equals("")) {
+		if (!getValidator().isNumber(phoneString)) {
+		//if (phoneString == null || phoneString.equals("")) {
 			_isPhoneError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_PHONE, "Phone invalid"));
 		}
 		if (addressString == null || addressString.equals("")) {
-			_isAddressError = true;
-			_isError = true;
-			addErrorString(localize(ERROR_ADDR, "Address invalid"));
+			//if(addressString.equals("")||addressString.indexOf(" ")==-1){
+				_isAddressError = true;
+				_isError = true;
+				addErrorString(localize(ERROR_ADDR, "Address invalid"));
+			//}
 		}
 		if (manNameString == null || manNameString.equals("")) {
 			_isManNameError = true;
@@ -475,19 +527,12 @@ public class ProviderAccountApplication extends CommuneBlock {
 			address = addressString;
 			managerName = manNameString;
 			provName = provNameString;
-			numPlaces = Integer.parseInt(numPlacesString);
 			telephone = phoneString;
-			postalCodeID = Integer.parseInt(postalCodeString);
-			schoolTypeIDs = new int[providerTypesString.length];
-			for (int i = 0; i < schoolTypeIDs.length; i++)
-			{
-				schoolTypeIDs[i]=Integer.parseInt(providerTypesString[i]);
-			}
-			schoolAreaID = Integer.parseInt(schoolAreaString);
-
 			if (addInfoString != null) {
 				additionalInfo = addInfoString;
 			}
+			postalCodeID = Integer.parseInt(postalCodeString);
+			numPlaces = Integer.parseInt(numPlacesString);
 			//CitizenAccountBusiness business = (CitizenAccountBusiness)IBOLookup.getServiceInstance(iwc,CitizenAccountBusiness.class);
 			ProviderAccountBusiness business = this.getBusiness(iwc);
 			//insert = business.insertApplication(business.getUser(pidString),pidString,emailString,phoneHomeString,phoneWorkString);
@@ -758,6 +803,56 @@ public class ProviderAccountApplication extends CommuneBlock {
 			return ListUtil.getEmptyList();
 		}
 	}
+
+
+	protected PresentationObjectContainer getSchoolTypesCheckboxes(IWContext iwc) {
+		Table table = new Table(2,2);
+		table.setResizable(true);
+
+		Collection postalCodes = getAvailableSchoolTypes(iwc);
+		if (postalCodes != null) {
+			try {
+				Iterator iter = postalCodes.iterator();
+				int ypos=1;
+				while (iter.hasNext()) {
+					SchoolType schType = (SchoolType) iter.next();
+					int schTypeID = ((Integer) schType.getPrimaryKey()).intValue();
+					String nameSchType = schType.getName();
+					CheckBox box = new CheckBox(PARAM_PROV_TYPE,Integer.toString(schTypeID));
+					System.out.println("ProvierAccountApplication: getSchoolTypesCheckboxes() : Testing school_type_id=\""+schTypeID+"\"");
+					if(isValueInArray(schTypeID,schoolTypeIDs)){
+						box.setChecked(true);
+					}
+					table.add(box,1,ypos);
+					table.add(getText(nameSchType),2,ypos++);
+				}
+			} catch (Exception e) {
+				System.err.println("ProviderAccountApplication: Error getting school types:");
+				e.printStackTrace();
+			}
+		}
+		return table;
+	}
+	
+	private boolean isValueInArray(int value,int[] array){
+		if(array!=null){
+			System.out.println("ProvierAccountApplication: isValueInArray() : array != null");
+			System.out.println("ProvierAccountApplication: isValueInArray() : array.length="+array.length);	
+			for (int i = 0; i < array.length; i++) {
+				int integ = array[i];
+				System.out.println("ProvierAccountApplication: isValueInArray() : Testing school_type_id=\""+integ+"\" for value=\""+value+"\"");
+				if(integ==value){
+					return true;
+				}
+			}
+		}
+		else{
+			System.out.println("ProvierAccountApplication: isValueInArray() : array == null");	
+		}
+		return false;
+	}
+
+
 
 	protected SelectionBox getSchoolTypesBox(IWContext iwc) {
 		SelectionBox drop = new SelectionBox(PARAM_PROV_TYPE);
