@@ -98,7 +98,9 @@ private String headerTextColor = "#FFFFFF";
 
                 String[] dates = getDates(modinfo);
 
-		Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
+		System.out.println("------------");
+		System.out.println("Starting: "+new idegaTimestamp().getTimestampRightNow().toString());
+                Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
                 Scorecard[] scoreCardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
 
                 myTable = new Table();
@@ -192,7 +194,7 @@ private String headerTextColor = "#FFFFFF";
 
 			double slope = (double) scoreCards[a].getSlope();
 			double course_rating = (double) scoreCards[a].getCourseRating();
-			String cr = scale_decimals(String.valueOf(course_rating),1);
+			String cr = TextSoap.singleDecimalFormat(String.valueOf(course_rating));
 			double field_par = (double) field.getFieldPar();
 			double grunn = (double) scoreCards[a].getHandicapBefore();
 			int heildarpunktar = scoreCards[a].getTotalPoints();
@@ -203,10 +205,9 @@ private String headerTextColor = "#FFFFFF";
 			Handicap leik = new Handicap(grunn);
 				leik_forgjof = leik.getLeikHandicap(slope, course_rating, field_par);
 
-
                         float realHandicap = 0;
 
-                        if ( a == 0 ) {
+                       if ( a == 0 ) {
                           if ( scoreCardsBefore.length > 0 ) {
                             realHandicap = scoreCardsBefore[0].getHandicapAfter();
                           }
@@ -221,19 +222,30 @@ private String headerTextColor = "#FFFFFF";
                         Handicap realLeik = new Handicap((double)realHandicap);
                         int realPlayHandicap = realLeik.getLeikHandicap(slope, course_rating, field_par);
 
-                        boolean isOverHandicap = false;
-
+                        boolean showRealHandicap = false;
                         if ( scoreCards[a].getTournamentRoundId() > 1 ) {
-                          isOverHandicap = true;
+                          if ( member.getGender().equalsIgnoreCase("m") ) {
+                            if ( (float) realPlayHandicap > tournament.getMaxHandicap() ) {
+                              showRealHandicap = true;
+                            }
+                          }
+                          else if ( member.getGender().equalsIgnoreCase("f") ) {
+                            if ( (float) realPlayHandicap > tournament.getFemaleMaxHandicap() ) {
+                              showRealHandicap = true;
+                            }
+                          }
+                        }
+                        if ( tournamentRound.getRoundNumber() > 1 ) {
+                          showRealHandicap = true;
                         }
 
                         int realPoints = 0;
-                        if ( isOverHandicap ) {
+                        if ( showRealHandicap ) {
                           realPoints = Handicap.getTotalPoints(scoreCards[a].getID(),realPlayHandicap);
                         }
 
-                        String grunn2 = scale_decimals(String.valueOf(grunn),1);
-                        String ny_grunn3 = scale_decimals(String.valueOf(ny_grunn),1);
+                        String grunn2 = TextSoap.singleDecimalFormat(String.valueOf(grunn));
+                        String ny_grunn3 = TextSoap.singleDecimalFormat(String.valueOf(ny_grunn));
 
 			Text field_name2 = new Text(field_name);
 				field_name2.setFontSize("1");
@@ -250,35 +262,31 @@ private String headerTextColor = "#FFFFFF";
 			Text leik_forgjof2 = new Text(String.valueOf(leik_forgjof));
 				leik_forgjof2.setFontSize("1");
                         Text realLeikForgjof = new Text();
-                          if ( isOverHandicap ) {
-                            realLeikForgjof.setText("&nbsp;/&nbsp;"+realPlayHandicap);
+                          if ( showRealHandicap ) {
+                            realLeikForgjof.setText(""+realPlayHandicap);
                           }
                           realLeikForgjof.setFontSize(1);
-	                  realLeikForgjof.setFontColor("#8ab490");
 			Text heildarpunktar2 = new Text(String.valueOf(heildarpunktar));
 				heildarpunktar2.setFontSize("1");
                         Text realHeildarPunktar = new Text();
-                          if ( isOverHandicap ) {
-                            realHeildarPunktar.setText("&nbsp;/&nbsp;"+realPoints);
+                          if ( showRealHandicap ) {
+                            realHeildarPunktar.setText(""+realPoints);
                           }
                           realHeildarPunktar.setFontSize(1);
-	                  realHeildarPunktar.setFontColor("#8ab490");
 			Text mispunktar = new Text(String.valueOf(heildarpunktar - grunn_punktar));
 				mispunktar.setFontSize("1");
                         Text realMisPunktar = new Text();
-                          if ( isOverHandicap ) {
-                            realMisPunktar.setText("&nbsp;/&nbsp;"+String.valueOf(realPoints - grunn_punktar));
+                          if ( showRealHandicap ) {
+                            realMisPunktar.setText(""+String.valueOf(realPoints - grunn_punktar));
                           }
                           realMisPunktar.setFontSize(1);
-	                  realMisPunktar.setFontColor("#8ab490");
 			Text grunn3 = new Text(grunn2);
 				grunn3.setFontSize("1");
                         Text realGrunn = new Text();
-                          if ( isOverHandicap ) {
-                            realGrunn.setText("&nbsp;/&nbsp;"+scale_decimals(String.valueOf(realHandicap),1));
+                          if ( showRealHandicap ) {
+                            realGrunn.setText(TextSoap.singleDecimalFormat(String.valueOf(realHandicap)));
                           }
                           realGrunn.setFontSize(1);
-                          realGrunn.setFontColor("#8ab490");
 			Text ny_grunn2 = new Text(ny_grunn3);
                                 ny_grunn2.setFontSize("1");
 			Text tee_text = new Text(tee_name);
@@ -298,23 +306,34 @@ private String headerTextColor = "#FFFFFF";
                         }
 			myTable.add(tee_text,4,a+3);
 			myTable.add(slope2,5,a+3);
-			myTable.add(leik_forgjof2,6,a+3);
-                        if ( isOverHandicap ) {
+                        if ( showRealHandicap ) {
                           myTable.add(realLeikForgjof,6,a+3);
                         }
-			myTable.add(heildarpunktar2,7,a+3);
-                        if ( isOverHandicap ) {
-                          myTable.add(realHeildarPunktar,7,a+3);
-                        }
-			myTable.add(mispunktar,8,a+3);
-                        if ( isOverHandicap ) {
-                          myTable.add(realMisPunktar,8,a+3);
+                        else {
+  			  myTable.add(leik_forgjof2,6,a+3);
                         }
 
-			myTable.add(grunn3,9,a+3);
-                        if ( isOverHandicap ) {
+                        if ( showRealHandicap ) {
+                          myTable.add(realHeildarPunktar,7,a+3);
+                        }
+                        else {
+                          myTable.add(heildarpunktar2,7,a+3);
+                        }
+
+                        if ( showRealHandicap ) {
+                          myTable.add(realMisPunktar,8,a+3);
+                        }
+                        else {
+			  myTable.add(mispunktar,8,a+3);
+                        }
+
+                        if ( showRealHandicap ) {
                           myTable.add(realGrunn,9,a+3);
                         }
+                        else {
+			  myTable.add(grunn3,9,a+3);
+                        }
+
 			if ( Double.toString(grunn) != null ) {
 			myTable.add(ny_grunn2,10,a+3);
 			}
@@ -407,7 +426,9 @@ private String headerTextColor = "#FFFFFF";
 
                 myTable.mergeCells(1,rows,11,rows);
                 myTable.setAlignment(1,rows,"right");
-                myTable.add(recalculateLink,1,rows);
+                if ( Integer.parseInt(this.member_id) > 1 ) {
+                  myTable.add(recalculateLink,1,rows);
+                }
 
 	}
 
@@ -574,68 +595,6 @@ private String headerTextColor = "#FFFFFF";
 		return dates;
 	}
 
-	private String reiknaHandicap(double grunn, int heildarpunktar) throws IOException{
-
-		double breyting;
-
-		if ( heildarpunktar >= 0 ) {
-
-			breyting = heildarpunktar - 36;
-
-		}
-
-		else {
-
-			breyting = 0.0;
-
-		}
-
-		Handicap forgjof = new Handicap(grunn);
-
-		double nyForgjof = forgjof.getNewHandicap(breyting);
-
-		if ( nyForgjof > 36.0 ) {
-
-			nyForgjof = 36.0;
-
-		}
-
-		BigDecimal test2 = new BigDecimal(nyForgjof);
-
-		String nyForgjof2 = test2.setScale(1,5).toString();
-
-		return nyForgjof2;
-	}
-
-	private double reiknaHandicap2(double grunn, int heildarpunktar) throws IOException{
-
-		double breyting;
-
-		if ( heildarpunktar >= 0 ) {
-
-			breyting = heildarpunktar - 36;
-
-		}
-
-		else {
-
-			breyting = 0.0;
-
-		}
-
-		Handicap forgjof = new Handicap(grunn);
-
-		double nyForgjof = forgjof.getNewHandicap(breyting);
-
-		if ( nyForgjof > 36.0 ) {
-
-			nyForgjof = 36.0;
-
-		}
-
-		return nyForgjof;
-	}
-
 	private String formatDate(String date) {
 
 		 idegaCalendar dagatal = new idegaCalendar();
@@ -646,95 +605,6 @@ private String headerTextColor = "#FFFFFF";
 		 ReturnString += "/"+date.substring(2, 4);
 
  	return ReturnString;
-
-	}
-
-	private String scale_decimals(String nyForgjof,int scale) throws IOException {
-
-		BigDecimal test2 = new BigDecimal(nyForgjof);
-
-		String nyForgjof2 = test2.setScale(scale,5).toString();
-
-		return nyForgjof2;
-
-	}
-
-	private void update_handicap(String member_id) throws SQLException,IOException {
-
-		MemberInfo member = new MemberInfo(Integer.parseInt(member_id));
-
-		double grunn = (double) member.getFloatColumnValue("handicap_first");
-		int tee_id = 0;
-
-		Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAllByColumnOrdered("member_id",member_id,"scorecard_date");
-		for (int m=0; m < scorecard.length; m++) {
-			Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].toString());
-
-				float slope = (float) scorecard[m].getSlope();
-				float course_rating = scorecard[m].getCourseRating();
-				int field_id = scorecard[m].getFieldID();
-
-			Field field = new Field(field_id);
-				float field_par = (float) field.getIntColumnValue("field_par");
-
-			Handicap leikForgjof = new Handicap(grunn);
-				int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
-
-			int leikpunktar = leik + 36;
-			int punktar = leikpunktar/18;
-			int afgangur = leikpunktar%18;
-			int punktar2 = punktar + 1;
-			int punktar3 = 0;
-			int heildarpunktar = 0;
-			int hole_handicap = 0;
-			int hole_par = 0;
-
-			Stroke[] stroke2 = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].toString());
-
-			for (int c = 0 ; c < stroke2.length; c++ ) {
-
-				hole_handicap = (int) stroke2[c].getHoleHandicap();
-				hole_par = stroke2[c].getHolePar();
-
-				int strokes2 = stroke2[c].getStrokeCount();
-
-				if ( hole_handicap > afgangur ) {
-					punktar3 = hole_par + punktar - strokes2;
-				}
-
-				if ( hole_handicap <= afgangur ) {
-					punktar3 = hole_par + punktar2 - strokes2;
-				}
-
-				if ( punktar2 < 0 ) {
-					punktar3 = 0;
-				}
-
-				if ( punktar3 < 0 ) {
-					punktar3 = 0;
-				}
-
-				heildarpunktar += punktar3;
-
-				stroke2[c].setPointCount(punktar3);
-				stroke2[c].update();
-
-			}
-
-			if ( stroke2.length <= 9 ) {
-				heildarpunktar *= 2;
-			}
-
-			scorecard[m].setHandicapBefore((float) grunn);
-			scorecard[m].setTotalPoints(heildarpunktar);
-			scorecard[m].update();
-
-			grunn = reiknaHandicap2((double)grunn,heildarpunktar);
-
-		}
-
-		member.setHandicap((float) grunn);
-		member.update();
 
 	}
 
