@@ -37,7 +37,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		Table table = new Table();
 		table.setCellpaddingAndCellspacing(0);
 		
-		int row = 0;
+		int row = 1; /** breytti ut 0, vegna arrayIndexOutOfBounds Villu... */
 		boolean useBreak = false;
 				
 		String manType = getSchoolBusiness(_iwc).getSchoolManagementTypeString(_school.getSchoolManagermentType());

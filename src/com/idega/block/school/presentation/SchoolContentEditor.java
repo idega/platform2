@@ -64,6 +64,7 @@ public class SchoolContentEditor extends IWAdminWindow{
   private String PARAMETER_SCHOOL_NAME = "scr_schn";
   private String PARAMETER_SCHOOL_ADDRESS_STREET = "scr_adst";
   private String PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE = "scr_adpc";
+  private String PARAMETER_SCHOOL_ZIP_AREA = "scr_zipa";
   private String PARAMETER_SCHOOL_PHONE = "scr_ph";
   private String PARAMETER_SCHOOL_FAX = "scr_fx";
 	private String PARAMETER_SCHOOL_WEBPAGE = "scr_swp";
@@ -132,13 +133,15 @@ public class SchoolContentEditor extends IWAdminWindow{
 		TextInput schoolName = new TextInput(this.PARAMETER_SCHOOL_NAME);
 		TextInput streetName = new TextInput(PARAMETER_SCHOOL_ADDRESS_STREET);
 		TextInput areaCode = new TextInput(PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE);
+		TextInput zipArea = new TextInput(PARAMETER_SCHOOL_ZIP_AREA);
 		schoolName.setSize(40);
 		streetName.setSize(40);
 		areaCode.setSize(7);
+		zipArea.setSize(20);
 		
 		DropdownMenu manType = new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE);
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID, _iwrb.getLocalizedString(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE, "Private"));
-		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC_ID, _iwrb.getLocalizedString(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC, "Public"));
+		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_PRIVATE_ID), "Private"));
+		manType.addMenuElement(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC_ID, _iwrb.getLocalizedString(getSchoolBusiness(iwc).getSchoolManagementTypeString(SchoolBusinessBean.MANAGEMENT_TYPE_PUBLIC_ID), "Public"));
 		
 		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
@@ -169,6 +172,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 			}
 			if ( _school.getSchoolZipCode() != null) {
 				areaCode.setContent(_school.getSchoolZipCode());
+			}
+			if (_school.getSchoolZipArea() != null) {
+				zipArea.setContent(_school.getSchoolZipArea());
 			}
 			if ( _school.getSchoolPhone() != null) {
 				phone.setContent(_school.getSchoolPhone());
@@ -206,10 +212,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 		this.addLeft(_iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
 
-		Table addressTable = new Table(2, 4);
+		Table addressTable = new Table(2, 6);
 		Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
 		Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
 		Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area Code"));
+		Text sZipAreaText = new Text(_iwrb.getLocalizedString("school.zip_area","Zip Area"));
 		Text sPhoneText = new Text(_iwrb.getLocalizedString("school.phone","Phone"));
 		Text sFaxText = new Text(_iwrb.getLocalizedString("school.fax","Fax"));
 
@@ -218,19 +225,25 @@ public class SchoolContentEditor extends IWAdminWindow{
 		formatText(sAreaCodeText, true);
 		formatText(sPhoneText, true);
 		formatText(sFaxText, true);
+		formatText(sZipAreaText, true);
 		setStyle(streetName);
 		setStyle(areaCode);
 		setStyle(phone);
 		setStyle(fax);
+		setStyle(zipArea);
 		
 		addressTable.add(sNameText, 1, 1);
-		addressTable.add(sAreaCodeText, 2, 1);
 		addressTable.add(streetName, 1, 2);
-		addressTable.add(areaCode, 2, 2);
-		addressTable.add(sPhoneText, 1, 3);
-		addressTable.add(sFaxText, 2, 3);
-		addressTable.add(phone, 1, 4);
-		addressTable.add(fax, 2, 4);
+		addressTable.mergeCells(1, 1, 2, 1);
+		addressTable.mergeCells(1, 2, 2, 2);
+		addressTable.add(sAreaCodeText, 1, 3);
+		addressTable.add(sZipAreaText, 2, 3);
+		addressTable.add(areaCode, 1, 4);
+		addressTable.add(zipArea, 2, 4);
+		addressTable.add(sPhoneText, 1, 5);
+		addressTable.add(sFaxText, 2, 5);
+		addressTable.add(phone, 1, 6);
+		addressTable.add(fax, 2, 6);
 			
 		
 		this.addLeft(addressTable, true);
@@ -262,6 +275,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			String school_name = iwc.getParameter( PARAMETER_SCHOOL_NAME );
 			String street = iwc.getParameter( PARAMETER_SCHOOL_ADDRESS_STREET );
 			String postalCode = iwc.getParameter( PARAMETER_SCHOOL_ADDRESS_POSTAL_CODE );
+			String zipArea = iwc.getParameter( PARAMETER_SCHOOL_ZIP_AREA);
 			String phone = iwc.getParameter( PARAMETER_SCHOOL_PHONE );
 			String fax = iwc.getParameter( PARAMETER_SCHOOL_FAX );
 			String manType = iwc.getParameter( PARAMETER_SCHOOL_MANAGEMENT_TYPE);
@@ -298,6 +312,9 @@ public class SchoolContentEditor extends IWAdminWindow{
 				}
 				if (!postalCode.equals("")) {
 					_school.setSchoolZipCode(postalCode);
+				}
+				if (!zipArea.equals("")) {
+					_school.setSchoolZipArea(zipArea);	
 				}
 				if (!phone.equals("")) {
 					_school.setSchoolPhone(phone);
