@@ -760,7 +760,7 @@ public class ChildCareContracts extends ChildCareBlock {
 		}
 	}
 	
-	/*private void setShowParentRadioButton(boolean show){
+	public void setShowParentRadioButton(boolean show){
 		showParentalRadio = show;
-	}*/
+	}
 }
