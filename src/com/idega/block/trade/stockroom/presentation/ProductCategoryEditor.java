@@ -92,11 +92,11 @@ public class ProductCategoryEditor extends IWAdminWindow {
       List allProducts = ProductBusiness.getProducts();
       allProducts.removeAll(products);
       
-      ProductComparator compare = new ProductComparator();
+      /*ProductComparator compare = new ProductComparator();
       compare.sortBy(compare.NAME);
       
       Collections.sort(allProducts, compare);
-      Collections.sort(products, compare);
+      Collections.sort(products, compare);*/
 
       SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
 
