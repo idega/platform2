@@ -54,6 +54,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	private Form form;
 	
 	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
+	private String borderAllWhite = "borderAllWhite";
 	
 	public CreateUserInLedger() {
 		super();
@@ -84,6 +85,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 		table = new Table();
 		table.setCellspacing(0);
 		table.setCellpadding(0);
+		table.setStyleClass(borderAllWhite);
 		table.add(nameText,1,1);
 		table.add(nameField,2,1);
 		table.add(ssnText,1,2);
@@ -157,12 +159,13 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 				}
 			}
 			
-						
+			Integer groupID = new Integer(ledger.getGroupID());			
 			if(user!=null) {
 				//user exists in a group but not the ledgerGroup
 				if(isInGroup == false || user.getPrimaryGroup() == null) {
 					//TODO: make adding user available in calbusiness
-					user.setMetaData(NEW_USER_IN_LEDGER,NEW_USER_IN_LEDGER);//user.getPrimaryKey().toString());
+					
+					user.setMetaData(NEW_USER_IN_LEDGER,groupID.toString());//user.getPrimaryKey().toString());
 					user.store();
 					ledger.addUser(user);	
 				}	
@@ -173,7 +176,7 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 			else {
 				try {
 					user = getUserBusiness(iwc).createUserByPersonalIDIfDoesNotExist(name,ssn,null,null);
-					user.setMetaData(NEW_USER_IN_LEDGER,NEW_USER_IN_LEDGER);
+					user.setMetaData(NEW_USER_IN_LEDGER,groupID.toString());
 					user.store();
 					if(ssn == null || ssn.equals("")) {
 						user.setPersonalID(Integer.toString(((Integer)user.getPrimaryKey()).intValue()));
@@ -186,10 +189,11 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 					e.printStackTrace();
 				}
 				
-			}			
+			}	
 			setOnLoad("window.opener.parent.location.reload()");			
 			close();
 		}
+		
 		add(form,iwc);
 	}
 	public String getBundleIdentifier() {
