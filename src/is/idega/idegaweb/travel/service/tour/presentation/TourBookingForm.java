@@ -1733,20 +1733,25 @@ public class TourBookingForm extends TravelManager {
       debug("SaveSan 6");
         int resId = -7;
         try {
-      debug("SaveSan 6.0.1");
+      debug("SaveSan 6.1");
           if (!sUserId.equals("-1")) {
+            debug("SaveSan 6.1.1");
             User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
+            debug("SaveSan 6.1.2");
             Reseller res = ResellerManager.getReseller(user);
+            debug("SaveSan 6.1.3");
             if (res != null) {
+            debug("SaveSan 6.2.1");
               resId = res.getID();
               for (int i = 0; i < bookingIds.length; i++) {
-      debug("SaveSan 6."+i);
+      debug("SaveSan 6.2.1."+i);
                 try {
                   res.addTo(GeneralBooking.class, bookingIds[i]);
                 }catch (SQLException sql) {debug(sql.getMessage());}
               }
             }
           }
+      debug("SaveSan 6.2.2");
         }catch (SQLException sql) {
           sql.printStackTrace(System.err);
         }
