@@ -76,7 +76,7 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		
    
     
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"one-to-one",WorkReportGroup.class);
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"many-to-one",WorkReportGroup.class);
 		
 
 	}
