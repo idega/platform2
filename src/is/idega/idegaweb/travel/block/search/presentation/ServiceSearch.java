@@ -80,7 +80,7 @@ public class ServiceSearch extends Block {
 		searchForms = new Vector();
 		AbstractSearchForm ss;
 		while (iter.hasNext()) {
-			object = objectHome.findByPrimaryKey(iter.next());
+			object = (ICObject) iter.next();
 			try {
 				Class tmpClass = Class.forName(object.getClassName());
 				ss = (AbstractSearchForm) tmpClass.newInstance();
