@@ -93,6 +93,7 @@ private IWResourceBundle iwrb;
     setWidth(570);
     setHeight(550);
     setResizable(true);
+    setScrollbar(true);
     setUnMerged();
   }
 
