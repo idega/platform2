@@ -59,9 +59,9 @@ public class AprtTypePeriodMaker extends Block{
   }
 
   protected void control(IWContext iwc){
-
+      //debugParameters(iwc);
       if(isAdmin){
-        if(iwc.getParameter("save") != null){
+        if(iwc.isParameterSet("save.x") || iwc.isParameterSet("save")){
           doUpdate(iwc);
         }
 
