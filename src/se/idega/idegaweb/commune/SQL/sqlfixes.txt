@@ -5,6 +5,11 @@
 *
 **/
 
+alter table ic_address modify (street_name varchar2(100))
+alter table ic_user modify (first_name varchar2(45));
+alter table ic_user modify (middle_name varchar2(45));
+alter table ic_user modify (last_name varchar2(45));
+alter table ic_user modify (display_name varchar2(45));
 
 /opt/interbase/bin/isql 
 connect /idega/databases/nacka1.gdb;
