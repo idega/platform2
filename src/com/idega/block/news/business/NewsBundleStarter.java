@@ -31,6 +31,7 @@ public class NewsBundleStarter implements IWBundleStartable{
   }
 
   public void start(){
+    System.err.println("News bundle starter: starting");
     if(!testNews()){
       System.err.println("News bundle starter: Making categories");
       Map map = makeICCategories();
