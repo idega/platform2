@@ -1,5 +1,5 @@
 /*
- * $Id: MainTemplate.java,v 1.4 2001/08/23 13:50:46 aron Exp $
+ * $Id: MainTemplate.java,v 1.5 2001/08/29 21:15:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -135,6 +135,10 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void addTabs(ModuleObject objectToAdd){
     getMainPage().addTabs( objectToAdd);
 
+  }
+
+  public void setBorder(int iBorder){
+    getMainPage().setBorder(iBorder);
   }
 
 }

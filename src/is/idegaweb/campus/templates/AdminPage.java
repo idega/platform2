@@ -1,5 +1,5 @@
 /*
- * $Id: MainPage.java,v 1.3 2001/08/29 21:15:45 aron Exp $
+ * $Id: AdminPage.java,v 1.1 2001/08/29 21:18:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,9 +23,9 @@ import com.idega.idegaweb.IWBundle;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class MainPage extends Page{
+public class AdminPage extends Page{
 
-  private Table MainTable,HeaderTable,SubHeaderTable,TitleTable,RightTable,myTable;
+ private Table MainTable,HeaderTable,SubHeaderTable,TitleTable,myTable;
   private Table LeftTable,TabTable;
   private Table content;
   private Image LeftHeaderImage,RightHeaderImage;
@@ -38,9 +38,8 @@ public class MainPage extends Page{
   private Image BottomLogo = new Image("/pics/template/bottomlogo.gif");
   protected IWBundle iwb;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
-  private boolean useRightTable = true;
 
-  public  MainPage(){
+  public AdminPage(){
     super();
     content = new Table(1,4);
     initContent();
@@ -49,10 +48,6 @@ public class MainPage extends Page{
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
-  }
-
-  public void setToUseRightTable(boolean use){
-    useRightTable = use;
   }
 
   public void setBorder(int iBorder){
@@ -110,9 +105,7 @@ public class MainPage extends Page{
   }
   public void initMainTable(){
     int cols = 2;
-    if( useRightTable){
-      cols = 3;
-    }
+
     MainTable = new Table(cols,1);
     MainTable.setBorder(BORDER);
     MainTable.setVerticalAlignment(1,1,"top");
@@ -124,12 +117,6 @@ public class MainPage extends Page{
     MainTable.setWidth("100%");
     MainTable.setWidth(1,"130");
     MainTable.setWidth(2,"100%");
-
-    if(useRightTable){
-      MainTable.add(getRightTable(),3,1);
-      MainTable.setWidth(3,"130");
-      MainTable.setVerticalAlignment(3,1,"top");
-    }
 
     MainTable.add(getMyTable(),2,1);
     MainTable.add(getLeftTable(),1,1);
@@ -214,21 +201,7 @@ public class MainPage extends Page{
     LeftTable.setBorder(BORDER);
     return LeftTable;
   }
-  public Table getRightTable(){
-    RightTable = new Table(1,3);
-    RightTable.setWidth("135");
-    RightTable.setColumnAlignment(1,"center");
-    //RightTable.setHeight("100%");
-    //RightTable.setHeight(2,"100%");
-    RightTable.setCellpadding(0);
-    RightTable.setCellspacing(0);
 
-    RightTable.setVerticalAlignment(1,1,"top");
-    RightTable.setVerticalAlignment(1,2,"top");
-    RightTable.setVerticalAlignment(1,3,"top");
-    RightTable.setBorder(BORDER);
-    return RightTable;
-  }
   private void initTabTable(){
     TabTable = new Table(1,2);
     TabTable.setBorder(BORDER);
@@ -353,20 +326,7 @@ public class MainPage extends Page{
   public void addLeft(ModuleObject objectToAdd){
     LeftTable.add(objectToAdd,1,2);
   }
-  /** Adds a ModuleObject to the center of the right side
-   *
-   */
-  public void addRight(ModuleObject objectToAdd){
-    if(RightTable != null)
-      RightTable.add(objectToAdd,1,2);
-  }
-  /** Adds a ModuleObject to the bottom of the right side
-   *
-   */
-  public void addRightBottom(ModuleObject objectToAdd){
-    if(RightTable != null)
-      RightTable.add(objectToAdd,1,3);
-  }
+
   /** Adds a ModuleObject to the titlebar on the left side
    *
    */
@@ -391,20 +351,8 @@ public class MainPage extends Page{
   public void addTopLeft(ModuleObject objectToAdd){
     LeftTable.add(objectToAdd,1,1);
   }
-  /** Adds a ModuleObject to the top of right side
-   *
-   */
-  public void addTopRight(ModuleObject objectToAdd){
-    if(RightTable != null)
-      RightTable.add(objectToAdd,1,1);
-  }
-  /** Adds a divider to the top of right side
-   *
-   */
-  public void addTopRightDivider(){
-    if(RightTable != null)
-      RightTable.add(getDivider(),1,1);
-  }
+
+
   /** Adds a ModuleObject to the upper logo area on the left
    *
    */
@@ -425,4 +373,3 @@ public class MainPage extends Page{
    SubHeaderTable.add(TabTable,3,1);
   }
 }
-

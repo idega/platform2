@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTemplate.java,v 1.7 2001/08/23 13:50:46 aron Exp $
+ * $Id: CampusTemplate.java,v 1.8 2001/08/29 21:15:58 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,9 +8,6 @@
  *
  */
 package is.idegaweb.campus.templates;
-
-import is.idegaweb.campus.templates.MainTemplate;
-import is.idegaweb.campus.templates.CampusPage;
 
 /**
  *
