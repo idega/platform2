@@ -90,7 +90,7 @@ public class MyDoctor extends EHealthBlock {
 			
 			PresentationObject picture=null;
 			User doctor = null;
-			int userIDDr = 41047; //45   41047
+			int userIDDr = 45; //45   41047
 			int userImageID = -1;
 			try {
 				doctor = ((UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class)).getUser(userIDDr);	

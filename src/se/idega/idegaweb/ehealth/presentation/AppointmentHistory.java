@@ -143,12 +143,12 @@ public class AppointmentHistory extends EHealthBlock {
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
 		transpImg.setWidth(20);
-		transpImg.setHeight(12);
+		transpImg.setHeight(13);
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
-		
+		layer.setHeight(13);
 		
 		int theRow = 1;
 		int theColumn = 1;
