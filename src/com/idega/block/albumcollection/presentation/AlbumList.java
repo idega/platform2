@@ -8,6 +8,9 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.util.idegaTimestamp;
+import com.idega.block.albumcollection.data.Performer;
+import com.idega.data.EntityFinder;
 
 import java.util.List;
 import java.util.Iterator;
@@ -51,6 +54,7 @@ public class AlbumList extends Block {
       contentTable = new Table(1,albumList.size()*2+1);
       contentTable.setAlignment("center");
       contentTable.setHeight(1,"30");
+      List albumTypes = AlbumCollectionBusiness.getAlbumTypeNames();
       int index = 2;
       Iterator iter = albumList.iterator();
       while (iter.hasNext()) {
@@ -66,10 +70,29 @@ public class AlbumList extends Block {
         if(item.getFrontCoverFileId() > 0){
           myLayout.setAlbumImage(new Image(item.getFrontCoverFileId()));
         }
-        myLayout.setAlbumPerformers("KK");
-        myLayout.setAlbumPublishingDay("1991");
-        myLayout.setAlbumType("Geisladiskur");
+        List performers = EntityFinder.findRelated(item,Performer.getStaticInstance(Performer.class));
+        if(performers != null){
+          Iterator iter2 = performers.iterator();
+          boolean f = false;
+          String name = "";
+          while (iter2.hasNext()) {
+            Performer performer = (Performer)iter2.next();
+            if(f){
+              name += ", ";
+            }
+            name = performer.getDisplayName();
+            f=true;
+          }
+          myLayout.setAlbumPerformers(name);
+        }
+        if(item.getPublishingDay() != null){
+          myLayout.setAlbumPublishingDay(Integer.toString(new idegaTimestamp(item.getPublishingDay()).getYear()));
+        }
 
+        String type = (String)albumTypes.get(item.getAlbumTypeId());
+        if(type != null){
+          myLayout.setAlbumType(type);
+        }
         if(hasEditPermission()){
           Link update = (Link)updateAlbumLinkTemplate.clone();
           update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());

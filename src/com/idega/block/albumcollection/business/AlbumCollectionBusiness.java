@@ -7,6 +7,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 
 import java.util.List;
+import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
 
@@ -150,8 +151,23 @@ public class AlbumCollectionBusiness {
     return EntityFinder.findAll(AlbumType.getStaticInstance(AlbumType.class));
   }
 
+  public static Vector getAlbumTypeNames() throws SQLException {
+    List types = getAlbumTypes();
+    if(types != null){
+      Vector st = new Vector();
+      Iterator iter = types.iterator();
+      while (iter.hasNext()) {
+        AlbumType item = (AlbumType)iter.next();
+        st.add(item.getID(),item.getName());
+      }
+      return st;
+    } else{
+      return null;
+    }
+  }
+
   public static List getAlbums() throws SQLException{
-    return EntityFinder.findAll(Album.getStaticInstance(Album.class));
+    return EntityFinder.findAllOrdered(Album.getStaticInstance(Album.class),Album._COLUMNNAME_PUBLISHINGDAY);
   }
 
   public static void createAlbum(String name, String description,Integer albumType, idegaTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
