@@ -1378,7 +1378,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 						
 			boolean hasBankId = false;
-			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
+			hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer) application.getOwner().getPrimaryKey()).intValue());
 
 						
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
@@ -1410,19 +1410,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setContractId(contractID);
 			application.setContractFileId(fileID);
 			*/
+			
+			String defaultContractCreatedBody = hasBankId 
+				? "Your child care contract for {0} has been created. " +
+					"Please sign the contract.\n\nWith best regards,\n{1}"
+				: "Your child care contract for {0} has been created and will be sent to you in a few days. " +
+					"Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
+			String defaultContractChangedBody = hasBankId 
+				? "Your child care contract with altered care time for {0} has been created. "	+
+					"Please sign the contract.\n\nWith best regards,\n{1}"			
+				: "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. " +					"Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
+							
+			String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
 			if (changeStatus) {
 				application.setApplicationStatus(getStatusContract());
 				changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
 				
 				String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
-				String body = getLocalizedString("child_care.contract_created_body", "Your child care contract for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
+				String body = getLocalizedString("child_care.contract_created_body"+localizeBankIdPrefix, defaultContractCreatedBody, locale);
 				sendMessageToParents(application, subject, body);
 			}
 			else {
 				changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
 
 				String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
-				String body = getLocalizedString("child_care.alter_caretime_body", "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}", locale);
+				String body = getLocalizedString("child_care.alter_caretime_body"+localizeBankIdPrefix, defaultContractChangedBody, locale);
 				sendMessageToParents(application, subject, body);
 			}
 			addContractToArchive(-1, application, contractID, validFrom.getDate());
