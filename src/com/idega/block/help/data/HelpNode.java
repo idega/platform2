@@ -10,6 +10,7 @@
 package com.idega.block.help.data;
 
 import com.idega.core.data.ICTreeNode;
+import com.idega.idegaweb.IWApplicationContext;
 
 import java.util.Iterator;
 import java.util.List;
@@ -113,6 +114,10 @@ public class HelpNode implements ICTreeNode {
 	public String getNodeName(Locale locale) {
 		return getNodeName();
 	}
+	
+	public String getNodeName(Locale locale, IWApplicationContext iwac){
+		return getNodeName(locale);
+	}
 
 	/**
 	 * @see com.idega.core.ICTreeNode#getNodeID()
@@ -130,6 +135,13 @@ public class HelpNode implements ICTreeNode {
 		}
 		else
 			return 0;
+	}
+	
+	/**
+	 * @see com.idega.core.ICTreeNode#getNodeType()
+	 */
+	public int getNodeType(){
+		return -1;
 	}
 	
 	public void setNodeID(int id) {

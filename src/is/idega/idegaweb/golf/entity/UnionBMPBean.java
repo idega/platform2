@@ -1425,6 +1425,13 @@ public List getTournamentGroupsRecursive(){
       return 0;
 
     }
+    
+	/**
+	 * @see com.idega.core.ICTreeNode#getNodeType()
+	 */
+	public int getNodeType(){
+		return -1;
+	}
 
 
 
