@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.16 2001/08/26 22:31:55 laddi Exp $
+ * $Id: Page.java,v 1.17 2001/08/27 09:42:37 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,7 +63,6 @@ public class Page extends ModuleObjectContainer {
   public Page(String s) {
     super();
     setTitle(s);
-    setAllMargins(0);
   }
 
   public void setBackgroundColor(String color) {
