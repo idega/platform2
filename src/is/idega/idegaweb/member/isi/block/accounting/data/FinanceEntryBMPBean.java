@@ -38,6 +38,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_TYPE = "entry_type";
 	protected final static String COLUMN_DATE_OF_ENTRY = "date_of_entry";
 	protected final static String COLUMN_INFO = "text_info";
+	protected final static String COLUMN_TARIFF_ID = "tariff";
+	protected final static String COLUMN_TARIFF_TYPE_ID = "tariff_type";
 	protected final static String COLUMN_INSERTED_BY = "inserted_by";
 	protected final static String COLUMN_AMOUNT_EQUALIZED = "eq_amount";
 	protected final static String COLUMN_OPEN = "entry_open";
@@ -72,6 +74,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
 		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
 		addManyToOneRelationship(COLUMN_GROUP_ID, Group.class);
+		addManyToOneRelationship(COLUMN_TARIFF_ID, ClubTariff.class);
+		addManyToOneRelationship(COLUMN_TARIFF_TYPE_ID, ClubTariffType.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
 		addAttribute(COLUMN_STATUS, "Status", true, true, String.class, 1);
 		addAttribute(COLUMN_TYPE, "Type", true, true, String.class, 1);
@@ -234,6 +238,38 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	public void setInfo(String info) {
 		setColumn(COLUMN_INFO, info);
 	}
+	
+	public int getTariffID() {
+		return getIntColumnValue(COLUMN_TARIFF_ID);
+	}
+
+	public void setTariffID(int id) {
+		setColumn(COLUMN_TARIFF_ID ,id);
+	}
+	
+	public ClubTariff getTariff() {
+		return (ClubTariff) getColumnValue(COLUMN_TARIFF_ID);
+	}
+	
+	public void setTariff(ClubTariff clubTariff) {
+		setColumn(COLUMN_TARIFF_ID, clubTariff);
+	}
+	
+	public int getTariffTypeID() {
+		return getIntColumnValue(COLUMN_TARIFF_TYPE_ID);
+	}
+
+	public void setTariffTypeID(int id) {
+		setColumn(COLUMN_TARIFF_TYPE_ID ,id);
+	}
+	
+	public ClubTariffType getTariffType() {
+		return (ClubTariffType) getColumnValue(COLUMN_TARIFF_TYPE_ID);
+	}
+	
+	public void setTariffType(ClubTariffType clubTariffType) {
+		setColumn(COLUMN_TARIFF_TYPE_ID, clubTariffType);
+	}	
 	
 	public int getInsertedByUserID() {
 		return getIntColumnValue(COLUMN_INSERTED_BY);
