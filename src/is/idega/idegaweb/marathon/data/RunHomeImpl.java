@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
+import com.idega.user.data.Group;
 
 
 /**
@@ -40,6 +41,13 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 		int theReturn = ((RunBMPBean) entity).ejbHomeGetNextAvailableParticipantNumber(min, max);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
+	}
+
+	public Collection findAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindAllByDistanceAndGroup(distance, runGroup);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 	public Run findByUserIDandDistanceID(int userID, int distanceID) throws FinderException {

@@ -468,6 +468,21 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return null;
 	}
 	
+	public Collection getRunnersByDistance(Group distance, Group runGroup) {
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			return runHome.findAllByDistanceAndGroup(distance, runGroup);
+		}
+		catch (RemoteException e) {
+			log(e);
+		}
+		catch (FinderException e) {
+			log(e);
+		}
+		 
+		return new ArrayList();
+	}
+	
 	public void setParticipantNumber(Run participant) {
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);

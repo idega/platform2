@@ -7,6 +7,7 @@ package is.idega.idegaweb.marathon.data;
 
 import com.idega.data.IDOEntity;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 
 /**
@@ -58,6 +59,11 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus
 	 */
 	public String getChipOwnershipStatus();
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getUser
+	 */
+	public User getUser();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getUserID

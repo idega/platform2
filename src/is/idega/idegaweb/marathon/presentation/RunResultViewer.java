@@ -7,7 +7,6 @@ import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.business.RunGroup;
 import is.idega.idegaweb.marathon.business.RunGroupComparator;
 import is.idega.idegaweb.marathon.business.RunGroupMap;
-import is.idega.idegaweb.marathon.business.RunResultsComparator;
 import is.idega.idegaweb.marathon.data.Run;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
@@ -73,7 +72,6 @@ public class RunResultViewer extends Block {
 	private Group distance;
 	private Group year;
 
-	private Map _runToRunnerMap = null;
 	private Collator _collator;
 	private IWContext _iwc;
 	private IWResourceBundle iwrb;
@@ -186,13 +184,12 @@ public class RunResultViewer extends Block {
 			
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
-				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
-				runs.addAll(getRunsForRunners(runners));
+				Collection runners = getRunBiz().getRunnersByDistance(distance, runGroup);
+				runs.addAll(runners);
 			}
 
 			row = insertRunGroupIntoTable(table, row, "results.all_participants");
 
-			sortRuns(runs);
 			Iterator runIter = runs.iterator();
 			int num = 1;
 			while (runIter.hasNext()) {
@@ -215,12 +212,10 @@ public class RunResultViewer extends Block {
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
 	
-				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
+				Collection runners = getRunBiz().getRunnersByDistance(runGroup, distance);
 				if (runners.size() > 0) {
-					List runs = getRunsForRunners(runners);
-					sortRuns(runs);
 					row = insertRunGroupIntoTable(table, row, "group_" + runGroup.getName());
-					Iterator runIter = runs.iterator();
+					Iterator runIter = runners.iterator();
 					int num = 1;
 					while (runIter.hasNext()) {
 						Run run = (Run) runIter.next();
@@ -246,10 +241,9 @@ public class RunResultViewer extends Block {
 			Iterator runGroupIter = groups.iterator();
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
-				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
-				runs.addAll(getRunsForRunners(runners));
+				Collection runners = getRunBiz().getRunnersByDistance(runGroup, distance);
+				runs.addAll(runners);
 			}
-			sortRuns(runs);
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
@@ -338,44 +332,6 @@ public class RunResultViewer extends Block {
 	}
 
 	/**
-	 * Gets the Run objects for a collection of runners, also creates the
-	 * <code>_runToRunnerMap</code> map.
-	 * 
-	 * @param runners
-	 *            A Collection of runners
-	 * @return A Collection of Runs
-	 */
-	private List getRunsForRunners(List runners) {
-		List runs = new ArrayList(runners.size());
-		if (_runToRunnerMap == null) {
-			_runToRunnerMap = new HashMap();
-		}
-
-		Iterator runnerIter = runners.iterator();
-		while (runnerIter.hasNext()) {
-			User runner = (User) runnerIter.next();
-			Run run = getRunBiz().getRunObjByUserIDandDistanceID(((Integer) runner.getPrimaryKey()).intValue(), ((Integer) distance.getPrimaryKey()).intValue()); // @TODO
-			boolean addToList = false;
-			if (run != null) {
-				_runToRunnerMap.put(run, runner);
-				runs.add(run);
-			}
-		}
-
-		return runs;
-	}
-
-	/**
-	 * Sorts runs by their time
-	 * 
-	 * @param runs
-	 *            The list of Run objects to sort
-	 */
-	private void sortRuns(List runs) {
-		Collections.sort(runs, new RunResultsComparator());
-	}
-
-	/**
 	 * Sorts groups based on their names
 	 * 
 	 * @param groups
@@ -393,7 +349,7 @@ public class RunResultViewer extends Block {
 	}
 
 	private int insertRunIntoTable(Table table, int row, Run run, int num, int participantRow) {
-		User user = (User) _runToRunnerMap.get(run);
+		User user = run.getUser();
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
 		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);

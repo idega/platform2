@@ -17,6 +17,7 @@ import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
  * Description: <br>
@@ -182,6 +183,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return getStringColumnValue(getColumnNameChipOwnershipStatus());
 	}
 
+	public User getUser() {
+		return (User) getColumnValue(getColumnNameUserID());
+	}
+
 	public int getUserID() {
 		return getIntColumnValue(getColumnNameUserID());
 	}
@@ -317,6 +322,18 @@ public class RunBMPBean extends GenericEntity implements Run {
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.LESSEQUAL, max));
 		
 		return idoGetNumberOfRecords(query.toString());
+	}
+	
+	public Collection ejbFindAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new MaxColumn(getColumnNameParticipantNumber()));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distance));
+		query.addCriteria(new MatchCriteria(table, getColumnNameRunGroupGroupID(), MatchCriteria.EQUALS, runGroup));
+		query.addOrder(table, getColumnNameRunTime(), true);
+		
+		return idoFindPKsBySQL(query.toString());
 	}
 	
 	public Integer ejbFindByUserIDandDistanceID(int userID, int distanceID) throws FinderException{

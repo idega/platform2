@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
+import com.idega.user.data.Group;
 
 
 /**
@@ -29,6 +30,11 @@ public interface RunHome extends IDOHome {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbHomeGetNextAvailableParticipantNumber
 	 */
 	public int getNextAvailableParticipantNumber(int min, int max) throws IDOException;
+
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindAllByDistanceAndGroup
+	 */
+	public Collection findAllByDistanceAndGroup(Group distance, Group runGroup) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindByUserIDandDistanceID
