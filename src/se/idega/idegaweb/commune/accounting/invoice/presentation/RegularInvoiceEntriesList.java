@@ -16,8 +16,11 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.EJBLocalHome;
+import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
-
+import javax.ejb.RemoveException;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -25,8 +28,10 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
 
+import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -50,6 +55,8 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
 /**
  * @author Roar
@@ -118,13 +125,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		ACTION_DELETE = 2, 
 		ACTION_CANCEL = 3,
 		ACTION_EDIT = 4, 
-		ACTION_SEARCH_PEOPLE = 5, 
-		ACTION_SEARCH_INVOICE = 6,
-		ACTION_SEARCH_REGULATION = 7,
-		ACTION_SAVE = 8,
-		ACTION_CANCEL_NEW_EDIT = 9,
-		ACTION_OPFIELD_DETAILSCREEN = 10,
-		ACTION_OPFIELD_MAINSCREEN = 11;
+		ACTION_SEARCH_INVOICE = 5,
+		ACTION_SEARCH_REGULATION = 6,
+		ACTION_SAVE = 7,
+		ACTION_CANCEL_NEW_EDIT = 8,
+		ACTION_OPFIELD_DETAILSCREEN = 9,
+		ACTION_OPFIELD_MAINSCREEN = 10;
 			
 	private static final String PAR = "PARAMETER_";
 	private static final String 
@@ -177,9 +183,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 					break;
 				case ACTION_EDIT:
 					handleEditAction(iwc, user);
-					break;
-				case ACTION_SEARCH_PEOPLE:
-					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
 				case ACTION_SEARCH_INVOICE:
 					handleInvoiceSearch(iwc, user, fromDate, toDate);
@@ -266,18 +269,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 	private void handleCreateAction(IWContext iwc, User user){
 		if (user != null){
-			try{
-				RegularInvoiceEntry entry = getRegularInvoiceEntryHome().create();
-				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-				entry.setCreatedSign(iwc.getCurrentUser().getName());				
-				entry.store();
-				handleEditAction(iwc, entry, user);
-			}catch(CreateException ex){
-				ex.printStackTrace();
-			}
+			handleEditAction(iwc, getEmptyEntry(), user);
 		}
 	}
-	
+
 	private void handleDeleteAction(IWContext iwc){
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
 		try{
@@ -301,38 +296,46 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 	
 	private void handleSaveAction(IWContext iwc, User user){
-		
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
 		
-		if (entry != null){
-			entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
-			Date from = parseDate(iwc.getParameter(PAR_FROM));
-			Date to = parseDate(iwc.getParameter(PAR_TO));
-			if (from != null && to != null){
-				entry.setFrom(from);
-				entry.setTo(to);
-				entry.setEditDate(new Date(new java.util.Date().getTime()));
-				entry.setEditSign(iwc.getCurrentUser().getName());					
-				entry.setNote(iwc.getParameter(PAR_REMARK));
-				entry.setPlacing(iwc.getParameter(PAR_PLACING));
-				entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-				entry.setPlacing(iwc.getParameter(PAR_PLACING));
-				if (iwc.getParameter(PAR_PROVIDER) != null){
-					entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
-				}
-				entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
-				entry.setUser(user);
-				entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-				entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-				entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
-				entry.store();		
-				handleEditAction(iwc, entry, user);					
-			} else {
-				handleEditAction(iwc, entry, user, "Date format error");	//TODO: localize				
-			}
+		if (entry == null){
+			try{
+				entry = getRegularInvoiceEntryHome().create();
+				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
+				entry.setCreatedSign(iwc.getCurrentUser().getName());				
+			}catch(CreateException ex2){
+				ex2.printStackTrace();
+				return;
+			}			
+		}else{
+			entry.setEditDate(new Date(new java.util.Date().getTime()));
+			entry.setEditSign(iwc.getCurrentUser().getName());
 		}
 		
-
+		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		Date from = parseDate(iwc.getParameter(PAR_FROM));
+		Date to = parseDate(iwc.getParameter(PAR_TO));
+		if (from != null && to != null){
+			entry.setFrom(from);
+			entry.setTo(to);
+				
+			entry.setNote(iwc.getParameter(PAR_REMARK));
+			entry.setPlacing(iwc.getParameter(PAR_PLACING));
+			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+			entry.setPlacing(iwc.getParameter(PAR_PLACING));
+			if (iwc.getParameter(PAR_PROVIDER) != null){
+				entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
+			}
+			entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
+			entry.setUser(user);
+			entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+			entry.store();		
+			handleEditAction(iwc, entry, user);					
+		} else {
+			handleEditAction(iwc, entry, user, "Date format error");	//TODO: localize				
+		}
 	}
 
 	private RegularInvoiceEntry getRegularInvoiceEntry(String pk) {
@@ -364,9 +367,13 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				
 	}
 	private void handleEditAction(IWContext iwc, User user, String errorMessage){
-		RegularInvoiceEntryHome home = getRegularInvoiceEntryHome();
-		
 		RegularInvoiceEntry entry = null;
+				
+		if (errorMessage != null){
+			entry = getNotStoredEntry(iwc);
+		}
+		
+		RegularInvoiceEntryHome home = getRegularInvoiceEntryHome();
 		if (home != null){
 			try{
 				entry = home.findByPrimaryKey(iwc.getParameter(PAR_PK));
@@ -395,7 +402,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}	
 		
 		Form form = new Form();
-		form.add(new HiddenInput(PAR_PK, ""+entry.getPrimaryKey()));
+		if (entry != null){
+			form.add(new HiddenInput(PAR_PK, ""+entry.getPrimaryKey()));
+		}
 		form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));	
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
@@ -477,7 +486,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
 	
 		inner.add(ofm, 2, 1);
-		add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
+		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
 		return inner;
 	}	
 	
@@ -596,19 +605,27 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	
 	private Table getDetailPanel(IWContext iwc, User user, RegularInvoiceEntry entry, Collection providers, Collection regTypes, Collection vatTypes, String errorMessage){
 				
+		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
 		int row = 1;
 		table.mergeCells(1,1,3,1);
 		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
+		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 				
 		addField(table, KEY_SSN, user.getPersonalID(), 1, row);
 		addField(table, KEY_NAME, user.getLastName() + ", " + user.getFirstName(), 3, row++);
 		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+				
+		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, entry.getSchoolId(), "getSchoolName", 1, row++);
+
 		addField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
-		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 		
-		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, entry.getSchoolId(), "getSchoolName", 1, row++);
+		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
+
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
 		if (errorMessage != null){
 			table.add(getErrorText(errorMessage), 1, row++);			
@@ -623,26 +640,176 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		toInput.setContent(formatDate(entry.getTo(), 4));		
 		toInput.setLength(4);
 		table.add(toInput, 2, row++);
+
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
 		addField(table, KEY_DAY_CREATED, formatDate(entry.getCreatedDate(), 6), 1, row);
 		addField(table, KEY_SIGNATURE, entry.getCreatedName(), 4, row++);
 		addField(table, KEY_DAY_REGULATED, formatDate(entry.getEditDate(), 6), 1, row);
 		addField(table, KEY_SIGNATURE, entry.getEditName(), 4, row++);
+
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+entry.getAmount(), 1, row++);
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+entry.getVAT(), 1, row++);
+
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+
 		addField(table, PAR_REMARK, KEY_REMARK, entry.getNote(), 1, row++);
+
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
-		
 		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getCategory", 1, row++);
 		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+				
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PAR_SAVE, KEY_SAVE, "Save");
 		bp.addLocalizedButton(PAR_CANCEL_NEW_EDIT, KEY_CANCEL, "Delete");
 		table.add(bp, 1, row);
 		
 		return table;
+	}
+
+	private RegularInvoiceEntry getEmptyEntry() {
+		return getNotStoredEntry(null);		
+	}
+	
+	private RegularInvoiceEntry getNotStoredEntry(IWContext iwc) {
+		final IWContext _iwc = iwc;
+		
+		return new RegularInvoiceEntry() {
+		
+			public Date getFrom() {
+				return getDateValue(PAR_FROM);
+			}
+		
+			public Date getTo() {
+				return getDateValue(PAR_TO);
+			}
+		
+			public String getPlacing() {
+				return getValue(PAR_PLACING);
+			}
+		
+			public User getUser() {
+				return null;
+			}
+		
+			public RegulationSpecType getRegSpecType() {
+				return null;
+			}
+		
+			public int getRegSpecTypeId() {
+				return getIntValue(PAR_REGULATION_TYPE);
+			}
+		
+			public School getSchool() {
+				return null;
+			}
+		
+			public int getSchoolId() {
+				return getIntValue(PAR_PROVIDER);
+			}
+		
+			public String getOwnPosting() {
+				return getValue(PAR_OWN_POSTING);
+			}
+		
+			public String getDoublePosting() {
+				return getValue(PAR_DOUBLE_ENTRY_ACCOUNT);
+			}
+		
+			public float getAmount() {
+				return getFloatValue(PAR_AMOUNT_PR_MONTH);
+			}
+		
+			public float getVAT() {
+				return getFloatValue(PAR_VAT_PR_MONTH);
+			}
+		
+			public VATRegulation getVatRegulation() {
+				return null;
+			}
+		
+			public int getVatRegulationId() {
+				return getIntValue(PAR_VAT_TYPE);
+			}
+		
+			public String getNote() {
+				return getValue(PAR_REMARK);
+			}
+		
+			public Date getCreatedDate() {
+				return null;
+			}
+		
+			public String getCreatedName() {
+				return null;
+			}
+		
+			public Date getEditDate() {
+				return null;
+			}
+		
+			public String getEditName() {
+				return null;
+			}
+			
+			String getValue(String parameter){
+				return _iwc == null ? "" : _iwc.getParameter(parameter);
+			}				
+			
+			int getIntValue(String parameter){
+				try {
+					return _iwc == null ? 0 : new Integer(_iwc.getParameter(parameter)).intValue();
+				} catch (NumberFormatException ex){
+					return 0;
+				}
+			}
+			
+			float getFloatValue(String parameter){
+				try {
+					return _iwc == null ? 0 : new Float(_iwc.getParameter(parameter)).floatValue();
+				} catch (NumberFormatException ex){
+					return 0;
+				}
+			}
+			Date getDateValue(String parameter){
+				return _iwc == null ? null : parseDate(_iwc.getParameter(parameter));
+			}
+						
+//dummy implementations - methods not used.
+			public void setFrom(Date from) {}
+			public void setTo(Date to) {}
+			public void setPlacing(String plascint) {}
+			public void setUser(User user) {}
+			public void setRegSpecType(RegulationSpecType regType) {}
+			public void setRegSpecTypeId(int regTypeId) {}
+			public void setSchoolId(int schoolId) {}
+			public void setAmount(float amount) {}
+			public void setVAT(float vat) {}
+			public void setVatRegulation(VATRegulation vatRegulation) {}
+			public void setVatRegulationId(int vatRegId) {}
+			public void setNote(String note) {}
+			public void setOwnPosting(String ownPosting) {}
+			public void setDoublePosting(String doublePosting) {}
+			public void setCreatedDate(Date date) {}
+			public void setCreatedSign(String name) {}
+			public void setEditDate(Date date) {}
+			public void setEditSign(String name) {}
+			public void delete() throws SQLException {}
+			public void store() throws IDOStoreException {}
+			public IDOEntityDefinition getEntityDefinition() {return null;}
+			public EJBLocalHome getEJBLocalHome() throws EJBException {return null;}
+			public Object getPrimaryKey() throws EJBException {return null;}
+			public void remove() throws RemoveException, EJBException {}
+			public boolean isIdentical(EJBLocalObject arg0) throws EJBException {return false;}
+			public int compareTo(Object arg0) {return 0;}
+		};
 	}
 	
 
