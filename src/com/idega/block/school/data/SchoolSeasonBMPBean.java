@@ -2,11 +2,13 @@ package com.idega.block.school.data;
 
 import java.sql.Date;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -140,5 +142,16 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
 
 		return idoFindPKsByQuery(query);
 		
+	}
+	
+	public Integer ejbFindNextSeason(SchoolSeason currentSeason) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, START, MatchCriteria.GREATEREQUAL, currentSeason.getSchoolSeasonEnd()));
+		query.addOrder(table, START, true);
+		
+		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

@@ -1,47 +1,246 @@
+/*
+ * $Id: SchoolClass.java,v 1.26 2005/03/19 16:38:22 laddi Exp $
+ * Created on 18.3.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package com.idega.block.school.data;
 
+import java.sql.Timestamp;
+import java.util.Collection;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.User;
 
-public interface SchoolClass extends com.idega.data.IDOEntity
-{
- public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException;
- public void addStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws com.idega.data.IDOAddRelationshipException;
- public void addTeacher(com.idega.user.data.User p0)throws com.idega.data.IDOAddRelationshipException;
- public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
- public java.util.Collection findRelatedStudyPaths()throws com.idega.data.IDORelationshipException;
- public java.util.Collection findRelatedUsers()throws com.idega.data.IDORelationshipException;
- public java.lang.String getGroupStringId();
- public boolean getIsSubGroup();
- public boolean getLocked();
- public java.sql.Timestamp getLockedDate();
- public java.lang.String getName();
- public boolean getReady();
- public java.sql.Timestamp getReadyDate();
- public com.idega.block.school.data.School getSchool();
- public java.lang.String getSchoolClassName();
- public int getSchoolId();
- public com.idega.block.school.data.SchoolSeason getSchoolSeason();
- public int getSchoolSeasonId();
- public com.idega.block.school.data.SchoolType getSchoolType();
- public int getSchoolTypeId();
- public java.util.Collection getSubGroupPlacements()throws com.idega.data.IDORelationshipException;
- public boolean getValid();
- public boolean hasRelationToSchoolYear(com.idega.block.school.data.SchoolYear p0);
- public boolean hasRelationToTeacher(com.idega.user.data.User p0);
- public void removeFromSchoolYear()throws com.idega.data.IDORemoveRelationshipException;
- public void removeFromUser()throws com.idega.data.IDORemoveRelationshipException;
- public void removeSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDORemoveRelationshipException;
- public void removeStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws com.idega.data.IDORemoveRelationshipException;
- public void removeStudyPaths()throws com.idega.data.IDORemoveRelationshipException;
- public void removeTeacher(com.idega.user.data.User p0)throws com.idega.data.IDORemoveRelationshipException;
- public void setGroupStringId(java.lang.String p0);
- public void setIsSubGroup(boolean p0);
- public void setLocked(boolean p0);
- public void setLockedDate(java.sql.Timestamp p0);
- public void setReady(boolean p0);
- public void setReadyDate(java.sql.Timestamp p0);
- public void setSchoolClassName(java.lang.String p0);
- public void setSchoolId(int p0);
- public void setSchoolSeasonId(int p0);
- public void setSchoolTypeId(int p0);
- public void setValid(boolean p0);
+
+/**
+ * <p>
+ * TODO laddi Describe Type SchoolClass
+ * </p>
+ *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.26 $
+ */
+public interface SchoolClass extends IDOEntity {
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolId
+	 */
+	public int getSchoolId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchool
+	 */
+	public School getSchool();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchoolId
+	 */
+	public void setSchoolId(int id);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchool
+	 */
+	public void setSchool(School school);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolTypeId
+	 */
+	public int getSchoolTypeId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolType
+	 */
+	public SchoolType getSchoolType();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchoolTypeId
+	 */
+	public void setSchoolTypeId(int id);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchoolSeasonId
+	 */
+	public void setSchoolSeasonId(int id);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchoolSeason
+	 */
+	public void setSchoolSeason(SchoolSeason season);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolSeasonId
+	 */
+	public int getSchoolSeasonId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolSeason
+	 */
+	public SchoolSeason getSchoolSeason();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setSchoolClassName
+	 */
+	public void setSchoolClassName(String name);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSchoolClassName
+	 */
+	public String getSchoolClassName();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getValid
+	 */
+	public boolean getValid();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setValid
+	 */
+	public void setValid(boolean valid);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getReady
+	 */
+	public boolean getReady();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setReady
+	 */
+	public void setReady(boolean valid);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getLocked
+	 */
+	public boolean getLocked();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setLocked
+	 */
+	public void setLocked(boolean valid);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setReadyDate
+	 */
+	public void setReadyDate(Timestamp timestamp);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getReadyDate
+	 */
+	public Timestamp getReadyDate();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setLockedDate
+	 */
+	public void setLockedDate(Timestamp timestamp);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getLockedDate
+	 */
+	public Timestamp getLockedDate();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setIsSubGroup
+	 */
+	public void setIsSubGroup(boolean isSubGroup);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getIsSubGroup
+	 */
+	public boolean getIsSubGroup();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#setGroupStringId
+	 */
+	public void setGroupStringId(String groupStringId);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getGroupStringId
+	 */
+	public String getGroupStringId();
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#hasRelationToSchoolYear
+	 */
+	public boolean hasRelationToSchoolYear(SchoolYear schoolYear);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#hasRelationToTeacher
+	 */
+	public boolean hasRelationToTeacher(User teacher);
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedUsers
+	 */
+	public Collection findRelatedUsers() throws com.idega.data.IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedSchoolYears
+	 */
+	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#addSchoolYear
+	 */
+	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeSchoolYear
+	 */
+	public void removeSchoolYear(SchoolYear year) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#addTeacher
+	 */
+	public void addTeacher(User teacher) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeTeacher
+	 */
+	public void removeTeacher(User teacher) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#findRelatedStudyPaths
+	 */
+	public Collection findRelatedStudyPaths() throws com.idega.data.IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#addStudyPath
+	 */
+	public void addStudyPath(SchoolStudyPath studyPath) throws IDOAddRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeStudyPath
+	 */
+	public void removeStudyPath(SchoolStudyPath studyPath) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeStudyPaths
+	 */
+	public void removeStudyPaths() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeFromSchoolYear
+	 */
+	public void removeFromSchoolYear() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#removeFromUser
+	 */
+	public void removeFromUser() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassBMPBean#getSubGroupPlacements
+	 */
+	public Collection getSubGroupPlacements() throws IDORelationshipException;
 }

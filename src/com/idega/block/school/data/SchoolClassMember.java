@@ -1,8 +1,8 @@
 /*
- * $Id: SchoolClassMember.java,v 1.40 2005/01/04 13:52:24 laddi Exp $
- * Created on 29.12.2004
+ * $Id: SchoolClassMember.java,v 1.41 2005/03/19 16:38:22 laddi Exp $
+ * Created on 19.3.2005
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -11,8 +11,6 @@ package com.idega.block.school.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-
-
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDORelationshipException;
@@ -21,10 +19,13 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
+ * <p>
+ * TODO laddi Describe Type SchoolClassMember
+ * </p>
+ *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public interface SchoolClassMember extends IDOEntity {
 
@@ -165,6 +166,11 @@ public interface SchoolClassMember extends IDOEntity {
 	public int getRegistratorId();
 
 	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setRegistrator
+	 */
+	public void setRegistrator(User user);
+
+	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#setNotes
 	 */
 	public void setNotes(String notes);
@@ -280,8 +286,27 @@ public interface SchoolClassMember extends IDOEntity {
 	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
 
 	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#addStudyPath
+	 */
+	public void addStudyPath(SchoolStudyPath path) throws IDOAddRelationshipException;
+
+	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeFromGroup
 	 */
 	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException;
 
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeStudyPath
+	 */
+	public void removeStudyPath(SchoolStudyPath path) throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#removeAllStudyPaths
+	 */
+	public void removeAllStudyPaths() throws IDORemoveRelationshipException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#getStudyPaths
+	 */
+	public Collection getStudyPaths() throws IDORelationshipException;
 }

@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/26 14:56:47 $ by $Author: anders $
- * @version $Revision: 1.130 $
+ *         Last modified: $Date: 2005/03/19 16:38:21 $ by $Author: laddi $
+ * @version $Revision: 1.131 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -102,6 +102,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(COMPENSATION_BY_AGREEMENT, "Compensation by agreement", true, true, Boolean.class);
 		this.addAttribute(STUDY_PATH, "study_path", true, true, Integer.class, MANY_TO_ONE, SchoolStudyPath.class);
 		this.addManyToManyRelationShip(SchoolClass.class, "sch_sub_group_placements");
+		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_member_study_path");
 	}
 
 	public String getEntityName() {
@@ -202,6 +203,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public int getRegistratorId() {
 		return this.getIntColumnValue(REGISTRATOR);
+	}
+	
+	public void setRegistrator(User user) {
+		setColumn(REGISTRATOR, user);
 	}
 
 	public void setNotes(String notes) {
@@ -373,6 +378,45 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 
 		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	//Uses the new many-to-many relationship between SchoolClassMember and SchoolStudyPath...
+	public Collection ejbFindBySchoolAndSeasonAndYearAndStudyPath(School school, SchoolSeason season, SchoolYear year, SchoolStudyPath studyPath) throws FinderException {
+		Table table = new Table(this);
+		Table group = new Table(SchoolClass.class);
+		Table path = new Table(SchoolStudyPath.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, group);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(group, "school_id", MatchCriteria.EQUALS, school));
+		query.addCriteria(new MatchCriteria(group, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		
+		if (year != null) {
+			query.addCriteria(new MatchCriteria(table, SCHOOL_YEAR, MatchCriteria.EQUALS, year));
+		}
+		
+		if (studyPath != null) {
+			try {
+				query.addManyToManyJoin(table, path);
+			}
+			catch (IDORelationshipException ire) {
+				throw new FinderException(ire.getMessage());
+			}
+			try {
+				query.addCriteria(new MatchCriteria(path, path.getPrimaryKeyColumnName(), MatchCriteria.EQUALS, studyPath));
+			}
+			catch (IDOCompositePrimaryKeyException icpe) {
+				throw new FinderException(icpe.getMessage());
+			}
+		}
+		
+		return idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbFindByStudent(User student) throws FinderException {
@@ -1633,8 +1677,23 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		super.idoAddTo(year);
 	}
 	
+	public void addStudyPath(SchoolStudyPath path) throws IDOAddRelationshipException {
+		super.idoAddTo(path);
+	}
 	
 	public void removeFromGroup(SchoolClass group) throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(group);
+	}
+
+	public void removeStudyPath(SchoolStudyPath path) throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(path);
+	}
+	
+	public void removeAllStudyPaths() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(SchoolStudyPath.class);
+	}
+	
+	public Collection getStudyPaths() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(SchoolStudyPath.class);
 	}
 }
