@@ -157,6 +157,19 @@ public class TravelManager extends TravelBlock {
         }
 
         if (isTravelAdministrator(iwc)){
+        	Link lSupplierManager = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.supplier_manager", "Supplier Manager"), SupplierManagerEditor.class);
+        	table.add(lSupplierManager, 1, 1);
+
+					List links = getServiceHandler(iwc).getServiceLinks(tsm.getIWResourceBundle());
+					for (int i = 0; i < links.size(); i++) {
+						table.add( (Link) links.get(i), 1, 1);
+					}
+          Link lUpdatePassword = new Link(iUpdatePassword);
+          lUpdatePassword.setWindowToOpen(LoginChanger.class);
+          table.add(lUpdatePassword,1,1);
+        	
+        } else if (isSupplierManager()){
+
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
@@ -168,11 +181,6 @@ public class TravelManager extends TravelBlock {
             Link lReports = new Link(iDailyReport, AdministratorReports.class);
               lReports.addParameter(this.sAction, this.parameterDailyReport);
             table.add(lReports, 1, 1);
-
-						List links = getServiceHandler(iwc).getServiceLinks(tsm.getIWResourceBundle());
-						for (int i = 0; i < links.size(); i++) {
-							table.add( (Link) links.get(i), 1, 1);
-						}
 						
 						Link engines = new Link(tsm.getIWResourceBundle().getLocalizedImageButton("travel.search_engines", "Search Engines"), ServiceSearchEditor.class);
 						engines.addParameter(this.sAction, this.parameterEngines);

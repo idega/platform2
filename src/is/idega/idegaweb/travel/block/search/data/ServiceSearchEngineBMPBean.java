@@ -10,6 +10,13 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.Order;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+import com.idega.user.data.Group;
 
 /**
  * @author gimmi
@@ -22,7 +29,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	private static String COLUMN_IS_VALID = "IS_VALID";
 	private static String COLUMN_GROUP_ID = "GROUP_ID";
 	private static String MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE = "sr_supplier_service_engine";
-
+	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -35,6 +42,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		addAttribute(COLUMN_IS_VALID, "is valid", Boolean.class);
 //		addAttribute(COLUMN_GROUP_ID, "staff group Id");
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
+		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		this.setUnique(COLUMN_NAME, true);
 		this.setNullable(COLUMN_NAME, false);
 		this.setUnique(COLUMN_BOOKING_CODE, true);
@@ -94,6 +102,22 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		this.idoRemoveFrom(Supplier.class);
 	}
 
+	public int getSupplierManagerID() {
+		return getIntColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+
+	public Group getSupplierManager() {
+		return (Group) getColumnValue(COLUMN_SUPPLIER_MANAGER_ID);
+	}
+	
+	public void setSupplierManager(Group group) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, group);
+	}
+ 	
+	public void setSupplierManagerPK(Object pk) {
+		setColumn(COLUMN_SUPPLIER_MANAGER_ID, pk);
+	}
+	
 	public Object ejbFindByName(String name) throws FinderException {
 		return this.idoFindOnePKByColumnBySQL(COLUMN_NAME, name);
 	}
@@ -103,7 +127,30 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	}
 	
 	public Collection ejbFindAll() throws FinderException {
+		try {
+			throw new Exception("ERRRROR : ServiceSearchEngine : Using a wrong method : findAll()    !!!!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return this.idoFindAllIDsByColumnOrderedBySQL(COLUMN_IS_VALID, "'Y'", COLUMN_NAME);
+	}
+		
+	public Collection ejbFindAll(Group supplierManager) throws FinderException {
+		Table table = new Table(this);
+		Column isValid = new Column(table, COLUMN_IS_VALID);
+		Column suppMan = new Column(table, COLUMN_SUPPLIER_MANAGER_ID);
+		Column name = new Column(table, COLUMN_NAME);
+		Order order = new Order(name, true);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(isValid, MatchCriteria.EQUALS, true));
+		query.addCriteria(new MatchCriteria(suppMan, MatchCriteria.EQUALS, supplierManager.getPrimaryKey()));
+		query.addOrder(order);
+		
+		return this.idoFindPKsByQuery(query);
+		
+//		return this.idoFindAllIDsByColumnOrderedBySQL(this.getColumnNameIsValid(), "'Y'", getColumnNameName());
 	}
 	
 	public void remove() throws RemoveException {

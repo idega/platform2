@@ -1,7 +1,15 @@
 package is.idega.idegaweb.travel.block.search.data;
 
+import com.idega.user.data.Group;
 
-public interface ServiceSearchEngineStaffGroup extends com.idega.core.data.GenericGroup
-{
- public java.lang.String getGroupTypeValue();
+
+/**
+ * @author gimmi
+ */
+public interface ServiceSearchEngineStaffGroup extends Group {
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroupBMPBean#getGroupTypeValue
+	 */
+	public String getGroupTypeValue();
 }

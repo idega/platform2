@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
+import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusinessBean;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchSession;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -615,7 +616,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 
 	public String getCacheKey() {
-		return ServiceSearchBusiness.SEARCH_FORM_CACHE_KEY;
+		return ServiceSearchBusinessBean.SEARCH_FORM_CACHE_KEY;
 	}
 
 	 protected String getCacheState(IWContext iwc, String cacheStatePrefix){

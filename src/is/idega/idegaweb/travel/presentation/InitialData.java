@@ -2,20 +2,16 @@ package is.idega.idegaweb.travel.presentation;
 
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.service.presentation.ServiceSelector;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
-import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.PermissionGroup;
@@ -131,7 +127,7 @@ public class InitialData extends TravelManager {
 		tsb = getTravelStockroomBusiness(iwc);
 	}
 	
-	private Form getDropdownForm(IWContext iwc) {
+	private Form getDropdownForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		Table table = new Table(1,1);
 		table.setWidth("90%");
@@ -155,7 +151,7 @@ public class InitialData extends TravelManager {
 			menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
 			menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
 			menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
-		}else if (super.isTravelAdministrator(iwc)) {
+		}else if (super.isSupplierManager()) {
 			menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
 			menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
 			menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.credidcard_properties","Creditcard Properties"));
@@ -344,7 +340,7 @@ public class InitialData extends TravelManager {
 				String supplier_id = iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName());
 				if (supplier_id != null)
 					try {
-						SupplierManager.invalidateSupplier(((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(Integer.parseInt(supplier_id)));
+						getSupplierManagerBusiness(iwc).invalidateSupplier(((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(Integer.parseInt(supplier_id)));
 					}catch (Exception e) {
 						e.printStackTrace(System.err);
 						add(iwrb.getLocalizedString("travel.supplier_was_not_deleted","Supplier was not deleted"));
@@ -359,7 +355,7 @@ public class InitialData extends TravelManager {
 	}
 	
 	
-	public Table selectSupplier(IWContext iwc) throws SQLException {
+	public Table selectSupplier(IWContext iwc) throws SQLException, RemoteException {
 		Table table = new Table();
 		table.setBorder(0);
 		table.setCellspacing(1);
@@ -402,67 +398,81 @@ public class InitialData extends TravelManager {
 		table.add(Text.NON_BREAKING_SPACE, 4, row);
 		table.setRowColor(row, super.backgroundColor);
 		
-		Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
+		SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+		Collection coll = null;
+		try {
+			coll = suppHome.findAll(super.getSupplierManager());
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		} 
+		
+//		Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
 		
 		String theColor = super.GRAY;
 		
-		for (int i = 0; i < supps.length; i++) {
-			++row;
-			//        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
-			
-			link = (Link) editLink.clone();
-			link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
-			table.add(link,4,row);
-			table.add(Text.NON_BREAKING_SPACE,4,row);
-			link = (Link) chooseLink.clone();
-			link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
-			table.add(link,4,row);
-			table.add(Text.NON_BREAKING_SPACE,4,row);
-			link = (Link) deleteLink.clone();
-			link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
-			table.add(link,4,row);
-			table.setAlignment(4,row,"right");
-			
-			table.setRowColor(row, theColor);
-			
-			suppNameText = (Text) theText.clone();
-			suppNameText.setText(supps[i].getName());
-			suppNameText.setFontColor(super.BLACK);
-			
-			table.add(suppNameText,1,row);
-			
-			
-			//pGroup = SupplierManager.getPermissionGroup(supps[i]);
-			try { /** @todo Skoða betur.......*/
-				//users = UserGroupBusiness.getUsersContained(pGroup);
-				user = SupplierManager.getMainUser(supps[i]);
-				if (user != null) {
-					//for (int j = 0; j < users.size(); j++) {
-					//if (j > 0) ++row;
-					
-					//table.setRowColor(row,super.backgroundColor);
-					
-					//user = (User) users.get(j);
-					logTable = LoginDBHandler.getUserLogin(user.getID());
-					suppLoginText = (Text) theText.clone();
-					suppLoginText.setText(logTable.getUserLogin());
-					suppLoginText.setFontColor(super.BLACK);
-					suppPassText = (Text) theText.clone();
-					suppPassText.setText(logTable.getUserPassword());
-					suppPassText.setFontColor(super.BLACK);
-					
-					table.add(suppLoginText,2,row);
-					table.mergeCells(2,row,3,row);
-					//}
-					
+		if (coll != null ) {
+			Iterator iter = coll.iterator();
+			Supplier supp;
+			while (iter.hasNext()) {
+				supp = (Supplier) iter.next();
+			//for (int i = 0; i < supps.length; i++) {
+				++row;
+				//        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+				
+				link = (Link) editLink.clone();
+				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
+				table.add(link,4,row);
+				table.add(Text.NON_BREAKING_SPACE,4,row);
+				link = (Link) chooseLink.clone();
+				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
+				table.add(link,4,row);
+				table.add(Text.NON_BREAKING_SPACE,4,row);
+				link = (Link) deleteLink.clone();
+				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
+				table.add(link,4,row);
+				table.setAlignment(4,row,"right");
+				
+				table.setRowColor(row, theColor);
+				
+				suppNameText = (Text) theText.clone();
+				suppNameText.setText(supp.getName());
+				suppNameText.setFontColor(super.BLACK);
+				
+				table.add(suppNameText,1,row);
+				
+				
+				//pGroup = SupplierManager.getPermissionGroup(supps[i]);
+				try { /** @todo Skoða betur.......*/
+					//users = UserGroupBusiness.getUsersContained(pGroup);
+					user = getSupplierManagerBusiness(iwc).getMainUser(supp);
+					if (user != null) {
+						//for (int j = 0; j < users.size(); j++) {
+						//if (j > 0) ++row;
+						
+						//table.setRowColor(row,super.backgroundColor);
+						
+						//user = (User) users.get(j);
+						logTable = LoginDBHandler.getUserLogin(user.getID());
+						suppLoginText = (Text) theText.clone();
+						suppLoginText.setText(logTable.getUserLogin());
+						suppLoginText.setFontColor(super.BLACK);
+						suppPassText = (Text) theText.clone();
+						suppPassText.setText(logTable.getUserPassword());
+						suppPassText.setFontColor(super.BLACK);
+						
+						table.add(suppLoginText,2,row);
+						table.mergeCells(2,row,3,row);
+						//}
+						
+					}
+				}catch (Exception e) {
+					e.printStackTrace(System.err);
 				}
-			}catch (Exception e) {
-				e.printStackTrace(System.err);
+				
+				
 			}
-			
-			
 		}
-		
 		
 		return table;
 	}
@@ -700,7 +710,7 @@ public class InitialData extends TravelManager {
 		++row;
 		table.setAlignment(1,row,"left");
 		table.add(lBack,1,row);
-		if (super.isInPermissionGroup || isTravelAdministrator(iwc)) {
+		if (super.isInPermissionGroup || isSupplierManager()) {
 			table.setAlignment(2,row,"right");
 			table.add(submit,2,row);
 		}
@@ -817,8 +827,7 @@ public class InitialData extends TravelManager {
 				int[] emailIds = new int[1];
 				emailIds[0] = eml.getID();
 				
-				SupplierManager suppMan = new SupplierManager();
-				supplier = suppMan.updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds);
+				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds);
 				
 				
 				add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -864,9 +873,9 @@ public class InitialData extends TravelManager {
 					eEmail.insert();
 					emailIds[0] = eEmail.getID();
 					
-					SupplierManager suppMan = new SupplierManager();
-					Supplier supplier = suppMan.createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
-					
+					Supplier supplier = getSupplierManagerBusiness(iwc).createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
+					supplier.setSupplierManager(getSupplierManager());
+					supplier.store();
 					
 					this.displayForm(iwc);
 				}else {
@@ -1174,8 +1183,7 @@ public class InitialData extends TravelManager {
 				int[] emailIds = new int[1];
 				emailIds[0] = eml.getID();
 				
-				ResellerManager resMan = new ResellerManager();
-				reseller = resMan.updateReseller(resellerId,name, description, addressIds, phoneIds, emailIds);
+				reseller = getResellerManager(iwc).updateReseller(resellerId,name, description, addressIds, phoneIds, emailIds);
 				
 				
 				add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -1217,8 +1225,7 @@ public class InitialData extends TravelManager {
 					eEmail.insert();
 					emailIds[0] = eEmail.getID();
 					
-					ResellerManager resellerMan = new ResellerManager();
-					Reseller reseller = resellerMan.createReseller(this.reseller, name, userName, passOne, description, addressIds, phoneIds, emailIds);
+					Reseller reseller = getResellerManager(iwc).createReseller(this.reseller, name, userName, passOne, description, addressIds, phoneIds, emailIds);
 					reseller.addTo(supplier);
 					
 					//add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));

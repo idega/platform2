@@ -22,8 +22,6 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -536,8 +534,8 @@ public class HotelBookingForm extends BookingForm {
         if (super.getUser() != null) {
           ++row;
           List users = null;
-          if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
-          if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
+          if ( this.supplier != null) users = getSupplierManagerBusiness(iwc).getUsersIncludingResellers(supplier);
+          if ( _reseller != null) users = getResellerManager(iwc).getUsersIncludingSubResellers(_reseller);
           if (users == null) users = com.idega.util.ListUtil.getEmptyList();
           usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
           usersDrop.setSelectedElement(Integer.toString(super.getUserId()));
@@ -1153,9 +1151,9 @@ public class HotelBookingForm extends BookingForm {
               ++row;
               List users = null;
               if ( this.supplier != null) {
-                users = SupplierManager.getUsersIncludingResellers(supplier);
+                users = getSupplierManagerBusiness(iwc).getUsersIncludingResellers(supplier);
               }else if ( _reseller != null) {
-                users = ResellerManager.getUsersIncludingSubResellers(_reseller);
+                users = getResellerManager(iwc).getUsersIncludingSubResellers(_reseller);
               }
               if (users == null) users = new Vector();
 //              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");

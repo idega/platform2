@@ -10,18 +10,14 @@ import is.idega.idegaweb.travel.data.ResellerDayPK;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Reseller;
@@ -124,7 +120,7 @@ public class Contracts extends TravelManager {
       reseller = super.getReseller();
       tsb  = getTravelStockroomBusiness(iwc);
 
-      resellers = getResellers();
+      resellers = getResellers(iwc);
 
       if (reseller != null) {
         suppliers = super.getContractBusiness(iwc).getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName());
@@ -132,12 +128,12 @@ public class Contracts extends TravelManager {
 
   }
 
-  private Iterator getResellers() {
+  private Iterator getResellers(IWContext iwc) throws RemoteException {
     Iterator returner = com.idega.util.ListUtil.getEmptyList().iterator();
     if (supplier != null) {
-     returner = ResellerManager.getResellers(supplier,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
+     returner = getResellerManager(iwc).getResellers(supplier,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     } else if (reseller != null) {
-     returner = ResellerManager.getResellerChilds(reseller,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
+     returner = getResellerManager(iwc).getResellerChilds(reseller,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     }
     return returner;
   }
@@ -517,7 +513,7 @@ public class Contracts extends TravelManager {
 
   }
 
-  public void selectReseller(IWContext iwc) {
+  public void selectReseller(IWContext iwc) throws RemoteException {
     Form form = new Form();
     Table table = new Table();
       form.add(table);
@@ -535,11 +531,11 @@ public class Contracts extends TravelManager {
 
     try {
       List tResellers = null;
-      if (reseller != null) tResellers = ResellerManager.getResellersAvailable(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
+      if (reseller != null) tResellers = getResellerManager(iwc).getResellersAvailable(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
       if (supplier != null) tResellers = EntityFinder.findAllOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class),com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
 
       if (tResellers == null) tResellers = com.idega.util.ListUtil.getEmptyList();
-      Iterator itResellers = this.getResellers();
+      Iterator itResellers = this.getResellers(iwc);
       List myResellers = new Vector();
       Reseller tReseller;
       while (itResellers.hasNext()) {

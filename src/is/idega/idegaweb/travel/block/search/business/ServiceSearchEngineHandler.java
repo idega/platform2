@@ -31,7 +31,7 @@ public class ServiceSearchEngineHandler implements ICPropertyHandler {
 				ServiceSearchEngine engine;
 				while (iter.hasNext()) {
 					engine = (ServiceSearchEngine) iter.next();
-					menu.addMenuElement(engine.getPrimaryKey().toString(), engine.getName());
+					menu.addMenuElement(engine.getPrimaryKey().toString(), engine.getName()+ " : "+engine.getSupplierManager().getName());
 				}
 			}
 			if (stringValue != null) {

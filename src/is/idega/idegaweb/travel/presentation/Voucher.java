@@ -4,18 +4,14 @@ import is.idega.idegaweb.travel.data.BookingEntry;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.interfaces.Booking;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
-import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
@@ -24,13 +20,14 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 /**
  * Title:        idegaWeb TravelBooking
@@ -105,8 +102,10 @@ public abstract class Voucher extends TravelManager {
       _entries = _booking.getBookingEntries();
       _supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(_product.getSupplierId());
       if (_booking.getUserId() != -1) {
-        _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
-        _reseller = ResellerManager.getReseller(_user);
+      	
+      	
+        _user = ((UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(_booking.getUserId()));
+        _reseller = getResellerManager(iwc).getReseller(_user);
       }
       _timeframe = getProductBusiness(iwc).getTimeframe(_product, new IWTimestamp(_booking.getBookingDate()));
       Collection coll = gBooking.getTravelAddresses();

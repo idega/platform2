@@ -40,8 +40,6 @@ import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
@@ -60,7 +58,6 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
@@ -89,6 +86,8 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
@@ -706,8 +705,8 @@ public abstract class BookingForm extends TravelManager{
 			if (super.getUser() != null) {
 				++row;
 				List users = null;
-				if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
-				if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
+				if ( this.supplier != null) users = getSupplierManagerBusiness(iwc).getUsersIncludingResellers(supplier);
+				if ( _reseller != null) users = getResellerManager(iwc).getUsersIncludingSubResellers(_reseller);
 				if (users == null) users = com.idega.util.ListUtil.getEmptyList();
 				usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
 				usersDrop.setSelectedElement(Integer.toString(super.getUserId()));
@@ -3425,24 +3424,20 @@ public abstract class BookingForm extends TravelManager{
 			 * adding booking to reseller if resellerUser is chosen from dropdown...
 			 */
 			int resId = -7;
-			try {
-				if (!sUserId.equals("-1")) {
-					User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
-					Reseller res = null;
-					if (user != null) {
-						res = ResellerManager.getReseller(user);
-					}
-					if (res != null) {
-						resId = res.getID();
-						for (int i = 0; i < bookingIds.length; i++) {
-							try {
-								res.addTo(GeneralBooking.class, bookingIds[i]);
-							}catch (SQLException sql) {debug(sql.getMessage());}
-						}
+			if (!sUserId.equals("-1")) {
+				User user = ((UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey(new Integer(sUserId));
+				Reseller res = null;
+				if (user != null) {
+					res = getResellerManager(iwc).getReseller(user);
+				}
+				if (res != null) {
+					resId = res.getID();
+					for (int i = 0; i < bookingIds.length; i++) {
+						try {
+							res.addTo(GeneralBooking.class, bookingIds[i]);
+						}catch (SQLException sql) {debug(sql.getMessage());}
 					}
 				}
-			}catch (SQLException sql) {
-				sql.printStackTrace(System.err);
 			}
 			
 			if (_reseller != null) {
@@ -3822,10 +3817,10 @@ public abstract class BookingForm extends TravelManager{
 				if (i != (users.size() -1)) {
 					usr = (User) users.get(i+1);
 					try {
-						if (ResellerManager.getReseller(usr) != null) {
-							usersDrop.addMenuElement(-1, ResellerManager.getReseller(usr).getName());
+						if (getResellerManager(iwc).getReseller(usr) != null) {
+							usersDrop.addMenuElement(-1, getResellerManager(iwc).getReseller(usr).getName());
 						}
-					}catch (SQLException sql) {
+					}catch (FinderException sql) {
 						sql.printStackTrace(System.err);
 					}
 				}

@@ -16,21 +16,16 @@ import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.presentation.AbstractBookingOverview;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
-import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -39,6 +34,8 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -590,18 +587,14 @@ public class HotelBookingOverview extends AbstractBookingOverview {
         TbookedBy.setFontColor(super.BLACK);
         
         if (bookings[i].getUserId() != -1) {
-          try {
-            bUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
-            bReseller = ResellerManager.getReseller(bUser);
-            TbookedBy.setText(bUser.getName());
-            if (bReseller != null) {
-              if (this._reseller != bReseller) {
-                TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
-              }
-            }
-          }catch (SQLException sql) {
-            throw new FinderException(sql.getMessage());
-          }
+	        bUser = ((UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(bookings[i].getUserId()));
+	        bReseller = getResellerManager(iwc).getReseller(bUser);
+	        TbookedBy.setText(bUser.getName());
+	        if (bReseller != null) {
+	          if (this._reseller != bReseller) {
+	            TbookedBy.addToText(" ( "+bReseller.getName()+" ) ");
+	          }
+	        }
         }else {
           TbookedBy.setText(_iwrb.getLocalizedString("travel.online","Online"));
         }

@@ -5,12 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
-import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.block.trade.stockroom.data.Reseller;
-import com.idega.block.trade.stockroom.data.ResellerBMPBean;
 import com.idega.block.trade.stockroom.data.ResellerHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
@@ -73,27 +69,27 @@ public class ResellerCreator extends TravelManager {
     init(iwc);
 
     String action = iwc.getParameter(this.sAction);
-    if (super.isTravelAdministrator(iwc)) {
+    if (super.isSupplierManager()) {
       if (action == null) {
         selectReseller(iwc);
 //        mainMenu(iwc);
       }else if (action.equals(this.parameterNewReseller)) {
-        resellerCreation(-1);
+        resellerCreation(iwc, -1);
       }else if (action.equals(this.parameterSelectReseller)) {
         selectReseller(iwc);
       }else if (action.equals(this.parameterEditReseller)) {
         String sResellerId = iwc.getParameter(this.parameterResellerId);
-        resellerCreation(Integer.parseInt(sResellerId));
+        resellerCreation(iwc, Integer.parseInt(sResellerId));
       }else if (action.equals(this.parameterSaveNewReseller)) {
         int resellerId = saveReseller(iwc,-1);
         if (resellerId != -1) {
-          resellerCreation(resellerId);
+          resellerCreation(iwc, resellerId);
         }
       }else if (action.equals(this.parameterUpdateReseller)) {
         String sResellerId = iwc.getParameter(this.parameterResellerId);
         int resellerId = saveReseller(iwc,Integer.parseInt(sResellerId));
         if (resellerId != -1) {
-          resellerCreation(resellerId);
+          resellerCreation(iwc, resellerId);
         }
       }else if (action.equals(this.parameterDeleteReseller)) {
         comfirmDelete(iwc);
@@ -136,7 +132,7 @@ public class ResellerCreator extends TravelManager {
 //      table.add(iwrb.getLocalizedImageButton("travel.new_reseller","New Reseller"),1, 1);
   }*/
 
-  private void resellerCreation(int resellerId) throws SQLException, RemoteException, FinderException{
+  private void resellerCreation(IWContext iwc, int resellerId) throws SQLException, RemoteException, FinderException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -207,9 +203,9 @@ public class ResellerCreator extends TravelManager {
       TextInput name = new TextInput("reseller_name");
         name.setSize(inputSize);
       TextArea description = new TextArea("reseller_description");
-        description.setWidth(Integer.toString(inputSize));
-        description.setHeight("5");
-      TextInput address = new TextInput("reseller_address");
+      description.setWidth("260");
+      description.setHeight("80");
+    	TextInput address = new TextInput("reseller_address");
         address.setSize(inputSize);
 		  DropdownMenu postalCode = new DropdownMenu("reseller_postal_code");
 			PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
@@ -356,7 +352,7 @@ public class ResellerCreator extends TravelManager {
 
       if (resellerId != -1) {
         form.add(Text.getBreak());
-        Table list = getSupplierList(resellerId);
+        Table list = getSupplierList(iwc, resellerId);
 //          form.addParameter(this.parameterResellerId, resellerId);
 				//++row;
 				//table.mergeCells(1, row, 2, row);
@@ -471,8 +467,7 @@ public class ResellerCreator extends TravelManager {
               int[] emailIds = new int[1];
               emailIds[0] = eml.getID();
 
-              ResellerManager resMan = new ResellerManager();
-              reseller = resMan.updateReseller(resellerId,  name, description, addressIds, phoneIds, emailIds);
+              reseller = getResellerManager(iwc).updateReseller(resellerId,  name, description, addressIds, phoneIds, emailIds);
 
 
               add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -519,8 +514,9 @@ public class ResellerCreator extends TravelManager {
                   eEmail.insert();
                 emailIds[0] = eEmail.getID();
 
-                ResellerManager resellerMan = new ResellerManager();
-                Reseller tempReseller = resellerMan.createReseller(null, name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                Reseller tempReseller = getResellerManager(iwc).createReseller(null, name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                tempReseller.setSupplierManager(getSupplierManager());
+                tempReseller.store();
                 /*if (supplier != null) {
                   tempReseller.addTo(supplier);
                 }*/
@@ -558,7 +554,7 @@ public class ResellerCreator extends TravelManager {
     return returner;
   }
 
-  private void comfirmDelete(IWContext iwc) throws SQLException{
+  private void comfirmDelete(IWContext iwc) throws SQLException, RemoteException{
     String resellerId = iwc.getParameter(this.parameterResellerId);
     if (resellerId != null) {
       ResellerHome rHome = (ResellerHome) IDOLookup.getHomeLegacy(Reseller.class);
@@ -578,7 +574,7 @@ public class ResellerCreator extends TravelManager {
       table.mergeCells(1, 1, 2, 1);
 
       table.mergeCells(1, 2, 2, 2);
-      Supplier[] supps = ResellerManager.getSuppliers(res.getID(), SupplierBMPBean.getColumnNameName());
+      Supplier[] supps = getResellerManager(iwc).getSuppliers(res.getID(), SupplierBMPBean.getColumnNameName());
       if (supps.length == 0) {
         table.add(getText(iwrb.getLocalizedString("travel.reseller_not_connected","This reseller is not connected to any suppliers")+"."), 1, 2);
       }else {
@@ -611,9 +607,10 @@ public class ResellerCreator extends TravelManager {
     }
   }
 
-  private void selectReseller(IWContext iwc) throws SQLException{
+  private void selectReseller(IWContext iwc) throws RemoteException, FinderException {
     ResellerHome rHome = (ResellerHome) IDOLookup.getHomeLegacy(Reseller.class);
-    Reseller[] resellers = (Reseller[]) rHome.createLegacy().findAll("select * from "+ResellerBMPBean.getResellerTableName()+" where "+ResellerBMPBean.getColumnNameIsValid()+" = 'Y' order by "+ResellerBMPBean.getColumnNameName());
+    Collection coll = rHome.findAllBySupplierManager(super.getSupplierManager());
+    //Reseller[] resellers = (Reseller[]) rHome.createLegacy().findAll("select * from "+ResellerBMPBean.getResellerTableName()+" where "+ResellerBMPBean.getColumnNameIsValid()+" = 'Y' order by "+ResellerBMPBean.getColumnNameName());
 
     Table table = super.getTable();
     table.setWidth(this.tableWidth);
@@ -623,17 +620,23 @@ public class ResellerCreator extends TravelManager {
     table.setRowColor(row, super.backgroundColor);
 
 
-    Link editLink;
-    for (int i = 0; i < resellers.length; i++) {
-      ++row;
-      table.setRowColor(row, super.GRAY);
-      table.add(super.getText(resellers[i].getName()), 1, row);
-
-      editLink = new Link(iwrb.getLocalizedImageButton("travel.more","More"));
-        editLink.addParameter(this.sAction, this.parameterEditReseller);
-        editLink.addParameter(this.parameterResellerId, resellers[i].getID());
-
-      table.add(editLink, 2, row);
+    if (coll != null) {
+	    Link editLink;
+	    Iterator iter = coll.iterator();
+	    Reseller reseller;
+	    while (iter.hasNext()) {
+	    //for (int i = 0; i < resellers.length; i++) {
+	    	reseller = (Reseller) iter.next();
+	      ++row;
+	      table.setRowColor(row, super.GRAY);
+	      table.add(super.getText(reseller.getName()), 1, row);
+	
+	      editLink = new Link(iwrb.getLocalizedImageButton("travel.more","More"));
+	        editLink.addParameter(this.sAction, this.parameterEditReseller);
+	        editLink.addParameter(this.parameterResellerId, reseller.getID());
+	
+	      table.add(editLink, 2, row);
+	    }
     }
 
     Link newReseller = new Link(iwrb.getLocalizedImageButton("travel.new_reseller","New Reseller"));
@@ -664,21 +667,21 @@ public class ResellerCreator extends TravelManager {
     }
   }
 
-  private void addSuppliers(IWContext iwc, int resellerId) throws SQLException {
-    SupplierHome sHome = (SupplierHome) IDOLookup.getHomeLegacy(Supplier.class);
+  private void addSuppliers(IWContext iwc, int resellerId) throws SQLException, RemoteException {
+    SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
     Collection collAllSupps = null;
 		try {
-			collAllSupps = sHome.findAll();
+			collAllSupps = sHome.findAll(getSupplierManager());
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		Supplier[] allSuppsArr = new Supplier[]{};
     if (collAllSupps != null) {
-    		collAllSupps.toArray(new Supplier[]{});
+    	allSuppsArr = (Supplier[]) collAllSupps.toArray(new Supplier[]{});
     }
     //Supplier[] allSuppsArr = sHome.findAll();//create().findAll("select * from "+SupplierBMPBean.getSupplierTableName()+" where "+SupplierBMPBean.getColumnNameIsValid()+" = 'Y' order by "+SupplierBMPBean.getColumnNameName());
-    Supplier[] resSuppsArr = ResellerManager.getSuppliers(resellerId, SupplierBMPBean.getColumnNameName());
+    Supplier[] resSuppsArr = getResellerManager(iwc).getSuppliers(resellerId, SupplierBMPBean.getColumnNameName());
     Supplier supp;
     
     List allSupps = getList(allSuppsArr);
@@ -742,8 +745,8 @@ public class ResellerCreator extends TravelManager {
   }
 
 
-  private Table getSupplierList(int resellerId) throws SQLException{
-    Supplier[] supps = ResellerManager.getSuppliers(resellerId);
+  private Table getSupplierList(IWContext iwc, int resellerId) throws SQLException, RemoteException{
+    Supplier[] supps = getResellerManager(iwc).getSuppliers(resellerId);
 
 //    Form form = new Form();
 //      form.addParameter(this.parameterResellerId, resellerId);

@@ -18,14 +18,15 @@ import java.util.Locale;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
+import com.idega.block.trade.stockroom.business.SupplierManagerBusiness;
+import com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -34,6 +35,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
@@ -62,51 +64,61 @@ public class TravelBlock extends Block {
 
 	protected void initializer(IWContext iwc) throws RemoteException {
     tsm = getTravelSessionManager(iwc);
-    if (!isTravelAdministrator(iwc)) {
-      try {
-	      int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
-	      SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-	      Supplier supplier = suppHome.findByPrimaryKey(supplierId);
-	      if (!supplier.getIsValid()) {
-	        //supplier = null;
-	      		expiredLogin = true;
-	      }else {
-	        tsm.setSupplier(supplier);
+    if (tsm.isSet()) {
+//    	System.out.println("SessionManager already set");
+    } else {
+//    	System.out.println("Setting SessionManager");
+	    if (!isTravelAdministrator(iwc)) {
+	      try {
+		      int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
+		      SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+		      Supplier supplier = suppHome.findByPrimaryKey(supplierId);
+		      if (!supplier.getIsValid()) {
+		        //supplier = null;
+		      		expiredLogin = true;
+		      }else {
+		        tsm.setSupplier(supplier);
+		      }
 	      }
-      }
-      catch (Exception e) {
-        debug(e.getMessage());
-      }
-
-      try {
-	      int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
-	      Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
-	      if (!reseller.getIsValid()) {
-	        //reseller = null;
-	      		expiredLogin = true;
-	      } else {
-	        tsm.setReseller(reseller);
+	      catch (Exception e) {
+	        debug(e.getMessage());
 	      }
-      }
-      catch (Exception e) {
-      	//e.printStackTrace(System.err);
-        debug(e.getMessage());
-      }
-      
-      try {
-	      	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
-	      	User user = tsm.getUser();
-	      	if (user != null) {
-	      		ServiceSearchEngine engine = ssb.getUserSearchEngine(user);
-	      		if (!engine.getIsValid()) {
-	      			expiredLogin = true;
-	      		} else {
-	      			tsm.setSearchEngine(engine);
-	      		}
-	      	}
-      } catch (Exception e) {
-      	debug(e.getMessage());
-      }
+	
+	      try {
+		      int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
+		      Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
+		      if (!reseller.getIsValid()) {
+		        //reseller = null;
+		      		expiredLogin = true;
+		      } else {
+		        tsm.setReseller(reseller);
+		      }
+	      }
+	      catch (Exception e) {
+	      	//e.printStackTrace(System.err);
+	        debug(e.getMessage());
+	      }
+	      
+	      try {
+		      	ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
+		      	User user = tsm.getUser();
+		      	if (user != null) {
+		      		ServiceSearchEngine engine = ssb.getUserSearchEngine(user);
+		      		if (!engine.getIsValid()) {
+		      			expiredLogin = true;
+		      		} else {
+		      			tsm.setSearchEngine(engine);
+		      		}
+		      	}
+	      } catch (Exception e) {
+	      	debug(e.getMessage());
+	      }
+	      
+	      if (this.isSupplierManager(iwc)) {
+	      	tsm.setIsSupplierManager(true);
+	      	tsm.setSupplierManager(getSupplierManager(iwc));
+	      }
+	    }
     }
     this.isInPermissionGroup = this.isInPermissionGroup(iwc);
     this.isSuperAdmin = isTravelAdministrator(iwc);
@@ -123,13 +135,13 @@ public class TravelBlock extends Block {
 
 	protected boolean isInPermissionGroup(IWContext iwc, User user) throws RemoteException {
 	  if (user != null) {
-	    PermissionGroup pGroup = null;
+	    Group pGroup = null;
 	    try {
 	      if (tsm.getReseller() != null) {
-	        pGroup = ResellerManager.getPermissionGroup(tsm.getReseller());
+	        pGroup = getResellerManager(iwc).getPermissionGroup(tsm.getReseller());
 	      }
 	      else if (tsm.getSupplier() != null) {
-	        pGroup = SupplierManager.getPermissionGroup(tsm.getSupplier());
+	        pGroup = getSupplierManagerBusiness(iwc).getPermissionGroup(tsm.getSupplier());
 	      } else if (tsm.getSearchEngine() != null) {
 	      		ServiceSearchBusiness ssb = (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwc, ServiceSearchBusiness.class);
 	      		pGroup = ssb.getPermissionGroup(tsm.getSearchEngine()); 
@@ -154,7 +166,7 @@ public class TravelBlock extends Block {
 	}
 		
   protected boolean hasLoginExpired(IWContext iwc) throws RemoteException {
-    return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null && tsm.getSearchEngine() == null);
+    return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null && tsm.getSearchEngine() == null && !isSupplierManager(iwc));
   }
 
   protected boolean isLoggedOn(IWContext iwc) throws RemoteException {
@@ -226,11 +238,39 @@ public class TravelBlock extends Block {
 
   protected boolean isTravelAdministrator(IWContext iwc) {
   	return iwc.isSuperAdmin();
-    //return iwc.hasEditPermission(this);
+  }
+  
+  protected boolean isSupplierManager() throws RemoteException {
+  	return tsm.isSupplierManager();
+  }
+  
+  private boolean isSupplierManager(IWContext iwc) {
+  	try {
+  		return iwc.getAccessController().hasRole(SupplierManagerBusinessBean.SUPPLIER_MANAGER_ROLE_KEY, iwc);
+  	} catch (NotLoggedOnException n) {
+  		return false;
+  	}
+  }
+  
+  protected Group getSupplierManager() throws RemoteException {
+  	return tsm.getSupplierManager();
+  }
+  
+  private Group getSupplierManager(IWContext iwc) throws RemoteException {
+		Group tmp = getSupplierManagerBusiness(iwc).getSupplierManager(iwc.getCurrentUser());
+		if (tmp != null) {
+			System.out.println("TravelBlock : supplierManager = "+tmp.getName());
+		} else {
+			System.out.println("TravelBlock : supplierManager = null");
+		}
+		return tmp;
   }
 
   protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException{
-    return TravelBlock.getTravelSessionManagerStatic(iwc);
+  	if (tsm == null) {
+  		tsm = getTravelSessionManagerStatic(iwc);
+  	}
+  	return tsm;
   }
 
   public static TravelSessionManager getTravelSessionManagerStatic(IWContext iwc) throws RemoteException{
@@ -246,11 +286,45 @@ public class TravelBlock extends Block {
   }
   
   protected BookingBusiness getBookingBusiness(IWApplicationContext iwac) {
-  		try {
-  			return (BookingBusiness) IBOLookup.getServiceInstance(iwac, BookingBusiness.class);
-  		} catch (IBOLookupException e) {
-  			throw new IBORuntimeException(e);
-  		}
+		try {
+			return (BookingBusiness) IBOLookup.getServiceInstance(iwac, BookingBusiness.class);
+		} catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
   }
-
+  
+  protected GroupBusiness getGroupBusiness(IWApplicationContext iwac) {
+  	try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(iwac, GroupBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+  }
+  
+	protected SupplierManagerBusiness getSupplierManagerBusiness(IWApplicationContext iwc) {
+		try {
+			return (SupplierManagerBusiness) IBOLookup.getServiceInstance(iwc, SupplierManagerBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	protected ResellerManager getResellerManager(IWApplicationContext iwc) {
+		try {
+			return (ResellerManager) IBOLookup.getServiceInstance(iwc, ResellerManager.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+  protected UserBusiness getUserBusiness() {
+  	try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+  }
 }

@@ -9,13 +9,11 @@ import is.idega.idegaweb.travel.presentation.AdministratorReports;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.presentation.Users;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -30,6 +28,7 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
@@ -155,16 +154,17 @@ public class ServiceSearchAdmin extends TravelManager {
 		form.add(table);
 		int row = 1;
 
-		List users = null;
-		List admins = null;
+		Collection users = null;
+		Collection admins = null;
 		ServiceSearchEngineStaffGroup sGroup = null;
-		PermissionGroup pGroup = null;
+		Group pGroup = null;
 		try {
 			sGroup = getBusiness(iwc).getServiceSearchEngineStaffGroup(engine);
-			pGroup = getBusiness(iwc).getPermissionGroup(engine);			
-			UserGroupBusiness ugb = new UserGroupBusiness();
-			users = ugb.getUsersContained(sGroup);
-			admins = ugb.getUsersContained(pGroup);
+			pGroup = getBusiness(iwc).getPermissionGroup(engine);
+			users = getUserBusiness().getUsersInGroup(sGroup);
+			admins = getUserBusiness().getUsersInGroup(pGroup);
+			//users = ugb.getUsersContained(sGroup);
+			//admins = ugb.getUsersContained(pGroup);
 			if (users != null && admins != null) {
 				users.removeAll(admins);
 			}
@@ -210,7 +210,7 @@ public class ServiceSearchAdmin extends TravelManager {
 		add(form);
 	}
 	
-	private int insertUsers(Table table, int row, List users) {
+	private int insertUsers(Table table, int row, Collection users) {
 		Iterator iter = users.iterator();
 		User user;
 		Link edit;

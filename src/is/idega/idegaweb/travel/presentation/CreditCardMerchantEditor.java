@@ -4,14 +4,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-
 import javax.ejb.CreateException;
-
+import javax.ejb.FinderException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.block.trade.stockroom.data.SupplierBMPBean;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -109,7 +107,7 @@ public class CreditCardMerchantEditor extends TravelManager {
 
   public Form getTPosMerchantEditorForm(IWContext iwc) throws RemoteException{
     Form form = new Form();
-    if (super.isTravelAdministrator(iwc)) {
+    if (super.isSupplierManager()) {
       String action = iwc.getParameter(_parameterAction);
       if (action == null || action.equals("")) {
         form = getMainMenu();
@@ -123,13 +121,13 @@ public class CreditCardMerchantEditor extends TravelManager {
         }
       }else if (action.equals(_actionContinue)){
         String passw = iwc.getParameter(_parameterPassword);
-        if (passw.equals(tempPass)) {
+//        if (passw.equals(tempPass)) {
           //form = getMerchantForm();
           form = getCreditCardInformation(iwc);
-        }else {
-          form = getMainMenu();
-          form.add(getHeaderText(_iwrb.getLocalizedString("travel.password invalid","Password invalid")));
-        }
+//        }else {
+//          form = getMainMenu();
+//          form.add(getHeaderText(_iwrb.getLocalizedString("travel.password invalid","Password invalid")));
+//        }
       } else if (action.equals(_actionInfoSelected)) {
         form = getMerchantForm();
       }else if (action.equals(_actionDelete)) {
@@ -164,10 +162,12 @@ public class CreditCardMerchantEditor extends TravelManager {
     form.add(table);
 
     try {
-      Supplier[] supps = SupplierBMPBean.getValidSuppliers();
+    	SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+    	Collection coll = suppHome.findAll(getSupplierManager());
+      //Supplier[] supps = SupplierBMPBean.getValidSuppliers();
       //Reseller[] repps = ResellerBMPBean.getValidResellers();
 
-      DropdownMenu suppMenu = new DropdownMenu(supps, this._parameterSupplierId);
+      DropdownMenu suppMenu = new DropdownMenu(coll, this._parameterSupplierId);
       //DropdownMenu reppMenu = new DropdownMenu(repps, this._parameterResellerId);
         suppMenu.addMenuElementFirst("-1", _iwrb.getLocalizedString("travel.please_select","Please select"));
         suppMenu.keepStatusOnAction();
@@ -178,22 +178,22 @@ public class CreditCardMerchantEditor extends TravelManager {
 
       table.add(getHeaderText(_iwrb.getLocalizedString("travel.suppliers", "Suppliers")), 1, 1);
       //table.add(getHeaderText(_iwrb.getLocalizedString("travel.resellers", "Resellers")), 2, 1);
-      table.add(getHeaderText(_iwrb.getLocalizedString("travel.password", "Password")), 2, 1);
+      //table.add(getHeaderText(_iwrb.getLocalizedString("travel.password", "Password")), 2, 1);
       table.setRowColor(1, super.backgroundColor);
 
       table.add(suppMenu, 1, 2);
       //table.add(reppMenu, 2, 2);
-      table.add(pass, 2, 2);
+      //table.add(pass, 2, 2);
       table.setRowColor(2, super.GRAY);
 
       //table.mergeCells(1, 2, 2, 2);
-      table.setAlignment(2, 3, "right");
+      table.setAlignment(1, 3, "right");
       table.setRowColor(3, super.GRAY);
-      table.add(button, 2, 3);
+      table.add(button, 1, 3);
       //table.add(getText(_iwrb.getLocalizedString("travel.please_select_a_supplier","Please select a supplier")), 2, 2);
 
 
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }
 

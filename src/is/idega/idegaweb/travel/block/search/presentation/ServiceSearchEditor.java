@@ -56,7 +56,11 @@ public class ServiceSearchEditor extends TravelManager {
 		super.main(iwc);
 		init(iwc);
 		add(Text.BREAK);
-		parseAction(iwc);
+		if (isSupplierManager()) {
+			parseAction(iwc);
+		} else {
+			add(getText(iwrb.getLocalizedString("travel.no_access", "You dont have access to this page.")));
+		}
 	}
 	
 	private void init(IWContext iwc) throws RemoteException {
@@ -96,7 +100,7 @@ public class ServiceSearchEditor extends TravelManager {
 	}
 	
 	private void displaySearchEngineList(IWContext iwc) throws RemoteException {
-		Collection allEngines = getBusiness(iwc).getServiceSearchEngines();
+		Collection allEngines = getBusiness(iwc).getServiceSearchEngines(getSupplierManager());
 		Table table = super.getTable();
 		Form form = new Form();
 		form.add(table);
@@ -151,7 +155,7 @@ public class ServiceSearchEditor extends TravelManager {
 		// Buttons
 		++row;
 		SubmitButton bNew = new SubmitButton(iwrb.getLocalizedImageButton("travel.new","New"), ACTION, ACTION_NEW);
-		if (super.hasPermission()) {
+		if (super.isSupplierManager()) {
 			table.add(bNew, 1, row);
 		}
 		table.setRowColor(row, GRAY);
@@ -228,7 +232,7 @@ public class ServiceSearchEditor extends TravelManager {
 		table.setRowColor(row++, backgroundColor);
 		
 		try {
-			Collection allSupps = getSupplierHome().findAll();
+			Collection allSupps = getSupplierHome().findAll(getSupplierManager());
 			Collection engineSupps = engine.getSuppliers();
 			
 			if (allSupps != null && engineSupps != null) {
@@ -355,7 +359,7 @@ public class ServiceSearchEditor extends TravelManager {
 				}
 				
 				if (proceed) {
-					engine = getBusiness(iwc).storeEngine(iID, name, code);
+					engine = getBusiness(iwc).storeEngine(iID, name, code, getSupplierManager());
 					displaySearchEngineList(iwc);
 				} else {
 					displayCreation(iwc);
@@ -370,7 +374,7 @@ public class ServiceSearchEditor extends TravelManager {
 	
 	private void deleteServiceSearchEngine(IWContext iwc) {
 		try {
-			getBusiness(iwc).deleteServiceSearchEngine(getBusiness(iwc).getSearchEngineHome().findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_SSE_ID))));
+			getBusiness(iwc).deleteServiceSearchEngine(getBusiness(iwc).getSearchEngineHome().findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_SSE_ID))), iwc.getCurrentUser());
 		}catch (Exception e){
 			add(getHeaderText(iwrb.getLocalizedString("travel.delete_failed","Delete failed")+Text.BREAK));
 		}

@@ -1,13 +1,20 @@
 package is.idega.idegaweb.travel.presentation;
-import java.sql.*;
-import java.util.*;
-
-
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -88,9 +95,9 @@ public class AdministratorReports extends Reports {
       _supplier = suppHome.findByPrimaryKey(new Integer(suppId));
       _usedSuppliers = new Vector();
       _usedSuppliers.add(_supplier);
-    }else if (_allSuppliers == null) {
+    }else if (_allSuppliers == null && super.isSupplierManager()) {
     	SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-    	_usedSuppliers = (List) suppHome.findAll(); 
+    	_usedSuppliers = (List) suppHome.findAll(getSupplierManager()); 
     }else { //if (suppId != null && suppId.equals("-1") && _allSuppliers != null) {
     	_usedSuppliers = _allSuppliers;
     } /*else {
@@ -185,8 +192,13 @@ protected Supplier[] getSuppliers() {
 	} else {
 		Supplier[] supps = new Supplier[]{};
 	  try {
-	    supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
-	  }catch (SQLException sql) {
+			SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			Collection coll = suppHome.findAll(getSupplierManager());
+			if (coll != null) {
+				supps = (Supplier[]) coll.toArray(new Supplier[]{});
+			}
+//	    supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
+	  }catch (Exception sql) {
 	    sql.printStackTrace(System.out);
 	  }
 	  return supps;

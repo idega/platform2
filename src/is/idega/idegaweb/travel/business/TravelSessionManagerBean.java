@@ -9,6 +9,7 @@ import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
@@ -27,10 +28,13 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
   private IWBundle _bundle;
   private Locale _locale;
   private int _localeId = -1;
+  private boolean _isSet = false;
 
   private Supplier _supplier;
   private Reseller _reseller;
+  private Group _supplierManager;
   private ServiceSearchEngine _engine;
+  private boolean _isSupplierManager;
   private User _user;
   private int _userId = -1;
 
@@ -50,14 +54,38 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
     _engine = null;
     _userId = -1;
     _user = null;
+    _supplierManager = null;
+    _isSupplierManager = false;
+    _isSet = false;
+  }
+  
+  public boolean isSupplierManager() {
+		return _isSupplierManager;
+  }
+  
+  public boolean isSet() {
+  	return _isSet;
+  }
+  
+  public void setIsSupplierManager(boolean isSupplierManager) {
+  	this._isSupplierManager = isSupplierManager;
+  }
+  
+  public void setSupplierManager(Group supplierManager) {
+  	this._supplierManager = supplierManager;
+  }
+  
+  public Group getSupplierManager() {
+  	return _supplierManager;
   }
 
   public User getUser() {
     if (_user == null) {
     	try {
-      _user = getUserContext().getCurrentUser();
+    		_user = getUserContext().getCurrentUser();
+    		_isSet = (_user != null);
     	} catch (NotLoggedOnException e) {
-    		System.out.println("SessionManager : Noone is logged on");
+//    		System.out.println("SessionManager : Noone is logged on");
     	}
     }
     return _user;

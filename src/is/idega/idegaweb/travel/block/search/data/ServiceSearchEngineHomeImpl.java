@@ -1,50 +1,60 @@
 package is.idega.idegaweb.travel.block.search.data;
 
-
-public class ServiceSearchEngineHomeImpl extends com.idega.data.IDOFactory implements ServiceSearchEngineHome
-{
- protected Class getEntityInterfaceClass(){
-  return ServiceSearchEngine.class;
- }
+import java.util.Collection;
+import javax.ejb.FinderException;
+import com.idega.data.IDOFactory;
+import com.idega.user.data.Group;
 
 
- public ServiceSearchEngine create() throws javax.ejb.CreateException{
-  return (ServiceSearchEngine) super.createIDO();
- }
+/**
+ * @author gimmi
+ */
+public class ServiceSearchEngineHomeImpl extends IDOFactory implements ServiceSearchEngineHome {
 
+	protected Class getEntityInterfaceClass() {
+		return ServiceSearchEngine.class;
+	}
 
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ServiceSearchEngineBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+	public ServiceSearchEngine create() throws javax.ejb.CreateException {
+		return (ServiceSearchEngine) super.createIDO();
+	}
 
-public ServiceSearchEngine findByCode(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ServiceSearchEngineBMPBean)entity).ejbFindByCode(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public ServiceSearchEngine findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (ServiceSearchEngine) super.findByPrimaryKeyIDO(pk);
+	}
 
-public ServiceSearchEngine findByGroupID(int p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ServiceSearchEngineBMPBean)entity).ejbFindByGroupID(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public ServiceSearchEngine findByName(String name) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ServiceSearchEngineBMPBean) entity).ejbFindByName(name);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
-public ServiceSearchEngine findByName(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ServiceSearchEngineBMPBean)entity).ejbFindByName(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
+	public ServiceSearchEngine findByCode(String code) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ServiceSearchEngineBMPBean) entity).ejbFindByCode(code);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 
- public ServiceSearchEngine findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ServiceSearchEngine) super.findByPrimaryKeyIDO(pk);
- }
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ServiceSearchEngineBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
+	public Collection findAll(Group supplierManager) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ServiceSearchEngineBMPBean) entity).ejbFindAll(supplierManager);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
-
+	public ServiceSearchEngine findByGroupID(int groupID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((ServiceSearchEngineBMPBean) entity).ejbFindByGroupID(groupID);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
 }

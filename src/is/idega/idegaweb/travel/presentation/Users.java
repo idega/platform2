@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
-import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.business.IBOLookup;
@@ -109,7 +107,7 @@ public class Users extends TravelManager implements InitialDataObject {
     return text;
   }
 */
-  private Form getUserList(IWContext iwc) {
+  private Form getUserList(IWContext iwc) throws RemoteException {
     Form form = new Form();
     Table table = new Table();
       table.setColor(super.WHITE);
@@ -118,8 +116,20 @@ public class Users extends TravelManager implements InitialDataObject {
       table.setWidth("50%");
 
     List users = null;
-    if (_reseller != null) users = ResellerManager.getUsersInPermissionGroup(_reseller);
-    if (_supplier != null) users = SupplierManager.getUsersInPermissionGroup(_supplier);
+    if (_reseller != null) {
+    	try {
+    		users = getResellerManager(iwc).getUsersInPermissionGroup(_reseller);
+    	} catch (FinderException f) {
+    		
+    	}
+    }
+    if (_supplier != null) {
+    	try {
+    		users = getSupplierManagerBusiness(iwc).getUsersInPermissionGroup(_supplier);
+    	} catch (FinderException f) {
+    		
+    	}
+    }
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
 
 
@@ -169,9 +179,9 @@ public class Users extends TravelManager implements InitialDataObject {
       table.setAlignment(2, row, "right");
     }
 
-    if (_reseller != null) users = ResellerManager.getUsersNotInPermissionGroup(_reseller);
-    if (_supplier != null) users = SupplierManager.getUsersNotInPermissionGroup(_supplier);
-    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+//    if (_reseller != null) users = ResellerManager.getUsersNotInPermissionGroup(_reseller);
+//    if (_supplier != null) users = getSupplierManagerBusiness(iwc).getUsersNotInPermissionGroup(_supplier);
+//    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
 
     ++row;
     Text staff = getText(_iwrb.getLocalizedString("travel.staff","Staff"));
@@ -376,10 +386,10 @@ public class Users extends TravelManager implements InitialDataObject {
 
 
         if (_reseller != null) {
-          ResellerManager.addUser(_reseller, user, isAdmin);
+        	getResellerManager(iwc).addUser(_reseller, user, isAdmin);
         }
         if (_supplier != null) {
-          SupplierManager.addUser(_supplier, user, isAdmin);
+        	getSupplierManagerBusiness(iwc).addUser(_supplier, user, isAdmin);
         }
 
         return getSuccessForm(iwc);
@@ -425,7 +435,7 @@ public class Users extends TravelManager implements InitialDataObject {
     return form;
   }
 
-  private Form getSuccessForm(IWContext iwc) {
+  private Form getSuccessForm(IWContext iwc) throws RemoteException{
     return getUserList(iwc);
   }
 
@@ -439,7 +449,7 @@ public class Users extends TravelManager implements InitialDataObject {
     }
   }
 
-  private Form deleteUser(IWContext iwc) {
+  private Form deleteUser(IWContext iwc) throws RemoteException {
     String userId = iwc.getParameter(this.paramaterUserID);
     try {
       User user = ((com.idega.user.data.UserHome)com.idega.data.IDOLookup.getHome(User.class)).findByPrimaryKey( new Integer(userId));

@@ -16,7 +16,6 @@ import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,21 +36,17 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.data.GenericGroupHome;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.business.UserGroupBusiness;
-import com.idega.core.user.data.User;
-import com.idega.data.EntityFinder;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -60,10 +55,12 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ServiceSearchBusinessBean extends IBOServiceBean implements ServiceSearchBusiness, ActionListener {
+public class ServiceSearchBusinessBean extends IBOServiceBean implements ActionListener , ServiceSearchBusiness{
 
 	private HashMap resultMap = new HashMap();
-	
+
+	public static String SEARCH_FORM_CACHE_KEY = "abstract_search_form";
+
 	
 	private String SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION = "Search Engine administator group";
 	private String permissionGroupNameExtention = " - admins";
@@ -212,7 +209,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 				try {
 					product = (Product) iter.next();
 //					System.out.println("ServiceSearchBusiness : checking product : " +product.getProductName(iwc.getCurrentLocaleId()));
-					productIsValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
+					productIsValid = getBookingBusiness().getIsProductValid(iwc, product, from, to);
 					if (productIsValid) {
 //						System.out.println("ServiceSearchBusiness : valid");
 						map.put(product, new Boolean(productIsValid));
@@ -260,10 +257,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return coll;
 	}
 
-	public Collection getServiceSearchEngines() {
+	public Collection getServiceSearchEngines(Group supplierManager) {
 		Collection coll = new Vector();
 		try {
-			coll = getSearchEngineHome().findAll();
+			coll = getSearchEngineHome().findAll(supplierManager);
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}
@@ -290,7 +287,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return engine;
 	}
 	
-	public ServiceSearchEngine storeEngine(Object pk, String name, String code) {
+	public ServiceSearchEngine storeEngine(Object pk, String name, String code, Group supplierManager) {
 		ServiceSearchEngine engine = null;
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
@@ -309,29 +306,36 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			
 			engine.setName(name);
 			engine.setCode(code);
+			if (supplierManager != null) {
+				engine.setSupplierManager(supplierManager);
+			}
 			engine.store();
 			
 			if (getServiceSearchEngineStaffGroup(engine) == null) {
 				String sName = name+"_"+engine.getPrimaryKey().toString();
 				Object object = IDOLookup.getHome(ServiceSearchEngineStaffGroup.class);
-				System.out.println("object = "+ object.getClass().getName());
 				ServiceSearchEngineStaffGroupHome ssesgh = (ServiceSearchEngineStaffGroupHome) IDOLookup.getHomeLegacy(ServiceSearchEngineStaffGroup.class);	
 				ServiceSearchEngineStaffGroup sGroup = ssesgh.create();
 				sGroup.setName(sName);
-				sGroup.insert();
-				engine.setStaffGroupID(sGroup.getID());
+				sGroup.store();
+				engine.setStaffGroupID(((Integer)sGroup.getPrimaryKey()).intValue());
 				engine.store();
 			} else if (engine.getStaffGroupID() < 1){
 				System.out.println("[ServiceSearchBusinessBean] Fixing engine, setting groupID");
-				engine.setStaffGroupID(getServiceSearchEngineStaffGroup(engine).getID());
+				engine.setStaffGroupID(((Integer)getServiceSearchEngineStaffGroup(engine).getPrimaryKey()).intValue());
 				engine.store();
 			}
 			
 			if (getPermissionGroup(engine) == null) {
 				String sName = name+"_"+engine.getPrimaryKey().toString();
-
-				AccessControl ac = new AccessControl();
-				ac.createPermissionGroup(sName+permissionGroupNameExtention, SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION, "", null ,null);
+	      Group pGroup = ((GroupHome) IDOLookup.getHome(Group.class)).create();
+	      pGroup.setName(sName+permissionGroupNameExtention);
+	      pGroup.setDescription(SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION);
+	      pGroup.store();
+	      
+//	      pGroup.addGroup(user);
+//	      AccessControl ac = new AccessControl();
+//				ac.createPermissionGroup(sName+permissionGroupNameExtention, SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION, "", null ,null);
 			}
 			
 			
@@ -358,10 +362,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	}
 	
 	public void addSearchEngineUser(ServiceSearchEngine engine, String name, String userName, String password, boolean addToPermissionGroup) {
-		UserBusiness uBus = new UserBusiness();
 		User user;
 		try {
-			user = uBus.insertUser(name,"","- admin",name+" - admin","Search Engine administrator",null,IWTimestamp.RightNow(),null);
+			user = getUserBusiness().insertUser(name,"","- admin",name+" - admin","Search Engine administrator",null,IWTimestamp.RightNow(),null);
 			LoginDBHandler.createLogin(user.getID(), userName, password);
 		
 			addUser(engine, user, addToPermissionGroup);		
@@ -370,93 +373,115 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
 	}
 	
-	public boolean isUserInPermissionGroup(ServiceSearchEngine engine, User user) {
-		PermissionGroup pGroup = getPermissionGroup(engine);
-		UserGroupBusiness ugb = new UserGroupBusiness();
-		try {
-			List allUsers = ugb.getUsersContained(pGroup);
-			return allUsers.contains(user);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return false;
+	public boolean isUserInPermissionGroup(ServiceSearchEngine engine, User user) throws RemoteException, FinderException {
+		Group pGroup = getPermissionGroup(engine);
+		Collection allUsers = getUserBusiness().getUsersInGroup(pGroup);
+		return allUsers.contains(user);
 	}
 	
-	public PermissionGroup getPermissionGroup(ServiceSearchEngine engine) {
+	public Group getPermissionGroup(ServiceSearchEngine engine) throws RemoteException, FinderException {
 	  String name = engine.getName()+"_"+engine.getPrimaryKey().toString() + permissionGroupNameExtention;
 	  String description = SEARCH_ENGINE_ADMINISTRATOR_GROUP_DESCRIPTION ;
 
-	  PermissionGroup pGroup = null;
-	  List listi = null;
-	  try {
-	  	listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), name, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
-	  } catch (SQLException e) {
-	  	e.printStackTrace();
+	  Group pGroup = null;
+	  Collection coll = getGroupBusiness().getGroupHome().findGroupsByNameAndDescription(name, description);
+	  if (coll != null && !coll.isEmpty()) {
+	  	Iterator iter = coll.iterator();
+	  	pGroup = (Group) iter.next();
 	  }
-	  if (listi != null) {
-	  	if (listi.size() > 0) {
-	  		pGroup = (PermissionGroup) listi.get(listi.size()-1);
-	  	}
-	  } else {
-	  	try {
-	  		listi = EntityFinder.findAllByColumn((PermissionGroup) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), engine.getName()+permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
-	  	} catch (SQLException e1) {
-	  		e1.printStackTrace();
-	  	}
-	  	
-	  	if (listi != null) {
-	  		if (listi.size() > 0) {
-	  			pGroup = (PermissionGroup) listi.get(listi.size()-1);
-	  		}
-	  	}
+
+	  if (coll != null && !coll.isEmpty()) {
+		  coll = getGroupBusiness().getGroupHome().findGroupsByNameAndDescription(engine.getName()+permissionGroupNameExtention, description);
+		  if (coll != null && !coll.isEmpty()) {
+		  	Iterator iter = coll.iterator();
+		  	pGroup = (Group) iter.next();
+		  }
 	  }
+//	  List listi = null;
+//	  try {
+//	  	listi = EntityFinder.findAllByColumn((PermissionGroup) GroupBMPBean.getStaticInstance(Group.class), GroupBMPBean.getNameColumnName(), name, GroupBMPBean.getGroupDescriptionColumnName(), description);
+//	  } catch (SQLException e) {
+//	  	e.printStackTrace();
+//	  }
+//	  if (listi != null) {
+//	  	if (listi.size() > 0) {
+//	  		pGroup = (Group) listi.get(listi.size()-1);
+//	  	}
+//	  } else {
+//	  	try {
+//	  		listi = EntityFinder.findAllByColumn((PermissionGroup) GroupBMPBean.getStaticInstance(Group.class), GroupBMPBean.getNameColumnName(), engine.getName()+permissionGroupNameExtention, GroupBMPBean.getGroupDescriptionColumnName(), description);
+//	  	} catch (SQLException e1) {
+//	  		e1.printStackTrace();
+//	  	}
+//	  	
+//	  	if (listi != null) {
+//	  		if (listi.size() > 0) {
+//	  			pGroup = (Group) listi.get(listi.size()-1);
+//	  		}
+//	  	}
+//	  }
 
 	  return pGroup;
 	}
 
-	public ServiceSearchEngineStaffGroup getServiceSearchEngineStaffGroup(ServiceSearchEngine engine) throws SQLException {
+	public ServiceSearchEngineStaffGroup getServiceSearchEngineStaffGroup(ServiceSearchEngine engine) throws RemoteException, FinderException {
 	  String name = engine.getName()+"_"+engine.getPrimaryKey().toString();
 	  ServiceSearchEngineStaffGroup sGroup = null;
-	  List listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), name);
-	  if (listi != null) {
-			if (listi.size() > 0) {
-			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
-			}
+	  ServiceSearchEngineStaffGroupHome ssesgh = (ServiceSearchEngineStaffGroupHome) IDOLookup.getHome(ServiceSearchEngineStaffGroup.class);
+
+	  Collection coll = ssesgh.findGroupsByName(name);
+	  if (coll != null && !coll.isEmpty()) {
+	  	Iterator iter = coll.iterator();
+	  	sGroup = (ServiceSearchEngineStaffGroup) iter.next();
 	  }
-	  if (listi == null) {
-		  	listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), engine.getName());
-			if (listi != null && listi.size() > 0) {
-			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
-			}
-	  }
+
+	  if (coll != null && !coll.isEmpty()) {
+		  coll = ssesgh.findGroupsByName(engine.getName());
+		  if (coll != null && !coll.isEmpty()) {
+		  	Iterator iter = coll.iterator();
+		  	sGroup = (ServiceSearchEngineStaffGroup) iter.next();
+		  }
+	  }	  
+//	  List listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), name);
+//	  if (listi != null) {
+//			if (listi.size() > 0) {
+//			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+//			}
+//	  }
+//	  if (listi == null) {
+//		  	listi = EntityFinder.findAllByColumn((GenericGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class), ServiceSearchEngineStaffGroupBMPBean.getNameColumnName(), engine.getName());
+//			if (listi != null && listi.size() > 0) {
+//			  sGroup = (ServiceSearchEngineStaffGroup) listi.get(listi.size()-1);
+//			}
+//	  }
 	  if (sGroup == null) {
 	  		System.err.println("searchEngineStaffGroup == null");
 	  }
 	  return sGroup;
 	}
 
-	public void addUser(ServiceSearchEngine engine, User user, boolean addToPermissionGroup) throws SQLException{
-	  PermissionGroup pGroup = getPermissionGroup(engine);
+	public void addUser(ServiceSearchEngine engine, User user, boolean addToPermissionGroup) throws RemoteException, FinderException {
+	  Group pGroup = getPermissionGroup(engine);
 	  ServiceSearchEngineStaffGroup sGroup = getServiceSearchEngineStaffGroup(engine);
 	  if (addToPermissionGroup) {
-	  	pGroup.addUser(user);
+	  	pGroup.addGroup(user);
 	  }
-	  sGroup.addUser(user);
+	  sGroup.addGroup(user);
 	}
 
-	public ServiceSearchEngine getUserSearchEngine(User user) throws RuntimeException, SQLException{
+	public ServiceSearchEngine getUserSearchEngine(User user) throws RuntimeException, RemoteException{
 	  try {
-		  GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
-		  List gr = gGroup.getAllGroupsContainingUser(user);
+//		  Group gGroup = ((GroupHome) IDOLookup.getHome(Group.class)).createLegacy();
+//		  List gr = gGroup.getAllGroupsContainingUser(user);
+		  Collection gr = getUserBusiness().getUserGroups(user);
 		  if(gr != null){
 				Iterator iter = gr.iterator();
 				while (iter.hasNext()) {
 					try {
-						GenericGroup item = (GenericGroup)iter.next();
+						Group item = (Group)iter.next();
 						String flepps = item.getGroupTypeValue();
 						if(item.getGroupType().equals(((ServiceSearchEngineStaffGroup) ServiceSearchEngineStaffGroupBMPBean.getStaticInstance(ServiceSearchEngineStaffGroup.class)).getGroupTypeValue())){
-							return getSearchEngineHome().findByGroupID(item.getID());
+							return getSearchEngineHome().findByGroupID( ((Integer) item.getPrimaryKey()).intValue());
 						}
 					} catch (ClassCastException cce) {
 						System.out.println("[ServiceSearchBusinessBean] classcastexception");
@@ -471,17 +496,19 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 	  }
 	}
 
-	public boolean deleteServiceSearchEngine(ServiceSearchEngine engine) {
+	public boolean deleteServiceSearchEngine(ServiceSearchEngine engine, User performer) {
 		try {
 			ServiceSearchEngineStaffGroup sGroup = this.getServiceSearchEngineStaffGroup(engine);
-			List users = UserGroupBusiness.getUsersContained(sGroup.getID());
+			Collection users = getUserBusiness().getUsersInGroup(sGroup);
+//			List users = UserGroupBusiness.getUsersContained(sGroup.getID());
 			if (users != null) {
 				Iterator iter = users.iterator();
 				User user;
 				while (iter.hasNext()) {
 					try {
 						user = (User) iter.next();
-						sGroup.removeFrom(user);
+						sGroup.removeGroup(user, performer);
+						//sGroup.removeFrom(user);
 						LoginDBHandler.deleteUserLogin( user.getID() );
 					}catch (Exception e) {
 						e.printStackTrace();
@@ -542,12 +569,30 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		}
 	}
 
-  protected BookingBusiness getBookingBusiness(IWApplicationContext iwac) {
+  protected BookingBusiness getBookingBusiness() {
 		try {
-			return (BookingBusiness) IBOLookup.getServiceInstance(iwac, BookingBusiness.class);
+			return (BookingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), BookingBusiness.class);
 		} catch (IBOLookupException e) {
 			throw new IBORuntimeException(e);
 		}
-}
-	
+  }
+
+  protected GroupBusiness getGroupBusiness() {
+  	try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+  }
+  
+  protected UserBusiness getUserBusiness() {
+  	try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+  }
+  
 }

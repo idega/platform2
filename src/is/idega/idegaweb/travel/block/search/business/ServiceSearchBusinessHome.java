@@ -1,8 +1,12 @@
 package is.idega.idegaweb.travel.block.search.business;
 
+import com.idega.business.IBOHome;
 
-public interface ServiceSearchBusinessHome extends com.idega.business.IBOHome
-{
- public ServiceSearchBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * @author gimmi
+ */
+public interface ServiceSearchBusinessHome extends IBOHome {
+
+	public ServiceSearchBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }
