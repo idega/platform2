@@ -319,8 +319,12 @@ public class TournamentList extends GolfBlock {
 							table.add(closedImage, column, row);
 						}
 
-						Text theForm = getSmallText(tournaments[i].getTournamentForm().getName());
-						table.add(theForm, column++, row);
+						if ( tournaments[i].getTournamentForm() != null) {
+							Text theForm = getSmallText(tournaments[i].getTournamentForm().getName());
+							table.add(theForm, column++, row);
+						} else {
+							table.add(getSmallText("-"), column++, row);
+						}
 
 						if (getTournamentBusiness(modinfo).isOnlineRegistration(tournaments[i], rightNowStamp)) {
 							Image registerImage = iwb.getImage("shared/tournament/register.gif");
