@@ -4,15 +4,12 @@ import java.sql.Date;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.user.data.*;
+
 /**
  * @author Joakim
- *
  */
-public class InvoiceHeaderBMPBean extends GenericEntity implements 
-//InvoiceHeader, 
-IDOLegacyEntity {
+public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader {
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 
 	private static final String COLUMN_MAIN_ACTIVITY = "main_activity";	

@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 import java.sql.Date;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 
 /**
@@ -11,7 +10,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
  * (They are all the same thign) in the Kravspecifikation Check and Peng. 
  */
-public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord, IDOLegacyEntity {
+public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord {
 	private static final String ENTITY_NAME = "cacc_invoice_record";
 
 	private static final String COLUMN_INVOICE_HEADER = "invoice_header";

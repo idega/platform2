@@ -1,5 +1,5 @@
 /*
- * $Id: PostingStringBMPBean.java,v 1.3 2003/08/28 15:25:42 joakim Exp $
+ * $Id: PostingStringBMPBean.java,v 1.4 2003/09/08 17:06:33 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,6 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
 /**
@@ -23,7 +22,7 @@ import com.idega.data.IDOQuery;
  * @author Joakim
  * @see PostingField
  */
-public class PostingStringBMPBean extends GenericEntity implements PostingString, IDOLegacyEntity
+public class PostingStringBMPBean extends GenericEntity implements PostingString
 {
 	private static final String ENTITY_NAME = "cacc_posting_string";
 
