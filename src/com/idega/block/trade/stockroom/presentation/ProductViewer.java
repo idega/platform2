@@ -35,21 +35,25 @@ public class ProductViewer extends Block {
   int _localeId = -1;
   String _fontStyle;
   String _headerFontStyle;
+  Image _seperator = null;
+  boolean _useHRasSeperator = false;
 
   public ProductViewer() { }
 
+
+
   public void main(IWContext iwc) {
+
     init(iwc);
-    if (_product != null) {
-      if (hasEditPermission()) {
-        Link lEdit = ProductEditorWindow.getEditorLink(_productId);
-        lEdit.setImage(iEdit);
-        add(lEdit);
-      }
-      getViewer(iwc);
-    } else {
-      add(iwrb.getLocalizedString("no_product_selected","No product selected"));
+
+    if (hasEditPermission()) {
+      Link lEdit = ProductEditorWindow.getEditorLink(_productId);
+      lEdit.setImage(iEdit);
+      add(lEdit);
     }
+
+    getViewer(iwc);
+
   }
 
   public String getBundleIdentifier() {
@@ -78,17 +82,25 @@ public class ProductViewer extends Block {
 
     IWBundle coreBundle = iwc.getApplication().getCoreBundle();
     iEdit = coreBundle.getImage("shared/edit.gif");
-
   }
+
+
 
   private void getViewer(IWContext iwc) {
     try {
       AbstractProductViewerLayout layout = (AbstractProductViewerLayout) this._viewerLayoutClass.newInstance();
-      PresentationObject po = layout.getViewer(this, _product, iwc);
+      PresentationObject po = null;
+
+      if (this._product == null) {
+        po = layout.getDemo(this, iwc);
+      }else {
+        po = layout.getViewer(this, _product, iwc);
+      }
 
       Table table = new Table(1, 1);
       table.setCellpadding(0);
       table.setCellspacing(0);
+
       if (_width != null)
         table.setWidth(_width);
       table.add(po);
@@ -132,4 +144,13 @@ public class ProductViewer extends Block {
       cnf.printStackTrace(System.err);
     }
   }
+
+  public void setSeperatorImage(Image seperator) {
+    this._seperator = seperator;
+  }
+
+  public void setUseHorizontalRuleAsSeperator(boolean use) {
+    this._useHRasSeperator = use;
+  }
 }
+

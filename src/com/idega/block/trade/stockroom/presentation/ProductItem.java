@@ -20,6 +20,7 @@ import com.idega.block.trade.stockroom.data.*;
  */
 
 public class ProductItem extends Block {
+  protected static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
 
   protected Product _product;
   protected int _productId = -1;
@@ -34,6 +35,10 @@ public class ProductItem extends Block {
 
   public void main(IWContext iwc) {
     initialize(iwc);
+  }
+
+  public String getBundleIdentifier() {
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   private void initialize(IWContext iwc) {

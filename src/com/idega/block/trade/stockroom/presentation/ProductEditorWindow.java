@@ -27,7 +27,7 @@ import com.idega.presentation.text.*;
  */
 
 public class ProductEditorWindow extends IWAdminWindow {
-  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
+  private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   public static final String PRODUCT_ID = "prod_edit_prod_id";
 
   private static final String ACTION = "prod_edit_action";
@@ -52,6 +52,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   public ProductEditorWindow() {
     setUnMerged();
     setWidth(500);
+    setHeight(500);
     setTitle("Product Editor");
     //super.addTitle("Product Editor");
   }
@@ -195,7 +196,9 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     Integer fileId = null;
     try {
-      fileId = new Integer(image);
+      if (image != null && !image.equals("-1")) {
+        fileId = new Integer(image);
+      }
     }catch (NumberFormatException n) {}
 
     if (!name.equals("")) {
@@ -212,7 +215,8 @@ public class ProductEditorWindow extends IWAdminWindow {
           if (setPrice(price)) {
             return true;
           }else {
-            return false;
+            super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
+            return true;
           }
 
         }catch (Exception e) {
@@ -231,7 +235,8 @@ public class ProductEditorWindow extends IWAdminWindow {
           if (setPrice(price)) {
             return true;
           }else {
-            return false;
+            super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
+            return true;
           }
         }catch (Exception e) {
           e.printStackTrace(System.err);
@@ -263,10 +268,11 @@ public class ProductEditorWindow extends IWAdminWindow {
       }else {
         return true;
       }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+      debug("Villa, returna false");
+      return false;
     }
-    return false;
   }
 
   private void saveFailed(IWContext iwc) {

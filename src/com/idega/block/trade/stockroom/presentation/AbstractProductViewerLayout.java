@@ -18,5 +18,6 @@ public abstract class AbstractProductViewerLayout extends Block {
   public AbstractProductViewerLayout() {
   }
 
+  public abstract PresentationObject getDemo(ProductViewer productViewer, IWContext iwc);
   public abstract PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc);
 }
