@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import com.idega.util.IWTimestamp;
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 
 /**
  * Holder for times that are calculated for placement times
@@ -18,8 +19,7 @@ public class PlacementTimes {
 	}
 
 	public int getDays () {
-		final IWTimestamp lastCheckDayPlusOneDay = createDayAfter (lastCheckDay);
-		return IWTimestamp.getDaysBetween (firstCheckDay, lastCheckDayPlusOneDay);
+		return 1 + AccountingUtil.getDayDiff (firstCheckDay, lastCheckDay);
 	}
 
 	public float getMonths () {
@@ -41,18 +41,12 @@ public class PlacementTimes {
 		return firstCheckDay;
 	}
 
-	private static IWTimestamp createDayAfter (final IWTimestamp sourceDay) {
-		final IWTimestamp dayAfter = new IWTimestamp (sourceDay);
-		dayAfter.addDays (1);
-		return dayAfter;
-	}
-
 	private static int daysInMonth (final IWTimestamp date) {
 		final IWTimestamp firstDay = new IWTimestamp (date);
 		firstDay.setDay (1);
 		final IWTimestamp lastDay = new IWTimestamp (firstDay);
 		lastDay.addMonths (1);
-		final int daysInMonth = IWTimestamp.getDaysBetween (firstDay, lastDay);
+		final int daysInMonth = AccountingUtil.getDayDiff (firstDay, lastDay);
 		return daysInMonth;
 	}
 }

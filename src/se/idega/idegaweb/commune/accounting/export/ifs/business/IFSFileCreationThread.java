@@ -663,7 +663,7 @@ public class IFSFileCreationThread extends Thread {
 					bWriter.write(";");
 					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
-					bWriter.write(Integer.toString(IWTimestamp.getDaysBetween(executionDate, paymentDate) + 1));
+					bWriter.write(Integer.toString(AccountingUtil.getDayDiff(executionDate, paymentDate) + 1));
 					bWriter.write(";");
 					bWriter.write("SEK");
 					bWriter.write(";");
