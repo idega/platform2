@@ -114,15 +114,7 @@ public class Emailer extends CampusBlock {
 		return "Emails";
 	}
 
-	/**
-	 *  Gets the bundleIdentifier of the Emailer object
-	 *
-	 * @return    The bundle identifier value
-	 */
-	public String getBundleIdentifier() {
-		return "is.idega.idegaweb.campus";
-	}
-
+	
 	/**
 	 * @param  iwc  Description of the Parameter
 	 * @todo        Description of the Method
