@@ -22,6 +22,7 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
@@ -77,6 +78,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private String ERROR_DATE_FORMAT = "error_date_form";
 	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
 	private String ERROR_REG_SPEC_BLANK = "error_reg_spec_blank";	
+	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
 	
 //	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
 	private String ERROR_POSTING = "error_posting";
@@ -355,11 +357,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			entry.setEditSign(iwc.getCurrentUser().getName());
 		}
 		
-		float amount = 0;
-		if (iwc.getParameter(PAR_AMOUNT_PR_MONTH) != null && iwc.getParameter(PAR_AMOUNT_PR_MONTH).length() != 0){
-			amount = new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue();
+		long amount = 0;
+		try{
+			amount = AccountingUtil.roundAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		}catch(NumberFormatException ex){
+			ex.printStackTrace();
+			errorMessages.put(ERROR_AMOUNT_FORMAT, localize(ERROR_AMOUNT_FORMAT, "Wrong format for amount"));
 		}
 		entry.setAmount(amount);
+		
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
 		entry.setFrom(from);
@@ -376,8 +382,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		RegulationSpecType regSpecType = getRegulationSpecType(iwc.getParameter(PAR_REGULATION_TYPE));
 		if (regSpecType.getRegSpecType().equals(RegSpecConstant.BLANK)){
 			errorMessages.put(ERROR_REG_SPEC_BLANK, localize(LOCALIZER_PREFIX + "reg_spec_blank", "Choose another value for regelspec.typ."));
-		}		
-		entry.setRegSpecTypeId(((Integer) regSpecType.getPrimaryKey()).intValue());
+		}	
+
+		entry.setRegSpecTypeId(Integer.parseInt((String) regSpecType.getPrimaryKey()));
 		entry.setChild(user);
 		entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
 		
@@ -792,7 +799,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 //			
 //		}
 		
-		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + entry.getAmount(), 1, row++);
+		if (errorMessages.get(ERROR_AMOUNT_FORMAT) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_FORMAT)), 2, row++);			
+		}		
+		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 
 		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
@@ -1161,6 +1171,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return reg;
 	}
 		
+	private Table addIntField(Table table, String parameter, String key, String value, int col, int row){
+		TextInput input = getTextInput(parameter, value);
+		input.setAsIntegers(localize(LOCALIZER_PREFIX + "int_format_error", "Format-error: Expecting integer:" )+ " " + localize(key, "")); 
+		return addWidget(table, key, input, col, row);
+	}		
 	
 
 }

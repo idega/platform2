@@ -24,6 +24,7 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
@@ -79,6 +80,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
+	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
 	
 
 	private static String LOCALIZER_PREFIX = "regular_payment_entries_list.";
@@ -396,7 +398,14 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}			
 		}
 
-		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		long amountMonth = 0;
+		try{
+			amountMonth = AccountingUtil.roundAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+			entry.setAmount(amountMonth);
+		}catch(NumberFormatException ex){
+			ex.printStackTrace();
+			errorMessages.put(ERROR_AMOUNT_FORMAT, localize(ERROR_AMOUNT_FORMAT, "Wrong format for amount"));
+		}
 
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
@@ -799,8 +808,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		table.add(toInput, 2, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-
-		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+entry.getAmount(), 1, row++);
+		
+		if (errorMessages.get(ERROR_AMOUNT_FORMAT) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_FORMAT)), 1, row++);			
+		}
+		
+		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
@@ -1165,7 +1178,16 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2); 
 		return addWidget(table, key, input, col, row);
 	}
+
+	
+	private Table addIntField(Table table, String parameter, String key, String value, int col, int row){
+		TextInput input = getTextInput(parameter, value);
+		input.setAsIntegers(localize(LOCALIZER_PREFIX + "int_format_error", "Format-error: Expecting integer:" )+ " " + localize(key, "")); 
+		return addWidget(table, key, input, col, row);
+	}
 		
+		
+	
 
 	/**
 	 * Adds a label and a value to a table
