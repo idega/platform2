@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.11 2001/08/21 18:16:27 laddi Exp $
+ * $Id: Menu.java,v 1.12 2001/08/27 20:16:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -182,7 +182,8 @@ public class Menu extends JModuleObject{
     }
     link6.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
     //link6.setURL(getUrl(ACT6));
-    link6.addParameter(strAction,ACT6);
+    link6.maintainParameter("text_action",modinfo);
+    link6.maintainParameter("campus_action",modinfo);
     LinkTable.add(link6,1,row);
     row++;
 

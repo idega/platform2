@@ -125,12 +125,8 @@ public class TextEditorWindow extends IWAdminWindow{
     if(textHelper != null){
       LocTx = textHelper.getLocalizedText();
       TxTx = textHelper.getTxText();
-      if(LocTx == null)
-      System.err.println("Loctex is null");
-
     }
-    else
-      System.err.println("texthelper ekki null");
+
     addLocalizedTextFields(LocTx,TxTx,iLocaleId);
   }
 
@@ -146,7 +142,7 @@ public class TextEditorWindow extends IWAdminWindow{
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-    TextArea taBody = new TextArea(prmBody,65,22);
+    TextArea taBody = new TextArea(prmBody,65,19);
     if ( hasLocalizedText ) {
       if ( locText.getHeadline() != null ) {
         tiHeadline.setContent(locText.getHeadline());
@@ -155,7 +151,6 @@ public class TextEditorWindow extends IWAdminWindow{
         taBody.setContent(locText.getBody());
       }
       addHiddenInput(new HiddenInput(prmLocalizedTextId,String.valueOf(locText.getID())));
-      add(" "+locText.getID());
     }
 
     if( hasTxText )
