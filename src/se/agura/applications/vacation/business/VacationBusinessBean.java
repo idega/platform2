@@ -53,6 +53,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 	private static String PROP_SYSTEM_SMTP_MAILSERVER = "messagebox_smtp_mailserver";
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS = "messagebox_from_mailaddress";
 	private static String PROP_SALARY_DEPARTMENT_EMAIL = "salary_department_mailaddress";
+	private static String PROP_SALARY_DEPARTMENT_EMAIL_CC = "salary_department_mailaddress_cc";
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS = "no-reply@aguraintra.se";
 	
 	protected String getBundleIdentifier() {
@@ -248,7 +249,8 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		changeCaseStatus(vacation, getCaseStatusGranted().getStatus(), comment, performer, null);
 
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "laddi@idega.is");
+		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "helen.overgaard@svenskakyrkan.se");
+		String cc = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL_CC, "ylva.jacobsson@svenskakyrkan.se");
 		if (email != null) {
 			VacationType type = vacation.getVacationType();
 			User user = vacation.getUser();
@@ -257,7 +259,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 			IWTimestamp to = new IWTimestamp(vacation.getToDate());
 			
 			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale), getLocalizedString(type.getLocalizedKey(), type.getTypeName()), from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT) };
-			sendMessage(email, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
+			sendMessage(email, cc, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
 		}
 	}
 
@@ -276,7 +278,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		try {
 			Email email = getUserBusiness().getUsersMainEmail(handler);
 			if (email != null) {
-				sendMessage(email.getEmailAddress(), getLocalizedString("vacation_application.forwarded_subject", "Acceptance of a vacation application forwarded to you"), getLocalizedString("vacation_application.forward_body", "You have to handle it on 'My page' on the intranet."), null);
+				sendMessage(email.getEmailAddress(), null, getLocalizedString("vacation_application.forwarded_subject", "Acceptance of a vacation application forwarded to you"), getLocalizedString("vacation_application.forward_body", "You have to handle it on 'My page' on the intranet."), null);
 			}
 		}
 		catch (NoEmailFoundException nefe) {
@@ -304,7 +306,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-	private void sendMessage(String email, String subject, String body, File attachment) {
+	private void sendMessage(String email, String cc, String subject, String body, File attachment) {
 		String receiver = email.trim();
 		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
@@ -320,10 +322,10 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 
 		try {
 			if (attachment == null) {
-				com.idega.util.SendMail.send(fromAddress, receiver, "", "", mailServer, subject, body);
+				com.idega.util.SendMail.send(fromAddress, receiver, cc != null ? cc : "", "", mailServer, subject, body);
 			}
 			else {
-				com.idega.util.SendMail.send(fromAddress, receiver, "", "", mailServer, subject, body, attachment);
+				com.idega.util.SendMail.send(fromAddress, receiver, cc != null ? cc : "", "", mailServer, subject, body, attachment);
 			}
 		}
 		catch (javax.mail.MessagingException me) {
