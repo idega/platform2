@@ -8,7 +8,7 @@ import com.idega.presentation.ui.*;
 import com.idega.util.text.*;
 import java.sql.*;
 import java.util.Locale;
-import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.AccessController;
 
 /**
  * Title:        idegaForums<p>
@@ -149,7 +149,7 @@ public abstract class ForumPresentation extends Block {
   }
 
   public void initPermissions(IWContext iwc)throws Exception{
-    boolean edit = this.hasPermission(AccessControl.getEditPermissionString(),this,getIWContext());
+    boolean edit = this.hasPermission(AccessController._PERMISSIONKEY_EDIT,this,getIWContext());
     _permissionTo_deleteThread = edit;
     _permissionTo_createForum = edit;
   }
