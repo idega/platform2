@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.4 2003/10/30 19:50:12 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.5 2003/10/30 20:07:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,20 +30,29 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 
-/** 
- * Business logic for the Control list
+/**
+ * This business handles the logic to retrieve a control list for batch runs.
+ * It basically gets all providers for an OperationField at a time. It then gets all contracts
+ * for each provider to calulate the number of children involved. Then it gets the amount
+ * from the payment records.
+ * It does this for the current period and basically 2 months back.
  * <p>
- * $Id: ControlListBusinessBean.java,v 1.4 2003/10/30 19:50:12 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.5 2003/10/30 20:07:09 kjell Exp $
  *
  * @author Kelly
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
 
 	/**
-	 * AdHoc thingy to get some values for the control list
-	 * This will be connected to the invoice/batch run later
-	 * 
-	 * @author Kelly
+	 * Retreives an array of values such as
+	 * Provider name, 
+	 * Number of individuals preliminary this period
+	 * Number of individuals preliminary last period
+	 * Total amount paid this period 
+	 * Total amount paid last period
+	 * An empty list is returned if nothing found.
+	 *
+	 * @return array of data for the ControlList
 	 */
 	public Collection getControlListValues() {
 		
@@ -133,8 +142,6 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		return arr;
 	}
 		
-
-
 	private Collection getAllOperationFields() {
 		Collection operationFields = new ArrayList();		
 		try {
