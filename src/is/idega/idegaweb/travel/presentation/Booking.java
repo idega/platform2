@@ -296,7 +296,7 @@ public class Booking extends TravelManager {
 
 
   public Table getCalendar(ModuleInfo modinfo) {
-      String colorForAvailableDay = NatBusiness.LIGHTORANGE;
+      String colorForAvailableDay = NatBusiness.DARKBLUE ;
 
       Table table = new Table(4,5);
           table.setBorder(0);
@@ -574,7 +574,8 @@ public class Booking extends TravelManager {
   }
 
   public Table getBookingFormTable() {
-      Table table = new Table(6,7);
+//      Table table = new Table(6,7);
+      Table table = new Table();
           table.setWidth("100%");
 
       table.setColumnAlignment(1,"right");
@@ -582,88 +583,118 @@ public class Booking extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
+      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), true);
 
-      int row = 1;
-      int textInputSizeLg = 18;
-      int textInputSizeSm = 2;
+      if (pPrices.length > 0) {
+          int row = 1;
+          int textInputSizeLg = 18;
+          int textInputSizeSm = 2;
 
-      Text adultsText = (Text) theText.clone();
-          adultsText.setText(iwrb.getLocalizedString("travel.adults","adults"));
-      Text childrenText = (Text) theText.clone();
-          childrenText.setText(iwrb.getLocalizedString("travel.children","children"));
-          childrenText.addToText(" : ");
-      Text age03Text = (Text) theText.clone();
-          age03Text.setText(iwrb.getLocalizedString("travel.age_0_3","age 0-3"));
-      Text age411Text = (Text) theText.clone();
-          age411Text.setText(iwrb.getLocalizedString("travel.age_4_11","age 4-11"));
-      Text surnameText = (Text) theText.clone();
-          surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
-      Text lastnameText = (Text) theText.clone();
-          lastnameText.setText(iwrb.getLocalizedString("travel.last_name","last name"));
-      Text addressText = (Text) theText.clone();
-          addressText.setText(iwrb.getLocalizedString("travel.address","address"));
-      Text areaCodeText = (Text) theText.clone();
-          areaCodeText.setText(iwrb.getLocalizedString("travel.area_code","area code"));
-      Text emailText = (Text) theText.clone();
-          emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
-      Text telNumberText = (Text) theText.clone();
-          telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
+          Text surnameText = (Text) theText.clone();
+              surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
+          Text lastnameText = (Text) theText.clone();
+              lastnameText.setText(iwrb.getLocalizedString("travel.last_name","last name"));
+          Text addressText = (Text) theText.clone();
+              addressText.setText(iwrb.getLocalizedString("travel.address","address"));
+          Text areaCodeText = (Text) theText.clone();
+              areaCodeText.setText(iwrb.getLocalizedString("travel.area_code","area code"));
+          Text emailText = (Text) theText.clone();
+              emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
+          Text telNumberText = (Text) theText.clone();
+              telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
 
 
-      TextInput adults = new TextInput("adults");
-          adults.setSize(textInputSizeSm);
-      TextInput age03 = new TextInput("age_0_3");
-          age03.setSize(textInputSizeSm);
-      TextInput age411 = new TextInput("age_4_11");
-          age411.setSize(textInputSizeSm);
-      TextInput surname = new TextInput("surname");
-          surname.setSize(textInputSizeLg);
-      TextInput lastname = new TextInput("lastname");
-          lastname.setSize(textInputSizeLg);
-      TextInput address = new TextInput("address");
-          address.setSize(textInputSizeLg);
-      TextInput areaCode = new TextInput("area_code");
-          areaCode.setSize(textInputSizeLg);
-      TextInput email = new TextInput("e-mail");
-          email.setSize(textInputSizeLg);
-      TextInput telNumber = new TextInput("telephone_number");
-          telNumber.setSize(textInputSizeLg);
+          TextInput surname = new TextInput("surname");
+              surname.setSize(textInputSizeLg);
+          TextInput lastname = new TextInput("lastname");
+              lastname.setSize(textInputSizeLg);
+          TextInput address = new TextInput("address");
+              address.setSize(textInputSizeLg);
+          TextInput areaCode = new TextInput("area_code");
+              areaCode.setSize(textInputSizeLg);
+          TextInput email = new TextInput("e-mail");
+              email.setSize(textInputSizeLg);
+          TextInput telNumber = new TextInput("telephone_number");
+              telNumber.setSize(textInputSizeLg);
 
 
 
-      ++row;
-      table.add(adultsText,1,row);
-      table.add(adults,2,row);
-      table.add(childrenText,3,row);
-      table.add(age03Text,3,row);
-      table.add(age03,4,row);
-      table.add(age411Text,4,row);
-      table.add(age411,4,row);
+          ++row;
+          table.add(surnameText,1,row);
+          table.add(surname,2,row);
+          table.add(lastnameText,3,row);
+          table.add(lastname,4,row);
 
-      ++row;
-      table.add(surnameText,1,row);
-      table.add(surname,2,row);
-      table.add(lastnameText,3,row);
-      table.add(lastname,4,row);
+          ++row;
+          table.add(addressText,1,row);
+          table.add(address,2,row);
+          table.add(areaCodeText,3,row);
+          table.add(areaCode,4,row);
 
-      ++row;
-      table.add(addressText,1,row);
-      table.add(address,2,row);
-      table.add(areaCodeText,3,row);
-      table.add(areaCode,4,row);
+          ++row;
+          table.add(emailText,1,row);
+          table.add(email,2,row);
+          table.add(telNumberText,3,row);
+          table.add(telNumber,4,row);
 
-      ++row;
-      table.add(emailText,1,row);
-      table.add(email,2,row);
-      table.add(telNumberText,3,row);
-      table.add(telNumber,4,row);
+          Text pPriceCatNameText;
+          TextInput pPriceText;
+          TextInput pPriceMany;
+          PriceCategory category;
+
+          Text totalText = (Text) theBoldText.clone();
+            totalText.setText("T - Total");
+          TextInput TotalTextInput = new TextInput("total","0");
+            TotalTextInput.setDisabled(true);
+            TotalTextInput.setSize(textInputSizeLg);
+
+          ++row;
+          for (int i = 0; i < pPrices.length; i++) {
+              ++row;
+              category = pPrices[i].getPriceCategory();
+              int price = (int) pPrices[i].getPrice();
+              pPriceCatNameText = (Text) theText.clone();
+                pPriceCatNameText.setText(category.getName());
+
+              pPriceText = new TextInput("thePrice"+i,"0");
+                pPriceText.setDisabled(true);
+                pPriceText.setSize(8);
+
+              pPriceMany = new TextInput("priceCategory"+i ,"0");
+                pPriceMany.setSize(5);
+
+            /**
+             * @todo implementa fyrir séríslenska stafi !!!!! (og bil)
+             * @todo laga total reikninga
+             */
+                pPriceMany.setOnBlur("this.form."+pPriceText.getName()+".value=("+price+"*this.form."+pPriceMany.getName()+".value)");
+
+                String totalCalc = "this.form."+TotalTextInput.getName()+".value=(";
+                for (int j = 0; j < pPrices.length; j++) {
+                  if (j != 0) totalCalc += " + ";
+                  totalCalc += "("+((int) pPrices[j].getPrice())+"*this.form.priceCategory"+j+".value)";
+                }
+                totalCalc += ")";
+                pPriceMany.setOnBlur(totalCalc);
 
 
-      ++row;
-      ++row;
-      table.add(new SubmitButton("TEMP BÓKA"),4,row);
-      table.setAlignment(4,row,"right");
+              table.add(pPriceCatNameText, 1,row);
+              table.add(pPriceMany,2,row);
+              table.add(pPriceText, 2,row);
+          }
+          ++row;
 
+          table.add(totalText,1,row);
+          table.add(TotalTextInput,2,row);
+
+
+          ++row;
+          ++row;
+          table.add(new SubmitButton("TEMP BÓKA"),4,row);
+          table.setAlignment(4,row,"right");
+      }else {
+          table.add("T - Verðflokkar ekki settir upp");
+      }
 
 
       return table;

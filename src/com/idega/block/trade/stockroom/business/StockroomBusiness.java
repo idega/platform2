@@ -48,13 +48,14 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
 
-  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price) throws SQLException {
+  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
    ProductPrice prPrice = new ProductPrice();
      prPrice.setProductId(productId);
      prPrice.setCurrencyId(currencyId);
      prPrice.setPriceCategoryID(priceCategoryId);
      prPrice.setPriceDate(time);
      prPrice.setPrice(price);
+     prPrice.setPriceType(priceType);
    prPrice.insert();
   }
 

@@ -84,13 +84,19 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
   }
 
-
-
   public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking) throws Exception {
+      return this.createPriceCategory(supplierId, name, description,type,extraInfo, isNetbooking, -1);
+  }
+
+  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking, int parentId) throws Exception {
 
     PriceCategory cat = new PriceCategory();
 
     cat.setName(name);
+
+    if(parentId != -1) {
+      cat.setParentId(parentId);
+    }
 
     if(description != null){
       cat.setDescription(description);
@@ -481,5 +487,37 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return returner;
   }
 
+
+  public ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
+      ProductPrice[] prices = {};
+
+      try {
+        ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
+        PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
+
+        String pTable = price.getProductPriceTableName();
+        String cTable = category.getEntityName();
+
+
+        StringBuffer SQLQuery = new StringBuffer();
+          SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
+          SQLQuery.append(" WHERE ");
+          SQLQuery.append(pTable+"."+ProductPrice.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
+          SQLQuery.append(" AND ");
+          SQLQuery.append(pTable+"."+ProductPrice.getColumnNameProductId() +" = " + productId);
+          if (netBookingOnly) {
+            SQLQuery.append(" AND ");
+            SQLQuery.append(cTable+"."+PriceCategory.getColumnNameNetbookingCategory()+" = 'Y'");
+          }
+          SQLQuery.append(" ORDER BY "+category.getIDColumnName());
+
+        prices = (ProductPrice[]) (ProductPrice.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+
+      return prices;
+  }
 
 }

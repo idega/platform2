@@ -541,6 +541,8 @@ public class ServiceDesigner extends TravelManager {
           TextArea extraInfo;
           BooleanInput onlineCategory;
           TextInput priceDiscount;
+          DropdownMenu discountOfMenu;
+
 
 
           Text counter;
@@ -557,6 +559,8 @@ public class ServiceDesigner extends TravelManager {
             catExtraInfo.setText("T - exrtaInfo");
           Text priceDiscountText = (Text) theText.clone();
             priceDiscountText.setText("T - Price / Discount");
+          Text discountOfText = (Text) theText.clone();
+            discountOfText.setText("T - Discount of");
 
           table.setColor(1,row,NatBusiness.backgroundColor);
           table.mergeCells(1,row,5,row);
@@ -576,6 +580,10 @@ public class ServiceDesigner extends TravelManager {
               priceDiscount = new TextInput("price_discount");
                 priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
 
+              discountOfMenu = new DropdownMenu("discount_of");
+                  for (int j = 1; j < i; j++) {
+                    discountOfMenu.addMenuElement(j,"T-Verðliði "+j);
+                  }
 
               ++row;
               table.mergeCells(1,row,1,row+2);
@@ -591,7 +599,12 @@ public class ServiceDesigner extends TravelManager {
               table.add(catDesc,2,row);
               table.add(description,3,row);
               table.add(catType,4,row);
-              table.add(type,5,row);
+              if (i != 1) {
+                table.add(type,5,row);
+              }else {
+                table.add("T - Verð",5,row);
+                table.add(new HiddenInput("price_type",PriceCategory.PRICETYPE_PRICE),5,row);
+              }
 
               ++row;
               table.add(catExtraInfo,2,row);
@@ -602,6 +615,12 @@ public class ServiceDesigner extends TravelManager {
               ++row;
               table.add(priceDiscountText,2,row);
               table.add(priceDiscount,3,row);
+              if (i != 1) {
+                table.add(discountOfText,4,row);
+                table.add(discountOfMenu,5,row);
+              }else {
+                table.add(new HiddenInput("discount_of","0"),5,row);
+              }
 
               ++row;
               table.setColor(1,row,NatBusiness.backgroundColor);
@@ -632,23 +651,42 @@ public class ServiceDesigner extends TravelManager {
       String[] online = (String[]) modinfo.getParameterValues("price_online");
 
       String[] priceDiscount = (String[]) modinfo.getParameterValues("price_discount");
+      String[] discountOf = (String[]) modinfo.getParameterValues("discount_of");
 
       Service service = this.getService(modinfo);
       TravelStockroomBusiness sb = TravelStockroomBusiness.getNewInstance();
 
       try {
-        int priceCategoryId;
-        boolean bOnline;
-        for (int i = 0; i < name.length; i++) {
-            if (online[i].equals("Y")) {
-                bOnline = true;
-            }else {
-              bOnline = false;
-            }
-            priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline);
-            sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]));
+        if (name != null) {
+          int priceCategoryId = 0;
+          int[] categoryIds = new int[name.length];
+          int parentId;
+          boolean bOnline;
+          for (int i = 0; i < name.length; i++) {
+              if (online[i].equals("Y")) {
+                  bOnline = true;
+              }else {
+                bOnline = false;
+              }
+
+              System.err.println("TYPE = "+type[i]);
+              if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+                parentId = categoryIds[Integer.parseInt(discountOf[i])-1];
+                System.err.println("Reyni að nota parentId = "+parentId);
+                priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline, parentId);
+                System.err.println("...TOKST of fekk category = "+priceCategoryId);
+                sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
+              }else if (type[i].equals(PriceCategory.PRICETYPE_PRICE)) {
+                priceCategoryId = sb.createPriceCategory(supplier.getID(), name[i], desc[i],type[i], info[i], bOnline);
+                sb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
+                System.err.println("Setti in category = "+priceCategoryId);
+              }
+
+              categoryIds[i] = priceCategoryId;
+          }
         }
         this.removeService(modinfo);
+
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }

@@ -3,6 +3,7 @@ package com.idega.block.trade.stockroom.data;
 import com.idega.data.*;
 import com.idega.core.data.*;
 import java.sql.SQLException;
+import java.util.List;
 
 
 /**
@@ -37,6 +38,18 @@ public class Product extends GenericEntity {
     this.setNullable(getColumnNameFileId(), true);
   }
 
+  public void delete() throws SQLException {
+      List prices = EntityFinder.findAllByColumn(ProductPrice.getStaticInstance(ProductPrice.class),ProductPrice.getColumnNameProductId(), this.getID() );
+      if (prices != null) {
+          ProductPrice price;
+          for (int i = 0; i < prices.size(); i++) {
+              price = (ProductPrice) prices.get(i);
+              price.delete();
+          }
+      }
+
+      super.delete();
+  }
 
   public String getEntityName() {
     return getProductEntityName();

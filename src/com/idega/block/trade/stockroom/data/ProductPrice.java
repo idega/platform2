@@ -36,6 +36,7 @@ public class ProductPrice extends GenericEntity{
     addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
   }
 
+
   public String getEntityName(){
     return getProductPriceTableName();
   }
@@ -75,7 +76,33 @@ public class ProductPrice extends GenericEntity{
   }
 
   public float getPrice() {
-    return getFloatColumnValue(getColumnNamePrice());
+    float returner = 0;
+    try {
+      if (this.getPriceType() == PRICETYPE_PRICE) {
+        returner = getFloatColumnValue(getColumnNamePrice());
+      }else if (this.getPriceType() == PRICETYPE_DISCOUNT) {
+        PriceCategory pCat = this.getPriceCategory();
+        int parentId = pCat.getParentId();
+        ProductPrice[] parent = (ProductPrice[]) (new ProductPrice()).findAllByColumn(getColumnNamePriceCategoryId(), parentId);
+        if (parent.length > 0) {
+          returner = parent[0].getPrice() * (getFloatColumnValue(getColumnNamePrice()) / 100);
+        }else {
+          System.err.println("Cannot find Parent");
+        }
+      }
+    }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+    }
+    return returner;
+
+  }
+
+  public int getDiscount() {
+    int returner = 0;
+    if (this.getPriceType() == PRICETYPE_DISCOUNT) {
+      returner = (int) getFloatColumnValue(getColumnNamePrice());
+    }
+    return returner;
   }
 
   public void setPrice(float price) {

@@ -1,6 +1,7 @@
 package com.idega.block.trade.data;
 
 import com.idega.data.*;
+import java.sql.SQLException;
 
 
 /**
@@ -15,6 +16,10 @@ import com.idega.data.*;
 public class Currency extends GenericEntity {
 
   public Currency() {
+  }
+
+  public Currency(int id) throws SQLException{
+    super(id);
   }
 
   public void initializeAttributes() {
