@@ -343,7 +343,7 @@ public class GolfWindow extends Window {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    super.main(modinfo);
+    super._main(modinfo);
   }
 
   /*
