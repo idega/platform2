@@ -349,7 +349,7 @@ public class FinanceFinder  {
   }
 
    public  List searchAccountUsers(String first,String middle,String last){
-    //System.err.println("names: "+first+" ,"+middle+","+last);
+    System.err.println("names: "+first+" ,"+middle+","+last);
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append("ic_user u ");
     boolean isfirst = true;
@@ -379,7 +379,7 @@ public class FinanceFinder  {
         sql.append("%' ");
         isfirst = false;
       }
-      //System.err.println(sql.toString());
+      System.err.println(sql.toString());
       try {
 				return EntityFinder.getInstance().findAll(User.class,sql.toString());
         //return EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());

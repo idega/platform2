@@ -67,6 +67,7 @@ public class Accounts extends Finance {
 
 
   protected void control(IWContext iwc)throws java.rmi.RemoteException{
+  	debugParameters(iwc);
     Edit = TextFormat.getInstance();
     if(isAdmin){
       Table T = new Table();
@@ -203,7 +204,7 @@ public class Accounts extends Finance {
     boolean hasSomething = false;
     if(iwc.isParameterSet("sf_id"))
       id = iwc.getParameter("sf_id");
-    if(!"".equals(id)){
+    if(id!=null && !"".equals(id) && id.length()>0){
       accounts = FinanceFinder.getInstance().searchAccounts(id,first,middle,last,type,iCategoryId);
     }
     // Else we try to lookup by name
