@@ -44,6 +44,9 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 	protected static final String LABEL_EXECUTED_BY = "isi_acc_alw_executed_by";
 	protected static final String LABEL_SUM = "isi_acc_alw_sum";
 	
+	private String backTableStyle ="back";
+	private String borderTableStyle ="borderAll";
+	
 	public AssessmentListWindow() {
 		setHeight(600);
 		setWidth(400);
@@ -66,10 +69,22 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 	
 	private void showList(String id, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		Table backTable = new Table(3,3);
+		backTable.setStyleClass(backTableStyle);
+		backTable.setWidth(Table.HUNDRED_PERCENT);
+		backTable.setHeight(1,1,"6");
+		backTable.setWidth(1,2,"6");
+		backTable.setWidth(3,2,"6");
 		Table heading = new Table();
+		heading.setColor("#ffffff");
+		heading.setStyleClass(borderTableStyle);
+		heading.setWidth(Table.HUNDRED_PERCENT);
 		Table t = new Table();
 		heading .setCellpadding(5);
+		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
+		t.setColor("#ffffff");
+		t.setStyleClass(borderTableStyle);
 		
 		int row = 1;
 		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
@@ -123,6 +138,8 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 //					t.add(entry.get)
 					row++;
 				}
+				t.mergeCells(2,row,3,row);
+				t.add("<hr>",2,row++);
 				t.add(labelSum, 2, row);
 				t.add(Double.toString(sum), 3, row);
 			}
@@ -134,8 +151,11 @@ public class AssessmentListWindow extends StyledIWAdminWindow {
 			e.printStackTrace();
 		}
 		
-		add(heading);
-		add(t);
+		backTable.add(heading,2,2);
+		backTable.add(t,2,3);
+		add(backTable);
+//		add(heading);
+//		add(t);
 	}
 	
 	/* (non-Javadoc)
