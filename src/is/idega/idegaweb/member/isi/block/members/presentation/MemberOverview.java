@@ -238,8 +238,8 @@ public class MemberOverview extends Block {
 	
 	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers, Link link) {
 		int length = headers.length;
-		if(length<3) {
-			table.mergeCells(1, row, 4 - length, row);
+		if(length<3 && length>0) {
+			table.mergeCells(2, row, 5 - length, row);
 		}
 		for(int i=0; i<length; i++) {
 			if(headers[i]!=null) {
