@@ -309,7 +309,7 @@ public class ContentViewer extends PresentationObjectContainer{
       for(int i =0; index < end && index <= len;i++){
         C = (Content)content.elementAt((index)-1);
         for(int j = 0; j < cols;j++){
-          T.add(getBodyText((C.getContent(j)).toString()),j+2,i+2);
+          T.add(getBodyObject((C.getContent(j))),j+2,i+2);
         }
         T.add(getBodyText(String.valueOf(index)),1,i+2);
         index++;
@@ -320,7 +320,7 @@ public class ContentViewer extends PresentationObjectContainer{
       for (int i = 0; i < clen; i++) {
         C = (Content)content.elementAt(i);
         for(int j = 0; j < cols;j++){
-          T.add(getBodyText((C.getContent(j)).toString()),j+2,i+2);
+          T.add(getBodyObject((C.getContent(j))),j+2,i+2);
         }
         T.add(getBodyText(String.valueOf(i+1)),1,i+2);
       }
@@ -329,6 +329,13 @@ public class ContentViewer extends PresentationObjectContainer{
 
     return T;
   }
+
+	private PresentationObject getBodyObject(Object Obj){
+	  if(Obj instanceof PresentationObject)
+			return (PresentationObject)Obj;
+		else
+			return getBodyText(Obj.toString());
+	}
 
   private Text getHeaderText(String text){
     Text T = new Text(text,true,false,false);
