@@ -5,7 +5,7 @@ import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.SchoolType;
 import com.idega.core.data.Address;
 import com.idega.core.data.PostalCode;
-import com.idega.presentation.IWContext;
+import com.idega.user.Converter;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
@@ -14,9 +14,16 @@ import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 
 /**
@@ -30,21 +37,33 @@ import javax.ejb.EJBException;
 
 public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness {
 
+	public static final String PROPERTIES_CHILD_CARE = "child_care";
+	public static final String PROPERTY_CHECK_FEE = "check_fee";
+	public static final String PROPERTY_CHECK_AMOUNT = "check_amount";
+
+	public static final int METHOD_USER = 1;
+	public static final int METHOD_SYSTEM = 2;
+	
 	public CheckBusinessBean() {}
 
-	private CheckHome getCheckHome() throws java.rmi.RemoteException {
+	private CheckHome getCheckHome() throws RemoteException {
 		return (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
 	}
 
-	public Check getCheck(int checkId) throws Exception {
-		return getCheckHome().findByPrimaryKey(new Integer(checkId));
+	public Check getCheck(int checkId) throws RemoteException {
+		try {
+			return getCheckHome().findByPrimaryKey(new Integer(checkId));
+		}
+		catch (FinderException fe) {
+			return null;
+		}
 	}
 
-	public Collection findChecks() throws Exception {
+	public Collection findChecks() throws FinderException,RemoteException {
 		return getCheckHome().findChecks();
 	}
 
-	public Collection findUnhandledChecks() throws Exception {
+	public Collection findUnhandledChecks() throws FinderException,RemoteException  {
 		return getCheckHome().findAllCasesByStatus(getCaseStatusOpen());
 	}
 
@@ -57,7 +76,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return ( rule1 && rule2 && rule3 && rule4 ) || rule5;
 	}
 
-	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws Exception {
+	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws CreateException,RemoteException {
 		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
 		Check check = home.create();
 		check.setChildCareType(childCareType);
@@ -82,9 +101,24 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.store();
 	}
 
-	public void sendMessageToCitizen(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
+	public Check createCheck(int childId, int method, int amount, int checkFee, User user) throws CreateException,RemoteException {
+		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
+		Check check = home.create();
+		check.setChildId(childId);
+		check.setMethod(method);
+		check.setAmount(amount);
+		check.setCheckFee(checkFee);
+		if ( user != null )
+			check.setOwner(user);
+		check.setCaseStatus(this.getCaseStatusOpen());
+
+		check.store();
+		return check;
+	}
+
+	public void sendMessageToCitizen(Check check, int userID, String subject, String body) throws Exception {
 		try {
-			Message message = getMessageBusiness(iwc).createUserMessage(userID, subject, body);
+			Message message = getMessageBusiness().createUserMessage(userID, subject, body);
 			message.setParentCase(check);
 			message.store();
 		} catch (Exception e) {
@@ -92,9 +126,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToArchive(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
+	public void sendMessageToArchive(Check check, int userID, String subject, String body) throws Exception {
 		try {
-			Message message = getMessageBusiness(iwc).createPrintArchivationMessage(userID, subject, body);
+			Message message = getMessageBusiness().createPrintArchivationMessage(userID, subject, body);
 			message.setParentCase(check);
 			message.store();
 		} catch (Exception e) {
@@ -102,9 +136,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToPrinter(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
+	public void sendMessageToPrinter(Check check, int userID, String subject, String body) throws Exception {
 		try {
-			Message message = getMessageBusiness(iwc).createPrintedLetterMessage(userID, subject, body);
+			Message message = getMessageBusiness().createPrintedLetterMessage(userID, subject, body);
 			message.setParentCase(check);
 			message.store();
 		} catch (Exception e) {
@@ -120,8 +154,12 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return userID;
 	}
 	
-	public Check saveCheckRules(int checkId, String[] selectedRules, String notes, int managerId) throws Exception {
-		Check check = getCheck(checkId);
+	public Check saveCheckRules(int checkID, String[] selectedRules, String notes, int managerId) throws Exception {
+		Check check = getCheck(checkID);
+		return saveCheckRules(check,selectedRules,notes,managerId);
+	}
+	
+	public Check saveCheckRules(Check check, String[] selectedRules, String notes, int managerId) throws Exception {
 		boolean rule1 = false,rule2 = false,rule3 = false,rule4 = false,rule5 = false;
 		check.setManagerId(managerId);
 		if ( selectedRules != null ) {
@@ -156,56 +194,72 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return check;
 	}
 
-	public SchoolType getSchoolType(IWContext iwc, int schoolTypeId) throws Exception {
+	public SchoolType getSchoolType(int schoolTypeId) throws Exception {
 		try {
-			SchoolTypeBusiness schoolTypeBusiness = (SchoolTypeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolTypeBusiness.class);
+			SchoolTypeBusiness schoolTypeBusiness = (SchoolTypeBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolTypeBusiness.class);
 			return schoolTypeBusiness.getSchoolType(new Integer(schoolTypeId));
 		} catch (EJBException e) {
 			return null;
 		}
 	}
 
-	public User getUserById(IWContext iwc, int userId) throws Exception {
+	public User getUserById(int userId) throws Exception {
 		try {
-			return getUserBusiness(iwc).getUser(userId);
+			return getUserBusiness().getUser(userId);
 		} catch (EJBException e) {
+			e.printStackTrace(System.err);
 			return null;
 		}
 	}
 
-	public User getUserByPersonalId(IWContext iwc, String personalID) throws Exception {
-		return getUserBusiness(iwc).getUserHome().findByPersonalID(personalID);
+	public User getUserByPersonalId(String personalID) throws Exception {
+		return getUserBusiness().getUserHome().findByPersonalID(personalID);
 	}
 
-	public Address getUserAddress(IWContext iwc, User user) {
+	public Address getUserAddress(User user) {
 		try {
-			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue());
+			return getUserBusiness().getUserAddress1(((Integer) user.getPrimaryKey()).intValue());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public PostalCode getUserPostalCode(IWContext iwc, User user) {
+	public PostalCode getUserPostalCode(User user) {
 		try {
-			return getUserBusiness(iwc).getUserAddress1(((Integer) user.getPrimaryKey()).intValue()).getPostalCode();
+			return getUserBusiness().getUserAddress1(((Integer) user.getPrimaryKey()).intValue()).getPostalCode();
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
+	public User getParent(User child) throws RemoteException{
+		try {
+			Collection custodians = getMemberFamilyLogic().getCustodiansFor(child);
+			Iterator iter = custodians.iterator();
+			while (iter.hasNext()) {
+				return ((User) iter.next());
+			}
+			return null;
+		}
+		catch (NoCustodianFound ncf) {
+			return null;
+		}
+	}
+	
 	public void commit(Check check) throws Exception {
 		check.store();
 	}
 
-	public void approveCheck(IWContext iwc,Check check,String subject,String body) throws Exception {
-		sendMessageToCitizen(iwc,check,getUserID(check),subject,body);
-		sendMessageToArchive(iwc,check,getUserID(check),subject,body);
-		sendMessageToPrinter(iwc,check,getUserID(check),subject,body);
+	public void approveCheck(Check check,String subject,String body) throws Exception {
+		sendMessageToCitizen(check,getUserID(check),subject,body);
+		sendMessageToArchive(check,getUserID(check),subject,body);
+		sendMessageToPrinter(check,getUserID(check),subject,body);
 		check.setCaseStatus(this.getCaseStatusGranted());
 		commit(check);
 	}
 
-	public void retrialCheck(IWContext iwc,Check check,String subject,String body) throws Exception {
+	public void retrialCheck(Check check,String subject,String body) throws Exception {
+		sendMessageToCitizen(check,getUserID(check),subject,body);
 		check.setCaseStatus(this.getCaseStatusReview());
 		commit(check);
 	}
@@ -215,11 +269,47 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		commit(check);
 	}
 
-	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
-		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+	private UserBusiness getUserBusiness() throws RemoteException {
+		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 	}
 
-	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
-		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
+	private MessageBusiness getMessageBusiness() throws RemoteException {
+		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MessageBusiness.class);
+	}
+	
+	private MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+	}
+	
+	public int getCheckFee() {
+		try {
+			return new Integer(getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE).getProperty(PROPERTY_CHECK_FEE)).intValue();
+		}
+		catch (NullPointerException npe) {
+			return -1;
+		}
+		catch (NumberFormatException nfe) {
+			return -1;
+		}
+	}
+	
+	public int getCheckAmount() {
+		try {
+			return new Integer(getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE).getProperty(PROPERTY_CHECK_AMOUNT)).intValue();
+		}
+		catch (NullPointerException npe) {
+			return -1;
+		}
+		catch (NumberFormatException nfe) {
+			return -1;
+		}
+	}
+	
+	public int getMethodUser() {
+		return METHOD_USER;
+	}
+	
+	public int getMethodSystem() {
+		return METHOD_SYSTEM;	
 	}
 }
