@@ -303,12 +303,7 @@ public class UserSearcher extends Block {
 			}
 			else
 				searchTable.add(search, 1, row + 1);
-			if (showResetButton) {
-				SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
-				reset.setStyleClass(buttonStyleName);
-				reset.setOnClick(clearAction + "return false;");
-				searchTable.add(reset, col++, row + 1);
-			}
+			
 			if (addedButtons != null && !addedButtons.isEmpty()) {
 				for (Iterator iter = addedButtons.iterator(); iter.hasNext();) {
 					PresentationObject element = (PresentationObject) iter.next();
@@ -317,6 +312,12 @@ public class UserSearcher extends Block {
 					else
 						searchTable.add(element, 1, row + 1);
 				}
+			}
+			if (showResetButton) {
+				SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
+				reset.setStyleClass(buttonStyleName);
+				reset.setOnClick(clearAction + "return false;");
+				searchTable.add(reset, col++, row + 1);
 			}
 		}
 		return searchTable;
