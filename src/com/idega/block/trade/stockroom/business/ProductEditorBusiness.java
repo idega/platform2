@@ -182,6 +182,8 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	  	Iterator iter = cats.iterator();
 	  	while ( iter.hasNext() ) {
 	  	  icCat = (Category) iter.next();	
+	      catSel.addMenuElement(icCat.getID(),icCat.getName());
+	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
 		  System.err.println(icCat.getID()+": "+icCat.getName());
 	  	}
 	    /*for (int i = 0; i < rCats.size(); i++) {
