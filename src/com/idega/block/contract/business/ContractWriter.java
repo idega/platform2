@@ -48,6 +48,15 @@ public class ContractWriter
 	public final static String contract_ends = "Valid to";
 	public final static String today = "Today";
 	
+	public static int writePDF(int contractID, int iCategoryId, String fileName){
+		return writePDF(new int[]{contractID},iCategoryId,fileName);
+	}
+	
+	public static int writePDF(int[] ids, int iCategoryId, String fileName){
+		return writePDF(ids,iCategoryId,fileName,new Font(Font.HELVETICA),new Font(Font.NORMAL),new Font(Font.COURIER),new Font(Font.NORMAL));
+	}
+	
+	
 	public static int writePDF(int[] ids, int iCategoryId, String fileName, Font titleFont, Font paragraphFont, Font tagFont, Font textFont)
 	{
 		StringBuffer dbContractText = new StringBuffer(); //Stored in the database and used for signing
@@ -174,7 +183,9 @@ public class ContractWriter
 		}
 		return id;
 	}
-	
+	public static void writeText(int id, int iCategoryId){
+		writeText(new int[]{id}, iCategoryId);
+	}
 	
 	public static void writeText(int[] ids, int iCategoryId)
 	{
