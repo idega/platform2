@@ -1,5 +1,8 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -52,10 +55,12 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 
@@ -120,10 +125,58 @@ public class InvoiceChildcareThread extends BillingThread{
 	}
 	
 	/**
+	 * Sets the invoice receivere acccording to C&P rules
+	 * @param contract
+	 * @return User InvoiceReceiver
+	 */
+	private User getInvoiceReceiver(ChildCareContract contract){
+		//First option is to set it to the invoice receiver according to the contract
+		User invoiceReceiver = contract.getInvoiceReceiver();
+		User child = contract.getChild();
+		
+		//If non is set in the contract, start looking for parents at the same address
+		//Select the female if several are found
+		if(invoiceReceiver == null){
+			try {
+				UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+				MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+				Collection custodians;		//Collection parents only hold the biological parents
+				custodians = familyLogic.getCustodiansFor(child);
+				Iterator custIter = custodians.iterator();
+				while(custIter.hasNext()){
+					User adult = (User)custIter.next();
+					Address childAddress = userBus.getUsersMainAddress(child);
+					Address custodianAddress = userBus.getUsersMainAddress(adult);
+					if(childAddress.getPostalAddress().equals(custodianAddress.getPostalAddress()) &&
+							childAddress.getCity().equals(custodianAddress.getCity()) &&
+							childAddress.getStreetAddress().equals(custodianAddress.getStreetAddress())){
+						if(invoiceReceiver == null || adult.getGenderID() == 1){
+							invoiceReceiver = adult;
+						}
+					}
+				}
+				if(invoiceReceiver!=null)
+				contract.setInvoiceReciver(invoiceReceiver);
+				contract.store();
+			} catch (NoCustodianFound e1) {
+				//Poor child
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		//If no invoice receiver is set in contract and no fitting custodian found,  
+		//just set the owner of the contract and create a warning
+		if(invoiceReceiver == null){
+			invoiceReceiver = contract.getApplication().getOwner();
+			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound");
+		}
+		return invoiceReceiver;
+	}
+	
+	/**
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the childcare contracts
 	 */
-
 	private void contracts() throws NotEmptyException{
 		//Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
@@ -153,8 +206,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
 				errorRelated.append("Contract "+contract.getContractID());
 				// **Fetch invoice receiver
-				custodian = contract.getApplication().getOwner();
-				errorRelated.append("Custodian "+custodian.getName());
+//				custodian = contract.getApplication().getOwner();
+				custodian = getInvoiceReceiver(contract);
+				errorRelated.append("Invoice receiver "+custodian.getName());
 				//**Fetch the reference at the provider
 				school = contract.getApplication().getProvider();
 				errorRelated.append("School "+school.getName(),1);
@@ -169,6 +223,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//Fill in all the field available at this times
 						invoiceHeader.setSchoolCategory(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
+						//Custodian is not correct label. Should be invoice receiver
 						invoiceHeader.setCustodianId(((Integer)custodian.getPrimaryKey()).intValue());
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
