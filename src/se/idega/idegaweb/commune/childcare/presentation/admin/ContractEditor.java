@@ -5,9 +5,11 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+
 import se.idega.idegaweb.commune.care.business.ProviderSession;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
@@ -16,7 +18,6 @@ import se.idega.idegaweb.commune.care.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
-import se.idega.idegaweb.commune.school.presentation.CentralPlacementSchoolGroupEditor;
 
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
@@ -408,8 +409,10 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(schoolClasses, 2, row);
 
 			row++;
-			GenericButton createGroup = getButton(new GenericButton("", localize("child_care.create_group", "Create group")));
-			createGroup.setWindowToOpen(CentralPlacementSchoolGroupEditor.class);
+			GenericButton createGroup = new SubmitButton(getResourceBundle().getLocalizedImageButton("child_care.create_group", "Create group"));
+			// TODO get some school class creator window
+			//createGroup.setWindowToOpen(CentralPlacementSchoolGroupEditor.class);
+			createGroup.setDisabled(true);
 			table.add(createGroup, 2, row);
 
 			Link back = new Link(getResourceBundle().getLocalizedImageButton("child_care.cancel", "Cancel"));
