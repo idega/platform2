@@ -506,14 +506,14 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 
 	public Collection ejbFindAllInHomeCommuneByCategory(SchoolCategory schoolCategory) throws IDOLookupException, EJBException, FinderException, CreateException {
-		int homeCommunePK = ((Integer)((CommuneHome) IDOLookup.create(Commune.class)).findDefaultCommune().getPrimaryKey()).intValue();
+		int homeCommunePK = ((Integer)((CommuneHome) IDOLookup.getHome(Commune.class)).findDefaultCommune().getPrimaryKey()).intValue();
 		StringBuffer sql = new StringBuffer("select s.* ");
-		sql.append(" sch_school s, sch_school_type t, sch_school_sch_school_type m, sch_school_category c ");
+		sql.append(" from sch_school s, sch_school_type t, sch_school_sch_school_type m, sch_school_category c ");
 		sql.append(" where s.sch_school_id = m.sch_school_id ");
 		sql.append(" and m.sch_school_type_id = t.sch_school_type_id");
-		sql.append(" and t.school_category = c.sch_school_category_id");
-		sql.append(" and c.sch_school_category_id = "+schoolCategory.getPrimaryKey().toString());
-		sql.append("and s.commune = "+homeCommunePK);
+		sql.append(" and t.school_category = c.category");
+		sql.append(" and c.category = '"+schoolCategory.getPrimaryKey().toString()+"'");
+		sql.append(" and s.commune = "+homeCommunePK);
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 

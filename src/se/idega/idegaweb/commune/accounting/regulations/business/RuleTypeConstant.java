@@ -5,10 +5,10 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
  *
  */
 public class RuleTypeConstant {
-	public static final String DERIVED ="ruleType.derived";
-	public static final String MANUAL ="ruleType.manual";
-	public static final String VAT ="ruleType.vat";
-	public static final String FORMULA ="ruleType.formula";
+	public static final String DERIVED ="cacc_condition_type.derived";
+	public static final String MANUAL ="cacc_condition_type.manual";
+	public static final String VAT ="cacc_condition_type.vat";
+	public static final String FORMULA ="cacc_condition_type.formula";
 
 	public final static String CONDITION_ID_OPERATION = "1";
 	public final static String CONDITION_ID_RESOURCE = "2";
