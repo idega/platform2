@@ -27,10 +27,16 @@ import is.idega.idegaweb.travel.data.*;
 
 public class AddressDesigner extends TravelManager {
 
-  private String parameterHotelPickupPlaceId = "parameterHotelPickupPlaceId";
-  private String parameterSaveHotelPickupPlaceInfo = "parameterSaveHotelPickupPlaceInfo";
+  private String PARAMETER_PICKUP_PLACE_ID = "prm_pp_id";
+  private String PARAMETER_PICKUP_PLACE_NAME = "pp_nm";
+  private String PARAMETER_PICKUP_PLACE_TO_DELETE = "pp_t_dlt_";
+  private String PARAMETER_PICKUP_PLACE_TO_ADD_TO_ALL = "pp_ata_";
+  private String PARAMETER_ADDRESS_TYPE = "prm_adr_ty";
+  private String PARAMETER_SAVE_PICKUP_PLACE_INFO = "prm_sv_pp_inf";
+  
 
-  private String sAction = "actionForHPPD";
+	private int textInputWidth = 60;
+  private String ACTION = "act_ad";
 
   private Supplier supplier = null;
   private IWResourceBundle iwrb = null;
@@ -45,17 +51,18 @@ public class AddressDesigner extends TravelManager {
   }
 
   private void handleInsert(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
-    String action = iwc.getParameter(sAction);
+    String action = iwc.getParameter(ACTION);
     if (action != null) {
-      if (action.equals(parameterSaveHotelPickupPlaceInfo)) {
+      if (action.equals(PARAMETER_SAVE_PICKUP_PLACE_INFO)) {
         saveHotelPickupPlaces(iwc, supplier);
       }
     }
   }
 
   private boolean saveHotelPickupPlaces(IWContext iwc, Supplier supplier) throws RemoteException, FinderException{
-    String[] hppIds = iwc.getParameterValues("parameterHotelPickupPlaceId");
-    String[] hppNames = iwc.getParameterValues("hotel_pickup_place_name");
+    String[] hppIds = iwc.getParameterValues(PARAMETER_PICKUP_PLACE_ID);
+    String[] hppNames = iwc.getParameterValues(PARAMETER_PICKUP_PLACE_NAME);
+    String[] type = iwc.getParameterValues(PARAMETER_ADDRESS_TYPE);
 
     boolean returner = false;
     String del;
@@ -76,15 +83,16 @@ public class AddressDesigner extends TravelManager {
             PickupPlace hpp = ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).create();
               hpp.setName(hppNames[i]);
               hpp.setAddress(hotelPickupAddress);
-              hpp.setAsPickup();
+              hpp.setType(Integer.parseInt(type[i]));
+              //hpp.setAsPickup();
               hpp.store();
             hpp.addToSupplier(supplier);
 //            hpp.addTo(supplier);
 
           }
         }else {
-          del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
-          add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
+          del = iwc.getParameter(PARAMETER_PICKUP_PLACE_TO_DELETE+hppIds[i]);
+          add = iwc.getParameter(PARAMETER_PICKUP_PLACE_TO_ADD_TO_ALL+hppIds[i]);
 
           PickupPlace hpp = ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(hppIds[i]));
           Address address = hpp.getAddress();
@@ -107,8 +115,6 @@ public class AddressDesigner extends TravelManager {
               }
             }
           }else {
-            System.err.println("hpp_id = "+hpp.getPrimaryKey().toString());
-            System.err.println("hppids[i] = "+hppIds[i]);
             hpp.removeFromSupplier(supplier);
 //            hpp.removeFrom(supplier);
           }
@@ -140,7 +146,6 @@ public class AddressDesigner extends TravelManager {
 	
   public Form getAddressDesignerForm(IWContext iwc, int supplierId) throws RemoteException, FinderException, SQLException{
     int extraFields = 3;
-    int textInputWidth = 60;
 
     Supplier supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
 
@@ -151,12 +156,10 @@ public class AddressDesigner extends TravelManager {
       table.setColor(TravelManager.WHITE);
       table.setCellspacing(1);
       table.setAlignment("center");
-      PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
-      Collection coll = hppHome.findHotelPickupPlaces(supplier);
-      PickupPlace[] places = (PickupPlace[]) coll.toArray(new PickupPlace[]{});
+      PickupPlaceHome pPlaceHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
 
     Text header = (Text) theText.clone();
-      header.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
+      header.setText(iwrb.getLocalizedString("travel.pickup","pick-up"));
       header.setBold();
     Text deleteTxt = (Text) theText.clone();
       deleteTxt.setText(iwrb.getLocalizedString("travel.delete","Delete"));
@@ -165,71 +168,96 @@ public class AddressDesigner extends TravelManager {
       addTxt.setText(iwrb.getLocalizedString("travel.add_to_all","Add to all"));
       addTxt.setBold();
 
-    Text nrTxt;
-    TextInput nameInp;
-    CheckBox delBox;
-    CheckBox addToAll;
-
     table.setWidth(1,"15");
     table.setWidth(3,"2");
 //    table.setWidth(4,"2");
 
     int row = 1;
+		int counter = 0;
+		int tempCounter = 0;
+
+
+		/** Pickup ...*/ 
     table.add(header,2,row);
     table.add(deleteTxt,3,row);
     table.add(addTxt,4,row);
     table.setRowColor(row,super.backgroundColor);
 
+		Collection coll = pPlaceHome.findHotelPickupPlaces(supplier);
+    tempCounter = row;
+		row = insertPlaces(table, pPlaceHome, coll, row);
+		counter = row - tempCounter;
 
-    int counter = 0;
+	  Text nrTxt;
+	  TextInput nameInp;
+	  CheckBox delBox;
+	  CheckBox addToAll;
+	  HiddenInput hidden;
+		
+	  for (int i = 0; i < extraFields; i++) {
+		  ++row;
+		  ++counter;
+		  nrTxt = (Text) super.smallText.clone();
+			nrTxt.setFontColor(super.BLACK);
+			nrTxt.setText(Integer.toString(counter));
+	
+		  nameInp = new TextInput(PARAMETER_PICKUP_PLACE_NAME);
+			nameInp.setSize(textInputWidth);
+			
+				  hidden = new HiddenInput(PARAMETER_ADDRESS_TYPE, Integer.toString(PickupPlaceBMPBean.TYPE_PICKUP));
+	
+		  table.setRowColor(row,super.GRAY);
+	
+		  table.add(new HiddenInput(this.PARAMETER_PICKUP_PLACE_ID, "-1"),1,row);
+		  table.add(nrTxt,1,row);
+		  table.add(Text.NON_BREAKING_SPACE,2,row);
+		  table.add(nameInp,2,row);
+		  table.add(Text.NON_BREAKING_SPACE,2,row);
+		  table.add(hidden, 2, row);
+	  }
+		/** ... Pickup*/ 
 
-    for (int i = 0; i < places.length; i++) {
-        ++row;
-        ++counter;
-        nrTxt = (Text) super.smallText.clone();
-          nrTxt.setFontColor(super.BLACK);
-          nrTxt.setText(Integer.toString(counter));
+		
+		/** Dropoff ...*/
+		++row;
+		header = (Text) header.clone(); 
+		header.setText(iwrb.getLocalizedString("travel.dropoff","Drop-off"));
+		table.add(header,2,row);
+		table.add(deleteTxt,3,row);
+		table.add(addTxt,4,row);
+		table.setRowColor(row,super.backgroundColor);
 
-        nameInp = new TextInput("hotel_pickup_place_name");
-          nameInp.setContent(places[i].getAddress().getStreetAddress());
-          nameInp.setSize(textInputWidth);
+		coll = pPlaceHome.findDropoffPlaces(supplier);
+		tempCounter = row;
+		row = insertPlaces(table, pPlaceHome, coll, row);
+		counter = row - tempCounter;
+		
 
-        delBox = new CheckBox("hotel_pickup_place_to_delete_"+places[i].getPrimaryKey().toString());
-        addToAll = new CheckBox("hotel_pickup_place_add_to_all_"+places[i].getPrimaryKey().toString());
-
-        table.setRowColor(row,super.GRAY);
-
-        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, places[i].getPrimaryKey().toString()),1,row);
-        table.add(nrTxt,1,row);
-        table.add(Text.NON_BREAKING_SPACE,2,row);
-        table.add(nameInp,2,row);
-        table.add(Text.NON_BREAKING_SPACE,2,row);
-        table.add(delBox,3,row);
-        table.add(addToAll,4,row);
-    }
-    for (int i = 0; i < extraFields; i++) {
-        ++row;
-        ++counter;
-        nrTxt = (Text) super.smallText.clone();
-          nrTxt.setFontColor(super.BLACK);
-          nrTxt.setText(Integer.toString(counter));
-
-        nameInp = new TextInput("hotel_pickup_place_name");
-          nameInp.setSize(textInputWidth);
-
-        table.setRowColor(row,super.GRAY);
-
-        table.add(new HiddenInput(this.parameterHotelPickupPlaceId, "-1"),1,row);
-        table.add(nrTxt,1,row);
-        table.add(Text.NON_BREAKING_SPACE,2,row);
-        table.add(nameInp,2,row);
-        table.add(Text.NON_BREAKING_SPACE,2,row);
-    }
-
+		for (int i = 0; i < extraFields; i++) {
+			++row;
+			++counter;
+			nrTxt = (Text) super.smallText.clone();
+			  nrTxt.setFontColor(super.BLACK);
+			  nrTxt.setText(Integer.toString(counter));
+	
+			nameInp = new TextInput(PARAMETER_PICKUP_PLACE_NAME);
+			  nameInp.setSize(textInputWidth);
+			hidden = new HiddenInput(PARAMETER_ADDRESS_TYPE, Integer.toString(PickupPlaceBMPBean.TYPE_DROPOFF));
+	
+			table.setRowColor(row,super.GRAY);
+	
+			table.add(new HiddenInput(this.PARAMETER_PICKUP_PLACE_ID, "-1"),1,row);
+			table.add(nrTxt,1,row);
+			table.add(Text.NON_BREAKING_SPACE,2,row);
+			table.add(nameInp,2,row);
+			table.add(Text.NON_BREAKING_SPACE,2,row);
+			table.add(hidden, 2, row);
+		}
+		/** ... Dropoff */
 
     ++row;
     table.setRowColor(row,super.GRAY);
-    SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterSaveHotelPickupPlaceInfo);
+    SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.ACTION, this.PARAMETER_SAVE_PICKUP_PLACE_INFO);
     table.mergeCells(1,row,4,row);
     if (super.isInPermissionGroup) {
       table.add(lSave,1,row);
@@ -241,6 +269,49 @@ public class AddressDesigner extends TravelManager {
 
     return form;
   }
+
+private int insertPlaces(Table table,	PickupPlaceHome pPlaceHome,	Collection coll,	int row)	throws FinderException {
+	if (coll != null && !coll.isEmpty()) {
+		Iterator iter = coll.iterator();
+		PickupPlace pPlace;
+		Text nrTxt;
+		TextInput nameInp;
+		CheckBox delBox;
+		CheckBox addToAll;
+		HiddenInput hidden;
+		int counter = 0;
+			
+		while (iter.hasNext()) {
+			pPlace = pPlaceHome.findByPrimaryKey(iter.next());
+			++row;
+			++counter;
+			nrTxt = (Text) super.smallText.clone();
+			  nrTxt.setFontColor(super.BLACK);
+			  nrTxt.setText(Integer.toString(counter));
+		
+			nameInp = new TextInput(PARAMETER_PICKUP_PLACE_NAME);
+			  nameInp.setContent(pPlace.getAddress().getStreetAddress());
+			  nameInp.setSize(textInputWidth);
+		
+			delBox = new CheckBox(PARAMETER_PICKUP_PLACE_TO_DELETE+pPlace.getPrimaryKey().toString());
+			addToAll = new CheckBox(PARAMETER_PICKUP_PLACE_TO_ADD_TO_ALL+pPlace.getPrimaryKey().toString());
+		        
+			hidden = new HiddenInput(PARAMETER_ADDRESS_TYPE, Integer.toString(pPlace.getType()));
+		
+			table.setRowColor(row,super.GRAY);
+		
+			table.add(new HiddenInput(this.PARAMETER_PICKUP_PLACE_ID, pPlace.getPrimaryKey().toString()),1,row);
+			table.add(nrTxt,1,row);
+			table.add(Text.NON_BREAKING_SPACE,2,row);
+			table.add(nameInp,2,row);
+			table.add(Text.NON_BREAKING_SPACE,2,row);
+			table.add(delBox,3,row);
+			table.add(addToAll,4,row);
+			table.add(hidden, 4, row);
+		}
+	}
+	return row;
+}
 
   private Service getService(Product product) throws RemoteException, FinderException{
     ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
