@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.42 2003/10/13 18:25:18 roar Exp $
+ * $Id: MessageBusinessBean.java,v 1.43 2003/10/15 09:29:55 roar Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -185,6 +185,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(null, user, subject, body, sendLetter);
 	}
 	
+	public Message createUserMessage(User user, String subject, Group handler, String body, boolean sendLetter) {
+		return createUserMessage(null, user, null, handler, subject, body, sendLetter);
+	}	
+	
 	public Message createUserMessage(User receiver, String subject, String body, User sender, boolean sendLetter) {
 		return createUserMessage(null, receiver, sender, subject, body, sendLetter);
 	}
@@ -194,6 +198,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter) {
+		return createUserMessage(parentCase, receiver, sender, null, subject, body, sendLetter);	
+	}
+	
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter) {
 		try {
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
@@ -201,7 +209,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			boolean canSendEmail = getIfCanSendEmail();
 			
 			if (sendToBox) {
-				message = createMessage(getTypeUserMessage(), receiver, sender, subject, body, parentCase);
+				message = createMessage(getTypeUserMessage(), receiver, sender, handler, subject, body, parentCase);
 			}
 			if (sendMail) {
 				boolean sendEmail = false;
@@ -477,21 +485,30 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	private Message createMessage(String messageType, User user, String subject, String body, Case parentCase) throws CreateException, RemoteException {
 		return createMessage(messageType, user, null, subject, body, parentCase);
 	}
-	
+
 	private Message createMessage(String messageType, User receiver, User sender, String subject, String body, Case parentCase) throws CreateException, RemoteException {
+		return createMessage(messageType, receiver, sender, null, subject, body, parentCase);
+	}
+	
+	private Message createMessage(String messageType, User receiver, User sender, Group handler, String subject, String body, Case parentCase) throws CreateException, RemoteException {
 		MessageHome home = this.getMessageHome(messageType);
 		Message message = home.create();
 		message.setOwner(receiver);
-		if (sender != null)
+		if (sender != null){
 			message.setSender(sender);
+		}
+		if (handler != null){
+			message.setHandler(handler);
+		}
 		message.setSubject(subject);
 		message.setBody(body);
-		if (parentCase != null)
+		if (parentCase != null){
 			message.setParentCase(parentCase);
+		}
+		
 		try {
 			message.store();
-		}
-		catch (IDOStoreException idos) {
+		} catch (IDOStoreException idos) {
 			throw new IDOCreateException(idos);
 		}
 		return message;
