@@ -132,7 +132,8 @@ public class WorkReportWindow extends IWAdminWindow {
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
 			}
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
-				selector = new WorkReportSelector();
+				WorkReportMultiEditor editor = new WorkReportMultiEditor();
+				table.add(editor,2,1);	//not a selector
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
@@ -287,7 +288,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		//B.11
 		LinkContainer closeReport = new LinkContainer();
 		closeReport.add(formatText(iwrb.getLocalizedString("workreportwindow.close_report", "Close report"), true));
-		reportsOverview.addParameter(ACTION, ACTION_CLOSE_REPORT);
+		closeReport.addParameter(ACTION, ACTION_CLOSE_REPORT);
 
 		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics", "Statistics"));
@@ -318,13 +319,13 @@ public class WorkReportWindow extends IWAdminWindow {
 			menu.add(editList, 1, 7);
 
 			//insert ugly hax
-			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
+			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(reportsOverview, 1, 8);
 			}
 
 			menu.add(sendReport, 1, 9);
 
-			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
+			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(closeReport, 1, 10);
 			}
 

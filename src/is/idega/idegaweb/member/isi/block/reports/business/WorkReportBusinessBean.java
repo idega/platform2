@@ -140,7 +140,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
 					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 					report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
-
+					report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
 					report.setGroupType(club.getGroupType());
 
 					//tegund felags?
@@ -1528,6 +1528,23 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		catch (FinderException e) {
 			//no group available return empty list
+			return ListUtil.getEmptyList();
+		}
+
+	}
+	
+
+	/**
+	 * Returns a collection of WorkReports or an empty List
+	 * @param year , the year of the reports
+	 * @return A collection of WorkReports or an empty List
+	 */
+	public Collection getAllWorkReportsForYear(int year) {
+		try {
+			return getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+		}
+		catch (FinderException e) {
+			//no report available return empty list
 			return ListUtil.getEmptyList();
 		}
 
