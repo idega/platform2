@@ -27,7 +27,7 @@ public class IWMemberConstants extends ICUserConstants{
 	public static final String META_DATA_CLUB_FOUNDED = "CLUBINFO_FOUNDED";
 
 	public static final String META_DATA_CLUB_SSN = "CLUBINFO_SSN";
-	public static final String META_DATA_CLUB_NUMBER = "CLUBINFO_NUMBER";
+	public static final String META_DATA_CLUB_NUMBER = ICUserConstants.META_DATA_GROUP_NUMBER;
 	
 	public static final String META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB = "1";
 	public static final String META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB = "2";
