@@ -301,7 +301,6 @@ public class AdminRegisterTeeTime extends GolfBlock {
 
 		myForm.add(Header);
 
-		getParentPage().setBackgroundColor("#8ab490");
 	}
 
 	public void setErroResponse(Form myForm) {

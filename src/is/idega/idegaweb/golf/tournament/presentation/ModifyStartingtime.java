@@ -76,7 +76,7 @@ public class ModifyStartingtime extends GolfBlock {
 
 			}
 			else {
-				add("Ekkert mót valið");
+				add(getMessageText(localize("tournament.no_tournament_selected","No tournament selected")));
 			}
 
 		}
@@ -91,15 +91,13 @@ public class ModifyStartingtime extends GolfBlock {
 
 		Form form = new Form();
 		Table table = new Table();
-		form.add(table);
 		table.setBorder(0);
 		table.setCellpadding(2);
-		table.setCellspacing(1);
-		table.setAlignment("center");
-		table.setWidth("85%");
+		table.setCellspacing(0);
+		table.setWidth(Table.HUNDRED_PERCENT);
 
 		int row = 0;
-		String color1 = "#ADC9D0";
+
 
 		int tournamentRoundId = 0;
 		TournamentRound[] tRounds = tournament.getTournamentRounds();
@@ -113,12 +111,12 @@ public class ModifyStartingtime extends GolfBlock {
 			}
 		}
 
-		++row;
-		table.mergeCells(1, row, 5, row);
-		table.setAlignment(1, row, "right");
+		Table myTable = new Table();
+		myTable.setCellspacing(0);
+		myTable.setWidth(Table.HUNDRED_PERCENT);
+		myTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		IWTimestamp tourDay;
-		DropdownMenu rounds = new DropdownMenu("tournament_round");
-		rounds.setStyleAttribute("font-size: 8pt");
+		DropdownMenu rounds = (DropdownMenu)getStyledInterface(new DropdownMenu("tournament_round"));
 
 		for (int i = 0; i < tRounds.length; i++) {
 			tourDay = new IWTimestamp(tRounds[i].getRoundDate());
@@ -129,47 +127,33 @@ public class ModifyStartingtime extends GolfBlock {
 			rounds.setSelectedElement(Integer.toString(tournamentRoundId));
 		}
 		rounds.setToSubmit();
-		table.add(rounds, 1, row);
+		myTable.add(rounds, 1, 1);
+		form.add(myTable);
 
 		++row;
-		Text rast = new Text("Rástimar");
-		rast.setFontSize(2);
-		rast.setBold();
-		rast.setFontColor("#FFFFFF");
-		Text move = new Text("Færa");
-		move.setFontSize(2);
-		move.setBold();
-		move.setFontColor("#FFFFFF");
-		Text name = new Text("Nafn");
-		name.setFontSize(2);
-		name.setBold();
-		name.setFontColor("#FFFFFF");
-		Text club = new Text("Klúbbur");
-		club.setFontSize(2);
-		club.setBold();
-		club.setFontColor("#FFFFFF");
-		Text hand = new Text("Forgjöf");
-		hand.setFontSize(2);
-		hand.setBold();
-		hand.setFontColor("#FFFFFF");
-		Text del = new Text("Eyða");
-		del.setFontSize(2);
-		del.setBold();
-		del.setFontColor("#FFFFFF");
-		Text tee = new Text("Rásteigur");
-		tee.setFontSize(2);
-		tee.setBold();
-		tee.setFontColor("#FFFFFF");
+		Text rast = getSmallHeader(localize("tournament.teetimes", "Teetimes"));
+		Text move =  getSmallHeader(localize("tournament.move","Move"));
+		Text name =  getSmallHeader(localize("tournament.name","Name"));
+		Text club =  getSmallHeader(localize("tournament.club","Club"));
+		Text hand =  getSmallHeader(localize("tournament.handicap","Handicap"));
+		Text del =  getSmallHeader(localize("tournament.delete","Delete"));
+		Text tee =  getSmallHeader(localize("tournament.tee","Tee"));
+
 
 		table.add(rast, 1, row);
 		table.add(move, 2, row);
 		table.add(name, 3, row);
-		table.setAlignment(3, row, "center");
 		table.add(club, 4, row);
 		table.add(hand, 5, row);
 		table.add(del, 6, row);
-		table.setRowColor(row, "#336661");
-		table.setHeight(1, row, "10");
+		table.setRowStyleClass(row,getHeaderRowClass());
+		
+		table.setColumnWidth(1,"100");
+		table.setColumnWidth(2,"70");
+		table.setColumnWidth(4,"70");
+		table.setColumnWidth(5,"70");
+		table.setColumnWidth(6,"70");
+		
 
 		if (tournamentRoundId != 0) {
 			TournamentRound tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(tournamentRoundId);
@@ -179,16 +163,13 @@ public class ModifyStartingtime extends GolfBlock {
 				displayTee = true;
 			}
 
-			Text tournamentName = new Text(tournament.getName());
-			tournamentName.setFontSize(3);
-			tournamentName.setBold();
+			Text tournamentName = getBigHeader(tournament.getName());
 
 			add("<br><center>");
 			add(tournamentName);
 			add("</center><p>");
 
 			DropdownMenu availableGrupNums = getAvailableGrupNums(tournament, tournamentRound);
-			availableGrupNums.setStyleAttribute("font-size: 8pt");
 			DropdownMenu clonedMenu;
 
 			CheckBox memberCheck;
@@ -212,29 +193,20 @@ public class ModifyStartingtime extends GolfBlock {
 
 				if (displayTee) {
 					++row;
-					Text startTee = new Text("Rásteigur : " + tee_number);
-					startTee.setFontColor("#FFFFFF");
-					startTee.setBold();
+					Text startTee = getText(localize("tournament.tee","Tee")+" : " + tee_number);
 					table.add(startTee, 1, row);
 					table.setRowColor(row, "#336661");
 					table.mergeCells(1, row, 5, row);
 					table.setAlignment(1, row, "center");
 				}
 
-				Text errorText = new Text("Ekki pláss");
+				Text errorText = new Text("Ekki pl‡ss");
 				errorText.setFontColor("RED");
 
 				while (end.isLaterThan(start)) {
 
 					++grupNum;
 					++row;
-
-					if (color1.equals("#ADC9D0")) {
-						color1 = "#CEDFCF";
-					}
-					else {
-						color1 = "#ADC9D0";
-					}
 
 					start.addMinutes(interval);
 
@@ -257,7 +229,7 @@ public class ModifyStartingtime extends GolfBlock {
 					//table.setAlignment(1,row,"center");
 					table.add("<br><br>", 1, row);
 					table.setVerticalAlignment(1, row, "top");
-					table.setHeight(1, row, "90");
+					table.setStyleClass(1, row, getBigRowClass());
 					table.mergeCells(1, row, 1, row + numberInGroup - 1);
 
 					if (sTimes.length > 0) {
@@ -265,15 +237,14 @@ public class ModifyStartingtime extends GolfBlock {
 						table.add(new HiddenInput("grup_num", Integer.toString(grupNum)), 1, row);
 					}
 
-					table.setColor(1, row, color1);
 
 					for (int i = 0; i < sTimes.length; i++) {
-						table.setColor(1, row, color1);
-						table.setColor(2, row, color1);
-						table.setColor(3, row, color1);
-						table.setColor(4, row, color1);
-						table.setColor(5, row, color1);
-						table.setColor(6, row, color1);
+						String rowClass =  (row%2==0)?getLightRowClass():getDarkRowClass();
+						table.setStyleClass(2, row, rowClass);
+						table.setStyleClass(3, row, rowClass);
+						table.setStyleClass(4, row, rowClass);
+						table.setStyleClass(5, row, rowClass);
+						table.setStyleClass(6, row, rowClass);
 
 						memberCheck = new CheckBox("grup_num_" + grupNum + "_member_checkbox_member_id_" + sTimes[i].getMemberID());
 						delMember = new CheckBox("remove_startingtime", "" + sTimes[i].getMemberID());
@@ -297,12 +268,13 @@ public class ModifyStartingtime extends GolfBlock {
 					}
 
 					for (int i = sTimes.length; i < numberInGroup; i++) {
+						String rowClass =  (row%2==0)?getLightRowClass():getDarkRowClass();
 						table.add("&nbsp;", 3, row);
-						table.setColor(2, row, color1);
-						table.setColor(3, row, color1);
-						table.setColor(4, row, color1);
-						table.setColor(5, row, color1);
-						table.setColor(6, row, color1);
+						table.setStyleClass(2, row, rowClass);
+						table.setStyleClass(3, row, rowClass);
+						table.setStyleClass(4, row, rowClass);
+						table.setStyleClass(5, row, rowClass);
+						table.setStyleClass(6, row, rowClass);
 						++row;
 					}
 
@@ -312,14 +284,14 @@ public class ModifyStartingtime extends GolfBlock {
 
 		}
 		else {
-			add("Mótið er ekki sett upp rétt");
+			add("M—tiÝ er ekki sett upp rŽtt");
 		}
 
 		++row;
 		table.mergeCells(1, row, 2, row);
 		table.mergeCells(3, row, 5, row);
 
-		Link link = new Link("Bæta við rástimum");
+		Link link = getLocalizedLink("tournament.add_teetimes","Add teetimes");
 		link.addParameter("action", "addMember");
 		link.addParameter("tournament_round", tournamentRoundId + "");
 		link.addParameter("tournament", tournament.getID() + "");
@@ -336,15 +308,22 @@ public class ModifyStartingtime extends GolfBlock {
 		table.setColumnAlignment(2, "center");
 		table.setColumnAlignment(4, "center");
 		table.setColumnAlignment(5, "center");
-		table.setAlignment(1, 1, "right");
-		table.setAlignment(1, row, "left");
+		table.setColumnAlignment(6, "center");
+		table.setAlignment(1, 1, "center");
+		table.setAlignment(3, 1, "left");
 		table.setAlignment(3, row, "right");
 
+		Table borderTable = new Table();
+		borderTable.setWidth(Table.HUNDRED_PERCENT);
+		borderTable.setCellpaddingAndCellspacing(0);
+		borderTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
+		borderTable.add(table);
+		form.add(borderTable);
 		return form;
 	}
 
 	public DropdownMenu getAvailableGrupNums(Tournament tournament, TournamentRound tRound) throws SQLException {
-		DropdownMenu menu = new DropdownMenu("grup_num_dropdown");
+		DropdownMenu menu = (DropdownMenu)getStyledInterface(new DropdownMenu("grup_num_dropdown"));
 
 		int interval = tournament.getInterval();
 		int grupNum = 0;

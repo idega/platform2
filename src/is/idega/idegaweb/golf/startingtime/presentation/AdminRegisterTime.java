@@ -545,6 +545,7 @@ public class AdminRegisterTime extends GolfWindow {
 		frameTable.add(dateTable);
 		
 		Table borderTable = new Table();
+		borderTable.setWidth(Table.HUNDRED_PERCENT);
 		borderTable.setCellpadding(0);
 		borderTable.setCellspacing(0);
 		borderTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
