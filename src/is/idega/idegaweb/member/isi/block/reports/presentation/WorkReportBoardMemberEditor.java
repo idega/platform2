@@ -65,7 +65,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
-  private static final String NO_LEAGUE_VALUE = "no_league_value";
+  protected static final String NO_LEAGUE_VALUE = "no_league_value";
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
