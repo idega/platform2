@@ -6,7 +6,10 @@
  */
 package com.idega.block.datareport.presentation;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -95,10 +98,12 @@ public class ReportGenerator extends Block {
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.datareport";
 
 	private Integer _queryPK = null;
-	private Integer _methodInvacationPK = null;
+	private Integer _methodInvocationPK = null;
 	private Integer _layoutICFilePK = null;
 	private String _layoutFileName = null;
 	private IWBundle _layoutIWBundle = null;
+	private String _methodInvocationFileName = null;
+	private IWBundle _methodInvocationIWBundle = null;
 	
 	private MethodInvocationDocument _methodInvokeDoc = null;
 	private Vector _dynamicFields = new Vector();
@@ -181,7 +186,7 @@ public class ReportGenerator extends Block {
 		if (tmpName != null) {
 			_reportName = tmpName;
 		}
-		if (_queryPK == null && _methodInvacationPK != null) {
+		if (_queryPK == null && (_methodInvocationPK!= null || _methodInvocationFileName!= null) ) {
 			isMethodInvocation = true;
 			if (_dataSource != null && _dataSource instanceof ReportableCollection) {
 				_allFields = ((ReportableCollection) _dataSource).getListOfFields();
@@ -505,7 +510,7 @@ public class ReportGenerator extends Block {
 	}
 
 	public void setMethodInvocationICFileID(Integer methodInvocationPK) {
-		_methodInvacationPK = methodInvocationPK;
+		_methodInvocationPK = methodInvocationPK;
 	}
 
 	public void setMethodInvocation(Integer methodInvocationPK) {
@@ -517,6 +522,15 @@ public class ReportGenerator extends Block {
 			setMethodInvocationICFileID((Integer) file.getPrimaryKey());
 	}
 
+	public void setMethodInvocationBundleAndFileName(IWBundle bundle, String fileName){
+		_methodInvocationFileName = fileName;
+		_methodInvocationIWBundle = bundle;
+	}
+	
+	public void setMethodInvocationFileNameAndUseDefaultBundle(String fileName){
+		setMethodInvocationBundleAndFileName(null,fileName);
+	}
+	
 	public void setLayoutICFile(ICFile file) {
 		if (file != null)
 			_layoutICFilePK = (Integer) file.getPrimaryKey();
@@ -557,10 +571,10 @@ public class ReportGenerator extends Block {
 				}
 			}
 			else
-				if (_methodInvacationPK != null) {
+				if ((_methodInvocationPK != null) || (_methodInvocationFileName != null)) {
 					String genState = iwc.getParameter(PRM_STATE);
 					if (genState == null || "".equals(genState)) {
-						parseMethodInvocationXML(iwrb);
+						parseMethodInvocationXML(iwc,iwrb);
 						lineUpElements(iwrb, iwc);
 						Form submForm = new Form();
 						submForm.maintainParameters(maintainParameterList);
@@ -571,7 +585,7 @@ public class ReportGenerator extends Block {
 						System.out.println("\n[ReportGenerator]: starts generating...");
 						System.out.println("[ReportGenerator]: parsing xml...");
 						long time1 = System.currentTimeMillis();
-						parseMethodInvocationXML(iwrb);
+						parseMethodInvocationXML(iwc,iwrb);
 						long time2 = System.currentTimeMillis();
 						System.out.println("[ReportGenerator]: took " + (time2 - time1) + "ms, total of " + (time2 - time1) + "ms");
 						System.out.println("[ReportGenerator]: generating datasource...");
@@ -642,23 +656,42 @@ public class ReportGenerator extends Block {
 	/**
 	 *  
 	 */
-	private void parseMethodInvocationXML(IWResourceBundle iwrb) throws IDOLookupException, ReportGeneratorException {
-		MethodInvocationXMLFile file;
-
-		try {
-			file =
-				(MethodInvocationXMLFile) ((MethodInvocationXMLFileHome) IDOLookup.getHome(MethodInvocationXMLFile.class)).findByPrimaryKey(
-					_methodInvacationPK);
-		}
-		catch (FinderException e) {
-			throw new ReportGeneratorException(
-				iwrb.getLocalizedString("report_transcription_not_found", "The report transcription was not found"),
-				e);
-			//e.printStackTrace();
-		}
-		if (file != null) {
+	private void parseMethodInvocationXML(IWContext iwc,IWResourceBundle iwrb) throws IDOLookupException, ReportGeneratorException {
+		MethodInvocationXMLFile file = null;
+		InputStream fileStream = null;
+			
+		if(_methodInvocationPK!=null){
 			try {
-				_methodInvokeDoc = (MethodInvocationDocument) new MethodInvocationParser().parse(file.getFileValue());
+				file =
+					(MethodInvocationXMLFile) ((MethodInvocationXMLFileHome) IDOLookup.getHome(MethodInvocationXMLFile.class)).findByPrimaryKey(
+						_methodInvocationPK);
+				
+				fileStream = file.getFileValue();
+			}
+			catch (FinderException e) {
+				throw new ReportGeneratorException(
+					iwrb.getLocalizedString("report_transcription_not_found", "The report transcription was not found"),
+					e);
+				//e.printStackTrace();
+			}
+		}
+		else if(_methodInvocationFileName!=null){
+			if( _methodInvocationIWBundle==null){
+				_methodInvocationIWBundle = getBundle(iwc);
+			}
+			
+			try {
+				fileStream = new FileInputStream(_methodInvocationIWBundle.getRealPathWithFileNameString(_methodInvocationFileName));
+			}
+			catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		if (fileStream != null) {
+			try {
+				_methodInvokeDoc = (MethodInvocationDocument) new MethodInvocationParser().parse(fileStream);
 			}
 			catch (XMLException e1) {
 				throw new ReportGeneratorException(
@@ -668,6 +701,7 @@ public class ReportGenerator extends Block {
 					e1);
 			}
 		}
+		
 
 		if (_methodInvokeDoc != null) {
 			List methods = _methodInvokeDoc.getMethodDescriptions();
