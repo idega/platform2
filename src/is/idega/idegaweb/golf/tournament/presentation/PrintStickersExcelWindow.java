@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
+import com.idega.presentation.ui.Window;
 
 
 /**
@@ -14,7 +14,7 @@ import is.idega.idegaweb.golf.templates.page.GolfWindow;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class PrintStickersExcelWindow extends GolfWindow {
+public class PrintStickersExcelWindow extends Window {
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class PrintStickersExcelWindow extends GolfWindow {
 	 */
 	public PrintStickersExcelWindow(String name, int width, int height) {
 		super(name, width, height);
-		this.setGolfClassToInstanciate(PrintStickersExcel.class);
+		this.add(new PrintStickersExcel());
 	}
 
 }

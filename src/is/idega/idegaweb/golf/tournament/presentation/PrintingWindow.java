@@ -30,6 +30,7 @@ public class PrintingWindow extends TournamentAdministratorWindow {
 	public PrintingWindow(String name, int width, int height) {
 		super(name, width, height);
 		this.setGolfClassToInstanciate(Printing.class);
+		setScrollbar(true);
 	}
 
 }
