@@ -4,6 +4,9 @@
  */
 package is.idega.idegaweb.campus.data;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.building.data.Apartment;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.data.GenericEntity;
@@ -20,10 +23,10 @@ public class ApartmentAccountEntryBMPBean extends GenericEntity implements Apart
 	
 	
 	/* (non-Javadoc)
-	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
 	 */
-	public String getIDColumnName() {
-		return COLUMN_ENTRY_ID;
+	public Class getPrimaryKeyClass() {
+		return ApartmentAccountEntryKey.class;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -37,10 +40,11 @@ public class ApartmentAccountEntryBMPBean extends GenericEntity implements Apart
 	public void initializeAttributes() {
 		addManyToOneRelationship(COLUMN_APARTMENT_ID, Apartment.class);
 		addManyToOneRelationship(COLUMN_ENTRY_ID, AccountEntry.class);
+		setAsPrimaryKey(COLUMN_APARTMENT_ID, true);
 		setAsPrimaryKey(COLUMN_ENTRY_ID, true);
-		
 		setNullable(COLUMN_APARTMENT_ID, false);
 		setNullable(COLUMN_ENTRY_ID, false);
+		
 	}
 	
 	public void setAccountEntryID(Integer entryID){
@@ -57,6 +61,15 @@ public class ApartmentAccountEntryBMPBean extends GenericEntity implements Apart
 	
 	public Integer getApartmentID(){
 		return getIntegerColumnValue(COLUMN_APARTMENT_ID);
+	}
+	
+	public Object ejbFindByPrimaryKey(ApartmentAccountEntryKey primaryKey) throws FinderException {
+		return super.ejbFindByPrimaryKey(primaryKey);
+	}
+	
+	public Object ejbCreate(ApartmentAccountEntryKey primaryKey) throws CreateException {
+		setPrimaryKey(primaryKey);
+		return super.ejbCreate();
 	}
 	
 }
