@@ -172,14 +172,18 @@ public class GroupMemberList extends Block {
 		if(!isTrainer) {
 			// not trainer by status, try to see if trainer is member of a trainer group in flock
 			Collection trainerParents = trainer.getParentGroups();
-			Iterator childIter = flock.getChildren();
-			while(childIter.hasNext()) {
-				Group child = (Group) childIter.next();
-				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(child.getGroupType())) {
-					if(trainerParents.contains(child)) {
-						isTrainer = true;
-						System.out.println("found trainer group in flock, " + child.getName());
-						break;
+			Iterator flockChildrenIter = flock.getChildren();
+			while(flockChildrenIter.hasNext()) {
+				Group flockChild = (Group) flockChildrenIter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(flockChild.getGroupType())) {
+					Iterator trainerParentsIter = trainerParents.iterator();
+					while(trainerParentsIter.hasNext()) {
+						Group trainerParent = (Group) trainerParentsIter.next();
+						if(trainerParent.getPrimaryKey().equals(flockChild.getPrimaryKey())) {
+							isTrainer = true;
+							System.out.println("found trainer group in flock, " + flockChild.getName());
+							break;
+						}
 					}
 				}
 			}
