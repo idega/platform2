@@ -20,8 +20,8 @@ public class News extends GenericEntity{
     addAttribute(getNewsCategoryIdColumnName(), "Category", true, true, "java.lang.Integer", "many-to-one","com.idega.jmodule.news.data.NewsCategory");
     addAttribute(getHeadLineColumnName(), "Headline", true, true, "java.lang.String");
     addAttribute(getNewsTextColumnName(), "Text", true, true, "java.lang.String",4000);
-    addAttribute(getNewsTextColumnName(), "Photo Included", true, true, "java.lang.String");
-    addAttribute(getImageIdColumnName(), "Phote", true, true, "java.lang.Integer");
+    addAttribute(getIncludeImageColumnName(), "Photo Included", true, true, "java.lang.String");
+    addAttribute(getImageIdColumnName(), "Photo", true, true, "java.lang.Integer");
     addAttribute(getNewsDateColumnName(), "Date", true, true, "java.sql.Timestamp");
     addAttribute(getAuthorColumnName(), "Author", true, true, "java.lang.String");
     addAttribute(getSourceColumnName(), "Source", true, true, "java.lang.String");

@@ -38,11 +38,13 @@ private String newsCollectionURL;
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
-private String selectFrom = "select news.* from news where ";
+private String selectFrom = "select nw_news.* from nw_news where ";
 private String orderBy = " order by news_date DESC";
-private String sNewsCategoryId = "news_category_id ='";
+private String sNewsCategoryId = "nw_news_cat_id ='";
 private String sNewsEditorUrl ="/news/editor.jsp";
 private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
+private boolean showHeadlineImage = false;
+private boolean showMoreButton = false;
 
 private Text textProxy = new Text();
 private Text headlineProxy = new Text();
@@ -421,30 +423,31 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   if( information.getAttribute("size") == null ) information.setFontSize(1);
   else if( information.getAttribute("size").equals("") )  information.setFontSize(1);
 
-  Table newsTable = new Table(1, 3);
-
+  Table newsTable = new Table();
   newsTable.setWidth("100%");
   newsTable.add(information, 1, 1);
+
+  if ( this.showHeadlineImage ) {
+    Image headlineImage = new Image(headlineImageURL,"");
+    headlineImage.setAttribute("align","absmiddle");
+    newsTable.add(headlineImage, 1, 2);
+  }
 
   if ( headlineAsLink ) {
     Link headlineLink = new Link(headline,getNewsReaderURL());
     headlineLink.addParameter("news_id",newsId);
-    Image headlineImage = new Image(headlineImageURL,"");
-    headlineImage.setAttribute("align","absmiddle");
-
-    newsTable.add(headlineImage, 1, 2);
     newsTable.add(headlineLink, 1, 2);
   }
-
   else {
     newsTable.add(headline, 1, 2);
   }
 
 
   if (image_id!=-1){
+      System.out.println("ImageID != -1");
     //debug
     if ( showImages ) {
-
+      System.out.println("ImageID != -1 && showImages");
       Table imageTable = new Table(1, 2);
       Image newsImage = new Image(image_id);
       imageTable.setAlignment("right");
@@ -467,17 +470,16 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   newsTable.setRowVerticalAlignment(3, "Top");
 
   if( backbutton ) {
-          newsTable.add(Text.getBreak(),1,3);
-          newsTable.add(new BackButton(back), 1, 3);
+         newsTable.add(new BackButton(back), 1, 4);
   }
   else {
     //if(showMore && !headlineAsLink) {//always show the more button
-      if(!headlineAsLink) {
+      if(showMoreButton) {
         if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
 
         Link moreLink = new Link(more,newsReaderURL);
         moreLink.addParameter("news_id",newsId);
-        newsTable.add(moreLink, 1, 3);
+        newsTable.add(moreLink, 1, 4);
       }
   }
 
@@ -616,6 +618,8 @@ private void addNext(Table table){
  switch (LAYOUT) {
    case SINGLE_FILE_LAYOUT:
     outerTable.add(table, 1, 1);
+    outerTable.addBreak(1,1);
+    outerTable.addBreak(1,1);
      break;
    case  NEWS_SITE_LAYOUT:
     //debug NEWS_SITE_LAYOUT shows only one image for now...code in insertTable
@@ -667,6 +671,7 @@ private Table createContainerTable(){
     else rows+=theRest;
 
     temp = new Table(2,rows);
+    temp.setCellspacing(6);;
     temp.setWidth(1,"50%");
     temp.setWidth(2,"50%");
     temp.mergeCells(1,1,2,1);
@@ -834,8 +839,18 @@ public void setShowImages(boolean showImages) {
   this.showImages=showImages;
 }
 
+public void setShowMoreButton(boolean showMoreButton) {
+  this.showMoreButton=showMoreButton;
+}
+
+public void setShowHeadlineImage(boolean showHeadlineImage) {
+  this.showHeadlineImage=showHeadlineImage;
+}
+
 public void setHeadlineAsLink(boolean headlineAsLink) {
   this.headlineAsLink=headlineAsLink;
+  this.showHeadlineImage=true;
+  this.showMoreButton=false;
 }
 
 public void setHeadlineImageURL(String headlineImageURL) {

@@ -133,7 +133,8 @@ private int attributeId = 3;
       }
     }
     catch(Exception e){
-      add(new Text("villa : "+e.getMessage()) );//something went wrong
+      add(new Text("villa : "+e.getMessage()) );
+      e.printStackTrace(System.err);//something went wrong
     }
   }
 
@@ -300,9 +301,15 @@ private int attributeId = 3;
     sideToolTable.add(getHeaderText(sImage), 1, 9);
 
     ImageInserter imageInsert = new ImageInserter();
-    if ( update ) {
-      imageInsert.setImageId(news.getImageId());
-    }
+      imageInsert.setSelected(false);
+      if ( update ) {
+        if ( news.getIncludeImage() != null ) {
+          if ( news.getIncludeImage().equalsIgnoreCase("y") ) {
+            imageInsert.setImageId(news.getImageId());
+            imageInsert.setSelected(true);
+          }
+        }
+      }
 
     sideToolTable.add(imageInsert, 1, 10);
     SubmitButton mySubmit = new SubmitButton("mode", "save");
@@ -360,7 +367,6 @@ private int attributeId = 3;
       news.setIncludeImage("N");
 
     String image_id = modinfo.getParameter("image_id");
-
     if(image_id == null)
       image_id="-1";
 
