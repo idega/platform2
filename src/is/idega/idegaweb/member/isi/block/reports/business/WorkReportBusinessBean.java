@@ -1895,6 +1895,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//1.
 		Collection allUsers;
 		try {
+			//TODO members in temporary and staff groups are not members!
+			//do not register those people
 			allUsers = groupBusiness.getUsersFromGroupRecursive(groupBusiness.getGroupByGroupID(groupId));
 		}
 		catch (FinderException e) {
