@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.user.presentation;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
+import is.idega.idegaweb.member.business.NoCohabitantFound;
 import is.idega.idegaweb.member.business.NoSpouseFound;
 import is.idega.idegaweb.member.presentation.UserEditor;
 import java.rmi.RemoteException;
@@ -63,8 +64,7 @@ public class CitizenEditor extends UserEditor {
 			}
 			catch (NoSpouseFound e) {
 			}
-			catch(Exception e){
-				
+			catch (Exception e) {
 			}
 			if (partner != null) {
 				relationsTable.add(getRelatedUserLink(partner), 2, row);
@@ -79,7 +79,31 @@ public class CitizenEditor extends UserEditor {
 					3,
 					row);
 			}
+			
+			// cohabitant handling
+			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.cohabitant", "Cohabitant")), 5, row);
+			User cohabitant = null;
+			try {
+				//System.out.println("geting spouse  of "+user.getName());
+				cohabitant = familyService.getCohabitantFor(this.user);
+			}
+			catch (NoCohabitantFound e) {
+			}
+			if (cohabitant != null) {
+				relationsTable.add(getRelatedUserLink(cohabitant), 6, row);
+				relationsTable.add(
+					getDisConnectorLink(
+						familyService.getCohabitantRelationType(),
+						null,
+						(Integer) user.getPrimaryKey(),
+						(Integer) cohabitant.getPrimaryKey(),
+						getDeleteIcon(
+							iwrb.getLocalizedString("mbe.remove_cohabitant_relation", "Remove cohabitant relationship"))),
+					7,
+					row);
+			}
 			row++;
+			
 			//	parent handling
 			relationsTable.add(getHeader(iwrb.getLocalizedString("mbe.parents", "Parents")), 1, row);
 			Collection parents = null;
@@ -205,11 +229,9 @@ public class CitizenEditor extends UserEditor {
 				e3.printStackTrace();
 			}
 		}
-		
-		relationsTable.setWidth(2,"200");
-		relationsTable.setWidth(4,"30");
-		relationsTable.setWidth(6,"200");
-		
+		relationsTable.setWidth(2, "200");
+		relationsTable.setWidth(4, "30");
+		relationsTable.setWidth(6, "200");
 		addToMainPart(relationsTable);
 	}
 	/**
@@ -262,9 +284,8 @@ public class CitizenEditor extends UserEditor {
 					iwc,
 					iwrb.getLocalizedString("mbe.register_mate", "Register mate"),
 					userID,
-					logic.getSpouseRelationType(),
+					logic.getCohabitantRelationType(),
 					null);
-			mateButton.setDisabled(true);
 			addButton(mateButton);
 			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
 			//regCustodian.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_custodian","Try to attach a custodian relationship to user"));
