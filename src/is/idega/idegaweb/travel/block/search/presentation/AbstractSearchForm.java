@@ -626,7 +626,6 @@ public abstract class AbstractSearchForm extends Block{
 			//while (iter.hasNext()) {
 				try {
 					product = pHome.findByPrimaryKey(tmp.get(i));
-					System.out.println("printing product : "+product.getPrimaryKey());
 					supplier = sHome.findByPrimaryKey(product.getSupplierId());
 					bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
 					addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true);
