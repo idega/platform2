@@ -172,9 +172,10 @@ public class ChildCareChildContracts extends ChildCareBlock {
 				}
 			}
 					
-			viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-			viewContract.setFile(contract.getContractFileID());
-			viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+			//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+			//viewContract.setFile(contract.getContractFileID());
+			//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+			viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
 					
 			if (useStyleNames()) {
 				if (row % 2 == 0) {

@@ -133,9 +133,10 @@ public class ChildCareContracts extends ChildCareBlock {
 							isCancelled = true;
 						}
 						
-						viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-						viewContract.setFile(contract.getContractFileID());
-						viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+						//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+						//viewContract.setFile(contract.getContractFileID());
+						//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+						viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
 						
 						if (isNotYetActive) {
 							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
