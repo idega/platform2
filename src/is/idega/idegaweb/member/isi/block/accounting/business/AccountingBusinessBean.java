@@ -717,6 +717,16 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
         return null;
 	}
 	
+	public Collection findAllPaymentEntriesByUserGroupAndDivision(Group club, Group div, User user) {
+	    try {
+            return getFinanceEntryHome().findAllPaymentsByUser(club, div, user);
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+	}
+
 	public FinanceEntry getFinanceEntryByPrimaryKey(Integer id) {
 	    try {
             return getFinanceEntryHome().findByPrimaryKey(id);

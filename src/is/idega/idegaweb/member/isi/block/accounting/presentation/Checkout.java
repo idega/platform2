@@ -14,8 +14,6 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.ejb.EJBException;
-
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.basket.data.BasketEntry;
 import com.idega.business.IBOLookup;
@@ -27,6 +25,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
 
 /**
@@ -35,6 +34,7 @@ import com.idega.user.business.UserBusiness;
 public class Checkout extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "co_submit";
 	protected static final String ACTION_REMOVE = "co_remove";
+	protected static final String ACTION_REMOVE_ALL = "co_remove_all";
 	
 	private final static String LABEL_SELECTED_USER = "isi_acc_co_select_user";
 	
@@ -46,6 +46,7 @@ public class Checkout extends CashierSubWindowTemplate {
 	private final static String LABEL_AMOUNT_REMAINING = "isi_acc_co_remaining";
 	
 	private final static String LABEL_REMOVE_FROM_BASKET = "isi_acc_co_remove_from_basket";
+	private final static String LABEL_REMOVE_ALL_FROM_BASKET = "isi_acc_co_remove_all_from_basket";
 	
 	/**
 	 * 
@@ -60,10 +61,6 @@ public class Checkout extends CashierSubWindowTemplate {
 	public void main(IWContext iwc) {
 		Form f = new Form();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		
-//		if (iwc.isParameterSet(ACTION_ADD_TO_BASKET)) {
-//			addToBasket(iwc);
-//		}
 		
 		Table inputTable = new Table();
 		Table paymentTable = new Table();
@@ -83,7 +80,8 @@ public class Checkout extends CashierSubWindowTemplate {
 		Text labelRemaining = new Text(iwrb.getLocalizedString(LABEL_AMOUNT_REMAINING, "Remaining"));
 		labelRemaining.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-//		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
+		SubmitButton removeAllEntries = new SubmitButton(iwrb.getLocalizedString(ACTION_REMOVE_ALL, "Remove all"), ACTION_REMOVE_ALL, "remove_all");
 		
 		int row = 1;
 //		inputTable.add(labelUser, 1, row);

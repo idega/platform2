@@ -39,11 +39,13 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String ACTION_DELETE = "cccc_delete";
 
 	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
+	protected static final String LABEL_GROUP = "isi_acc_cccc_group";
 	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
 	protected static final String LABEL_CARD_TYPE = "isi_acc_cccc_card_type";
 	protected static final String LABEL_DELETE = "isi_acc_cccc_delete";
 
 	protected static final String ELEMENT_ALL_DIVISIONS = "isi_acc_cccc_all_divisions";
+	
 	/**
 	 *  
 	 */
@@ -53,6 +55,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 	private void saveContract(IWContext iwc) {
 		String div = iwc.getParameter(LABEL_DIVISION);
+		String grp = iwc.getParameter(LABEL_GROUP);
 		String number = iwc.getParameter(LABEL_CONTRACT_NUMBER);
 		String type = iwc.getParameter(LABEL_CARD_TYPE);
 
@@ -167,7 +170,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		

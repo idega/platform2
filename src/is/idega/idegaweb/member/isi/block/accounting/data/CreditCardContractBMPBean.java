@@ -23,6 +23,7 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	
 	protected final static String COLUMN_CLUB = "club_id";
 	protected final static String COLUMN_DIVISION = "div_id";
+	protected final static String COLUMN_GROUP = "group_id";
 	protected final static String COLUMN_CONTRACT_NR = "contract_number";
 	protected final static String COLUMN_CARD_TYPE = "card_type_id";
 	protected final static String COLUMN_DELETED = "deleted";
@@ -41,6 +42,7 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(COLUMN_CLUB,Group.class);
 		addManyToOneRelationship(COLUMN_DIVISION,Group.class);
+		addManyToOneRelationship(COLUMN_GROUP,Group.class);
 		addAttribute(COLUMN_CONTRACT_NR,"Contract number",true,true,String.class);
 		addManyToOneRelationship(COLUMN_CARD_TYPE,CreditCardType.class);
 		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
@@ -60,6 +62,14 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	
 	public void setDivision(Group division) {
 		setColumn(COLUMN_DIVISION,division);
+	}
+
+	public void setGroupId(int id) {
+		setColumn(COLUMN_GROUP,id);
+	}
+	
+	public void setGroup(Group group) {
+		setColumn(COLUMN_GROUP,group);
 	}
 
 	public void setContractNumber(String number) {
@@ -94,6 +104,14 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		return (Group)getColumnValue(COLUMN_DIVISION);
 	}
 
+	public int getGroupId() {
+		return getIntColumnValue(COLUMN_GROUP);
+	}
+	
+	public Group getGroup() {
+		return (Group)getColumnValue(COLUMN_GROUP);
+	}
+
 	public String getContractNumber() {
 		return getStringColumnValue(COLUMN_CONTRACT_NR);
 	}
@@ -111,9 +129,25 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 	}
 	
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
+	    return ejbFindAllByClubDivisionAndGroup(club, null, null);
+	}	
+
+	public Collection ejbFindAllByClubAndDivision(Group club, Group division) throws FinderException {
+	    return ejbFindAllByClubDivisionAndGroup(club, division, null);
+	}	
+
+	public Collection ejbFindAllByClubDivisionAndGroup(Group club, Group division, Group group) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
+		if (division != null) {
+		    sql.appendAnd();
+		    sql.appendEquals(COLUMN_DIVISION, division);
+		}
+		if (group != null) {
+		    sql.appendAnd();
+		    sql.appendEquals(COLUMN_GROUP, group);		    
+		}
 		sql.appendAnd();
 		sql.appendLeftParenthesis();
 		sql.appendEquals(COLUMN_DELETED,false);

@@ -7,7 +7,6 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
@@ -38,6 +37,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.presentation.UserChooserBrowser;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -45,6 +45,7 @@ import com.idega.util.IWTimestamp;
  */
 public class ManualAssessment extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "ma_submit";
+	protected static final String ACTION_SELECT_USER = "ma_select_user";
 	
 	private final static String USER_CHOOSER_NAME = "ma_user_chooser_name";
 	
@@ -73,25 +74,25 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	}
 
 	private boolean saveAssessment(IWContext iwc) {
-		_errorList = new ArrayList();
+		errorList = new ArrayList();
 		String group = iwc.getParameter(LABEL_USERS_GROUPS);
 		String tariff = iwc.getParameter(LABEL_TARIFF);
 		String amount = iwc.getParameter(LABEL_AMOUNT);
 		String info = iwc.getParameter(LABEL_INFO);
 
 		if (group == null || "".equals(group)) {
-			_errorList.add(ERROR_NO_GROUP_SELECTED);
+			errorList.add(ERROR_NO_GROUP_SELECTED);
 		}
 		
 		if (tariff == null || "".equals(tariff)) {
-			_errorList.add(ERROR_NO_TARIFF_SELECTED);
+			errorList.add(ERROR_NO_TARIFF_SELECTED);
 		}
 		
 		if (amount == null || "".equals(amount)) {
-			_errorList.add(ERROR_NO_AMOUNT_ENTERED);
+			errorList.add(ERROR_NO_AMOUNT_ENTERED);
 		}
 		
-		if (!_errorList.isEmpty()) {
+		if (!errorList.isEmpty()) {
 			return false;
 		}
 		
@@ -127,8 +128,8 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				
 				int r = 1;
 				error.add(labelError, 1, r++);
-				if (_errorList != null && !_errorList.isEmpty()) {
-					Iterator it = _errorList.iterator();
+				if (errorList != null && !errorList.isEmpty()) {
+					Iterator it = errorList.iterator();
 					while (it.hasNext()) {
 						String loc = (String) it.next();
 						Text errorText = new Text(iwrb.getLocalizedString(loc, ""));
@@ -146,12 +147,25 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		f.add(inputTable);
 		f.add(dataTable);
 		
-		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
+		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user") + ":");
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
 		int row = 1;
+		SubmitButton selectUser = new SubmitButton(iwrb.getLocalizedString(ACTION_SELECT_USER, "Select User"), ACTION_SELECT_USER, "select_user");
+		
 		t.add(labelUser, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
+		if (getUser() != null) {
+			t.add(getUser().getName(), 1, row);
+		}
+		
+		row++;
+		t.add(new UserChooserBrowser(CashierWindow.PARAMETER_USER_ID), 1, row++);
+		t.add(selectUser, 1, row);
+		
+		t.setAlignment(1, 3, "RIGHT");
+
+		
 		if (getUser() != null) {
 			String selectedGroup = iwc.getParameter(LABEL_USERS_GROUPS);
 			String selectedTariff = iwc.getParameter(LABEL_TARIFF);
@@ -296,7 +310,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 						}
 						dataTable.add(nf.format(entry.getAmount()), 5, r);
 						if (entry.getTypeLocalizationKey() != null) {
-							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), "Type"), 6, r);
+							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), entry.getTypeLocalizationKey()), 6, r);
 						}
 						r++;
 					}

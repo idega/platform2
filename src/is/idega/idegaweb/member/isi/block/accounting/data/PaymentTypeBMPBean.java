@@ -29,7 +29,7 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
 
     protected final static String COLUMN_DELETED = "deleted";
 
-    protected final static String LOC_KEY_CASH = "isi-payment_type_cash";
+    protected final static String LOC_KEY_CASH = "isi_payment_type_cash";
 
     protected final static String LOC_KEY_CHECK = "isi_payment_type_check";
 

@@ -33,7 +33,6 @@ public class EditTariffType extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "ett_submit";
 	protected static final String ACTION_DELETE = "ett_delete";
 	
-//	protected static final String LABEL_CLUB = "isi_acc_ett_club";
 	protected static final String LABEL_NAME = "isi_acc_ett_name";
 	protected static final String LABEL_LIST_NAMES = "isi_acc_ett_list_names";
 	protected static final String LABEL_DELETE = "isi_acc_ett_delete";
@@ -139,7 +138,6 @@ public class EditTariffType extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		

@@ -35,7 +35,7 @@ import com.idega.user.presentation.UserChooserBrowser;
  * @author palli
  */
 public class SelectPayments extends CashierSubWindowTemplate {
-	protected static final String ACTION_SUBMIT = "sp_submit";
+	protected static final String ACTION_SELECT_USER = "sp_select_user";
 	protected static final String ACTION_ADD_TO_BASKET = "sp_basket";
 	
 	private final static String LABEL_SELECTED_USER = "isi_acc_sp_selected_user";
@@ -87,7 +87,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
 		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
+		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
 		labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -96,7 +96,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		Text labelRemaining = new Text(iwrb.getLocalizedString(LABEL_AMOUNT_REMAINING, "Remaining"));
 		labelRemaining.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
+		SubmitButton selectUser = new SubmitButton(iwrb.getLocalizedString(ACTION_SELECT_USER, "Select user"), ACTION_SELECT_USER, "select_user");
 		
 		int row = 1;
 		inputTable.add(labelUser, 1, row);
@@ -106,7 +106,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		
 		row++;
 		inputTable.add(new UserChooserBrowser(CashierWindow.PARAMETER_USER_ID), 1, row++);
-		inputTable.add(submit, 1, row);
+		inputTable.add(selectUser, 1, row);
 		
 		inputTable.setAlignment(1, 3, "RIGHT");
 
@@ -161,8 +161,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 			moveToBasket.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
 			paymentTable.add(moveToBasket, 6, row);
 			paymentTable.setAlignment(6, row, "RIGHT");
-    
-		    
 		}
 		
 		f.add(inputTable);
@@ -171,7 +169,6 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
-//		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		
 		add(f);
 	}

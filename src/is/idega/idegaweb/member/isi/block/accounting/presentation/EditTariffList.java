@@ -63,7 +63,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	}
 
 	private void saveTariffEntry(IWContext iwc) {
-		_errorList = new ArrayList();
+		errorList = new ArrayList();
 		
 		String group = iwc.getParameter(LABEL_GROUP);
 		String type = iwc.getParameter(LABEL_TARIFF_TYPE);
@@ -256,7 +256,6 @@ public class EditTariffList extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		

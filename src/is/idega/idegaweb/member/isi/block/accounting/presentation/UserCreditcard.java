@@ -215,7 +215,6 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		add(f);

@@ -207,7 +207,6 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		
 		row = 1;
 		t.add(labelName, 2, row);
-//		t.add(labelClub, 3, row);
 		t.add(labelDiv, 3, row);
 		t.add(labelGroup, 4, row);
 		t.add(labelStart, 5, row);
@@ -269,7 +268,6 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		

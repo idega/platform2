@@ -36,11 +36,11 @@ public class CashierSubWindowTemplate extends Block {
 	
 	protected static final String NOT_DONE ="isi_todo";
 	
-	protected Group _club = null;
-	protected Group _division = null;
-	protected User _user = null;
+	protected Group club = null;
+	protected Group division = null;
+	protected User user = null;
 	
-	protected ArrayList _errorList = null;
+	protected ArrayList errorList = null;
 	
 	/**
 	 * 
@@ -50,27 +50,27 @@ public class CashierSubWindowTemplate extends Block {
 	}
 
 	public void setClub(Group club) {
-		_club = club;
+		this.club = club;
 	}
 	
 	public void setDivision(Group division) {
-		_division = division;
+		this.division = division;
 	}
 	
 	public void setUser(User user) {
-		_user = user;
+		this.user = user;
 	}
 	
 	public Group getClub() {
-		return _club;
+		return club;
 	}
 	
 	public Group getDivision() {
-		return _division;
+		return division;
 	}
 	
 	public User getUser() {
-		return _user;
+		return user;
 	}
 	
 	

@@ -370,8 +370,27 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.append(getIDColumnName());
 		sql.appendDescending();
 		
-		System.out.println("sql = " + sql.toString());
+		return idoFindPKsByQuery(sql);		
+	}
 
+	public Collection ejbFindAllPaymentsByUser(Group club, Group division, User user) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		if (division != null) {
+			sql.appendAnd();
+			sql.appendEquals(COLUMN_DIVISION_ID, division);
+		}
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_USER_ID, user);
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_OPEN, true);
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_TYPE, TYPE_PAYMENT);
+		sql.appendOrderBy();
+		sql.append(getIDColumnName());
+		sql.appendDescending();
+		
 		return idoFindPKsByQuery(sql);		
 	}
 
