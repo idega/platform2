@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.10 2003/09/11 14:34:20 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.11 2003/10/02 22:42:17 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/09/11 14:34:20 $
+ * $Date: 2003/10/02 22:42:17 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -66,6 +66,8 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_HEADER_REG_SPEC_TYPE = KP + "reg_spec_type_header";
 	private final static String KEY_HEADER_MAIN_RULE = KP + "main_rule_header";
+	private final static String KEY_HEADER_EDIT = KP + "edit_header";
+	private final static String KEY_HEADER_REMOVE = KP + "remove_header";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_MAIN_RULE = KP + "main_rule";
 	private final static String KEY_SAVE = KP + "save";
@@ -283,8 +285,8 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		ListTable list = new ListTable(this, 4);
 		list.setLocalizedHeader(KEY_HEADER_REG_SPEC_TYPE, "Regelspecificeringstyp", 1);
 		list.setLocalizedHeader(KEY_HEADER_MAIN_RULE, "Huvudregel", 2);
-		list.setHeader(" ", 3);
-		list.setHeader(" ", 4);
+		list.setLocalizedHeader(KEY_HEADER_EDIT, "Redigera", 3);
+		list.setLocalizedHeader(KEY_HEADER_REMOVE, "Ta bort", 4);
 
 		if (regSpecTypes != null) {
 			Iterator iter = regSpecTypes.iterator();
