@@ -1,5 +1,5 @@
 /*
- * $Id: ActivityTypeBMPBean.java,v 1.1 2003/08/18 12:38:21 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.2 2003/08/18 13:29:30 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,13 +18,16 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
-
 /**
- * Activity types ("Förskola", "skola", "blabla") etc. Used for the posting.
- * @author Kjell Lindman
+ * Activity types ("Forskola", "skola", "blabla") etc. Used for the posting.
+ * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
+ * <p>
+ * $Id: ActivityTypeBMPBean.java,v 1.2 2003/08/18 13:29:30 kjell Exp $
+ * 
+ * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+ * @version $Revision: 1.2 $
  */
-
 public class ActivityTypeBMPBean extends GenericEntity implements ActivityType
 {
 	private static final String ENTITY_NAME = "cacc_activity_type";
