@@ -284,6 +284,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
 			
 			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
+			button.setSubmitConfirm(localize("child_care.clean_queue_request", "Do you really want to send the queue request?"));
 			if (iwc.getSessionAttribute(ChildCareBusiness.CLEAN_QUEUE_RUNNING) != null) {
 				form.setDisabled(true);
 			}
