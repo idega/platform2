@@ -22,6 +22,7 @@ import	com.idega.jmodule.image.business.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.jmodule.image.business.*;
+import com.oreilly.servlet.MultipartRequest;
 
 
 public class ImageViewer extends JModuleObject{
@@ -53,10 +54,14 @@ private Text textProxy = new Text();
 
 private Image view;
 private Image delete;
-private Image editor;
 private Image use;
 private Image copy;
 private Image cut;
+private Image edit;
+private Image save;
+private Image cancel;
+private Image newImage;
+private Image newCategory;
 
 private String language = "IS";
 
@@ -125,6 +130,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
 
+  outerTable.add(getEditForm(),1,2);
+
   if( refresh ){
     modinfo.getSession().removeAttribute("image_previous_catagory_id");
     modinfo.getSession().removeAttribute("image_entities");
@@ -132,10 +139,15 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
   delete = new Image("/pics/jmodules/image/"+language+"/delete.gif","Delete this image");
-  editor = new Image("/pics/jmodules/image/"+language+"/imageeditor.gif");
   use = new Image("/pics/jmodules/image/"+language+"/use.gif","Use this image");
   copy = new Image("/pics/jmodules/image/"+language+"/copy.gif","Copy this image");
   cut = new Image("/pics/jmodules/image/"+language+"/cut.gif","Cut this image");
+  edit = new Image("/pics/jmodules/image/"+language+"/edit.gif","Edit this image");
+
+  save = new Image("/pics/jmodules/image/"+language+"/save.gif","Edit this image");
+  cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Edit this image");
+  newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Edit this image");
+  newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit this image");
 
   String imageId = modinfo.getRequest().getParameter("image_id");
   String imageCategoryId = modinfo.getRequest().getParameter("image_catagory_id");
@@ -163,128 +175,139 @@ public void main(ModuleInfo modinfo)throws Exception{
   if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
   if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
 
-  if(isAdmin) {
-    Link imageEditor = new Link(editor,"/image/imageadmin.jsp");
-    outerTable.add(imageEditor,1,1);
-  }
 
-  if(imageId != null){
+
+  String edit = modinfo.getRequest().getParameter("edit");
+
+  if(edit!=null){
     try{
-      limitImageWidth = false;
-      image[0] = new ImageEntity(Integer.parseInt(imageId));
-      Text imageName = new Text(image[0].getName());
-      imageName.setBold();
-      imageName.setFontColor(textColor);
-      imageName.setFontSize(3);
-      outerTable.add(imageName,1,1);
-      outerTable.add(displayImage(image[0]),1,2);
-      Text backtext = new Text("Bakka <<");
-      backtext.setBold();
-      Link backLink = new Link(backtext);
-      backLink.setFontColor(textColor);
-      backLink.setAsBackLink();
-      links.add(backLink,1,1);
-      outerTable.add(links,1,3);
-      add(outerTable);
-     }
-    catch(NumberFormatException e) {
-      add(new Text("ImageId must be a number"));
-      System.err.println("ImageViewer: ImageId must be a number");
+      getEditor(modinfo);
+    }
+    catch(Throwable e){
+    e.printStackTrace(System.err);
+
+
     }
   }
   else{
-
-    try{
-      if ( (imageCategoryId != null) || (entities!=null) ){
-        ImageEntity[] imageEntity;
-        String sFirst = modinfo.getParameter("iv_first");//browsing from this image
-        if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
-
-        String previousCatagory =  (String)modinfo.getSession().getAttribute("image_previous_catagory_id");
-
-        if ( imageCategoryId != null){
-
-          if( (previousCatagory!=null) && (!previousCatagory.equalsIgnoreCase(imageCategoryId)) ){
-            modinfo.getSession().removeAttribute("image_previous_catagory_id");
-          }
-
-        ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
-        modinfo.getSession().setAttribute("image_previous_catagory_id",imageCategoryId);
-
-          categoryId = Integer.parseInt(imageCategoryId);
-          ImageCatagory category = new ImageCatagory(categoryId);
-          if ( inApplication == null ){
-            imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
-          }
-          else imageEntity = inApplication;
-
-          if( imageEntity!=null ){
-            modinfo.getServletContext().removeAttribute("image_entities_"+imageCategoryId);
-            modinfo.getServletContext().setAttribute("image_entities_"+imageCategoryId,imageEntity);
-          }
-
-          Text categoryName = new Text(category.getName());
-          categoryName.setBold();
-          categoryName.setFontColor(textColor);
-          categoryName.setFontSize(3);
-          outerTable.add(categoryName,1,1);
-
-          if( limitNumberOfImages ) {
-
-
-            Text leftText = new Text("Fyrri myndir <<");
-            leftText.setBold();
-
-            Link back = new Link(leftText);
-            back.setFontColor(textColor);
-            int iback = ifirst-numberOfDisplayedImages;
-            if( iback<0 ) ifirst = 0;
-            back.addParameter("iv_first",iback);
-            back.addParameter("image_catagory_id",category.getID());
-
-            String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
-            Text middleText = new Text(middle);
-            middleText.setBold();
-            middleText.setFontColor(textColor);
-
-
-            Text rightText = new Text(">> Næstu myndir");
-            rightText.setBold();
-
-            Link forward = new Link(rightText);
-            forward.setFontColor(textColor);
-
-            int inext = ifirst+numberOfDisplayedImages;
-            if( inext > (imageEntity.length-1)) inext = (imageEntity.length-1)-numberOfDisplayedImages;
-
-            forward.addParameter("iv_first",inext);
-            forward.addParameter("image_catagory_id",category.getID());
-
-            links.add(back,1,1);
-            links.add(middleText,2,1);
-            links.add(forward,3,1);
-
-
-          }
-        }
-        else{
-        //for searches
-
-          Text header = new Text(headerText);
-          header.setBold();
-          header.setFontColor(textColor);
-          header.setFontSize(3);
-          outerTable.add(header,1,1);
-          limitNumberOfImages=false;
-          imageEntity=entities;
-
-
-        }
+    if(imageId != null){
+      try{
+        limitImageWidth = false;
+        image[0] = new ImageEntity(Integer.parseInt(imageId));
+        Text imageName = new Text(image[0].getName());
+        imageName.setBold();
+        imageName.setFontColor(textColor);
+        imageName.setFontSize(3);
+        outerTable.add(imageName,1,1);
+        outerTable.add(displayImage(image[0]),1,2);
+        Text backtext = new Text("Bakka <<");
+        backtext.setBold();
+        Link backLink = new Link(backtext);
+        backLink.setFontColor(textColor);
+        backLink.setAsBackLink();
+        links.add(backLink,1,1);
         outerTable.add(links,1,3);
-        outerTable.add(displayCatagory(imageEntity),1,2);
         add(outerTable);
-
+       }
+      catch(NumberFormatException e) {
+        add(new Text("ImageId must be a number"));
+        System.err.println("ImageViewer: ImageId must be a number");
       }
+    }
+    else{
+
+      try{
+        if ( (imageCategoryId != null) || (entities!=null) ){
+          ImageEntity[] imageEntity;
+          String sFirst = modinfo.getParameter("iv_first");//browsing from this image
+          if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
+
+          String previousCatagory =  (String)modinfo.getSession().getAttribute("image_previous_catagory_id");
+
+          if ( imageCategoryId != null){
+
+            if( (previousCatagory!=null) && (!previousCatagory.equalsIgnoreCase(imageCategoryId)) ){
+              modinfo.getSession().removeAttribute("image_previous_catagory_id");
+            }
+
+          ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
+          modinfo.getSession().setAttribute("image_previous_catagory_id",imageCategoryId);
+
+            categoryId = Integer.parseInt(imageCategoryId);
+            ImageCatagory category = new ImageCatagory(categoryId);
+            if ( inApplication == null ){
+              imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+            }
+            else imageEntity = inApplication;
+
+            if( imageEntity!=null ){
+              modinfo.getServletContext().removeAttribute("image_entities_"+imageCategoryId);
+              modinfo.getServletContext().setAttribute("image_entities_"+imageCategoryId,imageEntity);
+            }
+
+            Text categoryName = new Text(category.getName());
+            categoryName.setBold();
+            categoryName.setFontColor(textColor);
+            categoryName.setFontSize(3);
+            outerTable.add(categoryName,1,1);
+
+            if( limitNumberOfImages ) {
+
+
+              Text leftText = new Text("Fyrri myndir <<");
+              leftText.setBold();
+
+              Link back = new Link(leftText);
+              back.setFontColor(textColor);
+              int iback = ifirst-numberOfDisplayedImages;
+              if( iback<0 ) ifirst = 0;
+              back.addParameter("iv_first",iback);
+              back.addParameter("image_catagory_id",category.getID());
+
+              String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
+              Text middleText = new Text(middle);
+              middleText.setBold();
+              middleText.setFontColor(textColor);
+
+
+              Text rightText = new Text(">> Næstu myndir");
+              rightText.setBold();
+
+              Link forward = new Link(rightText);
+              forward.setFontColor(textColor);
+
+              int inext = ifirst+numberOfDisplayedImages;
+              if( inext > (imageEntity.length-1)) inext = (imageEntity.length-1)-numberOfDisplayedImages;
+
+              forward.addParameter("iv_first",inext);
+              forward.addParameter("image_catagory_id",category.getID());
+
+              links.add(back,1,1);
+              links.add(middleText,2,1);
+              links.add(forward,3,1);
+
+
+            }
+          }
+          else{
+          //for searches
+
+            Text header = new Text(headerText);
+            header.setBold();
+            header.setFontColor(textColor);
+            header.setFontSize(3);
+            outerTable.add(header,1,1);
+            limitNumberOfImages=false;
+            imageEntity=entities;
+
+
+          }
+          outerTable.add(links,1,3);
+          outerTable.add(displayCatagory(imageEntity),1,2);
+          add(outerTable);
+
+        }
+
     }
     catch(NumberFormatException e) {
       add(new Text("CategoryId must be a number"));
@@ -292,6 +315,7 @@ public void main(ModuleInfo modinfo)throws Exception{
     }
   }
 
+  }
 }
 
 public static Table getImageInTable(int imageId) throws SQLException {
@@ -346,6 +370,11 @@ private Table displayImage( ImageEntity image ) throws SQLException
     Link imageEdit5 = new Link(use);
     imageEdit5.addParameter("image_id",imageId);
     imageEdit5.addParameter("action","use");
+    Link imageEdit6 = new Link(edit);
+    imageEdit6.addParameter("image_id",imageId);
+    imageEdit6.addParameter("edit","true");
+
+
 
 
     editTable.add(imageEdit,1,1);
@@ -354,6 +383,7 @@ private Table displayImage( ImageEntity image ) throws SQLException
    // editTable.add(imageEdit3,3,1);
     editTable.add(imageEdit4,4,1);
     editTable.add(imageEdit5,5,1);
+    editTable.add(imageEdit6,2,1);
 
     imageTable.add(editTable, 1, 2);
   }
@@ -492,9 +522,7 @@ public void setDeleteImage(String imageName){
   delete = new Image(imageName);
 }
 
-public void setEditorImage(String imageName){
-  editor = new Image(imageName);
-}
+
 
 public void setUseImage(String imageName){
   use = new Image(imageName);
@@ -717,10 +745,204 @@ private Form getEditForm(){
 }
 
 
+public void Upload(Connection Conn, ModuleInfo modinfo)throws IOException,SQLException{
+
+  Form newImageForm = new Form();
+  newImageForm.setMethod("GET");
+
+  MultipartRequest multi=null;
+
+  try {
+
+    multi = new MultipartRequest(modinfo.getRequest(),Conn,".", 5 * 1024 * 1024);
+
+  ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
+  DropdownMenu category = new DropdownMenu("category");
+  for (int i = 0 ; i < imgCat.length ; i++ ) {
+  category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
+  }
+
+
+  Table UploadDoneTable = new Table(2,3);
+      UploadDoneTable.mergeCells(1,1,2,1);
+  UploadDoneTable.mergeCells(1,2,2,2);
+  UploadDoneTable.setBorder(0);
+  newImageForm.add(UploadDoneTable);
+
+  UploadDoneTable.add(category,2,3);
+
+  UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
+  UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSession().getAttribute("image_id")) ),1,2);
+
+  UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
+  UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);
+  /*	newImageForm.add(new SubmitButton("submit","Ný mynd"));
+  newImageForm.add(new SubmitButton("submit","Vista"));
+  newImageForm.setMethod("GET");
+  *///	UploadDoneTable.add(newImageForm,1,3);
+  //	add(UploadDoneTable);
+  add(newImageForm);
+
+
+  }
+  catch (Exception e) {
+    e.printStackTrace();
+  }
+
+}
+
+public void drawUploadTable(String image_id,boolean replace){
+	Form MultipartForm = new Form();
+	MultipartForm.setMultiPart();
+	//MultipartForm.add(new HiddenInput("statement","insert into images (image_name,image_value,content_type,from_file,image_category_id) values('gunnar', ? ,?,'N',4)"));
+	if (replace) {
+		MultipartForm.add(new HiddenInput("statement","update image set image_value=?,content_type=?,image_name=? where image_id="+image_id+""));
+	}
+	else {
+
+		idegaTimestamp dags = new idegaTimestamp();
+
+	   //  MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,from_file) values("+image_id+",?,?,?,'N')"));
+            if( !ImageBusiness.getDatastoreType(new ImageEntity()).equals("oracle") )
+                MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,date_added,from_file) values("+image_id+",?,?,?,'"+dags.getTimestampRightNow().toString()+"','N')"));
+	        else  MultipartForm.add(new HiddenInput("statement","insert into image (image_id,image_value,content_type,image_name,date_added,from_file) values("+image_id+",?,?,?,"+dags.RightNow().toOracleString()+",'N')"));
+
+ }
+
+	MultipartForm.add(new HiddenInput("toDatabase","true"));
+
+	MultipartForm.add(new FileInput());
+	MultipartForm.add(new SubmitButton());
+
+
+	Table UploadTable = new Table(1,3);
+	UploadTable.add(new Text("Veldu mynd af harðadisknum þínum með \"Browse\" hnappnum"),1,1);
+	UploadTable.add(new Text("og smelltu svo á \"Submit\". ATH ef myndin er stór getur þetta tekið lengri tíma"),1,2);
+	UploadTable.add(MultipartForm,1,3);
+
+	add(UploadTable);
+}
+
+
+public void getEditor(ModuleInfo modinfo) throws Throwable{
+
+  Connection Conn = null;
+
+
+  String whichButton = getRequest().getParameter("submit");
+
+////
+
+
+  String ImageId = modinfo.getRequest().getParameter("image_id");
+  String image_in_session = (String) modinfo.getSession().getAttribute("image_in_session");
+  ImageHandler handler = (ImageHandler) modinfo.getSession().getAttribute("handler");
+
+
+  if (image_in_session!=null){
+    if (ImageId != null) {
+      if( !ImageId.equalsIgnoreCase(image_in_session) ){
+        modinfo.getSession().setAttribute("image_in_session",ImageId);
+        handler = new ImageHandler(Integer.parseInt(ImageId));
+        modinfo.getSession().setAttribute("handler",handler);
+
+      }
+      ImageBusiness.handleEvent(modinfo,handler);
+      outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
+    }
+    else {
+      ImageId = image_in_session;
+      ImageBusiness.handleEvent(modinfo,handler);
+      outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
+    }
+  }
+   else{
+    if( ImageId!=null ) {
+      modinfo.getSession().setAttribute("image_in_session",ImageId);
+      handler = new ImageHandler(Integer.parseInt(ImageId));
+      modinfo.getSession().setAttribute("handler",handler);
+      ImageBusiness.handleEvent(modinfo,handler);
+      outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
+    }
+   }
+
+
+
+////
+
+ try {
+
+  Conn = (new ImageEntity()).getConnection();
+
+    if (Conn != null) {
+        if (whichButton!=null && !(whichButton.equals(""))){
+          // opening a new upload window
+          if( whichButton.equals("new")){
+          //getSession().removeAttribute("ImageId");
+
+
+            //debug eiki was in main(....
+            if( ImageId!=null){//var til fyrir
+              drawUploadTable(ImageId,true);
+            }
+            else{
+              drawUploadTable( ImageBusiness.getImageID(Conn) ,false);
+            }
+
+            //
+
+
+            Upload(Conn,modinfo);
+          }
+          // done uploading
+          else if (whichButton.equals("Vista")){
+
+          //debug eiki make this work!
+          //  myWindow.setParentToReload();
+
+            //debug eiki added
+            int imageId = Integer.parseInt((String)modinfo.getSession().getAttribute("image_id"));
+            String[] categories = modinfo.getRequest().getParameterValues("category");
+            ImageBusiness.saveImageToCatagories(imageId,categories);
+
+            //debug eiki make this work!
+
+            //myWindow.close();
+
+          }
+          // updating
+          else{
+            ImageId = (String)modinfo.getSession().getAttribute("image_id");
+
+            //debug eiki
+            if( ImageId!=null){//var til fyrir
+              drawUploadTable(ImageId,true);
+            }
+            else{
+              drawUploadTable( ImageBusiness.getImageID(Conn) ,false);
+            }
+
+          }
+          }
+          else {
+                  //Upload(Conn);//no if here because of the multipart-request
+          }
+    }
+
+  }
+  catch (Throwable E){
+          E.printStackTrace(System.err);
+          add(E.getMessage());
+  }
+  finally{
+    if( Conn!=null) freeConnection(Conn);
+  }
 
 
 
 
+
+}
 
 
 }

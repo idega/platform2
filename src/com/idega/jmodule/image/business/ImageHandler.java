@@ -19,6 +19,7 @@ import com.idega.data.BlobInputStream;
 import com.idega.data.BlobWrapper;
 import com.idega.jmodule.client.imageModule;
 import com.idega.jmodule.image.data.*;
+import com.idega.jmodule.object.ModuleInfo;
 import com.idega.servlet.IWCoreServlet;
 
 
@@ -96,7 +97,7 @@ public void getImageFromDatabase(int imageId) throws Throwable{
 
   setImageId(imageId);
 
-  this.imageInfo = new ImageEntity( imageId );
+  this.imageInfo = new com.idega.jmodule.image.data.ImageEntity( imageId );
   setContentType( imageInfo.getContentType() );
   setImageName( imageInfo.getName() );
 
@@ -313,8 +314,8 @@ private float getQuality(){
   return this.quality;
 }
 
-public com.idega.jmodule.object.Image getModifiedImageAsImageObject(HttpServlet servlet) throws Throwable{
-  writeModifiedImageToFile(servlet.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg");//temporary storage
+public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Throwable{
+  writeModifiedImageToFile(modinfo.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg");//temporary storage
   //InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
 return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.getImageName(),this.getModifiedWidth(),this.getModifiedHeight());
 
