@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:06 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/16 12:12:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -164,6 +164,8 @@ public class InvoiceByCompensationView extends CommuneBlock {
                     + student.getLastName ();
             final String schoolName
                     = getSchoolNameFromMember (member, classHome, schoolHome);
+            final String intervalKey = member.getInvoiceInterval ();
+            final String intervalString = localize (intervalKey, intervalKey);
             ssnLink.addParameter (ACTION_KEY, ACTION_SHOWUSER_KEY);
             ssnLink.addParameter (MEMBERID_KEY, memberId.toString ());
             ssnLink.addParameter (SSN_KEY, ssn);
@@ -172,8 +174,7 @@ public class InvoiceByCompensationView extends CommuneBlock {
             memberTable.add (ssnLink, col++, row);
             memberTable.add (new Text(studentName), col++, row);
             memberTable.add (new Text(schoolName), col++, row);
-            memberTable.add (new Text(member.getInvoiceInterval ()), col++,
-                             row);
+            memberTable.add (new Text(intervalString), col++, row);
             final Date latestInvoiceDate = member.getLatestInvoiceDate ();
             if (null != latestInvoiceDate) {
                 memberTable.add (new Text(dateFormatter.format
@@ -211,6 +212,8 @@ public class InvoiceByCompensationView extends CommuneBlock {
         final String studentName = context.getParameter (NAME_KEY);
         final String schoolName = context.getParameter (SCHOOL_KEY);
         final Date latestInvoiceDate = member.getLatestInvoiceDate ();
+        final String intervalKey = member.getInvoiceInterval ();
+        final String intervalString = localize (intervalKey, intervalKey);
 
         // display student info
         final Table studentTable = new Table ();
@@ -222,7 +225,7 @@ public class InvoiceByCompensationView extends CommuneBlock {
                  { NAME_KEY, NAME_DEFAULT, studentName },
                  { PROVIDER_KEY, PROVIDER_DEFAULT, schoolName },
                  { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT,
-                   member.getInvoiceInterval () }};
+                   intervalString }};
         final TextInput textInput = (TextInput) getStyledInterface
                 (new TextInput (LATESTINVOICEDATE_KEY));
         textInput.setLength (10);
