@@ -340,21 +340,24 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     if (isAgeLimitStringentCondition(targetGroup))  {
       // test age of target group
       GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
+      int keyDateDay = keyDate.get(Calendar.DAY_OF_MONTH);
+      int keyDateMonth = keyDate.get(Calendar.MONTH);
       int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
-      keyDate.set(Calendar.YEAR, yearOfBirth);
-      boolean after = keyDate.after(dateOfBirth);
+      int dateOfBirthDay = dateOfBirth.get(Calendar.DAY_OF_MONTH);
+      int dateOfBirthMonth = dateOfBirth.get(Calendar.MONTH);
+      boolean birthdayAfterKeyDate = ( keyDateMonth < dateOfBirthMonth ) || (keyDateMonth == dateOfBirthMonth && keyDateDay < dateOfBirthDay);
       // get age
-      Calendar rightNow = GregorianCalendar.getInstance();
+      Calendar rightNow = Calendar.getInstance();
       int currentYear = rightNow.get(Calendar.YEAR);
       int userAge = currentYear - yearOfBirth;
       int lowerAgeLimit = getLowerAgeLimit(targetGroup);
       int upperAgeLimit = getUpperAgeLimit(targetGroup);
       // test lower age
-      if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && ! after) ) {
+      if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && birthdayAfterKeyDate) ) {
         return iwrb.getLocalizedString("age_gender_user_too_young", "The user is too young");
       }
       // test upper age
-      if (userAge > upperAgeLimit || (userAge == upperAgeLimit && after) ) {
+      if (userAge > upperAgeLimit + 1 || (userAge == upperAgeLimit + 1 && ! birthdayAfterKeyDate) ) {
         return iwrb.getLocalizedString("age_gender_user_too_old", "The user is too old");
       }
     }
