@@ -300,6 +300,20 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		
 		return super.idoFindPKsByQuery(sql);
 	}
+	
+	public Collection ejbFindAllCentralizedAdministratedByType(Collection typeIds) throws javax.ejb.FinderException {
+		if (typeIds == null || typeIds.size() < 1) {
+			return null;
+		}
+		else {
+			StringBuffer select = new StringBuffer("select distinct s.* from " + SCHOOL + " s,sch_school_sch_school_type m where m.sch_school_type_id in (");
+			select.append(getIDOUtil().convertListToCommaseparatedString(typeIds));
+			select.append(") and m.sch_school_id = s.sch_school_id");
+			select.append(" and s."+CENTRALIZED_ADMINISTRATION+" like 'Y'");			
+			select.append(" order by s.").append(NAME);
+			return super.idoFindPKsBySQL(select.toString());
+		}
+	}
 
 	public Collection ejbFindAllBySchoolArea(int areaId) throws javax.ejb.FinderException {
 		return super.idoFindPKsBySQL("select * from " + SCHOOL + " where " + SCHOOLAREA + " = " + areaId + " order by " + NAME);
