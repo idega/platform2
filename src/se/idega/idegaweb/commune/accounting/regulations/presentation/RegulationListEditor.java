@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.19 2003/10/29 09:56:10 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.20 2003/10/29 10:03:48 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.19 2003/10/29 09:56:10 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.20 2003/10/29 10:03:48 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -680,8 +680,8 @@ public class RegulationListEditor extends AccountingBlock {
 						}
 					}
 					mainMap.put(cond, intervalMap);
-					dropdown.addMenuElement(""+cond.getPrimaryKey(), cond.getLocalizationKey(), (Map) mainMap.get(cond), cond.getDataMethodName());
-//					dropdown.addMenuElement(""+cond.getPrimaryKey(), cond.getName(), (Map) mainMap.get(cond), cond.getDataMethodName());
+//					dropdown.addMenuElement(""+cond.getPrimaryKey(), cond.getLocalizationKey(), (Map) mainMap.get(cond), cond.getDataMethodName());
+					dropdown.addMenuElement(""+cond.getPrimaryKey(), cond.getName(), (Map) mainMap.get(cond), cond.getDataMethodName());
 				}
 			}
 		}
