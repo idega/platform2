@@ -29,6 +29,7 @@ public class BoxLayoutHandler implements PropertyHandler {
     menu.addMenuElement("","Select:");
     menu.addMenuElement(Box.BOX_VIEW,"Box view");
     menu.addMenuElement(Box.CATEGORY_VIEW,"Category view");
+    menu.addMenuElement(Box.COLLECTION_VIEW,"Collection view");
     menu.setSelectedElement(value);
     return menu;
   }

@@ -29,6 +29,7 @@ private int _layout = -1;
 
 public final static int BOX_VIEW = 1;
 public final static int CATEGORY_VIEW = 2;
+public final static int COLLECTION_VIEW = 3;
 
 public final static String BOX_VIEW_STRING = "BOX VIEW";
 public final static String CATEGORY_VIEW_STRING = "CATEGORY VIEW";
@@ -172,6 +173,11 @@ public Box(String attribute){
         case CATEGORY_VIEW:
           boxTable.setWidth(_boxWidth);
           getCategoryView(box,categories,boxTable,iwc);
+          break;
+        case COLLECTION_VIEW:
+          boxTable.setWidth(_boxWidth);
+          boxTable.setCellspacing(0);
+          getCollectionView(box,categories,boxTable,iwc);
           break;
       }
     }
@@ -334,6 +340,60 @@ public Box(String attribute){
     }
     if ( _isAdmin && _boxCategoryID != -1 ) {
       boxTable.add(getAddLink(category.getID()),1,row);
+    }
+  }
+
+  private void getCollectionView(BoxEntity box,BoxCategory[] categories,Table boxTable,IWContext iwc) {
+    int row = 1;
+    int column = 1;
+
+    Image image = Table.getTransparentCell(iwc);
+      image.setHeight(_boxSpacing);
+
+    for ( int a = 0; a < categories.length; a++ ) {
+      String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
+      if ( categoryString == null ) {
+        categoryString = "$language$";
+      }
+
+      Text categoryText = new Text(categoryString);
+        categoryText.setFontStyle(_categoryStyle);
+
+      Table table = new Table();
+        table.setWidth("100%");
+        table.setCellspacing(0);
+        table.setCellpadding(1);
+
+      table.add(categoryText,1,1);
+
+      int linkRow = 2;
+
+      BoxLink[] links = BoxFinder.getLinksInBox(box,categories[a]);
+      if ( links != null ) {
+        for ( int b = 0; b < links.length; b++ ) {
+          Link link = getLink(links[b]);
+          if ( link != null ) {
+            table.add(link,1,linkRow);
+            table.setWidth(1,linkRow,"100%");
+
+            if ( _isAdmin ) {
+              table.add(getEditLink(links[b].getID()),2,linkRow);
+              table.add(getDeleteLink(links[b].getID()),2,linkRow);
+            }
+            linkRow++;
+          }
+        }
+
+        if ( _isAdmin ) {
+          table.add(getAddLink(categories[a].getID()),1,linkRow);
+        }
+      }
+
+      boxTable.add(table,1,row);
+      row++;
+
+      boxTable.add(image,1,row);
+      row++;
     }
   }
 
