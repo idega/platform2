@@ -319,7 +319,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")+ personalIdUserName));
-				contentTable.add(getPlaceInGroupForm());
+				contentTable.add(getPlaceInGroupForm(iwc));
 				break;
 			case METHOD_MOVE_TO_GROUP :
 				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group")+ personalIdUserName));
@@ -661,7 +661,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getPlaceInGroupForm() throws RemoteException {
+	private Table getPlaceInGroupForm(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -690,22 +690,64 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 			table.add(textInput, 1, row++);
 		}
+		
+		/* *******restricting the classes being chosen */
+		Collection types = null;
+		try {
+			types = application.getProvider().findRelatedSchoolTypes();
+			
+		} catch (IDORelationshipException e) {
+			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		}
+		
+		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
+		schoolClasses.setLayoutVertical(true);
+		//schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.schooltype", "Type")+":"));
+		//schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.group", "Group")+":"));
+		//schoolClasses.setVerticalSpaceBetween(15);
+		//schoolClasses.setSpaceBetween(15);
+		//schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
+		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
+		//int classID = archive.getSchoolClassMember().getSchoolClassId();
+
+		
+		if (getChildcareID() != -1) {
+			
+			if (!types.isEmpty()) {
+				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
+				if (typeGroupMap != null) {
+					Iterator iter = typeGroupMap.keySet().iterator();
+					while (iter.hasNext()) {
+						SchoolType schoolType = (SchoolType) iter.next();
+						schoolClasses.addMenuElement(schoolType.getPrimaryKey().toString(), schoolType.getSchoolTypeName(), (Map) typeGroupMap.get(schoolType));
+					}
+				}
+			}
+		}
 
 		Table dropdownTable = new Table(2, 3);
 		int dropRow = 1;
-		DropdownMenu groups = getGroups(-1, -1);
-		groups.addMenuElementFirst("-1","");
-		groups.setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
+		
+		//DropdownMenu groups = getGroups(-1, -1)
+		//DropdownMenu groups = schoolClasses.getSecondaryDropdown();
+		schoolClasses.getSecondaryDropdown().addMenuElementFirst("-1","");
+		schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
 		
 		dropdownTable.add(getSmallText(localize("child_care.group", "Group")+":"), 1, dropRow);
-		dropdownTable.add(groups, 2, dropRow++);
-
-		DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
-		schoolTypes.addMenuElementFirst("-1","");
-		schoolTypes.setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
+		dropdownTable.add(schoolClasses.getSecondaryDropdown(), 2, dropRow++);
+		
+		//DropdownMenu schoolTypes = getSchoolTypes(-1, -1);
+		//DropdownMenu schoolTypes = schoolClasses.getPrimaryDropdown();
+		schoolClasses.getPrimaryDropdown().addMenuElementFirst("-1","");
+		schoolClasses.getPrimaryDropdown().setAsNotEmpty(localize("child_care.must_select_a_type","You must select a type."), "-1");
 		
 		dropdownTable.add(getSmallText(localize("child_care.schooltype", "Type")+":"), 1, dropRow);
-		dropdownTable.add(schoolTypes, 2, dropRow++);
+		dropdownTable.add(schoolClasses.getPrimaryDropdown(), 2, dropRow++);
+		//dropdownTable.add(schoolClasses);
+		
 		
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
@@ -1362,6 +1404,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						if (tag.getName().equals(field)) {
 							if (tag.getType() != null && tag.getType().equals(java.lang.Integer.class)){
 								input.setAsIntegers(localize("ccconsign_integer", "Use numbers only for " + field + "."));
+								input.setAsNotEmpty(localize("ccconsign_integer_not_empty","A number needs to be entered"));
+								input.setMaxlength(2);
 							}
 						}
 					}
