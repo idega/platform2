@@ -35,7 +35,7 @@ public class MyDoctor extends EHealthBlock {
 	
 	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
-	private String prmMessage = prefix + "message";
+	private String prmSendMessage = prefix + "send_message";
 	private String prmVisitBooking = prefix + "visit_booking";
 	
 	
