@@ -171,7 +171,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"1");
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"3");
 		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"4");
-		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"5");
+//		_makeField.setToDisableWhenSelected(_connectionToSpecialFieldName,"5");
 		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
 		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
@@ -207,14 +207,14 @@ public class ClubInformationTab extends UserGroupTab {
 		_typeField.addMenuElement("1","Innlent félag");
 		_typeField.addMenuElement("2","Sérsamband");
 		_typeField.addMenuElement("3","Héraðssamband/Íþróttabandalag");
-		_typeField.addMenuElement("4","Erlent félag");
+//		_typeField.addMenuElement("4","Erlent félag");
 		
 		_makeField.addMenuElement("0","");
 		_makeField.addMenuElement("1","Fjölgreinafélag");
 		_makeField.addMenuElement("2","Sérgreinafélag");
 		_makeField.addMenuElement("3","Félag án iðkenda");
-		_makeField.addMenuElement("4","Ungmennafélag");
-		_makeField.addMenuElement("5","Óvirkt");
+//		_makeField.addMenuElement("4","Ungmennafélag");
+		_makeField.addMenuElement("4","Óvirkt");
 		
 		_statusField.addMenuElement("0","");
 		_statusField.addMenuElement("1","Virkt");
