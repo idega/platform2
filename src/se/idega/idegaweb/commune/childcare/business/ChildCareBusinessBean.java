@@ -142,8 +142,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return (ChildCarePrognosisHome) IDOLookup.getHome(ChildCarePrognosis.class);
 	}
 	
-	public ChildCareContractHome getChildCareContractArchiveHome() throws RemoteException {
-		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
+	public ChildCareContractHome getChildCareContractArchiveHome() {
+		try {
+			return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	public ChildCareQueueHome getChildCareQueueHome() throws RemoteException {
@@ -964,6 +969,92 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (FinderException e) {
 			//Placing not yet created...
+		}
+	}
+	
+	public boolean alterContract(int childcareContractID, int careTime, Date fromDate, Date endDate, Locale locale, User performer) {
+		try {
+			return alterContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), careTime, fromDate, endDate, locale, performer);
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+	}
+	
+	public boolean alterContract(ChildCareContract childcareContract, int careTime, Date fromDate, Date endDate, Locale locale, User performer) {
+		UserTransaction trans = getSessionContext().getUserTransaction();
+		try {
+			trans.begin();
+			
+			Contract contract = childcareContract.getContract();
+			contract.removeFileFromContract(childcareContract.getContractFile());
+			
+			ChildCareApplication application = childcareContract.getApplication();
+			
+			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+			List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, careTime, new IWTimestamp(fromDate), false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			
+			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
+			
+			childcareContract.setCareTime(careTime);
+			childcareContract.setValidFromDate(fromDate);
+			childcareContract.setTerminatedDate(endDate);
+			childcareContract.setContractFile(contractFile);
+			childcareContract.store();
+			
+			contract.setValidFrom(fromDate);
+			contract.setValidTo(endDate);
+			if (endDate == null) {
+				contract.setStatus("T");
+			}
+			else {
+				contract.setStatus("C");
+			}
+			contract.store();
+			contract.addFileToContract(contractFile);
+			
+			if (application.getContractId() == childcareContract.getContractID()) {
+				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
+				application.store();
+			}
+			verifyApplication(application, performer);
+			
+			trans.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				trans.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	protected void verifyApplication(ChildCareApplication application, User performer) {
+		try {
+			ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer)application.getPrimaryKey()).intValue());
+			ChildCareContract lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer)application.getPrimaryKey()).intValue());
+		
+			application.setFromDate(firstContract.getValidFromDate());
+			application.setRejectionDate(lastContract.getTerminatedDate());
+			if (application.getRejectionDate() != null) {
+				application.setApplicationStatus(getStatusReady());
+				changeCaseStatus(application, getCaseStatusReady().getStatus(), performer);
+			}
+			else {
+				application.setApplicationStatus(getStatusCancelled());
+				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
+			}
+		}
+		catch (FinderException fe) {
+			logError(fe.getMessage());
+		}
+		catch (RemoteException re) {
+			logError(re.getMessage());
 		}
 	}
 
@@ -1846,7 +1937,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getTagMap(application, locale, validFrom, isChange, "...");
 	}
 	
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, int careTime, IWTimestamp validFrom, boolean isChange) throws RemoteException {
+		return getTagMap(application, locale, careTime, validFrom, isChange, "...");
+	}
+
 	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean isChange, String emptyCareTimeValue) throws RemoteException {
+		return getTagMap(application, locale, application.getCareTime(), validFrom, isChange, emptyCareTimeValue);
+	}
+	
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, int careTime, IWTimestamp validFrom, boolean isChange, String emptyCareTimeValue) throws RemoteException {
 		HashMap map = new HashMap();
 		User child = application.getChild();
 		User parent1 = application.getOwner();
@@ -1907,16 +2006,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
 	     
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
-		if (application.getCareTime() != -1 && !isChange)
-			peer.setContent(String.valueOf(application.getCareTime()));
+		if (careTime != -1 && !isChange)
+			peer.setContent(String.valueOf(careTime));
 
 		else
 			peer.setContent(emptyCareTimeValue);
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "careTimeChange");
-		if (application.getCareTime() != -1 && isChange)
-			peer.setContent(String.valueOf(application.getCareTime()));
+		if (careTime != -1 && isChange)
+			peer.setContent(String.valueOf(careTime));
 		else
 			peer.setContent("....");
 		map.put(peer.getAlias(), peer);
@@ -2043,9 +2142,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 		catch (IDOStoreException e) {
-			e.printStackTrace();
-		}
-		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		catch (CreateException e) {
