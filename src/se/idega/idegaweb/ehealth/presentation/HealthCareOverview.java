@@ -12,7 +12,6 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -23,8 +22,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Form;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
 import com.idega.util.Age;
 
 
@@ -62,8 +59,8 @@ public class HealthCareOverview extends EHealthBlock {
 	private String keySet2Text4U2 = prefix + "h_care_o_set2_text_4U2";
 	private String keySet2Text5U2 = prefix + "h_care_o_set2_text_5U2";
 	
-	private int userID = -1;
-	private User user;
+	//private int userID = -1;
+	//private User user;
 	IWContext _iwc = null;
 	private Image imageCircleD = null;
 	private Image imageCircleU = null;
@@ -74,22 +71,24 @@ public class HealthCareOverview extends EHealthBlock {
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
 		
-		userID = iwc.getUserId();
+		//userID = iwc.getUserId();
 		
-		if (userID > 0) {
+	/*	if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
+	*/
 		imageCircleD = getBundle(iwc).getImage("circleDown.gif");
 		imageCircleU = getBundle(iwc).getImage("circleUp.gif");
 		imageBgVert = getBundle(iwc).getImage("bgbeigeVert.gif");
 		
-		add(getOverviewForm(iwc));
+	//	add(getOverviewForm(iwc));
+		add(getOverviewForm());
 		
 	
 		
 	}
 	
-	public PresentationObject getOverviewForm(IWContext iwc){
+	public PresentationObject getOverviewForm(){
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		Table T = new Table(3, 3);
@@ -100,7 +99,8 @@ public class HealthCareOverview extends EHealthBlock {
 		T.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		T.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_TOP);
 		//T.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
-		T.add(getNavigationTree(iwc), 1, 1);
+		//T.add(getNavigationTree(iwc), 1, 1);
+		T.add(getNavigationTree(), 1, 1);
 	//	T.add(getInfoLayer(), 2, 1);
 		
 		
@@ -212,7 +212,8 @@ public class HealthCareOverview extends EHealthBlock {
 		return myForm;
 	}
 	
-	private Layer getNavigationTree(IWContext iwc) {
+	//private Layer getNavigationTree(IWContext iwc) {
+	private Layer getNavigationTree() {
 		Layer layersNav = new Layer(Layer.DIV);
 		layersNav.setOverflow("scroll");
 		layersNav.setPositionType("relative");
