@@ -46,8 +46,8 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		addAttribute(COLUMN_NAME_GROUP_YEAR, "Year of the work report",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GROUP_NAME,"Name of group",true,true,String.class);
 		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME,"Short name of group",true,true,String.class,30);
-		addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"one-to-one",Group.class);
-		addAttribute(COLUMN_NAME_GROUP_TYPE, "Group type",true,true,String.class,"one-to-one",GroupType.class);
+		addAttribute(COLUMN_NAME_GROUP_ID, "Group id",true,true,Integer.class,"many-to-one",Group.class);
+		addAttribute(COLUMN_NAME_GROUP_TYPE, "Group type",true,true,String.class,30,"many-to-one",GroupType.class);
 		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
