@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.61 2001/12/17 21:21:53 aron Exp $
+ * $Id: NewsReader.java,v 1.62 2001/12/18 17:35:29 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -924,7 +924,6 @@ public class NewsReader extends Block implements IWBlock {
   public void setHeadlineAsLink(boolean headlineAsLink) {
     this.headlineAsLink=headlineAsLink;
     this.showHeadlineImage=true;
-    this.showMoreButton=false;
   }
   public void setHeadlineImage(Image image) {
     this.headlineImage=image;
