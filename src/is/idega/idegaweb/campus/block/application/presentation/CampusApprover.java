@@ -182,7 +182,7 @@ public class CampusApprover extends Block{
 
     try{
       Application A = new Application(id);
-      A.setStatus(A.STATUS_GARBAGE);
+      A.setStatus(Application.STATUS_GARBAGE);
       A.update();
     }
     catch(Exception e){
@@ -1418,11 +1418,11 @@ public class CampusApprover extends Block{
     DropdownMenu drp = new DropdownMenu(name);
     Applicant A = new Applicant();
 
-    drp.addMenuElement(A.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
-    drp.addMenuElement(A.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
-    drp.addMenuElement(A.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
-    drp.addMenuElement(A.getResidenceColumnName(),iwrb.getLocalizedString("residence","Residence"));
-    drp.addMenuElement(A.getResidenceColumnName(),iwrb.getLocalizedString("phone","Residence phone"));
+    drp.addMenuElement(Applicant.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
+    drp.addMenuElement(Applicant.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(Applicant.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
+    drp.addMenuElement(Applicant.getResidenceColumnName(),iwrb.getLocalizedString("residence","Residence"));
+    drp.addMenuElement(Applicant.getResidenceColumnName(),iwrb.getLocalizedString("phone","Residence phone"));
     drp.setSelectedElement(selected);
     return drp;
   }

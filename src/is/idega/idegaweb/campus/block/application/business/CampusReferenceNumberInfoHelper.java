@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.7 2002/02/27 18:42:14 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.8 2002/04/03 16:31:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -81,7 +81,7 @@ public class CampusReferenceNumberInfoHelper {
 
     try {
       Applicant applicant = new Applicant();
-      List li = EntityFinder.findAllByColumn(applicant,applicant.getSSNColumnName(),ref);
+      List li = EntityFinder.findAllByColumn(applicant,Applicant.getSSNColumnName(),ref);
       if (li != null && !li.isEmpty()) {
         Iterator it = li.iterator();
         Contract contract = null;

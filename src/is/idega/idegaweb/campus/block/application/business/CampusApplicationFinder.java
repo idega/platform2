@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.4 2002/03/18 15:50:43 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.5 2002/04/03 16:31:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -253,7 +253,7 @@ public abstract class CampusApplicationFinder {
     if (eApplicant != null) {
       try {
         Application eApplication =  new Application();
-        List l = EntityFinder.findAllByColumn(eApplication,eApplication.getApplicantIdColumnName(),eApplicant.getID());
+        List l = EntityFinder.findAllByColumn(eApplication,Application.getApplicantIdColumnName(),eApplicant.getID());
         if (l != null) {
           eApplication = (Application)l.get(0);
           CampusApplication eCampusApplication = new CampusApplication();
@@ -288,7 +288,7 @@ public abstract class CampusApplicationFinder {
   public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
      try {
       WaitingList WL = new WaitingList();
-      return(EntityFinder.findAllByColumn(WL,WL.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),WL.getComplexIdColumnName(),String.valueOf(cmplxId)));
+      return(EntityFinder.findAllByColumn(WL,WaitingList.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),WaitingList.getComplexIdColumnName(),String.valueOf(cmplxId)));
     }
     catch(SQLException e){
       return(null);
@@ -507,7 +507,7 @@ public abstract class CampusApplicationFinder {
   public static List listOfWaitinglist(int applicantId) {
      try {
       WaitingList WL = new WaitingList();
-      List li = EntityFinder.findAllByColumnOrdered(WL,WL.getApplicantIdColumnName(),String.valueOf(applicantId),WL.getOrderColumnName());
+      List li = EntityFinder.findAllByColumnOrdered(WL,WaitingList.getApplicantIdColumnName(),String.valueOf(applicantId),WaitingList.getOrderColumnName());
       if (li != null) {
         updateWatingListToRightOrder(li);
       }
@@ -527,17 +527,17 @@ public abstract class CampusApplicationFinder {
       WaitingList wl = (WaitingList)it.next();
       if ((wl.getApartmentTypeId() != null) && (wl.getComplexId() != null)) {
         StringBuffer sql = new StringBuffer("select count(*) from ");
-        sql.append(wl.getEntityTableName());
+        sql.append(WaitingList.getEntityTableName());
         sql.append(" where ");
-        sql.append(wl.getOrderColumnName());
+        sql.append(WaitingList.getOrderColumnName());
         sql.append(" <= ");
         sql.append(wl.getOrder().toString());
         sql.append(" and ");
-        sql.append(wl.getApartmentTypeIdColumnName());
+        sql.append(WaitingList.getApartmentTypeIdColumnName());
         sql.append(" = ");
         sql.append(wl.getApartmentTypeId().toString());
         sql.append(" and ");
-        sql.append(wl.getComplexIdColumnName());
+        sql.append(WaitingList.getComplexIdColumnName());
         sql.append(" = ");
         sql.append(wl.getComplexId().toString());
         int count = 0;

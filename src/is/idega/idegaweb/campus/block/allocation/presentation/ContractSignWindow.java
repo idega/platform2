@@ -73,8 +73,8 @@ public class ContractSignWindow extends Window{
     iwb = getBundle(iwc);
     // permissons !!
     if(true){
-      if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
+      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
       }
 
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){

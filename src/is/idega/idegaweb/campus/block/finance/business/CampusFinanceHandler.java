@@ -401,7 +401,7 @@ public class CampusFinanceHandler implements FinanceHandler{
       AE.setInfo(T.getInfo()+" "+nf.format(factor));
     else
       AE.setInfo(nf.format(factor));
-    AE.setStatus(AE.statusCreated);
+    AE.setStatus(AccountEntry.statusCreated);
     AE.setCashierId(1);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
