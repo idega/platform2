@@ -1,9 +1,3 @@
-/*
- * Created on Jun 29, 2003
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package is.idega.idegaweb.travel.block.search.presentation;
 
 import is.idega.idegaweb.travel.block.search.business.InvalidSearchException;
@@ -14,8 +8,8 @@ import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
+import is.idega.idegaweb.travel.presentation.TravelBlock;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
-import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.presentation.TravelWindow;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
@@ -31,11 +25,12 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
 
+import com.idega.block.creditcard.business.CreditCardBusiness;
+import com.idega.block.creditcard.business.TPosException;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
-import com.idega.block.tpos.business.TPosException;
-import com.idega.block.tpos.presentation.ReceiptWindow;
 import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.business.ProductComparator;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
@@ -49,20 +44,23 @@ import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -78,11 +76,8 @@ import com.idega.util.SendMail;
 
 /**
  * @author gimmi
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class AbstractSearchForm extends Block{
+public abstract class AbstractSearchForm extends TravelBlock{
 
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
@@ -119,6 +114,7 @@ public abstract class AbstractSearchForm extends Block{
 	public static String PARAMETER_CC_NUMBER = BookingForm.parameterCCNumber;//"hs_ccn";
 	public static String PARAMETER_CC_MONTH = BookingForm.parameterCCMonth;//"hs_ccm";
 	public static String PARAMETER_CC_YEAR = BookingForm.parameterCCYear;//"hs_ccy";
+	public static String PARAMETER_CC_CVC = BookingForm.parameterCCCVC;
 	public static String PARAMETER_COMMENT = BookingForm.PARAMETER_COMMENT;//"hs_comm";
 	public static String PARAMETER_REFERER_URL = PublicBooking.PARAMETER_REFERRAL_URL;
 
@@ -127,6 +123,7 @@ public abstract class AbstractSearchForm extends Block{
 	protected String textFontStyle;
 	protected String headerFontStyle;
 	protected String linkFontStyle;
+	protected String clickedLinkFontStyle;
 	protected String errorFontStyle;
 	protected String headerBackgroundColor;
 	protected String linkBackgroundColor;
@@ -141,15 +138,23 @@ public abstract class AbstractSearchForm extends Block{
 	
 	protected Image headerImage;
 	protected Table formTable = new Table();
-	int row = 1;
+	protected int row = 1;
 	int tmpPriceID;
 	
 	protected Product definedProduct;
 	
 	private List errorFields = null;
+	private List searchForms = null;
 	
 	public AbstractSearchForm() {
 		super();
+	}
+
+	public synchronized Object clone() {
+		AbstractSearchForm obj = (AbstractSearchForm) super.clone();
+		obj.searchForms = searchForms;
+
+		return obj;
 	}
 	
 	protected abstract String getServiceName(IWResourceBundle iwrb);
@@ -177,10 +182,8 @@ public abstract class AbstractSearchForm extends Block{
 	}
 	
 	public void main(IWContext iwc) throws Exception {
+		super.main(iwc);
 		init(iwc);
-
-		TravelManager tm = new TravelManager();
-		tm.initializer(iwc);
 		
 		Table outTable = new Table();
 		if (width != null) {
@@ -205,13 +208,29 @@ public abstract class AbstractSearchForm extends Block{
 		form.add(getButtons());
 		outTable.add(form);
 		outTable.add(Text.BREAK);
-		outTable.add(addTermsAndConditions());
-		if (definedProduct != null && (tm.isInPermissionGroup(iwc) || tm.isAdministrator(iwc))) {
+		outTable.add(addTermsAndConditionsAndVerisign());
+		if (definedProduct != null && (isInPermissionGroup(iwc) || isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
 		} 
 		
 		super.add(outTable);
+	}
+	
+	protected Link getVerisign() {
+		Image image = bundle.getImage("verisignseals/verisign_logo.gif");
+		image.setWidth(100);
+		image.setHeight(42);
+		String verisignUrl = bundle.getProperty("verisign_url");
+		if (verisignUrl == null) { 
+			verisignUrl = "https://digitalid.verisign.com/as2/a83d13ff1653ab8baf084d646faab5c9";
+		}
+
+		Link verisign = new Link(image, verisignUrl);
+		verisign.setTarget(Link.TARGET_NEW_WINDOW);
+		verisign.setOutgoing(true);
+
+		return verisign;
 	}
 	
 	protected Link getDirectBookingLink() {
@@ -234,6 +253,7 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		Link link = new Link(text.toString()+"&"+PARAMETER_PRODUCT_ID+"="+definedProduct.getPrimaryKey().toString(), text.toString());
 		link.addParameter(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString());
+		link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, IWMainApplication.getEncryptedClassName(this.getClassName()));
 		return link;
 	}
 	
@@ -272,7 +292,7 @@ public abstract class AbstractSearchForm extends Block{
 	}
 
 	protected Table getLinks() {
-		List searchForms = ServiceSearch.searchForms;
+//		List searchForms = ServiceSearch.searchForms;
 		
 		Table table = new Table();
 		table.setWidth("100%");
@@ -284,10 +304,15 @@ public abstract class AbstractSearchForm extends Block{
 		if (searchForms != null && !searchForms.isEmpty() ) {
 			Iterator iter = searchForms.iterator();
 			AbstractSearchForm bsf;
+			String currentSearchFormName = getClassName();
 			while (iter.hasNext()) {
 				bsf = (AbstractSearchForm) iter.next();
-				link = new Link(getLinkText(bsf.getServiceName(iwrb)));
-				link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, bsf.getClassName());
+				if ( bsf.getClassName().equals(currentSearchFormName) ){
+					link = new Link(getLinkText(bsf.getServiceName(iwrb), true));
+				} else {
+					link = new Link(getLinkText(bsf.getServiceName(iwrb), false));
+				}
+				link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, IWMainApplication.getEncryptedClassName(bsf.getClassName()));
 				table.add(link, ++column, 1);
 				table.setNoWrap(column, 1);
 				table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_LEFT);
@@ -296,11 +321,11 @@ public abstract class AbstractSearchForm extends Block{
 			}
 		}	else {
 			System.out.println(" no extra searchForms found" );
-			link = new Link(getLinkText(this.getServiceName(iwrb)));
+			link = new Link(getLinkText(this.getServiceName(iwrb), true));
 			link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, this.getClassName());
 			table.add(link, ++column, 1);
 		}
-		Link currLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.curreny_calculator","Currencies")));
+		Link currLink = new Link(getLinkText(iwrb.getLocalizedString("travel.search.curreny_calculator","Currencies"), false));
 		currLink.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
 		if (windowHeaderImage != null) {
 			TravelCurrencyCalculatorWindow.setHeaderImage(currLink, windowHeaderImage.getDefaultImageID());
@@ -399,7 +424,7 @@ public abstract class AbstractSearchForm extends Block{
 		}
 	}
 	
-	private Table addTermsAndConditions() throws RemoteException {
+	private Table addTermsAndConditionsAndVerisign() throws RemoteException {
 		Link terms = new Link(getText(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
 		terms.setWindowToOpen(TravelWindow.class, "700", "400", true, true);
 		terms.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.terms_and_conditions");
@@ -416,9 +441,14 @@ public abstract class AbstractSearchForm extends Block{
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(terms, 1, 1);
 
-
 		table.setAlignment(1, 2, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(privacyStatement, 1, 2);
+		
+		table.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setRowHeight(3, "5");
+		
+		table.setAlignment(1, 4, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(getVerisign(), 1, 4);
 
 		return table;
 	}
@@ -434,7 +464,17 @@ public abstract class AbstractSearchForm extends Block{
 		}
 
 		Product product = getProduct();
-
+		Supplier supplier = null;
+		try {
+			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			supplier = sHome.findByPrimaryKey(product.getSupplierId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		formTable.mergeCells(1, row, 3, row);
+		formTable.add(getHeaderText(supplier.getName()), 1, row);
+		++row;
 		formTable.mergeCells(1, row, 3, row);
 		formTable.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
 		++row;
@@ -463,7 +503,7 @@ public abstract class AbstractSearchForm extends Block{
 		postalC.setSize(6);
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,new TextInput(PARAMETER_CITY)});
 
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email_address","Email address")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
 		formTable.mergeCells(2, (row-1), 3, (row-1));
 
 		TextInput expMonth = new TextInput(PARAMETER_CC_MONTH);
@@ -472,7 +512,48 @@ public abstract class AbstractSearchForm extends Block{
 		TextInput expYear = new TextInput(PARAMETER_CC_YEAR);
 		expYear.setSize(3);
 		expYear.setMaxlength(2);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number"),iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER), expMonth,expYear});
+		TextInput expCVC = new TextInput(PARAMETER_CC_CVC);
+		expCVC.setSize(5);
+		expCVC.setMaxlength(3);
+
+		if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
+			formTable.add(getErrorText("* "), 1, row);
+		}
+		formTable.add(getText(iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")), 1, row);
+		++row;
+		formTable.add(new TextInput(PARAMETER_CC_NUMBER), 1, row);
+		
+		++row;
+		Table ccTable = new Table();
+		ccTable.setCellpaddingAndCellspacing(0);
+		if ( errorFields != null && errorFields.contains(PARAMETER_CC_MONTH)) {
+			ccTable.add(getErrorText("* "), 1, 1);
+		}
+		ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_month","Expires month")), 1, 1);
+		if ( errorFields != null && errorFields.contains(PARAMETER_CC_YEAR)) {
+			ccTable.add(getErrorText("* "), 3, 1);
+		}
+		ccTable.add(getText(iwrb.getLocalizedString("travel.search.expires_year","Expires year")), 3, 1);
+		ccTable.add(expMonth, 1, 2);
+		ccTable.add(expYear, 3, 2);
+		ccTable.setColumnWidth(2, "8");
+		formTable.add(ccTable, 1, row);
+		
+		Table ccTable2 = new Table();
+		ccTable2.setCellpaddingAndCellspacing(0);
+		if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
+			ccTable2.add(getErrorText("* "), 1, 1);
+		}
+		ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
+		ccTable2.add(expCVC, 1, 2);
+		formTable.mergeCells(2, row, 3, row);
+		formTable.add(ccTable2, 2, row);
+		
+		++row;
+		
+		
+		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER)});
+		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC});
 
 		TextArea comment = new TextArea(PARAMETER_COMMENT);
 		comment.setWidth("350");
@@ -529,6 +610,25 @@ public abstract class AbstractSearchForm extends Block{
 		formTable.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		formTable.add(submit, 3, row);
 		//formTable.setBorder(1);
+
+		++row;
+		Table logoTable = new Table();
+		Collection imgs = null;
+		try {
+			imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supplier, IWTimestamp.RightNow()));
+			if (imgs != null && !imgs.isEmpty()) {
+				Iterator iter = imgs.iterator();
+				int col = 0;
+				while (iter.hasNext()) {
+					logoTable.add((Image)iter.next(), ++col, 1);
+				}
+				//addInputLine(new String[]{"", "", ""}, new PresentationObject[]{null, null, logoTable});
+				formTable.add(logoTable, 1, row);
+			}
+		}catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
 	}
 	
 	protected void checkBooking() throws RemoteException {
@@ -555,9 +655,9 @@ public abstract class AbstractSearchForm extends Block{
 			  formTable.add(Text.BREAK);
 			  formTable.add(Text.BREAK);
 			  if (sendEmail) {
-				formTable.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
-				formTable.add(Text.BREAK);
-				formTable.add(Text.BREAK);
+					formTable.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
+					formTable.add(Text.BREAK);
+					formTable.add(Text.BREAK);
 			  }
 			  formTable.add(getText(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
 			  formTable.add(getText(" : "));
@@ -572,22 +672,9 @@ public abstract class AbstractSearchForm extends Block{
 			  formTable.add(Text.BREAK);
 			  formTable.add(getText(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
 
-
-
 			  Link printVoucher = new Link(getText(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
 				printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
 				printVoucher.setWindowToOpen(VoucherWindow.class);
-
-			  if (bf._TPosClient != null) {
-				Supplier supplier = ( (SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(new Integer(gBooking.getService().getProduct().getSupplierId()));
-					com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(bf._TPosClient, supplier);
-					iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
-
-					Link printCCReceipt = new Link(getText(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
-				  printCCReceipt.setWindowToOpen(ReceiptWindow.class);
-					formTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
-					formTable.add(printCCReceipt, 1, 2);
-			  }
 
 			  formTable.add(printVoucher,1,3);
 			  formTable.setAlignment(1,1,"left");
@@ -611,6 +698,9 @@ public abstract class AbstractSearchForm extends Block{
 			}
 		} catch (Exception e) {
 			formTable.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")+" ( "+e.getMessage()+" )"));
+			formTable.add(Text.BREAK);
+			formTable.add(Text.BREAK);
+			formTable.add(new BackButton(iwrb.getLocalizedImageButton("travel.back", "Back")));
 			e.printStackTrace(System.err);
 		}
 	}
@@ -741,19 +831,14 @@ public abstract class AbstractSearchForm extends Block{
 	
 	protected Link getBookingLink(int productId) {
 		Link link = new Link(iwrb.getLocalizedImageButton("travel.book","Book"));
-//		Link link = new Link(getLinkText(iwrb.getLocalizedString("travel.book","Book")));
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
-		//link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
-		
-		//if (product == null) {
-			link.maintainParameter(PARAMETER_FROM_DATE, iwc);
-			link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
-			link.maintainParameter(getParameterTypeCountName(), iwc);
-			link.addParameter(PARAMETER_PRODUCT_ID, productId);
-			link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
-		//}
-		//link.setHttps(LinkGenerator.getIsHttps());
+		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
+		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+		link.maintainParameter(getParameterTypeCountName(), iwc);
+		link.addParameter(PARAMETER_PRODUCT_ID, productId);
+		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+
 		return link;
 	}
 
@@ -819,44 +904,51 @@ public abstract class AbstractSearchForm extends Block{
 			} else {
 				formTable.add(getText(text[i]), i+1, row);
 			}
+			formTable.setNoWrap(i+1, row);
 		}
 		++row;
 		String value;
 		for (int i = 0; i < object.length; i++) {
-			value = iwc.getParameter(object[i].getName());
-			if (value != null) {
-				if (object[i] instanceof DropdownMenu) {
-					((DropdownMenu)object[i]).setSelectedElement(value);
-				} else if (object[i] instanceof SelectionBox) {
-					String values[] = iwc.getParameterValues(object[i].getName());
-					((SelectionBox)object[i]).setSelectedElements(values);
-				} else if (object[i] instanceof DateInput) {
-					try {
-						String year = value.substring(0, 4);
-						String month = value.substring(5, 7);
-						String day = value.substring(8, 10);
-						((DateInput)object[i]).setYear(year);
-						((DateInput)object[i]).setMonth(month);
-						((DateInput)object[i]).setDay(day);
-					}catch (Exception e) {
-						System.out.println("Error changing setting dateinputs");
-					}
-				} else if (object[i] instanceof SelectPanel) {
-					String values[] = iwc.getParameterValues(object[i].getName());
-					((SelectPanel)object[i]).setSelectedElements(values);
+			if ( object[i] != null) {
+				if (object[i]  instanceof Table ) {
+					value = null;
 				} else {
-					try {
-						((InterfaceObject)object[i]).setContent(value);
-					}catch (Exception e) {
-						System.out.println("Error changing presentationObject to interfaceObject");
-					}
-				} 
+					value = iwc.getParameter(object[i].getName());
+				}
+				if (value != null) {
+					if (object[i] instanceof DropdownMenu) {
+						((DropdownMenu)object[i]).setSelectedElement(value);
+					} else if (object[i] instanceof SelectionBox) {
+						String values[] = iwc.getParameterValues(object[i].getName());
+						((SelectionBox)object[i]).setSelectedElements(values);
+					} else if (object[i] instanceof DateInput) {
+						try {
+							String year = value.substring(0, 4);
+							String month = value.substring(5, 7);
+							String day = value.substring(8, 10);
+							((DateInput)object[i]).setYear(year);
+							((DateInput)object[i]).setMonth(month);
+							((DateInput)object[i]).setDay(day);
+						}catch (Exception e) {
+							System.out.println("Error changing setting dateinputs");
+						}
+					} else if (object[i] instanceof SelectPanel) {
+						String values[] = iwc.getParameterValues(object[i].getName());
+						((SelectPanel)object[i]).setSelectedElements(values);
+					} else {
+						try {
+							((InterfaceObject)object[i]).setContent(value);
+						}catch (Exception e) {
+							System.out.println("Error changing presentationObject to interfaceObject");
+						}
+					} 
+				}
+	
+				if (formInputStyle != null) {
+					object[i].setStyleAttribute(formInputStyle);
+				}
+				formTable.add(object[i], i+1, row);
 			}
-
-			if (formInputStyle != null) {
-				object[i].setStyleAttribute(formInputStyle);
-			}
-			formTable.add(object[i], i+1, row);
 		}
 		++row;
 	}
@@ -878,11 +970,13 @@ public abstract class AbstractSearchForm extends Block{
 		return text;
 	}
 	
-	protected Text getLinkText(String content) {
+	protected Text getLinkText(String content, boolean clicked) {
 		Text text = new Text(content);
-		if (linkFontStyle != null) {
+		if (clicked && clickedLinkFontStyle != null) {
+			text.setFontStyle(clickedLinkFontStyle);
+		} else if (linkFontStyle != null) {
 			text.setFontStyle(linkFontStyle);
-		}
+		} 
 		return text;
 	}
 
@@ -904,6 +998,10 @@ public abstract class AbstractSearchForm extends Block{
 	
 	public void setLinkFontStyle(String fontStyle) {
 		this.linkFontStyle = fontStyle;
+	}
+	
+	public void setClickedLinkFontStyle(String fontStyle) {
+		this.clickedLinkFontStyle = fontStyle;
 	}
 
 	public void setErrorFontStyle(String fontStyle) {
@@ -936,6 +1034,10 @@ public abstract class AbstractSearchForm extends Block{
 	
 	public void setWindowHeaderImage(Image image) {
 		this.windowHeaderImage = image;
+	}
+	
+	public void setSearchForms(List searchForms) {
+		this.searchForms = searchForms;
 	}
 	
 	protected Product getProduct() {
@@ -1017,12 +1119,16 @@ public abstract class AbstractSearchForm extends Block{
 			}
 		}
 	}
+	
+	protected int getDefaultSortMethod() {
+		return ProductComparator.PRICE;
+	}
 
 	protected void handleResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
 		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 		PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
 		PriceCategory priceCat = pcHome.findByKey(getPriceCategoryKey());
-		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate));
+		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate), getDefaultSortMethod());
 
 		HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
 		int mapSize = map.size();
@@ -1070,5 +1176,13 @@ public abstract class AbstractSearchForm extends Block{
 		}
 		return suppIds;
 	}
-
+	
+	protected CreditCardBusiness getCreditCardBusiness(IWContext iwc) {
+		try {
+				return (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
+			} catch (IBOLookupException e) {
+			throw new IBORuntimeException();
+			}
+	}
+	
 }

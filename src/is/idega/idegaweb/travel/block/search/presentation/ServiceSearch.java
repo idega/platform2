@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.idega.business.IBOLookup;
@@ -15,11 +16,13 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author gimmi
@@ -33,6 +36,7 @@ public class ServiceSearch extends Block {
 	protected String textFontStyle;
 	protected String headerFontStyle;
 	protected String linkFontStyle;
+	protected String clickedLinkFontStyle;
 	protected String errorFontStyle;
 	
 	protected String headerBackgroundColor;
@@ -46,12 +50,25 @@ public class ServiceSearch extends Block {
 	private Image headerImage;
 	private Image windowHeaderImage;
 	
-	IWResourceBundle iwrb;
-	public static List searchForms; // Laga eitthvad, kannski grillad ad hafa public static....
-	Collection ICObjectList;
-	private AbstractSearchForm currentSearchForm;
+	private IWResourceBundle iwrb;
+	private List searchForms2 = null; 
+	private AbstractSearchForm currentSearchForm = null;
 
 	public ServiceSearch() {
+	}
+	
+	public synchronized Object clone() {
+		ServiceSearch obj = (ServiceSearch) super.clone();
+		/*
+		obj.searchForms2 = searchForms2;
+		
+		if (currentSearchForm != null) {
+			obj.currentSearchForm = (AbstractSearchForm) currentSearchForm.clone();
+		} else {
+			obj.currentSearchForm = null;
+		}*/
+		
+		return obj;
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -65,50 +82,63 @@ public class ServiceSearch extends Block {
 		} else {
 			add("searchform must be associated with an engine");
 		}
-		//drawForm();
 	}
 
 	protected void init(IWContext iwc) throws Exception {
 		iwrb = getTravelSessionManager(iwc).getIWResourceBundle();
-		IWBundle bundle = getTravelSessionManager(iwc).getIWBundle();
-		ICObjectList = bundle.getICObjectsList(IC_OBJECT_TYPE);
-		Iterator iter = ICObjectList.iterator();
-		ICObject object;
-		ICObjectHome objectHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
-		searchForms = new Vector();
-		AbstractSearchForm ss;
-		while (iter.hasNext()) {
-			object = (ICObject) iter.next();
-			try {
-				Class tmpClass = Class.forName(object.getClassName());
-				ss = (AbstractSearchForm) tmpClass.newInstance();
-				searchForms.add( ss );
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
 
-		currentSearchForm = setCurrentSearchForm(iwc);
+		if (searchForms2 != null) {
+			currentSearchForm = setCurrentSearchForm(iwc, searchForms2);
+		} else {
+			List searchForms = new Vector();
+			IWBundle bundle = getTravelSessionManager(iwc).getIWBundle();
+			Collection ICObjectList = bundle.getICObjectsList(IC_OBJECT_TYPE);
+			Iterator iter = ICObjectList.iterator();
+			ICObject object;
+			ICObjectHome objectHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
+			AbstractSearchForm ss;
+
+			while (iter.hasNext()) {
+				object = (ICObject) iter.next();
+				try {
+					Class tmpClass = Class.forName(object.getClassName());
+					//System.out.println(tmpClass.getName());
+					ss = (AbstractSearchForm) tmpClass.newInstance();
+					searchForms.add( ss );
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			currentSearchForm = setCurrentSearchForm(iwc, searchForms);
+		} 
+
 	}
 
-	protected AbstractSearchForm setCurrentSearchForm(IWContext iwc) {
+	protected AbstractSearchForm setCurrentSearchForm(IWContext iwc, List searchForms) {
 		try {
 			String currentSF = iwc.getParameter(PARAMETER_SERVICE_SEARCH_FORM);
+			try {
+				Integer.parseInt(currentSF);
+				currentSF = IWMainApplication.decryptClassName(currentSF);
+			} catch (NumberFormatException n) {
+				System.out.println("Cannot decrypt class name = "+currentSF);
+			}
 			AbstractSearchForm ss = null;
 			if (currentSF != null) {
 				ss = (AbstractSearchForm) Class.forName(currentSF).newInstance();
 			} else if (!searchForms.isEmpty()) {
-				ss = (AbstractSearchForm) searchForms.get(0);
+				ss = (AbstractSearchForm) searchForms.get(0).getClass().newInstance();
 			} else {
 				ss = (AbstractSearchForm) Class.forName(AbstractSearchForm.class.getName()).newInstance();
 			}
 			ss.setTextFontStyle(textFontStyle);
 			ss.setHeaderFontStyle(headerFontStyle);
 			ss.setLinkFontStyle(linkFontStyle);
+			//ss.setClickedLinkFontStyle(clickedLinkFontStyle);
 			ss.setErrorFontStyle(errorFontStyle);
 			ss.setHeaderBackgroundColor(headerBackgroundColor);
 			ss.setLinksBackgroundColor(linkBackgroundColor);
@@ -116,6 +146,7 @@ public class ServiceSearch extends Block {
 			ss.setWidth(width);
 			ss.setFormInputStyle(formInputStyle);
 			ss.setWindowHeaderImage(windowHeaderImage);
+			ss.setSearchForms(searchForms);
 			ss.setServiceSearchEngine(((ServiceSearchEngineHome) IDOLookup.getHome(ServiceSearchEngine.class)).findByPrimaryKey(new Integer(engineID)));
 			return ss;
 		}catch (Exception e) {
@@ -123,7 +154,7 @@ public class ServiceSearch extends Block {
 		}
 		return null;
 	}
-
+	
 	public void setTextFontStyle(String fontStyle) {
 		this.textFontStyle = fontStyle;
 	}
@@ -135,6 +166,10 @@ public class ServiceSearch extends Block {
 	public void setLinkFontStyle(String fontStyle) {
 		this.linkFontStyle = fontStyle;
 	}
+	/*
+	public void setClickedLinkFontStyle(String fontStyle) {
+		this.clickedLinkFontStyle = fontStyle;
+	}*/
 	
 	public void setErrorTextStyle(String fontStyle) {
 		this.errorFontStyle = fontStyle;
@@ -172,6 +207,33 @@ public class ServiceSearch extends Block {
 		this.engineID = engineID;
 	}
 	
+	/**
+	 * Set the valid search engines for the Search Engine
+	 * 
+	 * @param validSearchEngines Comma seperated classNames
+	 */
+	public void setValidSearchEngines(String validSearchEngines) {
+		searchForms2 = new Vector();
+		AbstractSearchForm ss;
+		validSearchEngines = TextSoap.findAndCut(validSearchEngines, " ");
+		StringTokenizer st = new StringTokenizer(validSearchEngines, ",");
+		
+		while (st.hasMoreTokens()) {
+			try {
+				Class tmpClass = Class.forName(st.nextToken());
+				ss = (AbstractSearchForm) tmpClass.newInstance();
+				searchForms2.add( ss );
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
 	protected TravelSessionManager getTravelSessionManager(IWUserContext iwuc) throws RemoteException {
 		return (TravelSessionManager) IBOLookup.getSessionInstance(iwuc, TravelSessionManager.class);
 	}
