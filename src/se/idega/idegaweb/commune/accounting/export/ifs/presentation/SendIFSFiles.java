@@ -81,15 +81,17 @@ public class SendIFSFiles extends AccountingBlock {
 		table.setCellpadding (getCellpadding ());
 		table.setCellspacing (getCellspacing ());
 		table.setWidth (Table.HUNDRED_PERCENT);
-		final int columnCount = filesMaps.size ();
+		final int columnCount = filesMaps.size () + 1;
 		table.setColumns (columnCount);
-		final int percentageInt = 100 / columnCount;
+		final int percentageInt = 100 / (columnCount - 1);
 		final String percentageString = percentageInt + "%";
-		for (int i = 1; i <= columnCount; i++) {
+		for (int i = 2; i <= columnCount; i++) {
 			table.setColumnWidth (i, percentageString);
 		}
 		add (table);
-		int col = 0;
+		int col = 1;
+		int numberedRowsCount = 0;
+		table.add (getSmallHeader ("#"), 1, 1);
 		for (Iterator i = filesMaps.keySet ().iterator (); i.hasNext ();) {
 			col++;
 			int row = 1;
@@ -111,6 +113,13 @@ public class SendIFSFiles extends AccountingBlock {
 					table.add (viewLink, col, row);
 				} else {
 					table.add (getSmallText (providerName), col, row);
+				}
+				if (row > numberedRowsCount) {
+					numberedRowsCount = row;
+					table.setAlignment (1, numberedRowsCount,
+															Table.HORIZONTAL_ALIGN_RIGHT);
+					table.add (getSmallText ((numberedRowsCount - 1) + ""), 1,
+										 numberedRowsCount);
 				}
 			}
 		}

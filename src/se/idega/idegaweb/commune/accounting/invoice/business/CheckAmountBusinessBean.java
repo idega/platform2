@@ -66,11 +66,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/21 17:05:58 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/21 17:42:53 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -127,6 +127,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 					} catch (NoPaymentRecordsFoundException e) {
 						noMailSentSinceNoPaymentRecords.put (school.getName (),
 																						 new Integer (-1));
+						long elapsedTime = System.currentTimeMillis () - startTime;
+						long totalSeconds = elapsedTime / 1000;
+						long minutes = totalSeconds / 60;
+						long seconds = totalSeconds % 60;
+						log ("# Check amount lists: E-mail=" + filesSentByEmail.size ()
+								 + ", Papermail=" + filesSentByPapermail.size ()
+								 + ", No payments=" + noMailSentSinceNoPaymentRecords.size ()
+								 + " (" + minutes + ":" + seconds + " minutes) " + elapsedTime);
 						continue;
 					}
 					SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
@@ -235,11 +243,6 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		outerDocument.open();
 		DocumentBusiness docBus = (DocumentBusiness) IBOLookup.getServiceInstance(iwc, DocumentBusiness.class);
 		outerDocument.newPage();
-		String countryText = "";
-		if (school.getCountry() != null
-				&& !school.getCountry ().getName ().equals ("Sweden")) {
-			countryText = school.getCountry().getName();
-		}
 		docBus.createDefaultLetterHeader (outerDocument, getAddressString (school),
 																			writer);
 		
