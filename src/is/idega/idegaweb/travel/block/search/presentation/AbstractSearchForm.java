@@ -91,6 +91,8 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock{
 
+	private boolean debug = false;
+	
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
 	protected String ACTION_BOOKING_FORM = "bsf_bf";
@@ -432,8 +434,10 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	protected boolean isCacheable(IWContext iwc) {
-		//return false; // Layout testing
-
+		if (debug) {
+			return false;
+		}
+		
 		try {
 			handleSubmit(iwc);
 			return (STATE_CHECK_BOOKING != getSession(iwc).getState());
@@ -1113,6 +1117,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 						innerTable = new Table(4, 1);
 						++resultsRow;
 						table.add(innerTable, 1, resultsRow);
+						//table.setBorder(0);
 						table.mergeCells(1, resultsRow, 3, resultsRow);
 						innerTable.setWidth("100%");
 						innerTable.setBorder(0);
@@ -1167,6 +1172,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				    }
 				    
 						++resultsRow;
+						table.setRowStyleClass(resultsRow++, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
 						
 					
 					//}
