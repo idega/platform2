@@ -230,6 +230,18 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 		return super.idoFindPKsBySQL(sql.toString());
 	}
+  
+  // *** Added by Göran Borgman 12.09.2003
+  public Integer ejbFindByStudentAndClassAndSeason(int studentId, int classId, int seasonId)  throws FinderException {
+    IDOQuery sql = idoQuery();
+    sql.append("select mb.* from sch_class_member mb, sch_school_class cl, sch_school_season sn, ic_user st ");
+    sql.appendWhereEquals("mb."+MEMBER, studentId);
+    sql.appendAndEquals("mb."+MEMBER, "st."+MEMBER);
+    sql.appendAndEquals("mb."+SCHOOLCLASS, classId);
+    sql.appendAndEquals("mb."+SCHOOLCLASS, "st."+SCHOOLCLASS);
+    sql.appendAndEquals("cl.sch_school_season_id", "sn.sch_school_season_id");
+    return (Integer) super.idoFindOnePKByQuery(sql);
+  }
 
 	public Collection ejbFindAllByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException {
 		return ejbFindAllByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(), ((Integer)season.getPrimaryKey()).intValue());
