@@ -224,7 +224,7 @@ public class EntryReportBMPBean implements EntryReport{
 
     sql.append(" group by b.bu_building_id,b.name,k.fin_acc_key_id,k.name,k.info ");
     sql.append(" order by b.bu_building_id ");
-    System.out.println(sql.toString());
+   // System.out.println(sql.toString());
     return sql.toString();
   }
 

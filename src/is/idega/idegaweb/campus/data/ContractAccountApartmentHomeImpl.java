@@ -55,6 +55,13 @@ public java.util.Collection findByTypeAndStatusAndOverlapPeriod(java.lang.String
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByTypeAndStatusAndOverlapPeriodAndNotInRound(java.lang.String p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3,java.lang.Integer p4)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByTypeAndStatusAndOverlapPeriodAndNotInRound(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public ContractAccountApartment findByUser(java.lang.Integer p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ContractAccountApartmentBMPBean)entity).ejbFindByUser(p0);

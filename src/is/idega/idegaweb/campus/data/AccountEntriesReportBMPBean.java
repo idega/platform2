@@ -113,7 +113,7 @@ public class AccountEntriesReportBMPBean {
 				conn = ConnectionBroker.getConnection();
 				sql = getKeyIdsSQL(from,to);
 				String[] keys = SimpleQuerier.executeStringQuery(sql,conn);
-				System.out.println("key length "+keys.length);
+				//System.out.println("key length "+keys.length);
 				Stmt = conn.createStatement();
 				
 				sql = getFindSql(buildingId, accountKey, from, to, byAccountCode,keys);
@@ -181,7 +181,7 @@ public class AccountEntriesReportBMPBean {
 			sql.append(buildingID);
 			sql.append(")");
 		}
-		System.out.println(sql.toString());
+		
 		return sql.toString();
 	}
 	

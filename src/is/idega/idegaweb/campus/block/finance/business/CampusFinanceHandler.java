@@ -1,9 +1,14 @@
 package is.idega.idegaweb.campus.block.finance.business;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
+import is.idega.idegaweb.campus.data.ApartmentAccountEntryBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
+import is.idega.idegaweb.campus.data.BatchContract;
+import is.idega.idegaweb.campus.data.BatchContractHome;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
+
+import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -14,6 +19,7 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountEntry;
@@ -23,9 +29,12 @@ import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.TariffHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.SimpleQuerier;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -41,43 +50,34 @@ public class CampusFinanceHandler implements FinanceHandler {
 	public String getAccountType() {
 		return com.idega.block.finance.data.AccountBMPBean.typeFinancial;
 	}
-	public boolean rollbackAssessment(int iAssessmentRoundId) {
-		StringBuffer sql = new StringBuffer("delete from ");
-		sql.append(AccountEntryBMPBean.getEntityTableName());
-		sql.append(" where ").append(com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName());
-		sql.append(" = ").append(iAssessmentRoundId);
-		System.err.println(sql.toString());
-		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+	public boolean rollbackAssessment(IWApplicationContext iwac,Integer assessmentRoundId) {
 		try {
-			t.begin();
-			AssessmentRound AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class))
-					.findByPrimaryKey(new Integer(iAssessmentRoundId));
-			SimpleQuerier.execute(sql.toString());
-			AR.delete();
-			t.commit();
-			return true;
-		} // Try block
-		catch (Exception e) {
-			try {
-				t.rollback();
-			} catch (javax.transaction.SystemException ex) {
-				ex.printStackTrace();
-			}
+			((CampusAssessmentBusiness)IBOLookup.getServiceInstance(iwac,CampusAssessmentBusiness.class)).rollBackAssessment(assessmentRoundId);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-	public boolean executeAssessment(int iCategoryId, int iTariffGroupId, String roundName, int iCashierId,
-			int iAccountKeyId, IWTimestamp paydate, IWTimestamp start, IWTimestamp end) {
+	public boolean executeAssessment(IWApplicationContext iwac,Integer categoryId, Integer tariffGroupId, String roundName, Integer cashierId,
+			Integer accountKeyId, IWTimestamp paymentdate, IWTimestamp start, IWTimestamp end,Integer excessRoundID) {
 		System.out.println("Starting assessment for period " + start.toString() + "-" + end.toString());
 		Collection tariffs = null;
 		Collection listOfUsers = null;
 		String[] statuses = {ContractBMPBean.statusSigned, ContractBMPBean.statusEnded, ContractBMPBean.statusResigned,
 				ContractBMPBean.statusTerminated};
 		try {
-			tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup(new Integer(iTariffGroupId));
-			listOfUsers = ((ContractAccountApartmentHome) IDOLookup.getHome(ContractAccountApartment.class))
-					.findByTypeAndStatusAndOverlapPeriod(getAccountType(), statuses, start.getDate(), end.getDate());
+			tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup((tariffGroupId));
+			ContractAccountApartmentHome caah = ((ContractAccountApartmentHome) IDOLookup.getHome(ContractAccountApartment.class));
+			// excess round handling
+			if(excessRoundID!=null  && excessRoundID.intValue()>0){
+				listOfUsers = caah.findByTypeAndStatusAndOverlapPeriodAndNotInRound(getAccountType(), statuses, start.getDate(), end.getDate(),excessRoundID);
+			}
+			else{
+				listOfUsers = caah.findByTypeAndStatusAndOverlapPeriod(getAccountType(), statuses, start.getDate(), end.getDate());
+			}
+					
 		} catch (IDOLookupException e1) {
 			e1.printStackTrace();
 		} catch (FinderException e1) {
@@ -92,11 +92,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 			if (listOfUsers != null) {
 				NumberFormat nf = NumberFormat.getPercentInstance();
 				int rlen = listOfUsers.size();
-				Tariff eTariff;
+				Tariff tariff;
 				char cAttribute;
 				ContractAccountApartment user;
-				int iAttributeId = -1;
-				int iRoundId = -1;
+				int attributeId = -1;
+				Integer roundId = new Integer( -1);
 				AssessmentRound AR = null;
 				javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 				try {
@@ -104,15 +104,15 @@ public class CampusFinanceHandler implements FinanceHandler {
 					//try {
 					AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
 					AR.setAsNew(roundName);
-					AR.setCategoryId(iCategoryId);
+					AR.setCategoryId(categoryId.intValue());
 					//AR.setCategoryId(iCategoryId);
-					AR.setTariffGroupId(iTariffGroupId);
+					AR.setTariffGroupId(tariffGroupId.intValue());
 					AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
-					AR.setDueDate(paydate.getDate());
+					AR.setDueDate(paymentdate.getDate());
 					AR.setPeriodFromDate(start.getDate());
 					AR.setPeriodToDate(end.getDate());
 					AR.store();
-					iRoundId = AR.getID();
+					roundId = (Integer) AR.getPrimaryKey();
 					//iRoundId++; // is this quickfix of death
 					/*
 					 * } catch (SQLException ex) { ex.printStackTrace(); try {
@@ -138,68 +138,70 @@ public class CampusFinanceHandler implements FinanceHandler {
 							float Amount = 0;
 							// For each tariff (Inner loop)
 							for (Iterator iter2 = tariffs.iterator(); iter2.hasNext();) {
-								eTariff = (Tariff) iter2.next();
+								tariff = (Tariff) iter2.next();
 								Amount = 0;
-								String sAttribute = eTariff.getTariffAttribute();
+								String sAttribute = tariff.getTariffAttribute();
 								// If we have an tariff attribute
 								if (sAttribute != null) {
-									iAttributeId = -1;
+									attributeId = -1;
 									cAttribute = sAttribute.charAt(0);
 									// If All
 									if (cAttribute == BuildingCacher.CHARALL) {
-										Amount = insertEntry(eTariff, user, iRoundId, paydate, iCashierId, factor);
+										Amount = insertEntry(tariff, user, roundId, paymentdate, cashierId, factor);
 									}
 									// other than all
 									else {
 										// attribute check
 										if (sAttribute.length() >= 3) {
-											iAttributeId = Integer.parseInt(sAttribute.substring(2));
+											attributeId = Integer.parseInt(sAttribute.substring(2));
 											switch (cAttribute) {
 												case BuildingCacher.CHARTYPE :
 													// Apartment type
-													if (iAttributeId == user.getApartmentTypeId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getApartmentTypeId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 												case BuildingCacher.CHARCATEGORY :
 													// Apartment category
-													if (iAttributeId == user.getApartmentCategoryId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getApartmentCategoryId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 												case BuildingCacher.CHARBUILDING :
 													// Building
-													if (iAttributeId == user.getBuildingId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getBuildingId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 												case BuildingCacher.CHARFLOOR :
 													// Floor
-													if (iAttributeId == user.getFloorId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getFloorId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 												case BuildingCacher.CHARCOMPLEX :
 													// Complex
-													if (iAttributeId == user.getComplexId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getComplexId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 												case BuildingCacher.CHARAPARTMENT :
 													// Apartment
-													if (iAttributeId == user.getApartmentId())
-														Amount = insertEntry(eTariff, user, iRoundId, paydate,
-																iCashierId, factor);
+													if (attributeId == user.getApartmentId().intValue())
+														Amount = insertEntry(tariff, user, roundId, paymentdate,
+																cashierId, factor);
 													break;
 											} // switch
 										} // attribute check
 									} // other than all
 									if (sAttribute.length() >= 3) {
-										iAttributeId = Integer.parseInt(sAttribute.substring(2));
+										attributeId = Integer.parseInt(sAttribute.substring(2));
 									}
 									totalAmount += Amount;
 								}
 							} // Inner loop block
+							// If the contract got some invoices we register it to the batch work
+							createBatchContract(user,AR);
 						}
 						totals += totalAmount * -1;
 					} // Outer loop block
@@ -277,11 +279,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 		// Date(endin)).toGMTString()+" factor: "+ret);
 		return ret;
 	}
-	public Collection listOfAssessmentTariffPreviews(int iTariffGroupId, IWTimestamp start, IWTimestamp end)
+	public Collection listOfAssessmentTariffPreviews(IWApplicationContext iwac,Integer tariffGroupId, IWTimestamp start, IWTimestamp end)
 			throws java.rmi.RemoteException {
 		Collection tariffs = null;
 		try {
-			tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup(new Integer(iTariffGroupId));
+			tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup((tariffGroupId));
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -335,32 +337,32 @@ public class CampusFinanceHandler implements FinanceHandler {
 									switch (cAttribute) {
 										case BuildingCacher.CHARTYPE :
 											// Apartment type
-											if (iAttributeId == user.getApartmentTypeId())
+											if (iAttributeId == user.getApartmentTypeId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARCATEGORY :
 											// Apartment category
-											if (iAttributeId == user.getApartmentCategoryId())
+											if (iAttributeId == user.getApartmentCategoryId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARBUILDING :
 											// Building
-											if (iAttributeId == user.getBuildingId())
+											if (iAttributeId == user.getBuildingId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARFLOOR :
 											// Floor
-											if (iAttributeId == user.getFloorId())
+											if (iAttributeId == user.getFloorId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARCOMPLEX :
 											// Complex
-											if (iAttributeId == user.getComplexId())
+											if (iAttributeId == user.getComplexId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 										case BuildingCacher.CHARAPARTMENT :
 											// Apartment
-											if (iAttributeId == user.getApartmentId())
+											if (iAttributeId == user.getApartmentId().intValue())
 												addAmount(H, eTariff, factor);
 											break;
 									} // switch
@@ -395,17 +397,17 @@ public class CampusFinanceHandler implements FinanceHandler {
 		map.put(id, preview);
 		count++;
 	}
-	private float insertEntry(Tariff T, ContractAccountApartment caa, int iRoundId, IWTimestamp itPaydate,
-			int iCashierId, double factor) throws CreateException, java.rmi.RemoteException {
+	private float insertEntry(Tariff T, ContractAccountApartment caa, Integer roundId, IWTimestamp paymentdate,
+			Integer cashierId, double factor) throws CreateException, java.rmi.RemoteException {
 		if (factor > 0) {
 			AccountEntry AE = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
 			AE.setAccountId(caa.getAccountId());
 			AE.setAccountKeyId(T.getAccountKeyId());
-			AE.setCashierId(iCashierId);
+			AE.setCashierId(cashierId);
 			AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
 			/** @todo skeptical precision cut */
 			AE.setTotal((int) (-T.getPrice() * factor));
-			AE.setRoundId(iRoundId);
+			AE.setRoundId(roundId);
 			AE.setName(T.getName());
 			if (T.getInfo() != null)
 				AE.setInfo(T.getInfo() + " " + nf.format(factor));
@@ -413,13 +415,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 				AE.setInfo(nf.format(factor));
 			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
 			AE.setCashierId(1);
-			AE.setPaymentDate(itPaydate.getTimestamp());
+			AE.setPaymentDate(paymentdate.getTimestamp());
 			AE.store();
-			ApartmentAccountEntry aprtEntry = ((ApartmentAccountEntryHome) IDOLookup
-					.getHome(ApartmentAccountEntry.class)).create();
-			aprtEntry.setAccountEntryID((Integer) AE.getPrimaryKey());
-			aprtEntry.setApartmentID(new Integer(caa.getApartmentId()));
-			aprtEntry.store();
+			createApartmentAccountEntry(caa, AE);
 			return AE.getTotal();
 		}
 		return 0;
@@ -428,6 +426,20 @@ public class CampusFinanceHandler implements FinanceHandler {
 		 * AE.getPrice(); System.err.println("price"+AE.getPrice());
 		 * System.err.println("totals after"+totals);
 		 */
+	}
+	private void createApartmentAccountEntry(ContractAccountApartment caa, AccountEntry AE) throws CreateException, IDOLookupException {
+		ApartmentAccountEntry aprtEntry = ((ApartmentAccountEntryHome) IDOLookup
+				.getHome(ApartmentAccountEntry.class)).create();
+		aprtEntry.setAccountEntryID((Integer) AE.getPrimaryKey());
+		aprtEntry.setApartmentID(caa.getApartmentId());
+		aprtEntry.store();
+	}
+	
+	private void createBatchContract(ContractAccountApartment caa, AssessmentRound round )throws CreateException, IDOLookupException{
+		BatchContract batchContract = ((BatchContractHome)IDOLookup.getHome(BatchContract.class)).create();
+		batchContract.setBatchID((Integer)round.getPrimaryKey());
+		batchContract.setContractID(caa.getContractId());
+		batchContract.store();
 	}
 	public Map getAttributeMap() {
 		Map map = BuildingCacher.mapOfLodgingsNames();
@@ -470,32 +482,32 @@ public class CampusFinanceHandler implements FinanceHandler {
 							switch (cAttribute) {
 								case BuildingCacher.CHARTYPE :
 									// Apartment type
-									if (iAttributeId == account.getApartmentTypeId())
+									if (iAttributeId == account.getApartmentTypeId().intValue())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARCATEGORY :
 									// Apartment category
-									if (iAttributeId == account.getApartmentCategoryId())
+									if (iAttributeId == account.getApartmentCategoryId().intValue())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARBUILDING :
 									// Building
-									if (iAttributeId == account.getBuildingId())
+									if (iAttributeId == account.getBuildingId().intValue())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARFLOOR :
 									// Floor
-									if (iAttributeId == account.getFloorId())
+									if (iAttributeId == account.getFloorId().intValue())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARCOMPLEX :
 									// Complex
-									if (iAttributeId == account.getComplexId())
+									if (iAttributeId == account.getComplexId().intValue())
 										userTariffs.add(tariff);
 									break;
 								case BuildingCacher.CHARAPARTMENT :
 									// Apartment
-									if (iAttributeId == account.getApartmentId())
+									if (iAttributeId == account.getApartmentId().intValue())
 										userTariffs.add(tariff);
 									break;
 							} // switch

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartmentBMPBean.java,v 1.4 2004/03/29 18:59:27 aron Exp $
+ * $Id: ContractAccountApartmentBMPBean.java,v 1.5 2004/03/31 00:56:22 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -182,52 +182,52 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 		return getEntityTableName();
 	}
 	
-	public int getContractId() {
-		return getIntColumnValue(getContractIdColumnName());
+	public Integer getContractId() {
+		return getIntegerColumnValue(getContractIdColumnName());
 	}
 	
-	public int getUserId() {
-		return getIntColumnValue(getUserIdColumnName());
+	public Integer getUserId() {
+		return getIntegerColumnValue(getUserIdColumnName());
 	}
 	
-	public int getApartmentId() {
-		return getIntColumnValue(getApartmentIdColumnName());
+	public Integer getApartmentId() {
+		return getIntegerColumnValue(getApartmentIdColumnName());
 	}
 	
-	public int getApartmentTypeId() {
-		return getIntColumnValue(getApartmentTypeIdColumnName());
+	public Integer getApartmentTypeId() {
+		return getIntegerColumnValue(getApartmentTypeIdColumnName());
 	}
 	
-	public int getAccountId() {
-		return getIntColumnValue(getAccountIdColumnName());
+	public Integer getAccountId() {
+		return getIntegerColumnValue(getAccountIdColumnName());
 	}
 	
-	public int getAccountType() {
-		return getIntColumnValue(getAccountTypeColumnName());
+	public Integer getAccountType() {
+		return getIntegerColumnValue(getAccountTypeColumnName());
 	}
 	
-	public int getBalance() {
-		return getIntColumnValue(getBalanceColumnName());
+	public Integer getBalance() {
+		return getIntegerColumnValue(getBalanceColumnName());
 	}
 
 	public String getAccountName() {
 		return getStringColumnValue(getAccountNameColumnName());
 	}
 	
-	public int getApartmentCategoryId() {
-		return getIntColumnValue(getApartmentCategoryIdColumnName());
+	public Integer getApartmentCategoryId() {
+		return getIntegerColumnValue(getApartmentCategoryIdColumnName());
 	}
 	
-	public int getFloorId() {
-		return getIntColumnValue(getFloorIdColumnName());
+	public Integer getFloorId() {
+		return getIntegerColumnValue(getFloorIdColumnName());
 	}
 	
-	public int getBuildingId() {
-		return getIntColumnValue(getBuildingIdColumnName());
+	public Integer getBuildingId() {
+		return getIntegerColumnValue(getBuildingIdColumnName());
 	}
 	
-	public int getComplexId() {
-		return getIntColumnValue(getComplexIdColumnName());
+	public Integer getComplexId() {
+		return getIntegerColumnValue(getComplexIdColumnName());
 	}
 
 	public Date getValidFrom() {
@@ -312,5 +312,20 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 	    return super.idoFindPKsBySQL(sql.toString());
 	}
 	
+	public Collection ejbFindByTypeAndStatusAndOverlapPeriodAndNotInRound(String type,String[] status,Date from,Date to,Integer roundID)throws FinderException{
+		IDOQuery query = super.idoQueryGetSelect().appendWhereEqualsQuoted(getAccountTypeColumnName(),type);
+		query.appendAnd();
+		query.append(getColumnStatus());
+		query.appendInArrayWithSingleQuotes(status);
+		query.appendAnd();
+		query.appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to);
+		query.appendAnd();
+		IDOQuery inQuery = super.idoQuery().appendSelect();
+		inQuery.append(BatchContractBMPBean.COLUMN_CONTRACT_ID).appendFrom().append(BatchContractBMPBean.ENTITY_NAME);
+		inQuery.appendWhereEquals(BatchContractBMPBean.COLUMN_BATCH_ID,roundID);
+		query.append(getContractIdColumnName()).appendNotIn(inQuery);
+		System.out.println(query.toString());
+		return super.idoFindPKsByQuery(query);
+	}
 	
 }

@@ -219,7 +219,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
 
 	sql.append(!byAccountKeyCode?" k.fin_acc_key_id,k.NAME,k.INFO ":"tk.fin_tariff_key_id,tk.NAME,tk.INFO");
 	sql.append(" order by u.FIRST_NAME,u.LAST_NAME,a.FIN_ACCOUNT_ID ");
-	System.out.println(sql.toString());
+	//System.out.println(sql.toString());
     return sql.toString();
   }
   
