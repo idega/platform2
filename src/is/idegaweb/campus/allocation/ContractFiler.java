@@ -4,6 +4,7 @@ import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.Page;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.jmodule.object.ModuleInfo;
+import com.lowagie.text.Font;
 
 /**
  * Title:
@@ -30,6 +31,11 @@ public class ContractFiler extends JModuleObject {
     String prefFilename = modinfo.getParameter("fname");
     String filename = "contract.pdf";
     String filetest = "test.pdf";
+    Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
+    Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+    Font tagFont = new Font(Font.COURIER,9,Font.BOLD);
+    Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
+
     if(prefFilename != null){
       filename = prefFilename+".pdf";
     }
@@ -38,7 +44,7 @@ public class ContractFiler extends JModuleObject {
       //Page p = getPage();
       if(modinfo.getParameter("contract_id")!=null){
         int id = Integer.parseInt(modinfo.getParameter("contract_id"));
-        boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename);
+        boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, titleFont, nameFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
         else
@@ -47,7 +53,7 @@ public class ContractFiler extends JModuleObject {
       }
       else if(modinfo.getParameter("test")!=null){
 
-        boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest);
+        boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest, titleFont, nameFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
         else

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.8 2001/08/17 12:44:12 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.9 2001/08/17 12:55:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -73,7 +73,8 @@ public class CampusContractWriter{
   public final static String TIIS = "TIS";
   public final static String TIEN = "T EN";
 
-  public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath){
+  public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath,
+  Font titleFont,Font nameFont, Font tagFont,Font textFont){
     boolean returner = false;
     boolean bEntity = false;
     if(id > 0){
@@ -89,30 +90,21 @@ public class CampusContractWriter{
         document.addSubject("");
         document.open();
 
-        Font chapterFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-        Font tagFont = new Font(Font.COURIER,9,Font.BOLD);
-        Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
-        Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
-
         HeaderFooter footer = new HeaderFooter(new Phrase("",textFont),true);
         footer.setBorder(0);
-
         footer.setAlignment(Element.ALIGN_CENTER);
-
         document.setFooter(footer);
 
-        filledFont.setStyle("underline");
         ContractText ct = getHeader();
         String title = "";
         if(ct != null)
           title = ct.getText()+" \n\n";
-        Paragraph cTitle = new Paragraph(title , chapterFont);
+        Paragraph cTitle = new Paragraph(title , titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
         chapter.setNumberDepth(0);
         Paragraph P;
         List L = listOfTexts();
-        Hashtable H = getHashTags(id,iwrb);
+        Hashtable H = getHashTags(id,iwrb,tagFont,textFont);
         if(L!=null){
           int len = L.size();
           for (int i = 0; i < len; i++) {
@@ -157,8 +149,8 @@ public class CampusContractWriter{
     return returner;
   }
 
-  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath){
-    return writePDF(-1,iwrb,realpath);
+  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath, Font titleFont,Font nameFont, Font tagFont,Font textFont){
+    return writePDF(-1,iwrb,realpath, titleFont, nameFont, tagFont, textFont);
   }
   private static List listOfTexts(){
     List L = null;
@@ -221,7 +213,7 @@ public class CampusContractWriter{
     return phrase;
   }
 
-  private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb){
+  private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb,Font tagFont,Font textFont){
     try{
       Contract eContract = new Contract(contractId);
       Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
@@ -230,8 +222,6 @@ public class CampusContractWriter{
       Floor eFloor = new Floor(eApartment.getFloorId());
       Building eBuilding = new Building(eFloor.getBuildingId());
       Complex eComplex = new Complex(eBuilding.getComplexId());
-      Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
-      Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
       Hashtable H = new Hashtable(TAGS.length);
       DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
       NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb.getLocale());

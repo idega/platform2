@@ -252,7 +252,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     row = 1;
     T2.add("Tags",1,row++);
     for (int i = 0; i < tags.length; i++) {
-      T2.add(tags[i],1,row++);
+      T2.add("["+tags[i]+"]",1,row++);
     }
 
     Frame.add(T,1,1);
