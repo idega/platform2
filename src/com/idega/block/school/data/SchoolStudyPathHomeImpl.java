@@ -34,6 +34,13 @@ public SchoolStudyPath findByCode(java.lang.String p0)throws javax.ejb.FinderExc
 	return this.findByPrimaryKey(pk);
 }
 
+public SchoolStudyPath findByCodeAndSchoolType(java.lang.String p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolStudyPathBMPBean)entity).ejbFindByCodeAndSchoolType(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findBySchoolType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchoolType(p0);
