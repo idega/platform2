@@ -65,6 +65,7 @@ public class EmailSetter extends KeyEditor{
 
   private ModuleObject getSetupForm(ModuleInfo modinfo){
     Table T = new Table(1,10);
+    T.setBorder(1);
     int row = 1;
     DropdownMenu localeDrop = Localizer.getAvailableLocalesDropdown(modinfo.getApplication(),localesParameter);
     localeDrop.keepStatusOnAction();

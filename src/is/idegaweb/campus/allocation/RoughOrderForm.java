@@ -1,5 +1,5 @@
 /*
- * $Id: RoughOrderForm.java,v 1.1 2001/07/13 09:33:41 palli Exp $
+ * $Id: RoughOrderForm.java,v 1.2 2001/08/15 11:56:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,6 @@
 package is.idegaweb.campus.allocation;
 
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.jmodule.object.Editor;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.jmodule.object.interfaceobject.Form;
@@ -19,40 +18,60 @@ import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
+import java.sql.SQLException;
 
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class RoughOrderForm extends Editor {
+public class RoughOrderForm extends ModuleObjectContainer {
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
+  private boolean isAdmin_ = false;
+  private static final String IW_RESOURCE_BUNDLE = "is.idegaweb.campus";
 
+  protected IWResourceBundle iwrb_;
+
+  /**
+   *
+   */
   public RoughOrderForm() {
   }
 
+  /*
+   *
+   */
   protected void control(ModuleInfo modinfo) {
-    String statusString = modinfo.getParameter("status");
-    int status = 0;
+    if (isAdmin_) {
+      String statusString = modinfo.getParameter("status");
+      int status = 0;
 
-    if (statusString == null){
-      status = statusEnteringPage_;
-    }
-    else {
-      status = Integer.parseInt(statusString);
-    }
+      if (statusString == null){
+        status = statusEnteringPage_;
+      }
+      else {
+        status = Integer.parseInt(statusString);
+      }
 
-    if (status == statusEnteringPage_) {
-      doSelectSubject(modinfo);
+      if (status == statusEnteringPage_) {
+        doSelectSubject(modinfo);
+      }
+      else if (status == statusSubject_)
+        doRoughOrdering(modinfo);
     }
-    else if (status == statusSubject_)
-      doRoughOrdering(modinfo);
+    else
+      add(new Text("Ekki Réttindi"));
   }
 
+  /*
+   *
+   */
   protected void doSelectSubject(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     List subjects = ApplicationFinder.listOfSubject();
     Text textTemplate = new Text();
 
@@ -63,15 +82,15 @@ public class RoughOrderForm extends Editor {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("subjectPeriod","Veldu tímabil sem grófraða á fyrir"));
+    heading.setText(iwrb_.getLocalizedString("subjectPeriod","Veldu tímabil sem grófraða á fyrir"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb.getLocalizedString("period","Tímabil"));
+    text1.setText(iwrb_.getLocalizedString("period","Tímabil"));
     text1.setBold();
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","grófraða"));
+    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","grófraða"));
     ok.setStyle("idega");
 
     form.add(heading);
@@ -86,8 +105,10 @@ public class RoughOrderForm extends Editor {
     add(form);
   }
 
+  /*
+   *
+   */
   protected void doRoughOrdering(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     String subject = (String)modinfo.getParameter("subject");
     int subject_id = Integer.parseInt(subject);
 
@@ -95,8 +116,31 @@ public class RoughOrderForm extends Editor {
     rough.createWaitingList(subject_id);
     Text heading = new Text();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("orderingDone","Grófröðun lokið"));
+    heading.setText(iwrb_.getLocalizedString("orderingDone","Grófröðun lokið"));
 
     add(heading);
+  }
+
+  /**
+   *
+   */
+  public String getBundleIdentifier() {
+    return(IW_RESOURCE_BUNDLE);
+  }
+
+  /**
+   *
+   */
+  public void main(ModuleInfo modinfo){
+    try {
+      isAdmin_ = AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql) {
+      isAdmin_ = false;
+    }
+
+    iwrb_ = getResourceBundle(modinfo);
+    //iwb = getBundle(modinfo);
+    control(modinfo);
   }
 }

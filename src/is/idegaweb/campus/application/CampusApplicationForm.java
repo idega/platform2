@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.8 2001/08/08 12:46:36 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.9 2001/08/15 11:56:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import com.idega.jmodule.object.interfaceobject.CheckBox;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
@@ -60,14 +59,12 @@ public class CampusApplicationForm extends ApplicationForm {
   private int pic2 = -1;
   private int pic3 = -1;
 
-  private String styleAttribute = "font-size: 8pt";
-  private TextInput textInputTemplate = new TextInput();
+  private static final String IW_RESOURCE_BUNDLE = "is.idegaweb.campus";
 
   /**
    *
    */
   public CampusApplicationForm() {
-    setStyleAttribute(styleAttribute);
   }
 
   /*
@@ -76,8 +73,6 @@ public class CampusApplicationForm extends ApplicationForm {
   protected void control(ModuleInfo modinfo) {
     String statusString = modinfo.getParameter("status");
     int status = 0;
-
-    System.out.println("status = " + statusString);
 
     if (statusString == null) {
       status = statusEnteringPage_;
@@ -118,7 +113,6 @@ public class CampusApplicationForm extends ApplicationForm {
    *
    */
   protected void doSelectSubject(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     List categories = BuildingFinder.listOfApartmentCategory();
     Text textTemplate = new Text();
@@ -130,28 +124,28 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
+    heading.setText(iwrb_.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb.getLocalizedString("applicationSubject","Umsókn um"));
+    text1.setText(iwrb_.getLocalizedString("applicationSubject","Umsókn um"));
     text1.setBold();
     Text text2 = (Text)textTemplate.clone();
     text2.setStyle("bodytext");
-    text2.setText(iwrb.getLocalizedString("apartmentType","Tegund íbúðar"));
+    text2.setText(iwrb_.getLocalizedString("apartmentType","Tegund íbúðar"));
     text2.setBold();
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
     subject.setStyle("formstyle");
     DropdownMenu aprtCat = new DropdownMenu(categories,"aprtCat");
     aprtCat.setStyle("formstyle");
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
     ok.setStyle("idega");
 
     form.add(heading);
@@ -193,7 +187,6 @@ public class CampusApplicationForm extends ApplicationForm {
    *
    */
   protected void doSelectAppliedFor(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     int id;
     String aprtCat = (String)modinfo.getSessionAttribute("aprtCat");
     try {
@@ -240,26 +233,26 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("applied","Húsnæði sem sótt er um"));
+    heading.setText(iwrb_.getLocalizedString("applied","Húsnæði sem sótt er um"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
-    text1.setText(iwrb.getLocalizedString("firstChoice","Fyrsta val"));
+    text1.setText(iwrb_.getLocalizedString("firstChoice","Fyrsta val"));
     text1.setBold();
     Text text2 = (Text)textTemplate.clone();
     text2.setStyle("bodytext");
-    text2.setText(iwrb.getLocalizedString("secondChoice","Annað val"));
+    text2.setText(iwrb_.getLocalizedString("secondChoice","Annað val"));
     Text text3 = (Text)textTemplate.clone();
     text3.setStyle("bodytext");
-    text3.setText(iwrb.getLocalizedString("thirdChoice","Þriðja val"));
+    text3.setText(iwrb_.getLocalizedString("thirdChoice","Þriðja val"));
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
 
-    SubmitButton ok = new SubmitButton(iwrb.getLocalizedString("ok","áfram"),"status",Integer.toString(statusAppliedFor_));
+    SubmitButton ok = new SubmitButton(iwrb_.getLocalizedString("ok","áfram"),"status",Integer.toString(statusAppliedFor_));
     ok.setStyle("idega");
 
     form.add(heading);
@@ -326,7 +319,6 @@ public class CampusApplicationForm extends ApplicationForm {
    *
    */
   protected void doCampusInformation(ModuleInfo modinfo) {
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
     List residences = CampusApplicationFinder.listOfResidences();
     List occupations = CampusApplicationFinder.listOfSpouseOccupations();
     DropdownMenu resSelect = new DropdownMenu(residences,"currentResidence");
@@ -335,18 +327,18 @@ public class CampusApplicationForm extends ApplicationForm {
     occSelect.setStyle("formstyle");
     DropdownMenu studyBeginMo = new DropdownMenu("studyBeginMo");
     studyBeginMo.setStyle("formstyle");
-    studyBeginMo.addMenuElement(1,iwrb.getLocalizedString("january","jan"));
-    studyBeginMo.addMenuElement(2,iwrb.getLocalizedString("february","feb"));
-    studyBeginMo.addMenuElement(3,iwrb.getLocalizedString("march","mar"));
-    studyBeginMo.addMenuElement(4,iwrb.getLocalizedString("april","apr"));
-    studyBeginMo.addMenuElement(5,iwrb.getLocalizedString("may","maí"));
-    studyBeginMo.addMenuElement(6,iwrb.getLocalizedString("june","jún"));
-    studyBeginMo.addMenuElement(7,iwrb.getLocalizedString("july","júl"));
-    studyBeginMo.addMenuElement(8,iwrb.getLocalizedString("august","ágú"));
-    studyBeginMo.addMenuElement(9,iwrb.getLocalizedString("september","sep"));
-    studyBeginMo.addMenuElement(10,iwrb.getLocalizedString("october","okt"));
-    studyBeginMo.addMenuElement(11,iwrb.getLocalizedString("november","nóv"));
-    studyBeginMo.addMenuElement(12,iwrb.getLocalizedString("december","des"));
+    studyBeginMo.addMenuElement(1,iwrb_.getLocalizedString("january","jan"));
+    studyBeginMo.addMenuElement(2,iwrb_.getLocalizedString("february","feb"));
+    studyBeginMo.addMenuElement(3,iwrb_.getLocalizedString("march","mar"));
+    studyBeginMo.addMenuElement(4,iwrb_.getLocalizedString("april","apr"));
+    studyBeginMo.addMenuElement(5,iwrb_.getLocalizedString("may","maí"));
+    studyBeginMo.addMenuElement(6,iwrb_.getLocalizedString("june","jún"));
+    studyBeginMo.addMenuElement(7,iwrb_.getLocalizedString("july","júl"));
+    studyBeginMo.addMenuElement(8,iwrb_.getLocalizedString("august","ágú"));
+    studyBeginMo.addMenuElement(9,iwrb_.getLocalizedString("september","sep"));
+    studyBeginMo.addMenuElement(10,iwrb_.getLocalizedString("october","okt"));
+    studyBeginMo.addMenuElement(11,iwrb_.getLocalizedString("november","nóv"));
+    studyBeginMo.addMenuElement(12,iwrb_.getLocalizedString("december","des"));
     DropdownMenu studyEndMo = (DropdownMenu)studyBeginMo.clone();
     studyEndMo.setName("studyEndMo");
     DropdownMenu spouseStudyBeginMo = (DropdownMenu)studyBeginMo.clone();
@@ -372,91 +364,91 @@ public class CampusApplicationForm extends ApplicationForm {
     spouseStudyEndYr.setName("spouseStudyEndYr");
 
 
-    SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("ok","áfram"));
+    SubmitButton ok = new SubmitButton("ok",iwrb_.getLocalizedString("ok","áfram"));
     ok.setStyle("idega");
 
     Text textTemplate = new Text();
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb.getLocalizedString("otherInfo","Aðrar upplýsingar um umsækjanda"));
+    heading.setText(iwrb_.getLocalizedString("otherInfo","Aðrar upplýsingar um umsækjanda"));
     Text required = (Text)textTemplate.clone();
     required.setText(" * ");
     required.setBold();
     required.setStyle("required");
     Text info = (Text)textTemplate.clone();
-    info.setText(iwrb.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
+    info.setText(iwrb_.getLocalizedString("mustFillOut","* Stjörnumerkt svæði verður að fylla út"));
     info.setStyle("subtext");
     Text text1 = (Text)textTemplate.clone();
-    text1.setText(iwrb.getLocalizedString("studyBegin","Nám hafið við HÍ (mán./ár)"));
+    text1.setText(iwrb_.getLocalizedString("studyBegin","Nám hafið við HÍ (mán./ár)"));
     text1.setStyle("bodytext");
     text1.setBold();
     Text text2 = (Text)textTemplate.clone();
-    text2.setText(iwrb.getLocalizedString("studyEnd","Áætluð námslok (mán./ár)"));
+    text2.setText(iwrb_.getLocalizedString("studyEnd","Áætluð námslok (mán./ár)"));
     text2.setStyle("bodytext");
     text2.setBold();
     Text text3 = (Text)textTemplate.clone();
-    text3.setText(iwrb.getLocalizedString("faculty","Deild"));
+    text3.setText(iwrb_.getLocalizedString("faculty","Deild"));
     text3.setStyle("bodytext");
     text3.setBold();
     Text text4 = (Text)textTemplate.clone();
-    text4.setText(iwrb.getLocalizedString("studyTrack","Námsbraut"));
+    text4.setText(iwrb_.getLocalizedString("studyTrack","Námsbraut"));
     text4.setStyle("bodytext");
     text4.setBold();
     Text text5 = (Text)textTemplate.clone();
-    text5.setText(iwrb.getLocalizedString("currentRes","Núverandi húsnæði"));
+    text5.setText(iwrb_.getLocalizedString("currentRes","Núverandi húsnæði"));
     text5.setStyle("bodytext");
     text5.setBold();
     Text text6 = (Text)textTemplate.clone();
-    text6.setText(iwrb.getLocalizedString("spouseName","Nafn umsækjanda/maka"));
+    text6.setText(iwrb_.getLocalizedString("spouseName","Nafn umsækjanda/maka"));
     text6.setStyle("bodytext");
     Text text7 = (Text)textTemplate.clone();
-    text7.setText(iwrb.getLocalizedString("spouseSSN","Kennitala"));
+    text7.setText(iwrb_.getLocalizedString("spouseSSN","Kennitala"));
     text7.setStyle("bodytext");
     Text text8 = (Text)textTemplate.clone();
-    text8.setText(iwrb.getLocalizedString("spouseSchool","Skóli"));
+    text8.setText(iwrb_.getLocalizedString("spouseSchool","Skóli"));
     text8.setStyle("bodytext");
     Text text9 = (Text)textTemplate.clone();
-    text9.setText(iwrb.getLocalizedString("spouseStudyTrack","Námsbraut"));
+    text9.setText(iwrb_.getLocalizedString("spouseStudyTrack","Námsbraut"));
     text9.setStyle("bodytext");
     Text text10 = (Text)textTemplate.clone();
-    text10.setText(iwrb.getLocalizedString("spouseStudyBegin","Nám hafið (mán./ár)"));
+    text10.setText(iwrb_.getLocalizedString("spouseStudyBegin","Nám hafið (mán./ár)"));
     text10.setStyle("bodytext");
     Text text11 = (Text)textTemplate.clone();
-    text11.setText(iwrb.getLocalizedString("spouseStudyEnd","Áætluð námslok (mán./ár)"));
+    text11.setText(iwrb_.getLocalizedString("spouseStudyEnd","Áætluð námslok (mán./ár)"));
     text11.setStyle("bodytext");
     Text text12 = (Text)textTemplate.clone();
-    text12.setText(iwrb.getLocalizedString("spouseOccupation","Maki er"));
+    text12.setText(iwrb_.getLocalizedString("spouseOccupation","Maki er"));
     text12.setStyle("bodytext");
     Text text13 = (Text)textTemplate.clone();
-    text13.setText(iwrb.getLocalizedString("children","Nöfn og fæðingardagur barna sem búa hjá umsækjanda"));
+    text13.setText(iwrb_.getLocalizedString("children","Nöfn og fæðingardagur barna sem búa hjá umsækjanda"));
     text13.setStyle("bodytext");
     Text text14 = (Text)textTemplate.clone();
-    text14.setText(iwrb.getLocalizedString("income","Tekjur, styrkir og námslán umsækjanda 1.1 - 1.6 í ár"));
+    text14.setText(iwrb_.getLocalizedString("income","Tekjur, styrkir og námslán umsækjanda 1.1 - 1.6 í ár"));
     text14.setStyle("bodytext");
     text14.setBold();
     Text text15 = (Text)textTemplate.clone();
-    text15.setText(iwrb.getLocalizedString("spouseIncome","Tekjur, styrkir og námslán umsækjanda/maka 1.1 - 1.6 í ár"));
+    text15.setText(iwrb_.getLocalizedString("spouseIncome","Tekjur, styrkir og námslán umsækjanda/maka 1.1 - 1.6 í ár"));
     text15.setStyle("bodytext");
     Text text16 = (Text)textTemplate.clone();
-    text16.setText(iwrb.getLocalizedString("wantHousingFrom","Húsnæði óskast frá og með"));
+    text16.setText(iwrb_.getLocalizedString("wantHousingFrom","Húsnæði óskast frá og með"));
     text16.setStyle("bodytext");
     text16.setBold();
     Text text17 = (Text)textTemplate.clone();
-    text17.setText(iwrb.getLocalizedString("waitingList","Óska eftir að vera á biðlista ef ég fæ ekki úthlutað húsnæði"));
+    text17.setText(iwrb_.getLocalizedString("waitingList","Óska eftir að vera á biðlista ef ég fæ ekki úthlutað húsnæði"));
     text17.setStyle("bodytext");
     Text text18 = (Text)textTemplate.clone();
-    text18.setText(iwrb.getLocalizedString("furniture","Óska eftir að leigja húsgögn ef mögulegt er"));
+    text18.setText(iwrb_.getLocalizedString("furniture","Óska eftir að leigja húsgögn ef mögulegt er"));
     text18.setStyle("bodytext");
     Text text19 = (Text)textTemplate.clone();
-    text19.setText(iwrb.getLocalizedString("contact","Ef ekki næst í mig í síma á dvalarstað má ná í mig eða skilja eftir skilaboð í sima"));
+    text19.setText(iwrb_.getLocalizedString("contact","Ef ekki næst í mig í síma á dvalarstað má ná í mig eða skilja eftir skilaboð í sima"));
     text19.setStyle("bodytext");
     Text text20 = (Text)textTemplate.clone();
-    text20.setText(iwrb.getLocalizedString("email","Tölvupóstur"));
+    text20.setText(iwrb_.getLocalizedString("email","Tölvupóstur"));
     text20.setStyle("bodytext");
     text20.setBold();
     Text text21 = (Text)textTemplate.clone();
-    text21.setText(iwrb.getLocalizedString("info","Aðrar upplýsingar"));
+    text21.setText(iwrb_.getLocalizedString("info","Aðrar upplýsingar"));
     text21.setStyle("bodytext");
 
     TextInput textInputTemplate = new TextInput();
@@ -843,10 +835,16 @@ public class CampusApplicationForm extends ApplicationForm {
     return(true);
   }
 
+  /**
+   *
+   */
   public String getBundleIdentifier() {
-    return("is.idegaweb.campus");
+    return(IW_RESOURCE_BUNDLE);
   }
 
+  /*
+   *
+   */
   private void checkAparmentTypesSelected(ModuleInfo modinfo) {
     String key1 = (String)modinfo.getParameter("aprtType");
     String key2 = (String)modinfo.getParameter("aprtType2");
@@ -868,10 +866,6 @@ public class CampusApplicationForm extends ApplicationForm {
         room = new ApartmentType(type);
         pic3 = room.getFloorPlanId();
       }
-
-      System.out.println("pic1 = " + pic1);
-      System.out.println("pic2 = " + pic2);
-      System.out.println("pic3 = " + pic3);
     }
     catch(SQLException e) {
       e.printStackTrace();

@@ -1,5 +1,5 @@
 /*
- * $Id: EmailParser.java,v 1.3 2001/08/13 14:28:44 palli Exp $
+ * $Id: EmailParser.java,v 1.4 2001/08/15 11:56:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,10 @@
  */
 package is.idegaweb.campus.service;
 
+import is.idegaweb.campus.exception.NoSuchTagException;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Set;
 
 /**
  *
@@ -49,6 +51,10 @@ public class EmailParser {
   }
 
   public void setTag(String key, String value) throws NoSuchTagException {
+    Set keySet = tags_.keySet();
+    if (!keySet.contains(key))
+      throw new NoSuchTagException("Tag " + key + " does not exists");
+
   }
 
   private void createTags() {
