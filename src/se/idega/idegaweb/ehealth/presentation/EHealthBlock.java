@@ -74,7 +74,7 @@ public class EHealthBlock extends Block {
 
 	protected GenericButton getButton(GenericButton button) {
 		//temporary, will be moved to IWStyleManager for handling...
-		button.setHeight("15");
+		button.setHeight("17");
 		
 		return (GenericButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
 	}
