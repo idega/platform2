@@ -482,7 +482,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
-		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
+		if (!containsTypePayment(types))
+			sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
 			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
 		if (club != null)
@@ -492,6 +493,15 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
 		return idoFindIDsBySQL(sql.toString());
+	}
+	
+	private boolean containsTypePayment(String[] types) {
+		boolean containsTypePayment = false;
+		for (int i = 0; i<types.length;i++) {
+			if (types[i].equals(TYPE_PAYMENT))
+				containsTypePayment = true;
+		}
+		return containsTypePayment;
 	}
 	
 	/**
