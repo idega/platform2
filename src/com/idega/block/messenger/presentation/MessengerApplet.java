@@ -52,7 +52,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private ImageLabel logoLabel;
   private MessageListener cycler;
   //debug
- // private Panel userPanel;
+ private Panel userPanel;
 
   private Thread t;
 
@@ -90,9 +90,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         ex.printStackTrace(System.err);
       }
 
-      //userPanel = new Panel();
-      //userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-      //add(userPanel);
+      userPanel = new Panel();
+      userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      add(userPanel);
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -356,6 +356,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setSize(16,100);
 
       add(item);
+      userPanel.add(item);
+      userPanel.repaint();
       item.repaint();
       repaint();
 
