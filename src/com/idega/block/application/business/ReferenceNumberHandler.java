@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.5 2001/12/04 12:26:35 palli Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.6 2002/01/08 15:27:27 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,11 +36,20 @@ public class ReferenceNumberHandler implements IWEventListener {
    */
   public void actionPerformed(IWContext iwc) throws IWException {
     String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
-    CypherText cyph = new CypherText();
-    String cypherKey = getCypherKey(iwc);
+    if (ref.length() != 10) {
+      System.out.println("Setting upp decyphered reference number");
+      CypherText cyph = new CypherText();
+      String cypherKey = getCypherKey(iwc);
 
-    ref = cyph.doDeCypher(ref,cypherKey);
-    iwc.setSessionAttribute(referenceNumber_,ref);
+      ref = cyph.doDeCypher(ref,cypherKey);
+      iwc.setSessionAttribute(referenceNumber_,ref);
+      iwc.removeSessionAttribute("DUMMY_LOGIN");
+    }
+    else {
+      System.out.println("Saving ssn to session");
+      iwc.setSessionAttribute(referenceNumber_,ref);
+      iwc.setSessionAttribute("DUMMY_LOGIN","true");
+    }
   }
 
   /**

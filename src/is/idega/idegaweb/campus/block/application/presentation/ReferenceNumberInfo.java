@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.2 2001/12/07 12:22:33 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.3 2002/01/08 15:26:43 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,6 +59,9 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
    *
    */
   protected void control(IWContext iwc) {
+    String which = (String)iwc.getSessionAttribute("DUMMY_LOGIN");
+    if (which == null) {
+    System.out.println("Handling reference number lookup");
     String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
 
     int aid = 0;
@@ -270,6 +273,27 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 
       form.add(refTable);
       add(form);
+    }
+    }
+    else {
+      System.out.println("Handling display of ssn lookup");
+      java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
+      if (li == null || li.size() != 2) {
+        add(new Text("Það er enginn skráður á þessa kennitölu"));
+      }
+      else {
+        String userid = (String)li.get(0);
+        String passwd = (String)li.get(1);
+        Text idText = new Text("userid : ");
+        add(idText);
+        add(userid);
+        add(Text.getBreak());
+        Text passwdText = new Text("passwd : ");
+        add(passwdText);
+        add(passwd);
+        iwc.removeSessionAttribute("DUMMY_LOGIN");
+        iwc.removeSessionAttribute("referenceNumber");
+      }
     }
   }
 
