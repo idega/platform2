@@ -77,7 +77,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	private static SchoolCategory SCHOOL_CATEGORY_COLLEGE;
 	private static SchoolCategory SCHOOL_CATEGORY_UNIVERSITY;
 
-
+	
+	public final static String PROPERTY_NAME_REJECT_STUDENT_MESSAGE = "reject_student_message";
+	public final static String PROPERTY_NAME_GROUP_OFFER_SUBJECT = "group_offer_headline";
+	public final static String PROPERTY_NAME_GROUP_OFFER_BODY = "group_offer_body";
+	public final static String PROPERTY_NAME_GROUP_CONFIRM_SUBJECT = "group_confirm_headline";
+	public final static String PROPERTY_NAME_GROUP_CONFIRM_BODY = "group_confirm_body";
+	
 	public SchoolHome getSchoolHome() {
 		try {
 			return (SchoolHome) IDOLookup.getHome(School.class);
@@ -1993,4 +1999,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new ArrayList();
 		}
 	}
+	
+	public String getProperty(School school, String propertyName) {
+		return school.getMetaData(propertyName);
+	}
+	
+	public void setProperty(School school, String propertyName, String propertyValue) {
+		school.setMetaData(propertyName, propertyValue);
+		school.store();
+	}
+	
 }
