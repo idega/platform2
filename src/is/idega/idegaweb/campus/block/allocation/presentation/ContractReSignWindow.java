@@ -17,6 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
 
 import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
@@ -29,7 +30,14 @@ import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
+
 import java.util.List;
+
+import javax.ejb.FinderException;
+
 import com.idega.util.SendMail;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
@@ -125,6 +133,7 @@ public class ContractReSignWindow extends Window{
         if(user !=null){
 		boolean isContractUser = user.getID() == eUser.getID();
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
+		  T.add(new HiddenInput("applicant_id",eContract.getApplicantId().toString()),1,row);
           T.add(new HiddenInput("us_id",String.valueOf(eContract.getUserId().intValue())),1,row);
           if(iwc.isParameterSet(prmAdmin)){
             T.add(new HiddenInput(prmAdmin,"true"));
@@ -189,10 +198,10 @@ public class ContractReSignWindow extends Window{
           
           TextInput newAddress = new TextInput("new_address");
           newAddress.setAsNotEmpty(iwrb.getLocalizedString("err_new_address","You must enter a new address"));
-					TextInput newZip = new TextInput("new_zip");
-					newZip.setAsNotEmpty(iwrb.getLocalizedString("err_new_zip","You must enter a new zip code"));
-					TextInput newPhone = new TextInput("new_phone");
-					newPhone.setAsNotEmpty(iwrb.getLocalizedString("err_new_phone","You must enter a new phone"));
+		  TextInput newZip = new TextInput("new_zip");
+		  newZip.setAsNotEmpty(iwrb.getLocalizedString("err_new_zip","You must enter a new zip code"));
+		  TextInput newPhone = new TextInput("new_phone");
+		  newPhone.setAsNotEmpty(iwrb.getLocalizedString("err_new_phone","You must enter a new phone"));
           
           T.add(Edit.formatText(iwrb.getLocalizedString("new_address","New address")),1,row);
           T.add(newAddress,2,row);
@@ -241,7 +250,7 @@ public class ContractReSignWindow extends Window{
     if(sMovDate !=null && sMovDate.length() == 10 )
       movDate = new IWTimestamp(sMovDate);
     boolean datesync = iwc.getParameter(prmDateSync)!=null;
-    System.out.println("saving shit");
+    //System.out.println("saving shit");
     if(isAdmin){
     System.out.println("is admin");
       ContractBusiness.endContract(id,movDate,sInfo,datesync);
@@ -252,8 +261,43 @@ public class ContractReSignWindow extends Window{
       ContractBusiness.resignContract(iwc,id,movDate,sInfo,datesync);
 
     }
+    doChangeApplicantAddress(iwc);
+    	
+    
     setParentToReload();
     close();
+  }
+  
+  private void doChangeApplicantAddress(IWContext iwc){
+  	try {
+  		 if(iwc.isParameterSet("applicant_id")){
+		 Integer applicantID = Integer.valueOf(iwc.getParameter("applicant_id"));
+		 Applicant applicant = ((ApplicantHome)IDOLookup.getHome(Applicant.class)).findByPrimaryKey(applicantID);
+		 if(iwc.isParameterSet("new_address")){
+		 	applicant.setResidence(iwc.getParameter("new_address"));
+		 }
+		 if(iwc.isParameterSet("new_zip")){
+		 	applicant.setPO(iwc.getParameter("new_zip"));
+		 }
+		 if(iwc.isParameterSet("new_phone")){
+		 	
+		 }
+		 applicant.store();
+  		 }
+	}
+	catch (NumberFormatException e) {
+		e.printStackTrace();
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (IDOStoreException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+  	
   }
 
   private void doAddEmail( int iUserId ,IWContext iwc){
