@@ -58,7 +58,7 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 
 	public ClubMemberExchangeWindow() {
 		setHeight(220);
-		setWidth(600);	
+		setWidth(620);	
 		setResizable(true);
 	}
 	
@@ -115,7 +115,7 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		form.add(table);
 		table.mergeCells(1,1,3,1);
 		table.mergeCells(1,5,3,5);
-		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setWidthAndHeightToHundredPercent();
 		table.setAlignment(1,5,Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		Collection groups = null;
