@@ -339,7 +339,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
         //link.setURL(IWMainApplication.BUILDER_SERVLET_URL);
-        link.setURL(iwc.getApplication.getBuilderServletURL());
+        link.setURL(iwc.getApplication().getBuilderServletURL());
       }
     }
 
