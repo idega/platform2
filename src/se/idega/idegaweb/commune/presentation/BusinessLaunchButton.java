@@ -1,5 +1,5 @@
 /*
- * $Id: BusinessLaunchButton.java,v 1.5 2003/11/05 14:14:32 laddi Exp $
+ * $Id: BusinessLaunchButton.java,v 1.6 2004/02/10 16:46:17 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,9 +13,12 @@ package se.idega.idegaweb.commune.presentation;
 import java.rmi.RemoteException;
 
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -31,10 +34,7 @@ public class BusinessLaunchButton extends ChildCareBlock {
 	
 	protected void control(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(SUBMIT)) {
-			getBusiness().convertOldQueue();
-		}
-		else if (iwc.isParameterSet(SUBMIT2)) {
-			getBusiness().addMissingGrantedChecks();
+			getBusiness(iwc).importLanguageToPlacement();
 		}
 		
 		displayForm();			
@@ -42,15 +42,21 @@ public class BusinessLaunchButton extends ChildCareBlock {
 
 	protected void displayForm() {
 		Form form = new Form();
-		SubmitButton button = new SubmitButton(SUBMIT,"Kill application");
-		SubmitButton button2 = new SubmitButton(SUBMIT2,"Add missing checks");
+		SubmitButton button = new SubmitButton(SUBMIT,"Add language to placements");
 		form.add(button);
-		form.add(Text.BREAK);		
-		form.add(button2);
 		add(form);	
 	}
 
 	public void init(IWContext iwc) throws RemoteException {
 		control(iwc);
+	}
+	
+	private SchoolChoiceBusiness getBusiness(IWContext iwc) {
+		try {
+			return (SchoolChoiceBusiness) IBOLookup.getServiceInstance(iwc, SchoolChoiceBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 }
