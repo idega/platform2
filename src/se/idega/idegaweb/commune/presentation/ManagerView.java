@@ -1,4 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
+import com.idega.core.data.Email;
+import com.idega.core.data.Phone;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -6,6 +8,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -102,8 +105,8 @@ public class ManagerView extends CommuneBlock {
 				}
 				mainTable.add(picture,2,1);
 				
-				String sManagerName = manager.getNameLastFirst();
-				Text tManagerName = getSmallText(sManagerName);
+				String sManagerName = manager.getName();
+				Text tManagerName = getHeader(sManagerName);
 				leftTable.add(tManagerName,1,1);
 				
 				String sWorkGroup = getWorkGroupName(manager,iwc);
@@ -114,16 +117,25 @@ public class ManagerView extends CommuneBlock {
 				Text tWorkGroupArea = getSmallText(sWorkGroupArea);
 				leftTable.add(tWorkGroupArea,1,3);
 				
-				String sWorkGroupDescription = getWorkGroupDescription(manager,iwc);
-				Text tWorkGroupDescription = getSmallText(sWorkGroupDescription);
-				leftTable.add(tWorkGroupDescription,1,4);
+				String sManagerDescription = getManagerDescription(manager,iwc);
+				Text tManagerDescription = getSmallText(sManagerDescription);
+				leftTable.add(tManagerDescription,1,4);
 				
 				String sManagerEmail = getManagerEmail(manager,iwc);
-				Text tManagerEmail = getSmallText(sManagerEmail);
+				Text tManagerEmail=null;
+				if(sManagerEmail.equals("")){
+					tManagerEmail = getSmallText(sManagerEmail);
+				}
+				else{
+					tManagerEmail = getLink(sManagerEmail);
+					Link lManagerEmail = (Link)tManagerEmail;
+					lManagerEmail.setURL("mailto:"+sManagerEmail);
+				}
+			
 				leftTable.add(tManagerEmail,1,6);
 				
 				String sManagerTelephone = getManagerTelephone(manager,iwc);
-				Text tManagerTelephone = getSmallText(sManagerTelephone);
+				Text tManagerTelephone = getSmallText(localize("managerview.tel","Tel")+": "+sManagerTelephone);
 				leftTable.add(tManagerTelephone,1,7);
 				
 				
@@ -140,7 +152,23 @@ public class ManagerView extends CommuneBlock {
 	 * @return String
 	 */
 	private String getManagerTelephone(User manager,IWContext iwc) {
-		return "-";
+		try{
+			int managerId = manager.getID();
+			Phone[] phones = getUserBusiness(iwc).getUserPhones(managerId);
+			//Try to take the first phone
+			Phone phone = phones[0];
+			if(phone!=null){
+				String sPhone = phone.getNumber();
+				if(sPhone!=null || !sPhone.equals("")){
+					return sPhone;
+				}
+			}
+			return "-";
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return "-";
+		}
 	}
 
 
@@ -151,13 +179,19 @@ public class ManagerView extends CommuneBlock {
 	 */
 	private String getManagerEmail(User manager,IWContext iwc) {
 		try{
-			getUserBusiness(iwc).getUsersMainAddress(manager);
+			Email email = getUserBusiness(iwc).getUserMail(manager);
+			if(email!=null){
+				String sEmail = email.getEmailAddress();
+				if(sEmail!=null || !sEmail.equals("")){
+					return sEmail;
+				}
+			}
 			return "-";
 		}
 		catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
+			return "-";
 		}
-		return null;
 	}
 
 
@@ -168,14 +202,36 @@ public class ManagerView extends CommuneBlock {
 	 */
 	private String getWorkGroupDescription(User manager,IWContext iwc) {
 		try
-		{
-			return getWorkGroup(manager,iwc).getDescription();
+		{	
+			String s = getWorkGroup(manager,iwc).getDescription();
+			if(s!=null){
+				return s;
+			}
 		} catch (Exception e)
 		{
 			return "-";
 		}
+		return "-";
 	}
 
+	/**
+	 * Method getWorkGroupDescription.
+	 * @param manager
+	 * @return String
+	 */
+	private String getManagerDescription(User manager,IWContext iwc) {
+		try
+		{	
+			String s =manager.getDescription();
+			if(s!=null){
+				return s;
+			}
+		} catch (Exception e)
+		{
+			return "-";
+		}
+		return "-";
+	}
 
 	/**
 	 * Method getWorkGroupName.
