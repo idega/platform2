@@ -216,7 +216,6 @@ public class WorkReportMultiEditor extends Block {
       
     EntityBrowser browser = EntityBrowser.getInstanceUsingEventSystemAndExternalForm();
     browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
-	browser.setScrollableWithHeightAndWidth(550, 750);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReport.class);
