@@ -457,6 +457,11 @@ public class MessengerApplet extends Applet implements ActionListener{
   //    super.paint(g);
     g.drawString("test",150,150);
     System.out.println("IN UPDATE");
+
+    if(isfirstRun){
+         cycler.start();
+      isfirstRun=false;
+    }
   }
 
 
@@ -474,8 +479,6 @@ public class MessengerApplet extends Applet implements ActionListener{
      cycler = new MessageListener(checkTimer);
      cycler.addActionListener(this);
     }
-
-   cycler.start();
 
    // run();
 
