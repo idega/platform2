@@ -218,10 +218,12 @@ private IWResourceBundle iwrb;
   private void processForm(IWContext iwc,String sNewsId,String sLocTextId,String sCategory){
     // Save :
     if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
+      iwc.getApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
       saveNews(iwc,sNewsId,sLocTextId,sCategory);
     }
     // Delete :
     else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
+      iwc.getApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
       try {
         if(iwc.getParameter(modeDelete)!=null){
           int I = Integer.parseInt(iwc.getParameter(modeDelete));

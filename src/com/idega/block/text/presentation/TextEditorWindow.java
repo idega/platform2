@@ -169,8 +169,8 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
     // Save :
     if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
-      saveText(iwc,sTextId,sLocTextId,sAttribute);
       iwc.getApplication().getIWCacheManager().invalidateCache(TextReader.CACHE_KEY);
+      saveText(iwc,sTextId,sLocTextId,sAttribute);
     }
     // Delete :
     else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
