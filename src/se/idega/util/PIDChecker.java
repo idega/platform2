@@ -182,7 +182,7 @@ public class PIDChecker {
 	 * @return Date	Returns null if personal ID is not valid.
 	 */
 	public Date getDateFromPersonalID(String personalID) {
-		if (isValid(personalID)) {
+		if (isValid(personalID, true)) {
 			int year = 0;
 			int month = 0;
 			int day = 0;
