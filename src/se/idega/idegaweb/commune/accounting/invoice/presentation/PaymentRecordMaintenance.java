@@ -15,10 +15,7 @@ import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -31,13 +28,9 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.LocaleUtil;
 import com.lowagie.text.DocumentException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -75,16 +68,22 @@ import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+//import com.idega.idegaweb.IWMainApplication;
+//import com.idega.io.MediaWritable;
+//import com.idega.io.MemoryInputStream;
+//import java.io.ByteArrayOutputStream;
+//import java.io.IOException;
+//import java.io.OutputStream;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/06 14:35:00 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/06 16:24:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.97 $
+ * @version $Revision: 1.98 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -174,13 +173,14 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		}
 	}
 	
-	private void generateCheckAmountListPdf (final IWContext context) {
+	private void generateCheckAmountListPdf (final IWContext context)
+		throws RemoteException, DocumentException, FinderException {
 		Link link1 = getCheckAmountListLink
 				(context, localize (CHECK_AMOUNT_LIST_WITHOUT_POSTING_KEY,
-														CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT));
+														CHECK_AMOUNT_LIST_WITHOUT_POSTING_DEFAULT), false);
 		Link link2 = getCheckAmountListLink
 				(context, localize (CHECK_AMOUNT_LIST_WITH_POSTING_KEY,
-														CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT));
+														CHECK_AMOUNT_LIST_WITH_POSTING_DEFAULT), true);
 		link2.addParameter (POSTING_KEY, true + "");
 		int row = 1;
 		final Table htmlTable = createTable (1);
@@ -201,27 +201,24 @@ public class PaymentRecordMaintenance extends AccountingBlock
 													formTable));
 	}
 
-	private Link getCheckAmountListLink (final IWContext context,
-																			 final String linkText) {
-		// create links		
-		CheckAmountListWriter.outerObject = this;
-		final Link link = new Link (linkText);
-		final Window w = new Window
-				(localize("school.class", "School class"),
-				 getIWApplicationContext ().getApplication ().getMediaServletURI ());
-		w.setResizable(true);
-		w.setMenubar(true);
-		w.setHeight(400);
-		w.setWidth(500);
-		link.setWindow(w);
-		link.addParameter (MediaWritable.PRM_WRITABLE_CLASS,
-											 IWMainApplication.getEncryptedClassName
-											 (CheckAmountListWriter.class));
-		link.addParameter (PROVIDER_KEY, context.getParameter (PROVIDER_KEY));
-		link.addParameter (START_PERIOD_KEY,
-											 context.getParameter (START_PERIOD_KEY));
-		link.addParameter (END_PERIOD_KEY, context.getParameter (END_PERIOD_KEY));
-		return link;
+	private Link getCheckAmountListLink
+		(final IWContext context, final String linkText,
+		 final boolean isShowPosting)
+		throws RemoteException, DocumentException, FinderException {
+			final Integer providerId = getProviderIdParameter (context);
+			final Date startPeriod	= getPeriodParameter (context,
+																											START_PERIOD_KEY);
+			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+			final String schoolCategoryId = getSession().getOperationalField ();
+			final MemoryFileBuffer buffer
+					= getCheckAmountBusiness ().getInternalCheckAmountListBuffer
+					(schoolCategoryId, providerId, startPeriod, endPeriod,
+					 isShowPosting);
+			final int fileId = getInvoiceBusiness ().generatePdf (linkText, buffer);
+			final Link link = new Link (linkText);
+			link.setFile (fileId);
+			link.setTarget ("check_amount_list_window_" + fileId);
+			return link;
 	}
 
 	private void removeRecord (final IWContext context)
@@ -1080,6 +1077,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
+	/*
 	public static class CheckAmountListWriter	implements MediaWritable {
 		public static PaymentRecordMaintenance outerObject;
 		private Integer providerId;
@@ -1118,6 +1116,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 			}
 		}
 	}
+	*/
 
 	private void addPresentation
 		(final Table table, final java.util.Map map, final String key,
