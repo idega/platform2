@@ -224,7 +224,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 
 	public int ejbHomeGetNumberOfActiveNotWithProvider(int childID, int providerID) throws IDOException {
 		IDOQuery sql = idoQuery();
-		sql.append("select a.* from ").append(this.getEntityName()).append(" a, comm_childcare c");
+		sql.append("select count(*) from ").append(this.getEntityName()).append(" a, comm_childcare c");
 		sql.appendWhereEquals("a."+this.COLUMN_APPLICATION_ID, "c.comm_childcare_id");
 		sql.appendAndEquals("a." + COLUMN_CHILD_ID, childID);
 		sql.appendAnd().append("c.provider_id").appendNOTEqual().append(providerID);
@@ -244,7 +244,7 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 
 	public int ejbHomeGetNumberOfTerminatedLaterNotWithProvider(int childID, int providerID, Date date) throws IDOException {
 		IDOQuery sql = idoQuery();
-		sql.append("select a.* from ").append(this.getEntityName()).append(" a, comm_childcare c");
+		sql.append("select count(*) from ").append(this.getEntityName()).append(" a, comm_childcare c");
 		sql.appendWhereEquals("a."+this.COLUMN_APPLICATION_ID, "c.comm_childcare_id");
 		sql.appendAndEquals("a." + COLUMN_CHILD_ID, childID);
 		sql.appendAnd().append("c.provider_id").appendNOTEqual().append(providerID);

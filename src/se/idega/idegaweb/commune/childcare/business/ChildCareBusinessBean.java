@@ -331,25 +331,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 						else {
 							changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
-							if (sendMessages)
+							if (sendMessages) {
 								sendMessageToParents(appl, subject, body);
+							}
 							updateQueue(appl);
 						}
 					}
 				}
 			}
-
-			/**
-			 * @todo Change status of check when used.
-			 */
-
-			/*if (!freetimeApplication) {
-				CheckBusiness checkBiz = (CheckBusiness) getServiceInstance(CheckBusiness.class);
-				Check check = checkBiz.getCheck(checkId);
-				//			check.setStatus(this.getcases)
-				//			check.store();
-
-			}*/
 
 			t.commit();
 		}
@@ -1202,6 +1191,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}	*/
 
+	public ChildCareApplication getAcceptedApplicationsByChild(int childID) {
+		try {
+			String caseStatus[] = { getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
+
+			return getChildCareApplicationHome().findActiveApplicationByChildAndStatus(childID, caseStatus);
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+	
 	public Collection getApplicationsByProvider(int providerId) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
@@ -1443,13 +1446,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public Collection getApplicationsForChild(User child) {
-		try {
-			return getChildCareApplicationHome().findApplicationByChild(((Integer) child.getPrimaryKey()).intValue());
-		} catch (FinderException fe) {
-			return null;
-		} catch (RemoteException re) {
-			return null;
-		}
+		return getApplicationsForChild(((Integer) child.getPrimaryKey()).intValue());
 	}
 	
 	public Collection getApplicationsForChild(int childId) {
@@ -1466,6 +1463,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) throws RemoteException {
 		try {
 			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, caseStatus);
+		} 
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
+	public int getNumberOfApplicationsForChild(int childID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().getNumberOfApplicationsForChild(childID);
+		} 
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
+	public int getNumberOfApplicationsForChildNotInactive(int childID) throws RemoteException {
+		try {
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus() };
+			return getChildCareApplicationHome().getNumberOfApplicationsForChildNotInStatus(childID, caseStatus);
 		} 
 		catch (IDOException ie) {
 			return 0;

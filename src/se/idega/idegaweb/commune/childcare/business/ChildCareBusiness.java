@@ -129,4 +129,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasActiveApplication(int childID) throws java.rmi.RemoteException;
  public boolean hasOutstandingOffers(int childID) throws java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildByStatus(int childID, String caseStatus) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getAcceptedApplicationsByChild(int childID) throws java.rmi.RemoteException;
+ public int getNumberOfApplicationsForChild(int childID) throws java.rmi.RemoteException;
+ public int getNumberOfApplicationsForChildNotInactive(int childID) throws java.rmi.RemoteException;
 }

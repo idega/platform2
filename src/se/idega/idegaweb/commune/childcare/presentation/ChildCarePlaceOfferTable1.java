@@ -208,10 +208,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
 			RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
 			RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
-			/*	rb1.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
-				rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
-				rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
-			*/
+
 			if (disableAccept) {
 				rb1.setDisabled(true);
 				rb2.setSelected();
@@ -222,10 +219,6 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
-
-			//			System.out.println("DATE ID" + date.getIDForDay());
-
-			//			b.setWindowToOpen(ChildCareProviderQueueWindow.class);
 
 			add(rb1, column++, row);
 			setNoWrap(column, row);
@@ -263,10 +256,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		}
 
 		if (!isCancelled) {
-			Link popup = new Link();
-			//		popup.setImage(new Image());
-			//		popup.setAsImageButton(true);
-			popup.setImage(_page.getEditIcon(_page.localize(EDIT_TOOLTIP)));
+			Link popup = new Link(_page.getEditIcon(_page.localize(EDIT_TOOLTIP)));
 			popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
 			popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
 			popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
@@ -274,10 +264,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 			add(popup, column++, row);
 
-			Link delete = new Link();
-			//		delete.setAsImageButton(true);
-			delete.setImage(_page.getDeleteIcon(_page.localize(DELETE_TOOLTIP)));
-			//		popup.setImage(new Image());
+			Link delete = new Link(_page.getDeleteIcon(_page.localize(DELETE_TOOLTIP)));
 			delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
 			delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
 			delete.addParameter(CCConstants.APPID, app.getNodeID());
@@ -307,16 +294,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int col = 1;
 
 		add(HEADER_YOUR_CHOICE, col++, 1);
-		//add(HEADER_QUEUE_INFO, col++, 1);
 		if (hasOffer) {
 			setWidth(HUNDRED_PERCENT);
 			setWidth(1, HUNDRED_PERCENT);
-			/*setColumnAlignment(col, HORIZONTAL_ALIGN_CENTER);
-			setNoWrap(col, 1);
-			add(HEADER_FROM_DATE, col++, 1);
-			setColumnAlignment(col, HORIZONTAL_ALIGN_CENTER);
-			setNoWrap(col, 1);
-			add(HEADER_VALID_UNTIL, col++, 1);*/
 			setColumnAlignment(col, HORIZONTAL_ALIGN_CENTER);
 			setNoWrap(col, 1);
 			add(HEADER_YES, col++, 1);
@@ -335,6 +315,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 			setColumnAlignment(col, HORIZONTAL_ALIGN_CENTER);
 			setNoWrap(col, 1);
 			add(HEADER_FROM_DATE, col++, 1);
+			setColumnAlignment(col, HORIZONTAL_ALIGN_CENTER);
+			setNoWrap(col, 1);
+			add(HEADER_QUEUE_POSITION, col++, 1);
 		}
 
 		setRowColor(1, _page.getHeaderColor());

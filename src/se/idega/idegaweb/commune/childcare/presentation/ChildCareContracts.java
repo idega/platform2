@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -49,6 +50,7 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row++);
 	
+			boolean showComment = false;
 			Collection contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
 			if (contracts != null) {
 				ChildCareApplication application;
@@ -77,7 +79,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					else
 						isCancelled = false;
 						
-					if (validFrom.isLaterThan(dateNow))
+					if (dateNow.isEarlierThan(validFrom))
 						isNotYetActive = true;
 					else
 						isNotYetActive = false;
@@ -103,6 +105,11 @@ public class ChildCareContracts extends ChildCareBlock {
 					else
 						table.setRowColor(row, getZebraColor2());
 	
+					if (isNotYetActive) {
+						showComment = true;
+						table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+					}
+					
 					if (getResponsePage() != null) {
 						archive = getSmallLink(child.getNameLastFirst(true));
 						archive.setEventListener(ChildCareEventListener.class);
@@ -138,6 +145,12 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			}
+			if (showComment) {
+				table.setHeight(2, row++);
+				table.mergeCells(1, row, table.getColumns(), row);
+				table.add(getSmallErrorText("*"), 1, row);
+				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
 			}
 	
 			add(table);		
