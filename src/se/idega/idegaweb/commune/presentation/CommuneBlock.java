@@ -14,6 +14,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -533,6 +534,18 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		Image pdfImage = iwb.getImage("shared/pdf-small.gif", 12, 12);
 		pdfImage.setToolTip(toolTip);
 		return pdfImage;
+	}
+	
+	/**
+	 * Retuns a download link to a file, with a pdf icon 
+	 * @param fileID
+	 * @param tooltip
+	 * @return
+	 */
+	protected DownloadLink getPDFLink(int fileID,String tooltip){
+	    DownloadLink link = new DownloadLink(fileID);
+	    link.setPresentationObject(getPDFIcon(tooltip));
+	    return link;
 	}
 
 	/**
