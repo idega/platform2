@@ -26,7 +26,6 @@ import com.idega.user.data.User;
 public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkReportBoardMember {
 	protected final static String ENTITY_NAME = "ISI_WR_BOARD_MEMB";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
-	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
 	protected final static String COLUMN_NAME_USER_ID = "IC_USER_ID";
 	protected final static String COLUMN_NAME_PERSONAL_ID = "PERSONAL_ID";
 	protected final static String COLUMN_NAME_NAME = "NAME";
@@ -39,7 +38,7 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	protected final static String COLUMN_NAME_HOME_PHONE = "HOME_PHONE";
 	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
 	protected final static String COLUMN_NAME_FAX = "FAX";
-	protected final static String COLUMN_NAME_EMAIL = "EMAIL";;
+	protected final static String COLUMN_NAME_EMAIL = "EMAIL";
 	
 	protected final static String COLUMN_NAME_BOARD_MEMBER = "BOARD_MEMBER";
 	protected final static String COLUMN_NAME_STATUS = "STATUS";//precident,vice president etc.
