@@ -230,6 +230,7 @@ public class MessageBox extends CommuneBlock {
 		_messageSize = getNumberOfMessages(iwc, user);
 
 		CollectionNavigator navigator = new CollectionNavigator(_messageSize);
+		navigator.setIdentifier("msgbx");
 		navigator.setTextStyle(STYLENAME_SMALL_TEXT);
 		navigator.setLinkStyle(STYLENAME_SMALL_LINK);
 		navigator.setNumberOfEntriesPerPage(_numberPerPage);
