@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.28 2002/11/14 19:44:45 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.29 2002/11/15 09:07:30 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 19:44:45 $ by $Author: laddi $
+ * Last modified: $Date: 2002/11/15 09:07:30 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -89,10 +89,12 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String STREET_KEY = "caa_street";
 	private final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
 	private final static String TENANCY_AGREEMENT_KEY = "caa_tenancy_agreement";
-	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Ansökan är mottagen.";
+	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT = "Ansökan är skickad.";
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "caa_app_submitted";
 	private final static String UNKNOWN_CITIZEN_DEFAULT = "Du finns inte registrerad som medborgare i Nacka. Du har ändå" + " möjlighet att registrera dig för ett användarkonto om du har" + " planerat att flytta till Nacka eller vill att ditt barn ska gå i" + " skolan i kommunen. Följ instruktionerna nedan.";
 	private final static String UNKNOWN_CITIZEN_KEY = "caa_unknown_citizen";
+    private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "Du har redan ett konto";
+    private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_user_allready_has_a_login";
 	final static String YES_DEFAULT = "Ja";
 	final static String YES_KEY = "caa_yes";
 	private final static String ZIP_CODE_DEFAULT = "Postnummer";
@@ -104,6 +106,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String UNKNOWN_CITIZEN_FORM_1_SUBMIT_DEAFULT = "Fortsätt";
 	private final static String UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY = "caa_unknownCitizenSubmit2";
 	private final static String UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT = "Skicka ansökan";
+
+    private final static String COLOR_RED = "#ff0000";
 
 	private final static String ERROR_NO_INSERT_DEFAULT = "Kunde inte lagra ansökan.";
 	private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
@@ -160,7 +164,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			if (user == null) {
 				// unknown user applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
-				text.setFontColor("#ff0000");
+				text.setFontColor(COLOR_RED);
 				add(text);
 				viewUnknownCitizenApplicationForm1(iwc);
 			}
@@ -174,20 +178,23 @@ public class CitizenAccountApplication extends CommuneBlock {
 					iwc.forwardToIBPage(getParentPage(), getResponsePage());
 				}
 				else {
-					add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, "Ansökan är skickad")));
+					add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
 				}
 			}
 		}
 		catch (UserHasLoginException uhle) {
-			final Text text = new Text(localize("user_already_has_a_login", "Du har redan ett konto"), true, false, false);
-			text.setFontColor("#ff0000");
+			final Text text = new Text
+                    (localize(USER_ALLREADY_HAS_A_LOGIN_KEY,
+                              USER_ALLREADY_HAS_A_LOGIN_DEFAULT), true, false,
+                     false);
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewSimpleApplicationForm(iwc);
 		}
 		catch (final Exception e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
-			text.setFontColor("#ff0000");
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewSimpleApplicationForm(iwc);
@@ -261,7 +268,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 		catch (final Exception e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
-			text.setFontColor("#ff0000");
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewUnknownCitizenApplicationForm1(iwc);
@@ -372,7 +379,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 		catch (final Exception e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
-			text.setFontColor("#ff0000");
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewUnknownCitizenApplicationForm1(iwc);
@@ -428,7 +435,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 		catch (final ParseException e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
-			text.setFontColor("#ff0000");
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewUnknownCitizenApplicationForm2(iwc);
@@ -442,7 +449,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (!isInserted) {
 			final String message = localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT);
 			final Text text = new Text(message, true, false, false);
-			text.setFontColor("#ff0000");
+			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
 			viewUnknownCitizenApplicationForm1(iwc);
