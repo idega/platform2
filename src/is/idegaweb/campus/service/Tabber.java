@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.14 2001/09/10 10:30:04 palli Exp $
+ * $Id: Tabber.java,v 1.15 2001/09/10 15:55:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package is.idegaweb.campus.service;
 
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
+import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.ModuleInfo;
@@ -86,7 +86,7 @@ public class Tabber extends JModuleObject {
           modinfo.getServletContext().setAttribute(strAction,sAct);
         }
       }
-      if(eUser !=null && getPermissionHash(modinfo,eUser.getID())){
+      if(eUser !=null && getPermissionHash(modinfo)){
 
         if(PermissionHash.containsValue("administrator") )
           Tabs = AdminTabs();
@@ -233,12 +233,8 @@ public class Tabber extends JModuleObject {
       return LinkTable;
   }
 
-
-
-  private boolean getUserAccessGroups(int iUserId)throws SQLException{
-//    GenericGroup[] group = (GenericGroup[])eUser.getGenericGroups();
-    GenericGroup g = new GenericGroup();
-    GenericGroup[] group = g.getAllGroupsContainingUser(eUser);
+  private boolean getUserAccessGroups(ModuleInfo modinfo)throws SQLException{
+    PermissionGroup[] group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(modinfo);
     int iGroupLen = group.length;
     PermissionHash = new Hashtable(iGroupLen);
     for(int i = 0; i < iGroupLen ; i++){
@@ -248,13 +244,13 @@ public class Tabber extends JModuleObject {
     return false;
   }
 
-  private boolean getPermissionHash(ModuleInfo modinfo,int iUserId)throws SQLException{
+  private boolean getPermissionHash(ModuleInfo modinfo)throws SQLException{
     if(modinfo.getParameter("man_perm_hash") != null){
       PermissionHash = (Hashtable) modinfo.getSession().getAttribute("man_perm_hash");
       return true;
     }
     else{
-      boolean returner = getUserAccessGroups(iUserId);
+      boolean returner = getUserAccessGroups(modinfo);
       modinfo.getSession().setAttribute("man_perm_hash",PermissionHash);
       return returner;
     }
