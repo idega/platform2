@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.5 2003/08/20 13:15:50 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.6 2003/08/25 21:41:32 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.accounting.posting.data;
         
 import java.util.Collection;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.ejb.FinderException;
 
@@ -38,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.5 2003/08/20 13:15:50 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.6 2003/08/25 21:41:32 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -81,10 +82,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		
 		addAttribute(COLUMN_PERIODE_FROM, "Period from", true, true, Date.class);
 		addAttribute(COLUMN_PERIODE_TO, "Period  tom", true, true, Date.class);
-		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, Date.class);
+		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, java.sql.Timestamp.class);
 		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings sign", true, true, String.class);
 		
 		addAttribute(COLUMN_ACTIVITY_ID, "Verksamhet", true, true, 
@@ -156,14 +156,14 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public void setDoublePostingObject(String data) {setColumn(COLUMN_DOUBLE_OBJECT, data); }
 
 
-	public Date getChangedDate() {
-		return (Date)getColumnValue(COLUMN_CHANGED_DATE);
+	public Timestamp getChangedDate(){
+		return (Timestamp) getColumnValue(COLUMN_CHANGED_DATE);
 	}
-
-	public void setUpdatedDate(Date changedDate) {
-		setColumn(COLUMN_CHANGED_DATE, changedDate);
+	
+	public void setChangedDate(Timestamp date){
+		setColumn(COLUMN_CHANGED_DATE, date);
 	}
-
+	
 	public String getChangedSign() {
 		return (String) getColumnValue(COLUMN_CHANGED_SIGN);
 	}
@@ -220,20 +220,19 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING_ID);
 	}
 	
-	public Collection ejbFindPostingParametersByPeriode(String from, String to) throws FinderException {
+	public Collection ejbFindPostingParametersByPeriode(Date from, Date to) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIODE_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+from+"'");
+		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
 		sql.appendAnd().append(COLUMN_PERIODE_TO);
-		sql.appendGreaterThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
 		return idoFindPKsBySQL(sql.toString());
 	}
 
 	public Collection ejbFindAllPostingParameters() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
 	}
 
