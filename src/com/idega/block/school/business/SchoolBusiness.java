@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.87 2005/01/07 07:42:57 malin Exp $
+ * $Id: SchoolBusiness.java,v 1.88 2005/01/10 12:02:42 anders Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/07 07:42:57 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/10 12:02:42 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.87 $
+ * @version $Revision: 1.88 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -253,6 +253,11 @@ public interface SchoolBusiness extends IBOService {
 	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchool
 	 */
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen) throws RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchool
+	 */
+	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen, String providerStringId) throws RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getSchoolRelatedSchoolTypes
