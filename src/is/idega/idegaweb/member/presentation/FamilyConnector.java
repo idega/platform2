@@ -109,7 +109,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 
 		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_pin","Personal ID")), 1, 1);
 		frameTable.add(new TextInput(_PARAM_RELATED_USER_ID), 1, 2);
-		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","Type")), 1, 3);
+		frameTable.add(new Text(iwrb.getLocalizedString("usr_fam_win_type","The person to connect is")), 1, 3);
 		frameTable.add(getRelationMenu(iwc), 1, 4);
 		
 		Table bottomTable = new Table();
