@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.4 2003/10/28 10:45:48 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -215,7 +215,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
 				if (methodName.compareTo("getLocalizationKey") == 0) {
 					s  = localize((String)m.invoke(o, null), (String)m.invoke(o, null));
 				} else {
-					s  = localize((String)m.invoke(o, null), (String)m.invoke(o, null));
+					s  = (String)m.invoke(o, null);
 				}
 				
 			} catch (Exception e) {
