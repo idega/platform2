@@ -38,6 +38,7 @@ public class ApartmentTypeBMPBean
 	protected static final String EXTRA_INFO = "extra_info";
 	protected static final String INFO = "info";
 	protected static final String NAME = "name";
+	protected static final String ABBREVIATION = "ABBREV";
 	protected static final String BU_APRT_CAT_ID = "BU_APRT_CAT_ID";
 	protected static final String BU_APRT_TYPE = "BU_APRT_TYPE";
 	
@@ -53,6 +54,7 @@ public class ApartmentTypeBMPBean
 			ApartmentCategory.class);
 		addAttribute(NAME, "Name", true, true, java.lang.String.class);
 		addAttribute(INFO, "Info", true, true, java.lang.String.class, 4000);
+		addAttribute(ABBREVIATION, "Abbreviation", true, true, java.lang.String.class, 10);
 		addAttribute(EXTRA_INFO, "Extra_Info", true, true, java.lang.String.class, 4000);
 		addAttribute(IC_IMAGE_ID, "Photo", true, true, java.lang.Integer.class);
 		addAttribute(PLAN_ID, "Plan", true, true, java.lang.Integer.class);
@@ -95,6 +97,12 @@ public class ApartmentTypeBMPBean
 	}
 	public void setInfo(String info) {
 		setColumn(INFO, info);
+	}
+	public String getAbbreviation() {
+		return getStringColumnValue(ABBREVIATION);
+	}
+	public void setAbbreviation(String abbreviation) {
+		setColumn(ABBREVIATION, abbreviation);
 	}
 	public String getExtraInfo() {
 		return getStringColumnValue(EXTRA_INFO);

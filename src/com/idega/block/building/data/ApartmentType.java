@@ -17,6 +17,7 @@ public interface ApartmentType extends BuildingEntity
  public boolean getKitchen();
  public boolean getLoft();
  public java.lang.String getName();
+ public java.lang.String getAbbreviation();
  public int getRent();
  public int getRoomCount();
  public boolean getStorage();
@@ -36,6 +37,7 @@ public interface ApartmentType extends BuildingEntity
  public void setInfo(java.lang.String p0);
  public void setKitchen(boolean p0);
  public void setLoft(boolean p0);
+ public void setAbbreviation(java.lang.String p0);
  public void setName(java.lang.String p0);
  public void setRent(int p0);
  public void setRent(java.lang.Integer p0);
