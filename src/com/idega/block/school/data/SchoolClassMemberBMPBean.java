@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/16 14:42:12 $ by $Author: goranb $
- * @version $Revision: 1.48 $
+ * Last modified: $Date: 2003/10/17 10:04:36 $ by $Author: staffan $
+ * @version $Revision: 1.49 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -465,6 +465,10 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
                 .append ("s." + SchoolBMPBean.COMPENSATION_BY_INVOICE)
                 .appendEqualSign ()
                 .appendWithinSingleQuotes ("Y")
+                .appendAnd ()
+                .append ("c." + SchoolClassBMPBean.SEASON)
+                .appendEqualSign ()
+                .append (seasonId)
                 .appendAnd ()
                 .appendLeftParenthesis ();
         
