@@ -151,7 +151,7 @@ public class AccountManager {
       sql.append(status);
       sql.append("'");
     }
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     List A = null;
     try{
         A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());

@@ -599,9 +599,9 @@ public class FinanceFinder  {
       sql.append(AccountInfo.getEntityTableName());
       sql.append(" where ").append(AccountInfo.getColumnType()).append(" = '").append(Account.typeFinancial).append("'");
       sql.append(" and ").append(AccountInfo.getColumnUserId()).append(" = ").append(iUserId);
-      EntityFinder.debug = true;
+      //EntityFinder.debug = true;
       List L =  EntityFinder.getInstance().findAll(AccountInfo.class,sql.toString());
-      EntityFinder.debug = false;
+      //EntityFinder.debug = false;
       return L;
     }
     catch (IDOFinderException ex) {
@@ -611,40 +611,46 @@ public class FinanceFinder  {
   }
 
   public List listOfPhoneAccountByUserId(int iUserId){
-    try {
-      StringBuffer sql = new StringBuffer("select * from ");
-      sql.append(Account.getEntityTableName());
-      sql.append(" where ").append(Account.getTypeColumnName()).append(" = '").append(Account.typePhone).append("' ");
-      sql.append(" and ").append(Account.getUserIdColumnName()).append(" = ").append(iUserId);
+    if(iUserId > 0){
+      try {
+        StringBuffer sql = new StringBuffer("select * from ");
+        sql.append(Account.getEntityTableName());
+        sql.append(" where ").append(Account.getTypeColumnName()).append(" = '").append(Account.typePhone).append("' ");
+        sql.append(" and ").append(Account.getUserIdColumnName()).append(" = ").append(iUserId);
 
-      EntityFinder.debug = true;
-      List L =  EntityFinder.getInstance().findAll(Account.class,sql.toString());
-      EntityFinder.debug = false;
-      return L;
-    }
-    catch (IDOFinderException ex) {
-      ex.printStackTrace();
+        //EntityFinder.debug = true;
+        List L =  EntityFinder.getInstance().findAll(Account.class,sql.toString());
+        //EntityFinder.debug = false;
+        return L;
+      }
+      catch (IDOFinderException ex) {
+        ex.printStackTrace();
+      }
     }
     return null;
   }
 
    public List listOfAccountByUserId(int iUserId){
-    try {
-      return EntityFinder.getInstance().findAllByColumn(Account.class,Account.getUserIdColumnName(),iUserId);
-    }
-    catch (IDOFinderException ex) {
-      ex.printStackTrace();
+    if(iUserId > 0){
+      try {
+        return EntityFinder.getInstance().findAllByColumn(Account.class,Account.getUserIdColumnName(),iUserId);
+      }
+      catch (IDOFinderException ex) {
+        ex.printStackTrace();
+      }
     }
     return null;
 
   }
 
   public List listOfAccountInfoByCategoryId(int iCategoryId){
-    try {
-      return EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnCategoryId(),iCategoryId);
-    }
-    catch (IDOFinderException ex) {
-      ex.printStackTrace();
+    if(iCategoryId > 0){
+      try {
+        return EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnCategoryId(),iCategoryId);
+      }
+      catch (IDOFinderException ex) {
+        ex.printStackTrace();
+      }
     }
     return null;
 
@@ -699,7 +705,7 @@ public class FinanceFinder  {
     sql.append(" and ");
     sql.append(AccountPhoneEntry.getColumnNameAccountEntryId());
     sql.append(" is null ");
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     List A = null;
     try{
         A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
