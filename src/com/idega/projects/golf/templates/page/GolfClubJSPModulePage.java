@@ -246,6 +246,9 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
     if ((modinfo.getParameter("union_id")).equalsIgnoreCase("81")){
       rightTable.resize(1,2);
+      rightTable.setWidth(1,"100%");
+      rightTable.setAlignment(1,2, "center");
+      rightTable.setVerticalAlignment(1,2,"top");
       //HeaderTable  dummyTable = this.getProGolfers();
       Image iBjorgvinir;
       iBjorgvinir = iwrb.getImage("/golferpage/bjorgvinir.jpg","Heimasíða Björgvins");
