@@ -507,10 +507,12 @@ public void clearParameters(){
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
-            if (getURL().equals("")){
-                    setURL(modinfo.getRequestURI());
-            }
             String oldURL = getURL();
+            if (oldURL.equals("")){
+                    oldURL=modinfo.getRequestURI();
+                    setURL(oldURL);
+            }
+
 
 		if (getLanguage().equals("HTML")){
 			//if (getInterfaceStyle().equals("something")){
