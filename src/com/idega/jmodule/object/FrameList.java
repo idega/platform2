@@ -7,11 +7,11 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.Image;
 
 /**
- * Title:
- * Description:
+ * Title: FrameList
+ * Description: An addable list that extends JModuleObject, can be inserted into pages or frames.
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company: idega
+ * @author Laddi
  * @version 1.0
  */
 
@@ -36,14 +36,6 @@ private String style = "";
       listTable.setCellspacing(0);
       listTable.setWidth("100%");
       listTable.setHeight("100%");
-  }
-
-  public void setLinkStyle(String style) {
-    this.style = style;
-  }
-
-  public void setZebraColors(String color1, String color2) {
-    listTable.setHorizontalZebraColored(color1,color2);
   }
 
   public void addToMenu(Class classToAdd, Image displayImage, String displayString, String target) {
@@ -83,5 +75,37 @@ private String style = "";
 
   public void addToMenu(Class classToAdd) {
     addToMenu(classToAdd,classToAdd.getName().substring(classToAdd.getName().lastIndexOf(".")+1),"_self");
+  }
+
+  public void setLinkStyle(String style) {
+    this.style = style;
+  }
+
+  public void setListWidth(String width) {
+    listTable.setWidth(width);
+  }
+
+  public void setListWidth(int width) {
+    setListWidth(Integer.toString(width));
+  }
+
+  public void setListHeight(String height) {
+    listTable.setHeight(height);
+  }
+
+  public void setListHeight(int height) {
+    setListHeight(Integer.toString(height));
+  }
+
+  public void setZebraColors(String color1, String color2) {
+    listTable.setHorizontalZebraColored(color1,color2);
+  }
+
+  public void setListpadding(int padding) {
+    listTable.setCellpadding(padding);
+  }
+
+  public void setListSpacing(int spacing) {
+    listTable.setCellspacing(spacing);
   }
 }
