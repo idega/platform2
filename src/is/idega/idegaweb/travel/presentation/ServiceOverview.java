@@ -179,7 +179,6 @@ public class ServiceOverview extends TravelManager {
           pCatIds = coll.iterator();
           while (pCatIds.hasNext()) {
             pCat = (ProductCategory) pCatIds.next();
-            System.out.println("prodCat = "+pCat.getCategoryType());
           }
         }catch (Exception e) {
           e.printStackTrace(System.err);
