@@ -12,13 +12,12 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
- * The databean for the "Fakturahuvud" in the C&P Req spec. The invoice header holds all the 
+ * The databean for the invoice header. The invoice header holds all the 
  * information that is the same for all the invoice records that it is related to.
  * 
  * @author Joakim
  */
-public class InvoiceHeaderBMPBean extends GenericEntity 
-//implements InvoiceHeader 
+public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader 
 {
 	private static final String ENTITY_NAME = "cacc_invoice_header";
 

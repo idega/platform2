@@ -14,9 +14,10 @@ import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
 
 /**
- * @author Joakim
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
  * (They are all the same dataobject) in the Kravspecifikation Check and Peng. 
+ * 
+ * @author Joakim
  */
 public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord {
 	private static final String ENTITY_NAME = "cacc_invoice_record";
