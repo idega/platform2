@@ -75,7 +75,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		IWTimestamp validFrom;
 		IWTimestamp terminated = null;
 		
-		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInSchool(getSession().getChildID(), getSession().getChildCareID());
+		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInChildCare(getSession().getChildID(), getSession().getChildCareID());
 		Iterator iter = placings.iterator();
 		while (iter.hasNext()) {
 			column = 1;
