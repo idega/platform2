@@ -279,7 +279,7 @@ public class Booking extends TravelManager {
           if (this.tour != null) {
             isDayVisible = TourBusiness.getIfDay(iwc, tour, stamp, false);
           }else {
-            isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
+            isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, product.getTimeframes(), this.stamp);
           }
           if (supplier == null) {
             if (isDayVisible) {
@@ -629,6 +629,7 @@ public class Booking extends TravelManager {
 
       try {
         if (reseller != null) {
+          try {
           if (TravelStockroomBusiness.getIfDay(iwc, contract,product, this.stamp)) {
             iCount = contract.getAlotment();
 
@@ -650,9 +651,13 @@ public class Booking extends TravelManager {
             iCount = iCount - iBooked;
 
           }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
         }
         else {
-          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.stamp)) {
+          try {
+          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp)) {
             iCount = tour.getTotalSeats();
             iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
             iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
@@ -672,6 +677,9 @@ public class Booking extends TravelManager {
             }
 
           }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
         }
 
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {

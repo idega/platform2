@@ -495,6 +495,8 @@ public class BookingOverview extends TravelManager {
                           ++row;
                           upALine = true;
                       }
+                  }catch (SQLException sql) {
+                    sql.printStackTrace(System.err);
                   }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
                     snfe.printStackTrace(System.err);
                   }catch (TourBusiness.TourNotFoundException tnfe) {

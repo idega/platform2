@@ -331,9 +331,7 @@ public class CalendarHandler extends TravelManager {
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
       int iBookings = 0;
 
-      debug("before");
       List depDays = this.getDepartureDays(iwc, _showPast);
-      debug("after ... size : "+depDays.size());
 
       int seats = 0;
       int minSeats = 0;
@@ -350,6 +348,7 @@ public class CalendarHandler extends TravelManager {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (idegaTimestamp) depDays.get(i);
             if (!TravelStockroomBusiness.getIfExpired(_contract, temp))
+            try {
             if (TravelStockroomBusiness.getIfDay(iwc,_contract,_product,temp)) {
               if (seats > 0 && seats <= Booker.getNumberOfBookings(_productId, temp) ) {
                 sm.setDayColor(temp, colorForFullyBooked);
@@ -359,6 +358,9 @@ public class CalendarHandler extends TravelManager {
                 sm.setDayFontColor(temp, colorForAvailableDayText);
               }
             }
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
           }
           int resellerId = _contract.getResellerId();
           if (this._viewInquiries) {
@@ -615,16 +617,17 @@ public class CalendarHandler extends TravelManager {
 debug("reppetan 1");
               depDays.addAll(TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast));
             }else {
-*/debug("reppetan 2");
+debug("reppetan 2");
+*/
               depDays.addAll(TourBusiness.getDepartureDays(iwc, _tour, _fromStamp, _toStamp, showPast));
 //            }
           }else {
-debug("reppetan 3");
+//debug("reppetan 3");
             depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
 //        }
       }else {
-debug("reppetan 4");
+//debug("reppetan 4");
           depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
 

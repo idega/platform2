@@ -374,11 +374,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return returner;
   }
 
-  public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
-    return getIfDay(iwc, product, stamp, true);
+  public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
+    return getIfDay(iwc, product, product.getTimeframes(), stamp);
   }
 
-  public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp, boolean includePast) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException {
+    return getIfDay(iwc, product, timeframes, stamp, true);
+  }
+
+  public static boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, idegaTimestamp stamp, boolean includePast) throws ServiceNotFoundException, TimeframeNotFoundException {
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
@@ -390,7 +394,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       if (obj == null) {
 
           int dayOfWeek = stamp.getDayOfWeek();
-          Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
+          // = product.getTimeframes();
 
           boolean tooEarly = false;
           if (!includePast) {
@@ -406,7 +410,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
             if (isValidWeekDay) {
               //System.err.println("repps 1");
-              if (isDayValid(product, stamp)) {
+              if (isDayValid(timeframes, stamp)) {
               //System.err.println("repps 2");
                 isDay = true;
                 serviceDayHash.put(key1, key2, new Boolean(true) );
@@ -442,11 +446,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   }
 
-  private static boolean isDayValid(Product product, idegaTimestamp stamp) {
-    return isDayValid(product, null, stamp);
+  private static boolean isDayValid(Timeframe[] frames, idegaTimestamp stamp) {
+    return isDayValid(frames, null, stamp);
   }
 
-  private static boolean isDayValid(Product product, Contract contract, idegaTimestamp stamp) {
+  private static boolean isDayValid(Timeframe[] frames, Contract contract, idegaTimestamp stamp) {
     boolean returner = false;
 
     try {
@@ -459,11 +463,12 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
 
       if (goOn) {
-//        Service service = TravelStockroomBusiness.getService(product);
-        Timeframe[] frames = product.getTimeframes();
         boolean isYearly = false;
 
         for (int i = 0; i < frames.length; i++) {
+          //System.err.println("isDayValid.... : from : "+new idegaTimestamp(frames[i].getFrom()).toSQLDateString());
+          //System.err.println(".............. : to   : "+new idegaTimestamp(frames[i].getTo()).toSQLDateString());
+          //System.err.println(".............. : year : "+frames[i].getYearly());
           isYearly = frames[i].getIfYearly();
           returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frames[i].getFrom()), new idegaTimestamp(frames[i].getTo() ), stamp, isYearly);
           if (returner) break;
@@ -514,7 +519,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  public static boolean getIfDay(IWContext iwc, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfDay(IWContext iwc, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
       boolean isDay = false;
       String key1 = Integer.toString(contract.getID());
       String key2 = stamp.toSQLDateString();
@@ -524,7 +529,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       boolean isValidServiceDay = false;
 
 
-      isValidServiceDay = TravelStockroomBusiness.getIfDay(iwc,product,stamp);
+      isValidServiceDay = TravelStockroomBusiness.getIfDay(iwc,product,product.getTimeframes(), stamp);
 
       if (isValidServiceDay) {
         HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.business;
 
+import com.idega.data.IDOLookup;
 import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -370,7 +371,8 @@ public class TourBusiness extends TravelStockroomBusiness {
     try {
       idegaTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
-        return TravelStockroomBusiness.getIfDay(iwc, ProductBusiness.getProduct(tour.getID()), stamp, includePast);
+        Product product = ProductBusiness.getProduct(tour.getID());
+        return TravelStockroomBusiness.getIfDay(iwc, product, product.getTimeframes(), stamp, includePast);
       }else {
         return (stamp.equals(temp));
       }
@@ -407,6 +409,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       Product product = ProductBusiness.getProduct(tour.getID());
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(tour.getID());
       Timeframe[] frames = product.getTimeframes();
+      Timeframe tempFrame = (Timeframe) IDOLookup.createLegacy(Timeframe.class);
 
       String applicationString = "tourDepDays"+tour.getID()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
 
@@ -416,6 +419,9 @@ public class TourBusiness extends TravelStockroomBusiness {
       }else {
 //        System.err.println("TourBusiness : getDepartDays : "+fromStamp+ " - " +toStamp);
         for (int i = 0; i < frames.length; i++) {
+          //System.err.println("------------------------------------------------");
+          //System.err.println("-----------------------"+i+"------------------------");
+          //System.err.println("------------------------------------------------");
 
           boolean yearly = frames[i].getIfYearly();
 
@@ -427,12 +433,8 @@ public class TourBusiness extends TravelStockroomBusiness {
           idegaTimestamp to = null;
           if (toStamp != null) to = new idegaTimestamp(toStamp);
 
-          if (from != null) {
-          System.err.println("from I: "+from.toSQLDateString());
-          }
-          if (to != null) {
-          System.err.println("to  I : "+to.toSQLDateString());
-          }
+          //System.err.println("tFrom... : "+tFrom.toSQLDateString());
+          //System.err.println("tTo..... : "+tTo.toSQLDateString());
 
           int numberOfDays = tour.getNumberOfDays();
             if (numberOfDays < 1) numberOfDays = 1;
@@ -444,17 +446,14 @@ public class TourBusiness extends TravelStockroomBusiness {
             to   = new idegaTimestamp(tTo);
           }
 
-          System.err.println("from : "+from.toSQLDateString());
-          System.err.println("to   : "+to.toSQLDateString());
-
-          int toMonth = tTo.getMonth();
-          int toM = to.getMonth();
-          int fromM = from.getMonth();
-          int yearsBetween = 0;
-
           from.addDays(-1);
           to.addDays(1);
 
+          int toMonth = tTo.getMonth();
+          int fromMonth = tFrom.getMonth();
+          int toM = to.getMonth();
+          int fromM = from.getMonth();
+          int yearsBetween = 0;
 
          if (yearly) {
             int fromYear = tFrom.getYear();
@@ -464,9 +463,11 @@ public class TourBusiness extends TravelStockroomBusiness {
 
             int daysBetween = idegaTimestamp.getDaysBetween(from, to);
 
-            if (fromYear == toYear) {
-              from.setYear(fromYear);
-            }else {
+            if (fromYear == toYear) { // If timeframe is in the same year...
+              tFrom.setYear(fromY);
+              tTo.setYear(toY);
+              //from.setYear(fromYear);
+            }else {/*
                 if (fromY >= toYear) {
                   if (fromM > toMonth) {
                     System.err.println("fromM ("+fromM+") > toMonth ("+toMonth+")");
@@ -475,6 +476,24 @@ public class TourBusiness extends TravelStockroomBusiness {
                     System.err.println("fromM ("+fromM+") <= toMonth ("+toMonth+")");
                     from.setYear(toYear);
                   }
+                }*/
+                if (fromY <= fromYear) {
+                  if (fromM < toMonth) {
+                    tFrom.addYears(toY - toYear);
+                    tTo.addYears(toY - toYear);
+//                    System.err.println("toM ("+toM+") < fromMonth ("+fromMonth+")");
+                  }/*else {
+                    System.err.println("fromM ("+fromM+") >= toMonth ("+toMonth+")");
+                  }*/
+                }else {
+                  if (toM < fromMonth) {
+//                    System.err.println("toM ("+toM+") < fromMonth ("+fromMonth+")");
+                    tFrom.addYears(toY - toYear);
+                    tTo.addYears(toY - toYear);
+                  }else {
+//                    System.err.println("toM ("+toM+") >= fromMonth ("+fromMonth+")");
+                  }
+//                  System.err.println("sraneson");
                 }
             }
 
@@ -486,36 +505,40 @@ public class TourBusiness extends TravelStockroomBusiness {
             //}
 
 
-            System.err.println("yearsBetween : "+yearsBetween);
+            //System.err.println("yearsBetween : "+yearsBetween);
           }
 
-          System.err.println("tFrom : "+tFrom.toSQLDateString());
-          System.err.println("tTo   : "+tTo.toSQLDateString());
+//          System.err.println("tFrom : "+tFrom.toSQLDateString());
+//          System.err.println("tTo   : "+tTo.toSQLDateString());
 
+          /*
+          System.err.println("------------------------------------------------");
           System.err.println("from : "+from.toSQLDateString());
           System.err.println("to   : "+to.toSQLDateString());
+          System.err.println("------------------------------------------------");
+          System.err.println("tFrom... : "+tFrom.toSQLDateString());
+          System.err.println("tTo..... : "+tTo.toSQLDateString());
+          */
 
         idegaTimestamp stamp = new idegaTimestamp(from);
         idegaTimestamp temp;
 
           idegaTimestamp now = idegaTimestamp.RightNow();
-          if (to.isLaterThan(stamp)) {
-            System.err.println("repps to is later");
-          }else {
-            System.err.println("repps to is NOT later");
-
-          }
+//((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+        tempFrame.setFrom(tFrom.getTimestamp());
+        tempFrame.setTo(tTo.getTimestamp());
 
           while (to.isLaterThan(stamp)) {
-            System.err.println("Stamp : "+stamp.toSQLDateString());
-            temp = getNextAvailableDay(iwc, tour, product, stamp);
+            //System.err.println("Stamp : "+stamp.toSQLDateString());
+            temp = getNextAvailableDay(iwc, tour, product,tempFrame, stamp);
+//            temp = getNextAvailableDay(iwc, tour, product,frames[i], stamp);
             if (temp != null) {
               if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
-                System.err.println("TEMP : "+temp.toSQLDateString()+" .... yearsBetween : "+yearsBetween+" ... yearly ("+yearly+")");
+                //System.err.println("TEMP : "+temp.toSQLDateString()+" .... yearsBetween : "+yearsBetween+" ... yearly ("+yearly+")");
                 if (yearly) {
                   temp.addYears(-yearsBetween);
                 }
-                System.err.println("TEMP : "+temp.toSQLDateString());
+                //System.err.println("TEMP : "+temp.toSQLDateString());
                 if (!showPast) {
                   if (temp.isLaterThanOrEquals(now)) {
                     returner.add(temp);
@@ -539,7 +562,7 @@ public class TourBusiness extends TravelStockroomBusiness {
             }
 
           }
-          System.err.println("STAMP : "+stamp.toSQLDateString());
+          //System.err.println("STAMP : "+stamp.toSQLDateString());
         }
         iwc.setApplicationAttribute(applicationString, returner);
       }
@@ -552,32 +575,16 @@ public class TourBusiness extends TravelStockroomBusiness {
     return returner;
   }
 
-  /**
-   * @deprecated
-   */
-  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Service service, idegaTimestamp from) {
-    try {
-      return getNextAvailableDay(iwc, ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(service.getID()), ProductBusiness.getProduct(service.getID()),from);
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-      return null;
-    }
+
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product, Timeframe timeframe, idegaTimestamp from) {
+    return getNextAvailableDay(iwc, tour, product, new Timeframe[] {timeframe}, from);
   }
 
-  /**
-   * @deprecated
-   */
-  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, idegaTimestamp from) {
-    try {
-      Product prod = ProductBusiness.getProduct(tour.getID());
-      return getNextAvailableDay(iwc, tour, prod, from);
-    }catch (SQLException sql) {
-      return null;
-    }
-
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product,  idegaTimestamp from) throws SQLException {
+    return getNextAvailableDay(iwc, tour, product, product.getTimeframes(), from);
   }
 
-  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product, idegaTimestamp from) {
+  public static idegaTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product, Timeframe[] timeframes, idegaTimestamp from) {
     idegaTimestamp stamp = new idegaTimestamp(from);
     boolean found = false;
 /**
@@ -592,7 +599,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       while (teljari++ < nod) {
         stamp.addDays(1);
-        if (TravelStockroomBusiness.getIfDay(iwc,product, stamp)) {
+        if (TravelStockroomBusiness.getIfDay(iwc,product, timeframes, stamp)) {
           found = true;
           break;
         }
