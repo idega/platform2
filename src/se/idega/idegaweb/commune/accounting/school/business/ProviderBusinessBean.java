@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.6 2003/09/25 15:59:46 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.7 2003/09/29 08:53:17 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import javax.ejb.RemoveException;
 import com.idega.business.IBOLookup;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.business.SchoolBusiness;
 
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -31,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/25 15:59:46 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/29 08:53:17 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -42,11 +43,13 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 
 	public final static String KEY_NAME_MISSING = KP + "name_missing";
 	public final static String KEY_ILLEGAL_ORGANIZATION_NUMBER = KP + "illegal_organization_number";
+	public final static String KEY_SCHOOL_NAME_ALREADY_EXISTS = KP + "school_already_exists";
 	public final static String KEY_CANNOT_SAVE_PROVIDER = KP + "cannot_save_provider";
 	public final static String KEY_CANNOT_DELETE_PROVIDER = KP + "cannot_delete_provider";
 
 	public final static String DEFAULT_NAME_MISSING = "The name of the provider must be entered.";
 	public final static String DEFAULT_ILLEGAL_ORGANIZATION_NUMBER = "Illegal organization number.";
+	public final static String DEFAULT_SCHOOL_NAME_ALREADY_EXISTS = "A provider with this name already exists.";
 	public final static String DEFAULT_CANNOT_SAVE_PROVIDER = "The provider cannot be stored due to technical error.";
 	public final static String DEFAULT_CANNOT_DELETE_PROVIDER = "The provider cannot be deleted due to technical error.";
 
@@ -134,9 +137,22 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			}
 		}
 		
-				
+		name = name.trim();
 		try {
 			SchoolBusiness sb = getSchoolBusiness();
+			School schoolByName = null;
+			try {
+				SchoolHome sh = getSchoolHome();
+				schoolByName = sh.findBySchoolName(name);				
+			} catch (FinderException e) {}
+			if (schoolByName != null) {
+				int schoolByNameId = ((Integer) schoolByName.getPrimaryKey()).intValue();
+				if (schoolByNameId != getInt(schoolId)) {
+					throw new ProviderException(KEY_SCHOOL_NAME_ALREADY_EXISTS, DEFAULT_SCHOOL_NAME_ALREADY_EXISTS);
+				}
+			}
+
+			
 			School school = sb.storeSchool(
 					getInt(schoolId),
 					name,
@@ -232,6 +248,13 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	protected SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);	
 	}	
+	
+	/**
+	 * Returns school home. 
+	 */
+	protected SchoolHome getSchoolHome() throws RemoteException {
+		return (SchoolHome) com.idega.data.IDOLookup.getHome(School.class);
+	}
 	
 	/**
 	 * Returns provider accounting properties home. 
