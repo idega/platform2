@@ -31,8 +31,6 @@ import com.idega.block.IWBlock;
 public class TextReader extends Block implements IWBlock{
 
 private boolean isAdmin=false;
-private TextModule text;
-
 
 private String sLocaleId;
 private String sAttribute = null;
@@ -318,10 +316,6 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public void setViewAll() {
     this.viewall=true;
-  }
-
-  public String getAnchorName(){
-  return text.getTextHeadline();
   }
 
   public String getBundleIdentifier(){

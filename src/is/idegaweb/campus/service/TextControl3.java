@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl3.java,v 1.5 2001/10/05 08:05:43 tryggvil Exp $
+ * $Id: TextControl3.java,v 1.6 2001/10/24 21:32:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.block.text.presentation.TextReader;
-import com.idega.block.text.data.TextModule;
+import com.idega.block.text.data.TxText;
 
 /**
  *
@@ -35,8 +35,8 @@ public class TextControl3 extends TextControl {
 
     try {
       for ( int a = 5; a < 13; a++ ) {
-        TextModule text = new TextModule(a);
-        if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
+        TxText text = new TxText(a);
+        if ( text == null  ) {
             text.setDefaultValues();
             text.insert();
         }

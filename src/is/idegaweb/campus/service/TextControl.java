@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.7 2001/10/05 08:05:43 tryggvil Exp $
+ * $Id: TextControl.java,v 1.8 2001/10/24 21:32:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,7 @@ import com.idega.jmodule.login.business.AccessControl;
 import com.idega.data.genericentity.Member;
 import com.idega.data.genericentity.Group;
 import com.idega.block.text.presentation.TextReader;
-import com.idega.block.text.data.TextModule;
+import com.idega.block.text.data.TxText;
 import java.util.Hashtable;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -90,10 +90,10 @@ public class TextControl extends Block {
     try {
       for ( int a = 5; a < 13; a++ ) {
         try {
-          TextModule text = new TextModule(a);
+          TxText text = new TxText(a);
         }
         catch (SQLException e) {
-          TextModule text = new TextModule();
+          TxText text = new TxText();
             text.setID(a);
             text.setDefaultValues();
             text.insert();
@@ -135,12 +135,12 @@ public class TextControl extends Block {
         textImage.setVerticalSpacing(12);
 
       try {
-        TextModule text = new TextModule(action);
+        TxText text = new TxText(action);
       }
       catch (SQLException e) {
-        TextModule text = new TextModule();
+        TxText text = new TxText();
           text.setID(action);
-          text.setDefaultValues();
+          //text.setDefaultValues();
           text.insert();
       }
 
