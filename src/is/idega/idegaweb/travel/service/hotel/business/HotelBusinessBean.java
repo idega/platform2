@@ -187,4 +187,8 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 		}
 	}
 
+	public boolean supportsSupplyPool() {
+		return true;
+	}
+	
 }
