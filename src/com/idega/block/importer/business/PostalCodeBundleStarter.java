@@ -42,18 +42,20 @@ private IWApplicationContext iwac;
 			File[] files = postalCodeFolder.listFiles();
 			if (files != null && files.length > 0) {
 				for (int i = 0; i < files.length; i++) {
-					ColumnSeparatedImportFile postals = new ColumnSeparatedImportFile(files[i]);
-					try {
-						String record;
-						while (!(record = (String) postals.getNextRecord()).equals("")) {
-							ArrayList values = postals.getValuesFromRecordString(record);
-							createPostalIfDoesNotExist((String) values.get(0), (String) values.get(1),
-									(String) values.get(2));
+					if(files[i].isFile()) {
+						ColumnSeparatedImportFile postals = new ColumnSeparatedImportFile(files[i]);
+						try {
+							String record;
+							while (!(record = (String) postals.getNextRecord()).equals("")) {
+								ArrayList values = postals.getValuesFromRecordString(record);
+								createPostalIfDoesNotExist((String) values.get(0), (String) values.get(1),
+										(String) values.get(2));
+							}
 						}
-					}
-					catch (Exception e) {
-						System.err.println("PostalCodeBundleStarter : Cant use file = " + files[i].getName()
-								+ " (error = " + e.getMessage() + ")");
+						catch (Exception e) {
+							System.err.println("PostalCodeBundleStarter : Cant use file = " + files[i].getName()
+									+ " (error = " + e.getMessage() + ")");
+						}
 					}
 				}
 			}
