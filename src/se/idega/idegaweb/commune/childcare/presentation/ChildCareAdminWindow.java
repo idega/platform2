@@ -1148,8 +1148,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					
 					if (application.getRequestedCancelDate() != null) {
 						dateInput.setDate(application.getRequestedCancelDate());
-					}
-	
+					}			
+					
 					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
 					table.add(dateInput, 1, row++);
 					if (helper.hasDeadlinePassed())
@@ -1171,7 +1171,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
 					table.add(dateInput, 1, row++);
 					
-					SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
+					SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_received", "Set"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 					form.setToDisableOnSubmit(cancelContract, true);
 					table.add(cancelContract, 1, row);
 					table.add(Text.getNonBrakingSpace(), 1, row);
