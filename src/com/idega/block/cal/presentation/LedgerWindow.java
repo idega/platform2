@@ -121,7 +121,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	
 	public LedgerWindow() {
 		setHeight(400);
-		setWidth(400);
+		setWidth(800);
 		setResizable(true);
 	}
 	/**
