@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlineSetter.java,v 1.2 2004/11/22 16:40:26 aron Exp $
+ * $Id: BatchDeadlineSetter.java,v 1.3 2004/11/26 13:41:44 aron Exp $
  * Created on 1.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/22 16:40:26 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/26 13:41:44 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BatchDeadlineSetter extends AccountingBlock {
 
@@ -53,7 +53,7 @@ public class BatchDeadlineSetter extends AccountingBlock {
         
         // still valid this month
         stamp.setDay(deadlineDay);
-        if(deadlineDay>=currentDay){
+        if(deadlineDay < currentDay){
             stamp.addMonths(1);
         }
         
