@@ -640,6 +640,19 @@ public class FinanceFinder  {
 
   }
 
+ public List listOfAccountInfoByUserId(int iUserId){
+    if(iUserId > 0){
+      try {
+        return EntityFinder.getInstance().findAllByColumn(AccountInfo.class,com.idega.block.finance.data.AccountInfoBMPBean.getColumnUserId(),iUserId);
+      }
+      catch (IDOFinderException ex) {
+        ex.printStackTrace();
+      }
+    }
+    return null;
+
+  }
+
   public List listOfAccountInfo(){
     try {
       return EntityFinder.getInstance().findAll(AccountInfo.class);
