@@ -4,19 +4,23 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Locale;
-import java.sql.Date;
-
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.text.Text;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
+import com.sun.jimi.core.encoder.jpg.util;
 
 /**
  * AccountingBlock a super class of all blocks in the accounting framework
@@ -268,5 +272,31 @@ public class AccountingBlock extends CommuneBlock {
 			intValue = -1;
 		}
 		return intValue;
+	}
+	
+	/**
+	 * Returns a <code>DropdownMenu</code> that uses the given <code>Collection</code> of entities as options.
+	 * @param name The form name for the returned <code>DropdownMenu</code>
+	 * @param entities The entity beans to use as values.
+	 * @param methodName The name of the method from which the values are retrieved.
+	 * @return
+	 */
+	protected DropdownMenu getDropdownMenu(String name, Collection entities, String methodName) {
+		return getDropdownMenu(name, entities, methodName, null);
+	}
+
+	/**
+	 * Returns a <code>DropdownMenu</code> that uses the given <code>Collection</code> of entities as options.
+	 * @param name The form name for the returned <code>DropdownMenu</code>
+	 * @param entities The entity beans to use as values.
+ 	 * @param methodName The name of the method from which the values are retrieved.
+	 * @param defaultValue The default value to set if method returns null
+	 * @return
+	 */
+	protected DropdownMenu getDropdownMenu(String name, Collection entities, String methodName, String defaultValue) {
+		SelectorUtility util = new SelectorUtility();
+		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), entities, methodName, getResourceBundle(), defaultValue);
+		
+		return menu;
 	}
 }
