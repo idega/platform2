@@ -58,8 +58,10 @@ public class MessengerApplet extends Applet implements ActionListener{
   private Thread t;
 
   private String keyPressed=null;
-  private Image offscreenImage;
-  private Graphics offscr;
+  //private Image offscreenImage;
+  //private Graphics offscr;
+  private Graphics g;
+
   private long checkTimer = 5000;
   private long threadSleep = 50;
 
@@ -69,12 +71,16 @@ public class MessengerApplet extends Applet implements ActionListener{
   /**Construct the applet*/
   public MessengerApplet() {
     setBackground(Color.red);
-    setSize(400,400);
+    setForeground(Color.blue);
   }
 
 
   /**Initialize the applet*/
   public void init() {
+
+
+    g = getGraphics();
+
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
       userId = this.getParameter(USER_ID, "-1");
@@ -358,9 +364,10 @@ public class MessengerApplet extends Applet implements ActionListener{
       item.setSize(16,100);
 
       add(item);
-      item.repaint();
-      repaint();
-
+      //item.repaint();
+      item.paint(g);
+      //repaint();
+      paint(g);
   }
 
   public synchronized void cycle(){
@@ -402,7 +409,8 @@ public class MessengerApplet extends Applet implements ActionListener{
     }*/
 
 
-    repaint();
+    //repaint();
+    paint(g);
   }
 
   /**
