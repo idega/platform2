@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.81 2005/01/26 16:42:43 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.82 2005/01/28 07:42:40 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -482,10 +482,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private String createPagePhase1(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
 		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(childID, _caseCode);
 		if (numberOfApplications == 0) {
-			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)));
+			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)), 1, 1);
 			return "";
 		}
-		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"), 1, 1);
 		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(childID, _caseCode);
 		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
@@ -589,7 +589,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolAddress()), 3, row++);
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
-			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady()) {
+			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() ||
+					activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled()) {
 				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 				careTimePopup.setWindowToOpen(ChildCareWindow.class);
 				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
@@ -608,13 +609,28 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				layoutTbl.setHeight(row++, 12);
 				layoutTbl.add(careTimePopup, 3, row);
 				layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
-				layoutTbl.add(cancelPopup, 3, row);
+				
+				GenericButton cancelFileButton = null;
+				
+				if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled()) {
+					if (activeApplication.getCancelFormFileID() > 0) {
+						cancelFileButton = getButton(new GenericButton("cancel_file", localize("child_care.show_cancel_file", "Show cancel document")));
+						cancelFileButton.setFileToOpen(activeApplication.getCancelFormFileID());
+					}
+					// Add cancel doc file button
+				} else {
+					layoutTbl.add(cancelPopup, 3, row);					
+				}
 
 				if (archive != null) {
 					GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
 					contractPopup.setFileToOpen(archive.getContractFileID());
 					layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
 					layoutTbl.add(contractPopup, 3, row);
+				}
+				if (cancelFileButton != null) {
+					layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
+					layoutTbl.add(cancelFileButton, 3, row);
 				}
 			}
 			else if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusWaiting() && hasBankID) {
@@ -645,7 +661,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
 		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2));
 
-		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"), 1, 1);
 		layoutTbl.add(appTable, 1, 1);
 		layoutTbl.setHeight(2, 12);
 		layoutTbl.add(cancelBtn, 1, 3);
@@ -843,7 +859,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		tbl.setWidth(1, 1, 700);
 		Text t = getLocalizedSmallText("ccot1_help", "Om du accepterar erbjudande kan du enbart kvarstå i kö till i de ovanstående valen. Du stryks automatiskt från de underliggande alternativen. Om ditt erbjudande gäller ditt förstahandsval har du möjlighet att välja att kvarstå i kö för ETT alternativ av de underliggande alternativen.");
 		t.setItalic(true);
-		tbl.add(t);
+		tbl.add(t, 1, 1);
 		return tbl;
 	}
 
