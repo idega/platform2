@@ -1045,16 +1045,15 @@ public class Booking extends TravelManager {
 			voucherLink.setWindowToOpen(VoucherWindow.class);
 			voucherLink.addParameter(VoucherWindow.parameterBookingId, bookingId);
 
+			Link printCCReceipt = null;
 			try {
 				CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking()));
 				if (entry != null) {
-					Link printCCReceipt = new Link(receiptText);
+					printCCReceipt = new Link(receiptText);
 					printCCReceipt.setWindowToOpen(ReceiptWindow.class);
 
 					Receipt r = new Receipt(entry, supplier);
 					iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
-
-					table.add(printCCReceipt, 1, 5);
 				}
 			}
 			catch (Exception e) {
@@ -1087,6 +1086,9 @@ public class Booking extends TravelManager {
 			table.add(voucherNumTxt, 1, 3);
 			table.add(voucherNum, 2, 3);
 			table.add(voucherLink, 1, 4);
+			if (printCCReceipt != null) {
+				table.add(printCCReceipt, 1, 5);
+			}
 			table.add(backLink, 1, 6);
 			table.add(btnBook, 2, 6);
 
