@@ -116,7 +116,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 						description = localize("child_care.reactivate_placement", "Click to reactivate placement");
 					}
 					
-					activateApplication = new SubmitButton(getDeleteIcon(description));
+					activateApplication = new SubmitButton(getEditIcon(description));
 					activateApplication.setDescription(description);
 					activateApplication.setValueOnClick(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 					activateApplication.setSubmitConfirm(localize("school.confirm_activation","Are you sure you want to reactivate this application?"));
