@@ -166,9 +166,9 @@ public class MemberService
   public void add(ImageEntity image){
     this.imageId = image.getID();
     this.contentType = image.getContentType();
-    this.imageValue = image.getImageValue();
+    //this.imageValue = image.getImageValue();
     this.imageName = image.getName();
-    this.dateAdded = image.getDateAdded();
+    //this.dateAdded = image.getDateAdded();
     //this.fromFile = image.getFromFile();
   }
 
