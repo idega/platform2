@@ -66,6 +66,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
  */
 public class RegularInvoiceEntriesList extends AccountingBlock {
 
+	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
+	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
 	private static final String KEY_AMOUNT_PR_MONTH = "amount_pr_month";
 	private static final String KEY_AMOUNT = "amount";
@@ -160,7 +162,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		Date toDate = parseDate(parTo);
 		
 		if ((parFrom != null && fromDate == null) || (parTo != null && toDate == null)){
-			dateFormatErrorMessage = localize("", "Wrong date format. use: yymm.");
+			dateFormatErrorMessage = localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm.");
 			handleDefaultAction(iwc, user, fromDate, toDate, dateFormatErrorMessage);
 			return;
 		}		
@@ -172,37 +174,31 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
 				case ACTION_NEW:
-					handleCreateAction(iwc, user);
+					handleEditAction(iwc, getEmptyEntry(), user);
 					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
 				case ACTION_CANCEL:
+					// TODO implement
+					break;
+				case ACTION_CANCEL_NEW_EDIT:				
+				case ACTION_SEARCH_INVOICE:		
+				case ACTION_OPFIELD_MAINSCREEN:
 					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
 				case ACTION_EDIT:
+				case ACTION_OPFIELD_DETAILSCREEN:				
 					handleEditAction(iwc, user);
 					break;
-				case ACTION_SEARCH_INVOICE:
-					handleInvoiceSearch(iwc, user, fromDate, toDate);
-					break;
 				case ACTION_SEARCH_REGULATION:
-					handleDefaultAction(iwc, user, fromDate, toDate);
+					//TODO implement
 					break;	
 				case ACTION_SAVE:
 					handleSaveAction(iwc, user);
 					break;	
-				case ACTION_CANCEL_NEW_EDIT:
-					handleDefaultAction(iwc, user, fromDate, toDate);
-					break;	
-				case ACTION_OPFIELD_MAINSCREEN:
-					handleDefaultAction(iwc, user, fromDate, toDate);
-					break;	
-				case ACTION_OPFIELD_DETAILSCREEN:
-					handleEditAction(iwc, user);
-					break;	
-						
+				
 				default:
 					handleDefaultAction(iwc, user, fromDate, toDate);				
 					
@@ -212,10 +208,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			add(new ExceptionWrapper(e, this));
 		}
 	}
-	
-	private void handleInvoiceSearch(IWContext iwc, User user, Date fromDate, Date toDate){
-		add(getEntryListPage(doInvoiceSearch(iwc, user, fromDate, toDate), user, fromDate, toDate));
-	}
+
 	
 	/**
 	 * @param iwc
@@ -267,11 +260,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return action;
 	}	
 
-	private void handleCreateAction(IWContext iwc, User user){
-		if (user != null){
-			handleEditAction(iwc, getEmptyEntry(), user);
-		}
-	}
 
 	private void handleDeleteAction(IWContext iwc){
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
@@ -315,26 +303,27 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
+		entry.setFrom(from);
+		entry.setTo(to);
+			
+		entry.setNote(iwc.getParameter(PAR_REMARK));
+		entry.setPlacing(iwc.getParameter(PAR_PLACING));
+		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+		entry.setPlacing(iwc.getParameter(PAR_PLACING));
+		if (iwc.getParameter(PAR_PROVIDER) != null){
+			entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
+		}
+		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
+		entry.setUser(user);
+		entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+		
 		if (from != null && to != null){
-			entry.setFrom(from);
-			entry.setTo(to);
-				
-			entry.setNote(iwc.getParameter(PAR_REMARK));
-			entry.setPlacing(iwc.getParameter(PAR_PLACING));
-			entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-			entry.setPlacing(iwc.getParameter(PAR_PLACING));
-			if (iwc.getParameter(PAR_PROVIDER) != null){
-				entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
-			}
-			entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
-			entry.setUser(user);
-			entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-			entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-			entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 			entry.store();		
-			handleEditAction(iwc, entry, user);					
+			handleDefaultAction(iwc, user, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));					
 		} else {
-			handleEditAction(iwc, entry, user, "Date format error");	//TODO: localize				
+			handleEditAction(iwc, entry, user, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));	//TODO: localize				
 		}
 	}
 
@@ -518,14 +507,14 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
 		TextInput from = getTextInput(PAR_SEEK_FROM, "");
 		from.setLength(4);
-		from.setAsNotEmpty("[TODO: Not empty message]");
+		from.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (fromDate != null){
 			from.setContent(formatDate(fromDate, 4));	
 		}	
 		
 		TextInput to = getTextInput(PAR_SEEK_TO, "");
 		to.setLength(4);
-		to.setAsNotEmpty("[TODO: Not empty message]");
+		to.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + KEY_PERIODE);
 		if (toDate != null){
 			to.setContent(formatDate(toDate, 4));	
 		}
@@ -620,7 +609,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				
 		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, entry.getSchoolId(), "getSchoolName", 1, row++);
 
-		addField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
+		addNoEmptyField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
 		
 		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
@@ -839,6 +828,22 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	 * @param row
 	 * @return
 	 */
+	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
+		TextInput input = getTextInput(parameter, value);
+		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: " + key));
+		return addWidget(table, key, input, col, row);
+	}
+	
+	/**
+	 * Adds a label and a TextInput to a table
+	 * @param table
+	 * @param key is used both as localization key for the label and default label value
+	 * @param value
+	 * @param parameter
+	 * @param col
+	 * @param row
+	 * @return
+	 */
 	private Table addField(Table table, String parameter, String key, String value, int col, int row){
 		return addWidget(table, key, getTextInput(parameter, value), col, row);
 	}
@@ -855,7 +860,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	 */
 	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsFloat(localize("regular_invoice_entries_list.float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, "") ); //TODO: localize
+		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, "") ); 
 		return addWidget(table, key, input, col, row);
 	}
 		
