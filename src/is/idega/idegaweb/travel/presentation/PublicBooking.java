@@ -541,7 +541,7 @@ public class PublicBooking extends Block  {
         }
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
         table.add(getBoldTextWhite(" : "));
-        table.add(getBoldTextWhite(heimild));
+        table.add(getBoldTextWhite(gBooking.getCreditcardAuthorizationNumber()));
         table.add(Text.BREAK);
         table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
         table.add(getBoldTextWhite(" : "));
