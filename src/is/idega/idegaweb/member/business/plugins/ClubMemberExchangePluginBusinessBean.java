@@ -1,5 +1,5 @@
 /*
- * $Id: ClubMemberExchangePluginBusinessBean.java,v 1.2 2004/09/07 19:46:51 thomas Exp $
+ * $Id: ClubMemberExchangePluginBusinessBean.java,v 1.3 2004/09/07 20:01:16 thomas Exp $
  * Created on Aug 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,7 +9,6 @@
  */
 package is.idega.idegaweb.member.business.plugins;
 
-import is.idega.block.nationalregister.business.NationalRegisterFileImportHandlerPlugin;
 import is.idega.idegaweb.member.presentation.ClubMemberExchangeWindowPlugin;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -25,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 19:46:51 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/09/07 20:01:16 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ClubMemberExchangePluginBusinessBean extends IBOServiceBean implements ClubMemberExchangePluginBusiness {
 
