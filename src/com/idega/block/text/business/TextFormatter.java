@@ -110,7 +110,7 @@ public class TextFormatter {
       }
 
       //Almenn hreinsun
-      textBody = TextSoap.findAndReplace(textBody,"*","<li>");
+      //textBody = TextSoap.findAndReplace(textBody,"*","<li>");
 
       textBody = TextSoap.findAndReplaceOnPrefixCondition(textBody, "\r\n", ">","<br/>",true);
 
