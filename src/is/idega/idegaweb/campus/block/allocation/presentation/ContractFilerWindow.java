@@ -95,6 +95,9 @@ import com.idega.block.media.servlet.MediaServlet;
 //			  p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
 				p.setParentToReload();
 			}
+			else{
+			  add("Could not create contract file");
+			}
 
   }
 }

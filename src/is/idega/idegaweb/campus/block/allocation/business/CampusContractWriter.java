@@ -146,7 +146,7 @@ public class CampusContractWriter{
 
 				ICFile pdfFile = null;
 				Contract eContract = null;
-				String fileName = "test.pdf";
+				String fileName = "test";
 				if(bEntity ){
           try {
 						//System.err.println("instanciating Contract "+ids[0]);
@@ -165,7 +165,7 @@ public class CampusContractWriter{
 					pdfFile = new ICFile();
 					//System.err.println("available "+mis.available());
 					pdfFile.setFileValue(mis);
-					pdfFile.setMimeType("application/x-pdf");
+					pdfFile.setMimeType("application/pdf");
 					pdfFile.setName(fileName+".pdf");
 					pdfFile.setFileSize(buffer.length());
 					pdfFile.insert();
