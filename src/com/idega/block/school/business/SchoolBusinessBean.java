@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -13,6 +14,9 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.UserTransaction;
 
+
+import com.idega.core.data.Commune;
+import com.idega.core.data.CommuneHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
@@ -1601,5 +1605,36 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-
+	/**
+	 * Filters out all schools from the specified collection
+	 * which do not belong the the home (default) commune. 
+	 * @param schools the collection of schools
+	 */
+	public Collection getHomeCommuneSchools(Collection schools) {
+		ArrayList l = new ArrayList();
+		try {
+			CommuneHome home = (CommuneHome) IDOLookup.getHome(Commune.class);
+			int defaultCommuneId = -1;
+			try {
+				Commune defaultCommune = home.findDefaultCommune();
+				defaultCommuneId = ((Integer) defaultCommune.getPrimaryKey()).intValue();
+			} catch (Exception e) {}
+			
+			Iterator iter = schools.iterator();
+			while (iter.hasNext()) {
+				School school = (School) iter.next();
+				boolean isHomeCommune = true;
+				int communeId = school.getCommuneId();
+				if (communeId > 0) {
+					if (defaultCommuneId != communeId) {
+						isHomeCommune = false;
+					}
+				}
+				if (isHomeCommune) {
+					l.add(school);
+				}
+			}
+		} catch (Exception e) {}
+		return l;
+	}
 }
