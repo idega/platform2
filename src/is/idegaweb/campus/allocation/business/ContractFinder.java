@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.2 2001/10/30 12:53:32 aron Exp $
+ * $Id: ContractFinder.java,v 1.3 2001/11/05 11:54:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -373,7 +373,7 @@ public abstract class ContractFinder {
           AC = new ApartmentContracts(C.getApartmentId().intValue());
           AC.setApartment(BuildingCacher.getApartment(aprtId.intValue()));
         }
-        System.err.println("adding contract "+C.getID()+" with key "+aprtId);
+        //System.err.println("adding contract "+C.getID()+" with key "+aprtId);
         AC.addContract(C);
         H.put(aprtId,AC);
       }
