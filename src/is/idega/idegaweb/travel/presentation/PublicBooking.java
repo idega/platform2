@@ -74,7 +74,7 @@ public class PublicBooking extends TravelBlock  {
   		super.main(iwc);
     init(iwc);
 
-    if (productId != -1 ) {
+    if (productId != -1 && product != null && product.getIsValid()) {
       displayForm(iwc);
     }else {
     }
