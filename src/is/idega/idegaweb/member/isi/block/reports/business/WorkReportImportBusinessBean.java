@@ -228,6 +228,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 		//Get the expenses part
 		for (currRow = 11; currRow < 26; currRow++) {
+			String parentKey = null;
+			double sum = 0.0;
 			if (currRow != 15) {
 				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
 				HSSFCell cell = row.getCell((short)1);
@@ -260,6 +262,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 
 					System.out.println("val = " + val);
+					if (currRow >= 16 && currRow <= 18)
+						sum += val;
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
 						try {
@@ -275,6 +279,24 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							catch (Exception e) {
 								//Do nothing
 							}
+							
+							if (currRow == 18) {
+								WorkReportAccountKey eParKey = null;
+								try {
+									eParKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(parentKey);
+								}
+								catch (FinderException e) {
+									e.printStackTrace();
+									throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+								}
+
+								WorkReportClubAccountRecord rec2 = clubRecordHome.create();
+								rec2.setAccountKey(eParKey);
+								rec2.setWorkReportGroup(league);
+								rec2.setReportId(workReportId);
+								rec2.setAmount((float)sum);
+								rec2.store();								
+							}
 						}
 						catch (Exception e) {
 							e.printStackTrace();
@@ -282,6 +304,18 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						}
 					}
 				}
+				
+			}
+			else {
+				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
+				HSSFCell cell = row.getCell((short)1);
+				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+					parentKey = Integer.toString((int)cell.getNumericCellValue());
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+					parentKey = cell.getStringCellValue();
+				else
+					parentKey = null;
+
 			}
 		}
 
@@ -348,6 +382,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		double totalDept = 0;
 		//Get the dept part
 		for (currRow = 38; currRow < 42; currRow++) {
+			String parentKey = null;
+			double sum = 0.0;
 			if (currRow != 39) {
 				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
 				HSSFCell cell = row.getCell((short)1);
@@ -380,6 +416,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 
 					System.out.println("val = " + val);
+					if (currRow >= 40 && currRow <= 41)
+						sum += val;
 					totalDept += val;
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
@@ -397,6 +435,23 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 								//Do nothing
 							}
 
+							if (currRow == 41) {
+								WorkReportAccountKey eParKey = null;
+								try {
+									eParKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(parentKey);
+								}
+								catch (FinderException e) {
+									e.printStackTrace();
+									throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+								}
+
+								WorkReportClubAccountRecord rec2 = clubRecordHome.create();
+								rec2.setAccountKey(eParKey);
+								rec2.setWorkReportGroup(league);
+								rec2.setReportId(workReportId);
+								rec2.setAmount((float)sum);
+								rec2.store();								
+							}
 						}
 						catch (Exception e) {
 							e.printStackTrace();
@@ -404,6 +459,16 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						}
 					}
 				}
+			}
+			else {
+				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
+				HSSFCell cell = row.getCell((short)1);
+				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+					parentKey = Integer.toString((int)cell.getNumericCellValue());
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+					parentKey = cell.getStringCellValue();
+				else
+					parentKey = null;
 			}
 		}
 
@@ -616,6 +681,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				String status = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STATUS);
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_SSN);
+				ssn = TextSoap.findAndCut(ssn, "-");				
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
@@ -740,6 +806,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (FinderException e) {
 					try {
+						e.printStackTrace();
 						board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
 					}
 					catch (CreateException e1) {
@@ -830,8 +897,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				//String name = HSSFCellUtil.translateUnicodeValues(row.getCell(COLUMN_MEMBER_NAME)).getStringCellValue();
 				String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_SSN);
-				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				ssn = TextSoap.findAndCut(ssn, "-");
+				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_POSTAL_CODE);
@@ -952,6 +1019,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, id.intValue());
 			}
 			catch (FinderException e) {
+				e.printStackTrace();
 				try {
 					board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
 				}
