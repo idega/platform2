@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.39 2004/06/29 12:48:26 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.40 2004/06/29 18:52:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,6 +138,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 			aid = 0;
 		}
 		
+		if(aid>0)
 		holder = applicationService.getApplicationInfo(aid);
 		
 		String update = iwc.getParameter("updatePhoneEmail");
@@ -162,7 +163,8 @@ public class ReferenceNumberInfo extends CampusBlock {
 		}
 		
 		// fetch again after changed data
-		holder = applicationService.getApplicationInfo(aid);
+		if(aid>0)
+			holder = applicationService.getApplicationInfo(aid);
 		
 		Table refTable = new Table();
 		refTable.setWidth(this.getWidth());
