@@ -53,7 +53,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String REJECTION_DATE = "rejection_date";
 	protected final static String PROGNOSIS = "prognosis";
 	protected final static String PRESENTATION = "presentation";
-	protected final static String MESSAGE = "message";
+	protected final static String CC_MESSAGE = "cc_message";
 	protected final static String QUEUE_ORDER = "queue_order";
 	protected final static String APPLICATION_STATUS = "application_status";
 	protected final static String HAS_PRIORITY = "has_priority";
@@ -96,7 +96,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(REJECTION_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(PROGNOSIS,"",true,true,java.lang.String.class,1000);
 		addAttribute(PRESENTATION,"",true,true,java.lang.String.class,1000);
-		addAttribute(MESSAGE,"",true,true,java.lang.String.class,1000);
+		addAttribute(CC_MESSAGE,"",true,true,java.lang.String.class,1000);
 		addAttribute(QUEUE_ORDER,"",true,true,java.lang.Integer.class);
 		addAttribute(APPLICATION_STATUS,"",true,true,java.lang.String.class,1);
 		addAttribute(HAS_PRIORITY,"",true,true,java.lang.Boolean.class);
@@ -177,7 +177,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public String getMessage() {
-		return getStringColumnValue(MESSAGE);	
+		return getStringColumnValue(CC_MESSAGE);	
 	}
 	
 	public int getQueueOrder() {
@@ -261,7 +261,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public void setMessage(String message) {
-		setColumn(MESSAGE,message);	
+		setColumn(CC_MESSAGE,message);	
 	}
 	
 	public void setQueueOrder(int order) {
@@ -294,7 +294,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
 		}
 		catch (RemoteException e) {
-			throw new FinderException(e.getMessage());
+			throw new FinderException(e.getMessage()); 
 		}
 	}
 	
@@ -309,6 +309,22 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
+	
+	
+	public Collection ejbFindAllChildCasesByProvider(int providerId) throws FinderException, RemoteException {
+		
+		StringBuffer sql = new StringBuffer(
+            "select m.* from msg_letter_message m, proc_case p, comm_childcare c" +
+            " where m.msg_letter_message_id = p.proc_case_id and " +
+            " c.provider_id = " + providerId + " and " +
+            " p.parent_case_id in (select proc_case_id from proc_case where case_code = 'MBANBOP' and proc_case_id = c.comm_childcare_id)");
+		
+		return (Collection)super.idoFindPKsBySQL(sql.toString());
+	}	
+		
+	
+	
+	
 	
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
 		IDOQuery sql = idoQuery();
