@@ -82,11 +82,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/19 15:18:59 $ by $Author: joakim $
+ * Last modified: $Date: 2004/03/22 08:26:35 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.124 $
+ * @version $Revision: 1.125 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -279,6 +279,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				paymentRecord.setPlacements(paymentRecord.getPlacements() - 1);
 				paymentRecord.setTotalAmount(paymentRecord.getTotalAmount() - invoiceRecord.getAmount());
 				paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT() - invoiceRecord.getAmountVAT());
+				paymentRecord.store ();
+				if (0 >= paymentRecord.getPlacements()) {
+					paymentRecord.remove ();
+				}
 			} catch (FinderException e1) {
 				e1.printStackTrace();
 			}
@@ -294,7 +298,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			final Collection invoiceRecords
 					= getInvoiceRecordHome ().findByPaymentRecord (paymentRecord);
 			for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
-				removeInvoiceRecord ((InvoiceRecord) i.next ());
+				((InvoiceRecord) i.next ()).remove ();
 			}
 		} catch (FinderException e) {
 			// no invoice records connected to this payment record, it's ok
