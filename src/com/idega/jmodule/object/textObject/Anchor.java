@@ -36,7 +36,7 @@ public class Anchor extends Link {
 	setAttribute("name",url);
   }
 
-  public void print(ModuleInfo modinfo)throws IOException{
+  public void print(ModuleInfo modinfo)throws Exception{
     initVariables(modinfo);
     obj = super.getObject();
     if (getLanguage().equals("HTML")){

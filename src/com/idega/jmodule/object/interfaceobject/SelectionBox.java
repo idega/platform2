@@ -284,7 +284,7 @@ public MenuElement getMenuElement(String ElementValue){
 	return theReturn;
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	theElements.trimToSize();
 	initVariables(modinfo);
 

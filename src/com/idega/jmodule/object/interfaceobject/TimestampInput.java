@@ -1,5 +1,5 @@
 /*
- * $Id: TimestampInput.java,v 1.4 2001/06/27 00:42:00 tryggvil Exp $
+ * $Id: TimestampInput.java,v 1.5 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -533,7 +533,7 @@ public void main(ModuleInfo modinfo){
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 
   for (int i=fromYear;i<=toYear;i++){
     theYear.addMenuElement(Integer.toString(i));

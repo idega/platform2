@@ -658,7 +658,7 @@ public Object getSessionAttributeWeak(String propertyName){
   return getWeakHashMap().get(propertyName);
 }
 
-private WeakHashMap getWeakHashMap(){
+private Map getWeakHashMap(){
   WeakHashMap map = (WeakHashMap)getSessionAttribute(WEAK_HASHMAP_KEY);
   if(map==null){
     map = new WeakHashMap();

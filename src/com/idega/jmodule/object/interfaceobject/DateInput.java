@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.9 2001/06/29 13:27:29 aron Exp $
+ * $Id: DateInput.java,v 1.10 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -348,7 +348,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 
   if(fromYear < toYear){
     for (int i=fromYear;i<=toYear;i++){

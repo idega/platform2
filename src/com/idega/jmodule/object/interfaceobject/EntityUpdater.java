@@ -1,5 +1,5 @@
 /*
- * $Id: EntityUpdater.java,v 1.2 2001/04/30 16:40:40 palli Exp $
+ * $Id: EntityUpdater.java,v 1.3 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -275,7 +275,7 @@ public void beforePrint(ModuleInfo modinfo)throws IOException{
 	}*/
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	theMain(modinfo);
 	beforePrint(modinfo);

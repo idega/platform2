@@ -115,7 +115,7 @@ public void addParameter(String parameterName,String parameterValue){
 
 
 
-public void print(ModuleInfo modinfo) throws IOException{
+public void print(ModuleInfo modinfo) throws Exception{
   if (link!=null){
     if(button==null){
       link.print(modinfo);

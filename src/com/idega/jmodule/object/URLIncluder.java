@@ -36,7 +36,7 @@ public String getURL(){
 	return URLString;
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	if (doPrint(modinfo)){
 		if (getLanguage().equals("HTML")){

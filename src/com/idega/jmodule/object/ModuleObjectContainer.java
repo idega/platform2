@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.6 2001/05/18 14:36:16 gummi Exp $
+ * $Id: ModuleObjectContainer.java,v 1.7 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,24 @@ public class ModuleObjectContainer extends ModuleObject {
   private boolean goneThroughMain = false;
 
   public ModuleObjectContainer() {
+  }
+
+  /**
+   * Add an object inside this container
+   */
+  protected void add(int index,ModuleObject modObject) {
+    try {
+      if (theObjects == null) {
+        this.theObjects = new Vector();
+      }
+      if (modObject != null) {
+        modObject.setParentObject(this);
+        this.theObjects.add(index,modObject);
+      }
+    }
+    catch(Exception ex) {
+      ExceptionWrapper exep = new ExceptionWrapper(ex,this);
+    }
   }
 
   /**
@@ -113,7 +131,7 @@ public class ModuleObjectContainer extends ModuleObject {
     addText(Integer.toString(integerToInsert));
   }
 
-  public Vector getAllContainingObjects() {
+  public List getAllContainingObjects() {
     return theObjects;
   }
 
@@ -155,7 +173,6 @@ public class ModuleObjectContainer extends ModuleObject {
         }
       }
     }
-
     goneThroughMain = true;
   }
 
@@ -187,7 +204,7 @@ public class ModuleObjectContainer extends ModuleObject {
   }*/
 
 
-  public void print(ModuleInfo modinfo) throws IOException {
+  public void print(ModuleInfo modinfo) throws Exception {
     goneThroughMain = false;
     initVariables(modinfo);
     //Workaround for JRun - JRun has hardcoded content type text/html in JSP pages
@@ -212,7 +229,47 @@ public class ModuleObjectContainer extends ModuleObject {
     }
   }
 
-  public ModuleObject getContainedObject(String objectTreeID) {
+
+  public ModuleObject getContainedObject(int objectInstanceID) {
+    List list = this.getAllContainingObjects();
+    Iterator iter = list.iterator();
+    while (iter.hasNext()) {
+      ModuleObject item = (ModuleObject)iter.next();
+      if(item.getICObjectInstanceID()==objectInstanceID){
+        return item;
+      }
+      else if(item instanceof ModuleObjectContainer){
+        ModuleObject theReturn = ((ModuleObjectContainer)item).getContainedObject(objectInstanceID);
+        if(theReturn != null){
+          return theReturn;
+        }
+      }
+    }
+    return null;
+  }
+
+  public ModuleObject getContainedObject(String objectInstanceID) {
+
+    try{
+      return getContainedObject(Integer.parseInt(objectInstanceID));
+    }
+    catch(NumberFormatException e){
+      int objectInstanceIDInt = Integer.parseInt(objectInstanceID.substring(0,objectInstanceID.indexOf(".") + 1));
+
+      String index = objectInstanceID.substring(objectInstanceID.indexOf(".") + 1,objectInstanceID.length());
+      if(index.indexOf(".") == -1){
+        return ((ModuleObjectContainer)getContainedObject(objectInstanceIDInt)).objectAt(Integer.parseInt(index));
+      }
+      else{
+        int xindex = Integer.parseInt(index.substring(0,index.indexOf(".") + 1));
+        int yindex = Integer.parseInt(index.substring(index.indexOf(".") + 1,index.length()));
+        return ((Table)getContainedObject(objectInstanceIDInt)).containerAt(xindex,yindex);
+      }
+    }
+
+  }
+
+  /*public ModuleObject getContainedObject(String objectTreeID) {
     if (objectTreeID.indexOf(".") == -1) {
       return objectAt(Integer.parseInt(objectTreeID));
     }
@@ -228,9 +285,9 @@ public class ModuleObjectContainer extends ModuleObject {
         return obj;
       }
     }
-  }
+  }*/
 
-  public void updateTreeIDs() {
+  /*public void updateTreeIDs() {
     if (!isEmpty()) {
       String thisTreeID = this.getTreeID();
       int numberOfObjects = numberOfObjects();
@@ -256,12 +313,12 @@ public class ModuleObjectContainer extends ModuleObject {
         }
       }
     }
-  }
+  }*/
 
-  public void setTreeID(String ID) {
+  /*public void setTreeID(String ID) {
     super.setTreeID(ID);
     updateTreeIDs();
-  }
+  }*/
 
   public int numberOfObjects() {
     if (theObjects != null) {

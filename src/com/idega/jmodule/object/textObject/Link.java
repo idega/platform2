@@ -517,7 +517,7 @@ public void clearParameters(){
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
             String oldURL = getURL();

@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.8 2001/05/24 19:42:05 eiki Exp $
+ * $Id: Page.java,v 1.9 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,11 @@ package com.idega.jmodule.object;
 import com.idega.jmodule.*;
 import com.idega.jmodule.object.textObject.Text;
 import java.io.*;
+import com.idega.servlet.IWCoreServlet;
+import com.idega.util.FrameStorageInfo;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import com.idega.idegaweb.IWMainApplication;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -33,6 +38,22 @@ public class Page extends ModuleObjectContainer {
   private String pageStyleFontStyle = Text.FONT_FACE_STYLE_NORMAL;
   private String styleSheetURL = "/style/style.css";
   private boolean addStyleSheet = false;
+  private Hashtable frameProperties;
+  private boolean isTemplate=false;
+
+
+
+  protected static final String ROWS_PROPERTY = "ROWS";
+
+  private static final String IW_FRAME_PARAMETER="idegaweb_frame_page_s";
+  protected static final String IW_PAGE_KEY = "idegaweb_page";
+  public static final String IW_FRAME_STORAGE_PARMETER = IWMainApplication.windowOpenerParameter;
+
+  private final static String START_TAG="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>";
+  private final static String END_TAG="</html>";
+
+  private static final String slash = "/";
+
 
   public Page() {
     this("");
@@ -228,7 +249,10 @@ public class Page extends ModuleObjectContainer {
    super.prepareClone(newObjToCreate);
    Page newPage = (Page)newObjToCreate;
    newPage.title = this.title;
-   newPage.theAssociatedScript = (Script)this.theAssociatedScript.clone();
+   Script newScript = (Script)this.theAssociatedScript;
+   if(newScript!=null){
+    newPage.theAssociatedScript = (Script)newScript.clone();
+   }
    newPage.zeroWait = this.zeroWait;
    newPage.redirectInfo = this.redirectInfo;
    newPage.doReload = this.doReload;
@@ -278,12 +302,14 @@ public class Page extends ModuleObjectContainer {
     }
   }
 
-  public void print(ModuleInfo modinfo) throws IOException {
+  public void print(ModuleInfo modinfo) throws Exception {
     initVariables(modinfo);
     setDefaultAttributes(modinfo);
 
     if (getLanguage().equals("HTML")) {
-      println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>");
+      //StringBuffer buf= new StringBuffer();
+      //buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>");
+      println(getStartTag());
       if(zeroWait) {
         this.setDoPrint(false);
       }
@@ -291,10 +317,12 @@ public class Page extends ModuleObjectContainer {
       if (getAssociatedScript() != null) {
         getAssociatedScript().print(modinfo);
       }
-      println("\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n");
-      if (getRedirectInfo() != null) {
-        println("<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">");
-      }
+      //println("\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n");
+      //if (getRedirectInfo() != null) {
+      //  println("<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">");
+      //}
+
+      println(getMetaInformation(modinfo));
       println("<title>"+getTitle()+"</title>");
       if (addStyleSheet) {
         println("<link rel=\"stylesheet\" href=\""+styleSheetURL+"\" type=\"text/css\">\n");
@@ -310,13 +338,14 @@ public class Page extends ModuleObjectContainer {
       }
       catch(Exception ex) {
         println("<h1>Villa var&eth;!</h1>");
-        println("idega arachnea error");
+        println("IW Error");
         println("<pre>");
         ex.printStackTrace(modinfo.getResponse().getWriter());
         println("</pre>");
       }
 
-      println("\n</body>\n</html>");
+      println("\n</body>");
+      println(getEndTag());
         //}
     }
     else if (getLanguage().equals("WML")) {
@@ -324,6 +353,7 @@ public class Page extends ModuleObjectContainer {
       println("<!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\" \"http://www.wapforum.org/DTD/wml_1.1.xml\">");
       println("<wml>");
       println("<card title=\""+getTitle()+"\" id=\"card1\">");
+
 
       //Catch all exceptions that are thrown in print functions of objects stored inside
       try {
@@ -346,5 +376,157 @@ public class Page extends ModuleObjectContainer {
     if (key.equalsIgnoreCase("title")) {
       setTitle(values[0]);
     }
+  }
+
+  public static String getStartTag(){
+    return START_TAG;
+  }
+
+  public static String getEndTag(){
+    return END_TAG;
+  }
+
+  public String getMetaInformation(ModuleInfo modinfo){
+      String theReturn = "\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n";
+      if (getRedirectInfo() != null) {
+        theReturn += "<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">";
+      }
+      return theReturn;
+  }
+
+  /**
+   * Used to find the Page object to be printed in top of the current page
+   */
+  public static Page getPage(ModuleInfo modinfo){
+      String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
+
+      if(frameKey==null){
+      /**
+       * Inside a top level page:
+       */
+       Page page =  (Page) IWCoreServlet.retrieveObject(IW_PAGE_KEY);
+       return page;
+      }
+      else{
+
+        Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
+        return page;
+        //return getPageFromSession(modinfo,frameKey);
+      }
+      /*Page page = (Page)retrieveObject("idega_page");
+        if (page==null){
+          String servletName = this.getServletConfig().getServletName();
+          String attributeKey =servletName+"_idega_page";
+          Page newPage = (Page)getServletContext().getAttribute(attributeKey);
+          //System.out.println("AttributeKey="+attributeKey+" for getPage()");
+          page = (Page)newPage.clone();
+          storeObject("idega_page",page);
+        }
+        return page;*/
+  }
+
+
+  private static FrameStorageInfo getFrameStorageInfo(ModuleInfo modinfo){
+    String key = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
+    FrameStorageInfo info =  (FrameStorageInfo)modinfo.getSessionAttribute(key);
+    if(info==null){
+      info = FrameStorageInfo.EMPTY_FRAME;
+    }
+    return info;
+  }
+
+
+
+  private static Page getPage(FrameStorageInfo info,ModuleInfo modinfo){
+      String key = info.getStorageKey();
+      Page theReturn = (Page)modinfo.getSessionAttributeWeak(key);
+      if(theReturn ==null){
+        try{
+          theReturn = (Page)info.getFrameClass().newInstance();
+        }
+        catch(Exception ex){
+          if(theReturn==null){
+            theReturn = new Page("Expired");
+            theReturn.add("This page has expired");
+          }
+          ex.printStackTrace();
+        }
+        storePage(theReturn,modinfo);
+      }
+      return theReturn;
+  }
+
+
+
+  public static void storePage(Page page,ModuleInfo modinfo){
+      String storageKey = page.getID();
+      String infoKey=storageKey;
+      FrameStorageInfo info = new FrameStorageInfo(storageKey,page.getClass());
+      modinfo.setSessionAttribute(infoKey,info);
+      modinfo.setSessionAttributeWeak(storageKey,page);
+    }
+
+
+  public static void setTopPage(Page page){
+    IWCoreServlet.storeObject(IW_PAGE_KEY,page);
+  }
+
+
+  public static boolean isRequestingTopPage(ModuleInfo modinfo){
+    return !modinfo.isParameterSet(IW_FRAME_PARAMETER);
+  }
+
+
+
+  protected void setFrameProperty(String propertyName,String propertyValue){
+    if(frameProperties ==null){
+      frameProperties = new Hashtable();
+    }
+    frameProperties.put(propertyName,propertyValue);
+  }
+
+  protected void setFrameProperty(String propertyName){
+    setFrameProperty(propertyName,slash);
+  }
+
+  protected String getFrameProperty(String propertyName){
+    if(frameProperties == null){
+      return null;
+    }
+    return (String)frameProperties.get(propertyName);
+  }
+
+  protected String getFramePropertiesString(){
+    StringBuffer returnString = new StringBuffer();
+    String Attribute ="";
+    if (this.attributes != null) {
+      Enumeration e = frameProperties.keys();
+      while (e.hasMoreElements()) {
+        Attribute = (String)e.nextElement();
+        if(!Attribute.equals(ROWS_PROPERTY)){
+          returnString.append(" ");
+          returnString.append(Attribute);
+
+          String AttributeValue = (String)frameProperties.get(Attribute);
+          if(!AttributeValue.equals(slash)){
+
+            returnString.append("=\"");
+            returnString.append(AttributeValue);
+            returnString.append("\" ");
+
+          }
+
+        }
+      }
+    }
+    return returnString.toString();
+  }
+
+  public void setTemplate(boolean isTemlpate){
+    this.isTemplate=isTemplate;
+  }
+
+  public boolean isTemplate(){
+    return isTemplate;
   }
 }

@@ -212,7 +212,7 @@ public void keepStatusOnAction(){
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	handleKeepStatus(modinfo);
 	super.print(modinfo);
 }

@@ -43,7 +43,7 @@ public void setOnClick(Image onClickImage){
 	setOnClick("this.src="+onClickImage.getURL());
 }
 
-public void print(ModuleInfo modinfo) throws IOException{
+public void print(ModuleInfo modinfo) throws Exception{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
 		if (getLanguage().equals("HTML")){

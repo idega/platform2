@@ -1,5 +1,5 @@
 /*
- * $Id: TimeInput.java,v 1.3 2001/06/26 23:26:59 tryggvil Exp $
+ * $Id: TimeInput.java,v 1.4 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -321,7 +321,7 @@ public void add(ModuleObject mo){
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	if (setCheck == true){
 		theWholeTime.setValue(theHour.getSelectedElementValue()+":"+theMinute.getSelectedElementValue()+":00.000000");
 	}

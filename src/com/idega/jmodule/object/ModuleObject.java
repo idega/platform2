@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.10 2001/06/27 00:33:15 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.11 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -234,7 +234,7 @@ public class ModuleObject extends Object implements Cloneable {
   /**
    * The default implementation for the print function
    */
-  public void print(ModuleInfo modinfo) throws IOException {
+  public void print(ModuleInfo modinfo) throws Exception {
     initVariables(modinfo);
     if (modinfo.getLanguage().equals("WML")) {
       getResponse().setContentType("text/vnd.wap.wml");
@@ -399,24 +399,20 @@ public class ModuleObject extends Object implements Cloneable {
     doPrint = printed;
   }
 
-  public void setTreeID(String treeID) {
+  /*public void setTreeID(String treeID) {
     this.treeID = treeID;
   }
 
   public String getTreeID() {
     return treeID;
-  }
+  }*/
 
-  /**
-   * @deprecated Replaced with setICObjectInstanceID()
-   */
+
   public void setICObjectInstanceID(int id) {
     this.ib_object_instance_id = id;
   }
 
-  /**
-   * @deprecated Replaced with setICObjectInstance()
-   */
+
   public void setICObjectInstance(ICObjectInstance instance) {
     this.ib_object_instance_id = instance.getID();
   }
@@ -432,11 +428,19 @@ public class ModuleObject extends Object implements Cloneable {
     return this.ib_object_instance_id;
   }
 
+  public int getICObjectInstanceID(){
+    return this.ib_object_instance_id;
+  }
+
   /**
    * @deprecated Replaced with getICObjectInstance()
    */
   public ICObjectInstance getICObjectInstance(ModuleInfo modinfo) throws SQLException {
     return new ICObjectInstance(getICObjectInstanceID(modinfo));
+  }
+
+  public ICObjectInstance getICObjectInstance()throws Exception{
+    return new ICObjectInstance(getICObjectInstanceID());
   }
 
   public ICObject getICObject() throws SQLException {
@@ -462,9 +466,9 @@ public class ModuleObject extends Object implements Cloneable {
     return (IWLinkListener[])listenerList.getListeners(IWLinkListener.class);
   }
 
-    public void addIWSubmitListener(IWSubmitListener l,ModuleInfo modinfo){
-      listenerList.add(IWSubmitListener.class,l);
-    }
+  public void addIWSubmitListener(IWSubmitListener l,ModuleInfo modinfo){
+    listenerList.add(IWSubmitListener.class,l);
+  }
 
     public IWSubmitListener[] getIWSubmitListeners(){
       return (IWSubmitListener[])listenerList.getListeners(IWSubmitListener.class);

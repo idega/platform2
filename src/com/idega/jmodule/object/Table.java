@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.6 2001/06/12 10:17:00 gummi Exp $
+ * $Id: Table.java,v 1.7 2001/07/04 18:11:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -680,7 +680,7 @@ public class Table extends ModuleObjectContainer {
   }
 
 
-  public Vector getAllContainingObjects(){
+  public List getAllContainingObjects(){
     Vector theReturn = new Vector();
 
     for (int x = 0;x<theObjects.length;x++){
@@ -714,7 +714,7 @@ public class Table extends ModuleObjectContainer {
     }
   }
 
-  public void print(ModuleInfo modinfo) throws IOException{
+  public void print(ModuleInfo modinfo) throws Exception{
     initVariables(modinfo);
     //if( doPrint(modinfo)){
       if (getLanguage().equals("HTML")){
@@ -1044,6 +1044,15 @@ public boolean isEmpty(int x, int y){
       ex.printStackTrace(System.err);
     }
     return obj;
+  }
+
+  public ModuleObjectContainer containerAt(int x,int y){
+    ModuleObjectContainer cont = theObjects[x-1][y-1];
+    if(cont==null){
+      cont = new ModuleObjectContainer();
+      cont.setParentObject(this);
+    }
+    return cont;
   }
 
 }

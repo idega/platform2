@@ -129,17 +129,18 @@ public void setOnSubmit(String script){
 }
 
 
-private Vector findAllInputNamesHelper(Vector vector,ModuleObjectContainer cont){
-	Vector objects = cont.getAllContainingObjects();
+private List findAllInputNamesHelper(List vector,ModuleObjectContainer cont){
+	List objects = cont.getAllContainingObjects();
 	if (objects != null){
-		for (Enumeration enum = objects.elements();enum.hasMoreElements();){
-			ModuleObject mo = (ModuleObject)enum.nextElement();
+		//for (Enumeration enum = objects.elements();enum.hasMoreElements();){
+                for (Iterator iter = objects.iterator();iter.hasNext();){
+			ModuleObject mo = (ModuleObject)iter.next();
 			if (mo instanceof ModuleObjectContainer){
 				vector = findAllInputNamesHelper(vector,(ModuleObjectContainer) mo);
 			}
 			else{
 				if (mo instanceof InterfaceObject){
-					vector.addElement(mo.getName());
+					vector.add(mo.getName());
 				}
 			}
 
@@ -151,7 +152,7 @@ private Vector findAllInputNamesHelper(Vector vector,ModuleObjectContainer cont)
 
 public String[] findAllInputNames(){
 
-	Vector vector = new Vector();
+	List vector = new Vector();
 
 	vector = findAllInputNamesHelper(vector,this);
 
@@ -184,19 +185,23 @@ public void maintainAllParameters(){
 	maintainAllParameters=true;
 }
 
-
-public void submitTo(ModuleObject objectToSubmitTo){
+/**
+ * @deprecated Implementors should use addActionListener
+ */
+/*public void submitTo(ModuleObject objectToSubmitTo){
   //maintainAllParameters();
   //Window window = new Window(200,100);
   //setWindow(window);
   //window.setBackgroundColor("gray");
   //window.add("Processing");
   submitToObject = objectToSubmitTo;
-}
+}*/
 
 
 
-//Creates a hidden field if there is an action on the form again
+/**
+ * Creates a hidden field if there is an action on the form again
+ */
 public void maintainParameter(String parameterName){
 	if (maintainedParameters == null){
 		maintainedParameters = new Vector();
@@ -216,12 +221,12 @@ private void addTheMaintainedParameters(ModuleInfo modinfo){
         /**
          * Should be probably deprecated if the "submitTo()" function is deprecated
          */
-        if(submitToObject!= null){
+        /*if(submitToObject!= null){
           String treeID=submitToObject.getTreeID();
           if(treeID!=null){
             this.add(new Parameter("idega_special_tree_node",treeID));
           }
-        }
+        }*/
 
         String WindowParameterValue = modinfo.getParameter(IWMainApplication.windowOpenerParameter);
         if(WindowParameterValue!=null){
@@ -277,7 +282,7 @@ private void addTheMaintainedParameters(ModuleInfo modinfo){
         }*/
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
 

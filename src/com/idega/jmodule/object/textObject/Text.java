@@ -217,7 +217,7 @@ private void setDefaultAttributes(ModuleInfo modinfo){
     return obj;
   }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	setDefaultAttributes(modinfo);
 	//if ( doPrint(modinfo) ){

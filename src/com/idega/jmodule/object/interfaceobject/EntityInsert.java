@@ -331,7 +331,7 @@ public boolean hasInserted(ModuleInfo modinfo){
 	return thisObjectSubmitted(modinfo);
 }
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 
 	if(theForm != null){
