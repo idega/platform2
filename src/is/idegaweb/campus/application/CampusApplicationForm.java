@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.4 2001/07/10 17:03:43 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.5 2001/07/24 16:07:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.business.ApplicationFinder;
+import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.jmodule.object.ModuleInfo;
@@ -27,7 +28,10 @@ import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.SendMail;
+import com.idega.util.CypherText;
 import is.idegaweb.campus.application.CampusApplicationFinder;
 import is.idegaweb.campus.entity.Application;
 import is.idegaweb.campus.entity.Applied;
@@ -49,10 +53,16 @@ public class CampusApplicationForm extends ApplicationForm {
   private String styleAttribute = "font-size: 8pt";
   private TextInput textInputTemplate = new TextInput();
 
+  /**
+   *
+   */
   public CampusApplicationForm() {
     setStyleAttribute(styleAttribute);
   }
 
+  /*
+   *
+   */
   protected void control(ModuleInfo modinfo) {
     String statusString = modinfo.getParameter("status");
     int status = 0;
@@ -88,6 +98,9 @@ public class CampusApplicationForm extends ApplicationForm {
     }
   }
 
+  /*
+   *
+   */
   protected void doSelectSubject(ModuleInfo modinfo) {
     IWResourceBundle iwrb = getResourceBundle(modinfo);
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
@@ -145,6 +158,9 @@ public class CampusApplicationForm extends ApplicationForm {
     add(form);
   }
 
+  /*
+   *
+   */
   protected void saveSubject(ModuleInfo modinfo) {
     String subject = (String)modinfo.getParameter("subject");
     String aprtCat = (String)modinfo.getParameter("aprtCat");
@@ -157,7 +173,9 @@ public class CampusApplicationForm extends ApplicationForm {
     modinfo.setSessionAttribute("aprtCat",aprtCat);
   }
 
-
+  /*
+   *
+   */
   protected void doSelectAppliedFor(ModuleInfo modinfo) {
     IWResourceBundle iwrb = getResourceBundle(modinfo);
     int id;
@@ -238,6 +256,9 @@ public class CampusApplicationForm extends ApplicationForm {
     add(form);
   }
 
+  /*
+   *
+   */
   protected void doCampusInformation(ModuleInfo modinfo) {
     IWResourceBundle iwrb = getResourceBundle(modinfo);
     List residences = CampusApplicationFinder.listOfResidences();
@@ -508,6 +529,9 @@ public class CampusApplicationForm extends ApplicationForm {
     add(form);
   }
 
+  /*
+   *
+   */
   protected void saveCampusInformation(ModuleInfo modinfo) {
     int studyBeginMon = 0;
     int studyBeginYr = 0;
@@ -634,6 +658,9 @@ public class CampusApplicationForm extends ApplicationForm {
     modinfo.setSessionAttribute("campusapplication",application);
   }
 
+  /*
+   *
+   */
   protected void saveAppliedFor(ModuleInfo modinfo) {
     String key1 = (String)modinfo.getParameter("aprtType");
     String key2 = (String)modinfo.getParameter("aprtType2");
@@ -675,6 +702,9 @@ public class CampusApplicationForm extends ApplicationForm {
       modinfo.setSessionAttribute("applied3",applied3);
   }
 
+  /*
+   *
+   */
   protected boolean saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
     com.idega.block.application.data.Application application = (com.idega.block.application.data.Application)modinfo.getSessionAttribute("application");
@@ -683,7 +713,10 @@ public class CampusApplicationForm extends ApplicationForm {
     Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
     Applied applied3 = (Applied)modinfo.getSessionAttribute("applied3");
 
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
     try {
+      t.begin();
       applicant.insert();
 
       application.setApplicantId(applicant.getID());
@@ -704,12 +737,22 @@ public class CampusApplicationForm extends ApplicationForm {
         applied3.setApplicationId(campusApplication.getID());
         applied3.insert();
       }
-    }
-    catch(SQLException e) {
-      System.err.println(e.toString());
-      return(false);
-    }
-    finally {
+
+      ReferenceNumberHandler h = new ReferenceNumberHandler();
+      String key = h.getCypherKey(modinfo);
+      CypherText ct = new CypherText();
+
+      String id = Integer.toString(application.getID());
+      while (id.length() < 6)
+        id = "0" + id;
+
+      String cypher = ct.doCyper(id,key);
+
+      String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
+
+      SendMail.send("jolasveinn@idega.is","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
+
+      t.commit();
       modinfo.removeSessionAttribute("applicant");
       modinfo.removeSessionAttribute("application");
       modinfo.removeSessionAttribute("campusapplication");
@@ -718,7 +761,21 @@ public class CampusApplicationForm extends ApplicationForm {
       modinfo.removeSessionAttribute("applied3");
       modinfo.removeSessionAttribute("aprtCat");
     }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
+      }
+      e.printStackTrace();
+      return(false);
+    }
 
     return(true);
+  }
+
+  public String getBundleIdentifier() {
+    return("is.idegaweb.campus");
   }
 }
