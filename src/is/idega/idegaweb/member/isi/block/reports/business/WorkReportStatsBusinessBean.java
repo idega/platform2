@@ -3948,20 +3948,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 */
 	public ReportableCollection getAgeStatisticsMemberTypeGenderRegionalUnionsFilterAndAge (
 			Integer year,
-			String strShowPlayers,
-			String strShowMembers,
 			String gender,
 			Collection regionalUnionsFilter,
 			Integer ageFrom,
-			Integer ageTo, 
+			Integer ageTo,
 			String strShowClubs) throws RemoteException {
 
 		boolean showClubs = strShowClubs!=null && strShowClubs.equals(YesNoDropDownMenu.YES);
-		boolean showPlayers = strShowPlayers!=null && strShowPlayers.equals(YesNoDropDownMenu.YES);
-		boolean showMembers = strShowMembers!=null && strShowMembers.equals(YesNoDropDownMenu.YES);
-		if(!showPlayers && !showMembers) {
-			showPlayers = showMembers = true;
-		}
 		
 		int age1 = ageFrom==null?0:ageFrom.intValue();
 		int age2 = ageTo==null?123:ageTo.intValue();
@@ -3970,9 +3963,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 		
 		boolean filterByAge = (age1==0 && age2==123);
-		
-		System.out.println("showClubs=" + showClubs + ", showPlayers=" + showPlayers + ", showMembers=" + showMembers + ", gender=" + gender + ", age1=" + age1 + ", age2=" + age2 + ", filterByAge=" + filterByAge);
-		
+	
 		//initialize stuff
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
@@ -3992,19 +3983,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField regionalUnionName = new ReportableField(FIELD_NAME_REGIONAL_UNION_NAME, String.class);
 		regionalUnionName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionName);
+		
+		ReportableField orderField = new ReportableField("only_used_for_ordering", String.class);
+		orderField.setLocalizedName("only_used_for_ordering", currentLocale);
+		reportCollection.addField(orderField);
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
-		ReportableField countType = new ReportableField("Count type", String.class);
-		countType.setLocalizedName(_iwrb.getLocalizedString("Count type", "Count type"), currentLocale);
-		reportCollection.addField(countType);
+		ReportableField memberCount = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(memberCount);
 
-		ReportableField count = new ReportableField(FIELD_NAME_COUNT, String.class);
-		count.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNT, "Count"), currentLocale);
-		reportCollection.addField(count);
-
+		ReportableField playerCount = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(playerCount);
 		
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map regionalUnionsStatsMap = new TreeMap();
@@ -4017,111 +4011,68 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//String cName = report.getGroupName();
 			String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
 			String cName = report.getGroupName();
-			
-			System.out.println("Handling " + regionalUnionIdentifier + "-" + cName);
 
 			//fetch the stats or initialize for this regional union (i.e. the one associated with regionalUnionIdentifier)
 			//Map clubMap = (Map) regionalUnionsClubMap.get(regionalUnionIdentifier);
-			ReportableData ruPlayers = (ReportableData) regionalUnionsStatsMap.get("a - players" + regionalUnionIdentifier);
-			ReportableData ruMembers = (ReportableData) regionalUnionsStatsMap.get("a - members" + regionalUnionIdentifier);
-			if(ruPlayers == null && showPlayers) {
-				ruPlayers = new ReportableData();
-				regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - players", ruPlayers);
-				ruPlayers.addData(regionalUnionName, regionalUnionIdentifier);
-				ruPlayers.addData(clubName, "");
-				ruPlayers.addData(countType, "a - players");
-				ruPlayers.addData(count, new Integer(0));
-				System.out.println("Addin player count for ru " + regionalUnionIdentifier);
-				reportCollection.add(ruPlayers);
+			ReportableData regData = (ReportableData) regionalUnionsStatsMap.get(regionalUnionIdentifier);
+			if(regData == null) {
+				regData = new ReportableData();
+				regionalUnionsStatsMap.put(regionalUnionIdentifier, regData);
+				regData.addData(regionalUnionName, regionalUnionIdentifier);
+				regData.addData(orderField, "a");
+				regData.addData(clubName, "");
+				regData.addData(memberCount, new Integer(0));
+				regData.addData(playerCount, new Integer(0));
+				reportCollection.add(regData);
 			}
-			if(ruMembers==null && showMembers) {
-				ruMembers = new ReportableData();
-				regionalUnionsStatsMap.put("a - " + regionalUnionIdentifier + " - members", ruMembers);
-				ruMembers.addData(regionalUnionName, regionalUnionIdentifier);
-				ruMembers.addData(clubName, "");
-				ruMembers.addData(countType, "a - members");
-				ruMembers.addData(count, new Integer(0));
-				System.out.println("Addin member count for ru " + regionalUnionIdentifier);
-				reportCollection.add(ruMembers);
+
+			int members;
+			int players;
+			if(filterByAge) {
+				if(gender==null) {
+					members = getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					players = getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+				} else if(gender.equals("m")) {
+					members = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					players = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+				} else {
+					members = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+					players = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+					          getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+				}
+			} else {
+				System.out.println("all ages");
+				if (gender==null) {
+					members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
+					players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+				} else if(gender.equals("m")) {
+					members = getWorkReportBusiness().getCountOfMaleMembersByWorkReport(report);
+					players = getWorkReportBusiness().getCountOfMalePlayersByWorkReport(report);
+				} else {
+					members = getWorkReportBusiness().getCountOfFemaleMembersByWorkReport(report);
+					players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
+				}
 			}
+			regData = addToIntegerCount(memberCount, regData, members);
+			regData = addToIntegerCount(playerCount, regData, players);
 			
-			if(showMembers) {
-				int members;
-				if(filterByAge) {
-					System.out.println("between ages " + age1 + " and " + age2);
-					if(gender==null) {
-						members = getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						          getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-						System.out.println("bothgenders");
-					} else if(gender.equals("m")) {
-						members = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						          getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-						System.out.println("males");
-					} else {
-						members = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						          getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-						System.out.println("females");
-					}
-				} else {
-					System.out.println("all ages");
-					if (gender==null) {
-						members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
-						System.out.println("both genders");
-					} else if(gender.equals("m")) {
-						members = getWorkReportBusiness().getCountOfMaleMembersByWorkReport(report);
-						System.out.println("males");
-					} else {
-						members = getWorkReportBusiness().getCountOfFemaleMembersByWorkReport(report);
-						System.out.println("females");
-					}
-				}
-				System.out.println("members is " + members);
-				ruMembers = addToIntegerCount(count, ruMembers, members);
-				if(showClubs) {
-					ReportableData rdClubMembers = new ReportableData();
-					rdClubMembers.addData(regionalUnionName, regionalUnionIdentifier);
-					rdClubMembers.addData(clubName, cName);
-					rdClubMembers.addData(countType, "b - members");
-					rdClubMembers.addData(count, new Integer(members));
-					reportCollection.add(rdClubMembers);
-				}
-			}
-			if(showPlayers) {
-				int players;
-				if(filterByAge) {
-					if(gender==null) {
-						players = getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-					} else if(gender.equals("m")) {
-						players = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-					} else {
-						players = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
-					}
-				} else {
-					if (gender==null) {
-						players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
-					} else if(gender.equals("m")) {
-						players = getWorkReportBusiness().getCountOfMalePlayersByWorkReport(report);
-					} else {
-						players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
-					}
-				}
-				System.out.println("players is " + players);
-				ruPlayers = addToIntegerCount(count, ruPlayers, players);
-				if(showClubs) {
-					ReportableData rdClubPlayers = new ReportableData();
-					rdClubPlayers.addData(regionalUnionName, regionalUnionIdentifier);
-					rdClubPlayers.addData(clubName, cName);
-					rdClubPlayers.addData(countType, "b - players");
-					rdClubPlayers.addData(count, new Integer(players));
-					reportCollection.add(rdClubPlayers);
-				}
+			if(showClubs) {
+				ReportableData rdClub = new ReportableData();
+				rdClub.addData(regionalUnionName, regionalUnionIdentifier);
+				regData.addData(orderField, "b");
+				rdClub.addData(clubName, cName);
+				rdClub.addData(memberCount, new Integer(members));
+				rdClub.addData(playerCount, new Integer(players));
+				reportCollection.add(rdClub);
 			}
 		}
 
-		ReportableField[] sortFields = new ReportableField[] {regionalUnionName, clubName, countType};
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionName, orderField, clubName};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
@@ -4176,9 +4127,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 
-		ReportableField count = new ReportableField(FIELD_NAME_COUNT, String.class);
-		count.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_COUNT, "Count"), currentLocale);
-		reportCollection.addField(count);
+		ReportableField memberCount = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(memberCount);
+
+		ReportableField playerCount = new ReportableField(FIELD_NAME_ALL_AGES, Integer.class);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(playerCount);
 
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), null);
 		Map leagueStatsMap = new TreeMap();
@@ -4216,38 +4171,49 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					leagueStatsMap.put(leagueKey, leagueStatsData);
 					leagueStatsData.addData(leagueString, leagueIdentifier);
 					leagueStatsData.addData(clubName, "");
-					leagueStatsData.addData(count, new Integer(0));
+					leagueStatsData.addData(memberCount, new Integer(0));
+					leagueStatsData.addData(playerCount, new Integer(0));
 					reportCollection.add(leagueStatsData);
 				}
 				
+				int members;
 				int players;
 				if(filterByAge) {
 					if(gender==null) {
+						members = getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 						players = getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						          getWorkReportBusiness().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 					} else if(gender.equals("m")) {
+						members = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 						players = getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						          getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 					} else {
+						members = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
+						          getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 						players = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age1, report) -
-						getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
+						          getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(age2 + 1, report);
 					}
 				} else {
 					if (gender==null) {
+						members = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 						players = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 					} else if(gender.equals("m")) {
+						members = getWorkReportBusiness().getCountOfMaleMembersByWorkReport(report);
 						players = getWorkReportBusiness().getCountOfMalePlayersByWorkReport(report);
 					} else {
+						members = getWorkReportBusiness().getCountOfFemaleMembersByWorkReport(report);
 						players = getWorkReportBusiness().getCountOfFemalePlayersByWorkReport(report);
 					}
 				}
-				System.out.println("players is " + players);
-				leagueStatsData = addToIntegerCount(count, leagueStatsData, players);
+				leagueStatsData = addToIntegerCount(memberCount, leagueStatsData, members);
+				leagueStatsData = addToIntegerCount(playerCount, leagueStatsData, players);
 				if(showClubs) {
 					ReportableData rdClubPlayers = new ReportableData();
 					rdClubPlayers.addData(leagueString, leagueIdentifier);
 					rdClubPlayers.addData(clubName, cName);
-					rdClubPlayers.addData(count, new Integer(players));
+					rdClubPlayers.addData(playerCount, new Integer(players));
 					reportCollection.add(rdClubPlayers);
 				}
 			}
@@ -4415,7 +4381,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			while (iterator.hasNext()) {
 				WorkReportGroup league = (WorkReportGroup) iterator.next();
 				Integer leagueKey = (Integer) league.getGroupId();//for comparison this must be the same key both years
-				
 				if (!leagueGroupIdList.contains(league.getGroupId())) {
 					continue; //don't process this one, go to next
 				}
