@@ -22,7 +22,7 @@ public class InnerJoinExpression implements Expression {
   public InnerJoinExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
     String entity = queryEntityPart.getBeanClassName();
     String path = queryEntityPart.getPath();
-    alias = sqlQuery.getUniqueNameForEntity(entity, path);
+    alias = sqlQuery.getUniqueNameForEntity(path);
 		tableName = sqlQuery.getTableName(entity);
   }
   

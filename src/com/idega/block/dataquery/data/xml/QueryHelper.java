@@ -7,13 +7,22 @@
 package com.idega.block.dataquery.data.xml;
 
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
+import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
+import com.idega.block.dataquery.data.QuerySequence;
+import com.idega.block.dataquery.data.UserQuery;
+import com.idega.business.IBOLookup;
 import com.idega.data.GenericEntity;
+import com.idega.presentation.IWContext;
 import com.idega.util.datastructures.HashMatrix;
+import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -31,7 +40,13 @@ import com.idega.xml.XMLParser;
 
 public class QueryHelper {
 
+	// important note: 
+	// if this query helper hasn't a next query, path and name are equal!
+	// comment-label: "prequerypath"
+	// search for "prequerypath"
 	private String name = null;
+	private String path = null;
+	
 	private XMLDocument doc = null;
 	private XMLElement root = null;
 	private QuerySQLPart sqlPart = null;
@@ -47,7 +62,7 @@ public class QueryHelper {
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false;
 	private boolean fieldsLock = false;
-	private String id;
+	private UserQuery userQuery = null;
 	
 	// the matrix below is only used during the query builder process as a temporary value holder
 	// example: 
@@ -56,44 +71,73 @@ public class QueryHelper {
 	// but when the query is saved the handler is stored in the query.
 	private HashMatrix entityFieldHandler = new HashMatrix();
 	
-	private QueryHelper previousQuery;
+	private List previousQueries = new ArrayList(1);
 	private QueryHelper nextQuery;
 	
 	public QueryHelper()	{
 	}
 
-	public QueryHelper(Query query) throws XMLException, Exception {
-		this(query.getFileValue());
-		this.id = query.getPrimaryKey().toString();
+	// used by report generator
+	public QueryHelper(Query query, IWContext iwc) throws XMLException, Exception {
+		this(query.getFileValue(), iwc);
 	}
 
-	public QueryHelper(InputStream stream) throws XMLException, Exception {
-		this(new XMLParser().parse(stream));
+	// used by report generator
+	public QueryHelper(InputStream stream, IWContext iwc) throws XMLException, Exception {
+		doc = new XMLParser().parse(stream);
+		this.userQuery = null;
+		init(doc.getRootElement(), iwc);
 	}
 
-	public QueryHelper(XMLDocument document) {
-		doc = document;
-		init(doc.getRootElement());
+	public QueryHelper(XMLData data,  IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
+		this(data, null, iwc);
 	}
 	
-	public QueryHelper(XMLElement root)	{
-		init(root);
+	public QueryHelper(XMLData data, UserQuery userQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException  {
+		doc = data.getDocument();
+		this.userQuery = userQuery;
+		init(doc.getRootElement(), iwc);
 	}
 	
-	public QueryHelper(XMLElement root, QueryHelper nextQuery)	{
+	public QueryHelper(XMLElement root, QueryHelper nextQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException	{
 		this.nextQuery = nextQuery;
-		init(root);
+		init(root, iwc);
 	}
-		
-
-	private void init(XMLElement root) {
+	
+	private void init(XMLElement root, IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
 		this.root = root; 
 		if (root != null) {
 			name = root.getAttribute(QueryXMLConstants.NAME).getValue();
+			// the query itself doesn't know the path - set the path equal to name
+			// see comment below
+			// comment-label: "prequerypath"
+			// search for "prequerypath"
+			path = name;
 			// check for an existing next query
-			XMLElement previousQueryElement = root.getChild(QueryXMLConstants.ROOT);
-			if (previousQueryElement != null)	{
-				previousQuery = new QueryHelper(previousQueryElement, this);
+			List copiedPreQueries = root.getChildren(QueryXMLConstants.ROOT);
+			Iterator copiedPreQueriesIterator = copiedPreQueries.iterator();
+			while (copiedPreQueriesIterator.hasNext()) {
+				XMLElement previousQueryElement = (XMLElement) copiedPreQueriesIterator.next();
+				QueryHelper previousQuery = new QueryHelper(previousQueryElement, this, iwc);
+				previousQueries.add(previousQuery);
+			}
+			XMLElement previousQueryElements = root.getChild(QueryXMLConstants.SOURCE_QUERY);
+			if (previousQueryElements != null)	{
+				List preQueries =  previousQueryElements.getChildren(QueryXMLConstants.ENTITY);
+				Iterator iterator = preQueries.iterator();
+				while (iterator.hasNext()) {
+					XMLElement queryXMLElement = (XMLElement) iterator.next();
+					String preQueryName = queryXMLElement.getText(QueryXMLConstants.NAME);
+					String preQueryPath = queryXMLElement.getText(QueryXMLConstants.PATH);
+					QueryService queryService = getQueryService(iwc);
+					QueryHelper previousQuery = queryService.getQueryHelperByNameAndPathToQuerySequence(preQueryName, preQueryPath, iwc);		
+					previousQuery.setNextQuery(this);
+					previousQueries.add(previousQuery);
+					// set the path of the prequery
+					// comment-label: "prequerypath"
+					// search for "prequerypath"
+					previousQuery.setPath(preQueryPath);
+				}
 			}
 			XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
 			isTemplate = (template != null && Boolean.getBoolean(template.getValue()));
@@ -184,12 +228,12 @@ public class QueryHelper {
 		return new XMLElement(QueryXMLConstants.SOURCE_ENTITY);
 	}
 
-	private XMLElement getRelatedElement() {
-		return new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
-	}
-	private XMLElement getFieldsElement() {
-		return new XMLElement(QueryXMLConstants.FIELDS);
-	}
+//	private XMLElement getRelatedElement() {
+//		return new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
+//	}
+//	private XMLElement getFieldsElement() {
+//		return new XMLElement(QueryXMLConstants.FIELDS);
+//	}
 
 	public XMLDocument createDocument() {
 		//if (doc == null)  {
@@ -210,9 +254,14 @@ public class QueryHelper {
 		
 	private void initializeRootElement() {
 		if (hasPreviousQuery())	{
-			XMLElement previousQueryRootElement = previousQuery().getUpdatedRootElement();
-			previousQueryRootElement = previousQueryRootElement.detach();
-			root.addContent(previousQueryRootElement);
+			XMLElement preQuery = new XMLElement(QueryXMLConstants.SOURCE_QUERY);
+			Iterator iterator = previousQueries.iterator();
+			while (iterator.hasNext()) {
+				QueryHelper previousQuery = (QueryHelper) iterator.next();
+				XMLElement preQueryElement = getPreQueryElement(previousQuery);
+				preQuery.addContent(preQueryElement);
+			}
+			root.addContent(preQuery);
 		}
 		if (isTemplate()) {
 			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
@@ -464,25 +513,36 @@ public class QueryHelper {
 		QueryEntityPart oldPart = sourceEntity;
 		sourceEntity = part;
 		if (oldPart != null && !part.encode().equals(oldPart.encode())) {
-			clearRelatedEntities();
-			clearFields();
-			clearConditions();
+//			clearRelatedEntities();
+//			clearFields();
+//			clearConditions();
 		}
 		checkStep();
 	}
 
-	/**
-	 * Sets the source entity part of the query
-	 * @param the entity class
-	 */
-	public void setSourceEntity(Class entityClass) {
-		QueryEntityPart entityPart = getQueryEntityPart(entityClass);
-		if (entityPart != null) {
-			setSourceEntity(entityPart);
+	public void addQuery(QueryHelper queryHelper)	{
+		UserQuery newUserQuery = queryHelper.getUserQuery();
+		String newUserQueryPrimaryKey = newUserQuery.getPrimaryKey().toString();
+		Iterator iterator = previousQueries.iterator();
+		while (iterator.hasNext()) {
+			QueryHelper tempQueryHelper = (QueryHelper) iterator.next();
+			UserQuery tempUserQuery = tempQueryHelper.getUserQuery();
+			String primaryKey = tempUserQuery.getPrimaryKey().toString();
+			if (newUserQueryPrimaryKey.equals(primaryKey)) {
+				// nothing to do
+				return;
+			}
 		}
+		// comment-label: "prequerypath"
+		String path = queryHelper.getPathToMyQuerySequence();
+		queryHelper.setPath(path);
+		previousQueries.add(queryHelper);
+//		clearFields();
+//		clearOrderConditions();
+//		clearConditions();
 	}
-
-	private QueryEntityPart getQueryEntityPart(Class entityClass) {
+	
+		private QueryEntityPart getQueryEntityPart(Class entityClass) {
 		GenericEntity entity = getEntity(entityClass);
 		if (entity != null)
 			return new QueryEntityPart(entity.getEntityName(), entityClass.getName());
@@ -546,25 +606,6 @@ public class QueryHelper {
 		}
 		return orderConditions;
 	}
-		
-		
-	
-	
-	public void addQuery(QueryHelper queryHelper)	{
-		if (previousQuery !=null)	{
-			String previousId = previousQuery.getId();
-			String newId = queryHelper.getId();
-			if ( previousId != null && previousId.equals(newId)) {
-				//do nothing
-				return;
-			}
-		}
-		this.previousQuery = queryHelper;
-		clearFields();
-		clearOrderConditions();
-		clearConditions();
-	}
-
 	
 	public void setBooleanExpressionForConditions(QueryBooleanExpressionPart booleanExpression)	{
 		this.booleanExpression = booleanExpression;
@@ -786,11 +827,11 @@ public class QueryHelper {
 	}
 	
 	public boolean hasPreviousQuery()	{
-		return previousQuery() != null;
+		return ! previousQueries.isEmpty();
 	}
 	
-	public QueryHelper previousQuery()	{
-		return previousQuery;
+	public List previousQueries()	{
+		return previousQueries;
 	}
 
 	public QueryHelper nextQuery()	{
@@ -805,10 +846,6 @@ public class QueryHelper {
 		return (String) entityFieldHandler.get(entityPath, field);
 	}
 	
-	public String getId() {
-		return id;
-	}
-
 	public boolean isSelectDistinct() {
 		return selectDistinct;
 	}
@@ -832,6 +869,79 @@ public class QueryHelper {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/**
+	 * @return Returns the userQuery.
+	 */
+	public UserQuery getUserQuery() {
+		return userQuery;
+	}
+
+	/**
+	 * @param userQuery The userQuery to set.
+	 */
+	public void setUserQuery(UserQuery userQuery) {
+		this.userQuery = userQuery;
+	}
+
+	public QueryService getQueryService(IWContext iwc) throws RemoteException {
+		return (QueryService) IBOLookup.getServiceInstance( iwc, QueryService.class);
+	}
+	
+	public XMLElement getPreQueryElement(QueryHelper preQuery) {
+		XMLElement el = new XMLElement(QueryXMLConstants.ENTITY);
+		XMLElement xmlName = new XMLElement(QueryXMLConstants.NAME);
+		QuerySequence previousQuerySequence = preQuery.getUserQuery().getRoot();
+		String preQueryName = previousQuerySequence.getName();
+		String className = QuerySequence.class.getName();
+		String preQueryPath = getPathToQuerySequence(previousQuerySequence);
+		xmlName.addContent(preQueryName);
+		XMLElement xmlClass = new XMLElement(QueryXMLConstants.BEANCLASS);
+		xmlClass.addContent(className);
+		XMLElement xmlPath = new XMLElement(QueryXMLConstants.PATH);
+		xmlPath.addContent(preQueryPath);
+		el.addContent(xmlName);
+		el.addContent(xmlClass);
+		el.addContent(xmlPath);
+		return el;
+	}
+	/**
+	 * @param nextQuery The nextQuery to set.
+	 */
+	public void setNextQuery(QueryHelper nextQuery) {
+		this.nextQuery = nextQuery;
+	}
+
+	/**
+	 * @return Returns the path.
+	 */
+	public String getPath() {
+		return path;
+	}
+
+	/**
+	 * @param path The path to set.
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPathToMyQuerySequence() {
+		return getPathToQuerySequence(getUserQuery().getRoot());
+	}
+		
+	private String getPathToQuerySequence(QuerySequence previousQuerySequence) {	
+		String preQueryId = previousQuerySequence.getPrimaryKey().toString();
+		String idColumnName = previousQuerySequence.getIDColumnName();
+		String className = QuerySequence.class.getName();
+		StringBuffer buffer = new StringBuffer(className);
+		buffer.append('.');
+		buffer.append(idColumnName);
+		buffer.append('(');
+		buffer.append(preQueryId);
+		buffer.append(')');
+		return buffer.toString();
 	}
 
 }

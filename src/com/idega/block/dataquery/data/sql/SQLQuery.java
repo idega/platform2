@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
@@ -41,6 +40,7 @@ public class SQLQuery implements DynamicExpression {
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
   
+  private String path;
   private String name;
   
   private String uniqueIdentifier;
@@ -94,40 +94,71 @@ public class SQLQuery implements DynamicExpression {
    */ 
   static public  SQLQuery getInstance(QueryHelper queryHelper, String uniqueIdentifier)	{
   	// go back to the very first query helper
-  	QueryHelper currentQueryHelper = queryHelper;
-  	while (currentQueryHelper.hasPreviousQuery())	{
-  		currentQueryHelper = currentQueryHelper.previousQuery();
+//  	QueryHelper currentQueryHelper = queryHelper;
+//  	while (currentQueryHelper.hasPreviousQuery())	{
+//  		currentQueryHelper = currentQueryHelper.previousQuery();
+//  	}
+  	List queries = new ArrayList();
+  	collectAllChildren(queries, queryHelper);
+  	SQLQuery currentQuery = null;
+  	int tempCounter = 0;
+  	Map queryTableNames = new HashMap();
+  	Map entityQueryEntityMap = new HashMap();
+  	for (int i  = queries.size()-1 ; i >= 0; i--) {
+  		QueryHelper currentQueryHelper = (QueryHelper) queries.get(i);
+  		currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, tempCounter, queryTableNames, entityQueryEntityMap, currentQuery);
+  		// primitves aren't objects, therefore set counter to the right number
+  		tempCounter = currentQuery.counter;
   	}
-  	SQLQuery currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, 0, new TreeMap(), new HashMap(), null);
-  	// go forward to the very first query
-  	while(currentQuery.hasNextQuery())	{
-  		currentQuery = currentQuery.nextQuery();
-  	}
+//  	// go forward to the very first query
+//  	while(currentQuery.hasNextQuery())	{
+//  		currentQuery = currentQuery.nextQuery();
+//  	}
   	return currentQuery;
   }
 		
-  	
+  static private void collectAllChildren(List result, QueryHelper queryHelper) {
+  	result.add(queryHelper);
+  	List children = queryHelper.previousQueries();
+  	Iterator iterator = children.iterator();
+  	while (iterator.hasNext()) {
+  		QueryHelper child = (QueryHelper) iterator.next();
+  		collectAllChildren(result, child);
+  	}
+  }
+  		
   
 	private SQLQuery(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery)	{
   	initialize(queryHelper, uniqueIdentifier, counter, queryTablesNames,  entityQueryEntityMap, previousQuery);
   }
   
   protected void initialize(QueryHelper queryHelper, String uniqueIdentifier, int counter, Map queryTablesNames, Map entityQueryEntityMap, SQLQuery previousQuery) {
+  	if (previousQuery != null) {
+  		previousQuery.nextQuery = this;
+  	}
   	this.previousQuery = previousQuery;
   	this.counter = counter;
   	this.uniqueIdentifier = uniqueIdentifier;
   	name = queryHelper.getName();
+  	path = queryHelper.getPath();
   	queryDescription = queryHelper.getDescription();
-  	// add all already existing table names
-  	beanClassNameTableNameMap.putAll(queryTablesNames);
-  	entityQueryEntity.putAll(entityQueryEntityMap);
-  	// create table name for this instance (unique identifier is user id) 
+  	
+  	// table names.... 
+  	 // create table name for this instance (unique identifier is user id) 
   	String myTableName = new StringBuffer("Q_").append(uniqueIdentifier).
   	append("_").append(++counter).toString();
-  	// add the table name for this instance to the map
-  	beanClassNameTableNameMap.put(name, myTableName);
-  	QueryEntityPart queryEntity = new QueryEntityPart(name, name, name);
-  	entityQueryEntityMap.put(name, queryEntity);
+  	 // add the table name for this instance to the map
+  	 queryTablesNames.put(path, myTableName);
+  	// add the new one AND all already existing table names
+  	beanClassNameTableNameMap.putAll(queryTablesNames);
+  	
+  	// query entities...
+  	QueryEntityPart queryEntity = new QueryEntityPart(path, path, path);
+  	// add the queryEntity to the map
+  	entityQueryEntityMap.put(path, queryEntity);
+  	// add th enew one AND all already existing query entities
+  	entityQueryEntity.putAll(entityQueryEntityMap);
+
   	try {
       query = createQuery(queryHelper);
     }
@@ -135,13 +166,13 @@ public class SQLQuery implements DynamicExpression {
       query = null;
       System.err.println(ex.getMessage());
     }
-    // go to the next query
-    if (queryHelper.hasNextQuery())	{
-    	QueryHelper nextQueryHelper = queryHelper.nextQuery();
-    	SQLQuery sqlQuery = new SQLQuery(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
-    	// get the generated dynamic expression
-    	nextQuery = sqlQuery;
-    }	
+//    // go to the next query
+//    if (queryHelper.hasNextQuery())	{
+//    	QueryHelper nextQueryHelper = queryHelper.nextQuery();
+//    	SQLQuery sqlQuery = new SQLQuery(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
+//    	// get the generated dynamic expression
+//    	nextQuery = sqlQuery;
+//    }	
   }
   
   public boolean hasPreviousQuery()	{
@@ -215,8 +246,8 @@ public class SQLQuery implements DynamicExpression {
     return displayNames;
   }
 
-	public String getName()	{
-		return name;
+	public String getPath()	{
+		return path;
 	}
 
   private void setSourceEntity(QueryHelper queryHelper) {
@@ -418,10 +449,9 @@ public class SQLQuery implements DynamicExpression {
 	}
 	
 	public String getMyTableName()	{
-		return (String) beanClassNameTableNameMap.get(name);
+		return (String) beanClassNameTableNameMap.get(path);
 	}
-		
- 
+	
   protected String getTableName(String beanClassName) {
     // performance improvement
     String tableName = (String) beanClassNameTableNameMap.get(beanClassName);
@@ -438,9 +468,9 @@ public class SQLQuery implements DynamicExpression {
   	if (queryFieldPart == null) 	{
   		return result;
   	}
-		String entityName = queryFieldPart.getEntity();
+
 		String entityPath = queryFieldPart.getPath();
-		String uniqueName = getUniqueNameForEntity(entityName, entityPath);
+		String uniqueName = getUniqueNameForEntity(entityPath);
 		String[] columns = queryFieldPart.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			String columnName = columns[i];
@@ -480,8 +510,8 @@ public class SQLQuery implements DynamicExpression {
   }
 
 
-	protected String getUniqueNameForEntity(String entity, String entityPath)	{
-		String tableName = getTableName(entity);
+	protected String getUniqueNameForEntity(String entityPath)	{
+		String tableName = getTableName(entityPath);
 		return getUniqueNameForEntityByTableName(tableName, entityPath);
 	}		
 	
@@ -535,6 +565,13 @@ public class SQLQuery implements DynamicExpression {
 	 */
 	public String getQueryDescription() {
 		return queryDescription;
+	}
+
+	/**
+	 * @return Returns the name.
+	 */
+	public String getName() {
+		return name;
 	}
 
 }
