@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.21 2003/09/17 16:18:01 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.22 2003/09/18 15:26:25 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,6 +30,10 @@ import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 
 /**
+ * Business logic for creating assembling, and disassembling the posting strings, and for setting up 
+ * the rules and structures of the posting strings (C&P req. spec. konteringsstrangar och 
+ * konteringsfalt).
+ * 
  * @author Joakim
  * @author Kjell Lindman
  * 
@@ -52,6 +56,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @param date for valid time of posting rules
 	 * @return the merged posting strings
 	 * @throws RemoteException
+	 * @author Joakim
 	 */
 	public String generateString(String first, String second, Date date) throws RemoteException, PostingException {
 		StringBuffer ret = new StringBuffer();		//used to build together returnstring
@@ -102,6 +107,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @param date
 	 * @throws MissingMandatoryFieldException
 	 * @throws PostingException
+	 * 
+	 * @author Joakim
 	 */
 	public void validateString(String postingString, Date date) throws MissingMandatoryFieldException, PostingException{
 		int fieldLength, readPointer = 0;
@@ -111,11 +118,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			PostingString posting = ksHome.findPostingStringByDate(date);
 			Collection list = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
 			Iterator iter = list.iterator();
+			//Go through all fields
 			while (iter.hasNext()) 
 			{
 				PostingField field = (PostingField)iter.next();
 				fieldLength = field.getLen();
 				if(field.getIsMandatory()){
+					//Check if mandatory field is empty
 					if (trim(postingString.substring(readPointer,readPointer+fieldLength),field).length()==0)
 					{
 						throw new MissingMandatoryFieldException(field.getFieldTitle());
