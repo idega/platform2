@@ -191,7 +191,7 @@ public class GolfLogin extends GolfBlock {
 			myTable.setCellpaddingRight(3, 1, 5);
 	
 			Member member = (Member) modinfo.getSession().getAttribute("member_login");
-			Text userName = getSmallHeader(member.getName());
+			Text userName = getStyleText(member.getName(), this.STYLENAME_TEMPLATE_HEADER2);
 			myTable.add(userName, 1, 1);
 			myTable.setNoWrap(1, 1);
 	
