@@ -206,18 +206,24 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   public void setAsChildFor(User personToSet,User parent)throws CreateException,RemoteException{
-    personToSet.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-    parent.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
+    if(!this.isChildOf(personToSet,parent)){
+      personToSet.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
+      parent.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
+    }
   }
 
   public void setAsParentFor(User parent,User child)throws CreateException,RemoteException{
-    child.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-    parent.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
+    if(!this.isParentOf(parent,child)){
+      child.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
+      parent.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
+    }
   }
 
   public void setAsSpouseFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
-    personToSet.addRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
-    relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+    if(!this.isSpouseOf(personToSet,relatedPerson)){
+      personToSet.addRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
+      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+    }
   }
 
   public void removeAsChildFor(User personToSet,User parent)throws RemoveException,RemoteException{
