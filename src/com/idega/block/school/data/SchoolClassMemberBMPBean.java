@@ -54,8 +54,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/04/06 09:27:52 $ by $Author: laddi $
- * @version $Revision: 1.132 $
+ *         Last modified: $Date: 2005/04/06 11:11:39 $ by $Author: laddi $
+ * @version $Revision: 1.133 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1668,7 +1668,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		}
 		
 		if (school != null) {
-			query.addCriteria(new MatchCriteria(schoolClass, "sch_school_id", MatchCriteria.EQUALS, school));
+			query.addCriteria(new MatchCriteria(schoolClass, "school_id", MatchCriteria.EQUALS, school));
 		}
 		if (season != null) {
 			query.addCriteria(new MatchCriteria(schoolClass, "sch_school_season_id", MatchCriteria.EQUALS, season));
