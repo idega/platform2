@@ -10,6 +10,7 @@ import java.io.IOException;
  * Company:
  * @author Hafthor Hilmarsson
  * @version 1.0
+ *
  */
 
 public class Anchor extends Link {
