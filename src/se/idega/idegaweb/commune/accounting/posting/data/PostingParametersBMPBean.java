@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.7 2003/08/27 14:03:46 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.8 2003/08/27 22:47:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.7 2003/08/27 14:03:46 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.8 2003/08/27 22:47:57 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -227,6 +227,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
 		sql.appendAnd().append(COLUMN_PERIODE_TO);
 		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -237,6 +238,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendLessThanOrEqualsSign().append("'"+date+"'");
 		sql.appendAnd().append(COLUMN_PERIODE_TO);
 		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -244,6 +246,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public Collection ejbFindAllPostingParameters() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
+		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
 		return idoFindPKsBySQL(sql.toString());
 	}
 

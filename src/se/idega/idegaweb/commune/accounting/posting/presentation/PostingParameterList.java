@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.11 2003/08/27 22:45:57 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.12 2003/08/27 22:48:58 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -46,10 +46,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.11 2003/08/27 22:45:57 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.12 2003/08/27 22:48:58 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -142,7 +142,6 @@ public class PostingParameterList extends AccountingBlock {
 	 * on the POST parameters in the specified context.
 	 */
 	private int parseAction(IWContext iwc) {
-		System.out.println("---------------------------------------> DELETE"+iwc.getParameter(PARAM_DELETE_ID));
 		if (iwc.isParameterSet(PARAM_DELETE_ID)) {
 			return ACTION_DELETE;
 		}
