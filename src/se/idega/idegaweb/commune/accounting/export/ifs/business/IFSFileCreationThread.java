@@ -836,8 +836,8 @@ public class IFSFileCreationThread extends Thread {
 			int numberOfHeaders = 0;
 			int numberOf62Lines = 0;
 			int numberOf63Lines = 0;
-			float sum62Lines = 0;
-			float sum63Lines = 0;
+			long sum62Lines = 0;
+			long sum63Lines = 0;
 
 			Iterator ihIt = iHeaders.iterator();
 			while (ihIt.hasNext()) {
@@ -1036,12 +1036,12 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(empty.substring(0, 10));
 								//Tecken
 								boolean isNegative = false;
-								float am = iRec.getAmount();
+								long am = AccountingUtil.roundAmount(iRec.getAmount());
 								if (am < 0)
 									isNegative = true;
 
 								//Belopp
-								am = AccountingUtil.roundAmount(Math.abs(am * 100));
+								am = Math.abs(am * 100);
 								String amount = format.format(am);
 								if (isNegative)
 									amount = amount.substring(0, 14) + "å";
