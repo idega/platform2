@@ -1,4 +1,5 @@
 package com.idega.block.trade.stockroom.presentation;
+import java.util.Iterator;
 import java.util.List;
 import com.idega.block.category.data.ICCategory;
 import com.idega.presentation.IWContext;
@@ -15,8 +16,10 @@ import com.idega.presentation.text.Link;
  * @version 1.0
  */
 public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout {
+		
 	public ProductCatalogLayoutCategories() {
 	}
+	
 	public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
 		Table table = new Table();
 		table.setWidth("100%");
@@ -25,34 +28,62 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 		spacer.setWidth(5);
 		int row = 1;
 		int column = 1;
-		ICCategory pCat;
-		Link configCategory;
 		Image spaceBetween = (Image) spacer.clone();
 		spaceBetween.setHeight(productCatalog._spaceBetween);
-		for (int i = 0; i < productCategories.size(); i++) {
+		
+		int level = 1;
+		row = listCategories(productCatalog, productCategories.iterator(), table, spacer, row, column, spaceBetween, level);
+		return table;
+	}
+
+	/**
+	 * @param productCatalog
+	 * @param productCategories
+	 * @param table
+	 * @param spacer
+	 * @param row
+	 * @param column
+	 * @param spaceBetween
+	 */
+	private int listCategories(ProductCatalog productCatalog, Iterator productCategories, Table table, Image spacer, int row, int column, Image spaceBetween, int level) {
+		ICCategory pCat;
+		Link configCategory;
+		
+		while (productCategories != null && productCategories.hasNext()) {
+		//for (int i = 0; i < productCategories.size(); i++) {
 			try {
 				if (productCatalog._spaceBetween > 0) {
-					table.add(spaceBetween, 1, row++);
+					table.setCellpaddingBottom(1, row, productCatalog._spaceBetween);
+					table.setCellpaddingTop(1, row, productCatalog._spaceBetween);
 				}
-				pCat = (ICCategory) productCategories.get(i);
+				table.setCellpaddingLeft(1, row, productCatalog.getIndent(level));
+				pCat = (ICCategory) productCategories.next();//get(i);
 				if (productCatalog._iconImage != null) {
 					Image iconImage = (Image) productCatalog._iconImage.clone();
 					iconImage.setVerticalSpacing(productCatalog._iconSpacing);
 					table.add(iconImage, column++, row);
 					table.add(spacer, column++, row);
 				}
-				table.add(productCatalog.getCategoryLink(pCat, pCat.getName()), column++, row);
+				table.add(productCatalog.getCategoryLink(pCat, pCat.getName(), level), column++, row);
 				if (productCatalog._hasEditPermission) {
 					configCategory = productCatalog.getProductCategoryEditorLink(pCat);
 					table.add(configCategory, column, row);
 				}
+				String color = productCatalog.getColor(level);
+				if (color != null) {
+					table.setRowColor(row, color);
+				}
 				table.setRowVerticalAlignment(row++, Table.VERTICAL_ALIGN_TOP);
 				column = 1;
+
+				if (productCatalog.isCategoryExpanded(pCat)) {
+					row = listCategories(productCatalog, pCat.getChildren(), table, spacer, row, column, spaceBetween, (level +1));
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}
-		return table;
+		return row;
 	}
 }
