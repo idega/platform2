@@ -128,8 +128,6 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	holder.setMiddleValue(1);
       currencyMap.put(holder.getCurrencyName(),holder);
     }
-
-    System.out.println("Default currency: "+defaultCurrency);
   }
 
   public static CurrencyHolder getCurrencyHolder(String currencyName) {
@@ -207,9 +205,10 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     boolean execute = false;
 
     Iterator iter = currencyMap.keySet().iterator();
+    HashMap map = getValuesFromDB();
     while (iter.hasNext()) {
       CurrencyHolder holder = (CurrencyHolder) currencyMap.get((String)iter.next());
-      if ( holder != null ) {
+      if ( holder != null && !map.containsKey(holder.getCurrencyName()) ) {
 	currency = new Currency();
 	currency.setCurrencyAbbreviation(holder.getCurrencyName());
 	currency.setCurrencyName(holder.getCurrencyName());
@@ -221,7 +220,6 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     if ( execute ) {
       try {
 	bulk.execute();
-	System.out.println("Saving currency values to database...");
       }
       catch (Exception e) {
 	e.printStackTrace(System.err);
@@ -232,8 +230,12 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
   }
 
   public static void getValuesFromDatabase() {
-    if ( currencyMap == null )
-      currencyMap = new HashMap();
+    HashMap map = getValuesFromDB();
+    currencyMap = map;
+  }
+
+  public static HashMap getValuesFromDB() {
+    HashMap map = new HashMap();
 
     CurrencyHolder holder = null;
     Currency currency = null;
@@ -252,10 +254,12 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	  holder.setCurrencyName(currency.getCurrencyAbbreviation());
 	  holder.setMiddleValue(value.getMiddleValue());
 	  holder.setSellValue(value.getSellValue());
-	  currencyMap.put(holder.getCurrencyName(),holder);
+	  map.put(holder.getCurrencyName(),holder);
 	}
       }
     }
+
+    return map;
   }
 
   public static List getCurrencyList() {

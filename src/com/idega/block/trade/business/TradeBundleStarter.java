@@ -31,6 +31,7 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
     EventTimer timer = new EventTimer(EventTimer.THREAD_SLEEP_24_HOURS/2,IW_CURRENCY_TIMER);
     timer.addActionListener(this);
     timer.start();
+    System.out.println("Trade bundle starter: starting");
   }
 
   public void actionPerformed(ActionEvent event) {
