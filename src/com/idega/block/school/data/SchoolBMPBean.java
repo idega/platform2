@@ -2,6 +2,8 @@ package com.idega.block.school.data;
 
 import com.idega.data.*;
 import com.idega.user.data.Group;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
 
 
@@ -203,4 +205,20 @@ public class SchoolBMPBean extends GenericEntity implements School {
     return super.idoFindPKsBySQL(sql.toString());
 
   }
+  
+  public Collection ejbFindAllBySchoolGroup(Group schoolGroup) throws javax.ejb.FinderException,RemoteException{
+  	StringBuffer sql = new StringBuffer("Select s.* ");
+  	sql.append("  from sch_school s ");
+	sql.append(" where s.headmaster_group_id in ( ");
+	sql.append(" select r.ic_group_id from ic_group_relation r ");
+	sql.append(" where r.ic_group_id in(select headmaster_group_id from sch_school ) ");
+	sql.append(" and r.related_ic_group_id = ");
+	sql.append(schoolGroup.getPrimaryKey().toString() );
+	sql.append(" ) ");
+  	return super.idoFindPKsBySQL(sql.toString());
+  }
+  
+   public static void main(String[] args){
+   	System.out.println("hellu there");
+   }
 }
