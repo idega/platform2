@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCatalogLayoutHandler.java,v 1.3 2002/04/03 11:52:01 laddi Exp $
+ *  $Id: ProductCatalogLayoutHandler.java,v 1.4 2002/06/03 09:13:00 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,6 +45,7 @@ public class ProductCatalogLayoutHandler implements PropertyHandler {
   menu.addMenuElement( ProductCatalogLayoutProductList.class.getName(), "Product list" );
   menu.addMenuElement( ProductCatalogLayoutExpandedList.class.getName(), "Expanded list" );
   menu.addMenuElement( ProductCatalogLayoutMultibleColumns.class.getName(), "Column list" );
+  menu.addMenuElement( ProductCatalogLayoutCategories.class.getName(), "Category list" );
   menu.setSelectedElement( value );
   return ( menu );
  }
