@@ -48,6 +48,10 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		setColumn(COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId);
 	}
 	
+	public void setWorkReportGroup(WorkReportGroup group) {
+		setColumn(COLUMN_NAME_WORK_REPORT_GROUP,group);
+	}
+	
 	public int getWorkReportGroupId(){
 		return getIntColumnValue(COLUMN_NAME_WORK_REPORT_GROUP);
 	}
@@ -58,6 +62,10 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 
 	public void setReportId(int reportId) {
 		setColumn(COLUMN_NAME_REPORT_ID,reportId);
+	}
+	
+	public void setReport(WorkReport report) {
+		setColumn(COLUMN_NAME_REPORT_ID,report);
 	}
 	
 	public float getAmount() {
@@ -74,6 +82,10 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 
 	public void setAccountKeyId(int accountKeyId) {
 		setColumn(COLUMN_NAME_ACCOUNT_KEY_ID,accountKeyId);
+	}
+	
+	public void setAccountKey(WorkReportAccountKey key) {
+		setColumn(COLUMN_NAME_ACCOUNT_KEY_ID,key);
 	}
 	
 	public Collection ejbFindAllRecordsByWorkReportId(int reportId) throws FinderException{
