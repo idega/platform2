@@ -139,7 +139,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		}
 		
 		headlineField = entry.getName();
-		typeField = entry.getEntryTypeName();
+		typeField = iwrb.getLocalizedString("calendarEntry."+entry.getEntryTypeName(),entry.getEntryTypeName());
 		dayFromField = new IWTimestamp(entry.getDate()).getDateString("dd MMM yyyy - HH.mm");
 		dayToField = new IWTimestamp(entry.getEndDate()).getDateString("dd MMM yyyy - HH.mm");
 		
