@@ -620,6 +620,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
                     entry.setUser(info.getUser());
                     entry.setClub(info.getClub());
                     entry.setDivision(info.getDivision());
+                    entry.setGroup(info.getGroup());
                     entry.setAmount(info.getAmount());
                     entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
                     entry.setStatusCreated();
