@@ -9,7 +9,6 @@ import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.Block;
