@@ -1,7 +1,7 @@
 package com.idega.block.dataquery.data.sql;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
@@ -25,7 +25,7 @@ public class CriteriaExpression implements DynamicExpression {
 	
 	private String booleanExpression = null;
 	
-	private Map idCriterionMap = new HashMap();
+	private Map idCriterionMap = new LinkedHashMap(0);
 	
 	public CriteriaExpression(QueryBooleanExpressionPart booleanExpressionPart) {
 		booleanExpression = booleanExpressionPart.getBooleanExpression();
@@ -52,7 +52,7 @@ public class CriteriaExpression implements DynamicExpression {
 	 * @see com.idega.block.dataquery.data.sql.DynamicExpression#getIdentifierDescriptionMap()
 	 */
 	public Map getIdentifierInputDescriptionMap() {
-		Map resultMap = new HashMap();
+		Map resultMap = new LinkedHashMap();
 		Iterator iterator = idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();
@@ -64,7 +64,7 @@ public class CriteriaExpression implements DynamicExpression {
 	}
 
 	public Map getIdentifierValueMap() {
-		Map resultMap = new HashMap();
+		Map resultMap = new LinkedHashMap();
 		Iterator iterator = idCriterionMap.values().iterator();
 		while(iterator.hasNext())	{
 			CriterionExpression expression = (CriterionExpression) iterator.next();

@@ -1,8 +1,8 @@
 package com.idega.block.dataquery.data.sql;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +35,8 @@ public class SelectStatement implements DynamicExpression {
   
   private boolean selectDistinct = true;
   
-  private Map identifierValueMap = new HashMap();
-  private Map identifierInputDescriptionMap = new HashMap();
+  private Map identifierValueMap = new LinkedHashMap(0);
+  private Map identifierInputDescriptionMap = new LinkedHashMap(0);
   
   public static SelectStatement getInstanceWithDistinctFunction() {
   	SelectStatement selectStatement = new SelectStatement();

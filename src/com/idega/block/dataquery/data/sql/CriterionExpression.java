@@ -3,6 +3,7 @@ package com.idega.block.dataquery.data.sql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -83,7 +84,7 @@ public class CriterionExpression implements DynamicExpression {
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
     // set pattern
-    identifierValueMap = new HashMap();
+    identifierValueMap = new LinkedHashMap();
     String patternFieldName = condition.getPatternField();
   	String patternPath = condition.getPatternPath();
   	if (patternFieldName == null && patternPath == null) {
@@ -99,7 +100,7 @@ public class CriterionExpression implements DynamicExpression {
   	else {
   		patternField = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
    	}
-   	identifierInputDescriptionMap = new HashMap();
+   	identifierInputDescriptionMap = new LinkedHashMap();
    	String description = condition.getDescription();
    	if (description == null || description.length() == 0)	{
    	IWResourceBundle iwrb = getResourceBundle(iwc);
