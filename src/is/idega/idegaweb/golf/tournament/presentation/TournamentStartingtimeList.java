@@ -54,6 +54,8 @@ public class TournamentStartingtimeList extends GolfBlock {
 	private boolean useBorder;
 	private boolean forPrinting=false;
 	private Form form;
+	private String[] submitButtonParameter;
+	
 	
 	public TournamentStartingtimeList(Tournament tournament, String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder, boolean forPrinting) {
 		this.tournament = tournament;
@@ -436,6 +438,9 @@ public class TournamentStartingtimeList extends GolfBlock {
 			table.mergeCells(4, row, 7, row);
 			if (!viewOnly) {
 				SubmitButton submitButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("tournament.save", "Save")));
+				if (submitButtonParameter != null) {
+					submitButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("tournament.save", "Save"), submitButtonParameter[0], submitButtonParameter[1]));
+				}
 				table.add(new HiddenInput("sub_action", "saveDirectRegistration"), 4, row);
 				table.add(submitButton, 4, row);
 				table.add(new HiddenInput("number_of_groups", "" + groupCounterNum), 4, row);
@@ -445,6 +450,12 @@ public class TournamentStartingtimeList extends GolfBlock {
 			if (!onlineRegistration) modinfo.setApplicationAttribute(cacheString, form);
 
 			add(form);
+		}
+	}
+	
+	public void setSubmitButtonParameter(String name, String value) {
+		if (name != null && value != null) {
+			submitButtonParameter = new String[]{name, value};
 		}
 	}
 	
