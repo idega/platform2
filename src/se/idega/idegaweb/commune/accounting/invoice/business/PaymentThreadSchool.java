@@ -58,11 +58,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/09 11:55:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/10 10:18:47 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -265,7 +265,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			System.out.println(
                                "Getting posting string for"
                                + "\n category: "+ category.getCategory()
-                               + "\n  Type "+ schoolClassMember.getSchoolType()
+                               + "\n  SchoolType "+ schoolClassMember.getSchoolType()
                                + "\n  RegSpecType "+ ((Integer) regSpecType.getPrimaryKey()).intValue()
                                + "\n  provider "+ provider.getSchool().getName()
                                + "\n  Date "+ currentDate.toString()
@@ -475,30 +475,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
 			}
 		}
-	}
-    
-	/*
-	 * Overridden function until billing is done by period instead of date (non-Javadoc)
-	 * Now we always bill for the whole month...
-	 * Just remove this function when changing to date range
-	 * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread#calculateTime(java.sql.Date, java.sql.Date)
-	 */
-	/**
-	 * calculatest the number of days and months between the start and end date 
-	 * and sets the local variables monts and days
-	 * 
-	 * @param start
-	 * @param end
-	 */
-	protected void calculateTime(Date start, Date end) {
-		startTime = new IWTimestamp(startPeriod);
-		startTime.setAsDate();
-		//Then get end date
-		endTime = new IWTimestamp(endPeriod);
-		endTime.setAsDate();
-		//calc the how many months are in the given time.
-		months = 1.0f;
-		days = IWTimestamp.getDaysBetween(startTime, endTime);
 	}
     
 	private SchoolClassMemberHome getSchoolClassMemberHome() throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.48 2003/12/09 11:55:12 staffan Exp $
+ * $Id: PostingBusinessBean.java,v 1.49 2003/12/10 10:18:47 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -838,22 +838,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 		return new String[] {ownPosting, doublePosting};
 	}	
-
-	private int parseYear(String year){
-		int ret = 0;
-		
-		for(int i=0;i<year.length();i++){
-			char c = year.charAt(i);
-			try{
-				int t = Integer.parseInt(""+c);
-				ret *= 10;
-				ret+=t;
-			}catch(NumberFormatException e){
-				//Don't worry, be happy
-			}
-		}
-		return ret;
-	}
 
 	protected PostingParametersHome getPostingParametersHome() throws RemoteException {
 		return (PostingParametersHome) com.idega.data.IDOLookup.getHome(PostingParameters.class);
