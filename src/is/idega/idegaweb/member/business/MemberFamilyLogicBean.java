@@ -52,7 +52,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
 
   /**
    * @returns A Collection of User object who are children of a user. Returns an empty Collection if no children found.
-   * @throws NoSpouseFound if no NoChildrenFound is found
+   * @throws NoChildrenFound if no children are found
    */
   public Collection getChildrenFor(User user)throws NoChildrenFound,RemoteException{
     String userName = null;
@@ -60,7 +60,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
       userName = user.getName();
       Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_PARENT);
       if(coll==null){
-        throw new NoChildrenFound(userName);
+	throw new NoChildrenFound(userName);
       }
       return coll;
     }
@@ -85,6 +85,24 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
     }
   }
 
+  /**
+   * @returns A Collection of User object who are custodians of a user. Returns an empty Collection if no custodians are found.
+   * @throws NoCustodianFound if no custodians are found
+   */
+  public Collection getCustodiansFor(User user)throws NoCustodianFound,RemoteException{
+    String userName = null;
+    try{
+      userName = user.getName();
+      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_CHILD);
+      if(coll==null){
+	throw new NoCustodianFound(userName);
+      }
+      return coll;
+    }
+    catch(Exception e){
+      throw new NoCustodianFound(userName);
+    }
+  }
 
   public boolean hasPersonGotChildren(User person){
     /**
