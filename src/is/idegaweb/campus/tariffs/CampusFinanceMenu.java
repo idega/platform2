@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.5 2001/09/11 09:55:10 aron Exp $
+ * $Id: CampusFinanceMenu.java,v 1.6 2001/09/24 13:02:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.FrameList;
 import com.idega.jmodule.object.ModuleInfo;
+import is.idegaweb.campus.phone.presentation.PhoneFiles;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
@@ -54,6 +55,7 @@ public class CampusFinanceMenu extends FrameList{
       addToList(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes"),CampusFinance.FRAME_NAME);
       addToList(CampusTariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs"),CampusFinance.FRAME_NAME);
       addToList(CampusTariffer.class,iwrb.getLocalizedString("assessment","Assessment"),CampusFinance.FRAME_NAME);
+      addToList(PhoneFiles.class,iwrb.getLocalizedString("phonefiles","Phone files"),CampusFinance.FRAME_NAME);
 
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.9 2001/08/30 06:49:09 aron Exp $
+ * $Id: CampusTariffer.java,v 1.10 2001/09/24 13:02:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -153,9 +153,9 @@ public class CampusTariffer extends ModuleObjectContainer {
     if(L!= null){
       int len = L.size();
 
-      T.add(Edit.titleText(iwrb.getLocalizedString("assessment_name","Assessment name")),1,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("assessment_stamp","Timestamp")),2,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("totals","Total amount")),3,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("assessment_name","Assessment name")),1,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("assessment_stamp","Timestamp")),2,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("totals","Total amount")),3,1);
 
       int col = 1;
       row = 2;
@@ -251,7 +251,7 @@ public class CampusTariffer extends ModuleObjectContainer {
 
     DropdownMenu drpAccountTypes = new DropdownMenu("account_type");
     drpAccountTypes.addMenuElement(Account.typeFinancial,iwrb.getLocalizedString("financial","Financial"));
-    drpAccountTypes.addMenuElement(Account.typePhone,iwrb.getLocalizedString("phone","phone"));
+    //drpAccountTypes.addMenuElement(Account.typePhone,iwrb.getLocalizedString("phone","phone"));
     Edit.setStyle(drpAccountTypes );
 
     T.add(di,2,row);

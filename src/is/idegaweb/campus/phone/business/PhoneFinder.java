@@ -2,9 +2,13 @@ package is.idegaweb.campus.phone.business;
 
 import com.idega.data.EntityFinder;
 import is.idegaweb.campus.entity.CampusPhone;
+import is.idegaweb.campus.entity.Contract;
+import is.idegaweb.campus.entity.AccountPhone;
+import is.idegaweb.campus.allocation.business.ContractFinder;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Iterator;
 import java.sql.SQLException;
 import com.idega.block.finance.data.Account;
 /**
@@ -29,7 +33,7 @@ public abstract class PhoneFinder {
     }
   }
 
-  public static Hashtable mapOfPhonesByPhoneNumber(){
+  public static Map mapOfPhonesByPhoneNumber(){
     List L = listOfPhones();
     if(L!=null){
       Hashtable H = new Hashtable();
@@ -43,6 +47,78 @@ public abstract class PhoneFinder {
     else
       return null;
   }
+
+  public static List listOfPhonesInUse(){
+    StringBuffer sql = new StringBuffer("select pho.* ");
+    sql.append(" from cam_phone pho,cam_contract con ");
+    sql.append(" where pho.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and con.status = '");
+    sql.append(Contract.statusSigned);
+    sql.append("'");
+    try{
+      return  EntityFinder.findAll(new CampusPhone(),sql.toString());
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
+  public static List listOfAccountPhones(){
+    try {
+      return EntityFinder.findAll(new AccountPhone());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+
+  public static Map mapOfAccountIdsByPhoneNumber(){
+    Hashtable H = null;
+    List L = listOfAccountPhones();
+    if(L!=null){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      AccountPhone A;
+      while(I.hasNext()){
+        A = (AccountPhone) I.next();
+        H.put(A.getPhoneNumber(),A.getAccountId());
+      }
+    }
+    return H;
+  }
+
+  public static Map mapOfPhonesInUse(){
+    Hashtable H = null;
+    List L = listOfPhonesInUse();
+    if(L != null){
+      int len = L.size();
+      H = new Hashtable(len);
+      Iterator I = L.iterator();
+      CampusPhone P;
+      while(I.hasNext()){
+        P = (CampusPhone) I.next();
+        H.put(P.getPhoneNumber(),P);
+      }
+    }
+    return H;
+  }
+
+  public static Map mapOfPhonesInContractByPhoneNumber(){
+    List L = listOfPhones();
+    if(L!=null){
+      Hashtable H = new Hashtable();
+      int len = L.size();
+      for (int i = 0; i < len; i++) {
+        CampusPhone C = (CampusPhone) L.get(i);
+        H.put(C.getPhoneNumber(),C);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
 
   private static String getOrderString(int type){
     String order = null;

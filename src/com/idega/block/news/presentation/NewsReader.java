@@ -233,7 +233,10 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
         newsHelper = (NewsHelper) L.get(i);
         I = new Integer(i);
         if(objectsBetween != null && objectsBetween.containsKey(I)){
-          T.add((ModuleObject)objectsBetween.get(I),sObjectAlign );
+          Table t = new Table(1,1);
+          t.setCellpadding(4);
+          t.add((ModuleObject)objectsBetween.get(I));
+          T.add(t,sObjectAlign );
           objectsBetween.remove(I);
         }
         T.add(getNewsTable(newsHelper,newsCategory,locale ,false),useDividedTable,"left");
