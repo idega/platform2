@@ -148,9 +148,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 					//status ovirkt?
 					//META_DATA_CLUB_STATUS
-					String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
-					if (IWMemberConstants.META_DATA_CLUB_STATUS_INACTIVE_CLUB.equals(status)) {
+					String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
+					if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
 						report.setAsInactive();
+					}else{
+						report.setAsActive();
 					}
 
 					try {
