@@ -98,7 +98,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		String delete[] = iwc.getParameterValues(LABEL_DELETE);
 		
 		try {
-			getAccountingBusiness(iwc).deleteTariffType(delete);
+			getAccountingBusiness(iwc).deleteTariff(delete);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

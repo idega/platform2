@@ -21,9 +21,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -36,12 +35,14 @@ import com.idega.user.presentation.GroupChooser;
  */
 public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
-
+	protected static final String ACTION_DELETE = "etl_delete";
+	
 	protected static final String LABEL_CLUB = "isi_acc_cccc_club";
 	protected static final String LABEL_DIVISION = "isi_acc_cccc_division";
 	protected static final String LABEL_CONTRACT_NUMBER = "isi_acc_cccc_cont_nr";
 	protected static final String LABEL_CARD_TYPE = "isi_acc_cccc_card_type";
-
+	protected static final String LABEL_DELETE = "isi_acc_cccc_delete";
+	
 	/**
 	 *  
 	 */
@@ -49,7 +50,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		super();
 	}
 
-	private void saveTariffEntry(IWContext iwc) {
+	private void saveContract(IWContext iwc) {
 		String div = iwc.getParameter(LABEL_DIVISION);
 		String number = iwc.getParameter(LABEL_CONTRACT_NUMBER);
 		String type = iwc.getParameter(LABEL_CARD_TYPE);
@@ -66,9 +67,23 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		}
 	}
 
+	private void deleteContract(IWContext iwc) {
+		String delete[] = iwc.getParameterValues(LABEL_DELETE);
+		
+		try {
+			getAccountingBusiness(iwc).deleteContract(delete);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			saveTariffEntry(iwc);
+			saveContract(iwc);
+		}
+		else if (iwc.isParameterSet(ACTION_DELETE)) {
+			deleteContract(iwc);
 		}
 
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -132,6 +147,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				CreditCardContract cont = (CreditCardContract) it.next();
+				CheckBox delete = new CheckBox(LABEL_DELETE, cont.getPrimaryKey().toString());
+				t.add(delete, 1, row);
 				t.add(getClub().getName(),2,row);
 				Group div = cont.getDivision();
 				if (div != null)
@@ -139,6 +156,12 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 				t.add(cont.getContractNumber(), 4, row);
 				t.add(cont.getCardType().getName(), 5, row++);
 			}
+			
+			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
+			delete.setToEnableWhenChecked(LABEL_DELETE);
+			t.add(delete, 5, row);
+			t.setAlignment(5, row, "RIGHT");
+			
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);

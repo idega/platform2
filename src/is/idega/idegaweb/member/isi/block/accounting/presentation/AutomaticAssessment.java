@@ -78,7 +78,14 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	}
 	
 	private void deleteAssessment(IWContext iwc) {
+		String delete[] = iwc.getParameterValues(LABEL_DELETE);
 		
+		try {
+			getAccountingBusiness(iwc).deleteAssessmentRound(delete);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void main(IWContext iwc) {
@@ -211,7 +218,9 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			}
 			
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
+			delete.setToEnableWhenChecked(LABEL_DELETE);
 			t.add(delete, 10, row);
+			t.setAlignment(10, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);

@@ -302,6 +302,27 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return false;
 	}
 
+	public boolean deleteContract(String ids[]) {
+		try {
+			for (int i = 0; i < ids.length; i++) {
+				Integer id = new Integer(ids[i]);
+				CreditCardContract eCont = getCreditCardContractHome().findByPrimaryKey(id);
+				eCont.setDeleted(true);
+				eCont.store();
+			}
+
+			return true;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
 	public Collection findAllAssessmentRoundByClubAndDivision(Group club, Group division) {
 		try {
 			return getAssessmentRoundHome().findAllByClubAndDivision(club, division);
@@ -339,6 +360,28 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 		return true;
 	}
+	
+	public boolean deleteAssessmentRound(String ids[]) {
+		try {
+			for (int i = 0; i < ids.length; i++) {
+				Integer id = new Integer(ids[i]);
+				AssessmentRound eRound = getAssessmentRoundHome().findByPrimaryKey(id);
+				eRound.setDeleted(true);
+				eRound.store();
+			}
+
+			return true;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
 
 	private ClubTariffTypeHome getClubTariffTypeHome() {
 		try {
