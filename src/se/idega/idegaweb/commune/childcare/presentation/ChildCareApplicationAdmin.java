@@ -79,8 +79,10 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	
 	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
 	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
-	private final static String EMAIL_USER_SUBJECT = "cca_user_email_subject";
-	private final static String EMAIL_USER_MESSAGE = "cca_user_email_message";
+	private final static String EMAIL_USER_SUBJECT = "child_care.application_received_subject";
+	private final static String EMAIL_USER_MESSAGE = "child_care.application_received_body";
+	private final static String EMAIL_USER_REJECT_SUBJECT = "child_care.application_rejected_subject";
+	private final static String EMAIL_USER_REJECT_MESSAGE = "child_care.application_rejected_body";
 
 	private final static String HIDDEN_PARAM_APPL_COUNT = "ccaa_appl_count";
 	
@@ -321,15 +323,12 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		if (action == ACTION_NO) {
 			String id = iwc.getParameter(PARAM_ID);
 			if (id != null) {
-				try {
-					String subject = localize(EMAIL_PROVIDER_SUBJECT,"Child care application");
-					String message = localize(EMAIL_PROVIDER_MESSAGE,"You have received a new childcare application");
+				String rejectSubject = localize(EMAIL_USER_REJECT_SUBJECT,"Child care application");
+				String rejectMessage = localize(EMAIL_USER_REJECT_MESSAGE,"You have received a new childcare application");
+				String receiveSubject = localize(EMAIL_USER_SUBJECT,"Child care application");
+				String receiveMessage = localize(EMAIL_USER_MESSAGE,"You have received a new childcare application");
 
-					return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),subject,message,iwc.getCurrentUser());
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),rejectSubject,rejectMessage,receiveSubject,receiveMessage,iwc.getCurrentUser());
 			}
 		}
 		else if (action == ACTION_YES) {

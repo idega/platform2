@@ -27,7 +27,7 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.1 2003/02/19 16:18:27 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.2 2003/03/05 14:33:13 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -210,6 +210,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						application, 
 						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), /**@TODO: Change text */
 						getRejectedMessage(iwc, application),
+						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
+						getAcceptedMessage(iwc, application),
 						application.getOwner()); 
 						application.setFromDate(status._date);							
 					
@@ -218,6 +220,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						application, 
 						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
 						getRejectedMessage(iwc, application),
+						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
+						getAcceptedMessage(iwc, application),
 						application.getOwner()); 
 				}					
 			}

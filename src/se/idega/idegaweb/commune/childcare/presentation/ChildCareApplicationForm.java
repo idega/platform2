@@ -83,8 +83,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
 
-	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
-	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
+	private final static String EMAIL_PROVIDER_SUBJECT = "child_care.application_received_subject";
+	private final static String EMAIL_PROVIDER_MESSAGE = "child_care.application_received_body";
 
 	private String prefix = "cc_app_";
 	private String prmPreSchool = prefix + "pre_scl";
@@ -392,7 +392,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				catch (Exception e) {
 					checkID = -1;
 				}*/
-				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application");
+				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
 				done = business.insertApplications(_user, _valProvider, _valDate, checkID, new Integer(childId).intValue(), subject, message, false);

@@ -15,6 +15,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.core.data.ICFile;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
@@ -240,78 +241,49 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException, RemoteException {
-		Collection ids = super.ejbFindAllCasesByStatus(caseStatus);
-		
-		StringBuffer sql = new StringBuffer("select * from ");
-		sql.append(getEntityName());
-		sql.append(" where ");
-		sql.append(PROVIDER_ID);
-		sql.append(" = ");
-		sql.append(providerId);
-		sql.append(" and ");
-		sql.append(getIDColumnName());
-		sql.append(" in (");
-		
-		Iterator it = ids.iterator();
-		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-			sql.append(id);
-			if (it.hasNext())
-				sql.append(", ");
-		}
-		sql.append(")");
-		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append("c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+QUEUE_DATE);
+
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
 	
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+QUEUE_DATE);
+
+		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}	
+	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException, RemoteException {
-		Collection ids = super.ejbFindAllCasesByStatusArray(caseStatus);
-		
-		StringBuffer sql = new StringBuffer("select * from ");
-		sql.append(getEntityName());
-		sql.append(" where ");
-		sql.append(PROVIDER_ID);
-		sql.append(" = ");
-		sql.append(providerId);
-		sql.append(" and ");
-		sql.append(getIDColumnName());
-		sql.append(" in (");
-		
-		Iterator it = ids.iterator();
-		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-			sql.append(id);
-			if (it.hasNext())
-				sql.append(", ");
-		}
-		sql.append(")");
-		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().append("p.case_status").appendInArray(caseStatus);
+		sql.appendOrderBy("c."+QUEUE_DATE);
+
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}		
 	
 	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException, RemoteException {
-		Collection ids = super.ejbFindAllCasesByStatus(caseStatus);
-		
-		StringBuffer sql = new StringBuffer("select * from ");
-		sql.append(getEntityName());
-		sql.append(" where ");
-		sql.append(PROVIDER_ID);
-		sql.append(" = ");
-		sql.append(providerId);
-		sql.append(" and ");
-		sql.append(getIDColumnName());
-		sql.append(" in (");
-		
-		Iterator it = ids.iterator();
-		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-			sql.append(id);
-			if (it.hasNext())
-				sql.append(", ");
-		}
-		sql.append(") and ");
-		sql.append(REJECTION_DATE);
-		sql.append(" is null");
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().append(REJECTION_DATE).append(" is null");
 		
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
@@ -332,5 +304,34 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).appendAndEquals(CHILD_ID,childID);
 		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Collection ejbFindApplicationByChild(int childID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID,childID);
+		sql.appendOrderBy(CHOICE_NUMBER);
+		return super.idoFindPKsByQuery(sql);
+	}
+	
+	public int ejbHomeGetNumberOfApplications(int providerID, String caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetNumberOfApplications(int providerID, String[] caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendInArray(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+
+		return idoGetNumberOfRecords(sql);
 	}
 }
