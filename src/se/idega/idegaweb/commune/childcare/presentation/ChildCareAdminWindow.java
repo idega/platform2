@@ -54,6 +54,7 @@ import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author laddi
@@ -1444,7 +1445,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String messageHeader = localize("child_care.application_accepted_subject", "Child care application accepted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
 		if (messageBody.indexOf("$datum$") != -1) {
-			messageBody.replaceAll("$datum$", "{6}");
+			messageBody = TextSoap.findAndReplace(messageBody, "$datum$", "{6}");
 		}
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
 		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
