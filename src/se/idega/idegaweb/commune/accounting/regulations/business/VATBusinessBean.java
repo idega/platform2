@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.12 2003/10/09 07:39:17 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.13 2003/10/09 09:27:33 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/09 07:39:17 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/09 09:27:33 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -283,7 +283,8 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			IWTimestamp vatTo = new IWTimestamp(periodTo);
 			vatTo.setAsDate();
 			
-			if (vatFrom.isBetween(from, to) || vatTo.isBetween(from, to) ||
+			if ((vatFrom.isLaterThan(from) && vatFrom.isEarlierThan(to)) || 
+					(vatTo.isLaterThan(from) && vatTo.isEarlierThan(to)) ||
 					((vatFrom.isEarlierThan(from) || vatFrom.equals(from)) && (vatTo.isLaterThanOrEquals(to)))) {
 				if ((vr.getPaymentFlowTypeId() == paymentFlowTypeId) && 
 						(vr.getProviderTypeId() == providerTypeId)) {				
