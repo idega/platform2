@@ -48,9 +48,9 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String STATUS_READY = "R";
 	protected final static String STATUS_SENT = "S";
 	
-	protected final static String TYPE_ASSESSMENT = "A";
-	protected final static String TYPE_MANUAL = "M";
-	protected final static String TYPE_PAYMENT = "P";
+	public final static String TYPE_ASSESSMENT = "A";
+	public final static String TYPE_MANUAL = "M";
+	public final static String TYPE_PAYMENT = "P";
 	
 	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
 	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";
@@ -364,6 +364,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	 */
 	public Collection ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(
 			Group club,
+			String[] types,
 			Date dateFrom,
 			Date dateTo,
 			Collection divisions,
@@ -374,7 +375,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		String[] ordering = { COLUMN_DIVISION_ID, COLUMN_GROUP_ID , COLUMN_DATE_OF_ENTRY };
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
-		sql.appendWhere().append(COLUMN_TYPE).appendIn("'A','M'");
+		if  (types != null && types.length>0)
+			sql.appendWhere().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types));
 		sql.appendAnd().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
 		if (club != null)
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
