@@ -161,6 +161,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private UserSearcher _userSearcher = null;
 	
 	public void init(final IWContext iwc) {
+		
+		if (iwc.getCurrentUser() == null){
+			add(getLocalizedText("not_logged_in", "No user logged in"));
+			return;	
+		}
+		
 		_userSearcher = getUserSearcherForm(iwc, getUser(iwc));
 		User user = _userSearcher.getUser();
 
