@@ -1,6 +1,6 @@
 /*
- * $Id: VacationTypeHomeImpl.java,v 1.1 2004/11/25 14:22:35 anna Exp $
- * Created on 25.11.2004
+ * $Id: VacationTypeHomeImpl.java,v 1.2 2004/12/13 14:44:20 anna Exp $
+ * Created on 8.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -15,10 +15,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: 25.11.2004 14:19:45 by: anna
+ * Last modified: 8.12.2004 14:05:32 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VacationTypeHomeImpl extends IDOFactory implements VacationTypeHome {
 

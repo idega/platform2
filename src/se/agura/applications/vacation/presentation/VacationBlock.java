@@ -9,13 +9,11 @@ package se.agura.applications.vacation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import se.agura.applications.vacation.business.VacationBusiness;
 import se.agura.applications.vacation.business.VacationConstants;
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationTime;
 import se.agura.applications.vacation.data.VacationType;
-
 import com.idega.block.process.data.CaseLog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -31,6 +29,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -358,6 +357,23 @@ public abstract class VacationBlock extends Block {
 		return button;
 	}
 	
+	
+	public SubmitButton getSendButton() {
+		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.send_application", "Send"), PARAMETER_ACTION, ACTION_SEND));
+		sendButton.setToolTip("Sends your application in");
+		sendButton.setSubmitConfirm("Are you sure you want to send the application now?");
+		return sendButton;
+	}
+	
+	public GenericButton getCancelButton() {
+		GenericButton cancelButton = getButton(new GenericButton(getResourceBundle().getLocalizedString("vacation_approver.cancel", "Cancel")));
+		if (getPage() != null) {
+			cancelButton.setPageToOpen(getPage());
+		}
+		cancelButton.setToolTip("Cancels and returns to last page");
+		return cancelButton;
+	}
+
 	/**
 	 * @param buttonStyleClass The buttonStyleClass to set.
 	 */

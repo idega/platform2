@@ -10,23 +10,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import se.agura.applications.vacation.business.ExtraInformation;
 import se.agura.applications.vacation.data.VacationType;
-
 import com.idega.block.media.presentation.FileChooser;
-import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -39,10 +35,8 @@ import com.idega.util.IWTimestamp;
  */
 public class VacationApplication extends VacationBlock {
 
+	private String validateMessage;
 	
-	private ICPage iPage;
-	
-
 	public void present(IWContext iwc) {
 		try {
 			String action = iwc.getParameter(PARAMETER_ACTION);
@@ -116,19 +110,32 @@ public class VacationApplication extends VacationBlock {
 
 	// view of the second step of the vacation request
 	private Form showPageTwo(IWContext iwc) throws RemoteException {
-		Form form = new Form();
-		form.add(showWorkingDaysTable(iwc));
-		form.add(new Break());
-		form.add(getReasonTable(iwc));
-		form.add(new Break());
-		form.addParameter(PARAMETER_ACTION, ACTION_PAGE_THREE);
-		form.add(getCancelButton());
-		form.add(getNextButton());
-		form.maintainParameter(PARAMETER_VACATION_FROM_DATE);
-		form.maintainParameter(PARAMETER_VACATION_TO_DATE);
-		form.maintainParameter(PARAMETER_VACATION_WORKING_HOURS);
-		form.maintainParameter(PARAMETER_VACATION_TYPE);
-		return form;
+		if (validate(iwc)) {
+			Form form = new Form();
+			form.add(showWorkingDaysTable(iwc));
+			form.add(new Break());
+			form.add(getReasonTable(iwc));
+			form.add(new Break());
+			form.addParameter(PARAMETER_ACTION, ACTION_PAGE_THREE);
+			form.add(getCancelButton());
+			form.add(getNextButton());
+			form.maintainParameter(PARAMETER_VACATION_FROM_DATE);
+			form.maintainParameter(PARAMETER_VACATION_TO_DATE);
+			form.maintainParameter(PARAMETER_VACATION_WORKING_HOURS);
+			form.maintainParameter(PARAMETER_VACATION_TYPE);
+			form.maintainParameter(PARAMETER_VACATION_EXTRA_TEXT);
+			return form;
+		}
+		else {
+			Form form = new Form();
+			form.add(getHeader(getResourceBundle().getLocalizedString("vacation_request.validation_error", "Validation error")));
+			form.add(new Break());
+			form.add(getText(validateMessage));
+			form.add(new Break(2));
+			form.add(getInput(new BackButton(getResourceBundle().getLocalizedString("vacation_request.back", "Back"))));
+			
+			return form;
+		}
 	}
 
 	// shows the overview over the application request made by the user.
@@ -140,7 +147,7 @@ public class VacationApplication extends VacationBlock {
 		form.add(new Break());
 		form.addParameter(PARAMETER_ACTION, ACTION_SEND);
 		form.add(getCancelButton());
-		form.add(getNextButton());
+		form.add(getSendButton());
 		form.maintainParameter(PARAMETER_VACATION_FROM_DATE);
 		form.maintainParameter(PARAMETER_VACATION_TO_DATE);
 		form.maintainParameter(PARAMETER_VACATION_WORKING_HOURS);
@@ -173,14 +180,52 @@ public class VacationApplication extends VacationBlock {
 		
 		return table;
 	}
+	
+	private VacationType getVacationType(IWContext iwc) {
+		
+		VacationType vacationType = null;
+		try {
+			vacationType = getBusiness(iwc).getVacationType(iwc.getParameter(PARAMETER_VACATION_TYPE));
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		return vacationType;
+	}
+	
+	private boolean validate(IWContext iwc) {
+		IWTimestamp fromDate = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
+		IWTimestamp toDate = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_TO_DATE));
+
+		
+		int maxDays = getVacationType(iwc) != null ? getVacationType(iwc).getMaxDays() : -1;
+		
+		if (fromDate.isLaterThan(toDate)) {
+			validateMessage = getResourceBundle().getLocalizedString("vacation_request.from_date_later_than_to_date", "The from date is later than the to date.");
+			return false;
+		}
+		if (maxDays != -1 && IWTimestamp.getDaysBetween(fromDate, toDate) > maxDays) {
+			validateMessage = getResourceBundle().getLocalizedString("vacation_request.max_days_exceeded", "Maximum number of days exceeded.");
+			return false;
+		}
+		return true;
+	}
 
 	private Table getTimeTable(IWContext iwc) throws RemoteException {
+		IWTimestamp stamp = new IWTimestamp();
+		
 		DateInput fromDateInput = (DateInput) getInput(new DateInput(PARAMETER_VACATION_FROM_DATE));
 		fromDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.from_date_not_empty", "This field may not be empty"));
+		fromDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.from_date_back_in_time", "From date can not be back in time."));
 		
 		DateInput toDateInput = (DateInput) getInput(new DateInput(PARAMETER_VACATION_TO_DATE));
 		toDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.to_date_not_empty", "This field may not be empty"));
+		toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
 		
+		//hva› ef ﬂa› er skrá› inn tala hér???
 		TextInput hours = (TextInput) getInput(new TextInput(PARAMETER_VACATION_WORKING_HOURS));
 		hours.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.hours_not_empty", "This field may not be empty"));
 		
@@ -220,16 +265,10 @@ public class VacationApplication extends VacationBlock {
 		return timeTable;
 	}
 
-	private GenericButton getCancelButton() {
-		GenericButton cancel = getButton(new GenericButton("cancel", getResourceBundle().getLocalizedString("vacation.cancel", "Cancel")));
-		if (iPage != null) {
-			cancel.setPageToOpen(iPage);
-		}
-		return cancel;
-	}
-
 	private SubmitButton getNextButton() {
 		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation.next", "Next step")));
+		nextButton.setToolTip("Proceeds to next step");
+		nextButton.setSubmitConfirm("Are you sure you want to proceed?");
 		return nextButton;
 	}
 
@@ -315,52 +354,60 @@ public class VacationApplication extends VacationBlock {
 		int selectedHours = Integer.parseInt(iwc.getParameter(PARAMETER_VACATION_WORKING_HOURS));
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
 		IWTimestamp to = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_TO_DATE));
-
+		
+		String vacationPeriod = from.getDate() + " - " + to.getDate();
+		int maxDays = getVacationType(iwc) != null ? getVacationType(iwc).getMaxDays() : -1;
 		Table workingDaysTable = new Table();
 		workingDaysTable.setBorder(0);
 		workingDaysTable.setCellspacing(0);
 		workingDaysTable.setCellpadding(iCellpadding);
 		int row = 1;
 		
-		workingDaysTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period",
-				"Working days and hours under the period")), 1, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
-		workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row);
-		
-		int week = -1;
-		to.addDays(1);
-		while (from.isEarlierThan(to)) {
-			if (week != from.getWeekOfYear() && !(from.getDayOfWeek() == Calendar.SUNDAY)) {
-				row++;
-				week = from.getWeekOfYear();
-				workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
-			}
-			if (week == -1 && (from.getDayOfWeek() == Calendar.SUNDAY)) {
-				row++;
-				workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
-			}
+		if (maxDays != -1 && IWTimestamp.getDaysBetween(from, to) < maxDays) {
+			workingDaysTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period",
+					"Working days and hours under the period")), 1, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
+			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row);
 			
-			int hours = selectedHours;
-			int dayOfWeek = from.getDayOfWeek();
-			if (dayOfWeek == Calendar.SUNDAY) {
-				dayOfWeek = 9;
-				hours = 0;
-			}
-			else {
-				if (dayOfWeek == Calendar.SATURDAY) {
+			int week = -1;
+			to.addDays(1);
+			while (from.isEarlierThan(to)) {
+				if (week != from.getWeekOfYear() && !(from.getDayOfWeek() == Calendar.SUNDAY)) {
+					row++;
+					week = from.getWeekOfYear();
+					workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
+				}
+				if (week == -1 && (from.getDayOfWeek() == Calendar.SUNDAY)) {
+					row++;
+					workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
+				}
+				
+				int hours = selectedHours;
+				int dayOfWeek = from.getDayOfWeek();
+				if (dayOfWeek == Calendar.SUNDAY) {
+					dayOfWeek = 9;
 					hours = 0;
 				}
-				dayOfWeek++;
+				else {
+					if (dayOfWeek == Calendar.SATURDAY) {
+						hours = 0;
+					}
+					dayOfWeek++;
+				}
+				workingDaysTable.add(getWorkingHoursMenu(hours, 8), dayOfWeek, row);
+				from.addDays(1);
 			}
-			
-			workingDaysTable.add(getWorkingHoursMenu(hours, 8), dayOfWeek, row);
-			from.addDays(1);
+		}
+		if (IWTimestamp.getDaysBetween(from, to) > 35) {
+			workingDaysTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period",
+			"Vacation period")), 1, row);
+			workingDaysTable.add(vacationPeriod, 2, row++);
 		}
 		
 		workingDaysTable.mergeCells(1, 1, 1, workingDaysTable.getRows());
@@ -396,6 +443,7 @@ public class VacationApplication extends VacationBlock {
 		String selectedHours = iwc.getParameter(PARAMETER_VACATION_WORKING_HOURS);
 		String[] workingHours = iwc.getParameterValues(PARAMETER_VACATION_HOURS);
 		String vacationType = iwc.getParameter(PARAMETER_VACATION_TYPE);
+		String motivation = iwc.getParameter(PARAMETER_VACATION_EXTRA_TEXT);
 		VacationType type = null;
 		try {
 			type = getBusiness(iwc).getVacationType(vacationType);
@@ -472,6 +520,13 @@ public class VacationApplication extends VacationBlock {
 		table.mergeCells(2, row, table.getColumns(), row);
 		if (type != null) {
 			table.add(getText(getResourceBundle().getLocalizedString(type.getLocalizedKey())), 2, row++);
+		}
+		
+		table.setCellpaddingLeft(1, row, 0);
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.motivation","Motivation")),1,row);
+		table.mergeCells(2, row, table.getColumns(), row);
+		if(motivation != null) {
+			table.add(getText(motivation), 2, row++);
 		}
 
 		table.setCellpaddingLeft(1, row, 0);

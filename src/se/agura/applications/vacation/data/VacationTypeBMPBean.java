@@ -30,6 +30,8 @@ public class VacationTypeBMPBean extends GenericEntity implements VacationType {
 
 	public static final String COLUMN_ALLOWS_FORWARDING = "allows_forwarding";
 
+	public static final String COLUMN_MAX_DAYS = "max_days";
+
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -40,6 +42,7 @@ public class VacationTypeBMPBean extends GenericEntity implements VacationType {
 		addAttribute(COLUMN_TYPE_NAME, "Type name", String.class);
 		addAttribute(COLUMN_LOCALIZED_KEY, "Localized key", String.class);
 		addAttribute(COLUMN_ALLOWS_FORWARDING, "Allows forwarding", Boolean.class);
+		addAttribute(COLUMN_MAX_DAYS, "Max days", Integer.class);
 
 		addMetaDataRelationship();
 	}
@@ -50,6 +53,14 @@ public class VacationTypeBMPBean extends GenericEntity implements VacationType {
 
 	public void setAllowsForwarding(boolean allowes) {
 		setColumn(COLUMN_ALLOWS_FORWARDING, allowes);
+	}
+
+	public int getMaxDays() {
+		return getIntColumnValue(COLUMN_MAX_DAYS);
+	}
+
+	public void setMaxDays(int maxDays) {
+		setColumn(COLUMN_ALLOWS_FORWARDING, maxDays);
 	}
 
 	public String getTypeName() {

@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.3 2004/12/09 13:43:37 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.4 2004/12/13 14:44:20 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,12 +11,9 @@ package se.agura.applications.vacation.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationType;
-
 import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -26,7 +23,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
@@ -39,7 +35,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -277,30 +273,28 @@ public class VacationApprover extends VacationBlock {
 
 	private SubmitButton getDeniedButton() {
 		SubmitButton deniedButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.reject_application", "Reject"), PARAMETER_ACTION, ACTION_DENIED));
+		deniedButton.setToolTip("Denies the application");
+		deniedButton.setSubmitConfirm("Are you sure you want to deny this application?");
 		return deniedButton;
 	}
 
 	private SubmitButton getApprovedButton() {
 		SubmitButton approvedButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.approve_application", "Approve"), PARAMETER_ACTION, ACTION_APPROVED));
+		approvedButton.setToolTip("Approves the application");
+		approvedButton.setSubmitConfirm("Are you sure you want to approve this application?");
 		return approvedButton;
 	}
 
-	private SubmitButton getSendButton() {
+	public SubmitButton getSendButton() {
 		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.send_application", "Send"), PARAMETER_ACTION, ACTION_SEND));
 		return sendButton;
 	}
 
 	private SubmitButton getForwardButton() {
 		SubmitButton forwardButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.forward_application", "Forward"), PARAMETER_ACTION, ACTION_FORWARD));
+		forwardButton.setToolTip("Forwards the application");
+		forwardButton.setSubmitConfirm("Are you sure you want to forward this application?");
 		return forwardButton;
-	}
-
-	private GenericButton getCancelButton() {
-		GenericButton cancelButton = getButton(new GenericButton(getResourceBundle().getLocalizedString("vacation_approver.cancel", "Cancel")));
-		if (getPage() != null) {
-			cancelButton.setPageToOpen(getPage());
-		}
-		return cancelButton;
 	}
 
 	private Table handleRequest(IWContext iwc) {
