@@ -171,7 +171,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         while (iterator.hasNext())  {
           String field = (String) iterator.next();
           EntityPathValueContainer entityPathValueContainerFromTextEditor = 
-            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(newGroupId, field, iwc);
+            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), field, iwc);
           if (entityPathValueContainerFromTextEditor.isValid()) {
             setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, newGroupId, workReportBusiness);
           }
