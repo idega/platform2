@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.5 2001/05/18 14:36:16 gummi Exp $
+ * $Id: Table.java,v 1.6 2001/06/12 10:17:00 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -485,8 +485,7 @@ public class Table extends ModuleObjectContainer {
   }
 
   public void addBreak(int xpos,int ypos){
-    Text myText = new Text();
-    myText.addBreak();
+    Text myText = Text.getBreak();
     this.add(myText,xpos,ypos);
   }
 
