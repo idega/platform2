@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.4 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: GroupHandler.java,v 1.1 2004/02/25 16:57:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -7,10 +7,11 @@
  * Use is subject to license terms.
  *
  */
-package com.idega.builder.handler;
+package com.idega.user.handler;
 
 import java.util.List;
 
+import com.idega.builder.handler.PropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.data.Group;
