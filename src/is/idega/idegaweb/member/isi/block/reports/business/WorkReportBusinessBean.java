@@ -17,6 +17,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.presentation.ClubSelector;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
@@ -1179,7 +1180,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness)  {
     // add ADA league to the work report
     // create corresponding division board
-    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year);
+    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(getMainBoardName(), year);
     try {
       createWorkReportDivisionBoard(workReportId, null, adaGroup);
     }
@@ -1503,7 +1504,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     // get the year of the work report
     int year = getWorkReportById(workReportId).getYearOfReport().intValue();
     // get the ADA work report group 
-    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year); 
+    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(getMainBoardName(), year); 
 
     // get the first level under the club
     Collection childGroups;
@@ -3625,5 +3626,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return workReportClubAccountRecordHome;
 	}
+  
+    private String getMainBoardName() {
+      return getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.ISI_MAIN_BOARD_NAME);
+    }
+      
 
 } //end of class
