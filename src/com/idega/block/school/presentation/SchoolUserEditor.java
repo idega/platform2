@@ -989,7 +989,9 @@ public class SchoolUserEditor extends Block {
 
 		table.add(inp, 1, row);
 		table.add(utInp, 1, row);
-		table.add(login, 7, row);
+		if (!_hideLogin) {
+			table.add(login, 7, row);
+		}
 
 		table.add(pName, 1, row);
 		if (emails != null) {
