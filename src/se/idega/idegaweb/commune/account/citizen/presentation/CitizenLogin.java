@@ -166,7 +166,7 @@ public class CitizenLogin extends Login {
 		table.setWidth(iWidth);
 		
 		table.mergeCells(1, 1, 2, 1);
-		table.add(tryAgain, 1, 2);
+		table.add(tryAgain, 1, 1);
 		
 		table.setCellpaddingTop(1, 2, 16);
 		table.setCellpaddingTop(2, 2, 16);
