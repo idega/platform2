@@ -19,7 +19,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
@@ -383,7 +382,7 @@ public class CalendarView extends CategoryBlock{
 	
 
 	public void main(IWContext iwc) throws Exception{
-		Form form = new Form();
+//		Form form = new Form();
 		IWResourceBundle iwrb = getResourceBundle(iwc);	
 		if (timeStamp == null) {
 			String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
@@ -410,7 +409,7 @@ public class CalendarView extends CategoryBlock{
 		}
 		Integer pmView = new Integer(view);
 		HiddenInput hi = new HiddenInput(CalendarParameters.PARAMETER_VIEW,pmView.toString());
-		form.add(hi);
+//		form.add(hi);
 		action = iwc.getParameter(ACTION);
 	
 		CalendarEntryCreator creator = new CalendarEntryCreator();
@@ -555,8 +554,8 @@ public class CalendarView extends CategoryBlock{
 			table.add(Text.NON_BREAKING_SPACE,1,5);
 			table.add(right,1,5);					
 		}	
-		form.add(table);
-		add(form);
+//		form.add(table);
+		add(table);
 	}
 	/**
 	 * 
