@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.12 2001/12/11 14:12:56 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.13 2002/01/29 14:21:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ public class ApplicationFinder {
     try {
       Application A = new Application();
       String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+status+"'";
-      System.err.println(sql);
+      //System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
     }
