@@ -506,6 +506,9 @@ public abstract class BillingThread extends Thread{
 	}
 	
 	protected boolean hasPlacements() throws IDOException, RemoteException, EJBException {
+		if (isTestRun()){
+			return false;
+		}
 		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth((String) category.getPrimaryKey(), month) > 0;
 	}
 	
