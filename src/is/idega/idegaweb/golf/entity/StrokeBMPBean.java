@@ -87,6 +87,7 @@ public class StrokeBMPBean extends GenericEntity implements Stroke{
 		query.addJoin(table, scorecard);
 		query.addCriteria(new MatchCriteria(scorecard, "member_id", MatchCriteria.EQUALS, member));
 		query.addCriteria(new MatchCriteria(strokes, criteria, COLUMN_HOLE_PAR + " + (" + difference + ")", false));
+		query.addCriteria(new MatchCriteria(strokes, MatchCriteria.NOTEQUALS, 0));
 		
 		return this.idoGetNumberOfRecords(query.toString());
 	}
