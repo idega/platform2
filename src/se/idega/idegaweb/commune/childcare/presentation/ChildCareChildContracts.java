@@ -4,11 +4,13 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 
@@ -40,6 +42,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 
 	public static final String PARAMETER_APPLICATION_ID = "ccc_application_id";
 	private boolean insideWindow = false;
+	private boolean useFuturePayment = false;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -71,15 +74,15 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			}
 			table.add(getInformationTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
-			if (getBusiness().hasFutureContracts(getSession().getApplicationID()) && getBusiness().hasActiveContract(getSession().getApplicationID())) {
-				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-				if (useStyleNames()) {
-					table.setCellpaddingLeft(1, row, 12);
-					table.setCellpaddingRight(1, row, 12);
-				}
-				table.add(getRemoveContractsForm(), 1, row++);
-				table.setHeight(row++, 6);
+			
+			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			if (useStyleNames()) {
+				table.setCellpaddingLeft(1, row, 12);
+				table.setCellpaddingRight(1, row, 12);
 			}
+			table.add(getRemoveContractsForm(iwc), 1, row++);
+			table.setHeight(row++, 6);
+				
 			table.add(getContractsTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 			if (useStyleNames()) {
@@ -376,15 +379,40 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		return table;
 	}
 	
-	protected Form getRemoveContractsForm() throws RemoteException {
+	protected Form getRemoveContractsForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID())));
+		int applicationId = getSession().getApplicationID();
+		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(applicationId)));
 		
 		SubmitButton removeContracts = (SubmitButton) getStyledInterface(new SubmitButton("remove", localize("child_care.remove_future_contracts","Remove future contracts")));
-		removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
+		if (!getBusiness().hasFutureContracts(applicationId)) {
+			removeContracts.setDisabled(true);			
+		} else {
+			Date earliestPossibleRemoveDate = getEarliestPossibleContractRemoveDate();
+			if (getBusiness().getNumberOfFutureContracts(applicationId, new java.sql.Date(earliestPossibleRemoveDate.getTime())) > 0) {
+				removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
+			} else {
+				removeContracts.setOnSubmit("javascript:alert('" + localize("child_care.only_admin_delete_future_contract", "Earliest possible date to remove contract is") + 
+						new IWTimestamp(earliestPossibleRemoveDate).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " " + "');return false;");
+			}
+		}
 		form.add(removeContracts);
 	
 		return form;
+	}
+	
+	private Date getEarliestPossibleContractRemoveDate() throws RemoteException {
+		Date earliestPossibleRemoveDate = null;
+		if (useFuturePayment) {
+			IWTimestamp t = new IWTimestamp();
+			t.setDay(1);
+			t.addMonths(3);
+			earliestPossibleRemoveDate = t.getDate();
+		} else {
+			PlacementHelper helper = getBusiness().getPlacementHelper(new Integer(getSession().getApplicationID()));
+			earliestPossibleRemoveDate = helper.getEarliestPlacementDate();				
+		}
+		return earliestPossibleRemoveDate;
 	}
 
 	protected Text getText(String text, boolean isActive) {
@@ -438,5 +466,13 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	 */
 	public void setInsideWindow(boolean insideWindow) {
 		this.insideWindow = insideWindow;
+	}
+	
+	public boolean getUseFuturePayment() {
+		return useFuturePayment;
+	}
+	
+	public void setUseFuturePayment(boolean b) {
+		useFuturePayment = b;
 	}
 }
