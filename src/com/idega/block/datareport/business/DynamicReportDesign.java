@@ -363,8 +363,27 @@ public class DynamicReportDesign {
 		//summary.setIsSplitAllowed(true);
 		_designDoc.setSummary(summary);
 	}
+
+	public void addField(String fieldName, String displayParameterName, String className, int columnWidth) {
+		_designDoc.addField(fieldName, className);
+		addColumn(fieldName, displayParameterName, className, columnWidth);
+	}
 	
+	public void addField(String fieldName, String displayParameterName, Class classType, int columnWidth){
+		_designDoc.addField(fieldName,classType);
+		addColumn(fieldName, displayParameterName, classType, columnWidth);
+	}
 	
+	public void addColumn(String fieldName, String displayParameterName, String className, int columnWidth) {
+		addFieldToColumnHeader(displayParameterName, String.class, columnWidth);
+		addToFieldDetail(fieldName, className, columnWidth);
+	}
+
+	private void addColumn(String fieldName, String displayParameterName, Class classType, int columnWidth){
+		addFieldToColumnHeader(displayParameterName, String.class, columnWidth);
+		addToFieldDetail(fieldName, classType, columnWidth);
+	}
+
 	
 	public void addField(String fieldName, String className, int columnWidth) {
 		_designDoc.addField(fieldName, className);
