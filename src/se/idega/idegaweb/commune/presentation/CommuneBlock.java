@@ -581,7 +581,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	protected String getHeaderRow2Class() {
-		return getStyleName(STYLENAME_HEADER_ROW);
+		return getStyleName(STYLENAME_HEADER_ROW2);
 	}
 
 	protected String getLightRowClass() {
