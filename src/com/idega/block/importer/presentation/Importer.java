@@ -497,8 +497,8 @@ public class Importer extends StyledIWAdminWindow {
 		if (reportFile != null) {
 			Iterator reports = reportFile.getChildrenIterator();
 			ICFile report;
-			if (reports.hasNext()) {
-				while (reports != null && reports.hasNext()) {
+			if (reports != null && reports.hasNext()) {
+				while (reports.hasNext()) {
 					report = (ICFile) reports.next();
 					Link link = new Link( ((Integer) report.getPrimaryKey()).intValue());
 					link.setText(report.getName());
@@ -506,7 +506,7 @@ public class Importer extends StyledIWAdminWindow {
 					
 					fileTable.add(link,column,row);
 				}
-			} else {
+			} else if (reports != null) {
 				// Backwards thingy
 				if (reportFile != null) {
 					fileTable.add(new Text(reportFile.getName() + " available"),column,row);
