@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.2 2003/08/20 13:16:39 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.3 2003/08/20 14:57:12 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,11 +12,11 @@ package se.idega.idegaweb.commune.accounting.posting.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.sql.Date;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DateInput;		
 import com.idega.builder.data.IBPage;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -28,7 +28,7 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 
 
 /**
- * PostingList is an idegaWeb block that handles maintenance of some default data (PostingParameters) 
+ * PostingParameterList is an idegaWeb block that handles maintenance of some default data (PostingParameters) 
  * that is used in a "posting". The block shows/edits a list of Periode, Activity, Regulation specs, 
  * Company types and Commune belonging. 
  * This list shows only the most essential values of the PostingParameter.
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.2 2003/08/20 13:16:39 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.3 2003/08/20 14:57:12 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -79,6 +79,8 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String PARAM_TO = "param_to";
 
 	private IBPage editPage;
+	private Date currentFromDate;
+	private Date currentToDate;
 
 	/**
 	 * Handles the property setEditPage
@@ -106,7 +108,7 @@ public class PostingParameterList extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewDefaultForm(iwc);
+					viewForm(iwc);
 					break;
 			}
 		}
@@ -127,26 +129,32 @@ public class PostingParameterList extends AccountingBlock {
 	 * Adds the default form to the block.
 	 */	
 	 
-	private void viewDefaultForm(IWContext iwc) {
+	private void viewForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
 		
-		Table searchPanel = getSearchPanel(localize(KEY_PERIOD_SEARCH, "Period:"),
-									getFromToDatePanel(PARAM_FROM, PARAM_TO),
-									localize(KEY_CANCEL, "Sök"));
+		if (iwc.isParameterSet(PARAM_FROM)) {
+			currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+		}
 		
-		ListTable postingTable = getPostingTable(iwc);
-					
+		if (iwc.isParameterSet(PARAM_TO)) {
+			currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+		}
+			 		
+		
+		app.setTitle(localize(KEY_HEADER, "Konteringlista"));
+		app.setSearchPanel(getSearchPanel());
+		app.setMainPanel(getPostingTable(iwc));
+		app.setButtonPanel(getButtonPanel());
+		add(app);		
+	}
+
+	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel();
 		buttonPanel.addButton(PARAM_COPY, localize(KEY_COPY, "Kopiera"));
 		buttonPanel.addButton(PARAM_NEW, localize(KEY_NEW, "Ny"), editPage);
 		buttonPanel.addButton(PARAM_REMOVE, localize(KEY_REMOVE, "Ta bort"));
 		buttonPanel.addButton(PARAM_CANCEL, localize(KEY_CANCEL, "Avbryt"));
-		
-		app.setTitle(localize(KEY_HEADER, "Konteringlista"));
-		app.setSearchPanel(searchPanel);
-		app.setMainPanel(postingTable);
-		app.setButtonPanel(buttonPanel);
-		add(app);		
+		return buttonPanel;
 	}
 	
 	/*
@@ -194,29 +202,58 @@ public class PostingParameterList extends AccountingBlock {
 		return list;
 	}
 	
-	private Table getSearchPanel(String what, Table fields, String searchButtonText) {
-		GenericButton search = (GenericButton) getButton(new GenericButton(PARAM_SEARCH, searchButtonText));
+	private Table getSearchPanel() {
+		
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setWidth(getWidth());
-		table.add(getSmallText(what), 1, 1);
-		table.add(fields, 2, 1);
-		table.add(search, 3, 1);
+		table.setWidth("75%");
+
+		table.add(getFormLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
+		table.add(getFromToDatePanel(PARAM_FROM, currentFromDate, PARAM_TO, currentToDate), 2, 1);
+		table.add(getFormButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
+
 		return table;
 	}
 
-	private Table getFromToDatePanel(String from, String to) {
+	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		DateInput fromDate = new DateInput(from);
-		DateInput toDate = new DateInput(to);
+		TextInput fromDate = getFormTextInput(param_from, formatDate(date_from, 6),  100, 10);
+		TextInput toDate = getFormTextInput(param_from, formatDate(date_to, 6),  100, 10);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);
 		return table;
+	}
+
+	/*
+	 * Formats a date according to specifications 
+	 * @param dt user/session context 
+	 * @param pp PostingParameter 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 * @return formated date in String format
+	 */
+	private String formatDate(Date dt, int len) {
+		if (dt == null) {
+			return "";
+		}
+		String ret = "";
+		String y = ("00" + dt.getYear()).substring(2);
+		String year = y.substring(y.length()-2);
+		String m = ("00" + (dt.getMonth() + 1));
+		String month = m.substring(m.length()-2);
+		String d = ("00" + dt.getDay());
+		String day = m.substring(d.length()-2);
+		if (len == 4) {
+			ret = year+month;
+		}
+		if (len == 6) {
+			ret = year+month+day;
+		}
+		return ret;
 	}
 
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {

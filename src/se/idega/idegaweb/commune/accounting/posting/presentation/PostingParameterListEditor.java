@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.3 2003/08/20 13:04:19 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.4 2003/08/20 14:57:29 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.3 2003/08/20 13:04:19 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.4 2003/08/20 14:57:29 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -174,7 +174,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private Table getTopPanel(IWContext iwc, PostingParameters pp) {
 
 		Table table = new Table();
-		table.setWidth("50%");
+		table.setWidth("75%");
 		Date dd = Date.valueOf("2003-01-01");
 		
 		table.add(getFormLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
