@@ -104,7 +104,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		newTitleLink.setText(sTitle);
 		newTitleLink.addParameter(prmCategoryId, iCategoryId);
 		int row = 1;
-		T.add(getPDFLink(iwb.getImage("print.gif")), 1, row);
+		T.add(getPDFLink(iwb.getImage("print.gif"), iCategoryId), 1, row);
 		T.add(getNewLink(iCategoryId), 2, row);
 		row++;
 		T.add(Edit.titleText(iwrb.getLocalizedString("header", "Header")), 1, row);
@@ -283,9 +283,10 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		newLink.addParameter("new_text", "new");
 		return newLink;
 	}
-	public Link getPDFLink(PresentationObject MO) {
+	public Link getPDFLink(PresentationObject MO, int iCategoryId) {
 		Link L = new Link(MO);
 		L.setWindowToOpen(ContractFilerWindow.class);
+		L.addParameter(prmCategoryId, iCategoryId);
 		L.addParameter("test", "test");
 		return L;
 	}
