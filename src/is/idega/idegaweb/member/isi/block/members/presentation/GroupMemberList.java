@@ -25,6 +25,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author jonas
@@ -50,7 +51,7 @@ public class GroupMemberList extends Block {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		String name = group==null?"null":group.getName();
+		String name = group==null?"":group.getName();
 		Text title = new Text(name + ": ");
 		title.setBold();
 		add(title);
@@ -71,14 +72,15 @@ public class GroupMemberList extends Block {
 			return null;
 		}
 		int row = 1;
+		resetColor();
 		while(groupIter.hasNext()) {
-			Group childGroup = (Group) groupIter.next();
-			System.out.print("Checking child " + childGroup.getName() + " of group (" + childGroup.getPrimaryKey() + ")");
-			if(childGroup.isUser()) {
-				System.out.print(" (is user)");
-				table.add(childGroup.getName(), 1, row++);
-			}
-			System.out.println();
+			User user = (User) groupIter.next();
+			table.add(user.getName(), 1, row);
+			table.add((new IWTimestamp(user.getDateOfBirth())).getDateString("dd-MM-yyyy"), 2, row);
+			String color = getColor();
+			table.setColor(1, row, color);
+			table.setColor(2, row, color);
+			row++;
 		}
 		
 		return table;
@@ -106,6 +108,23 @@ public class GroupMemberList extends Block {
 		
 		return _groupBiz;
 	}
+	
+	private String getColor() {
+		if(_currentColor == _color1) {
+			_currentColor = _color2;
+		} else {
+			_currentColor = _color1;
+		}
+		return _currentColor;
+	}
+	
+	private void resetColor() {
+		_currentColor = null;
+	}
+	
+	private String _currentColor = null;
+	private String _color1 = "lightgray";
+	private String _color2 = "white";
 	
 	private GroupBusiness _groupBiz = null;
 }
