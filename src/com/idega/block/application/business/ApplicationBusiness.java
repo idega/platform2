@@ -1,8 +1,15 @@
 package com.idega.block.application.business;
 
 import com.idega.block.application.data.ApplicationSubject;
-import java.sql.SQLException;
+import com.idega.block.application.data.ApplicationSubjectHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
+
 import java.sql.Date;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 /**
  * Title:
  * Description:
@@ -18,31 +25,37 @@ public class ApplicationBusiness {
   }
 
   public static ApplicationSubject saveApplicationSubject(int id,String sName, Date expires){
-    try {
-      ApplicationSubject subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
-      boolean update = false;
-      if(id > 0){
-        subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id);
-        update = true;
-      }
-      subject.setExpires(expires);
-      subject.setDescription(sName);
-      if(update)
-        subject.update();
-      else
-        subject.insert();
-
-      return subject;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-    }
+    
+     try {
+		 ApplicationSubject subject = ((ApplicationSubjectHome)IDOLookup.getHome(ApplicationSubject.class)).create();
+		  if(id > 0){
+		    subject = ((ApplicationSubjectHome)IDOLookup.getHome(ApplicationSubject.class)).findByPrimaryKey(new Integer(id));
+		  }
+		  subject.setExpires(expires);
+		  subject.setDescription(sName);
+		  subject.store();
+		
+		  return subject;
+	}
+	catch (IDOLookupException e) {
+		e.printStackTrace();
+	}
+	catch (IDOStoreException e) {
+		e.printStackTrace();
+	}
+	catch (CreateException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+    
     return null;
   }
 
   public static boolean deleteApplicationSubject(int id){
   try {
-      ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id).delete();
+      ((ApplicationSubjectHome)IDOLookup.getHome(ApplicationSubject.class)).findByPrimaryKey(new  Integer(id)).remove();
       return true;
     }
     catch (Exception ex) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.4 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ApplicationBMPBean.java,v 1.5 2004/06/05 06:16:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,9 @@ package com.idega.block.application.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.util.IWTimestamp;
 
@@ -28,11 +31,11 @@ public class ApplicationBMPBean extends com.idega.data.GenericEntity implements 
   private static final String STATUS_CHANGED = "status_changed";
 
 
-  public static final String STATUS_SUBMITTED = "S";
-  public static final String STATUS_APPROVED = "A";
-  public static final String STATUS_REJECTED = "R";
-  public static final String STATUS_SIGNED = "C";
-  public static final String STATUS_GARBAGE = "G";
+  public static final String STATUS_SUBMITTED = Status.SUBMITTED.toString();
+  public static final String STATUS_APPROVED = Status.APPROVED.toString();
+  public static final String STATUS_REJECTED = Status.REJECTED.toString();
+  public static final String STATUS_SIGNED = Status.SIGNED.toString();
+  public static final String STATUS_GARBAGE = Status.GARBAGE.toString();
 
   public ApplicationBMPBean() {
     super();
@@ -109,6 +112,10 @@ public class ApplicationBMPBean extends com.idega.data.GenericEntity implements 
   public int getApplicantId() {
     return getIntColumnValue(getApplicantIdColumnName());
   }
+  
+  public Applicant getApplicant(){
+  	return (Applicant)getColumnValue(getApplicantIdColumnName());
+  }
 
   public void setSubmitted(Timestamp submitted) {
     setColumn(getSubmittedColumnName(),submitted);
@@ -158,4 +165,29 @@ public class ApplicationBMPBean extends com.idega.data.GenericEntity implements 
   public Timestamp getStatusChanged() {
     return((Timestamp)getColumnValue(getStatusChangedColumnName()));
   }
+  
+  public Collection ejbFindByApplicantID(Integer ID)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()));
+  }
+  
+  public Collection ejbFindByApplicantAndStatus(Integer ID,String status)throws FinderException{
+	  return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status).appendOrderByDescending(getStatusChangedColumnName()));
+	}
+  
+  public Collection ejbFindBySubjectAndStatus(Integer subjectID,String status)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getSubjectIdColumnName(),subjectID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status));
+  }
+  
+  public Collection ejbFindByStatus(String status)throws FinderException{
+	 return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(getStatusColumnName(),status).appendOrderByDescending(getStatusChangedColumnName()));
+   }
+  
+  public Collection ejbFindBySubject(Integer subjectID)throws FinderException{
+	 return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getSubjectIdColumnName(),subjectID.intValue()));
+   }
+   
+   public Collection ejbFindBySQL(String sql)throws FinderException{
+	  return super.idoFindPKsBySQL(sql);
+	}	
+   
 }

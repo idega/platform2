@@ -1,10 +1,15 @@
 package com.idega.block.application.presentation;
 
-import java.util.List;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
-import com.idega.block.application.business.ApplicationBusiness;
-import com.idega.block.application.business.ApplicationFinder;
+import javax.ejb.FinderException;
+
+import com.idega.block.application.business.ApplicationService;
 import com.idega.block.application.data.ApplicationSubject;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -62,7 +67,7 @@ public class ApplicationSubjectMaker extends Block{
         ApplicationSubject subject = null;
         if(iwc.isParameterSet("app_subject_id")){
           try {
-            subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter("app_subject_id")));
+            subject = getApplicationService(iwc).getSubjectHome().findByPrimaryKey(new Integer(iwc.getParameter("app_subject_id")));
           }
           catch (Exception ex) {
 
@@ -81,7 +86,7 @@ public class ApplicationSubjectMaker extends Block{
         T.setVerticalAlignment(1,1,"top");
         T.setVerticalAlignment(2,1,"top");
         T.add(getSubjectFormTable(subject),1,1);
-        T.add(getSubjectTable(subject),2,1);
+        T.add(getSubjectTable(iwc,subject),2,1);
         add(T);
 
       }
@@ -96,9 +101,18 @@ public class ApplicationSubjectMaker extends Block{
     return LinkTable;
   }
 
-  private PresentationObject getSubjectTable(ApplicationSubject subject){
+  private PresentationObject getSubjectTable(IWContext iwc,ApplicationSubject subject){
 
-    List L = ApplicationFinder.listOfSubject();
+    Collection L = null;
+	try {
+		L = getApplicationService(iwc).getSubjectHome().findAll();
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
     DataTable dTable = new DataTable();
     dTable.setTitlesHorizontal(true);
     dTable.addTitle(iwrb.getLocalizedString("subjects","Subjects"));
@@ -106,10 +120,10 @@ public class ApplicationSubjectMaker extends Block{
     dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
 
     if(L != null){
-      int len = L.size();
       int a = 2;
-      for (int i = 0; i < len; i++) {
-        ApplicationSubject AS = (ApplicationSubject) L.get(i);
+      for (Iterator iter = L.iterator(); iter.hasNext();) {
+		ApplicationSubject AS = (ApplicationSubject) iter.next();
+		
         dTable.add(getSubjectLink(AS),1,a);
         dTable.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
         dTable.add((getDeleteLink(AS)),3,a);
@@ -133,7 +147,7 @@ public class ApplicationSubjectMaker extends Block{
     if(subject !=null){
       Description.setContent(subject.getDescription());
       ExpireDate.setDate(subject.getExpires());
-      dTable.add(new HiddenInput("app_subject_id",String.valueOf(subject.getID())));
+      dTable.add(new HiddenInput("app_subject_id",subject.getPrimaryKey().toString()));
     }
     dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
     dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
@@ -148,27 +162,37 @@ public class ApplicationSubjectMaker extends Block{
 
   public Link getDeleteLink(ApplicationSubject AS){
     Link L = new Link("X");
-    L.addParameter("delete",AS.getID());
+    L.addParameter("delete",AS.getPrimaryKey().toString());
     return L;
   }
 
    public Link getSubjectLink(ApplicationSubject AS){
     Link L = new Link(AS.getDescription());
-    L.addParameter("app_subject_id",AS.getID());
+    L.addParameter("app_subject_id",AS.getPrimaryKey().toString());
     return L;
   }
 
   public void doDelete(IWContext iwc){
-    int id = Integer.parseInt(iwc.getParameter("delete"));
-    ApplicationBusiness.deleteApplicationSubject(id);
+    Integer id = new Integer(iwc.getParameter("delete"));
+   try {
+		 getApplicationService(iwc).removeApplicationSubject(id);
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
   }
 
   public void doUpdate(IWContext iwc,ApplicationSubject subject){
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
-    int id = subject !=null?subject.getID():-1;
+    Integer id = subject !=null?(Integer)subject.getPrimaryKey():new Integer(-1);
     if(sDesc.length() > 0){
-      ApplicationBusiness.saveApplicationSubject(id,sDesc,new IWTimestamp(sDate).getSQLDate());
+     try {
+		 getApplicationService(iwc).storeApplicationSubject(id,sDesc,new IWTimestamp(sDate).getSQLDate());
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
     }
   }
 
@@ -178,6 +202,10 @@ public class ApplicationSubjectMaker extends Block{
     iwb = getBundle(iwc);
     core = iwc.getIWMainApplication().getBundle( iwc.getIWMainApplication().CORE_BUNDLE_IDENTIFIER );
     control(iwc);
+  }
+  
+  public ApplicationService getApplicationService(IWApplicationContext iwac)throws RemoteException{
+	  return (ApplicationService)IBOLookup.getServiceInstance(iwac,ApplicationService.class);
   }
 
 }

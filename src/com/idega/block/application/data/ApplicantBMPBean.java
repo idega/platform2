@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantBMPBean.java,v 1.3 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ApplicantBMPBean.java,v 1.4 2004/06/05 06:16:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,10 @@
 package com.idega.block.application.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.StringTokenizer;
+
+import javax.ejb.FinderException;
 
 /**
  *
@@ -329,4 +332,41 @@ public class ApplicantBMPBean extends com.idega.data.TreeableEntityBMPBean imple
 
     return super.idoFindIDsBySQL(sql.toString());
   }
+  
+  public Collection ejbFindByApplicationStatusOrderedBy(String status,String order) throws FinderException{
+		String applicantTable = ENTITY_NAME;
+		String applicationTable = ApplicationBMPBean.ENTITY_NAME;
+		 StringBuffer sql = new StringBuffer("select distinct ");
+		 sql.append(applicantTable);
+		 sql.append(".* from ");
+		 sql.append(applicantTable);
+		 sql.append(",");
+		 sql.append(applicationTable);
+		 sql.append(" where ");
+		 sql.append(applicantTable);
+		 sql.append(".");
+		 sql.append(getIDColumnName());
+		 sql.append(" = ");
+		 sql.append(applicationTable);
+		 sql.append(".");
+		 sql.append(ApplicationBMPBean.getApplicantIdColumnName());
+		 sql.append(" and ");
+		 if(status != null){
+		   sql.append(applicationTable);
+		   sql.append(".");
+		   sql.append(ApplicationBMPBean.getStatusColumnName());
+		   sql.append(" = '");
+		   sql.append(status);
+		   sql.append("' ");
+		 }
+		 if(order != null && order.length() > 0){
+		   sql.append(" order by ");
+		   sql.append( order);
+		 }
+		 return super.idoFindPKsBySQL(sql.toString());
+  }
+  
+  public Collection ejbFindBySQL(String sql)throws FinderException{
+  	return super.idoFindPKsBySQL(sql);
+  }	
 }

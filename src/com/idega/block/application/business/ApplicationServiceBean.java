@@ -6,6 +6,9 @@ package com.idega.block.application.business;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
@@ -15,6 +18,7 @@ import com.idega.block.application.data.ApplicationSubjectHome;
 import com.idega.block.application.data.ApplicationSubjectInfo;
 import com.idega.block.application.data.ApplicationSubjectInfoHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOStoreException;
 
 /**
  * ApplicationServiceBean
@@ -37,6 +41,46 @@ public class ApplicationServiceBean extends IBOServiceBean {
 	
 	public ApplicationSubjectInfoHome getSubjectInfoHome() throws RemoteException{
 		return (ApplicationSubjectInfoHome) getIDOHome(ApplicationSubjectInfo.class);
+	}
+	
+	
+
+	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires)
+		throws RemoteException {
+
+		try {
+			ApplicationSubject subject = getSubjectHome().create();
+
+			if (ID != null && ID.intValue() > 0) {
+				subject = getSubjectHome().findByPrimaryKey(ID);
+			}
+			subject.setExpires(expires);
+			subject.setDescription(sName);
+			subject.store();
+
+			return subject;
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean removeApplicationSubject(Integer id) {
+		try {
+			getSubjectHome().findByPrimaryKey(id).remove();
+			return true;
+		}
+		catch (Exception ex) {
+
+		}
+		return false;
 	}
 	
 	

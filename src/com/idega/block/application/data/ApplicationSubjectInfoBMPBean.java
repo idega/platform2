@@ -1,6 +1,6 @@
 /*
 
- * $Id: ApplicationSubjectInfoBMPBean.java,v 1.2 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ApplicationSubjectInfoBMPBean.java,v 1.3 2004/06/05 06:16:42 aron Exp $
 
  *
 
@@ -24,6 +24,9 @@ package com.idega.block.application.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 
 
@@ -156,6 +159,10 @@ public class ApplicationSubjectInfoBMPBean extends com.idega.data.GenericEntity 
 
 
   }
+  
+  public Collection ejbFindAll() throws FinderException{
+	  return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+	}
 
 }
 

@@ -7,37 +7,30 @@ public class ApplicationSubjectHomeImpl extends com.idega.data.IDOFactory implem
   return ApplicationSubject.class;
  }
 
+
  public ApplicationSubject create() throws javax.ejb.CreateException{
-  return (ApplicationSubject) super.idoCreate();
+  return (ApplicationSubject) super.createIDO();
  }
 
- public ApplicationSubject createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApplicationSubjectBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public ApplicationSubject findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ApplicationSubject) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findNonExpired()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApplicationSubjectBMPBean)entity).ejbFindNonExpired();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ApplicationSubject findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ApplicationSubject) super.idoFindByPrimaryKey(pk);
+  return (ApplicationSubject) super.findByPrimaryKeyIDO(pk);
  }
 
- public ApplicationSubject findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

@@ -7,37 +7,25 @@ public class ApplicantHomeImpl extends com.idega.data.IDOFactory implements Appl
   return Applicant.class;
  }
 
+
  public Applicant create() throws javax.ejb.CreateException{
-  return (Applicant) super.idoCreate();
+  return (Applicant) super.createIDO();
  }
 
- public Applicant createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findByApplicationStatusOrderedBy(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApplicantBMPBean)entity).ejbFindByApplicationStatusOrderedBy(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public Applicant findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Applicant) super.idoFindByPrimaryKey(id);
- }
-
- public Applicant findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Applicant) super.idoFindByPrimaryKey(pk);
- }
-
- public Applicant findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
+public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApplicantBMPBean)entity).ejbFindBySQL(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 public java.util.Collection findBySSN(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -45,6 +33,11 @@ public java.util.Collection findBySSN(java.lang.String p0)throws javax.ejb.Finde
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
+
+ public Applicant findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (Applicant) super.findByPrimaryKeyIDO(pk);
+ }
+
 
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubjectBMPBean.java,v 1.2 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ApplicationSubjectBMPBean.java,v 1.3 2004/06/05 06:16:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,11 @@ package com.idega.block.application.data;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.util.IWTimestamp;
 
 /**
  *
@@ -96,5 +101,13 @@ public class ApplicationSubjectBMPBean extends com.idega.data.GenericEntity impl
 
   public String getStatus() {
     return((String)getColumnValue(status_));
+  }
+  
+  public Collection ejbFindAll() throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+  }
+  
+  public Collection ejbFindNonExpired() throws FinderException{
+	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhere(getExpiresColumnName()).appendGreaterThanSign().append(IWTimestamp.RightNow().getDate()));
   }
 }
