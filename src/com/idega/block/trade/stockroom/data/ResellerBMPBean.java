@@ -20,6 +20,11 @@ import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -30,7 +35,7 @@ import com.idega.data.IDOLookup;
  * @version 1.0
  */
 
-public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.block.trade.stockroom.data.Reseller {
+public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implements Reseller{
   private String newName;
 
   public ResellerBMPBean() {
@@ -247,4 +252,15 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     }
   }
 
+	public Collection ejbFindAllByGroupID(Object groupPK) throws FinderException {
+		Table table = new Table(this);
+		Column groupColumn = new Column(table, getColumnNameGroupID());
+		Column validColumn = new Column(table, getColumnNameIsValid());
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(groupColumn, MatchCriteria.EQUALS, groupPK));
+		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
+		return this.idoFindPKsByQuery(query);
+	}
+  
 }

@@ -121,6 +121,7 @@ public class ProductCategoryEditor extends CategoryWindow {
 				iLocale = iwc.getCurrentLocaleId();
 				sLocale = ICLocaleBusiness.getLocale(iLocale).toString();
 			}
+			int defaultLocaleID = ICLocaleBusiness.getLocaleId(iwc.getIWMainApplication().getSettings().getDefaultLocale());
 
 			List products = getProductBusiness(iwc).getProducts(_productCategory);
 			Collection allProducts = ((ProductHome) IDOLookup.getHome(Product.class)).findProducts(-1, -1, null, null, null, iLocale, iFilter);
@@ -130,16 +131,25 @@ public class ProductCategoryEditor extends CategoryWindow {
 			/** @todo Sortera productin */
 			Product product;
 			Iterator iter = allProducts.iterator();
+			String productName;
 			while (iter.hasNext()) {
 				product = (Product) iter.next();
+				productName = product.getProductName(localeId, defaultLocaleID, null);
+				if (productName == null) {
+					productName = iwrb.getLocalizedString("trade.not_localized", "Not localized");
+				}
 				//        product = (Product) iter.next();
-				sdb.getLeftBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
+				sdb.getLeftBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), productName);
 			}
 			iter = products.iterator();
 			while (iter.hasNext()) {
 				//        product = getProductHome().findByPrimaryKey(iter.next());
 				product = (Product) iter.next();
-				sdb.getRightBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
+				productName = product.getProductName(localeId, null);
+				if (productName == null) {
+					productName = iwrb.getLocalizedString("trade.not_localized", "Not localized");
+				}
+				sdb.getRightBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), productName);
 			}
 			sdb.getRightBox().selectAllOnSubmit();
 			sdb.getLeftBox().setHeight(height);

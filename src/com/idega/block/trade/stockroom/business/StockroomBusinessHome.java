@@ -1,8 +1,12 @@
 package com.idega.block.trade.stockroom.business;
 
+import com.idega.business.IBOHome;
 
-public interface StockroomBusinessHome extends com.idega.business.IBOHome
-{
- public StockroomBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * @author gimmi
+ */
+public interface StockroomBusinessHome extends IBOHome {
+
+	public StockroomBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

@@ -13,11 +13,10 @@ import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Reseller;
-import com.idega.block.trade.stockroom.data.ResellerBMPBean;
+import com.idega.block.trade.stockroom.data.ResellerHome;
 import com.idega.block.trade.stockroom.data.ResellerStaffGroup;
 import com.idega.block.trade.stockroom.data.ResellerStaffGroupBMPBean;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.block.trade.stockroom.data.SupplierBMPBean;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -26,17 +25,15 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.data.GenericGroupHome;
-import com.idega.core.user.data.User;
 import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -348,27 +345,26 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
   public  int getUserSupplierId(User user) throws RuntimeException, SQLException{
   	try {
-	  	GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
-	  	List gr = gGroup.getAllGroupsContainingUser(user);
+	  	List gr = user.getParentGroups();
 	    if(gr != null){
     		SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 	      Iterator iter = gr.iterator();
 	      while (iter.hasNext()) {
-	        GenericGroup item = (GenericGroup)iter.next();
+	        Group item = (Group)iter.next();
 	        if(item.getGroupType().equals(SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE)){
-	        		try {
-	        			Collection coll = sHome.findAllByGroupID(item.getID());
-	        			if (coll != null && !coll.isEmpty()) {
-	        				return ((Supplier) coll.iterator().next()).getID();
-	        			} 
-	        		} catch (FinderException fe) {
-	        			fe.printStackTrace();
-	        		}
+        		try {
+        			Collection coll = sHome.findAllByGroupID( ((Integer) item.getPrimaryKey()).intValue());
+        			if (coll != null && !coll.isEmpty()) {
+        				return ((Supplier) coll.iterator().next()).getID();
+        			} 
+        		} catch (FinderException fe) {
+        			fe.printStackTrace();
+        		}
 	        		
-	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
-	          if(supp != null && supp.length > 0){
-	            return supp[0].getID();
-	          }
+//	          IDOLegacyEntity[] supp = ((Supplier) SupplierBMPBean.getStaticInstance(Supplier.class)).findAllByColumn(SupplierBMPBean.getColumnNameGroupID(),item.getID());
+//	          if(supp != null && supp.length > 0){
+//	            return supp[0].getID();
+//	          }
 	        }
 	      }
 	    }
@@ -386,7 +382,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusinessBean.getUser(iwc);
+      User us = iwc.getCurrentUser();//LoginBusinessBean.getUser(iwc);
       if(us != null){
         int suppId = getUserSupplierId(us);
         LoginBusinessBean.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), iwc);
@@ -405,7 +401,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusinessBean.getUser(iwc);
+      User us = iwc.getCurrentUser();//LoginBusinessBean.getUser(iwc);
       if(us != null){
         int resellerId = getUserResellerId(us);
         LoginBusinessBean.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), iwc);
@@ -418,25 +414,35 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
 
   public  int getUserResellerId(User user) throws RuntimeException, SQLException{
-	try {
-		GenericGroup gGroup = ((GenericGroupHome) IDOLookup.getHome(GenericGroup.class)).createLegacy();
-		List gr = gGroup.getAllGroupsContainingUser(user);
+  	List gr = user.getParentGroups();
 		if(gr != null){
-		  Iterator iter = gr.iterator();
-		  while (iter.hasNext()) {
-				GenericGroup item = (GenericGroup)iter.next();
-				if(item.getGroupType().equals(((ResellerStaffGroup) ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
-				  IDOLegacyEntity[] reseller = ((Reseller) ResellerBMPBean.getStaticInstance(Reseller.class)).findAllByColumn(ResellerBMPBean.getColumnNameGroupID(),item.getID());
-				  if(reseller != null && reseller.length > 0){
-					return reseller[0].getID();
-				  }
+			try {
+				ResellerHome rHome = (ResellerHome) IDOLookup.getHome(Reseller.class);
+				Iterator iter = gr.iterator();
+			  while (iter.hasNext()) {
+					Group item = (Group)iter.next();
+					if(item.getGroupType().equals(((ResellerStaffGroup) ResellerStaffGroupBMPBean.getStaticInstance(ResellerStaffGroup.class)).getGroupTypeValue())){
+	      		try {
+	      			Collection coll = rHome.findAllByGroupID( item.getPrimaryKey() );
+	      			if (coll != null && !coll.isEmpty()) {
+	      				return ((Supplier) coll.iterator().next()).getID();
+	      			} 
+	      		} catch (FinderException fe) {
+	      			fe.printStackTrace();
+	      		}
+
+//	      		IDOLegacyEntity[] reseller = ((Reseller) ResellerBMPBean.getStaticInstance(Reseller.class)).findAllByColumn(ResellerBMPBean.getColumnNameGroupID(),item.getID());
+//					  if(reseller != null && reseller.length > 0){
+//						return reseller[0].getID();
+//					  }
+					}
 				}
-		  }
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
 		}
 		throw new RuntimeException("Does not belong to any supplier");
-	} catch (IDOLookupException e) {
-		throw new RuntimeException("Does not belong to any supplier");
-	}
 	
 	/*com.idega.core.data.GenericGroup gGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).createLegacy();
     List gr = gGroup.getAllGroupsContainingUser(user);
