@@ -5,7 +5,7 @@ package com.idega.block.cal.presentation;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Iterator;
 import java.util.List;
 import com.idega.block.cal.business.CalBusiness;
@@ -304,7 +304,7 @@ public class CalendarEntryCreator extends Form{
 		if(view != null && !view.equals("")) {
 			v = Integer.parseInt(view);
 		}
-		dayFromField = new DatePicker(dayFromFieldParameterName);		
+		dayFromField = new DatePicker(dayFromFieldParameterName);	
 		dayToField = new DatePicker(dayToFieldParameterName);		
 		if(day != null && month != null && year != null && 
 				v == CalendarParameters.DAY) {
@@ -610,8 +610,10 @@ public class CalendarEntryCreator extends Form{
 			entryAttendees = entryAttendees.substring(entryAttendees.lastIndexOf("_")+1);
 		}
 
-		Timestamp from = Timestamp.valueOf(entryDate);
-		Timestamp to = Timestamp.valueOf(entryEndDate);
+		IWTimestamp f = new IWTimestamp(entryDate);
+		IWTimestamp t = new IWTimestamp(entryEndDate);
+		Timestamp from = f.getTimestamp();
+		Timestamp to = t.getTimestamp();
 		from.setHours(Integer.parseInt(entryTimeHour));
 		from.setMinutes(Integer.parseInt(entryTimeMinute));
 		to.setHours(Integer.parseInt(entryEndTimeHour));

@@ -505,7 +505,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				e.printStackTrace();
 			}			
 //		}
-		Timestamp startTime = Timestamp.valueOf(startDate);		
+			IWTimestamp st = new IWTimestamp(startDate);
+		Timestamp startTime = st.getTimestamp();		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
 			Integer sH =new Integer(startHour);		
@@ -517,8 +518,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		startTime.setSeconds(0);
 //		startTime.setNanos(0);
-		
-		Timestamp endTime = Timestamp.valueOf(endDate);
+		IWTimestamp et = new IWTimestamp(endDate);
+		Timestamp endTime = et.getTimestamp();
 		//modifications of the time properties of the end timestamp
 		if(endHour != null || !endHour.equals("")) {
 			Integer eH =new Integer(endHour);
