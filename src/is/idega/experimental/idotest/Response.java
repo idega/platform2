@@ -1,0 +1,9 @@
+package is.idega.experimental.idotest;
+
+import javax.ejb.*;
+
+public interface Response extends com.idega.data.IDOEntity
+{
+ public void setResponse(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.lang.String getResponse() throws java.rmi.RemoteException;
+}
