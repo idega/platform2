@@ -421,7 +421,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     browser.setUseExternalForm(true);
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
-    TextEditorConverter textEditorConverter = new TextEditorConverter(form);
+    TextEditorConverter textEditorConverter = new WorkReportAccountInputConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     // define path short keys and map corresponding converters
     int i = 1;
