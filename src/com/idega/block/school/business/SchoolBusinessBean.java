@@ -51,6 +51,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
    public SchoolYearHome getSchoolYearHome()throws java.rmi.RemoteException{
     return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
   }
+   public SchoolAreaHome getSchoolAreaHome()throws java.rmi.RemoteException{
+    return (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
+  }
+  public SchoolTypeHome getSchoolTypeHome()throws java.rmi.RemoteException{
+    return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+  }
 	public School getSchool(Object primaryKey)
 	{
 		try
