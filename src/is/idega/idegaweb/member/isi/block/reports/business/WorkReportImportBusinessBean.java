@@ -853,9 +853,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
-		if (sheets > 3)
+		if (sheets != 3 && sheets != 4) {
 			throw new WorkReportImportException(
 					"workreportimportexception.wrong_number_of_sheets");
+		}
 
 		HSSFSheet members = excel.getSheetAt(SHEET_BOARD_PART);
 		int firstRow = 6;
@@ -1206,9 +1207,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
-		if (sheets > 3)
+		if (sheets != 3 && sheets != 4) {
 			throw new WorkReportImportException(
 					"workreportimportexception.wrong_number_of_sheets");
+		}
 
 		HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
 		int firstRow = 4;
