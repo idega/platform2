@@ -1,5 +1,5 @@
 /*
- * $Id: CancelFormContext.java,v 1.1 2005/01/18 13:44:24 laddi Exp $ Created
+ * $Id: CancelFormContext.java,v 1.2 2005/02/04 14:35:03 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,7 @@ import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -39,10 +40,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- * Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/04 14:35:03 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CancelFormContext extends PrintingContextImpl {
 
@@ -75,9 +76,11 @@ public class CancelFormContext extends PrintingContextImpl {
 		props.put("child", child);
 		props.put("provider", provider);
 		Address address = null;
+		PostalCode code = null;
 		try {
 			CommuneUserBusiness userBuiz = getUserService(iwac);
 			address = userBuiz.getPostalAddress(user);
+			code = address.getPostalCode();
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -86,6 +89,7 @@ public class CancelFormContext extends PrintingContextImpl {
 			e.printStackTrace();
 		}
 		props.put("address", address);
+		props.put("postalCode", code);
 		props.put("application", application.getRequestedCancelDate());
 		
 		addDocumentProperties(props);
