@@ -538,7 +538,7 @@ private void isLoggedOn(ModuleInfo modinfo){
                         Member member = (Member) modinfo.getSession().getAttribute("member_login");
                         user.addToText(member.getName());
 
-                        Link hlekkur = new Link(user,"/test/nyskraning.jsp?kt="+member.getSocialSecurityNumber());
+                        Link hlekkur = new Link(user,"/createlogin.jsp?kt="+member.getSocialSecurityNumber());
 
                         uppi.add(hlekkur);
                         uppi.setAlignment(1,1,"center");

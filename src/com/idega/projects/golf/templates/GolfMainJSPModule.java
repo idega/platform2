@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.15 2001/05/23 15:34:08 gummi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.16 2001/05/24 19:54:13 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,11 +15,15 @@ import com.idega.jmodule.*;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.projects.golf.entity.Member;
 import java.sql.SQLException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * @author
  */
 public class GolfMainJSPModule extends MainSideJSPModule {
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
   public void initializePage() {
     this.setPage(new GolfMainJSPModulePage());
@@ -87,13 +91,20 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   }
 
 
+  public IWResourceBundle getResourceBundle(){
+     return getResourceBundle(getModuleInfo());
+  }
+
+  public IWBundle getBundle(){
+    return getBundle(getModuleInfo());
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+
+
+
+
 }
-
-
-
-/*
-
-
-
-
-*/
