@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/01/02 14:31:36 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/13 09:43:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -52,6 +52,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
     private static final String ISTERMINATED_KEY = PREFIX + "isTerminated";
     private static final String NOTES_DEFAULT = "Kommentar";
     private static final String NOTES_KEY = PREFIX + "notes";
+    private static final String NOTKNOWN_DEAFULT  = "Inte känd";
+    private static final String NOTKNOWN_KEY  = PREFIX + "notKnown";
     private static final String NOUSERFOUND_KEY = PREFIX + "noUserFound";
     private static final String NOUSERFOUND_DEFAULT
         = "Inga träffar på valda sökvillkor";
@@ -441,8 +443,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	 * @param user the person to get info about
      * @return displayable string with address info
 	 */
-    private static String getAddressStringFromUser (final User user) {
-        String result = "not known";
+    private String getAddressStringFromUser (final User user) {
+			String result = localize (NOTKNOWN_KEY, NOTKNOWN_DEAFULT);
         final Collection addressCollection = user.getAddresses ();
         if (null != addressCollection && !addressCollection.isEmpty ()) {
             final Address address = (Address) addressCollection.toArray () [0];
@@ -521,16 +523,6 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         calendar.set (year, month - 1, day);
         return calendar.getTime ();
     }
-
-    /*private SchoolClassMember getCurrentSchoolClassMembership
-        (final SchoolCommuneBusiness communeBusiness, final User user,
-         final int schoolId) throws RemoteException {
-        return null == user ? null
-                : (0 <= schoolId
-                   ? communeBusiness.getCurrentSchoolClassMembership (user,
-                                                                      schoolId)
-                   : communeBusiness.getCurrentSchoolClassMembership (user));
-    }*/
 
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
