@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.82 2005/01/28 07:42:40 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.83 2005/01/28 08:14:01 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -589,8 +589,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolAddress()), 3, row++);
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
-			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() ||
-					activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled()) {
+			boolean cancelledContractStillActive = activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled();
+			if (activeApplication.getOfferValidUntil() != null) {
+				cancelledContractStillActive &= (new Date(System.currentTimeMillis())).getTime() < activeApplication.getOfferValidUntil().getTime();
+			}
+			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusWaiting();
+			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() || cancelledContractStillActive) {
 				GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 				careTimePopup.setWindowToOpen(ChildCareWindow.class);
 				careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
@@ -612,12 +616,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				
 				GenericButton cancelFileButton = null;
 				
-				if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusCancelled()) {
+				if (cancelledContractStillActive) {
 					if (activeApplication.getCancelFormFileID() > 0) {
 						cancelFileButton = getButton(new GenericButton("cancel_file", localize("child_care.show_cancel_file", "Show cancel document")));
 						cancelFileButton.setFileToOpen(activeApplication.getCancelFormFileID());
 					}
-					// Add cancel doc file button
 				} else {
 					layoutTbl.add(cancelPopup, 3, row);					
 				}
