@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.1 2003/04/22 10:45:33 joakim Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.2 2003/04/22 11:42:35 laddi Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -48,7 +48,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		switch (parseAction(iwc)) {
 			case CCConstants.ACTION_SUBMIT_1 :
 				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
-				createPagePhase2(iwc, layoutTbl);
+				createPagePhase2(layoutTbl);
 				break;
 			case CCConstants.ACTION_SUBMIT_CONFIRM :
 				createPagePhase1(iwc, layoutTbl);
@@ -59,8 +59,8 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 				break;
 			case CCConstants.ACTION_SUBMIT_2 :
 				//				iwc.setSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE, getKeepInQueue(iwc));
-				handleAcceptStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));
-				handleKeepQueueStatus(iwc, getKeepInQueue(iwc));
+				handleAcceptStatus((List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));
+				handleKeepQueueStatus(getKeepInQueue(iwc));
 				iwc.forwardToIBPage(getParentPage(), getEndPage());
 				//				createSubmitPage(iwc, layoutTbl);
 				break;
@@ -77,7 +77,6 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 //					"Requst for information",
 //					"Requesting information...",
 //					application.getOwner());
-				//TODO: find a better text
 				createRequestInfoConfirmPage(layoutTbl);
 				/*	layoutTbl.add(new Text("[Requesting info from " + 
 						getChildCareBusiness(iwc)
@@ -162,7 +161,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @throws RemoteException
 	 * @throws RemoveException
 	 */
-	private void handleKeepQueueStatus(IWContext iwc, List l) throws RemoteException, RemoveException {
+	private void handleKeepQueueStatus(List l) throws RemoteException, RemoveException {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			String[] status = (String[]) i.next();
@@ -181,7 +180,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @param l
 	 * @throws RemoteException
 	 */
-	private void handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
+	private void handleAcceptStatus(List l) throws RemoteException {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			AcceptedStatus status = (AcceptedStatus) i.next();
@@ -199,7 +198,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 //						Integer.valueOf(status._appid).intValue(),
 //						application.getOwner(),
 //						status._date);
-					//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), /**@TODO: Change text */
+					//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
 					//						getRejectedMessage(iwc, application),
 					//						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
 					//						getAcceptedMessage(iwc, application),
@@ -281,7 +280,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 					//_date = new java.sql.Date(calendar.getTimeInMillis());
 					_date = stamp.getDate();
 				} catch (IllegalArgumentException ex) {
-					_date = new Date(0); /**@TODO: IS THIS OK?*/
+					_date = new Date(0);
 				}
 			}
 		}
@@ -376,7 +375,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 			layoutTbl.setStyle(1, 4, "padding-top", "15px");
 		}
 	}
-	private void createPagePhase2(IWContext iwc, Table layoutTbl) throws RemoteException {
+	private void createPagePhase2(Table layoutTbl) throws RemoteException {
 //		Table appTable = new ChildCarePlaceOfferTable2(this, sortApplications(findApplications(iwc), true));
 		SubmitButton submitBtn =
 			new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_2).toString());
@@ -410,16 +409,15 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		} catch (NullPointerException e) { //no parameter set
 			return new ArrayList(); //empty collection
 		} catch (FinderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return choices;
 	}
+	
 	/**
 	 * Method getChildCareBusiness.
 	 * @param iwc
 	 * @return ChildCareBusiness
-	 */
 	private ChildCareQueue getChildCareQueue(IWContext iwc) {
 		try {
 			return (ChildCareQueue) com.idega.business.IBOLookup.getServiceInstance(iwc, ChildCareQueue.class);
@@ -427,6 +425,8 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 			return null;
 		}
 	}
+	 */
+
 	/**
 	 * Method sortApplications.
 	 * @param apps
