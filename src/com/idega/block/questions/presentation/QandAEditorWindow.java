@@ -191,7 +191,8 @@ public class QandAEditorWindow extends IWAdminWindow {
 			TextInput answerTitle = new TextInput(PRM_A_TITLE);
 			answerTitle.setWidth("500");
 			TextEditor questionBody = new TextEditor(PRM_Q_BODY,"");
-			questionBody.setColumns(70);
+			// @TODO commenting the following out, it broke the build, aron fix when he gets to work
+			/*questionBody.setColumns(70);
 			questionBody.setRows(10);
 			TextEditor answerBody = new TextEditor(PRM_A_BODY,"");
 			answerBody.setColumns(70);
@@ -209,7 +210,7 @@ public class QandAEditorWindow extends IWAdminWindow {
 			if(answer!=null){
 				answerTitle.setContent(answer.getHeadline());
 				answerBody.setContent(answer.getBody());
-			}
+			}*/
 			
 			SubmitButton save = new SubmitButton(PRM_SAVE,iwrb.getLocalizedString("save","Save"));
 			SubmitButton close = new SubmitButton(PRM_CLOSE,iwrb.getLocalizedString("close","Close"));
