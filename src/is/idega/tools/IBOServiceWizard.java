@@ -1,6 +1,7 @@
 package is.idega.tools;
 
-import java.io.File;
+import java.io.*;
+import java.util.*;
 import java.lang.reflect.Method;
 
 
@@ -35,8 +36,43 @@ public class IBOServiceWizard extends EJBWizard{
   public static void main(String[] args)throws Exception{
     try{
       String className = args[0];
-      IBOServiceWizard instance = new IBOServiceWizard(className);
-      instance.doJavaFileCreate();
+         if(className.endsWith(".java") || className.endsWith(".JAVA")){
+      	File javaFile = new File(className);
+      	FileReader reader = new FileReader(javaFile);
+      	LineNumberReader linereader = new LineNumberReader(new FileReader(javaFile));
+      	String line;
+      	String pack = "";
+      	String clss = "";
+      	int nr = 0;
+      	while( (line = linereader.readLine()) != null ){
+      		StringTokenizer tok = new StringTokenizer(line," ;");
+      		while( tok.hasMoreTokens()){
+      			String token = tok.nextToken();
+      			if(token.equals("package")){
+      				if(tok.hasMoreTokens())
+      					pack = tok.nextToken();
+      			}
+      			else if(token.equals("class")){
+      				if(tok.hasMoreTokens())
+      					clss = tok.nextToken();
+      				break;
+      			}
+      			//System.out.println("line"+nr++);
+      		}
+      	
+      	}
+      	
+      	className = pack+"."+clss;
+      	//System.out.println(className);
+      	IBOServiceWizard instance = new IBOServiceWizard(className);
+      	instance.setWorkingDirectory(javaFile.getParentFile());
+      	 instance.doJavaFileCreate();
+      }
+      else{
+      
+		      IBOServiceWizard instance = new IBOServiceWizard(className);
+		      instance.doJavaFileCreate();
+      }
     }
     catch(java.lang.ArrayIndexOutOfBoundsException e){
       e.printStackTrace();
