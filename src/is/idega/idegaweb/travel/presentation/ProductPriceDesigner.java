@@ -246,6 +246,8 @@ public class ProductPriceDesigner extends TravelWindow {
     table.add(priceDiscountText,2,row);
     table.setAlignment(3, row, "right");
     table.setRowColor(row,TravelManager.backgroundColor);
+//		table.mergeCells(1,row,3,row);
+//		table.setRowColor(row, TravelManager.backgroundColor);
 
     DecimalFormat df = new DecimalFormat("0.00");
     if (!iter.hasNext()) {
@@ -256,14 +258,15 @@ public class ProductPriceDesigner extends TravelWindow {
 	          table.add(new HiddenInput(PARAMETER_TIMEFRAME_ID, "-1"),1,row);
 	          table.add(new HiddenInput(PARAMETER_ADDRESS_ID, "-1"),1,row);
 	          insertCategoryIntoTable(table, row, cats[i], prices);
-	          ++row;
-	
+						++row;
 	        }catch (SQLException sql) {
 	          sql.printStackTrace(System.out);
 	        }
 	      }
     	}else {
 				for (int i = 0; i < tFrames.length; i++ ) {
+					++row;
+					table.setRowColor(row, TravelManager.backgroundColor);
 	        Text timeframeText = getTimeframeText(tFrames[i], iwc);
 	        timeframeText.setFontColor(TravelManager.WHITE);
 	        table.add(timeframeText,3,row);
@@ -281,27 +284,28 @@ public class ProductPriceDesigner extends TravelWindow {
 		          sql.printStackTrace(System.out);
 		        }
 		      }
-		      ++row;
-		      table.setRowColor(row, TravelManager.backgroundColor);
 		      
 				}
     	}
     	
     }
 
+
     while (iter.hasNext()) {
       address = (TravelAddress) iter.next();
-      table.mergeCells(1,row,3,row);
-      table.setRowColor(row, TravelManager.backgroundColor);
       addrText = (Text) super.getTextHeader(address.getName());
-      table.add(addrText, 1, row);
-      ++row;
+//      ++row;
+			table.add(addrText, 1, row+1);
+			table.setRowColor(row+1, TravelManager.backgroundColor);
 
 
       for (int k = 0; k < tFrames.length; k++) {
+				++row;
         Text timeframeText = getTimeframeText(tFrames[k], iwc);
         timeframeText.setFontColor(TravelManager.WHITE);
         table.add(timeframeText,3,row);
+        table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        table.setRowColor(row, TravelManager.backgroundColor);
 
         ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(),  0, _currencyId, _visibility);
         for (int i = 0; i < cats.length; i++) {
@@ -338,10 +342,10 @@ public class ProductPriceDesigner extends TravelWindow {
           }
           ++row;
         }
-            ++row;
       }
     }
 
+		++row;
     table.setRowColor(row,TravelManager.GRAY);
     table.setAlignment(3,row,"right");
     table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.FORM_ACTION, this.FORM_ACTION_SAVE),3,row);
