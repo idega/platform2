@@ -393,7 +393,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
 
     try {
       ContractText CT = new ContractText();
-      L = EntityFinder.findAllByColumnOrdered(CT,CT.getLanguageColumnName(),IS,CT.getOrdinalColumnName());
+      L = EntityFinder.findAllByColumnOrdered(CT,ContractText.getLanguageColumnName(),IS,ContractText.getOrdinalColumnName());
     }
     catch (SQLException ex) {
 
@@ -406,7 +406,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
 
     try {
       ContractText CT = new ContractText();
-      L = EntityFinder.findAllByColumnOrdered(CT,CT.getLanguageColumnName(),TIS,CT.getOrdinalColumnName());
+      L = EntityFinder.findAllByColumnOrdered(CT,ContractText.getLanguageColumnName(),TIS,ContractText.getOrdinalColumnName());
       if(L!= null)
         return (ContractText) L.get(0);
       else

@@ -133,8 +133,8 @@ public class CampusAllocator extends Block implements Campus{
       this.iComplexId = ((Integer)iwc.getSessionAttribute("sess_cplx_id")).intValue();
     }
 
-    if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
+    if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
     }
 
     Table Frame = new Table();
@@ -1044,7 +1044,7 @@ public class CampusAllocator extends Block implements Campus{
   private ApartmentTypePeriods getPeriod(int aprt_type_id){
     try {
       ApartmentTypePeriods A = new ApartmentTypePeriods();
-      List L = EntityFinder.findAllByColumn(A,A.getApartmentTypeIdColumnName(),aprt_type_id);
+      List L = EntityFinder.findAllByColumn(A,ApartmentTypePeriods.getApartmentTypeIdColumnName(),aprt_type_id);
       if(L!=null)
         return (ApartmentTypePeriods) L.get(0);
       else

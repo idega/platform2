@@ -76,8 +76,8 @@ public class ContractKeyWindow extends Window{
     iwb = getBundle(iwc);
     if(iwc.isLoggedOn()){
       //add(iwrb.getLocalizedString("manual","Instructions"));
-      if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
+      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
       }
 
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
@@ -120,13 +120,13 @@ public class ContractKeyWindow extends Window{
       if(apartmentReturn){
         T.addTitle(iwrb.getLocalizedString("apartment_return","Apartment return"));
         val = "return";
-        if(eContract.getStatus().equals(eContract.statusEnded) || eContract.getStatus().equals(eContract.statusResigned) )
+        if(eContract.getStatus().equals(Contract.statusEnded) || eContract.getStatus().equals(Contract.statusResigned) )
           T.addButton(save);
       }
       else{
         T.addTitle(iwrb.getLocalizedString("apartment_deliver","Apartment deliver"));
         val = "deliver";
-        if(eContract.getStatus().equals(eContract.statusSigned) )
+        if(eContract.getStatus().equals(Contract.statusSigned) )
           T.addButton(save);
       }
       T.add(new HiddenInput("val",val),1,1);
