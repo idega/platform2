@@ -192,7 +192,11 @@ private static final String MAIN_CLUB_TYPE = "main";
 			String phone = ((String) userProperties.get(PHONE_COLUMN)).trim();
 			
 			//only import active members
-			if (!NO_CLUB.equals(clubAbbr) && "A".equals(status)) {
+			if (NO_CLUB.equals(clubAbbr) || "I".equals(status)) {
+				return true;
+			}
+			
+			if(!NO_CLUB.equals(clubAbbr) && "A".equals(status)){
 				//get the club
 				Group club = getClubGroup(clubAbbr);
 				//continue and get the temporary group or create it
