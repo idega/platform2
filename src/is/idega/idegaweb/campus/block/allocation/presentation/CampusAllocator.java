@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.71 2004/07/12 12:55:47 aron Exp $
+ * $Id: CampusAllocator.java,v 1.72 2004/07/15 11:30:51 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1251,12 +1251,16 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Table Frame = new Table();
 		Frame.setCellpadding(3);
 	    Frame.setCellspacing(1);
+	    Frame.setWidth(800);
+	    Frame.setHeight(400);
+	    
 		//Frame.addTitle(localize("applicants", "Applicants") + " " + apartmentType.getName());
 		//Frame.setTitlesHorizontal(true);
 		int row = 2;
 		int col = 1;
 		
 		boolean ifLong = conID.intValue() < 0 ? true : false;
+		
 		Frame.add(getHeader(localize("nr", "Nr")), col++, row);
 		Frame.add(getHeader(localize("priority", "Pr")), col++, row);
 		Frame.add(getHeader(localize("refnum", "Ref. num")), col++, row);
@@ -1264,10 +1268,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		Frame.add(getHeader(localize("name", "Name")), col++, row);
 		Frame.add(getHeader(localize("ssn", "Socialnumber")), col++, row);
 		Frame.add(getHeader(localize("residence", "Residence")), col++, row);
-		if (ifLong)
+		if (ifLong){
+			
 			Frame.add(getHeader(localize("legal_residence", "Legal residence")), col++, row);
+		}
 		Frame.add(getHeader(localize("mobile_phone", "Mobile phone")), col++, row);
 		Frame.add(getHeader(localize("phone", "Phone")), col++, row);
+		
+		
 	
 		Collection waitingLists =
 			getWaitingListHome().findByApartmentTypeAndComplex(typeID.intValue(), complexID.intValue());

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.58 2004/07/12 11:52:22 aron Exp $
+ * $Id: CampusApprover.java,v 1.59 2004/07/15 11:31:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1137,7 +1137,7 @@ public class CampusApprover extends CampusBlock {
 		int row = 1;
 		if (lApplied != null) {
 			int i = 0;
-			ApartmentTypeHome ath =applicationService.getBuildingService().getApartmentTypeHome();
+			ApartmentTypeHome ath =getApplicationService(iwc).getBuildingService().getApartmentTypeHome();
 			for (Iterator iter = lApplied.iterator(); iter.hasNext();) {
 				Applied A = (Applied) iter.next();
 				T.add(getText(String.valueOf(i + 1)), 1, row);
