@@ -786,8 +786,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
-						SchoolClass schoolClass = (SchoolClass) iter.next();
-						schoolClasses.addMenuElement(schoolClass.getPrimaryKey().toString(), schoolClass.getSchoolClassName(), (Map) typeGroupMap.get(schoolClass));
+						SchoolType schoolType = (SchoolType) iter.next();
+						schoolClasses.addMenuElement(schoolType.getPrimaryKey().toString(), schoolType.getSchoolTypeName(), (Map) typeGroupMap.get(schoolType));
 					}
 				}
 			}
