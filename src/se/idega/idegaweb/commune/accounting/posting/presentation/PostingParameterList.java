@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.30 2003/12/13 17:25:46 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.31 2004/01/11 21:24:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.30 2003/12/13 17:25:46 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.31 2004/01/11 21:24:46 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -63,6 +63,7 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_PERIOD_SEARCH = "posting_def_list.periode_search";
 	private final static String KEY_ACTIVITY = "posting_parm_list.activity";
 	private final static String KEY_REG_SPEC = "posting_parm_list.reg_spec";
+	private final static String KEY_STUDY_PATH = "posting_parm_list.study_path";
 	private final static String KEY_COMPANY_TYPE = "posting_parm_list.company_type";
 	private final static String KEY_COMMUNE_BELONGING = "posting_parm_list.commune_belonging";
 	private final static String KEY_OWN_ENTRY = "posting_parm_list.own_entry";
@@ -183,7 +184,7 @@ public class PostingParameterList extends AccountingBlock {
 		PostingBusiness pBiz;
 		
 		
-		ListTable list = new ListTable(this, 11);
+		ListTable list = new ListTable(this, 12);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_ACTIVITY, "Verksamhet", 2);
@@ -193,9 +194,10 @@ public class PostingParameterList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_SCHOOL_YEAR, "Skolår", 6);
 		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 7);
 		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 8);
-		list.setLocalizedHeader(KEY_EDIT, "", 9);
-		list.setLocalizedHeader(KEY_COPY, "", 10);
-		list.setLocalizedHeader(KEY_REMOVE, "", 11);
+		list.setLocalizedHeader(KEY_STUDY_PATH, "Studieväg", 9);
+		list.setLocalizedHeader(KEY_EDIT, "", 10);
+		list.setLocalizedHeader(KEY_COPY, "", 11);
+		list.setLocalizedHeader(KEY_REMOVE, "", 12);
 
 		String tod = iwc.isParameterSet(PARAM_TO) ? 
 				iwc.getParameter(PARAM_TO) : iwc.getParameter(PARAM_RETURN_TO_DATE);  
@@ -252,6 +254,11 @@ public class PostingParameterList extends AccountingBlock {
 					list.add(p.getPostingString().substring(0, accountLength));
 					list.add(p.getDoublePostingString().substring(0, accountLength));
 
+					if (p.getStudyPath() == null) {
+						list.add(BLANK);					
+					} else {
+						list.add(p.getStudyPath().getCode());
+					}
 
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
