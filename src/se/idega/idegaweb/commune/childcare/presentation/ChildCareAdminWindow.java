@@ -890,7 +890,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(textArea, 1, row++);
 	
 			IWTimestamp stampNow = new IWTimestamp();
-			stampNow.addDays(1);
+			stampNow.addDays(-1);
 			IWTimestamp stamp = new IWTimestamp();
 			stamp.addMonths(2);
 			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
