@@ -98,7 +98,7 @@ public class CommuneForum extends Forum {
 
 					ForumData newestThread = forumBusiness.getNewestThreads(topic);
 					if (newestThread != null) {
-						lastUpdatedText = getThreadDate(iwc, newestThread);
+						lastUpdatedText = getThreadDate(iwc, newestThread, TEXT_STYLE);
 					}
 					else
 						lastUpdatedText = null;
