@@ -1,5 +1,14 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberBMPBean;
@@ -11,17 +20,6 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 /**
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
