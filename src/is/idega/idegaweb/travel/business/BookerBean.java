@@ -497,12 +497,23 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
   public  DropdownMenu getPaymentTypeDropdown(IWResourceBundle iwrb, String name) {
     DropdownMenu menu = new DropdownMenu(name);
-      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_NO_PAYMENT, iwrb.getLocalizedString("travel.unpaid","Unpaid"));
-      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CASH, iwrb.getLocalizedString("travel.cash","Cash"));
-      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CREDIT_CARD ,iwrb.getLocalizedString("travel.credit_card","Credit card"));
-      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,iwrb.getLocalizedString("travel.voucher","Voucher"));
-      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_ACCOUNT, iwrb.getLocalizedString("travel.account","Account"));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_NO_PAYMENT, getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_NO_PAYMENT));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CASH, getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_CASH));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_CREDIT_CARD ,getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_CREDIT_CARD));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_VOUCHER));
+      menu.addMenuElement(Booking.PAYMENT_TYPE_ID_ACCOUNT, getPaymentType(iwrb, Booking.PAYMENT_TYPE_ID_ACCOUNT));
     return menu;
+  }
+  
+  public String getPaymentType(IWResourceBundle iwrb, int paymentType) {
+  	switch (paymentType) {
+  		case Booking.PAYMENT_TYPE_ID_NO_PAYMENT : return iwrb.getLocalizedString("travel.unpaid","Unpaid");
+			case Booking.PAYMENT_TYPE_ID_CASH : return iwrb.getLocalizedString("travel.cash","Cash");
+			case Booking.PAYMENT_TYPE_ID_CREDIT_CARD : return iwrb.getLocalizedString("travel.credit_card","Credit card");
+			case Booking.PAYMENT_TYPE_ID_VOUCHER : return iwrb.getLocalizedString("travel.voucher","Voucher");
+			case Booking.PAYMENT_TYPE_ID_ACCOUNT : return iwrb.getLocalizedString("travel.account","Account");
+  		default : return iwrb.getLocalizedString("travel.unspecified","Unspecified");	
+  	}
   }
 
   public  Currency getCurrency(Booking booking) throws SQLException, FinderException, RemoteException {
