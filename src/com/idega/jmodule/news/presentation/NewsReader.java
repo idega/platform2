@@ -115,11 +115,9 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   IWResourceBundle iwrb = getResourceBundle(modinfo);
 
-  newsReaderURL = iwb.getProperty("news_reader_url");
-  newsCollectionURL = iwb.getProperty("news_collection_url");
+  newsReaderURL = iwb.getProperty("news_reader_url","");//link with "" constructs a link to the calling page
+  newsCollectionURL = iwb.getProperty("news_collection_url","");
 
- // if( newsReaderURL == null ) newsCollectionURL = "";
- // if( newsCollectionURL == null ) newsCollectionURL = "";
 
   back = iwrb.getImage("back.gif");
   more  = iwrb.getImage("more.gif");
@@ -382,7 +380,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
 
 
 
-private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int news_id,int image_id) throws SQLException
+private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int newsId,int image_id) throws SQLException
 {
 
   Text headline = new Text(Headline);
@@ -420,7 +418,7 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
   if ( headlineAsLink ) {
     Link headlineLink = new Link(headline,getNewsReaderURL());
-    headlineLink.addParameter("news_id",news_id);
+    headlineLink.addParameter("news_id",newsId);
     Image headlineImage = new Image("pics/jmodules/news/nanar2.gif","");
     headlineImage.setAttribute("align","absmiddle");
 
@@ -467,6 +465,7 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
       if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
 
       Link moreLink = new Link(more,newsReaderURL);
+      moreLink.addParameter("news_id",newsId);
       newsTable.add(moreLink, 1, 3);
       }
   }
@@ -475,10 +474,10 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   if(isAdmin) {
     Table links = new Table(2,1);
     Link newsEdit = new Link(change,"/news/editor.jsp");
-    newsEdit.addParameter("news_id",news_id);
+    newsEdit.addParameter("news_id",newsId);
 
     Link newsDelete = new Link(delete,"/news/editor.jsp");
-    newsDelete.addParameter("news_id",news_id);
+    newsDelete.addParameter("news_id",newsId);
     newsDelete.addParameter("mode","delete");
 
     links.setAlignment(1,1,"left");
