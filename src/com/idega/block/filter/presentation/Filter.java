@@ -26,12 +26,7 @@ public class Filter extends PresentationObjectContainer {
 	public void _main(IWContext iwc) throws Exception {
 		if(!iwc.isInEditMode()) { // always show block if were editing in the builder
 			if(_showOnUserLoged!=null) {
-				boolean isLogedOn = true;
-				try {
-					isLogedOn = iwc.getCurrentUserId()!=-1;
-				} catch(NotLoggedOnException e) {
-					isLogedOn = false;
-				}
+				boolean isLogedOn = iwc.isLoggedOn();
 				if(_showOnUserLoged.booleanValue()) {
 					_show = isLogedOn;
 				} else {
