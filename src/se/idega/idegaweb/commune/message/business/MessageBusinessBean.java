@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.26 2002/12/31 17:04:37 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.27 2003/01/10 10:20:44 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -163,11 +163,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(user);
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(user);
+			boolean canSendEmail = getIfCanSendEmail();
 			
-			if ( sendToBox ) {
+			if (sendToBox) {
 				message = createMessage(getTypeUserMessage(), user, subject, body);
 			}
-			if ( sendMail ) {
+			if (sendMail && canSendEmail) {
 				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(user);	
 				if ( mail != null ) {
 					sendMessage(mail.getEmailAddress(),subject,body);
@@ -482,6 +483,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				return Boolean.valueOf(property).booleanValue();
 		}
 		return true;
+	}
+	
+	public boolean getIfCanSendEmail() {
+		boolean canSend = true;
+		IWPropertyList propertyList = getIWApplicationContext().getSystemProperties().getProperties("mail_properties");
+		if (propertyList != null) {
+			String property = propertyList.getProperty("can_send_email");
+			if (property != null)
+				canSend = Boolean.valueOf(property).booleanValue();
+		}
+		return canSend;
 	}
 
 	public void setIfUserPreferesMessageByEmail(User user,boolean preference){
