@@ -1,13 +1,14 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.data.GeneralBooking;
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
@@ -27,12 +28,12 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -527,11 +528,16 @@ public class PublicBooking extends TravelBlock  {
   public static boolean sendEmails(IWContext iwc, GeneralBooking gBooking,IWResourceBundle iwrb) {
 	boolean sendEmail = false;
 	try {
+	  DecimalFormat df = new DecimalFormat("0.00");
+
 	  ProductHome pHome = (ProductHome)com.idega.data.IDOLookup.getHome(Product.class);
 	  Product prod = pHome.findByPrimaryKey(new Integer(gBooking.getServiceID()));
     ProductBusiness pBus =  (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
+    CreditCardBusiness ccBus = (CreditCardBusiness) IBOLookup.getServiceInstance(iwc, CreditCardBusiness.class);
 
 	  Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
+	  List addresses = suppl.getAddresses();
+	  List phones = suppl.getPhones();
 	  Settings settings = suppl.getSettings();
 	  Email sEmail = suppl.getEmail();
 	  String suppEmail = "";
@@ -547,10 +553,48 @@ public class PublicBooking extends TravelBlock  {
 	      sendEmail = true;
 	      StringBuffer mailText = new StringBuffer();
 	      mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
-	      mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
+	      mailText.append("\n").append(iwrb.getLocalizedString("travel.supplier",   "Supplier    ")).append(" : ").append(suppl.getName());
+	      if (addresses != null) {
+	      		Address addr;
+	      		Iterator iter = addresses.iterator();
+	      		while (iter.hasNext()) {
+	      			addr = (Address) iter.next();
+	    	      mailText.append("\n").append(iwrb.getLocalizedString("travel.address","Address    ")).append(" : ").append(addr.getStreetName());
+	    	      if (addr.getStreetNumber() != null) {
+	    	      		mailText.append(" "+addr.getStreetNumber());
+	    	      }
+	      		}
+	      }
+	      if (suppEmail != null) {
+	      		mailText.append("\n").append(iwrb.getLocalizedString("travel.email",   "Email    ")).append(" : ").append(suppEmail);
+	      }
+	      if (phones != null) {
+	      		Phone phone;
+	      		Iterator iter = phones.iterator();
+	      		while (iter.hasNext()) {
+	      			phone = (Phone) iter.next();
+	      			if (phone != null && phone.getNumber() != null && !"".equals(phone.getNumber())) {
+	      				mailText.append("\n").append(iwrb.getLocalizedString("travel.phone","Phone    ")).append(" : ").append(phone.getNumber());
+	      			}
+	      		}
+	      }
+	      	      
+	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(pBus.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(getLocaleDate(new IWTimestamp(gBooking.getBookingDate())));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
+
+	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.order_number",  "Order number   ")).append(" : ").append(Voucher.getVoucherNumber(gBooking.getID()));
+	      String ccAuthNumber =  gBooking.getCreditcardAuthorizationNumber();
+				String cardType = null;
+				if (ccAuthNumber != null) {
+					CreditCardAuthorizationEntry entry = ccBus.getAuthorizationEntry(suppl, ccAuthNumber, new IWTimestamp(gBooking.getDateOfBooking()));
+					cardType = entry.getBrandName();
+					double fAmount = entry.getAmount() / CreditCardAuthorizationEntry.amountMultiplier;
+		      mailText.append("\n").append(iwrb.getLocalizedString("travel.amount_paid","Amount paid   ")).append(" : ").append(df.format(fAmount)+" "+entry.getCurrency()+" ("+cardType+")");
+				}
+	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.comment",  "Comment   ")).append(" : ").append(gBooking.getComment());
+	      
 	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
 	      mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
 	      
