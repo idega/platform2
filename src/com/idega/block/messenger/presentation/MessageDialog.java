@@ -7,6 +7,7 @@ import java.util.EventListener;
 import java.net.URL;
 import com.idega.block.messenger.data.Message;
 import com.idega.presentation.awt.ImageLabel;
+import java.applet.AudioClip;
 
 /**
  * Title:        com.idega.block.messenger.presentation
@@ -29,6 +30,7 @@ public class MessageDialog extends Dialog implements ActionListener{
   String recipientName;
   ImageLabel logo;
   ActionListener listener;
+  AudioClip alertSound;
 
   public MessageDialog(String title, Message message) {
     super(new Frame(), title, false);
@@ -121,6 +123,8 @@ public class MessageDialog extends Dialog implements ActionListener{
     senderNameLabel.setText(message.getSenderName()+" - instant message");
     messageArea.append(message.getSenderName()+" says:\n");
     messageArea.append("   "+message.getMessage()+"\n");
+    if(alertSound!=null) alertSound.play();
+
   }
 
   public Vector getMessages(){
@@ -156,6 +160,10 @@ public class MessageDialog extends Dialog implements ActionListener{
 
   public void setLogoImageLabel(ImageLabel imageLabel){
     this.logo = imageLabel;
+  }
+
+  public void setAudioClip(AudioClip alertSound){
+    this.alertSound = alertSound;
   }
 
 

@@ -52,6 +52,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private ImageLabel faceLabel;
   private ImageLabel logoLabel;
   private MessageListener cycler;
+
+  private AudioClip alertSound;
+
   //debug
  private Panel userPanel;
 
@@ -94,6 +97,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_in.gif"));
         logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_out.gif"));
+        alertSound = getAudioClip(new URL(hostURL+resourceURL),"notify.wav");
+
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
@@ -158,13 +163,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
         messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+        messageDialog.addActionListener(this);
+        messageDialog.setAudioClip(alertSound);
 
         dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
 
-        messageDialog.addActionListener(this);
-
         messageDialog.addMessage(aMessage);
-
         messageDialog.setVisible(true);
 
       }
