@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.29 2003/07/29 11:31:03 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.30 2003/07/30 11:27:07 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -491,8 +491,13 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				dTable.addText(getApartmentString(contract),1,2);
 				dTable.setAlignment(3,2,Table.HORIZONTAL_ALIGN_RIGHT);
 				SubmitButton deny = new SubmitButton("denyAllocation", _iwrb.getLocalizedString("denyAllotion", "No thanks"));
-				deny.setSubmitConfirm(_iwrb.getLocalizedString("denyAllocationWarning","Do you really want to deny this apartment ?"));
+				String message = (_iwrb.getLocalizedString("denyAllocationWarning","Do you really want to deny this apartment ?"));
+				deny.setOnClick("return confirm('"+message+"');");
+		
 				SubmitButton accept = new SubmitButton("acceptAllocation", _iwrb.getLocalizedString("acceptAllotion", "Accept"));
+				String acceptMsg =  (_iwrb.getLocalizedString("acceptAllocationWarning","Please contact Student Housing office as soon as possible."));
+				accept.setOnClick("return confirm('"+acceptMsg+"');");
+				
 				dTable.add(deny, 3, 2);
 				dTable.add(accept, 3, 2);
 				dTable.add(new HiddenInput("adWaitL_id",allocatedWaitinglistID.toString()));
