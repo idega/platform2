@@ -155,6 +155,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   }
   public void main(ModuleInfo modinfo){
     try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}

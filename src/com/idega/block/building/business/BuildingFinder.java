@@ -23,54 +23,47 @@ import java.lang.StringBuffer;
 
 public class BuildingFinder {
 
-  public static List ListOfComplex(){
+  public static List listOfComplex(){
     try{
       return EntityFinder.findAll(new Complex());
     }
     catch(SQLException e){return null;}
   }
-  public static List ListOfBuilding(){
+  public static List listOfBuilding(){
     try{
       return EntityFinder.findAll(new Building());
     }
     catch(SQLException e){return null;}
   }
 
-  public static List ListOfFloor(){
+  public static List listOfFloor(){
     try{
       return EntityFinder.findAll(new Floor());
     }
     catch(SQLException e){return null;}
   }
 
-  public static List ListOfApartmentType(){
+  public static List listOfApartmentType(){
     try{
      return EntityFinder.findAll(new ApartmentType());
     }
     catch(SQLException e){return null;}
   }
 
-  public static List ListOfApartmentCategory(){
+  public static List listOfApartmentCategory(){
     try{
      return EntityFinder.findAll(new ApartmentCategory());
     }
     catch(SQLException e){return null;}
   }
 
-  public static List RoomTypesList(){
+  public static List listOfApartment(){
     try{
-     return EntityFinder.findAll(new RoomType());
+     return EntityFinder.findAll(new Apartment());
     }
     catch(SQLException e){return null;}
   }
-  public static Building[] findBuildings(){
-    Building[] buildings = new Building[0];
-    try{
-      buildings = (Building[]) (new Building().findAll());
-    }
-    catch(SQLException e){}
-    return buildings;
-  }
+
 
   public static Floor[] findFloors(){
     Floor[] floors = new Floor[0];
@@ -236,11 +229,11 @@ public class BuildingFinder {
 
   public static Hashtable getLodgingsHash(){
     Hashtable hashtable = new Hashtable();
-    List BuildingList = ListOfBuilding();
-    List FloorList = ListOfFloor();
-    List TypeList = ListOfApartmentType();
-    List CategoryList = ListOfApartmentCategory();
-    List ComplexList  = ListOfComplex();
+    List BuildingList = listOfBuilding();
+    List FloorList = listOfFloor();
+    List TypeList = listOfApartmentType();
+    List CategoryList = listOfApartmentCategory();
+    List ComplexList  = listOfComplex();
     if(ComplexList != null){
       int clen = ComplexList.size();
       Complex C;
@@ -283,6 +276,28 @@ public class BuildingFinder {
     }
 
     return hashtable;
+  }
+
+  public static List listOfApartmentsInType(int id){
+    Apartment A = new Apartment();
+    List L = null;
+    try{
+     L = EntityFinder.findAllByColumnOrdered(A,A.getIDColumnName(),String.valueOf(id),A.getNameColumnName());
+    }
+    catch(SQLException sql){}
+    return L;
+  }
+
+  public static List searchApartment(String searchname){
+    Apartment A = new Apartment();
+    List L = null;
+    try {
+      L = EntityFinder.findAllByColumnOrdered(A,A.getNameColumnName(),searchname,A.getFloorIdColumnName());
+    }
+    catch (SQLException ex) {
+
+    }
+    return L;
   }
 
 }// class end
