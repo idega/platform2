@@ -93,6 +93,7 @@ public class ClientManager implements PacketManager{
         /**@todo make a removeProperty method in packet*/
         packet.clearProperties();
         packet.addProperty(new Property(USER_LIST, getConnectedClients()));
+        packet.addProperty(new Property(USER_LIST_VERSION, getUserListVersion()) );
       }
 
           //System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
