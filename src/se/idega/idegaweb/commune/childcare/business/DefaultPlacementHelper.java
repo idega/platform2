@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultPlacementHelper.java,v 1.1 2004/10/05 13:51:17 aron Exp $
+ * $Id: DefaultPlacementHelper.java,v 1.2 2004/10/07 09:08:07 aron Exp $
  * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,10 +19,10 @@ import com.idega.idegaweb.IWResourceMessage;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/05 13:51:17 $ by $Author: aron $
+ *  Last modified: $Date: 2004/10/07 09:08:07 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DefaultPlacementHelper implements PlacementHelper{
 
@@ -90,8 +90,8 @@ public class DefaultPlacementHelper implements PlacementHelper{
     }
     public void setContract(ChildCareContract contract) {
         this.contract = contract;
-        this.member = contract.getSchoolClassMember();
-        
+        if(contract!=null)
+            this.member = contract.getSchoolClassMember();
     }
 
     /* (non-Javadoc)
