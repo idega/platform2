@@ -463,7 +463,7 @@ public class ServiceDaySetter extends TravelWindow {
 							iMax = sDay.getMax();
 							iMin = sDay.getMin();
 							iEst = sDay.getEstimated();
-							if (iMax != BookingForm.UNLIMITED_AVAILABILITY) {
+							if (iMax != BookingForm.UNLIMITED_AVAILABILITY && iMax != -1) {
 								max.setContent(Integer.toString(iMax));
 							}
 							if (iMin != -1) {
