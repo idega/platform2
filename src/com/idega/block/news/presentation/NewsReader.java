@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.69 2002/02/21 18:40:30 eiki Exp $
+ * $Id: NewsReader.java,v 1.70 2002/02/21 21:49:58 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,6 +67,9 @@ public class NewsReader extends Block implements IWBlock {
   private int cellSpacing = 0;
   private int viewPageId = -1;
   private int textSize = 2;
+  private int firstImageWidth = 200;
+  private int ImageWidth = 100;
+  private int ImageBorder = 1;
   private boolean backbutton = false;
   private boolean showAll = false;
   private boolean showImages = true;
@@ -123,6 +126,7 @@ public class NewsReader extends Block implements IWBlock {
   public static final int COLLECTION_LAYOUT = NewsLayoutHandler.COLLECTION_LAYOUT;
 
   private int iLayout =SINGLE_FILE_LAYOUT;
+  private int newsCount = 0;
 
   public NewsReader(){
     init();
@@ -504,6 +508,7 @@ public class NewsReader extends Block implements IWBlock {
 
   // Make a table around each news
   private PresentationObject getNewsTable(NewsHelper newsHelper,ICCategory newsCategory, Locale locale,boolean showAll,boolean collection,IWContext iwc){
+
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -573,6 +578,8 @@ public class NewsReader extends Block implements IWBlock {
       }
       else
       if(locText!=null && !collection){
+        // counting news
+        newsCount++;
         sNewsBody =  locText.getBody();
 
         // shortening newstext
@@ -599,7 +606,27 @@ public class NewsReader extends Block implements IWBlock {
               Image newsImage = new Image(imid);
               if(att != null)
                 newsImage.setAttributes(getAttributeMap(att));
+              else{
+                newsImage.setAlignment("right");
+                newsImage.setBorder(ImageBorder);
+              }
+              // first news
+              if(newsCount==1){
+                newsImage.setMaxImageWidth(firstImageWidth);
                 T.add(newsImage,1,row);
+              }
+              // other news
+              else{
+                newsImage.setMaxImageWidth(ImageWidth);
+                Link L = new Link(newsImage);
+                L.addParameter(ImageWindow.prmImageId,imid);
+                L.addParameter(ImageWindow.prmInfo,sHeadline);
+                ImageWindow w = new ImageWindow();
+                L.setWindowToOpen(ImageWindow.class);
+                T.add(L,1,row);
+              }
+
+
               }
               catch(SQLException ex){
                 ex.printStackTrace();
