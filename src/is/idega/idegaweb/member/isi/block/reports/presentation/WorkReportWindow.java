@@ -470,7 +470,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_1_reportname");
 		b12_2_1.setStyleClass(styledLink);
 		
-		stats.add(b12_2_1,1,3);
+		stats.add(b12_2_1,1,4);
 		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")),1,5);
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.accounts", "Accounts")),1,7);
