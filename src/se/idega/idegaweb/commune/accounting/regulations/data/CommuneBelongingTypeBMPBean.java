@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.10 2003/11/20 17:00:13 joakim Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.11 2003/11/21 13:33:10 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.10 2003/11/20 17:00:13 joakim Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.11 2003/11/21 13:33:10 roar Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -96,7 +96,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 	
 	public Object ejbFindNoHomeCommune() throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, ENTITY_NAME + "." + NO_HOME_COMMUNE);
+		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_COMMUNE_BELONGING_TYPE, ENTITY_NAME + "." + NO_HOME_COMMUNE);
 		return idoFindOnePKByQuery(sql);		
 	}	
 
