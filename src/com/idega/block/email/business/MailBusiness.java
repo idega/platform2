@@ -258,6 +258,30 @@ public class MailBusiness {
       //ex.printStackTrace();
     }
   }
+  
+  public void removeEmailFromLists(String email, int[] ListIds) {
+    try {
+
+      Email eEmail =MailFinder.getInstance().lookupEmail(email);
+      if(eEmail == null){
+       	return;
+      }
+
+      for (int i = 0; i < ListIds.length; i++) {
+        try{
+        //System.err.println("adding "+eEmail.getEmailAddress()+" to "+ListIds[i]);
+        eEmail.removeFrom(MailList.class,ListIds[i]);
+        //eEmail.addTo(MailList.class, ListIds[i]);
+        //MailTopic topic =((MailTopicHome) IDOLookup.getHome(MailTopic.class)).findOneByListId(ListIds[i]);
+        //sendWelcomeLetters(topic,eEmail.getEmailAddress());
+        }
+        catch(Exception ex){}
+      }
+
+    } catch (Exception ex) {
+      
+    }
+  }
 
   public void sendWelcomeLetters(MailTopic topic,String email)throws RemoteException,FinderException{
   	Collection letters = MailFinder.getInstance().getEmailLetters(((Integer)topic.getPrimaryKey()).intValue(),EmailLetter.TYPE_SUBSCRIPTION);
