@@ -106,6 +106,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 					netOrder = getBusiness().getNumberInQueueByStatus(application);
 				else
 					netOrder = -1;
+					
+				if (netOrder == 1 && row != 2) {
+					applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+					applicationTable.setStyle(1, row, "padding: 0px;");
+					applicationTable.setColor(1, row++, "#000000");
+				}
 				
 				if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
 					applicationTable.setRowColor(row, ACCEPTED_COLOR);

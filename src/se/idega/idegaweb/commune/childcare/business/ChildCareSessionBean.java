@@ -18,6 +18,7 @@ import com.idega.util.IWTimestamp;
 public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSession {
 
 	protected static final String PARAMETER_CHILD_CARE_ID = "cc_c_c_id";
+	protected static final String PARAMETER_GROUP_ID = "cc_group_id";
 	protected static final String PARAMETER_USER_ID = "cc_user_id";
 	protected static final String PARAMETER_APPLICATION_ID = "cc_application_id";
 	protected static final String PARAMETER_FROM = "cc_from";
@@ -28,6 +29,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected int _userID = -1;
 	protected int _childID = -1;
 	protected int _applicationID = -1;
+	protected int _groupID = -1;
 	protected int _sortBy = -1;
 	protected IWTimestamp fromTimestamp;
 	protected IWTimestamp toTimestamp;
@@ -121,6 +123,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public String getParameterApplicationID() {
 		return PARAMETER_APPLICATION_ID;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterGroupID() {
+		return PARAMETER_GROUP_ID;
 	}
 
 	/**
@@ -223,6 +232,21 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			this.toTimestamp = new IWTimestamp(timestamp);
 		else
 			this.toTimestamp = null;
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getGroupID() {
+		return _groupID;
+	}
+
+	/**
+	 * Sets the groupID.
+	 * @param groupID The groupID to set
+	 */
+	public void setGroupID(int groupID) {
+		_groupID = groupID;
 	}
 
 }

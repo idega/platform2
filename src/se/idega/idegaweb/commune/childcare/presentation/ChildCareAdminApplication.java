@@ -232,7 +232,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				table.add(parentsAgree, 3, 1);
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
-				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), ChildCareAdminWindow.METHOD_CREATE_CONTRACT);
+				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);
+				createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
 				table.add(createContract, 3, 1);
 			}
 			else if (status == getBusiness().getStatusContract()) {
@@ -241,6 +242,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				table.add(viewContract, 3, 1);
 				GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract","Recreate contract"), ChildCareAdminWindow.METHOD_CREATE_CONTRACT);
 				table.add(recreateContract, 5, 1);
+				GenericButton placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
+				table.add(placeInGroup, 7, 1);
 			}
 		}
 		

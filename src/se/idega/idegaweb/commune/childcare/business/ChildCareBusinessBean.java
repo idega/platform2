@@ -46,6 +46,7 @@ import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
@@ -452,6 +453,36 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return false;
+	}
+
+	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, User user) throws RemoteException {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setCareTime(childCareTime);
+			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
+			
+			getSchoolBusiness().storeSchoolClassMember(application.getChildId(), groupID, IWTimestamp.getTimestampRightNow(), ((Integer)user.getPrimaryKey()).intValue());
+			sendMessageToParents(application, subject, body);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	public void moveToGroup(int childID, int providerID , int schoolClassID) throws RemoteException {
+		try {
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(childID, providerID);
+			classMember.setSchoolClassId(schoolClassID);
+			classMember.store();
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean acceptApplication(ChildCareApplication application, String subject, String message, User user) {

@@ -5,12 +5,15 @@ import java.text.MessageFormat;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
+import com.idega.block.school.data.SchoolClass;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -18,6 +21,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.URLUtil;
 
 /**
  * @author laddi
@@ -34,6 +38,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PRIORITY_MESSAGE = "cc_priority_message";
 	public static final String PARAMETER_CHANGE_DATE = "cc_change_date";
 	public static final String PARAMETER_CHILDCARE_TIME = "cc_childcare_time";
+	public static final String PARAMETER_GROUP_NAME = "cc_group_name";
+	public static final String PARAMETER_OLD_GROUP = "cc_old_group";
 
 	private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
 	private final static String USER_MESSAGE_BODY = "child_care.application_received_body";
@@ -42,6 +48,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_OFFER = 3;
 	public static final int METHOD_CHANGE_DATE = 4;
 	public static final int METHOD_CREATE_CONTRACT = 5;
+	public static final int METHOD_CREATE_GROUP = 6;
+	public static final int METHOD_PLACE_IN_GROUP = 7;
+	public static final int METHOD_MOVE_TO_GROUP = 8;
 
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -49,6 +58,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_CHANGE_DATE = 3;
 	public static final int ACTION_PARENTS_AGREE = 4;
 	public static final int ACTION_CREATE_CONTRACT = 5;
+	public static final int ACTION_CREATE_GROUP = 6;
+	public static final int ACTION_PLACE_IN_GROUP = 7;
+	public static final int ACTION_MOVE_TO_GROUP = 8;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -83,6 +95,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_CREATE_CONTRACT :
 				createContract(iwc);
+				break;
+			case ACTION_CREATE_GROUP :
+				createGroup(iwc);
+				break;
+			case ACTION_PLACE_IN_GROUP :
+				placeInGroup(iwc);
+				break;
+			case ACTION_MOVE_TO_GROUP :
+				moveToGroup(iwc);
 				break;
 		}
 
@@ -137,9 +158,20 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")));
 				contentTable.add(getChangeDateForm(iwc));
 				break;
-			case METHOD_CREATE_CONTRACT :
-				headerTable.add(getHeader(localize("child_care.create_contract", "Create contract")));
-				contentTable.add(getCreateContractForm(iwc));
+			case METHOD_PLACE_IN_GROUP :
+				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")));
+				contentTable.add(getPlaceInGroupForm(iwc));
+				break;
+			case METHOD_MOVE_TO_GROUP :
+				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group")));
+				contentTable.add(getMoveGroupForm(iwc));
+				break;
+			case METHOD_CREATE_GROUP :
+				if (getSession().getGroupID() != -1)
+					headerTable.add(getHeader(localize("child_care.change_group", "Change group")));
+				else
+					headerTable.add(getHeader(localize("child_care.create_group", "Create group")));
+				contentTable.add(getCreateGroupForm(iwc));
 				break;
 		}
 		
@@ -228,7 +260,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return null;
 	}
 
-	private Table getCreateContractForm(IWContext iwc) throws RemoteException {
+	private Table getPlaceInGroupForm(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -241,11 +273,80 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
 
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
-		table.add(getSmallText(localize("child_care.child_care_time", "Time")), 1, row);
+		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+		table.add(textInput, 1, row++);
+		
+		DropdownMenu groups = getGroups(-1, -1);
+		groups.addMenuElementFirst("-1","");
+		groups.setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
+		
+		table.add(getSmallText(localize("child_care.group", "Group")+":"), 1, row);
+		table.add(groups, 1, row++);
+
+		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
+		table.add(placeInGroup, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getCreateGroupForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_GROUP_NAME));
+		textInput.setLength(24);
+		textInput.setAsNotEmpty(localize("child_care.group_name_required","You must fill in a name for the group."));
+		if (getSession().getGroupID() != -1) {
+			SchoolClass group = getBusiness().getSchoolBusiness().findSchoolClass(new Integer(getSession().getGroupID()));
+			if (group.getSchoolClassName() != null)
+				textInput.setContent(group.getSchoolClassName());
+		}
+
+		table.add(getSmallHeader(localize("child_care.enter_group_name", "Enter group name:")), 1, row++);
+		table.add(getSmallText(localize("child_care.group_name", "Name")), 1, row);
 		table.add(textInput, 1, row++);
 
-		SubmitButton createContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.create_contract", "Create contract"), PARAMETER_ACTION, String.valueOf(ACTION_CREATE_CONTRACT)));
-		table.add(createContract, 1, row);
+		String localized = "";
+		if (getSession().getGroupID() != -1)
+			localized = localize("child_care.change_group", "Change group");
+		else
+			localized = localize("child_care.create_group", "Create group");
+
+		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
+		table.add(createGroup, 1, row);
+		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getMoveGroupForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		int oldGroup = Integer.parseInt(iwc.getParameter(PARAMETER_OLD_GROUP));
+		DropdownMenu groups = getGroups(-1, oldGroup);
+		groups.addMenuElementFirst("-1","");
+		groups.setAsNotEmpty(localize("child_care.must_select_a_group","You must select a group.  If one does not exist, you will have to create one first."), "-1");
+		
+		table.add(getSmallHeader(localize("child_care.select_group", "Select group to move child to")), 1, row++);
+		table.add(getSmallText(localize("child_care.group", "Group")+":"), 1, row);
+		table.add(groups, 1, row++);
+
+		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.move_group", "Move to group"), PARAMETER_ACTION, String.valueOf(ACTION_MOVE_TO_GROUP)));
+		table.add(placeInGroup, 1, row);
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
@@ -305,10 +406,33 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
-		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
-		getBusiness().assignContractToApplication(_applicationID, childCareTime, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		getBusiness().assignContractToApplication(_applicationID, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		close(iwc);
+	}
+	
+	private void createGroup(IWContext iwc) throws RemoteException {
+		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
+		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), -1, -1, -1);
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void placeInGroup(IWContext iwc) throws RemoteException {
+		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
+		getBusiness().placeApplication(getSession().getApplicationID(), "", "", childCareTime, groupID, iwc.getCurrentUser());
+
+		close(iwc);
+	}
+	
+	private void moveToGroup(IWContext iwc) throws RemoteException {
+		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
+		getBusiness().moveToGroup(_userID, getSession().getChildCareID(), groupID);
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
 	}
 	
 	private void close(IWContext iwc) {

@@ -1,10 +1,14 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 
+import com.idega.block.school.data.SchoolClass;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
@@ -19,9 +23,12 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	protected ChildCareSession session;
 	private int _childCareID = -1;
 	
-	public static final String ACCEPTED_COLOR = "#FFEAEA";
-	public static final String PARENTS_ACCEPTED_COLOR = "#EAFFEE";
-	public static final String CONTRACT_COLOR = "#EAF1FF";
+	//public static final String ACCEPTED_COLOR = "#FFEAEA";
+	//public static final String PARENTS_ACCEPTED_COLOR = "#EAFFEE";
+	//public static final String CONTRACT_COLOR = "#EAF1FF";
+	public static final String ACCEPTED_COLOR = "#FFE0E0";
+	public static final String PARENTS_ACCEPTED_COLOR = "#E0FFE0";
+	public static final String CONTRACT_COLOR = "#E0E0FD";
 	
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
@@ -97,5 +104,21 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		colorTable.setCellspacing(1);
 		
 		return colorTable;		
+	}
+
+	protected DropdownMenu getGroups(int groupID, int groupToIgnoreID) throws RemoteException {
+		DropdownMenu menu = new DropdownMenu(getSession().getParameterGroupID());
+		
+		Collection groups = getBusiness().getSchoolBusiness().findSchoolClassesBySchool(getSession().getChildCareID());
+		Iterator iter = groups.iterator();
+		while (iter.hasNext()) {
+			SchoolClass element = (SchoolClass) iter.next();
+			if (((Integer)element.getPrimaryKey()).intValue() != groupToIgnoreID)
+				menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolClassName());
+		}
+		if (groupID != -1)
+			menu.setSelectedElement(groupID);
+		
+		return (DropdownMenu) getStyledInterface(menu);	
 	}
 }

@@ -12,9 +12,11 @@ public interface ChildCareSession extends com.idega.business.IBOSession
  public java.lang.String getParameterApplicationID();
  public java.lang.String getParameterChildCareID();
  public java.lang.String getParameterFrom();
+ public java.lang.String getParameterGroupID();
  public java.lang.String getParameterSortBy();
  public java.lang.String getParameterTo();
  public java.lang.String getParameterUserID();
+ public int getGroupID();
  public int getSortBy();
  public com.idega.util.IWTimestamp getToTimestamp();
  public int getUserID() throws java.rmi.RemoteException;
@@ -22,6 +24,7 @@ public interface ChildCareSession extends com.idega.business.IBOSession
  public void setChildCareID(int p0) throws java.rmi.RemoteException;
  public void setChildID(int p0) throws java.rmi.RemoteException;
  public void setFromTimestamp(java.lang.String p0);
+ public void setGroupID(int p0);
  public void setSortBy(int p0);
  public void setToTimestamp(java.lang.String p0);
  public void setUserID(int p0) throws java.rmi.RemoteException;
