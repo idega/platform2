@@ -127,6 +127,10 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		setColumn(COLUMN_TYPE, TYPE_PAYMENT);
 	}
 	
+	public String getType() {
+		return getStringColumnValue(COLUMN_TYPE);
+	}
+
 	public void setPaymentTypeID(int payment_type_id) {
 	    setColumn(COLUMN_PAYMENT_TYPE_ID, payment_type_id);
 	}
