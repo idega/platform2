@@ -12,12 +12,20 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -34,21 +42,31 @@ import com.idega.presentation.IWContext;
  */
 public class PaymentThreadElementarySchool extends BillingThread{
 	PaymentHeader paymentHeader;
+	Date currentDate = new Date( System.currentTimeMillis());
 	
 	public PaymentThreadElementarySchool(Date month, IWContext iwc){
 		super(month,iwc);
 	}
 	
 	public void run(){
-		Date currentDate = new Date( System.currentTimeMillis());
+		//Create all the billing info derrived from the contracts
+		contracts();
+		//Create all the billing info derrived from the regular payments
+		regularPayment();
+		//VAT
+		calcVAT();
+	}
+	
+	private void contracts(){
 		Collection regulationArray = new ArrayList();
 //		Collection applications;
 		ArrayList conditions = new ArrayList();
 		boolean first;
 		ExportDataMapping categoryPosting;
-//		PostingDetail postingDetail;
+		PostingDetail postingDetail;
 
 		try {
+			//Set the category parameter to ElementarySchool
 			category = getSchoolCategoryHome().findElementarySchoolCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
@@ -84,7 +102,7 @@ public class PaymentThreadElementarySchool extends BillingThread{
 							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(
 									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 							while(applicationIter.hasNext()){
-//								ChildCareApplication application = (ChildCareApplication) applicationIter.next();
+								ChildCareApplication application = (ChildCareApplication) applicationIter.next();
 								if(first){
 									paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
 									paymentHeader.setSchoolID(school);
@@ -96,9 +114,16 @@ public class PaymentThreadElementarySchool extends BillingThread{
 									}
 									first = false;
 								}
-//								postingDetail = regBus.getPostingDetailForContract(
-//									0.0f,application.getContract());
-//								createPaymentRecord(postingDetail,ownPosting,doublePosting);
+								ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
+								//Get the posting details for the contract
+								postingDetail = regBus.getPostingDetailForContract(0.0f,contract);
+								RegulationSpecType regSpecType = getRegulationSpecTypeHome().
+										findByRegulationSpecType(postingDetail.getRuleSpecType());
+								int schoolType = ((Integer)contract.getSchoolClassMmeber().
+										getSchoolClass().getSchoolType().getPrimaryKey()).intValue();
+								String[] postings = compilePostingStrings(
+										schoolType, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
+								createPaymentRecord(postingDetail,postings[0],postings[1]);
 							}
 						}
 					}
@@ -113,15 +138,55 @@ public class PaymentThreadElementarySchool extends BillingThread{
 		} catch (CreateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (PostingParametersException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PostingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MissingMandatoryFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the Regular payments
+	 */
+	private void regularPayment(){
+		PostingDetail postingDetail = null;
+		
+		try {
+			//TODO (JJ) change this to RegularPaymentBusiness when Roar is done with that
+			Iterator regularPaymentIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
+			//Go through all the regular payments
+			while(regularPaymentIter.hasNext()){
+				//TODO (JJ) change this to RegularPaymentEntry when Roar is done with that
+				RegularInvoiceEntry regularPaymentEntry = (RegularInvoiceEntry)regularPaymentIter.next();
+				postingDetail = new PostingDetail(regularPaymentEntry);
+				createPaymentRecord(postingDetail,regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(postingDetail != null){
+				createNewErrorMessage(postingDetail.getTerm(),"payment.DBSetupProblem");
+			}else{
+				createNewErrorMessage("payment.severeError","payment.DBSetupProblem");
+			}
+		}
+	}
+
 	private SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
 
 	private SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
 		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+	}
+
+	private RegulationSpecTypeHome getRegulationSpecTypeHome() throws RemoteException {
+		return (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 	}
 
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {

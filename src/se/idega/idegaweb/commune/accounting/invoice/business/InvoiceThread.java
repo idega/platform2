@@ -20,36 +20,25 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -69,9 +58,8 @@ public class InvoiceThread extends BillingThread{
 	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
-	private SchoolCategory childcareCategory;
-	private int childcare = 0;
-	private int check = 0;
+	private int childcare;
+	private int check = 0;//TODO (JJ) This must be set
 	private Map siblingOrders = new HashMap();
 	private String ownPosting, doublePosting;
 
@@ -85,13 +73,13 @@ public class InvoiceThread extends BillingThread{
 	 */
 	public void run(){
 		try {
-			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
-			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
+			category = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
+			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 		
 			//Create all the billing info derrived from the contracts
 			contracts();
 			//Create all the billing info derrived from the regular payments
-			regularPayments();
+			regularInvoice();
 			//VAT
 			calcVAT();
 
@@ -105,33 +93,6 @@ public class InvoiceThread extends BillingThread{
 		}
 	}
 	
-	/**
-	 * Creates the VATpostings for private providers
-	 */
-	private void calcVAT(){
-		try {
-			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(childcareCategory,currentDate).iterator();
-			while(paymentHeaderIter.hasNext()){
-				PaymentHeader paymentHeader = (PaymentHeader)paymentHeaderIter.next();
-				Iterator paymentRecordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
-				while(paymentRecordIter.hasNext()){
-					PaymentRecord paymentRecord = (PaymentRecord) paymentRecordIter.next();
-					VATRegulation vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
-					//TODO (JJ) this needs to be tested heavily. I have no idea what I am doing...
-					float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
-					paymentRecord.setTotalAmountVAT(-vat);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			if(postingDetail != null){
-				createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
-			}else{
-				createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
-			}
-		}
-	}
-
 	/**
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the childcare contracts
@@ -169,7 +130,7 @@ public class InvoiceThread extends BillingThread{
 					//No header was found so we have to create it
 					invoiceHeader = getInvoiceHeaderHome().create();
 					//Fill in all the field available at this times
-					invoiceHeader.setSchoolCagtegoryID(childcareCategory);
+					invoiceHeader.setSchoolCagtegoryID(category);
 					invoiceHeader.setPeriod(startPeriod.getDate());
 					invoiceHeader.setCustodianId(custodian);
 					invoiceHeader.setDateCreated(currentDate);
@@ -192,6 +153,7 @@ public class InvoiceThread extends BillingThread{
 			
 				//Get all the parameters needed to select the correct contract
 				String childcareType = contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getName();
+				childcare = ((Integer)contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getPrimaryKey()).intValue();
 				hours = contract.getCareTime();
 				age = new Age(contract.getChild().getDateOfBirth());
 				ArrayList conditions = new ArrayList();
@@ -202,7 +164,7 @@ public class InvoiceThread extends BillingThread{
 				//Select a specific row from the regulation, given the following restrictions
 				postingDetail = regBus.
 				getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-					childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+				category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
 					PaymentFlowConstant.OUT, 	//The payment flow is out
 					currentDate,					//Current date to select the correct date range
 					RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
@@ -212,7 +174,8 @@ public class InvoiceThread extends BillingThread{
 					contract);						//Sent in to be used for "Specialutrakning"
 		
 				try{
-					compilePostingStrings();
+					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
+					compilePostingStrings(childcare, check, provider);
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, ownPosting, doublePosting);			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -225,11 +188,11 @@ public class InvoiceThread extends BillingThread{
 					//Get all the rules for this contract
 					//TODO (JJ) This is a func that Thomas will provide.
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-					childcareCategory.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
-						PaymentFlowConstant.IN, 		//The payment flow is out
-						currentDate,					//Current date to select the correct date range
-						RuleTypeConstant.DERIVED,		//The conditiontype
-						conditions						//The conditions that need to fulfilled
+					category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+						PaymentFlowConstant.IN, 			//The payment flow is out
+						currentDate,							//Current date to select the correct date range
+						RuleTypeConstant.DERIVED,			//The conditiontype
+						conditions								//The conditions that need to fulfilled
 						);
 
 					Iterator regulationIter = regulationArray.iterator();
@@ -275,15 +238,14 @@ public class InvoiceThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
-	private void regularPayments(){
+	private void regularInvoice(){
 		User custodian;
 		try {
-			RegularInvoiceBusiness regularPaymentBusiness = getRegularInvoiceBusiness();
-			Iterator regularInvoiceIter = regularPaymentBusiness.findRegularInvoicesForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
-			//Go through all the regular payments
+			Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
+			//Go through all the regular invoices
 			while(regularInvoiceIter.hasNext()){
-				RegularInvoiceEntry regularPaymentEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-				custodian = regularPaymentEntry.getUser();
+				RegularInvoiceEntry regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
+				custodian = regularInvoiceEntry.getUser();
 				InvoiceHeader invoiceHeader;
 				try{
 					invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
@@ -291,7 +253,7 @@ public class InvoiceThread extends BillingThread{
 					//No header was found so we have to create it
 					invoiceHeader = getInvoiceHeaderHome().create();
 					//Fill in all the field available at this times
-					invoiceHeader.setSchoolCagtegoryID(childcareCategory);
+					invoiceHeader.setSchoolCagtegoryID(category);
 					invoiceHeader.setPeriod(startPeriod.getDate());
 					invoiceHeader.setCustodianId(custodian);
 					invoiceHeader.setDateCreated(currentDate);
@@ -301,20 +263,21 @@ public class InvoiceThread extends BillingThread{
 					invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 					invoiceHeader.store();
 				}
-				if(regularPaymentEntry.getRegSpecType().equals(RegSpecConstant.CHECK)){
+				//TODO (JJ) I think something more needs to be inserted here...
+				if(regularInvoiceEntry.getRegSpecType().equals(RegSpecConstant.CHECK)){
 					
 				}else{
 				}
 				
-				calculateTime(new Date(regularPaymentEntry.getFrom().getTime()),
-						new Date(regularPaymentEntry.getTo().getTime()));
+				calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
+						new Date(regularInvoiceEntry.getTo().getTime()));
 
 				InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 				invoiceRecord.setInvoiceHeader(invoiceHeader);
-				invoiceRecord.setInvoiceText(regularPaymentEntry.getNote());
+				invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
 
-				invoiceRecord.setProviderId(regularPaymentEntry.getProvider());
-				invoiceRecord.setRuleText(regularPaymentEntry.getNote());
+				invoiceRecord.setProviderId(regularInvoiceEntry.getProvider());
+				invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 				invoiceRecord.setDays(days);
 				invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
 				invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
@@ -322,13 +285,13 @@ public class InvoiceThread extends BillingThread{
 				invoiceRecord.setPeriodEndPlacement(endTime.getDate());
 				invoiceRecord.setDateCreated(currentDate);
 				invoiceRecord.setCreatedBy(BATCH_TEXT);
-				invoiceRecord.setAmount(regularPaymentEntry.getAmount()*months);
-				invoiceRecord.setAmountVAT(regularPaymentEntry.getVAT()*months);
-				invoiceRecord.setVATType(regularPaymentEntry.getVatRegulationID());
-				invoiceRecord.setRuleSpecType(regularPaymentEntry.getRegSpecType());
+				invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*months);
+				invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
+				invoiceRecord.setVATType(regularInvoiceEntry.getVatRegulationID());
+				invoiceRecord.setRuleSpecType(regularInvoiceEntry.getRegSpecType());
 
-				invoiceRecord.setOwnPosting(regularPaymentEntry.getOwnPosting());
-				invoiceRecord.setDoublePosting(regularPaymentEntry.getDoublePosting());
+				invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
+				invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
 				invoiceRecord.store();
 			}
 		} catch (Exception e) {
@@ -569,83 +532,10 @@ public class InvoiceThread extends BillingThread{
 		invoiceRecord.setRuleSpecType(postingDetail.getRuleSpecType());
 
 		//Set the posting strings
-/*
-		PostingBusiness postingBusiness = getPostingBusinessHome().create();
-		PostingParameters parameters = postingBusiness.getPostingParameter(
-			new Date(new java.util.Date().getTime()), childcare, check, 0, 0);
-
-		ownPosting = parameters.getPostingString();
-		Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
-		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
-		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
-		postingBusiness.validateString(ownPosting,currentDate);
-*/
 		invoiceRecord.setOwnPosting(ownPosting);
-/*	
-		doublePosting = parameters.getDoublePostingString();
-		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
-		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
-		postingBusiness.validateString(doublePosting,currentDate);
-*/
 		invoiceRecord.setDoublePosting(doublePosting);
 		invoiceRecord.store();
 	
 		return invoiceRecord;
-	}
-
-	/**
-	 * Creates a pair of posting strings according to the settings of the provider and the categoryPosting
-	 * @throws CreateException
-	 * @throws PostingParametersException
-	 * @throws PostingException
-	 * @throws RemoteException
-	 * @throws MissingMandatoryFieldException
-	 */
-	private void compilePostingStrings() throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
-		//Set the posting strings
-		PostingBusiness postingBusiness = (PostingBusiness)IDOLookup.create(PostingBusiness.class);
-
-		PostingParameters parameters = postingBusiness.getPostingParameter(
-			currentDate, childcare, check, 0, 0);
-
-		ownPosting = parameters.getPostingString();
-		Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
-		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
-		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
-		postingBusiness.validateString(ownPosting,currentDate);
-
-		doublePosting = parameters.getDoublePostingString();
-		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
-		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
-		postingBusiness.validateString(doublePosting,currentDate);
-	}
-
-	//Getters to different commonly used objects
-	private ChildCareContractHome getChildCareContractHome() throws RemoteException {
-		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
-	}
-
-	private InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
-		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
-	}
-
-	private PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
-		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
-	}
-
-	private InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
-		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
-	}
-
-	private PaymentRecordHome getPaymentRecordHome() throws RemoteException {
-		return (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-	}
-
-	private RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {
-		return (RegularInvoiceBusiness) IBOLookup.getServiceInstance(iwc, RegularInvoiceBusiness.class);
-	}
-
-	private VATBusiness getVATBusiness() throws RemoteException {
-		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
 }

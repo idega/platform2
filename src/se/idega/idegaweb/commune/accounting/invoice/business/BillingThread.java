@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -9,12 +10,26 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -117,6 +132,56 @@ public abstract class BillingThread extends Thread{
 		}
 		return paymentRecord;
 	}
+	
+	/**
+	 * Creates the VATpostings for private providers
+	 */
+	protected void calcVAT(){
+		try {
+			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(category,currentDate).iterator();
+			while(paymentHeaderIter.hasNext()){
+				PaymentHeader paymentHeader = (PaymentHeader)paymentHeaderIter.next();
+				Iterator paymentRecordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
+				while(paymentRecordIter.hasNext()){
+					PaymentRecord paymentRecord = (PaymentRecord) paymentRecordIter.next();
+					VATRegulation vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
+					//TODO (JJ) this needs to be tested heavily. I have no idea what I am doing...
+					float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
+					paymentRecord.setTotalAmountVAT(-vat);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+		}
+	}
+
+	/**
+	 * Creates a pair of posting strings according to the settings of the provider and the categoryPosting
+	 * @throws CreateException
+	 * @throws PostingParametersException
+	 * @throws PostingException
+	 * @throws RemoteException
+	 * @throws MissingMandatoryFieldException
+	 */
+	protected String[] compilePostingStrings(int category, int regSpecType, Provider provider) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
+		//Set the posting strings
+		PostingBusiness postingBusiness = (PostingBusiness)IDOLookup.create(PostingBusiness.class);
+
+		PostingParameters parameters = postingBusiness.getPostingParameter(
+			currentDate, category, regSpecType, 0, 0);
+
+		String ownPosting = parameters.getPostingString();
+		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
+		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
+		postingBusiness.validateString(ownPosting,currentDate);
+
+		String doublePosting = parameters.getDoublePostingString();
+		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
+		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
+		postingBusiness.validateString(doublePosting,currentDate);
+		return new String[] {ownPosting, doublePosting};
+	}
 
 	/**
 	 * calculatest the number of days and months between the start and end date 
@@ -186,4 +251,32 @@ public abstract class BillingThread extends Thread{
 		return (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
 	
+	protected ChildCareContractHome getChildCareContractHome() throws RemoteException {
+		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
+	}
+
+	protected RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {
+		return (RegularInvoiceBusiness) IBOLookup.getServiceInstance(iwc, RegularInvoiceBusiness.class);
+	}
+
+	//Getters to different commonly used objects
+	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
+		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
+	}
+
+	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
+		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
+	}
+
+	protected InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
+		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+	}
+
+	protected PaymentRecordHome getPaymentRecordHome() throws RemoteException {
+		return (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
+	}
+
+	protected VATBusiness getVATBusiness() throws RemoteException {
+		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
+	}
 }
