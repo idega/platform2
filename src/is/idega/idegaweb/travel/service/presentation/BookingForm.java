@@ -2136,7 +2136,7 @@ public abstract class BookingForm extends TravelManager{
 				isIcelandOnly = true;
 			} else if (countries.size() == 1) {
 				Country country = (Country) countries.iterator().next();
-				isIcelandOnly = "is_IS".equals(country.getIsoAbbreviation());
+				isIcelandOnly = "is_IS".equals(country.getIsoAbbreviation()) || "IS".equals(country.getIsoAbbreviation());
 			}
 			
 			InterfaceObject menu;
