@@ -91,6 +91,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
 	public int getTotalCountOfMembersForWorkReportYear(int year) {
+		//TODO use sql to get number!
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
@@ -108,6 +109,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public int getTotalCountOfPlayersForWorkReportYear(int year) {
+		//TODO use sql to get number!
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
@@ -129,6 +131,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public int getTotalCountOfCompetitorsForWorkReportYear(int year) {
+		//TODO use sql to get number!
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
@@ -1539,14 +1542,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					workReport.store();
 					tm.commit();
 					
+					
+					if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB)){
 					//update the stats
-					try {
-						updateWorkReportData(workReportId);
-					}
-					catch (Exception ex) {
-						String message = "[WorkReportBusiness]: Can't update work report data.";
-						System.err.println(message + " Message is: " + ex.getMessage());
-						ex.printStackTrace(System.err);
+						//TODO remove when the stats are fetched by sql!!!!!
+						try {
+							updateWorkReportData(workReportId);
+						}
+						catch (Exception ex) {
+							String message = "[WorkReportBusiness]: Can't update work report data.";
+							System.err.println(message + " Message is: " + ex.getMessage());
+							ex.printStackTrace(System.err);
+						}
 					}
 					
 					return true;
@@ -1632,8 +1639,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Collection mainComm = null;
 		Collection divisions = null;
 		Collection mainBoardUsers = null;
+		Group club = null;
+		String type = null;
 		try {
-			Group club = groupBusiness.getGroupByGroupID(groupId);
+			club = groupBusiness.getGroupByGroupID(groupId);
+			type = club.getGroupType();
 		}
 		catch (FinderException e1) {
 			e1.printStackTrace();
@@ -1645,8 +1655,35 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		List mainCommittee = new ArrayList();
 		mainCommittee.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
 		
-		mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId,mainCommittee,true);
-		divisions = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId,divisionType,true);
+		if(type.equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
+			mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId,mainCommittee,true);
+		}
+		else if(type.equals(IWMemberConstants.GROUP_TYPE_LEAGUE)){
+			List committees = new ArrayList();
+			committees.add(IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE);
+			Collection comm = groupBusiness.getChildGroups(club, committees, true);
+			if(comm!=null && !comm.isEmpty()){
+				Iterator iter = comm.iterator(); 
+				Group group = null;
+				while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
+					group = (Group) iter.next();
+					mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered( ((Integer)group.getPrimaryKey()).intValue(),mainCommittee,true);
+				}
+			}
+		}
+		else if(type.equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){
+			List committees = new ArrayList();
+			committees.add(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE);
+			Collection comm = groupBusiness.getChildGroups(club, committees, true);
+			if(comm!=null && !comm.isEmpty()){
+				Iterator iter = comm.iterator(); 
+				Group group = null;
+				while (iter.hasNext() && (mainComm==null || mainComm.isEmpty())) {
+					group = (Group) iter.next();
+					mainComm = groupBusiness.getChildGroupsRecursiveResultFiltered( ((Integer)group.getPrimaryKey()).intValue(),mainCommittee,true);
+				}
+			}
+		}
 		
 		//
 		// create work report board members
@@ -1666,6 +1703,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		else{
 			return false; //there must be a main board in the club!!
+		}
+		
+//		this is VERY important! don't look for divisions for leagues and regional unions!
+		if(type.equals(IWMemberConstants.GROUP_TYPE_CLUB) ){
+			divisions = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId,divisionType,true);
 		}
 		
 		if(divisions!=null && !divisions.isEmpty()){
@@ -1720,6 +1762,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		// first update work report
 		String mainBoardName = getIWApplicationContext().getIWMainApplication().getBundle(
 				ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME, "ADA");
+		
+		
 		Collection members = getAllWorkReportMembersForWorkReportId(workReportId);
 		// create map: member as key, leagues as value
 		Map leagueCountMap = new HashMap();
@@ -1904,9 +1948,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//1.
 		Collection allUsers;
 		try {
-			//TODO members in temporary and staff groups are not members!
+			//members in temporary and staff groups are not members!
 			//do not register those people
-			allUsers = groupBusiness.getUsersFromGroupRecursive(groupBusiness.getGroupByGroupID(groupId));
+			List notFromGroups = new ArrayList();
+			notFromGroups.add(IWMemberConstants.GROUP_TYPE_TEMPORARY);
+			notFromGroups.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE);
+			notFromGroups.add(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN);
+			
+			allUsers = groupBusiness.getUsersFromGroupRecursive(groupBusiness.getGroupByGroupID(groupId),notFromGroups,false);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
