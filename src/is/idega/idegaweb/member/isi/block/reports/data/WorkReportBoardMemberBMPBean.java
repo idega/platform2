@@ -46,6 +46,8 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	
 	protected final static String MALE = "m";
 	protected final static String FEMALE = "f";
+	
+	protected final static String COLUMN_NAME_WORK_REPORT_GROUP_ID = "ISI_WR_GROUP_ID";
 
 	
 	public WorkReportBoardMemberBMPBean() {
@@ -72,8 +74,11 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		addAttribute(COLUMN_NAME_FAX,"Fax number",true,true,String.class);
 		addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
 		
+   
+    
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"one-to-one",WorkReportGroup.class);
 		
-		addManyToManyRelationShip(WorkReportGroup.class);
+
 	}
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -171,11 +176,11 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	}
 	
 	public WorkReportGroup getLeague() throws IDOException {
-		//could be optimized by only getting league workreportgroups
-		Collection coll = idoGetRelatedEntities(WorkReportGroup.class);
-    Iterator iterator = coll.iterator();
-    WorkReportGroup group = (iterator.hasNext()) ? (WorkReportGroup) iterator.next() : null;
-    return group;
+		return (WorkReportGroup) getColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);
+	}
+	
+	public void setLeague(int workReportGroupId){
+		setColumn(COLUMN_NAME_WORK_REPORT_GROUP_ID,workReportGroupId);
 	}
 	
 	public void setAsBoardMember(boolean boardMember){

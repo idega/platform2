@@ -21,6 +21,7 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public void setFirstPhone(java.lang.String p0);
  public void setGroupId(int p0);
  public void setHomePage(java.lang.String p0);
+ public void setLeague(int p0);
  public void setPersonalId(java.lang.String p0);
  public void setPostalCode(com.idega.core.data.PostalCode p0);
  public void setPostalCodeID(int p0);

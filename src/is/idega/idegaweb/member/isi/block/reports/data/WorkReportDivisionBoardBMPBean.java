@@ -30,6 +30,8 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
   // id of the division group
   protected final static String COLUMN_NAME_GROUP_ID = "IC_GROUP_ID";
+	// id of the league group
+	protected final static String COLUMN_NAME_WORK_REPORT_GROUP_ID = "ISI_WR_GROUP_ID";
 
   protected final static String COLUMN_NAME_HOME_PAGE = "HOME_PAGE";
   protected final static String COLUMN_NAME_PERSONAL_ID = "PERSONAL_ID";
@@ -61,7 +63,9 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
     
     
-    addManyToManyRelationShip(WorkReportGroup.class);
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"one-to-one",WorkReportGroup.class);
+    
+    
   }
   public String getEntityName() {
     return ENTITY_NAME;
@@ -100,12 +104,12 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   }
   
   public WorkReportGroup getLeague() throws IDOException {
-    //could be optimized by only getting league workreportgroups
-    Collection coll = idoGetRelatedEntities(WorkReportGroup.class);
-    Iterator iterator = coll.iterator();
-    WorkReportGroup group = (iterator.hasNext()) ? (WorkReportGroup) iterator.next() : null;
-    return group;
+		return (WorkReportGroup) getColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);
   }
+  
+	public void setLeague(int workReportGroupId){
+		setColumn(COLUMN_NAME_WORK_REPORT_GROUP_ID,workReportGroupId);
+	}
   
   public String getStreetName() {
     return (String) getColumnValue(COLUMN_NAME_STREET_NAME);

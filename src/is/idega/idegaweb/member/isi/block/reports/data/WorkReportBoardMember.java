@@ -30,6 +30,7 @@ public interface WorkReportBoardMember extends com.idega.data.IDOEntity
  public void setEmail(java.lang.String p0);
  public void setFax(java.lang.String p0);
  public void setHomePhone(java.lang.String p0);
+ public void setLeague(int p0);
  public void setName(java.lang.String p0);
  public void setPersonalId(java.lang.String p0);
  public void setPostalCode(com.idega.core.data.PostalCode p0);
