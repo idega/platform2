@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.6 2005/02/08 14:01:10 anna Exp $
+ * $Id: MeetingReportCertifier.java,v 1.7 2005/02/14 18:37:57 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -90,8 +90,10 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		
 		Group conGroup = meetingFee.getCongregationGroup();
 		String conGroupName = conGroup.getName();
-		User owner = meetingFee.getOwner();
-		String ownerName = owner.getName();
+		User speaker = getBusiness(iwc).getSupervisor(conGroup);
+		String speakerName = speaker.getName();
+		//User owner = meetingFee.getOwner();
+		//String ownerName = owner.getName();
 		String location = meetingFee.getInCommune() ? getResourceBundle().getLocalizedString("meeting.fee.in_commune", "In commune") : getResourceBundle().getLocalizedString("meeting.fee.outside_of_commune", "Outside of commune");
 		IWTimestamp meetingDate = new IWTimestamp(meetingFee.getMeetingDate());
 		String comment = meetingFee.getComment();
@@ -101,7 +103,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		table.setHeight(row++, 12);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker")),1,row);
-		table.add(getText(ownerName), 2, row++); 
+		table.add(getText(speakerName), 2, row++); 
 		table.setHeight(row++, 12);
 		
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_location","Meeting location")), 1, row);
