@@ -35,7 +35,7 @@ public class MemberGroupData {
 	//public static final String LOCALIZE_KEY_PREFIX_STATUS = "usr_stat_";
 	
 	/**
-	 * @param user The user to create the MemverGroupData for
+	 * @param user The user to create the MemberGroupData for
 	 * @param iwrb
 	 */
 	public MemberGroupData(User user, IWResourceBundle iwrb, IWResourceBundle comUserBundle) {
@@ -71,6 +71,8 @@ public class MemberGroupData {
 			if(!isInStatusList) {
 				// only add group to list if it wasn't added by statuses
 				processGroupRelation(groupRel);
+			} else {
+				System.out.println("Skipping group " + groupRel.getGroup().getName() + " since it was handled in a UserStatus");
 			}
 		}
 	}

@@ -103,9 +103,10 @@ public class MemberOverview extends Block {
 		historyLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"false":"true");
 		historyLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
 		String historyHeader = _iwrb.getLocalizedString("member_overview_history", "Membership history");
+		String statusText = _iwrb.getLocalizedString("member_overview_status", "Status");
 		String beginText = _iwrb.getLocalizedString("member_overview_begin_date", "Started");
 		String endText = _iwrb.getLocalizedString("member_overview_end_date", "Quit");
-		String[] historyHeaders = showHistory?(new String[] {historyHeader, beginText, endText}):(new String[] {historyHeader});
+		String[] historyHeaders = showHistory?(new String[] {historyHeader, statusText, beginText, endText}):(new String[] {historyHeader});
 		row = insertSectionHeaderIntoTable(table, row, historyHeaders, historyLink);
 		if(showHistory) {
 			row = insertRegistrationInfoIntoTable(table, row, true);
@@ -278,7 +279,7 @@ public class MemberOverview extends Block {
 	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers, Link link) {
 		int length = headers.length;
 		if(length<3 && length>0) {
-			table.mergeCells(2, row, 5 - length, row);
+			table.mergeCells(2, row, 6 - length, row);
 		}
 		for(int i=0; i<length; i++) {
 			if(headers[i]!=null) {
