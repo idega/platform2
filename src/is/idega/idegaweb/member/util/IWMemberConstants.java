@@ -60,5 +60,9 @@ public final class IWMemberConstants {
 	public static final String GROUP_TYPE_TEMPORARY = "iwme_temporary";
 	public static final String GROUP_TYPE_ALIAS = "alias";
 	public static final String GROUP_TYPE_GENERAL = "general";
-
+	
+	public static final String MEMBER_BOARD_STATUS_CHAIR_MAN = "chairman";
+	public static final String MEMBER_BOARD_MEMBER = "board_member";
+	public static final String MEMBER_CASHIER = "cashier";
+	public static final String MEMBER_SECRETARY = "secretary";
 }
