@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.11 2003/10/02 16:28:43 anders Exp $
+ * $Id: AgeEditor.java,v 1.12 2003/10/03 09:31:53 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/02 16:28:43 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/03 09:31:53 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -181,7 +181,7 @@ public class AgeEditor extends AccountingBlock {
 	private void handleNewAction(IWContext iwc) {
 		add(getAgeRegulationForm(iwc, "", "", "", "", "", "", "", null, true));
 	}
-
+	
 	/*
 	 * Handles the open action (link clicked in the list) for this block.
 	 */	
@@ -189,12 +189,6 @@ public class AgeEditor extends AccountingBlock {
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
 			AgeRegulation ar = ab.getAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
-			Date cutDate = ar.getCutDate();
-			String cutDateString = "";
-			if (cutDate != null) {
-				String s = formatDate(cutDate, 8);
-				cutDateString = s.substring(4, 7);
-			}
 			add(getAgeRegulationForm(
 					iwc,
 					ar.getPrimaryKey().toString(),
@@ -203,7 +197,7 @@ public class AgeEditor extends AccountingBlock {
 					"" + ar.getAgeFrom(),
 					"" + ar.getAgeTo(),
 					ar.getDescription(),
-					cutDateString,
+					formatCutDate(ar.getCutDate()),
 					null,
 					false)
 			);
@@ -222,9 +216,9 @@ public class AgeEditor extends AccountingBlock {
 
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
-			String cutDate = getParameter(iwc, PARAMETER_CUT_DATE);
-			if (cutDate.length() != 0) {
-				cutDate = "2000" + cutDate;
+			String cutDateString = getParameter(iwc, PARAMETER_CUT_DATE);
+			if (cutDateString.length() != 0) {
+				cutDateString = "2000" + cutDateString;
 			}
 			ab.saveAgeRegulation(
 					getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID),
@@ -235,8 +229,8 @@ public class AgeEditor extends AccountingBlock {
 					iwc.getParameter(PARAMETER_AGE_FROM),
 					iwc.getParameter(PARAMETER_AGE_TO),
 					iwc.getParameter(PARAMETER_DESCRIPTION),
-					parseDate(cutDate),
-					cutDate);
+					parseDate(cutDateString),
+					cutDateString);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -358,7 +352,7 @@ public class AgeEditor extends AccountingBlock {
 				list.add(ar.getAgeFrom());
 				list.add(ar.getAgeTo());
 				list.add(ar.getDescription());
-				list.add(formatDate(ar.getCutDate(), 4));
+				list.add(formatCutDate(ar.getCutDate()));
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna Œldersregel")));
 				edit.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
@@ -494,5 +488,17 @@ public class AgeEditor extends AccountingBlock {
 			}
 		} catch (RemoteException e) {}
 		return menu;
+	}
+
+	/*
+	 * Returns a formatted cut date
+	 */
+	private String formatCutDate(Date cutDate) { 
+		String cutDateString = "";
+		if (cutDate != null) {
+			String s = formatDate(cutDate, 8);
+			cutDateString = s.substring(4, 8);
+		}
+		return cutDateString;
 	}
 }
