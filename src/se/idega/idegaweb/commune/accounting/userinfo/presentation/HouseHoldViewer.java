@@ -21,6 +21,9 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -65,6 +68,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private String userEditorUserParameterName = CitizenEditorWindow.getUserIDParameterName();
 	private String userBruttoIncomeUserParameterName = BruttoIncomeWindow.getUserIDParameterName();
 	private String userLowIncomeUserParameterName = null;
+	private ApplicationForm appForm = null;
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -85,7 +89,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			add(firstUserID.toString());
+			//add(firstUserID.toString());
 		}
 		prm = UserSearcher.getUniqueUserParameterName("two");
 		if (iwc.isParameterSet(prm)) {
@@ -96,7 +100,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			add(secondUserID.toString());
+			//add(secondUserID.toString());
 		}
 		lookupChildren(iwc);
 	}
@@ -137,10 +141,13 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 
 	public void presentate(IWContext iwc) {
+		appForm = new ApplicationForm(this);
+		appForm.setLocalizedTitle("household.title","Household info");
 		presentateSearch(iwc);
 		presentateUsersFound(iwc);
 		presentateChildren(iwc);
 		presentateButtons(iwc);
+		add(appForm);
 	}
 
 	public void presentateSearch(IWContext iwc) {
@@ -173,18 +180,23 @@ public class HouseHoldViewer extends AccountingBlock {
 		table.add(searcherTwo, 1, 2);
 
 		//add(table);
-		Form form = new Form();
-		form.maintainParameter(prmOne);
-		form.maintainParameter(prmTwo);
-		form.add(table);
-		add(form);
-		add(Text.getBreak());
+		//Form form = new Form();
+		//form.maintainParameter(prmOne);
+		//form.maintainParameter(prmTwo);
+		//form.add(table);
+		//add(form);
+		//add(Text.getBreak());
+		appForm.setSearchPanel(table);
+		
 	}
 
 	public void presentateUsersFound(IWContext iwc) {
 		Text tAdults = getHeader(localize("household.adults","Adults"));
-		add(tAdults);
-		Table table = new Table();
+		
+		//add(tAdults);
+		//Table table = new Table();
+		ListTable table = new ListTable(this,6);
+	
 		Text tIndividual = getHeader(localize("household.individual", "Individual"));
 		Text tPersonalID = getHeader(localize("household.personal_id", "Personal ID"));
 		Text tStreetAddress = getHeader(localize("household.streetaddress", "Street address"));
@@ -194,12 +206,12 @@ public class HouseHoldViewer extends AccountingBlock {
 
 		int col = 1;
 		int row = 1;
-		table.add(tIndividual, col++, row);
-		table.add(tPersonalID, col++, row);
-		table.add(tStreetAddress, col++, row);
-		table.add(tSpouse, col++, row);
-		table.add(tPartner, col++, row);
-		table.add(tBruttoIncome, col++, row);
+		table.setHeader(tIndividual, col++);
+		table.setHeader(tPersonalID, col++);
+		table.setHeader(tStreetAddress, col++);
+		table.setHeader(tSpouse, col++);
+		table.setHeader(tPartner, col++);
+		table.setHeader(tBruttoIncome, col++);
 		row++;
 		Vector users = new Vector(2);
 		if (firstUser != null) {
@@ -212,36 +224,45 @@ public class HouseHoldViewer extends AccountingBlock {
 		for (Iterator iter = users.iterator(); iter.hasNext();) {
 			User user = (User) iter.next();
 			col = 1;
-			table.add(getText(user.getNameLastFirst()), col++, row);
-			table.add(getText(user.getPersonalID()), col++, row);
+			table.add(getText(user.getNameLastFirst()));
+			table.add(getText(user.getPersonalID()));
 			Address address = getUserAddress(iwc, user);
 
 			if (address != null) {
-				table.add(getText(address.getStreetAddress()), col, row);
+				table.add(getText(address.getStreetAddress()));
 			}
-			col++;
+			else{
+				table.skip();
+			}
 			User spouse = getSpouse(iwc, user);
 			if (spouse != null) {
-				table.add(getText(spouse.getPersonalID()), col, row);
+				table.add(getText(spouse.getPersonalID()));
 			}
-			col++;
+			else{
+				table.skip();
+			}
 			// partner ??
-			col++;
+			table.skip();
+			
 			BruttoIncome income = getBruttoIncome(user);
 			if (income != null) {
-				table.add(getText(nf.format(income.getIncome().doubleValue())), col, row);
+				table.add(getText(nf.format(income.getIncome().doubleValue())));
 			}
-			col++;
+			else{
+				table.skip();
+			}
 			row++;
 		}
-		add(table);
-		add(Text.getBreak());
+		//add(table);
+		//add(Text.getBreak());
+		appForm.setMainPanel(table);
+		
 	}
 
 	public void presentateChildren(IWContext iwc) {
 		Text tChildren = getHeader(localize("household.children","Children"));
-		add(tChildren);
-		Table table = new Table();
+		//add(tChildren);
+		ListTable table = new ListTable(this,8);
 		Text tIndividual = getHeader(localize("household.individual", "Individual"));
 		Text tPersonalID = getHeader(localize("household.personal_id", "Personal ID"));
 		Text tStreetAddress = getHeader(localize("household.streetaddress", "Street address"));
@@ -252,56 +273,69 @@ public class HouseHoldViewer extends AccountingBlock {
 		Text tSecondCustodian = getHeader(localize("household.second_custodian", "Second custodian"));
 		int row = 1;
 		int col = 1;
-		table.add(tIndividual, col++, row);
-		table.add(tPersonalID, col++, row);
-		table.add(tStreetAddress, col++, row);
-		table.add(tSiblingOrder, col++, row);
-		table.add(tCalculatedAge, col++, row);
-		table.add(tLowIncome, col++, row);
-		table.add(tFirstCustodian, col++, row);
-		table.add(tSecondCustodian, col++, row);
+		table.setHeader(tIndividual, col++);
+		table.setHeader(tPersonalID, col++);
+		table.setHeader(tStreetAddress, col++);
+		table.setHeader(tSiblingOrder, col++);
+		table.setHeader(tCalculatedAge, col++);
+		table.setHeader(tLowIncome, col++);
+		table.setHeader(tFirstCustodian, col++);
+		table.setHeader(tSecondCustodian, col++);
 		row++;
 		if (children != null) {
 			for (Iterator iter = children.iterator(); iter.hasNext();) {
 				User child = (User) iter.next();
 				col = 1;
-				table.add(getText(child.getFirstName()), col++, row);
-				table.add(getText(child.getPersonalID()), col++, row);
+				table.add(getText(child.getFirstName()));
+				table.add(getText(child.getPersonalID()));
 				Address address = getUserAddress(iwc, child);
 				if (address != null) {
-					table.add(getText(address.getStreetAddress()), col, row);
+					table.add(getText(address.getStreetAddress()));
 				}
-				col++;
+				else{
+					table.skip();
+				}
 				Integer siblingOrder = getSiblingOrder(child);
 				if (siblingOrder != null) {
-					table.add(getText(siblingOrder.toString()), col, row);
+					table.add(getText(siblingOrder.toString()));
 				}
-				col++;
+				else{
+					table.skip();
+				}
 				Age age = getCalculatedAge(child);
 				if (age != null) {
-					table.add(getText(String.valueOf(age.getYears())), col, row);
+					table.add(getText(String.valueOf(age.getYears())));
 				}
-				col++;
+				else{
+					table.skip();
+				}
 				// TODO get lowIncome properly
 				Object lowIncome = getLowIncome(child);
 				if (lowIncome != null) {
-					table.add(getText(nf.format(lowIncome.toString())), col, row);
+					table.add(getText(nf.format(lowIncome.toString())));
 				}
-				col++;
+				else{
+					table.skip();
+				}
 				Collection custodians = getCustodians(iwc, child);
 				if (custodians != null && !custodians.isEmpty()) {
 					for (Iterator iterator = custodians.iterator(); iterator.hasNext();) {
 						User custodian = (User) iterator.next();
-						table.add(getText(custodian.getPersonalID()), col, row);
+						table.add(getText(custodian.getPersonalID()));
 						col++;
 					}
 				}
-				row++;
+				else{
+					table.skip(2);
+					
+				}
+				
 				
 			}
 		}
-		add(table);
-		add(Text.getBreak());
+		//add(table);
+		//add(Text.getBreak());
+		appForm.setMainPanel(table);
 	}
 
 	public void presentateButtons(IWContext iwc) {
@@ -315,6 +349,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			drp.addMenuElement(secondUser.getPrimaryKey().toString(), secondUser.getName());
 			hasUser = true;
 		}
+		/*
 		Table table = new Table();
 		table.add(drp, 1, 1);
 		table.add(getUserEditorButton(iwc),2,1);
@@ -324,6 +359,14 @@ public class HouseHoldViewer extends AccountingBlock {
 		Form form = new Form();
 		form.add(table);
 		add(form);
+		*/
+		ButtonPanel bPanel  = new ButtonPanel(this);
+		bPanel.addObject(drp);
+		bPanel.addObject(getUserEditorButton(iwc));
+		bPanel.addObject(getBruttoIncomeEditorButton(iwc));
+		bPanel.addObject(getLowIncomeEditorButton(iwc));
+		appForm.setButtonPanel(bPanel);
+		
 	}
 
 	private PresentationObject getUserEditorButton(IWContext iwc) {

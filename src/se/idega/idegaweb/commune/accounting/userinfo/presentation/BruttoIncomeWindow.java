@@ -16,7 +16,7 @@ import com.idega.presentation.ui.Window;
 public class BruttoIncomeWindow extends Window {
 
 	public BruttoIncomeWindow() {
-		this.setWidth(500);
+		this.setWidth(600);
 		this.setHeight(500);
 		this.setScrollbar(true);
 		this.setResizable(true);
