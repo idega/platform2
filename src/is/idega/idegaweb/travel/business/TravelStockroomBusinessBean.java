@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -77,12 +78,12 @@ import com.idega.util.datastructures.HashtableDoubleKeyed;
 
 public class TravelStockroomBusinessBean extends StockroomBusinessBean implements TravelStockroomBusiness, ActionListener {
 
-  private String resellerDayHashtableSessionName = "resellerDayHashtable";
-  private String resellerDayOfWeekHashtableSessionName = "resellerDayOfWeekHashtable";
-  private String serviceDayHashtableSessionName = "serviceDayHashtable";
+  private static final String resellerDayHashtableSessionName = "resellerDayHashtable";
+  private static final String resellerDayOfWeekHashtableSessionName = "resellerDayOfWeekHashtable";
+  private static final String serviceDayHashtableSessionName = "serviceDayHashtable";
 
-  protected Timeframe timeframe;
-	private static HashMap maxDaysMap = new HashMap();
+  protected Timeframe timeframe; // Thread unsafe ?
+	protected Hashtable maxDaysMap = new Hashtable();
 
   public TravelStockroomBusinessBean() {
   }
