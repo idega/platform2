@@ -36,20 +36,23 @@ public class UserStatusTab extends UserTab {
 	private CheckBox _inactiveField;
 	private Text _groupField;
 	private SelectDropdown _statusField;
-	private SelectDropdown _parentStatusField;
-	private SelectDropdown _boardStatusField;
+	private CheckBox _parent1StatusField;
+	private CheckBox _parent2StatusField;
+	private CheckBox _parent3StatusField;
 	
 	private Text _inactiveText;
 	private Text _groupText;
 	private Text _statusText;
-	private Text _parentStatusText;
-	private Text _boardStatusText;
+	private Text _parent1StatusText;
+	private Text _parent2StatusText;
+	private Text _parent3StatusText;
 	
 	private String _inactiveFieldName;
 	private String _groupFieldName;
 	private String _statusFieldName;
-	private String _parentStatusFieldName;
-	private String _boardStatusFieldName;
+	private String _parent1StatusFieldName;
+	private String _parent2StatusFieldName;
+	private String _parent3StatusFieldName;
 	
 	public UserStatusTab() {
 		super();
@@ -70,8 +73,9 @@ public class UserStatusTab extends UserTab {
 		_inactiveFieldName = "usr_stat_inactive";
 		_groupFieldName = "usr_grp_status";
 		_statusFieldName = "usr_stat_status";
-		_parentStatusFieldName = "usr_stat_parent_status";
-		_boardStatusFieldName = "usr_stat_board_status";
+		_parent1StatusFieldName = "usr_stat_parent1_status";
+		_parent2StatusFieldName = "usr_stat_parent2_status";
+		_parent3StatusFieldName = "usr_stat_parent3_status";
 	}
 
 	/* (non-Javadoc)
@@ -82,8 +86,9 @@ public class UserStatusTab extends UserTab {
 		fieldValues.put(_inactiveFieldName, new Boolean(false));
 		fieldValues.put(_groupFieldName, "");
 		fieldValues.put(_statusFieldName, "");
-		fieldValues.put(_parentStatusFieldName, "");	
-		fieldValues.put(_boardStatusFieldName, "");	
+		fieldValues.put(_parent1StatusFieldName, new Boolean(false));	
+		fieldValues.put(_parent2StatusFieldName, new Boolean(false));	
+		fieldValues.put(_parent3StatusFieldName, new Boolean(false));	
 	}
 
 	/* (non-Javadoc)
@@ -93,8 +98,9 @@ public class UserStatusTab extends UserTab {
 		_inactiveField.setChecked(((Boolean) fieldValues.get(_inactiveFieldName)).booleanValue());
 		_groupField.setText((String) fieldValues.get(_groupFieldName));		
 		_statusField.setSelectedOption((String) fieldValues.get(_statusFieldName));
-		_parentStatusField.setSelectedOption((String) fieldValues.get(_parentStatusFieldName));		
-		_boardStatusField.setSelectedOption((String) fieldValues.get(_boardStatusFieldName));		
+		_parent1StatusField.setChecked(((Boolean) fieldValues.get(_parent1StatusFieldName)).booleanValue());
+		_parent2StatusField.setChecked(((Boolean) fieldValues.get(_parent2StatusFieldName)).booleanValue());
+		_parent3StatusField.setChecked(((Boolean) fieldValues.get(_parent3StatusFieldName)).booleanValue());
 	}
 
 	/* (non-Javadoc)
@@ -103,8 +109,9 @@ public class UserStatusTab extends UserTab {
 	public void initializeFields() {
 		_inactiveField = new CheckBox(_inactiveFieldName);
 		_groupField = new Text(Integer.toString(getGroupID()));
-		_parentStatusField = new SelectDropdown(_parentStatusFieldName);
-		_boardStatusField = new SelectDropdown(_boardStatusFieldName);
+		_parent1StatusField = new CheckBox(_parent1StatusFieldName);
+		_parent2StatusField = new CheckBox(_parent2StatusFieldName);
+		_parent3StatusField = new CheckBox(_parent3StatusFieldName);
 		_statusField = new SelectDropdown(_statusFieldName);
 		
 		Status[] status = null;
@@ -130,37 +137,6 @@ public class UserStatusTab extends UserTab {
 			}
 		}
 						
-/*			_statusField.addOption(new SelectOption("Félagsmaður","0"));
-			_statusField.addOption(new SelectOption("Iðkandi","1"));
-			_statusField.addOption(new SelectOption("Keppandi","2"));
-			_statusField.addOption(new SelectOption("Stjórnarmaður","3"));
-			_statusField.addOption(new SelectOption("Þjálfari","4"));
-			_statusField.addOption(new SelectOption("Aðstoðarþjálfari","5"));
-			_statusField.addOption(new SelectOption("Dómari","6"));
-			_statusField.addOption(new SelectOption("Foreldri","7"));
-			_statusField.addOption(new SelectOption("Forráðamaður","8"));
-			_statusField.addOption(new SelectOption("Starfsmaður","9"));
-			_statusField.addOption(new SelectOption("Styrktaraðili","10"));
-			_statusField.addOption(new SelectOption("Aukaflokkur","11"));
-			_statusField.addOption(new SelectOption("Iðk. á árinu","12"));
-			_statusField.addOption(new SelectOption("Félagsmaður","13"));
-			_statusField.addOption(new SelectOption("Félagsmaður","14"));
-		}*/
-		
-		_parentStatusField.addOption(new SelectOption("","0"));
-		_parentStatusField.addOption(new SelectOption("Forráðamaður I","1"));
-		_parentStatusField.addOption(new SelectOption("Forráðamaður II","2"));
-		_parentStatusField.addOption(new SelectOption("Í foreldraráði","3"));
-		_parentStatusField.addOption(new SelectOption("Í unglinganefnd","4"));
-		_parentStatusField.addOption(new SelectOption("Vill taka þátt í félagsstarfi","5"));
-		
-		_boardStatusField.addOption(new SelectOption("","0"));
-		_boardStatusField.addOption(new SelectOption("Formaður","0"));
-		_boardStatusField.addOption(new SelectOption("Varaformaður","0"));
-		_boardStatusField.addOption(new SelectOption("Gjaldkeri","0"));
-		_boardStatusField.addOption(new SelectOption("Ritari","0"));
-		_boardStatusField.addOption(new SelectOption("Meðstjórnandi","0"));
-		_boardStatusField.addOption(new SelectOption("Framkvæmdastjóri","0"));
 	}
 
 	/* (non-Javadoc)
@@ -172,8 +148,9 @@ public class UserStatusTab extends UserTab {
 
 		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active") + ":");
 		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
-		_parentStatusText = new Text(iwrb.getLocalizedString(_parentStatusFieldName, "Parent status") + ":");
-		_boardStatusText = new Text(iwrb.getLocalizedString(_boardStatusFieldName, "Board status") + ":");		
+		_parent1StatusText = new Text(iwrb.getLocalizedString(_parent1StatusFieldName, "Parent status1") + ":");
+		_parent2StatusText = new Text(iwrb.getLocalizedString(_parent2StatusFieldName, "Parent status2") + ":");
+		_parent3StatusText = new Text(iwrb.getLocalizedString(_parent3StatusFieldName, "Parent status3") + ":");
 	}
 
 	/* (non-Javadoc)
@@ -182,15 +159,17 @@ public class UserStatusTab extends UserTab {
 	public void lineUpFields() {
 		empty();
 		
-		Table t = new Table(2, 4);
+		Table t = new Table(2, 5);
 		t.add(_inactiveText, 1, 1);
 		t.add(_inactiveField, 2, 1);
 		t.add(_statusText, 1, 2);
 		t.add(_statusField, 2, 2);
-		t.add(_parentStatusText, 1, 3);
-		t.add(_parentStatusField, 2, 3);
-		t.add(_boardStatusText, 1, 4);
-		t.add(_boardStatusField, 2, 4);
+		t.add(_parent1StatusText, 1, 3);
+		t.add(_parent1StatusField, 2, 3);
+		t.add(_parent2StatusText, 1, 4);
+		t.add(_parent2StatusField, 2, 4);
+		t.add(_parent3StatusText, 1, 5);
+		t.add(_parent3StatusField, 2, 5);
 
 		add(t);		
 	}
@@ -202,8 +181,9 @@ public class UserStatusTab extends UserTab {
 		if (iwc != null) {
 			String inactive = iwc.getParameter(_inactiveFieldName);
 			String status[] = iwc.getParameterValues(_statusFieldName);
-			String parentStatus = iwc.getParameter(_parentStatusFieldName);
-			String boardStatus = iwc.getParameter(_boardStatusFieldName);
+			String parent1Status = iwc.getParameter(_parent1StatusFieldName);
+			String parent2Status = iwc.getParameter(_parent2StatusFieldName);
+			String parent3Status = iwc.getParameter(_parent3StatusFieldName);
 			
 			if (status != null) {
 				fieldValues.put(_statusFieldName,status);
@@ -212,19 +192,9 @@ public class UserStatusTab extends UserTab {
 				fieldValues.put(_statusFieldName,new String[1]);
 			}
 			
-			if (parentStatus != null) {
-				fieldValues.put(_parentStatusFieldName,parentStatus);
-			}
-			else {		
-				fieldValues.put(_parentStatusFieldName,"");
-			}
-
-			if (boardStatus != null) {
-				fieldValues.put(_boardStatusFieldName,boardStatus);
-			}
-			else {		
-				fieldValues.put(_boardStatusFieldName,"");
-			}
+			fieldValues.put(_parent1StatusFieldName,new Boolean(parent1Status != null));
+			fieldValues.put(_parent2StatusFieldName,new Boolean(parent2Status != null));
+			fieldValues.put(_parent3StatusFieldName,new Boolean(parent3Status != null));
 			fieldValues.put(_inactiveFieldName, new Boolean(inactive != null));
 		}
 		
