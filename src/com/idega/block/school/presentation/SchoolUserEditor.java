@@ -79,7 +79,7 @@ public class SchoolUserEditor extends Block {
 	
 	private String PARAMETER_SCHOOL_USER_NAME = "sue_un";
 	private String PARAMETER_SCHOOL_USER_TELEPHONE = "sue_utf";
-	private String PARAMETER_SCHOOL_USER_CELLPHONE = "sue_ucf";
+	//private String PARAMETER_SCHOOL_USER_CELLPHONE = "sue_ucf";
 	private String PARAMETER_SCHOOL_USER_MOBILEPHONE = "sue_umf";
 	private String PARAMETER_SCHOOL_USER_EMAIL = "sue_uem";
 	private String PARAMETER_SCHOOL_USER_ID = "sue_uid";

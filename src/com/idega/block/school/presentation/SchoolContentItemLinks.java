@@ -8,7 +8,6 @@ import javax.ejb.FinderException;
 
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
-import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 //import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
@@ -19,7 +18,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
 
@@ -390,12 +388,13 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		_spaceBetween = spaceBetween;
 	}
 
+	/*
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
+	*/
 	
 	private SchoolUserBusiness getSchoolUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (SchoolUserBusiness) IDOLookup.getServiceInstance(iwac, SchoolUserBusiness.class);	
-	}
-
+	}	
 }

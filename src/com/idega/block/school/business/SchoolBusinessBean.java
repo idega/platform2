@@ -501,7 +501,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				SchoolType type;
 				while (iter.hasNext()) {
 					type = (SchoolType) iter.next();
-					map.put((Integer) type.getPrimaryKey(), type);
+					map.put(type.getPrimaryKey(), type);
 				}
 				return map;
 			}
@@ -932,7 +932,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			Iterator iter = c.iterator();
 			while (iter.hasNext()) {
 				SchoolYearPlaces p = (SchoolYearPlaces) iter.next();
-				m.put((Integer) p.getPrimaryKey(), p);
+				m.put(p.getPrimaryKey(), p);
 			}
 
 		}

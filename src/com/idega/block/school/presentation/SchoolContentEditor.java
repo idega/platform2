@@ -35,8 +35,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
-import com.idega.user.business.UserBusiness;
-//import com.idega.user.data.User;
 
 /**
  * @author gimmi
@@ -68,7 +66,7 @@ public class SchoolContentEditor extends IWAdminWindow{
   private String PARAMETER_SCHOOL_EMAIL = "scr_email";
   private String PARAMETER_SCHOOL_VISIT_ADDRESS = "scr_vis_addr"; 
 
-  private String CONTENT_EDITORS_GROUP_PARAMETER_NAME = "school.content_editors_group_id";
+  //private String CONTENT_EDITORS_GROUP_PARAMETER_NAME = "school.content_editors_group_id";
   	  
   private String PARAMETER_ACTION = "scr_act";
   private String ACTION_UPDATE = "scr_act_ud";
@@ -696,9 +694,11 @@ public class SchoolContentEditor extends IWAdminWindow{
 		return (SchoolBusiness) IBOLookup.getServiceInstance(iwac, SchoolBusiness.class);
 	}
 	
+	/*
 	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return  (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
+	*/
 	
 	protected SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);

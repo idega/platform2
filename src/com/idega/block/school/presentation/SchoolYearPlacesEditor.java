@@ -75,10 +75,12 @@ public class SchoolYearPlacesEditor extends Block {
     schBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
   }
 
+/*
   private PresentationObject getInput(IWContext iwc ,int id)throws java.rmi.RemoteException{
     return getInputTable(iwc,schBean.getSchoolYearPlaces(new Integer(id)));
   }
-
+*/
+  
   private void savePlaces(IWContext iwc)throws java.rmi.RemoteException{
     if(iwc.isParameterSet("sch_save_school_places")){
       if(iwc.getParameter("sch_save_school_places").equals("true")){

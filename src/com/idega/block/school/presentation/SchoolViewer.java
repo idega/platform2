@@ -9,7 +9,6 @@ import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
@@ -25,7 +24,7 @@ public class SchoolViewer extends Block {
 
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
   private IWResourceBundle _iwrb;
-  private IWBundle _iwb;
+  //private IWBundle _iwb;
 
 
 	public void main( IWContext iwc ) throws RemoteException{
@@ -36,7 +35,7 @@ public class SchoolViewer extends Block {
 
 	private void init( IWContext iwc ) {
 		_iwrb = super.getResourceBundle( iwc );
-		_iwb = super.getBundle( iwc );
+		//_iwb = super.getBundle( iwc );
 	}
 
 	private void schoolList( IWContext iwc ) throws RemoteException {

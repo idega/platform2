@@ -25,8 +25,8 @@ public class SchoolEditorInfoText extends Window {
 	public static final int PARAMETER_TOPIC_ID_PERSON = 2;
 	
 
-private Text TEXT_NORMAL;
-	private Text TEXT_TITLE;
+//private Text TEXT_NORMAL;
+	//private Text TEXT_TITLE;
 	
 
 	public SchoolEditorInfoText() {
@@ -148,11 +148,11 @@ return text;
 
 
 public void setTextStyleNormal(Text text) {
-  	this.TEXT_NORMAL = text;	
+  	//this.TEXT_NORMAL = text;	
   }
   
   public void setTextStyleTitle(Text text) {
-  	this.TEXT_TITLE = text;	
+  	//this.TEXT_TITLE = text;	
   }
 
 }
