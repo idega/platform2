@@ -4,10 +4,7 @@ import com.idega.block.finance.data.*;
 import com.idega.data.GenericEntity;
 import com.idega.core.data.ICObjectInstance;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
@@ -214,9 +211,7 @@ public class FinanceFinder  {
 
   public static List listOfTariffsByAttribute(String attribute){
      try{
-      EntityFinder.debug = true;
       List L =  EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnAttribute(),attribute);
-      EntityFinder.debug = false;
       return L;
       }
       catch(SQLException e){
@@ -433,5 +428,90 @@ public class FinanceFinder  {
     }
     return ti;
   }
+
+  public static Collection getKeySortedTariffsByAttribute(String attribute){
+    Hashtable tar = null;
+    Map AccKeyMap = mapOfAccountKeys();
+    Map TarKeyMap = mapOfTariffKeys();
+    List tariffs = FinanceFinder.listOfTariffsByAttribute(attribute);
+    if(tariffs != null ){
+      tar = new Hashtable();
+      java.util.Iterator iter = tariffs.iterator();
+      Tariff t;
+      Integer acckey;
+      Integer tarkey;
+      while(iter.hasNext()){
+        t = (Tariff) iter.next();
+        acckey = new Integer(t.getAccountKeyId());
+        if(AccKeyMap.containsKey(acckey)){
+          AccountKey AK = (AccountKey) AccKeyMap.get(acckey);
+          tarkey = new Integer(AK.getTariffKeyId());
+          if(TarKeyMap.containsKey(tarkey)){
+            TariffKey TK = (TariffKey) TarKeyMap.get(tarkey);
+            if(tar.containsKey(tarkey)){
+              Tariff a = (Tariff)tar.get(tarkey);
+              a.setPrice(a.getPrice()+t.getPrice());
+            }
+            else{
+              t.setName(TK.getName());
+              t.setInfo(TK.getInfo());
+              tar.put(tarkey,t)  ;
+            }
+          }
+        }
+      }
+      return tar.values();
+    }
+    return null;
+  }
+
+  public static Map mapOfAccountKeys(){
+    List L = listOfAccountKeys();
+    if(L != null){
+      int len = L.size();
+      Hashtable H = new Hashtable(len);
+      for (int i = 0; i < len; i++) {
+        AccountKey AK = (AccountKey) L.get(i);
+        H.put(new Integer(AK.getID()),AK);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
+  public static Map mapOfTariffKeys(){
+    List L = listOfTariffKeys();
+    if(L != null){
+      int len = L.size();
+      Hashtable H = new Hashtable(len);
+      for (int i = 0; i < len; i++) {
+        TariffKey AK = (TariffKey) L.get(i);
+        H.put(new Integer(AK.getID()),AK);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
+   public static List listOfAccountKeys(){
+    try {
+      return EntityFinder.findAll(new AccountKey());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static List listOfTariffKeys(){
+    try {
+      return EntityFinder.findAll(new TariffKey());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
 
 }// class FinanceFinder

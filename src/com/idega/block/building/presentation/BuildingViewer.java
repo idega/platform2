@@ -35,6 +35,7 @@ private String nameStyle = "font-family:verdana; font-size: 11pt; font-weight: b
 private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight: bold; color: #9FA9B3;";
 private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
+private Class apartmentTypeWindowClass = ApartmentTypeWindow.class;
 
 private int imageMaxSize = 165;
 
@@ -43,6 +44,10 @@ public BuildingViewer(){
 
 public BuildingViewer(int building_id){
     this.building_id=building_id;
+}
+
+public void setApartmentTypeWindowClass(Class windowClass){
+  apartmentTypeWindowClass = windowClass;
 }
 
 
@@ -197,7 +202,8 @@ public BuildingViewer(int building_id){
 
       String typeName = formatText(types[a].getName()+" "+types[a].getArea()+"m2");
 
-      String typeText = types[a].getInfo();
+      //String typeText = types[a].getInfo();
+      String typeText = types[a].getExtraInfo();
         typeText = TextSoap.findAndReplace(typeText,"\n","<br>");
 
       String divideText = ("<br>.........<br><br>");
@@ -216,7 +222,7 @@ public BuildingViewer(int building_id){
       Image moreImage = iwrb_.getImage("/building/more.gif");
       Image backImage = iwrb_.getImage("/building/back.gif");
       Link typeLink = new Link(moreImage);
-				typeLink.setWindowToOpen(ApartmentTypeWindow.class);
+				typeLink.setWindowToOpen(apartmentTypeWindowClass);
         typeLink.addParameter(ApartmentTypeViewer.PARAMETER_STRING,types[a].getID());
 
       BackButton BB = new BackButton( backImage);

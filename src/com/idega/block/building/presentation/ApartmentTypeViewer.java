@@ -37,12 +37,19 @@ private String style = "font-family:verdana,arial,sans-serif; font-size: 11pt; f
 private String infoStyle =  "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
 protected IWBundle iwb_;
+private String specialAttributesName = null;
+private Map specialAttributes = null;
 
 public ApartmentTypeViewer(){
 }
 
 public ApartmentTypeViewer(int apartmenttypeid){
     this.apartmenttypeid=apartmenttypeid;
+}
+
+public void setSpecialAttributes(String name,Map attributes){
+  specialAttributesName  = name;
+  specialAttributes = attributes;
 }
 
 
@@ -215,11 +222,34 @@ public ApartmentTypeViewer(int apartmenttypeid){
       roomTable.add(Inventory,2,1);
       roomTable.add(Text.getBreak(),2,1);
 
+      /** @todo  get rid of*/
+      /*
       if(room.getRent() > 0){
         roomTable.add(getBoldText(iwrb_.getLocalizedString("rent","Rent")+": "),2,1);
         NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());
         String rentString = format.format((long)room.getRent());
         roomTable.add(getInfoText(rentString),2,1);
+      }
+      */
+      if(specialAttributes!=null){
+        Table T = new Table();
+        T.setCellpadding(0);
+        T.setCellspacing(0);
+        int row = 1;
+        if(specialAttributesName!=null){
+          T.add(getBoldText(specialAttributesName),1,row++);
+        }
+        Iterator iter = specialAttributes.entrySet().iterator();
+        while(iter.hasNext()){
+          Map.Entry me = (Map.Entry) iter.next();
+          T.add(getBoldText((String)me.getKey()),1,row);
+          T.add(getInfoText((String)me.getValue()),3,row);
+          row++;
+        }
+        T.mergeCells(1,1,3,1);
+        T.setColumnAlignment(3,"right");
+        T.setWidth(2,"5");
+         roomTable.add(T,2,1);
       }
 
        Table linksTable = new Table(2,3);

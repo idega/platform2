@@ -20,7 +20,6 @@ public class ApartmentTypeWindow extends Window {
     setHeight(515);
     setWidth(420);
     //setResizable(true);
-    keepFocus();
   }
 
   public void main(IWContext iwc) throws Exception{

@@ -7,9 +7,7 @@ import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.*;
 /**
  * Title:        AccountManager
  * Description:
@@ -196,56 +194,24 @@ public class AccountManager {
   }
 
   public static List listOfAccountKeys(){
-    try {
-      return EntityFinder.findAll(new AccountKey());
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+   return FinanceFinder.listOfAccountKeys();
   }
 
   public static List listOfTariffKeys(){
-    try {
-      return EntityFinder.findAll(new TariffKey());
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    return FinanceFinder.listOfTariffKeys();
   }
 
-  public static Hashtable hashOfAccountKeys(){
-    List L = listOfAccountKeys();
-    if(L != null){
-      int len = L.size();
-      Hashtable H = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        AccountKey AK = (AccountKey) L.get(i);
-        H.put(new Integer(AK.getID()),AK);
-      }
-      return H;
-    }
-    else
-      return null;
+  public static Map hashOfAccountKeys(){
+    return FinanceFinder.mapOfAccountKeys();
   }
 
-  public static Hashtable hashOfTariffKeys(){
-    List L = listOfTariffKeys();
-    if(L != null){
-      int len = L.size();
-      Hashtable H = new Hashtable(len);
-      for (int i = 0; i < len; i++) {
-        TariffKey AK = (TariffKey) L.get(i);
-        H.put(new Integer(AK.getID()),AK);
-      }
-      return H;
-    }
-    else
-      return null;
+  public static Map hashOfTariffKeys(){
+    return FinanceFinder.mapOfTariffKeys();
   }
 
   public static List listOfKeySortedEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
-    Hashtable acckeys = hashOfAccountKeys();
-    Hashtable takeys = hashOfTariffKeys();
+    Map acckeys = hashOfAccountKeys();
+    Map takeys = hashOfTariffKeys();
     if(acckeys != null && takeys != null){
       List entries = listOfAccountEntries(iAccountId,from,to);
       if(entries != null){
@@ -280,6 +246,7 @@ public class AccountManager {
     else
       return null;
   }
+
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException{
     Account A = new Account();
     A.setBalance(0);
