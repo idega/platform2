@@ -5,6 +5,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
 {
  public SchoolClassMember create() throws javax.ejb.CreateException;
  public SchoolClassMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+ public java.util.Collection findActiveByCategorySeasonAndSchools(com.idega.block.school.data.SchoolCategory p0,com.idega.block.school.data.SchoolSeason p1, java.lang.String[] p2, boolean p3)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolAndUsersWithSchoolYearAndNotRemoved(int p0,java.util.Collection p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySeasonAndSchoolYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException;

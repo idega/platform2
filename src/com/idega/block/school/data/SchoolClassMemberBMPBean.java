@@ -1,6 +1,5 @@
 package com.idega.block.school.data;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -43,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/03/31 10:55:30 $ by $Author: laddi $
- * @version $Revision: 1.106 $
+ *         Last modified: $Date: 2004/04/01 09:23:25 $ by $Author: anders $
+ * @version $Revision: 1.107 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -556,6 +555,30 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendOrderBy(REGISTER_DATE + " desc");
 
 		return (Integer) this.idoFindOnePKBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindActiveByCategorySeasonAndSchools(SchoolCategory cat, SchoolSeason season, String[] schoolIds, boolean notInSchools) throws FinderException {
+		
+		IDOQuery sql = idoQuery();
+
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " + SchoolClassBMPBean.SCHOOLCLASS + " cl, " + SchoolTypeBMPBean.SCHOOLTYPE + " tp")
+		.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y")
+		.appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+		.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(season.getPrimaryKey())
+		.appendAnd().append("mb." + SCHOOL_TYPE).appendEqualSign().append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+		.appendAnd().append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY).appendEqualSign().append("'" + cat.getPrimaryKey() + "'")
+		.appendAnd().appendLeftParenthesis().append("mb." + REMOVED_DATE + " is null").appendOr() 
+		.append("mb." + REMOVED_DATE).appendGreaterThanOrEqualsSign().append(new Date(System.currentTimeMillis())).appendRightParenthesis();
+		if (schoolIds != null) {
+			if (notInSchools) {
+				sql.append("cl.school_id").appendNotInArray(schoolIds);
+			} else {
+				sql.append("cl.school_id").appendInArray(schoolIds);			
+			}
+		}
+
+		return this.idoFindPKsByQuery(sql);
 	}
 
 	public Collection ejbFindAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {
