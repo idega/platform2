@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-
 import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -23,14 +22,9 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
-
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
-//import se.idega.util.PIDChecker;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
