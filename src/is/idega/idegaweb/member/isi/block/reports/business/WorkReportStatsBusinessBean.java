@@ -3558,10 +3558,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
 			double pChange = (
+			                  ((double) (pThisYear - pLastYear) /
+			                  ((double) (pThisYear>0?pThisYear:(((pThisYear - pLastYear)!=0)?(pThisYear - pLastYear):1))))
+			                 ) * 100.0 
+					           * ((((pThisYear-pLastYear)!=0 && pThisYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);
+			/*double pChange = (
 			                  ((double) pThisYear) /
 			                  ((double) (pLastYear>0?pLastYear:((pThisYear-pLastYear)!=0?(pThisYear-pLastYear):1)))
 			                 ) * 100.0 
-			                   * ((((pThisYear-pLastYear)!=0 && pThisYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);
+			                   * ((((pThisYear-pLastYear)!=0 && pThisYear!=0) && (pThisYear>=pLastYear))?1.0:-1.0);*/
 			
 			regData.addData(membersThisYear, new Integer(mThisYear));
 			regData.addData(membersLastYear, new Integer(mLastYear));
