@@ -49,7 +49,7 @@ public class TPosClient {
     _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
 
     boolean valid = _client.sendCACertificateReq();
-    _client.confirmCACertificate();
+//    _client.confirmCACertificate();
 
     if (!valid) {
       System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
