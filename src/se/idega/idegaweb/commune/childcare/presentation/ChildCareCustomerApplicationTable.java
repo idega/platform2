@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
@@ -39,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.63 2004/03/08 11:07:50 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.64 2004/03/16 10:28:40 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -85,6 +86,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 		if (_renewQueuePage != null) {
 			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(getChildId(iwc), _caseCode)) {
+				getChildCareSession(iwc).setChildID(getChildId(iwc));
 				iwc.forwardToIBPage(getParentPage(), _renewQueuePage);
 			}
 		}
@@ -707,6 +709,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	ChildCareBusiness getChildCareBusiness(IWContext iwc) {
 		try {
 			return (ChildCareBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+	}
+
+	ChildCareSession getChildCareSession(IWContext iwc) {
+		try {
+			return (ChildCareSession) com.idega.business.IBOLookup.getSessionInstance(iwc, ChildCareSession.class);
 		}
 		catch (RemoteException e) {
 			return null;
