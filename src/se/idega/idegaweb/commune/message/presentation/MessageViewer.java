@@ -7,6 +7,7 @@ import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.block.text.business.TextFormatter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
@@ -92,7 +93,7 @@ public class MessageViewer extends CommuneBlock {
 		table.add(getSmallHeader(localize("message.subject","Subject")),1,row);
 		table.add(getSmallText(msg.getSubject()),2,row++);
 
-		table.add(getSmallText(msg.getBody()),2,row++);
+		table.add(getSmallText(TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT)),2,row++);
 
 		table.add((CloseButton) getButton(new CloseButton(localize("message.back", "Back"))),1,row);
 		table.mergeCells(1, row, 2, row);
