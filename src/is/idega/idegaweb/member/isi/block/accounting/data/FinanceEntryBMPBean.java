@@ -34,6 +34,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_DATE_OF_ENTRY = "date_of_entry";
 	protected final static String COLUMN_INFO = "text_info";
 	protected final static String COLUMN_INSERTED_BY = "inserted_by";
+	protected final static String COLUMN_AMOUNT_EQUALIZED = "eq_amount";
+	protected final static String COLUMN_OPEN = "entry_open";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -42,6 +44,10 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String TYPE_ASSESSMENT = "A";
 	protected final static String TYPE_MANUAL = "M";
 	protected final static String TYPE_PAYMENT = "P";
+	
+	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
+	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";
+	protected static final String STRING_TYPE_PAYMENT = "isi_acc_fin_entry_pay_type";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -67,6 +73,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		addAttribute(COLUMN_DATE_OF_ENTRY, "Timestamp", true, true, Timestamp.class);
 		addAttribute(COLUMN_INFO, "Text info", true, true, String.class, 255);
 		addManyToOneRelationship(COLUMN_INSERTED_BY, User.class);
+		addAttribute(COLUMN_AMOUNT_EQUALIZED, "Amount equalized", true, true, Double.class);
+		addAttribute(COLUMN_OPEN, "Open", true, true, Boolean.class);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -96,6 +104,26 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	
 	public void setTypePayment() {
 		setColumn(COLUMN_TYPE, TYPE_PAYMENT);
+	}
+	
+	public String getTypeLocalizationKey() {
+		String type = getStringColumnValue(COLUMN_TYPE);
+		if (type != null && !"".equals(type)) {
+			if (type.equals(TYPE_ASSESSMENT)) {
+				return STRING_TYPE_AUTOMATIC;
+			}
+			else if (type.endsWith(TYPE_MANUAL)) {
+				return STRING_TYPE_MANUAL;
+			}
+			else if (type.equals(TYPE_PAYMENT)) {
+				return STRING_TYPE_PAYMENT;
+			}
+			else {
+				return null;
+			}
+		}
+		
+		return null;
 	}
 	
 	public double getAmount() {
@@ -218,6 +246,22 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		setColumn(COLUMN_INSERTED_BY, user);
 	}
 	
+	public double getAmountEqualized() {
+		return getDoubleColumnValue(COLUMN_AMOUNT_EQUALIZED, 0);
+	}
+
+	public void setAmountEqualized(double amount) {
+		setColumn(COLUMN_AMOUNT_EQUALIZED, amount);
+	}
+	
+	public boolean getEntryOpen() {
+		return getBooleanColumnValue(COLUMN_OPEN, true);
+	}
+
+	public void setEntryOpen(boolean open) {
+		setColumn(COLUMN_OPEN, open);
+	}
+	
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -225,4 +269,23 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		
 		return idoFindPKsByQuery(sql);
 	}	
+	
+	public Collection ejbFindAllByUser(Group club, Group division, User user) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		if (division != null) {
+			sql.appendAnd();
+			sql.appendEquals(COLUMN_DIVISION_ID, division);
+		}
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_USER_ID, user);
+		sql.appendOrderBy();
+		sql.append(getIDColumnName());
+		sql.appendDescending();
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);		
+	}
 }

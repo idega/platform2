@@ -4,6 +4,7 @@ package is.idega.idegaweb.member.isi.block.accounting.data;
 public interface FinanceEntry extends com.idega.data.IDOEntity
 {
  public double getAmount();
+ public double getAmountEqualized();
  public is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound getAssessmentRound();
  public int getAssessmentRoundID();
  public com.idega.user.data.Group getClub();
@@ -11,14 +12,17 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public java.sql.Timestamp getDateOfEntry();
  public com.idega.user.data.Group getDivision();
  public int getDivisionID();
+ public boolean getEntryOpen();
  public com.idega.user.data.Group getGroup();
  public int getGroupID();
  public java.lang.String getInfo();
  public com.idega.user.data.User getInsertedByUser();
  public int getInsertedByUserID();
+ public java.lang.String getTypeLocalizationKey();
  public com.idega.user.data.User getUser();
  public int getUserID();
  public void setAmount(double p0);
+ public void setAmountEqualized(double p0);
  public void setAssessment(is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound p0);
  public void setAssessmentRoundID(int p0);
  public void setClub(com.idega.user.data.Group p0);
@@ -26,6 +30,7 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public void setDateOfEntry(java.sql.Timestamp p0);
  public void setDivision(com.idega.user.data.Group p0);
  public void setDivisionID(int p0);
+ public void setEntryOpen(boolean p0);
  public void setGroup(com.idega.user.data.Group p0);
  public void setGroupID(int p0);
  public void setInfo(java.lang.String p0);

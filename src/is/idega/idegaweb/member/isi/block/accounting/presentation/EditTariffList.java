@@ -107,7 +107,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		String skip = getBundle(iwc).getProperty(PROPERTY_SKIP, "");
 
 		try {
-			getAccountingBusiness(iwc).insertTariff(getClub(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
+			getAccountingBusiness(iwc).insertTariff(getClub(), getDivision(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

@@ -22,6 +22,10 @@ public class CashierSubWindowTemplate extends Block {
 	protected static final String ERROR_COULD_NOT_SAVE = "isi_acc_could_not_save";
 	protected static final String ENTRY_ENTERED = "isi_acc_entry_entered";
 	
+	protected static final String STRING_TYPE_MANUAL = "isi_acc_fin_entry_manual_type";
+	protected static final String STRING_TYPE_AUTOMATIC = "isi_acc_fin_entry_auto_type";
+	protected static final String STRING_TYPE_PAYMENT = "isi_acc_fin_entry_pay_type";
+	
 	protected Group _club = null;
 	protected Group _division = null;
 	protected User _user = null;

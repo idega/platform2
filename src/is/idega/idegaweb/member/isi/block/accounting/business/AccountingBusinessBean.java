@@ -19,6 +19,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -39,7 +40,6 @@ import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -118,7 +118,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 	
-	public boolean insertTariff(Group club, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren, String skip) {
+	public boolean insertTariff(Group club, Group division, String groupId, String typeId, String text, String amount, Date from, Date to, boolean applyToChildren, String skip) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -156,10 +156,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (Exception e) {
 		}
 
-		return insertTariff(club, group, type, text, am, from, to, applyToChildren, skip, null);
+		return insertTariff(club, division, group, type, text, am, from, to, applyToChildren, skip, null);
 	}
 
-	public boolean insertTariff(Group club, Group group, ClubTariffType type, String text, float amount, Date from, Date to, boolean applyToChildren, String skipList, List skip) {
+	public boolean insertTariff(Group club, Group division, Group group, ClubTariffType type, String text, float amount, Date from, Date to, boolean applyToChildren, String skipList, List skip) {
 		if (skip == null || skip.isEmpty()) {
 			skip = new ArrayList();
 		
@@ -167,19 +167,19 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			while (tok.hasMoreElements()) {
 				String str = (String) tok.nextElement();
 				skip.add(str);
-			}
-			
-			Iterator it = skip.iterator();
-			while (it.hasNext()) {
-				System.out.println((String)it.next());
-			}
+			}			
 		}
 		
 		ClubTariff eTariff;
 		try {
 			if (!skip.contains(group.getGroupType())) {
+				if (division == null) {
+					division = findDivisionForGroup(group);
+				}
+				
 				eTariff = getClubTariffHome().create();
 				eTariff.setClub(club);
+				eTariff.setDivision(division);
 				eTariff.setGroup(group);
 				eTariff.setTariffType(type);
 				eTariff.setText(text);
@@ -195,7 +195,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				if (children != null) {
 					while (children.hasNext()) {
 						Group child = (Group) children.next();
-						boolean ret = insertTariff(club, child, type, text, amount, from, to, applyToChildren, skipList, skip);
+						boolean ret = insertTariff(club, division, child, type, text, amount, from, to, applyToChildren, skipList, skip);
 						if (!ret)
 							return ret;
 					}
@@ -209,6 +209,34 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 
 		return false;
+	}
+	
+	public Group findDivisionForGroup(Group group) {
+		if (group == null) {
+			return null;
+		}
+
+		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+			return group;
+		}
+		else if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
+			return null;
+		}
+		
+		List parents = group.getParentGroups();
+		if (parents != null && !parents.isEmpty()) {
+			Iterator it = parents.iterator();
+			while (it.hasNext()) {
+				Group parent = (Group) it.next();
+				
+				Group div = findDivisionForGroup(parent);
+				if (div != null) {
+					return div;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public boolean deleteTariff(String ids[]) {
@@ -392,6 +420,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			round = getAssessmentRoundHome().create();
 			round.setName(name);
 			round.setClub(club);
+			if (division == null) {
+				division = findDivisionForGroup(group);
+			}
 			if (division != null)
 				round.setDivision(division);
 			if (group != null)
@@ -402,7 +433,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				round.setEndTime(end);
 			round.setIncludeChildren(includeChildren);
 			round.setPaymentDate(paymentDate);
-//			round.set
 
 			round.store();
 		}
@@ -494,11 +524,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			FinanceEntry entry = getFinanceEntryHome().create();
 			entry.setUser(user);
 			entry.setClub(club);
+			if (div == null) {
+				div = findDivisionForGroup(group);
+			}
 			entry.setDivision(div);
 			entry.setGroup(group);
 			entry.setAmount(amount);
 			entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
-			if (info != null)
+			if (info != null && !"".equals(info))
 				entry.setInfo(info);
 			else
 				entry.setInfo(tariff.getText());

@@ -10,8 +10,11 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffHome;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,6 +38,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -55,6 +59,11 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	private final static String ERROR_NO_GROUP_SELECTED = "isi_acc_ma_no_group_selected";
 	private final static String ERROR_NO_TARIFF_SELECTED = "isi_acc_ma_no_tariff_selected";
 	private final static String ERROR_NO_AMOUNT_ENTERED = "isi_acc_ma_no_amount_entered";
+	
+	private final static String LABEL_DIVISION = "isi_acc_ma_division";
+	private final static String LABEL_GROUP = "isi_acc_ma_group";
+	private final static String LABEL_DATE = "isi_acc_ma_date";
+	private final static String LABEL_TYPE = "isi_acc_ma_type";
 	
 	/**
 	 * 
@@ -131,16 +140,11 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 				
 				f.add(error);
 			}
-			else {
-				Text labelOK = new Text(iwrb.getLocalizedString(ENTRY_ENTERED, "Entry entered"));
-				labelOK.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
-				
-				f.add(labelOK);
-			}
 		}
 		
 		f.add(t);
 		f.add(inputTable);
+		f.add(dataTable);
 		
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -249,6 +253,58 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 			inputTable.add(submit, 4, row++);	
+			
+			try {
+				Collection entries = getFinanceEntryHome().findAllByUser(getClub(), getDivision(), getUser());
+				if (entries != null && !entries.isEmpty()) {
+					Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+					labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+					Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
+					labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+					Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
+					labelDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+					Text labelType = new Text(iwrb.getLocalizedString(LABEL_TYPE, "Type"));
+					labelType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+					
+					int r = 1;
+					dataTable.add(labelDivision, 1, r);
+					dataTable.add(labelGroup, 2, r);
+					dataTable.add(labelInfo, 3, r);
+					dataTable.add(labelDate, 4, r);
+					dataTable.add(labelAmount, 5, r);
+					dataTable.add(labelType, 6, r++);
+					
+					NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
+					nf.setMaximumFractionDigits(0);
+					
+					Iterator it = entries.iterator();
+					while (it.hasNext()) {
+						FinanceEntry entry = (FinanceEntry) it.next();
+						
+						if (entry.getDivision() != null) {
+							dataTable.add(entry.getDivision().getName(), 1, r);
+						}
+						if (entry.getGroup() != null) {
+							dataTable.add(entry.getGroup().getName(), 2, r);
+						}
+						if (entry.getInfo() != null) {
+							dataTable.add(entry.getInfo(), 3, r);
+						}
+						if (entry.getDateOfEntry() != null) {
+							IWTimestamp date = new IWTimestamp(entry.getDateOfEntry());
+							dataTable.add(date.getDateString("dd.MM.yyyy"), 4, r);
+						}
+						dataTable.add(nf.format(entry.getAmount()), 5, r);
+						if (entry.getTypeLocalizationKey() != null) {
+							dataTable.add(iwrb.getLocalizedString(entry.getTypeLocalizationKey(), "Type"), 6, r);
+						}
+						r++;
+					}
+				}
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			} 
 		}
 		else {
 			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab."), 1, row);
@@ -347,6 +403,17 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 		
+		return null;
+	}	
+	
+	private FinanceEntryHome getFinanceEntryHome() {
+		try {
+			return (FinanceEntryHome) IDOLookup.getHome(FinanceEntry.class);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}	
 }

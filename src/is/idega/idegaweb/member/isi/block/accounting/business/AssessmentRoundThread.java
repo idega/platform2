@@ -107,7 +107,11 @@ public class AssessmentRoundThread extends Thread {
 							entry.setUser(user);
 							entry.setAssessment(_round);
 							entry.setClub(_round.getClub());
-							entry.setDivision(_round.getDivision());
+							Group division = _round.getDivision();
+							if (division == null) {
+								division = getAccountingBusiness().findDivisionForGroup(group);
+							}
+							entry.setDivision(division);
 							entry.setGroup(group);
 							entry.setAmount(tariff.getAmount());
 							entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
@@ -148,6 +152,15 @@ public class AssessmentRoundThread extends Thread {
 	private UserBusiness getUserBusiness() {
 		try {
 			return (UserBusiness) IBOLookup.getServiceInstance(_iwac, UserBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}	
+	
+	private AccountingBusiness getAccountingBusiness() {
+		try {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(_iwac, AccountingBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
