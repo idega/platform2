@@ -22,7 +22,7 @@ public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
     public void insertStartData () throws Exception {
         super.insertStartData ();
         
-        System.out.println ("¤¤¤ Invoked " + this + ".insertStartData ()");
+        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
         TopCategoryHome home
                 = (TopCategoryHome) IDOLookup.getHome(TopCategory.class);

@@ -91,9 +91,9 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         viewpoint.setAnswer (answer);
 		final CaseStatusHome caseStatusHome
                 = (CaseStatusHome) IDOLookup.getHome (CaseStatus.class);
-        //final CaseStatus statusAnswered = caseStatusHome.findByPrimaryKey
-        //        (Viewpoint.STATUSKEY_ANSWERED);
-        //viewpoint.setCaseStatus (statusAnswered);
+        final CaseStatus statusAnswered = caseStatusHome.findByPrimaryKey
+                (Viewpoint.STATUSKEY_ANSWERED);
+        viewpoint.setCaseStatus (statusAnswered);
         viewpoint.store ();
     }
 

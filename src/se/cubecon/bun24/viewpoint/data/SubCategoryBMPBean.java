@@ -23,7 +23,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
     public void insertStartData () throws Exception {
         super.insertStartData ();
-        System.out.println ("¤¤¤ Invoked " + this + ".insertStartData ()");
+        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
 
         final String [][] startData = {
             { "Anordnare", "Barnomsorg", "Myndighetsgruppen" },
@@ -124,7 +124,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
     public Collection ejbFindSubCategories (final int topCategoryId)
         throws FinderException, RemoteException {
-        final String sql = "select * from " + ENTITY_NAME + "where "
+        final String sql = "select * from " + ENTITY_NAME + " where "
                 + COLUMN_TOPCATEGORY_ID + " = '" + topCategoryId + "'";
         System.out.println ("sql: " + sql);
         return idoFindIDsBySQL (sql);
