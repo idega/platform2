@@ -1,12 +1,15 @@
 package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserBusinessBean;
@@ -99,6 +102,42 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			e.printStackTrace();
 		}
 	}
+	
+	//temp refactor this class to MemberBusiness or move this method to that class
+	/**
+	 * @return A collection of groups (of the type iwme_club_division)
+	 */
+	public Collection getAllClubDivisionsForLeague(Group league){
+		Collection groups = null;
+		
+		try {
+			groups  = getGroupHome().findGroupsByMetaData(IWMemberConstants.META_DATA_LEAGUE_CONNECTION,league.getPrimaryKey().toString());
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return groups;
+	}
+	
+	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException{
+		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
+		
+		if(tops!=null){
+			
+			
+			
+		}
+		return null;
+		
+		
+	}
+	
+	
+	
 	
 	
 }
