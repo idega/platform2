@@ -4,6 +4,8 @@ import com.idega.block.messenger.presentation.MessengerApplet;
 import com.idega.block.messenger.presentation.MessageDialog;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.AWTEventMulticaster;
 
 /**
  * Title:        com.idega.block.messenger.business
@@ -15,27 +17,20 @@ import java.awt.event.ActionEvent;
  */
 
 public class MessageListener implements Runnable{
-  private MessengerApplet client;
+  private ActionListener listener;
   private Thread t;
   private long threadSleep = 5000;//5 seconds
   private boolean runThread = false;
 
-  public MessageListener(MessengerApplet applet) {
-    this.client = applet;
-  }
-
-  public MessageListener(MessengerApplet applet, long interval) {
-    this(applet);
+  public MessageListener(long interval) {
     setInterval(interval);
   }
 
   public void run(){
     while(runThread){
       try {
-        client.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-cycle"));
-        //client.cycle();
+        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-cycle"));
         t.sleep(threadSleep);
-
       }
       catch (Exception e) {
         e.printStackTrace(System.out);
@@ -66,4 +61,17 @@ public class MessageListener implements Runnable{
   public void setInterval(long interval){
     this.threadSleep = interval;
   }
+
+  public void addActionListener(ActionListener l) {
+    listener = AWTEventMulticaster.add(listener, l);
+  }
+
+  public void removeActionListener(ActionListener l) {
+    listener = AWTEventMulticaster.remove(listener, l);
+  }
+
+  private ActionListener getActionListener(){
+    return listener;
+  }
+
 }
