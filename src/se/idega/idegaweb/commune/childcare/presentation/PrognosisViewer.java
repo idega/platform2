@@ -21,6 +21,9 @@ public class PrognosisViewer extends ChildCareBlock {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
+	
+	private boolean showVacancies = false;
+	
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
 			add(getPrognosisTable(iwc));
@@ -40,26 +43,47 @@ public class PrognosisViewer extends ChildCareBlock {
 	
 	public Table getProviderCapacity() throws RemoteException {
 		Table table = new Table();
+		table.setWidth(400);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setColumns(1);
 		table.setRows(2);
 		
+		int row = 1;
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
 		if (prognosis != null) {
 			int provierCapacity = prognosis.getProviderCapacity();
-			table.add(getSmallText(localize("child_care.provider_capacity","Provider capacity")+": "),1,1);
+			table.add(getSmallText(localize("child_care.provider_capacity","Provider capacity")+": "),1,row);
 			if (provierCapacity != -1) {
-				table.add(getSmallHeader(String.valueOf(provierCapacity)),1,1);	
+				table.add(getSmallHeader(String.valueOf(provierCapacity)),1,row++);	
 			}
 			else {
-				table.add(getSmallHeader(localize("child_care.provider_capacity_not_set","Capacity not set")),1,1);
+				table.add(getSmallHeader(localize("child_care.provider_capacity_not_set","Capacity not set")),1,row++);
+			}
+			if (showVacancies){
+				int vacancies = prognosis.getVacancies();
+				table.add(getSmallText(localize("child_care.vacancies","Number of vacancies")+": "),1,row);
+				if (vacancies != -1) {
+					table.add(getSmallHeader(String.valueOf(vacancies)),1,row++);
+				}
+				else {
+					table.add(getSmallHeader(localize("child_care.vacancies_not_set","Vacancies not set")),1,row++);
+				}
 			}
 			
-			
+			String comments = prognosis.getProviderComments();
+			table.add(getSmallText(localize("child_care.provider_comments", "Comments")+": "),1,row);
+			if (comments != null) {
+				table.add(getSmallText(String.valueOf(comments)),1,row++);
+			}
+			else {
+				table.add(getSmallHeader(localize("child_care.comments_not_set","Comments not set")),1,row++);
+			}
 		}
 		return  table;
 	}
+	
+	
 	
 	public Table getPrognosisTable(IWContext iwc) throws RemoteException {
 		Table table = new Table();
@@ -111,7 +135,14 @@ public class PrognosisViewer extends ChildCareBlock {
 		updatePrognosis.setWindowToOpen(ChildCareWindow.class);
 		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_UPDATE_PROGNOSIS);
 		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_SHOW_VACANCIES, String.valueOf(showVacancies));
 		return updatePrognosis;
 	}
+	
+	public void setShowVacancies(boolean show){
+		showVacancies = show;
+	}
+	
+	
 
 }
