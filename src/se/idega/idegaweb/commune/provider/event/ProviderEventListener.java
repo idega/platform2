@@ -27,6 +27,8 @@ public class ProviderEventListener implements IWPageEventListener {
 	public boolean actionPerformed(IWContext iwc) {
 		ProviderSession session = getProviderSession(iwc);
 		try {
+		    if(iwc.isParameterSet(session.getParameterProviderID()))
+		        session.setProviderID(Integer.parseInt(iwc.getParameter(session.getParameterProviderID())));
 			if (iwc.isParameterSet(session.getParameterSeasonID()))
 				session.setSeasonID(Integer.parseInt(iwc.getParameter(session.getParameterSeasonID())));
 			if (iwc.isParameterSet(session.getParameterYearID()))

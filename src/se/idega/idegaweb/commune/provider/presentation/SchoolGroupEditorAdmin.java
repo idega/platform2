@@ -78,7 +78,7 @@ public class SchoolGroupEditorAdmin extends SchoolGroupEditor {
 			ex.printStackTrace();
 		}
 		
-		return -1;
+		return super.getProviderID();
 	}	
 	
 	/**

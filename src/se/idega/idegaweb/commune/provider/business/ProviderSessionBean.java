@@ -26,6 +26,7 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 	private final String PARAMETER_SEASON_ID = "pr_season_id";
 	private final String PARAMETER_YEAR_ID = "pr_year_id";
 	private final String PARAMETER_STUDY_PATH_ID = "pr_study_path_id";
+	private final String PARAMETER_PROVIDER_ID = "pr_prov_id";
 	
 	protected int _providerID = -1;
 	protected School _provider;
@@ -113,6 +114,10 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 	
 	public String getParameterStudyPathID() {
 		return PARAMETER_STUDY_PATH_ID;
+	}
+	
+	public String getParameterProviderID() {
+		return PARAMETER_PROVIDER_ID;
 	}
 	
 	/**
