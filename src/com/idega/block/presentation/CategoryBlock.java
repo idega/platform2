@@ -22,7 +22,6 @@ public abstract class CategoryBlock extends Block{
 
   private ICCategory icCategory;
   private int icCategoryId = -1;
-  private int defaultCategoryId = -1;
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
@@ -33,9 +32,9 @@ public abstract class CategoryBlock extends Block{
    *  Returns the first Category bound to this instance
    */
   public int getCategoryId(){
-    if(icCategoryIds.length >0)
-      return icCategoryIds[0];
-    return -1;
+    if(icCategoryId == -1 && icCategoryIds.length >0)
+      icCategoryId =  icCategoryIds[0];
+    return icCategoryId;
   }
 
   /**
@@ -104,13 +103,15 @@ public abstract class CategoryBlock extends Block{
 
   protected void initCategory(IWContext iwc){
     if(icCategoryId <= 0){
-      String sCategoryId = iwc.getParameter(prmCategoryId );
-      if(sCategoryId != null){
-        icCategoryId = Integer.parseInt(sCategoryId);
+      if(iwc.isParameterSet(prmCategoryId) ){
+
+        icCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId));
         icCategory = CategoryFinder.getInstance().getCategory(icCategoryId);
+        //System.err.println("getting category from parameter:"+prmCategoryId+" cat: "+icCategory+" "+this.getClassName());
       }
       else if(getICObjectInstanceID() > 0){
         icCategoryIds = CategoryFinder.getInstance().getObjectInstanceCategoryIds(getICObjectInstanceID(),autocreate,getCategoryType());
+        //System.err.println("getting category from instance: "+getICObjectInstanceID()+" cat: "+icCategory+" "+this.getClassName());
         //icCategoryId = CategoryFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),autocreate,getCategoryType());
       }
     }
@@ -194,6 +195,5 @@ public abstract class CategoryBlock extends Block{
   public boolean deleteBlock(int iObjectInstanceId) {
     return CategoryBusiness.getInstance().removeInstanceCategories(iObjectInstanceId);
   }
-
 
 }

@@ -121,9 +121,9 @@ public class CategoryWindow extends IWAdminWindow {
     allowOrdering = iwc.isParameterSet(prmOrder);
 
     /**
-     * @todo What the feck ???
+     * @todo We need some authication here ,
+     *  permissions from underlying window ???
      */
-    multi = true;
     if(true){
 			if(iwc.isParameterSet(actForm)){
 	      processCategoryForm(iwc);
