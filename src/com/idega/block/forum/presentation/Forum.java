@@ -116,6 +116,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	protected IWBundle _iwb;
 	protected IWBundle _iwcb;
 	protected ForumBusiness forumBusiness;
+	
+	private boolean ignoreObjectID = false;
 
 	/**
 	 * @todo implement Statehandling for Forum
@@ -247,6 +249,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+					if (_page != null) {
+						topicLink.setPage(_page);
+					}
 
 					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
 					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TABLE_TEXT_STYLE);
@@ -814,7 +819,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			_topicID = -1;
 		}
 
-		if (_selectedObjectID != -1 && _selectedObjectID != _objectID)
+		if (_selectedObjectID != -1 && _selectedObjectID != _objectID && !ignoreObjectID)
 			_state = _initialState;
 	}
 
@@ -1010,5 +1015,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	 */
 	public void setBodyIndent(int indent) {
 		this._bodyIndent = indent;
+	}
+	
+	/**
+	 * @param ignoreObjectID The ignoreObjectID to set.
+	 */
+	public void setIgnoreObjectID(boolean ignoreObjectID) {
+		this.ignoreObjectID = ignoreObjectID;
 	}
 } // Class Forum
