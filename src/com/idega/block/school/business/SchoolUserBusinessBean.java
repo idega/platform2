@@ -10,6 +10,8 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolDepartment;
+import com.idega.block.school.data.SchoolDepartmentHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
@@ -20,6 +22,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
@@ -34,18 +37,44 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public static final int USER_TYPE_ASSISTANT_HEADMASTER = SchoolUserBMPBean.USER_TYPE_ASSISTANT_HEADMASTER;
 	public static final int USER_TYPE_TEACHER = SchoolUserBMPBean.USER_TYPE_TEACHER;
 	public static final int USER_TYPE_WEB_ADMIN = SchoolUserBMPBean.USER_TYPE_WEB_ADMIN;
+	public static final int USER_TYPE_IB_COORDINATOR = SchoolUserBMPBean.USER_TYPE_IB_COORDINATOR;
 
 	public SchoolUser addUser(School school, User user, int userType) throws RemoteException, CreateException, FinderException {
-		SchoolUser sUser = getSchoolUserHome().create();
-		sUser.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
-		sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
-		sUser.setUserType(userType);
-		sUser.store();
-		
-		setUserGroups(school, user, userType);
-		
-		return sUser;
+		return addUser (school, user, userType, true, false);
 	}
+	
+	public SchoolUser addUser(School school, User user, int userType, boolean showInContacts, boolean main_headmaster) throws RemoteException, CreateException, FinderException {
+			SchoolUser sUser = getSchoolUserHome().create();
+			sUser.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
+			sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
+			sUser.setUserType(userType);
+			sUser.setShowInContact(showInContacts);
+			sUser.setMainHeadmaster(main_headmaster);
+			sUser.store();
+		
+			setUserGroups(school, user, userType);
+		
+			return sUser;
+		}
+
+	public SchoolUser updateSchUser(School school, User user, int userType, boolean showInContacts) throws RemoteException, CreateException, FinderException {
+			//SchoolUser sUser = getSchoolUserHome().findByPrimaryKey(user.getPrimaryKey().intValue());
+			Object id = null;
+			SchoolUser sUser = null;
+			id = getSchoolUserHome().getSchoolUserId(school, user, userType);
+			
+			if (id != null) {
+				sUser = getSchoolUserHome().findByPrimaryKey(id);
+				//sUser.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
+				//sUser.setUserId(((Integer) user.getPrimaryKey()).intValue());
+				//sUser.setUserType(userType);
+				sUser.setShowInContact(showInContacts);
+				sUser.store();		
+				setUserGroups(school, user, userType);
+			}			
+		
+			return sUser;
+		}
 
 	public SchoolUser addTeacher(School school, User user) throws RemoteException, CreateException, FinderException {
 		return addUser(school, user, USER_TYPE_TEACHER);	
@@ -81,18 +110,32 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		getUserBusiness().deleteUser(user, currentUser);
 	}
 	
-	public void removeUser(School school, User user, User currentUser) throws FinderException, RemoteException, RemoveException {
+		public void removeUser(School school, User user, User currentUser) throws FinderException, RemoteException, RemoveException {
 		Collection coll	= getSchoolUserHome().findBySchoolAndUser(school, user);
 		if (coll != null && coll.size() > 0 ) {
 			SchoolUser sUser;
 			Iterator iter = coll.iterator();
 			while (iter.hasNext()) {
 				sUser = (SchoolUser)iter.next();	
+				SchoolDepartmentHome schdephome = getSchoolBusiness().getSchoolDepartmentHome();
+				Collection collSchdep = schdephome.findAllDepartmentsByUser(sUser);
+				Iterator iter2 = collSchdep.iterator();
+				while (iter2.hasNext()) {
+					SchoolDepartment sd = (SchoolDepartment) iter2.next();
+					try {
+						sd.removeSchoolUser(sUser);
+					} catch (IDORemoveRelationshipException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				sUser.remove();
 			}
 		}
+		
 		getUserBusiness().deleteUser(user, currentUser);
 	}
+
 	/**
 	 * Gets the Users of type Teacher for School with id schID
 	 * @return A collection of com.idega.user.data.User entites
@@ -123,12 +166,20 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	public Collection getTeacherUserIds(School school) throws RemoteException, FinderException{
 		return getUserIds(school, USER_TYPE_TEACHER);	
 	}
+
 	/**
 	 * Gets the Users of type Headmaster for School school
 	 * @return A collection of com.idega.user.data.User entites
 	 */
 	public Collection getHeadmasters(School school) throws RemoteException, FinderException{
 		return getUsers(school, USER_TYPE_HEADMASTER);	
+	}
+/**
+	 * Gets the Users of type Main Headmaster for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
+	public Collection getMainHeadmasters(School school) throws RemoteException, FinderException{
+		return getUsersByMainHeadMaster(school, USER_TYPE_HEADMASTER, true);	
 	}
 	/**
 	 * Gets the Users of type AssistantHeadMaster for School school
@@ -160,6 +211,88 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		return users;
 	}
 
+	/**Malin
+		 * Gets the Users of a specific type for School school and usertype and specific department
+		 * @return A collection of com.idega.user.data.User entites
+		 */
+		public Collection getUsersByDepartm(School school, int userType, int departmentID) throws RemoteException, FinderException {
+			Collection schUsers = getSchoolUserHome().findBySchoolAndTypeAndDepartment(school, userType, departmentID);
+			Collection users = new Vector();
+			Iterator iter = schUsers.iterator();
+			while (iter.hasNext()) {
+				SchoolUser sUser = (SchoolUser)iter.next();
+				users.add(sUser.getUser());
+			}
+			return users;
+		}	
+		
+	/**Malin
+			 * Gets the Users of a specific type for School school and specific department
+			 * @return A collection of com.idega.user.data.User entites
+			 */
+		public Collection getUsersByDepartm(School school, int departmentID) throws RemoteException, FinderException {
+			Collection schUsers = getSchoolUserHome().findBySchoolAndDepartment(school, departmentID);
+			Collection users = new Vector();
+			Iterator iter = schUsers.iterator();
+			while (iter.hasNext()) {
+				SchoolUser sUser = (SchoolUser)iter.next();
+				users.add(sUser.getUser());
+			}
+			return users;
+		}	
+	
+	/**Malin
+			 * Gets the Users of a specific type for School school and specific department
+			 * @return A collection of com.idega.user.data.User entites
+			 */
+		public Collection getUsersByMainHeadMaster(School school,  int userType, boolean main_headmaster) throws RemoteException, FinderException {
+			Collection schUsers = getSchoolUserHome().findBySchoolAndMainHeadmaster(school, userType, main_headmaster);
+			Collection users = new Vector();
+			Iterator iter = schUsers.iterator();
+			while (iter.hasNext()) {
+				SchoolUser sUser = (SchoolUser)iter.next();
+				users.add(sUser.getUser());
+			}
+			return users;
+		}	
+	
+	
+	
+	/**
+	 * Malin
+		 * Gets a collection of true or false if SchoolUsers should be shown in the contact list 
+		 *  @return A collection of com.idega.user.data.SchoolUser entites
+		 */
+	public boolean getUserShowInContact(User user) throws RemoteException, FinderException {
+			//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
+			//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
+		Collection schUsers = getSchoolUserHome().findByUser(user);
+			String[] showContact;
+			Iterator iter = schUsers.iterator();
+			boolean show = true;
+			while (iter.hasNext()) {
+				SchoolUser sUser = (SchoolUser)iter.next();
+				show = sUser.getShowInContact();
+				//showContact = (String[]) show;
+			}
+			
+			return show;
+		}
+	public boolean getUserMainHeadmaster(User user) throws RemoteException, FinderException {
+		//Collection schUsers = getSchoolUserHome().findBySchoolAndUser(school, user);
+		//borde ev göras om lite eftersom det skulle kunna finnas flera school users på en user
+		Collection schUsers = getSchoolUserHome().findByUser(user);
+		String[] showContact;
+		Iterator iter = schUsers.iterator();
+		boolean main_head = false;
+		while (iter.hasNext()) {
+			SchoolUser sUser = (SchoolUser)iter.next();
+			main_head = sUser.getMainHeadmaster();
+			
+		}
+	
+		return main_head;
+	}
 
 	/**
 	 * Gets the UserIds of a aspecific type for School school
@@ -194,14 +327,15 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	}
 	
 	/**
-	 *	Returns a collection of Strings. "SCHOOL" or "CHILDCARE" or both 
-	 * 
+ *	Returns a collection of Strings. "SCHOOL" or "CHILDCARE" or both or "HIGH_SCHOOL" 
+	 *	//added handling for Highschool (Malin) 
 	 */
 	public Collection getSchoolTypeCategories(School school) throws IDORelationshipException, RemoteException, FinderException {
 		Collection sTypes = school.getSchoolTypes();
 		SchoolType sType;
 		boolean SCHOOL = false;
 		boolean CHILDCARE = false;
+		boolean HIGH_SCHOOL = false; 
 		
 		if (sTypes != null && !sTypes.isEmpty() ) {
 			Iterator iter = sTypes.iterator();
@@ -209,10 +343,16 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			while (iter.hasNext()) {
 				sType = (SchoolType)(iter.next());
 				sCat = sType.getSchoolCategory();
-				if (sCat != null && sCat.equals(getSchoolBusiness().getElementarySchoolSchoolCategory())){
+				String strElementary = getSchoolBusiness().getElementarySchoolSchoolCategory();
+				String strChildcare = getSchoolBusiness().getChildCareSchoolCategory();
+				String strHighschool = getSchoolBusiness().getHighSchoolSchoolCategory();
+
+				if (sCat != null && sCat.equals(strElementary)){
 					SCHOOL = true;
-				}else if (sCat != null && sCat.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
+				}else if (sCat != null && sCat.equals(strChildcare)) {
 					CHILDCARE = true;
+				}else if (sCat != null && sCat.equals(strHighschool)) {
+					HIGH_SCHOOL = true;
 				}
 			}
 		}
@@ -223,6 +363,9 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		if (CHILDCARE) {
 			coll.add(getSchoolBusiness().getChildCareSchoolCategory());	
+		}
+		if (HIGH_SCHOOL){
+			coll.add(getSchoolBusiness().getHighSchoolSchoolCategory());
 		}
 		
 		return coll;
@@ -261,6 +404,14 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
+			}
+			else if (category.equals(getSchoolBusiness().getHighSchoolSchoolCategory())) {
+				//userTypes.add(new String[] {"school.main_headmaster", "Main headmaster", Integer.toString(USER_TYPE_MAIN_HEADMASTER) });
+				userTypes.add(new String[] {"school.headmaster", "Headmaster", Integer.toString(USER_TYPE_HEADMASTER) });
+				userTypes.add(new String[] {"school.assistant_headmaster_abbrev", "Ass. headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
+				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
+				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
+				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
 			}
 			
 		}

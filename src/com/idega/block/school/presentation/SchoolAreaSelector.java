@@ -8,6 +8,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.Block;
@@ -43,15 +45,20 @@ public class SchoolAreaSelector extends Block {
 	private String _spaceBetween = "5";
 	private ICPage _page;
 	private int _spaceBeforeExpanded = 2;
-
+	private boolean _isHighSchool = false;
 
 	public void main(IWContext iwc) throws RemoteException{
 		init(iwc);
 		
-		if (!_displayWithoutTypeId && _schoolTypeId == -1) {
+	if (!_displayWithoutTypeId && _schoolTypeId == -1) {
 			/** Does Nothing */
 		}else {
+			if (getIsHighSchool()) { 
+				drawHighSchoolList(iwc);
+			}
+			else {
 			drawList(iwc);
+			}
 		}
 	}
 
@@ -84,6 +91,85 @@ public class SchoolAreaSelector extends Block {
 			return IW_BUNDLE_IDENTIFIER;
 	}	
 
+private void drawHighSchoolList(IWContext iwc) throws RemoteException {
+			SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
+			SchoolArea sArea;
+			int iAreaId;
+		
+			Collection coll;
+			SchoolCategory highSchoolCategory = sb.getCategoryHighSchool();
+			
+			if (highSchoolCategory != null) {
+				coll = sb.findAllSchoolTypesInCategory(highSchoolCategory.getCategory());				
+			}
+			else {
+				coll = sb.findAllSchoolTypes();
+			}			
+			
+			School school;
+			int iSchoolId;
+		
+			Table table = new Table();
+			table.setCellpaddingAndCellspacing(0);
+
+			int row = 0;
+			int col = 1;
+		
+			Iterator iter = coll.iterator(); //coll = collection with highschool categories	
+			while (iter.hasNext()) {
+				++row;		
+				table.setWidth(col, row, _spaceBetween);
+
+				++row;
+									
+				SchoolType schType = (SchoolType) iter.next();
+
+				int ihighSchoolTypeId = ((Integer) schType.getPrimaryKey()).intValue();
+				
+				Collection schools = sb.findAllSchoolsByType(ihighSchoolTypeId);
+	
+				table.setWidth(col, row, _spaceBetween);
+				schools = sb.getHomeCommuneSchools(schools);
+				if (schools != null) {
+					String indent = "";
+					for (int i = 0; i < _spaceBeforeExpanded; i++) {
+						indent = indent + Text.NON_BREAKING_SPACE;	
+					}
+	
+					Iterator sIter = schools.iterator();
+					while (sIter.hasNext()) {
+						++row;
+						school = (School) sIter.next();
+						iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
+						//if (iSchoolId == _schoolId) {
+						//	table.add(getExpandedText(indent+school.getName(), true), col, row);
+						//}
+						//else {
+							//table.add(getExpandedText(indent, false), col, row);
+							table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
+	
+						//}
+						//table.add(getText(school.getName(), false), col, row);
+					}	
+				}
+			//}else if (_expandSchools && _schoolTypeId == -1) {
+			//	++row;
+			//	table.add(getText("School Type Not Defined", false), col, row);
+			//}
+	
+					}
+add(table);	
+				/*else {
+						table.add(getLink(sArea.getName(), sArea.getPrimaryKey().toString() ), col, row);
+					}*/
+				//}
+
+				
+			//}
+			/*else {
+				add("No areas found");	
+			}*/
+}
 	private void drawList(IWContext iwc) throws RemoteException {
 		SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
 		
@@ -287,4 +373,11 @@ public class SchoolAreaSelector extends Block {
 	public void setPage(ICPage page) {
 		_page = page;	
 	}
+	public void setIsHighSchool(boolean isHighSchool){
+		_isHighSchool = isHighSchool;	
+	}
+	
+	public boolean getIsHighSchool(){
+			return _isHighSchool;	
+		}
 }

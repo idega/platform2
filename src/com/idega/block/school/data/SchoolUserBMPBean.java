@@ -19,11 +19,14 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	private final String COLUMN_NAME_SCHOOL_ID = "SCH_SCHOOL_ID";
 	private final String COLUMN_NAME_USER_ID = "IC_USER_ID";
 	private final String TABLE_NAME = "sch_school_user";
+	private final String COLUMN_NAME_SHOW_IN_CONTACTS = "show_in_contact";
+	private final String COLUMN_NAME_MAIN_HEADMASTER = "main_headmaster";
 
 	public static final int USER_TYPE_HEADMASTER = 0;
 	public static final int USER_TYPE_ASSISTANT_HEADMASTER = 1;
 	public static final int USER_TYPE_TEACHER = 2;
 	public static final int USER_TYPE_WEB_ADMIN = 3;
+	public static final int USER_TYPE_IB_COORDINATOR = 4;
 
 
 	/**
@@ -41,6 +44,8 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		this.addAttribute(COLUMN_NAME_SCHOOL_ID, "school id", true, true, Integer.class, this.ONE_TO_MANY, School.class);
 		this.addAttribute(COLUMN_NAME_USER_ID, "user id", true, true, Integer.class, ONE_TO_MANY, User.class);
 		this.addAttribute(COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
+		this.addAttribute(COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);
+		this.addAttribute(COLUMN_NAME_MAIN_HEADMASTER, "main headmaster", true, true, Boolean.class);	
 	}
 
 	public void setSchoolId(int schoolId) {
@@ -71,6 +76,22 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return getIntColumnValue(COLUMN_NAME_USER_TYPE);	
 	}
 
+public void setMainHeadmaster(boolean mainHead) {
+		setColumn(COLUMN_NAME_MAIN_HEADMASTER, mainHead);	
+	}
+	
+	public boolean getMainHeadmaster() {
+		return getBooleanColumnValue(COLUMN_NAME_MAIN_HEADMASTER);	
+	}
+	
+	public void setShowInContact(boolean showinContacts) {
+			setColumn(COLUMN_NAME_SHOW_IN_CONTACTS, showinContacts);	
+		}
+	
+	public boolean getShowInContact() {
+		return getBooleanColumnValue(COLUMN_NAME_SHOW_IN_CONTACTS);	
+	}
+
 	/**
 	 * Returns a Collection of SchoolUsers	 * @param school School	 * @param userType User type	 * @return Collection	 * @throws FinderException
 	 */
@@ -93,6 +114,120 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		Collection coll = this.idoFindIDsBySQL(sql.toString());
 		return coll;
 	}
+
+	/**
+	 * Returns a Collection of SchoolUsers
+	 * @param school School
+	 * @param userType User type
+	 * @param departmentID int
+	 * @return Collection
+	 * @throws FinderException
+	 */
+	public Collection ejbFindBySchoolAndTypeAndDepartment(School school, int userType, int departmentID) throws FinderException {
+		IDOQuery sql = idoQuery();
+			//sql.appendSelect()
+			 //.append("*")
+			 //.appendFrom()
+			 //.append(TABLE_NAME)
+			sql.appendSelectAllFrom(TABLE_NAME + " su , " 
+													  + SchoolDepartmentBMPBean.ENTITY_NAME + " sd, " + SchoolDepartmentBMPBean.ENTITY_NAME + "_USER sdu")
+			 .appendWhere()
+			 .append("su." + COLUMN_NAME_SCHOOL_ID)
+			 .appendEqualSign()
+			 .append(school.getPrimaryKey().toString())
+			 .appendAnd()
+			 .append("su." + COLUMN_NAME_USER_TYPE)
+			 .appendEqualSign()
+			 .append(userType)
+			 .appendAnd()
+			 .append("sd." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+			 .appendEqualSign()
+			 .append(departmentID)
+			 .appendAnd()
+			 .append("sd." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+			 .appendEqualSign()
+			 .append("sdu." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+			 .appendAnd()
+			 .append("su."  + getIDColumnName())
+			 .appendEqualSign()
+			 .append("sdu." + getIDColumnName());
+			 
+			 	 
+			 /** THARF AD SKILA USERUM ...*/
+		Collection coll = this.idoFindIDsBySQL(sql.toString());
+		return coll;
+	}
+	
+	/**
+		 * Returns a Collection of SchoolUsers
+		 * @param school School
+		 * @param departmentID int
+		 * @return Collection
+		 * @throws FinderException
+		 */
+		public Collection ejbFindBySchoolAndDepartment(School school, int departmentID) throws FinderException {
+			IDOQuery sql = idoQuery();
+				
+				sql.appendSelectAllFrom(TABLE_NAME + " su , " 
+														  + SchoolDepartmentBMPBean.ENTITY_NAME + " sd, " + SchoolDepartmentBMPBean.ENTITY_NAME + "_USER sdu")
+				 .appendWhere()
+				 .append("su." + COLUMN_NAME_SCHOOL_ID)
+				 .appendEqualSign()
+				 .append(school.getPrimaryKey().toString())
+				 .appendAnd()
+				 .append("sd." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+				 .appendEqualSign()
+				 .append(departmentID)
+				 .appendAnd()
+				 .append("sd." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+				 .appendEqualSign()
+				 .append("sdu." + SchoolDepartmentBMPBean.DEPARTMENT_ID)
+				 .appendAnd()
+				 .append("su."  + getIDColumnName())
+				 .appendEqualSign()
+				 .append("sdu." + getIDColumnName());
+			 			 
+				 ///////
+				 
+				 /** THARF AD SKILA USERUM ...*/
+			Collection coll = this.idoFindIDsBySQL(sql.toString());
+			return coll;
+		}
+	
+	/**
+		 * Returns a Collection of SchoolUsers
+		 * @param school School
+		 * @param userType User type
+		 * @param departmentID int
+		 * @return Collection
+		 * @throws FinderException
+		 */
+		public Collection ejbFindBySchoolAndMainHeadmaster(School school, int userType, boolean main_headmaster) throws FinderException {
+			IDOQuery sql = idoQuery();
+			String strMain_headmaster = "N";
+			if (main_headmaster) {
+				strMain_headmaster = "Y";
+			} 
+
+				sql.appendSelect()
+				 .append("*")
+				 .appendFrom()
+				 .append(TABLE_NAME)
+				 .appendWhere()
+				 .append(COLUMN_NAME_SCHOOL_ID)
+				 .appendEqualSign()
+				 .append(school.getPrimaryKey().toString())
+				 .appendAnd()
+				 .append(COLUMN_NAME_MAIN_HEADMASTER)
+				 .appendEqualSign()
+				 .appendWithinSingleQuotes(strMain_headmaster)
+				 .appendAnd()
+				 .append(COLUMN_NAME_USER_TYPE)
+				 .appendEqualSign()
+				 .append(userType);
+			return this.idoFindIDsBySQL(sql.toString());		
+		}
+	
 	
 	public Collection ejbFindByUser(User user) throws FinderException {
 		IDOQuery sql = idoQuery();

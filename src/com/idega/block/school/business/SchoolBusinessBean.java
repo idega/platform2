@@ -23,6 +23,8 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolDepartment;
+import com.idega.block.school.data.SchoolDepartmentHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
@@ -84,6 +86,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public final static String PROPERTY_NAME_GROUP_CONFIRM_SUBJECT = "group_confirm_headline";
 	public final static String PROPERTY_NAME_GROUP_CONFIRM_BODY = "group_confirm_body";
 	
+ 	public SchoolDepartmentHome getSchoolDepartmentHome() throws RemoteException {
+		  return (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
+	}
+
 	public SchoolHome getSchoolHome() {
 		try {
 			return (SchoolHome) IDOLookup.getHome(School.class);
@@ -154,6 +160,36 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
+	}
+
+	public Collection getDepartments(School school) throws RemoteException, FinderException {
+		return getSchoolDepartmentHome().findAllDepartmentsBySchool(school);
+	}
+	
+	public int getDepartmentID(SchoolDepartment schDepm) throws RemoteException, FinderException {
+		return schDepm.getDepartmentID();
+	}
+	
+	public void removeDepartment(SchoolDepartment schDep) throws FinderException, RemoteException, RemoveException {
+		schDep.remove();				
+	}
+	
+	public void addSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException, RemoveException {
+		try {
+			
+			SchoolDepartmentHome schDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
+			SchoolDepartment schDep = schDepHome.findByPrimaryKey(new Integer(schDep_id));
+			schDep.addSchoolUser(schUser);
+		} catch (IDOAddRelationshipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}				
+	}
+	
+	public void removeSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException, RemoveException, IDORemoveRelationshipException, IDOAddRelationshipException {
+			SchoolDepartmentHome schDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
+			SchoolDepartment schDep = schDepHome.findByPrimaryKey(new Integer(schDep_id));
+			schDep.removeSchoolUser(schUser);			
 	}
 
 	public Collection getSchoolCategories() {
@@ -1101,7 +1137,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return category.getCategory();
 		return null;
 	}
-
+	/**
+		 * @return The School type key registered for Highschool types.
+		 */
+	public String getHighSchoolSchoolCategory() throws RemoteException{
+		SchoolCategory category = getCategoryHighSchool();
+		if (category != null){				
+			return category.getCategory();
+		}
+		return null;
+	}
+	
 	public Collection findAllSchoolTypesForChildCare() {
 		return findAllSchoolTypesInCategory(getChildCareSchoolCategory());
 	}
@@ -1917,6 +1963,34 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newArea.setSchoolAreaName(name);
 		newArea.store();
 	}
+
+public void storeSchoolDepartment(String description, String phone, int schoolID, int schDepID) throws RemoteException {
+			/**
+			 * @todo figure out how to implement
+			 */
+		SchoolDepartment schoolDepartm = null;
+		try {
+			schoolDepartm = getSchoolDepartmentHome().findByPrimaryKey(new Integer(schDepID));
+		}
+		catch (FinderException e) {
+			try {
+				schoolDepartm = getSchoolDepartmentHome().create();
+			}
+			catch (CreateException e1) {
+				e1.printStackTrace();
+				//return null;
+			}
+		}
+
+		schoolDepartm.setDepartment(description);
+		schoolDepartm.setDepartmentPhone(phone);
+		schoolDepartm.setSchoolID(schoolID);
+		
+		schoolDepartm.store();
+
+	//return storeSchoolDepartment(description, phone, schoolID);
+	
+}
 	
 	public SchoolUserBusiness getSchoolUserBusiness() {
 		try {
