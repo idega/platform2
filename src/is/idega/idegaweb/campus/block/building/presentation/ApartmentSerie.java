@@ -6,7 +6,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -16,21 +16,28 @@ import com.idega.block.building.business.*;
 import java.util.List;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
+
 /**
  * Title:
  * Description:
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company:      idega.is
+ * @author 2000 - idega team - <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
 
-public class ApartmentSerie extends PresentationObjectContainer {
+public class ApartmentSerie extends Block {
   protected boolean isAdmin = false;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  public ApartmentSerie() {
+
+  public String getLocalizedNameKey(){
+    return "apartment_series";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Series";
   }
 
 

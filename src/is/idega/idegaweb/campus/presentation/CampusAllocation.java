@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.5 2002/01/17 18:06:17 aron Exp $
+ * $Id: CampusAllocation.java,v 1.6 2002/01/29 13:18:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
+import com.idega.block.application.presentation.ApplicationSubjectMaker;
 import com.idega.block.application.business.ApplicationFinder;
 
 import java.util.List;
@@ -33,14 +34,15 @@ import java.util.Collection;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
-
-
-
 /**
- *
- * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega.is
+ * @author 2000 - idega team - <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
+
 public class CampusAllocation extends Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
@@ -66,8 +68,8 @@ public class CampusAllocation extends Block{
     if(objects == null)
       objects = new Vector();
     objects.add(0,new SysPropsSetter());
-    objects.add(0,new AprtTypePeriodMaker());
-    objects.add(0,new SubjectMaker());
+    //objects.add(0,new AprtTypePeriodMaker());
+    objects.add(0,new ApplicationSubjectMaker());
     objects.add(0,new EmailSetter());
     objects.add(0,new ContractTextSetter());
     objects.add(0,new CampusAllocator());

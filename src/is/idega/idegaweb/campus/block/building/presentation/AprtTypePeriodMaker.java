@@ -15,6 +15,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
@@ -74,20 +75,21 @@ public class AprtTypePeriodMaker extends Block{
 
   public PresentationObject makeInputTable(){
     Form F = new Form();
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("apartment_periods","Apartment periods"));
     List Types = BuildingCacher.getTypes();
     Hashtable ht = hashOfStuff();
     if(Types != null){
       int len = Types.size();
       ApartmentType AT;
 
-      T.add(Edit.titleText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
       int row = 2;
       for (int i = 0; i < len; i++) {
         AT = (ApartmentType) Types.get(i);
-        T.add(AT.getName(),1,row);
+        T.add(Edit.formatText(AT.getName()),1,row);
         Integer typeId = new Integer(AT.getID());
         DropdownMenu drpDayOne = dayDrop("dayone"+i);
         DropdownMenu drpMonthOne = monthDrop("monthone"+i);
@@ -116,19 +118,9 @@ public class AprtTypePeriodMaker extends Block{
         row++;
       }
       T.add(new HiddenInput("count",String.valueOf(len)));
-      SubmitButton save = new SubmitButton("save",iwrb.getLocalizedString("save","Save"));
+      SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
       Edit.setStyle(save);
-      T.add(save,1,row);
-       T.setCellpadding(1);
-      T.setCellspacing(1);
-      T.setBorder(0);
-       T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
-      T.setRowColor(1,Edit.colorBlue);
-      int lastrow = row;
-      T.setRowColor(lastrow,Edit.colorRed);
-      T.mergeCells(1,lastrow,4,lastrow);
-      T.add(Edit.formatText(" "),1,lastrow);
-      T.setHeight(lastrow,Edit.bottomBarThickness);
+      T.addButton(save);
 
     }
     else

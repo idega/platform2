@@ -42,6 +42,7 @@ protected IWBundle iwb;
 
 private final static String PARAMETER_CAMPUS_ID = "campus_id";
 private final static String PARAMETER_ORDER_ID = "order_id";
+private final static String APPLICATION_VARIABLE = "cam_tenants";
 
 private boolean _isAdmin = false;
 private boolean _isLoggedOn = false;
@@ -96,7 +97,7 @@ private Image image;
       Table myTable = new Table(1,2);
         myTable.setWidth("100%");
       myTable.add(getLinkTable(),1,1);
-      myTable.add(getTenantsTable(),1,2);
+      myTable.add(getTenantsTable(iwc),1,2);
 
       image = myTable.getTransparentCell(iwc);
         image.setHeight(6);
@@ -136,13 +137,7 @@ private Image image;
     return table;
   }
 
-  public Table getTenantsTable(){
-    Table table = new Table();
-      table.setCellspacing(1);
-      table.setCellpadding(3);
-      table.mergeCells(1,1,5,1);
-      table.setWidth("100%");
-
+  public List listOfComplexHabitants(int iComplexId,IWContext iwc){
     Vector vector = new Vector();
     Building building = null;
     Contract contract = null;
@@ -151,6 +146,7 @@ private Image image;
     Floor floor = null;
     HabitantsCollector collector = null;
     CampusApplication campusApplication = null;
+
     if(!_isAdmin){
       contract = ContractFinder.findApplicant(_userID);
       applicant = ContractFinder.getApplicant(contract);
@@ -158,16 +154,73 @@ private Image image;
       floor = BuildingCacher.getFloor(apartment.getFloorId());
       building = BuildingCacher.getBuilding(floor.getBuildingId());
     }
+
+    Map collectionMap = (Map) iwc.getApplicationAttribute(APPLICATION_VARIABLE);
+    Integer CMPLX_ID = new Integer(iComplexId);
+    if(collectionMap!=null && collectionMap.containsKey(CMPLX_ID) ){
+      //System.err.println("getting from memory");
+      return (List) collectionMap.get(CMPLX_ID);
+    }
+    else{
+      Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
+      CampusPhone phone = null;
+      //System.err.println("not getting from memory");
+      List list = ContractFinder.listOfContractsInComplex(_campusID,new Boolean(true));
+
+      if ( list != null ) {
+        for ( int a = 0; a < list.size(); a++ ) {
+          contract = (Contract) list.get(a);
+          applicant = ContractFinder.getApplicant(contract);
+          apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+          floor = BuildingCacher.getFloor(apartment.getFloorId());
+          campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
+          Integer ID = new Integer(apartment.getID());
+          if(phoneMap != null && phoneMap.containsKey(ID))
+            phone = (CampusPhone)phoneMap.get(ID);
+          else
+            phone = null;
+
+          collector = new HabitantsCollector();
+          collector.setUserID(contract.getUserId().intValue());
+          collector.setApartment(apartment.getName());
+          collector.setEmail(campusApplication.getEmail());
+          collector.setFirstName(applicant.getFirstName());
+          collector.setFloor(floor.getName());
+          collector.setLastName(applicant.getLastName());
+          collector.setMiddleName(applicant.getMiddleName());
+          if ( phone != null )
+            collector.setPhone(phone.getPhoneNumber());
+
+          vector.add(collector);
+        }
+      }
+      if(collectionMap==null){
+        collectionMap = new java.util.Hashtable();
+      }
+      collectionMap.put(CMPLX_ID,vector);
+      iwc.setApplicationAttribute(APPLICATION_VARIABLE,collectionMap);
+    }
+
+    return vector;
+  }
+
+  public Table getTenantsTable(IWContext iwc){
+    Table table = new Table();
+      table.setCellspacing(1);
+      table.setCellpadding(3);
+      table.mergeCells(1,1,5,1);
+      table.setWidth("100%");
+
     Complex complex = null;
     if ( _campusID != -1 )
       complex = BuildingCacher.getComplex(_campusID);
-    else if(!_isAdmin)
-      complex = BuildingCacher.getComplex(building.getComplexId());
+    else if(!_isAdmin){
+      BuildingCacher bc = new BuildingCacher();
+      complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(ContractFinder.findApplicant(_userID).getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
+    }
     else {
       complex = BuildingCacher.getComplex();
     }
-    Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
-    CampusPhone phone = null;
 
     if ( _campusID == -1 && complex !=null ) {
       _campusID = complex.getID();
@@ -194,36 +247,10 @@ private Image image;
     table.add(formatText(iwrb.getLocalizedString("phone","Residence phone")),4,2);
     table.add(formatText(iwrb.getLocalizedString("email","E-mail")),5,2);
 
-    List list = ContractFinder.listOfContractsInComplex(_campusID);
+
     int row = 3;
 
-    if ( list != null ) {
-      for ( int a = 0; a < list.size(); a++ ) {
-        contract = (Contract) list.get(a);
-        applicant = ContractFinder.getApplicant(contract);
-        apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-        floor = BuildingCacher.getFloor(apartment.getFloorId());
-        campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
-        Integer ID = new Integer(apartment.getID());
-        if(phoneMap != null && phoneMap.containsKey(ID))
-          phone = (CampusPhone)phoneMap.get(ID);
-        else
-          phone = null;
-
-        collector = new HabitantsCollector();
-        collector.setUserID(contract.getUserId().intValue());
-        collector.setApartment(apartment.getName());
-        collector.setEmail(campusApplication.getEmail());
-        collector.setFirstName(applicant.getFirstName());
-        collector.setFloor(floor.getName());
-        collector.setLastName(applicant.getLastName());
-        collector.setMiddleName(applicant.getMiddleName());
-        if ( phone != null )
-          collector.setPhone(phone.getPhoneNumber());
-
-        vector.add(collector);
-      }
-    }
+    List vector = listOfComplexHabitants(_campusID,iwc);
 
     HabitantsComparator comparator = new HabitantsComparator(_orderID);
     Collections.sort(vector,comparator);

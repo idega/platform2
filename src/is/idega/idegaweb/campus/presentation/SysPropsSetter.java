@@ -15,6 +15,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import com.idega.util.idegaTimestamp;
@@ -62,7 +63,7 @@ public class SysPropsSetter extends Block{
 
   protected void control(IWContext iwc){
     SystemProperties SysProps = null;
-    if(iwc.getParameter("save")!=null){
+    if(iwc.isParameterSet("save")||iwc.isParameterSet("save.x")){
       SysProps = saveProperties(iwc);
       iwc.setApplicationAttribute(propParameter,SysProps);
     }
@@ -123,7 +124,9 @@ public class SysPropsSetter extends Block{
   }
 
   private PresentationObject getProperties(SystemProperties SysProps){
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("system_properties","System properties"));
+
     Form myForm = new Form();
     DateInput DI = new DateInput("contract_date",true);
     DropdownMenu TI = intDrp("contract_years",10);
@@ -143,7 +146,6 @@ public class SysPropsSetter extends Block{
     catch (SQLException ex) {
       groups = new DropdownMenu("def_group");
     }
-
 
     int row = 1;
     T.add(Edit.formatText(iwrb.getLocalizedString("contract_date","Contract date")),1,row);
@@ -198,8 +200,8 @@ public class SysPropsSetter extends Block{
     row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("email_host","Email Host")),1,row);
     T.add(emailHost,3,row);
-    SubmitButton save = new SubmitButton("save","Save");
-    T.add(save,4,7);
+    SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save","Save"),"save");
+    T.addButton(save);
     myForm.add(T);
     return myForm;
   }

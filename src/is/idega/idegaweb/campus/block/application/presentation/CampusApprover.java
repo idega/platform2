@@ -68,12 +68,6 @@ public class CampusApprover extends Block{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    java.util.Enumeration e = iwc.getParameterNames();
-    while(e.hasMoreElements()){
-      String prm = (String) e.nextElement();
-      System.err.println("prm "+prm+" : "+iwc.getParameter(prm));
-    }
-
     if(iwc.getSessionAttribute("iterator")!=null){
       iterator = (ListIterator)iwc.getSessionAttribute("iterator");
     }

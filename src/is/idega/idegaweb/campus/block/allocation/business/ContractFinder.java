@@ -322,6 +322,45 @@ public abstract class ContractFinder {
     }
   }
 
+  public static List listOfContractsInComplex(int complexID,Boolean rented){
+
+    StringBuffer sql = new StringBuffer("select con.* ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and con.app_applicant_id = p.app_applicant_id");
+    sql.append(" and con.app_applicant_id = p.app_applicant_id");
+    sql.append(" and bu_complex_id  = ");
+    sql.append(complexID);
+    if(rented !=null){
+      sql.append(" and con.rented = ");
+      sql.append(rented.booleanValue()?"'Y'":"'N'");
+    }
+    String order = getOrderString(0);
+    if(order != null){
+      sql.append(" order by ");
+      sql.append(order);
+    }
+    String sSQL = sql.toString();
+    //System.err.println(sSQL);
+    try{
+      List list = EntityFinder.findAll(new Contract(),sql.toString());
+      if ( list != null ) {
+        return list;
+      }
+      return null;
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
+
   public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId,String status){
     StringBuffer sql = new StringBuffer("select count(*) ");
     sql.append(" from bu_apartment a,bu_floor f,bu_building b");
