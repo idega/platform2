@@ -4,14 +4,10 @@
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
 
-import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
-import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRoundHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 

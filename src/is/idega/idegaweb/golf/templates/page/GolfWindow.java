@@ -1,8 +1,6 @@
 // idega - Gimmi & Eiki
 package is.idega.idegaweb.golf.templates.page;
 
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-
 import java.util.HashMap;
 import java.util.Map;
 

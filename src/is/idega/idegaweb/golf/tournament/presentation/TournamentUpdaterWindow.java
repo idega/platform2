@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 
 /**
