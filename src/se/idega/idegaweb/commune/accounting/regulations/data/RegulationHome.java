@@ -1,5 +1,8 @@
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
 
 public interface RegulationHome extends com.idega.data.IDOHome
 {
@@ -12,5 +15,9 @@ public interface RegulationHome extends com.idega.data.IDOHome
  public java.util.Collection findRegulations(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4,int p5)throws javax.ejb.FinderException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
+ public java.util.Collection findRegulationsByNameNoCase(String name) throws javax.ejb.FinderException;
+ public Collection findRegulationsByNameNoCaseAndDate(String string, Date validDate) throws javax.ejb.FinderException;
+
+
 
 }

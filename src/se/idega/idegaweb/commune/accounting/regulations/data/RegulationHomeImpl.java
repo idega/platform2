@@ -1,5 +1,8 @@
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
 
 public class RegulationHomeImpl extends com.idega.data.IDOFactory implements RegulationHome
 {
@@ -55,6 +58,22 @@ public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Da
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+
+public java.util.Collection findRegulationsByNameNoCase(String name) throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByNameNoCase(name);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);	
+}
+
+public Collection findRegulationsByNameNoCaseAndDate(String name, Date validDate) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByNameNoCaseAndDate(name, validDate);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);	
+}
+
+
 public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((RegulationBMPBean)entity).ejbFindRegulationsByPeriod(p0,p1,p2,p3,p4);
@@ -62,9 +81,11 @@ public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Da
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+
  public Regulation findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Regulation) super.findByPrimaryKeyIDO(pk);
  }
+
 
 
 
