@@ -6,25 +6,19 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import java.sql.SQLException;
-
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.tournament.business.TournamentSession;
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.tournament.business.TournamentBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
-import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -35,110 +29,95 @@ import com.idega.util.IWTimestamp;
  */
 public class TournamentRegistrationMobile extends Block {
 	
+	public static final String PARAM_NAME_SEARCH_INTERVAL = "s_i";
+	public static final String SEARCH_INTERVAL_WEEK = "w";
+	public static final String SEARCH_INTERVAL_MONTH = "m";
+	
+	public static final String PARAM_NAME_TOURNAMENT = "tr";
+	
+	public static final String LOCALIZATION_KEY_SEARCH_TEXT = "mobile_search_text";
+	public static final String LOCALIZATION_KEY_WEEK = "mobile_oneweek";
+	public static final String LOCALIZATION_KEY_MONTH = "mobile_onemonth";
+	
+	public static final String LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT = "mobile_selection_text";
+	
 	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 	
 	private IWResourceBundle _iwrb;
+	private TournamentBusiness _biz = null;
 	
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		
-//		PresentationObject tournamentSearchForm = getTournamentSearchPO(iwc);
-//		add(tournamentSearchForm);
+		PresentationObject po;
+		
+		if(iwc.getParameter(PARAM_NAME_SEARCH_INTERVAL) == null ) {
+			po = getTimeIntervalForm(iwc);
+		} else {
+			po = getTournamentSelectionForm(iwc);
+		}
+		
+		add(po);
 	}
 	
-	private PresentationObject getTournamentSearch(IWContext iwc) {
+	private PresentationObject getTournamentSelectionForm(IWContext iwc) {
 		try {
-			Form tournamentSearchForm = new Form();
+			Form form = new Form();
 			
-			String union_id = iwc.getParameter("union_id");
+			String selectionLabel = _iwrb.getLocalizedString(LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT, "Select tournament");
 			
-			String clubSelectionLabel = _iwrb.getLocalizedString("tournament.club", "Club") + ": ";
-			DropdownMenu clubMenu = getClubMenu(iwc, union_id);
-			
-			IWTimestamp now = IWTimestamp.RightNow();
-			IWCalendar dagatalid = new IWCalendar();
-	
-			String fromDateLabel = _iwrb.getLocalizedString("tournament.from", "From") + ": ";
-			DateInput startDate = getDateMenu(getTournamentSession(iwc).getParameterNameStartDate(), now.getYear(), getStartStamp(iwc).getDate());
-			
-			String toDateLabel = _iwrb.getLocalizedString("tournament.to", "To") + ": ";
-			DateInput endDate = getDateMenu(getTournamentSession(iwc).getParameterNameEndDate(), now.getYear(), getEndStamp(iwc).getDate());
-			
-			tournamentSearchForm.add(clubSelectionLabel);
-			tournamentSearchForm.add(clubMenu);
-			tournamentSearchForm.addBreak();
-			tournamentSearchForm.add(fromDateLabel);
-			tournamentSearchForm.add(startDate);
-			tournamentSearchForm.addBreak();
-			tournamentSearchForm.add(toDateLabel);
-			tournamentSearchForm.add(endDate);
-			
-			SubmitButton button = new SubmitButton();
-			
-			tournamentSearchForm.add(button);
-			return tournamentSearchForm;
+			boolean week = SEARCH_INTERVAL_WEEK.equals(iwc.getParameter(PARAM_NAME_SEARCH_INTERVAL));
+			IWTimestamp begin = new IWTimestamp();
+			begin.setHour(8);
+			begin.setMinute(0);
+			IWTimestamp end = new IWTimestamp(begin);
+			end.addDays(week?7:31);
+			end.setHour(23);
+			Tournament[] tournaments = getTournamentBusiness(iwc).getTournaments(begin, end);
+			System.out.println("Got " + tournaments.length + " tournaments from " + begin + " to " + end);
+			DropdownMenu menu = new DropdownMenu(PARAM_NAME_TOURNAMENT);
+			for(int i=0; i<tournaments.length; i++) {
+				Tournament t = tournaments[i];
+				String displayStr = t.getStartTime() + " - " + t.getName() + " - " + t.getField().getName();
+				menu.addMenuElement(t.getPrimaryKey().toString(), displayStr);
+			}
+			form.add(selectionLabel);
+			form.add(menu);
+		 	return form;
 		} catch(Exception e) {
+			e.printStackTrace();
 			return new Text();
 		}
 	}
 	
-	private DateInput getDateMenu(String paramName, int year, java.sql.Date date) {
-		DateInput dateInput = new DateInput(paramName);
-		dateInput.setYear(year);
-		dateInput.setDate(date);
-		return dateInput;
+	private PresentationObject getTimeIntervalForm(IWContext iwc) {
+		try {
+			Form form = new Form();
+			
+			String menuLabel = _iwrb.getLocalizedString(LOCALIZATION_KEY_SEARCH_TEXT, "Find tournaments that start within");
+			DropdownMenu menu = new DropdownMenu(PARAM_NAME_SEARCH_INTERVAL);
+			menu.addMenuElement(SEARCH_INTERVAL_WEEK, _iwrb.getLocalizedString(LOCALIZATION_KEY_WEEK, "a week"));
+			menu.addMenuElement(SEARCH_INTERVAL_WEEK, _iwrb.getLocalizedString(LOCALIZATION_KEY_MONTH, "a month"));
+			SubmitButton button = new SubmitButton();
+			
+			form.add(menuLabel);
+			form.add(menu);
+			
+			return form;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new Text();
+		}
 	}
 	
-	public IWTimestamp getStartStamp(IWContext modinfo) {
-		IWTimestamp stamp = null;
+	public TournamentBusiness getTournamentBusiness(IWContext iwc) {
+		if(_biz==null)
 		try {
-			stamp = new IWTimestamp(getTournamentSession(modinfo).getStartDate());
+			_biz = (TournamentBusiness) IBOLookup.getServiceInstance(iwc, TournamentBusiness.class);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
 		}
-		catch (Exception e) {
-			stamp = IWTimestamp.RightNow();
-			stamp.addDays(-7);
-		}
-
-		return stamp;
-	}
-
-	public IWTimestamp getEndStamp(IWContext modinfo) {
-		IWTimestamp stamp = null;
-
-		try {
-			stamp = new IWTimestamp(getTournamentSession(modinfo).getEndDate());
-		}
-		catch (Exception e) {
-			stamp = getStartStamp(modinfo);
-			stamp.addDays(14);
-		}
-
-		return stamp;
-	}
-	
-	private DropdownMenu getClubMenu(IWContext iwc, String selected) throws SQLException {
-		Union[] unions = (Union[]) ((Union) IDOLookup.instanciateEntity(Union.class)).findAllOrdered("ABBREVATION");
-		DropdownMenu clubMenu = new DropdownMenu("union_id");
-		if (unions != null) {
-			for (int i = 0; i < unions.length; i++) {
-				if (unions[i].getID() != 1) {
-					clubMenu.addMenuElement(unions[i].getID(), unions[i].getAbbrevation() + "&nbsp;&nbsp;" + unions[i].getName());
-				}
-			}
-		}
-		if (selected != null && selected.length()>0) {
-			clubMenu.setSelectedElement(selected);
-		}
-		return clubMenu;
-	}
-	
-	private TournamentSession getTournamentSession(IWContext iwc) {
-		try {
-			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);
-		}
-		catch (IBOLookupException ile) {
-			throw new IBORuntimeException(ile);
-		}
+		return _biz;
 	}
 	
 	public String getBundleIdentifier(){
