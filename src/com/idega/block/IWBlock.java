@@ -14,6 +14,7 @@ public interface IWBlock {
 public final static String IW_CORE_BUNDLE_IDENTIFIER="com.idega.core";
 
   public boolean deleteBlock(int ICObjectInstanceId);
+  public boolean copyBlock(int newInstanceID);
   public String getBundleIdentifier();
   public String getLocalizedNameKey();
   public String getLocalizedNameValue();
