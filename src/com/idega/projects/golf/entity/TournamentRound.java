@@ -1,18 +1,21 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
-
-/**
-*@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 1.2
-*/
+ * $Id: TournamentRound.java,v 1.4 2001/05/15 10:43:50 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.projects.golf.entity;
 
 import java.sql.*;
 import com.idega.data.*;
 
+/**
+*@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+*@version 1.2
+*/
 public class TournamentRound extends GolfEntity{
 
 	public TournamentRound(){
@@ -99,13 +102,18 @@ public class TournamentRound extends GolfEntity{
 		setColumn("decrease_handicap",new Boolean(decrease_handicap));
 	}
 
-        public void delete() {
-            Scorecard[] scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",this.getID());
-            if (scorecards != null) {
-                for (int j = 0; j < scorecards.length; j++) {
-                    scorecards[j].delete();
-                }
-            }
+  public void delete() {
+    try {
+      Scorecard[] scorecards = (Scorecard[]) this.findAllByColumn("TOURNAMENT_ROUND_ID",this.getID());
+      if (scorecards != null) {
+        for (int j = 0; j < scorecards.length; j++) {
+          scorecards[j].delete();
         }
+      }
+    }
+    catch (java.sql.SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
 }
