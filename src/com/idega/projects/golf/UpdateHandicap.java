@@ -41,14 +41,15 @@ public class UpdateHandicap {
                         if ( round.getRoundNumber() == 1 ) {
                           tournamentHandicap = grunn;
                         }
+                        float tournamentPlayHandicap = (float) leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
                         Tournament tournament = round.getTournament();
                         if ( member.getGender().equalsIgnoreCase("m") ) {
-                          if ( tournamentHandicap > (double) tournament.getMaxHandicap() ) {
+                          if ( tournamentPlayHandicap > tournament.getMaxHandicap() ) {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getMaxHandicap());
                           }
                         }
                         else if ( member.getGender().equalsIgnoreCase("f") ) {
-                          if ( tournamentHandicap > (double) tournament.getFemaleMaxHandicap() ) {
+                          if ( tournamentPlayHandicap > tournament.getFemaleMaxHandicap() ) {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getFemaleMaxHandicap());
                           }
                         }
