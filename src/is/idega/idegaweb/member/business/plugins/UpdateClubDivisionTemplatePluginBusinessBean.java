@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateClubDivisionTemplatePluginBusinessBean.java,v 1.1 2004/09/01 16:52:34 thomas Exp $
+ * $Id: UpdateClubDivisionTemplatePluginBusinessBean.java,v 1.2 2004/09/02 07:54:07 laddi Exp $
  * Created on Sep 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,14 +9,16 @@
  */
 package is.idega.idegaweb.member.business.plugins;
 
-import is.idega.idegaweb.member.presentation.UpdateClubDivisionTemplate;
 import is.idega.idegaweb.member.presentation.UpdateClubDivisionTemplatePlugin;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.data.Group;
@@ -25,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/01 16:52:34 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/09/02 07:54:07 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class UpdateClubDivisionTemplatePluginBusinessBean extends IBOServiceBean implements UpdateClubDivisionTemplatePluginBusiness{
 
