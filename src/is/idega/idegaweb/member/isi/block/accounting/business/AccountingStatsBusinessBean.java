@@ -34,6 +34,7 @@ import com.idega.util.text.TextSoap;
  */
 public class AccountingStatsBusinessBean extends IBOSessionBean implements AccountingStatsBusiness {
 	
+	private static final String LOCALIZED_LABEL = "AccountingStatsBusiness.label";
 	private static final String LOCALIZED_DIVISION_NAME = "AccountingStatsBusiness.division_name";
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
 	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
@@ -85,7 +86,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
 		 "accountingreport",
-		 _iwrb.getLocalizedString("AccountingStatsBusiness.label", "Current date"),
+		 _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 		 "label",
 		 TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		 

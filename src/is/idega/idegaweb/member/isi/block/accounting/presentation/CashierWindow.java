@@ -320,7 +320,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         addParametersToMenuItems(paymentStatus, REPORT_PAYMENT_STATUS);
         paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.1.xml");
         paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.1.xml");
-        paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.payment_status_reportname");
+        paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentStatus");
 
         LinkContainer paymentOverview = new LinkContainer();
         paymentOverview.setStyleClass(styledLink);
@@ -644,8 +644,7 @@ public class CashierWindow extends StyledIWAdminWindow {
             	subWindow = new CashierLedgerWindow();
             	helpTextKey = ACTION_CASHIER_LEDGER + "_help";
             } else if (action.equals(ACTION_REMOVE_PAYMENTS)) {
-                actionTitle
-                        .append(iwrb.getLocalizedString(
+                actionTitle.append(iwrb.getLocalizedString(
                                 ACTION_REMOVE_PAYMENTS,
                                 "Remove selected payments"));
                 subWindow = new RemovePayments();
@@ -656,33 +655,26 @@ public class CashierWindow extends StyledIWAdminWindow {
                 repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
                 repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
                 repGen.setParameterToMaintain(STATS_LAYOUT_NAME_FROM_BUNDLE);
-                repGen
-                        .setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
+                repGen.setParameterToMaintain(STATS_INVOCATION_NAME_FROM_BUNDLE);
                 repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
                 repGen.setParameterToMaintain(PARAMETER_GROUP_ID);
                 repGen.setParameterToMaintain(PARAMETER_CLUB_ID);
                 String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
-                String invocationFileName = iwc
-                        .getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
+                String invocationFileName = iwc.getParameter(STATS_INVOCATION_NAME_FROM_BUNDLE);
                 String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
-                String layoutFileName = iwc
-                        .getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
-                String localizedNameKey = iwc
-                        .getParameter(STATS_LOCALIZABLE_KEY_NAME);
-                if ((invocationKey != null && iwb.getProperty(invocationKey,
-                        "-1") != null)
+                String layoutFileName = iwc.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
+                String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
+                if ((invocationKey != null && iwb.getProperty(invocationKey,"-1") != null)
                         || invocationFileName != null) {
 
                     if (invocationFileName != null) {
                         repGen.setMethodInvocationBundleAndFileName(iwb,
                                 invocationFileName);
                     } else {
-                        Integer invocationICFileID = new Integer(iwb
-                                .getProperty(invocationKey));
+                        Integer invocationICFileID = new Integer(iwb.getProperty(invocationKey));
 
                         if (invocationICFileID.intValue() > 0) {
-                            repGen
-                                    .setMethodInvocationICFileID(invocationICFileID);
+                            repGen.setMethodInvocationICFileID(invocationICFileID);
                         }
                     }
                     if (layoutFileName != null) {
@@ -704,14 +696,9 @@ public class CashierWindow extends StyledIWAdminWindow {
                     }
                 }
                 table.add(repGen, 2, 1); //not a selector
-                //selectorIsSet = true;
-                //this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS,
-                // "Statistics"));
-                //this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS,
-                // "Statistics"), IWConstants.BUILDER_FONT_STYLE_TITLE);
-                this.addTitle("Statistics");
-                this.addTitle("Statistics",
-                        IWConstants.BUILDER_FONT_STYLE_TITLE);
+                //this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS, "Statistics"));
+                //this.addTitle(iwrb.getLocalizedString(REPORT_PAYMENT_STATUS, "Statistics"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+                
             }
 
             if (eClub != null) {
