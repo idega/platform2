@@ -614,6 +614,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private void setValuesOfWorkReportClubAccountRecord(EntityPathValueContainer valueContainer, Integer groupId, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
+    if (LEAGUE_NAME.equals(pathShortKey)) {
+      changeLeagueOfExistingRecords(groupId, value.toString(), workReportBusiness);
+      return;
+    }
     Float amount;
     try {
       amount = new Float(value.toString());
