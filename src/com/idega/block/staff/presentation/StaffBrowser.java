@@ -109,6 +109,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private String extraAlignment = Table.HORIZONTAL_ALIGN_CENTER;
 	private boolean _sortAlphabetically = true;
 	private boolean _sortGroupsAlphabetically = true;
+	private boolean _showNavigationLinks = true;
 
 	public StaffBrowser() {
 		setDefaultValues();
@@ -498,10 +499,10 @@ public class StaffBrowser extends Block implements Builderaware {
 			backLink.setPage(_backPage);
 		backLink.setStyle(_name);
 
-		if (previousLink != null)
+		if (previousLink != null && _showNavigationLinks)
 			linkTable.add(previousLink, 1, 1);
 		linkTable.add(backLink, 2, 1);
-		if (nextLink != null) {
+		if (nextLink != null && _showNavigationLinks) {
 			linkTable.add(nextLink, 3, 1);
 			linkTable.setAlignment(3, 1, "right");
 		}
@@ -954,4 +955,10 @@ public class StaffBrowser extends Block implements Builderaware {
 		_emailAlignment = string;
 	}
 
+	/**
+	 * @param navigationLinks
+	 */
+	public void setShowNavigationLinks(boolean navigationLinks) {
+		_showNavigationLinks = navigationLinks;
+	}
 }
