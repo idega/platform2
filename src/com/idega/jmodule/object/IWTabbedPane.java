@@ -310,11 +310,13 @@ public class IWTabbedPane extends Table implements SwingConstants {
         pages.removeElementAt(index);
     }
 
-    public void remove(ModuleObject moduleobject) {
+    public boolean remove(ModuleObject moduleobject) {
         int index = indexOfComponent(moduleobject);
         if (index != -1) {
             removeTabAt(index);
         }
+
+        return(true);
     }
 
     public void remove(int index) {
