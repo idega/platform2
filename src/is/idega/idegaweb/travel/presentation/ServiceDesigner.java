@@ -216,6 +216,7 @@ public class ServiceDesigner extends TravelManager {
                 infoText.setText("");
               }else if (cats[i].getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
                 try {
+                  priceDiscount.setSize(6);
                   infoText.setText("%");
                   infoText.addToText(Text.NON_BREAKING_SPACE);
                   infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
@@ -251,7 +252,8 @@ public class ServiceDesigner extends TravelManager {
               table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(cats[i].getID())),1,row);
               table.add(categoryName,1,row);
               table.add(priceDiscount,2,row);
-              table.setWidth(2,"100");
+              table.setAlignment(2,row,"right");
+              table.setWidth(2,"150");
               table.add(infoText,3,row);
               table.setRowColor(row,super.GRAY);
 

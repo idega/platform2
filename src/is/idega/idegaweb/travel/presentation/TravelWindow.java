@@ -30,7 +30,7 @@ public class TravelWindow extends Window {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.travel";
+  public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
 
 
   public TravelWindow() {

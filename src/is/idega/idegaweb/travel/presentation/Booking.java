@@ -263,25 +263,16 @@ public class Booking extends TravelManager {
 
       Image image = new Image("/pics/mynd.gif");
 
-
       Text departureFromText = (Text) theBoldText.clone();
           departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
       Text departureTimeText = (Text) theBoldText.clone();
           departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
 
-      table.mergeCells(1,1,1,4);
-
-      table.add(image,1,1);
-      table.setWidth(1,"150");
-      table.setColumnAlignment(2,"left");
-      table.setColumnAlignment(3,"left");
-      table.add(nameText,2,1);
-      table.add(timeText,3,1);
-      table.add(departureFromText,2,3);
-      table.add(departureTimeText,3,3);
-
-
       try {
+          if (product.getFileId() != -1) {
+            image = new Image(product.getFileId());
+                image.setMaxImageWidth(138);
+          }
 
           Text nameTextC = (Text) theText.clone();
             nameTextC.setText(service.getName());
@@ -290,7 +281,7 @@ public class Booking extends TravelManager {
             timeTextC.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc)+" - "+new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc) );
 
           Text depFrom = (Text) theText.clone();
-            depFrom.setText(service.getAddress().getStreetName());
+            depFrom.setText(tsb.getDepartureAddress(service).getStreetName());
 
           idegaTimestamp temp = new idegaTimestamp(service.getDepartureTime());
           Text depAt = (Text) theText.clone();
@@ -305,6 +296,17 @@ public class Booking extends TravelManager {
       }catch (SQLException sql) {
           sql.printStackTrace(System.err);
       }
+
+      table.mergeCells(1,1,1,4);
+
+      table.add(image,1,1);
+      table.setWidth(1,"150");
+      table.setColumnAlignment(2,"left");
+      table.setColumnAlignment(3,"left");
+      table.add(nameText,2,1);
+      table.add(timeText,3,1);
+      table.add(departureFromText,2,3);
+      table.add(departureTimeText,3,3);
 
       return form;
   }

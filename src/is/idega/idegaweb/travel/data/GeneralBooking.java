@@ -114,7 +114,7 @@ public class GeneralBooking extends GenericEntity implements Booking{
   }
 
   public String getAddress() {
-    return getStringColumnValue(getCityColumnName());
+    return getStringColumnValue(getAddressColumnName());
   }
 
   public void setAddress(String address) {

@@ -314,25 +314,6 @@ public class TourBusiness extends TravelStockroomBusiness {
     }
   }
 
-  public static Address getArrivalAddress(Service service) throws SQLException{
-    Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueArrivalAddressType))));
-    if (tempAddresses.length > 0) {
-      return new Address(tempAddresses[tempAddresses.length -1].getID());
-    }else {
-      return null;
-    }
-  }
-
-  public static Address getDepartureAddress(Service service) throws SQLException{
-      Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueDepartureAddressType))));
-      if (tempAddresses.length > 0) {
-        return new Address(tempAddresses[tempAddresses.length -1].getID());
-      }else {
-        return null;
-      }
-
-
-  }
 
 
 
