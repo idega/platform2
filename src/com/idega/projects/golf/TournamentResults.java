@@ -207,7 +207,7 @@ public class TournamentResults extends JModuleObject {
         Vector roundScore = collector.getRoundScore();
 
         if ( hole.equalsIgnoreCase("f") ) {
-          int lastNine = (int) collector.getLastNine();
+          int lastNine = (int) collector.getRealLastNine();
           if ( roundScore != null ) {
             totalScore = ((Integer)roundScore.elementAt(roundScore.size()-1)).intValue();
             totalDifference = totalScore - collector.getFieldPar();

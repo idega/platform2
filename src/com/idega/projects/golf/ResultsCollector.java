@@ -22,6 +22,7 @@ public class ResultsCollector {
   private double lastSix_ = 0;
   private double lastThree_ = 0;
   private double last_ = 0;
+  private int realLastNine_ = 0;
 
   private boolean sortByRound = false;
   private int resultType_ = 0;
@@ -222,6 +223,7 @@ public class ResultsCollector {
       difference_ = totalStrokes_ - totalPar_;
 
       last_ = ((Double)strokes_.elementAt(size-1)).doubleValue();
+      realLastNine_ = (int) lastNine_;
 
       if ( resultType_ == TOTALSTROKESWITHHANDICAP ) {
         lastNine_ = lastNine_ - handicap_ / 2;
@@ -279,6 +281,7 @@ public class ResultsCollector {
 
       roundScore_.add(new Integer(roundTotal));
       last_ = ((Double)points_.elementAt(size-1)).doubleValue();
+      realLastNine_ = (int) lastNine_;
     }
   }
 
@@ -352,6 +355,10 @@ public class ResultsCollector {
 
   public double getScore() {
     return(0);
+  }
+
+  public double getRealLastNine() {
+    return(realLastNine_);
   }
 
   public double getLastNine() {
