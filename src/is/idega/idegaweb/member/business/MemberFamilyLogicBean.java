@@ -301,4 +301,36 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
 
+	/**
+	 * Returns the RELATION_TYPE_GROUP_CHILD.
+	 * @return String
+	 */
+	public String getChildRelationType() {
+		return RELATION_TYPE_GROUP_CHILD;
+	}
+
+	/**
+	 * Returns the RELATION_TYPE_GROUP_PARENT.
+	 * @return String
+	 */
+	public String getParentRelationType() {
+		return RELATION_TYPE_GROUP_PARENT;
+	}
+
+	/**
+	 * Returns the RELATION_TYPE_GROUP_SIBLING.
+	 * @return String
+	 */
+	public String getSiblingRelationType() {
+		return RELATION_TYPE_GROUP_SIBLING;
+	}
+
+	/**
+	 * Returns the RELATION_TYPE_GROUP_SPOUSE.
+	 * @return String
+	 */
+	public String getSpouseRelationType() {
+		return RELATION_TYPE_GROUP_SPOUSE;
+	}
+
 }

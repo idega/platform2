@@ -4,10 +4,14 @@ import javax.ejb.*;
 
 public interface MemberFamilyLogic extends com.idega.business.IBOService
 {
+ public java.lang.String getChildRelationType() throws java.rmi.RemoteException;
  public java.util.Collection getChildrenFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoChildrenFound,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection getCustodiansFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoCustodianFound,java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.lang.String getParentRelationType() throws java.rmi.RemoteException;
+ public java.lang.String getSiblingRelationType() throws java.rmi.RemoteException;
  public java.util.Collection getSiblingsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoSiblingFound,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.User getSpouseFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoSpouseFound, java.rmi.RemoteException;
+ public java.lang.String getSpouseRelationType() throws java.rmi.RemoteException;
  public boolean hasPersonGotChildren(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public boolean hasPersonGotSiblings(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public boolean hasPersonGotSpouse(com.idega.user.data.User p0) throws java.rmi.RemoteException;
