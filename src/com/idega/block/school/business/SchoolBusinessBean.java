@@ -43,6 +43,7 @@ import com.idega.block.school.data.SchoolYearPlacesHome;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.TxText;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
@@ -101,6 +102,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
 		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+	}
+
+	private SchoolSeasonHome getSchoolSeasonHome() {
+		try {
+			return (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
 	public SchoolManagementTypeHome getSchoolManagementTypeHome() throws RemoteException {
@@ -1087,6 +1097,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (Exception ex) {
 			return null;
 		}
+	}
+	
+	public SchoolSeason getCurrentSchoolSeason() throws FinderException {
+		return getSchoolSeasonHome().findCurrentSeason();
 	}
 
 	public void removeSchoolSeason(int id) {

@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 /**
  * <p>Title: </p>
@@ -128,6 +129,9 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
+	public Integer ejbFindCurrentSeason() throws FinderException {
+		return ejbFindSeasonByDate(new IWTimestamp().getDate());
+	}
 	
 	public Collection ejbFindSchoolSeasonsActiveInTimePeriod(Date firstDateInPeriod, Date lastDateInPeriod) throws FinderException{
 		
