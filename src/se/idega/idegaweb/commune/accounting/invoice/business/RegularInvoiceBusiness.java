@@ -7,7 +7,11 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.util.Collection;
-import java.util.Date;
+import java.sql.Date;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOLookupException;
 
 /**
  * @author Roar
@@ -15,7 +19,7 @@ import java.util.Date;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public interface RegularInvoiceBusiness {
+public interface RegularInvoiceBusiness extends com.idega.business.IBOService {
 	/**
 	 * 
 	 * @param from
@@ -23,7 +27,7 @@ public interface RegularInvoiceBusiness {
 	 * @param userId
 	 * @return Collection of RegularPaymentEntry
 	 */
-	Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId);
+	Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws IDOLookupException, FinderException;
 	/**
 	 * 
 	 * @param from
