@@ -16,11 +16,8 @@ import java.util.Vector;
 public class MessageListener implements Runnable{
   private MessengerApplet client;
   private Thread t;
-  private long threadSleep = 1000;//1 sec
+  private long threadSleep = 5000;//5 sec
   private boolean runThread = false;
-  private Vector dialogs = null;
-
-  int i = 1;
 
   public MessageListener(MessengerApplet applet) {
     this.client = applet;
@@ -28,30 +25,14 @@ public class MessageListener implements Runnable{
 
   public MessageListener(MessengerApplet applet, long interval) {
     this(applet);
-    setIntervalForMsgChecking(interval);
-  }
-
-  public void addMessageDialog(MessageDialog msg){
-    if( dialogs == null ) dialogs = new Vector();
-    dialogs.addElement(msg);
+    setInterval(interval);
   }
 
   public void run(){
     while(runThread){
       try {
-        System.out.println("IN THREAD count :"+i);
-        if( dialogs != null ){
-          int length = dialogs.size();
-          System.out.println("IN THREAD before loop. size = "+length);
-          for (int k = 0; k < length; k++) {
-
-            System.out.println("IN THREAD INSIDE loop");
-
-            client.getMessagesFromDialog((MessageDialog)dialogs.elementAt(k));
-          }
-        }
+        client.cycle();
         t.sleep(threadSleep);
-        i++;
       }
       catch (Exception e) {
         e.printStackTrace(System.out);
@@ -62,10 +43,12 @@ public class MessageListener implements Runnable{
   public void start(){
     if( t == null ){
       t = new Thread();
-      runThread = true;
       t.start();
       run();
     }
+
+    runThread = true;
+
   }
 
   public void stop(){
@@ -74,7 +57,12 @@ public class MessageListener implements Runnable{
     }
   }
 
-  public void setIntervalForMsgChecking(long interval){
+   /**Destroy the thread*/
+  public void destroy() {
+   t = null;
+  }
+
+  public void setInterval(long interval){
     this.threadSleep = interval;
   }
 }

@@ -10,8 +10,8 @@ import java.net.*;
 import com.idega.block.messenger.data.Message;
 import com.idega.block.messenger.data.Packet;
 import com.idega.block.messenger.data.Property;
+import com.idega.block.messenger.business.MessageListener;
 import com.idega.presentation.awt.ImageLabel;
-
 import com.idega.presentation.awt.SingleLineItem;
 
 /**
@@ -50,6 +50,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private Hashtable dialogs = new Hashtable();
   private ImageLabel faceLabel;
   private ImageLabel logoLabel;
+  private MessageListener cycler;
   //debug
  // private Panel userPanel;
 
@@ -58,17 +59,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private String keyPressed=null;
   private Image offscreenImage;
   private Graphics offscr;
-  private int checkTimer = 15;
+  private long checkTimer = 5000;
   private long tm;
-  private long threadSleep;
+  private long threadSleep = 50;
 
   private Packet packetToServlet;
   private Packet packetFromServlet;
-
-  /**Get a parameter value*/
-  public String getParameter(String key, String def) {
-    return (getParameter(key) != null ? getParameter(key) : def);
-  }
 
   /**Construct the applet*/
   public MessengerApplet() {
@@ -97,9 +93,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       //userPanel = new Panel();
       //userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       //add(userPanel);
-
-      //threadSleep = 1000*checkTimer;
-      threadSleep = 50;//debug
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -112,9 +105,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     while(runThread){
       repaint();
 
-      cycle();//get and send packets
-
-      try {//keep the wait insync with the performance of the machine it is on
+      //message checking is done in another thread
+     try {//keep the wait insync with the performance of the machine it is on
       	tm += threadSleep;
         t.sleep(Math.max(0, tm - System.currentTimeMillis()));
       }
@@ -372,7 +364,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   }
 
-  private void cycle(){
+  public void cycle(){
     URLConnection conn = getURLConnection();
     // send the Packet object to the servlet using serialization
     sendPacket(conn);
@@ -547,15 +539,27 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void start() {
     if ( t == null ){
       t = new Thread(this);
-      runThread = true;
       t.start();
     }
+
+    runThread = true;
+
+    if(cycler==null){
+     cycler = new MessageListener(this,checkTimer);
+    }
+
+    cycler.start();
+
 
   }
   /**Stop the applet*/
   public void stop() {
     if ( t != null ){
       runThread = false;
+    }
+
+    if(cycler==null){
+     cycler.stop();
     }
 
   }
@@ -568,8 +572,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         g.dispose(); // crucial
         g = null;
     }
-    if ( t!=null ){
-      t=null;
+
+    t=null;
+
+    if(cycler!=null){
+     cycler.destroy();
     }
 
     dialogs.clear();
@@ -589,6 +596,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public String getAppletInfo() {
     return FRAME_NAME;
   }
+
+
+  /**Get a parameter value*/
+  public String getParameter(String key, String def) {
+    return (getParameter(key) != null ? getParameter(key) : def);
+  }
+
   /**Get parameter info*/
   public String[][] getParameterInfo() {
     String[][] pinfo =
@@ -599,4 +613,5 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       };
     return pinfo;
   }
+
 }
