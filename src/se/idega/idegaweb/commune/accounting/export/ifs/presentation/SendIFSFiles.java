@@ -15,6 +15,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -39,6 +40,7 @@ public class SendIFSFiles extends AccountingBlock {
 	private final static String PREFIX = "cacc_send_files_";
 	protected final static String KEY_HEADER = PREFIX + "header";
 
+	protected final static String KEY_CREATED_BY = PREFIX + "created_by";
 	protected final static String KEY_EMAILED_PROVIDERS = PREFIX + "emailed_providers";
 	protected final static String KEY_ENDED = PREFIX + "ended";
 	protected final static String KEY_HANDLED_PROVIDER_COUNT = PREFIX + "handled_provider_count";
@@ -117,6 +119,8 @@ public class SendIFSFiles extends AccountingBlock {
 			table.setRowAlignment (row, Table.HORIZONTAL_ALIGN_CENTER) ;
 			table.add (getSmallHeader (localize (KEY_LAST_BROADCAST_FOR, KEY_LAST_BROADCAST_FOR) + ' ' + getSchoolCategoryName (_currentOperation)), 1, row++);
  			table.setColumnWidth (1, "33%");
+			table.add (getSmallHeader (localize (KEY_CREATED_BY, KEY_CREATED_BY) + ':'), 1, row);
+			table.add (getSmallText (getSignature (broadcastInfo.getCreatedBy ())), 2, row++);
 			table.add (getSmallHeader (localize (KEY_STARTED, KEY_STARTED) + ':'), 1, row);
 			table.add (getSmallText (broadcastInfo.getStartTime () + ""), 2, row++);
 			final Timestamp endTime = broadcastInfo.getEndTime ();
@@ -134,12 +138,20 @@ public class SendIFSFiles extends AccountingBlock {
 		}
 	}
 
+	private String getSignature (final User user) {
+		if (null == user) return "";
+		final String firstName = user.getFirstName ();
+		final String lastName = user.getLastName ();
+		return (firstName != null ? firstName + " " : "")
+				+ (lastName != null ? lastName : "");
+	}
+
 	private Table getProviderTable
 		(final Collection emailedProviders, final Collection paperMailedProviders,
 		 final Collection ignoredProviders) throws RemoteException {
 		final Table table = createTable (4);
  		for (int i = 2; i <= 4; i++) {
- 			table.setColumnWidth (i, "25%");
+ 			table.setColumnWidth (i, "33%");
  		}
 		int col = 1;
 		int row = 1;
