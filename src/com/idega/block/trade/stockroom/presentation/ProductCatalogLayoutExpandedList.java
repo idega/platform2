@@ -38,7 +38,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   Table table = new Table();
   table.setCellpaddingAndCellspacing(0);
   table.setWidth("100%");
-  int row = 0;
+  int row = 1;
 
   Table productTable;
 
@@ -58,7 +58,6 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     pCat = (ICCategory) productCategories.get(j);
     products = ProductBusiness.getProducts((ICCategory) pCat);
     productCatalog.sortList(products);
-    ++row;
 
     if (productCatalog._hasEditPermission) {
       configCategory = new Link(productCatalog.iDetach);
@@ -66,13 +65,12 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 	configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
       table.add(configCategory, 1,row);
     }
-    table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
+    table.add(productCatalog.getCategoryText(pCat.getName()), 1,row++);
 
     for (int i = 0; i < products.size(); i++) {
       productTable = new Table();
       productTable.setCellpaddingAndCellspacing(0);
       product = (Product) products.get(i);
-      ++row;
       if (productCatalog._hasEditPermission) {
 	editLink = productCatalog.getProductEditorLink(product);
 	productTable.add(editLink, 1, 1);
@@ -126,6 +124,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       description = TextFormatter.formatText(description, -1, null);
       productTable.add(productCatalog.getText(description), 1, 2);
     }
+
+    table.add(productTable,1,row++);
 
     return row;
   }
