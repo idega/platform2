@@ -175,7 +175,7 @@ public class HysingSubPage extends HysingPage{
 
 			myTable2.setBackgroundImage(new Image("/pics/BoxBackground/grunntiler2.gif"));
 			myTable2.setBackgroundImage(1,1,new Image("/pics/BoxBackground/grunntiler1.gif"));
-			myTable2.setBackgroundImage(1,5,new Image("/pics/footers/BlarFooter.gif"));
+			myTable2.setBackgroundImage(1,5,new Image(getFooterImageURL()));
 			myTable2.setBackgroundImage(3,2,new Image("/pics/BoxBackground/divider.gif"));
 
 			Link mainpage = new Link("forsíða","/index.jsp");

@@ -122,6 +122,10 @@ public class HysingPage extends TemplatePage{
       headerImageURL=URL;
   }
 
+  public String getFooterImageURL(){
+    return footerImageURL;
+  }
+
   public void setFooterImageURL(String URL){
      footerImageURL=URL;
   }
