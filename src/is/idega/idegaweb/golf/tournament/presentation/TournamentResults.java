@@ -310,6 +310,7 @@ public class TournamentResults extends GolfBlock {
 							myTable.add(totalRoundScore, 9, row);
 							break;
 
+						case ResultComparator.TOTALPOINTSWITHOUTHANDICAP:
 						case ResultComparator.TOTALPOINTS:
 							int roundScoreColumn3 = 9;
 							for (int b = 1; b <= numberOfRounds; b++) {
@@ -452,6 +453,7 @@ public class TournamentResults extends GolfBlock {
 					addHeaders(iwrb.getLocalizedString("tournament.total", "Total"), roundColumn, 1);
 					break;
 
+				case ResultComparator.TOTALPOINTSWITHOUTHANDICAP:
 				case ResultComparator.TOTALPOINTS:
 					addHeaders(total, column + 2, 2);
 					column += 3;

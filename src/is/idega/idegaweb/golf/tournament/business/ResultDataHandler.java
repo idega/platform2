@@ -146,6 +146,7 @@ public class ResultDataHandler {
 	  r.addStroke(holeNumber,stroke);
 	  r.addPoints(point);
 	  r.addPar(par);
+	  r.addPointsWithoutHandicap(Math.max(0, (par - (int) stroke + 2)));
 	  a++;
 	}
 

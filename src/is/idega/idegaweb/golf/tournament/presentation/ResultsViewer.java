@@ -291,6 +291,7 @@ public class ResultsViewer extends GolfBlock {
 		scoreMenu.addMenuElement(ResultComparator.TOTALSTROKES, iwrb.getLocalizedString("tournament.strokes_without_handicap", "Strokes"));
 		scoreMenu.addMenuElement(ResultComparator.TOTALSTROKESWITHHANDICAP, iwrb.getLocalizedString("tournament.strokes_with_handicap", "Strokes w/handicap"));
 		scoreMenu.addMenuElement(ResultComparator.TOTALPOINTS, iwrb.getLocalizedString("tournament.points", "Points"));
+		scoreMenu.addMenuElement(ResultComparator.TOTALPOINTSWITHOUTHANDICAP, iwrb.getLocalizedString("tournament.points_without_handicap", "Points wo/handicap"));
 		scoreMenu.keepStatusOnAction();
 
 		DropdownMenu orderMenu = (DropdownMenu) getStyledInterface(new DropdownMenu("order"));

@@ -18,6 +18,7 @@ public class ResultComparator implements Comparator {
   public static final int TOTALSTROKES = 1;
   public static final int TOTALSTROKESWITHHANDICAP = 2;
   public static final int TOTALPOINTS = 3;
+  public static final int TOTALPOINTSWITHOUTHANDICAP = 8;
   public static final int NAME = 4;
   public static final int ABBREVATION = 5;
   public static final int TOURNAMENTROUND = 6;
@@ -69,6 +70,7 @@ public class ResultComparator implements Comparator {
           result = nameCompare(r1,r2);
       break;
 
+      case TOTALPOINTSWITHOUTHANDICAP :
       case TOTALPOINTS :
         result = totalPointsCompare(r1,r2);
         if (result == 0)
