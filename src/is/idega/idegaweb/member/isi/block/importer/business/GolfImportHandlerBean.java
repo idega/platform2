@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.isi.block.importer.business;
 
-import is.idega.idegaweb.golf.util.GolfConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
+import com.idega.user.data.MetadataConstants;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Timer;
@@ -50,7 +50,7 @@ import com.idega.util.text.TextSoap;
  * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson </a>
  * @version 1.0
  */
-public class GolfImportHandlerBean extends IBOSessionBean implements ImportFileHandler, GolfImportHandler, GolfConstants, UserGroupPlugInBusiness {
+public class GolfImportHandlerBean extends IBOSessionBean implements ImportFileHandler, GolfImportHandler, UserGroupPlugInBusiness {
 
 	
 private static final String MAIN_CLUB_TYPE = "main";
@@ -255,13 +255,13 @@ private static final String MAIN_CLUB_TYPE = "main";
 
 	private void setClubMetaData(User user, String clubAbbr, String membership_status) {
 		if(membership_status.equalsIgnoreCase(MAIN_CLUB_TYPE)){
-			String abbr = user.getMetaData(MAIN_CLUB_META_DATA_KEY);
+			String abbr = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
 			if(abbr!=null && !abbr.equals(clubAbbr)){
 				//move the main club to a sub club
 				addToSubClubs(abbr,user);
-				user.setMetaData(MAIN_CLUB_META_DATA_KEY,clubAbbr);
+				user.setMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY,clubAbbr);
 			}else{
-				user.setMetaData(MAIN_CLUB_META_DATA_KEY,clubAbbr);
+				user.setMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY,clubAbbr);
 			}
 		}else{
 			addToSubClubs(clubAbbr,user);
@@ -273,7 +273,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 	 * @param abbr
 	 */
 	private void addToSubClubs(String abbr,User user) {
-		String subClubs = user.getMetaData(SUB_CLUBS_META_DATA_KEY);
+		String subClubs = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
 		if(subClubs==null){
 			subClubs = abbr+",";
 			
@@ -284,7 +284,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 			}
 		}
 		
-		user.setMetaData(SUB_CLUBS_META_DATA_KEY,subClubs);
+		user.setMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY,subClubs);
 	}
 
 	private Group getOrCreateImportGroup(String clubAbbr, Group club) throws RemoteException, CreateException {
