@@ -9,6 +9,7 @@ public class IntervalConstant {
 	public static final String MOTHER_TONGUE = "interval.modersmal";
 	public static final String SWEDISH_AS_SECOND_LANGUAGE = "interval.svenska_som_andrasprak";
 	public static final String FAMILY_DAY_NURSERY = "interval.familjedaghem";
+	public static final String ACTIVITY = "interval.activity";
 	public static final String GRADE = "interval.arskurs";
 	public static final String GROUP = "interval.grupp";
 	public static final String HOURS = "interval.timmar";
