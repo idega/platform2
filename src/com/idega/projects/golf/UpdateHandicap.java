@@ -121,6 +121,7 @@ public class UpdateHandicap {
                           int modifiedHandicap = Math.round((float) modified * modifier);
                           tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,modifiedHandicap);
                           //System.out.println("TournamentHandicap: "+tournamentHandicap);
+                          leikForgjof = new Handicap((double) tournamentHandicap);
                         }
                       }
 
