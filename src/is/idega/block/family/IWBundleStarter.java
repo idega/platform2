@@ -35,6 +35,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		insertGroupRelationType("FAM_CHILD");
 		insertGroupRelationType("FAM_PARENT");
 		insertGroupRelationType("FAM_SPOUSE");
+		insertGroupRelationType("FAM_COHABITANT");
 	}
 	
 	private void insertGroupRelationType(String groupRelationType) {
