@@ -621,7 +621,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     try {
       _pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
 

@@ -1,16 +1,18 @@
 package is.idega.idegaweb.campus.presentation;
 
-import is.idega.idegaweb.campus.block.finance.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.util.TextFormat;
-import com.idega.presentation.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.util.TextFormat;
 import com.idega.util.database.ConnectionBroker;
-import com.idega.data.SimpleQuerier;
-import java.sql.*;
 
 /**
  * Title
@@ -109,6 +111,15 @@ import java.sql.*;
     iwb = getBundle(iwc);
     tf = TextFormat.getInstance();
     add(createResultTable(iwc));
+  }
+  
+  public Connection getConnection()
+  {
+	  return ConnectionBroker.getConnection();
+  }
+  public void freeConnection(Connection conn)
+  {
+	  ConnectionBroker.freeConnection(conn);
   }
 }
 
