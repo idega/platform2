@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.invoice.presentation.RegularInvoiceEntriesList;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
@@ -44,6 +46,7 @@ import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.URLUtil;
 /**
  * HouseHoldViewer
  * @author aron 
@@ -66,20 +69,54 @@ public class HouseHoldViewer extends AccountingBlock {
 	private String childContractHistoryChildParameterName = ChildContractsWindow.PARAMETER_CHILD_ID;
 	private String userEditorUserParameterName = CitizenEditorWindow.getUserIDParameterName();
 	private String userBruttoIncomeUserParameterName = BruttoIncomeWindow.getUserIDParameterName();
-	private String userLowIncomeUserParameterName = null;
+	private String userLowIncomeUserParameterName = RegularInvoiceEntriesList.getUserIDParameterName();
 	private ApplicationForm appForm = null;
 	private int nameInputLength = 25;
 	private int personalIdInputLength = 15;
 	private boolean constrainSearchToUniqueIdentifier = false;
+	private UserSearcher searcherOne=null,searcherTwo = null;
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		nf = NumberFormat.getNumberInstance(iwc.getCurrentLocale());
-		
+		initSearches();
 		process(iwc);
 		presentate(iwc);
+	}
+	
+	private void initSearches(){
+	    searcherOne = new UserSearcher();
+		searcherOne.setShowMiddleNameInSearch(false);
+		searcherOne.setOwnFormContainer(false);
+		searcherOne.setUniqueIdentifier("one");
+		//searcherOne.setSkipResultsForOneFound(false);
+		searcherOne.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
+		searcherOne.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
+		searcherOne.setPersonalIDLength(personalIdInputLength);
+		searcherOne.setFirstNameLength(nameInputLength);
+		searcherOne.setLastNameLength(nameInputLength);
+		searcherOne.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
+		searcherOne.addMonitoredSearchIdentifier("two");
+		searcherOne.setShowResetButton(false);
+		searcherOne.setShowMultipleResetButton(true);
+		searcherOne.addClearButtonIdentifiers("two");
+		searcherTwo = new UserSearcher();
+		searcherTwo.setShowMiddleNameInSearch(false);
+		searcherTwo.setOwnFormContainer(false);
+		searcherTwo.setUniqueIdentifier("two");
+		//searcherTwo.setSkipResultsForOneFound(false);
+		searcherTwo.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
+		searcherTwo.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
+		searcherTwo.setPersonalIDLength(personalIdInputLength);
+		searcherTwo.setFirstNameLength(nameInputLength);
+		searcherTwo.setLastNameLength(nameInputLength);
+		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
+		
+		searcherTwo.addMonitoredSearchIdentifier("one");
+		
+	
 	}
 	public void process(IWContext iwc) {
 		String prm = UserSearcher.getUniqueUserParameterName("one");
@@ -108,6 +145,32 @@ public class HouseHoldViewer extends AccountingBlock {
 			}
 			//add(secondUserID.toString());
 		}
+		
+		if(firstUser==null && searcherOne!=null){
+			try {
+				searcherOne.process(iwc);
+				firstUser = searcherOne.getUser();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		if(secondUser==null && searcherTwo!=null){
+			try {
+				searcherTwo.process(iwc);
+				secondUser=searcherTwo.getUser();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		lookupChildren(iwc);
 	}
 	private void lookupChildren(IWContext iwc) {
@@ -175,33 +238,6 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 	public void presentateSearch(IWContext iwc) {
 		Table table = new Table();
-		UserSearcher searcherOne = new UserSearcher();
-		searcherOne.setShowMiddleNameInSearch(false);
-		searcherOne.setOwnFormContainer(false);
-		searcherOne.setUniqueIdentifier("one");
-		searcherOne.setSkipResultsForOneFound(false);
-		searcherOne.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
-		searcherOne.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
-		searcherOne.setPersonalIDLength(personalIdInputLength);
-		searcherOne.setFirstNameLength(nameInputLength);
-		searcherOne.setLastNameLength(nameInputLength);
-		searcherOne.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
-		searcherOne.addMonitoredSearchIdentifier("two");
-		searcherOne.setShowResetButton(false);
-		searcherOne.setShowMultipleResetButton(true);
-		UserSearcher searcherTwo = new UserSearcher();
-		searcherTwo.setShowMiddleNameInSearch(false);
-		searcherTwo.setOwnFormContainer(false);
-		searcherTwo.setUniqueIdentifier("two");
-		searcherTwo.setSkipResultsForOneFound(false);
-		searcherTwo.setHeaderFontStyleName(getStyleName(STYLENAME_HEADER));
-		searcherTwo.setButtonStyleName(getStyleName(STYLENAME_INTERFACE_BUTTON));
-		searcherTwo.setPersonalIDLength(personalIdInputLength);
-		searcherTwo.setFirstNameLength(nameInputLength);
-		searcherTwo.setLastNameLength(nameInputLength);
-		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
-		searcherTwo.addClearButtonIdentifiers("one");
-		searcherTwo.addMonitoredSearchIdentifier("one");
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
 		if (iwc.isParameterSet(prmTwo)) {
@@ -212,13 +248,10 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 		table.add(searcherOne, 1, 1);
 		table.add(searcherTwo, 1, 2);
-		//add(table);
-		//Form form = new Form();
+		
 		appForm.maintainParameter(prmOne);
 		appForm.maintainParameter(prmTwo);
-		//form.add(table);
-		//add(form);
-		//add(Text.getBreak());
+		
 		appForm.setSearchPanel(table);
 	}
 	public void presentateUsersFound(IWContext iwc) {
@@ -404,6 +437,13 @@ public class HouseHoldViewer extends AccountingBlock {
 			drp.addMenuElement(secondUser.getPrimaryKey().toString(), secondUser.getName());
 			hasUser = true;
 		}
+		if(children!=null){
+			for (Iterator iter = children.iterator(); iter.hasNext();) {
+				User child = (User) iter.next();
+				drp.addMenuElement(child.getPrimaryKey().toString(),child.getName());
+			}
+			hasUser = true;
+		}
 		/*
 		Table table = new Table();
 		table.add(drp, 1, 1);
@@ -455,7 +495,12 @@ public class HouseHoldViewer extends AccountingBlock {
 		GenericButton button = new SubmitButton(localize("household.edit_low_income", "Edit low income"));
 		button = getButton(button);
 		if (hasUser && userLowIncomePageID != null) {
-			button.setPageToOpen(userLowIncomePageID.intValue());
+			String onclickString = getButtonOnClickForPage(iwc,userLowIncomePageID.intValue(),userLowIncomeUserParameterName);
+			if(onclickString !=null)
+				button.setOnClick(onclickString);
+			else
+				button.setPageToOpen(userLowIncomePageID.intValue());
+			
 		}
 		else if (hasUser && userLowIncomeWindowClass != null) {
 			button.setOnClick(getButtonOnClickForWindow(iwc, userLowIncomeWindowClass, userLowIncomeUserParameterName));
@@ -471,6 +516,19 @@ public class HouseHoldViewer extends AccountingBlock {
 			prm = "&" + userParameterName + "=" + "'+this.form.usr_drp.value+' ";
 		String URL = Window.getWindowURL(windowClass, iwc) + prm;
 		return "javascript:" + Window.getCallingScriptString(windowClass, URL, true, iwc) + ";return false;";
+	}
+	
+	private String getButtonOnClickForPage(IWContext iwc,int pageID,String userParameterName){
+		try {
+			URLUtil url = new URLUtil(getBuilderService(iwc).getPageURI(pageID), true);
+			if(userParameterName !=null)
+				url.addParameter(userParameterName,"'+this.form.usr_drp.value");
+			return "javascript:window.location='"+url.toString()+";return false;";
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	private Collection getCustodians(IWContext iwc, User user) {
 		try {
@@ -688,6 +746,9 @@ public class HouseHoldViewer extends AccountingBlock {
 	 */
 	public void setUserLowIncomePageID(Integer userLowIncomePageID) {
 		this.userLowIncomePageID = userLowIncomePageID;
+	}
+	public void setUserLowIncomePageID(int userLowIncomePageID) {
+		this.userLowIncomePageID = new Integer(userLowIncomePageID);
 	}
 	/**
 	 * @return
