@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/17 08:21:26 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/17 14:06:52 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.109 $
+ * @version $Revision: 1.110 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -693,21 +693,148 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 							 doublePaymentPosting, regSpecTypeName, orderId);
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
-					// inte till kommun landsting, stat
-					/*
+					// inte till kommun landsting, stat ?
+					
 					final SchoolClassMember placement = record.getSchoolClassMember ();
 					createVatPaymentRecord
 							(paymentRecord, null, //final PostingDetail postingDetail
 							 school, placement.getSchoolType (),
 							 placement.getSchoolYear (), new CalendarMonth (period),
 							 ConstantStatus.PRELIMINARY, createdBySignature);
-*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
 		return record;
 	}
+
+	public PaymentRecord createVatPaymentRecord
+		(final PaymentRecord paymentRecord, final PostingDetail postingDetail,
+		 final School school, final SchoolType schoolType,
+		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
+		 final String createdBySignature)
+	throws RemoteException, CreateException {
+
+		// get vat regulation
+		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
+		if (null == vatRuleRegulation) return null;
+		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
+
+		// get payment header
+		final SchoolCategory schoolCategory = schoolType.getCategory ();
+		final Date startDate = month.getFirstDateOfMonth ();
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
+				(school, schoolCategory, startDate, status);
+
+		// get own and double postings
+		final int regSpecTypeId
+				= ((Number) regSpecType.getPrimaryKey ()).intValue ();
+		final Provider provider = new Provider (school);
+		final int schoolYearId = null == schoolYear ? -1
+				: ((Number) schoolYear.getPrimaryKey ()).intValue ();
+		String ownPosting = "";
+		String doublePosting = "";
+		try {
+			final String [] postings = getPostingBusiness ().getPostingStrings
+					(schoolCategory, schoolType, regSpecTypeId, provider, startDate,
+					 schoolYearId);
+			ownPosting = postings [0];
+			doublePosting = postings [1];
+		} catch (PostingException e) {
+			// no postings found
+			e.printStackTrace ();
+		}
+
+		// count increase value for amount
+		System.err.println ("### VATAmount = " + vatRuleRegulation.getAmount ());
+		System.err.println ("### TotalAmount = " + paymentRecord.getTotalAmount ());
+		final float newTotalVatAmount = AccountingUtil.roundAmount
+				(vatRuleRegulation.getAmount ().intValue () * paymentRecord.getTotalAmount ());				
+		final String paymentText = vatRuleRegulation.getName ();
+
+		// find or create vat payment record
+		PaymentRecord vatPaymentRecord;
+		try {
+			// update old vat payment record
+			vatPaymentRecord = getPaymentRecordHome ()
+					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth
+					(ownPosting, doublePosting, null, paymentText,
+					 new CalendarMonth (startDate));
+			vatPaymentRecord.setTotalAmount
+					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
+																			 + newTotalVatAmount));
+			vatPaymentRecord.store ();
+		} catch (FinderException e1) {
+			//It didn't exist, so we create it
+			vatPaymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
+			vatPaymentRecord.setPaymentHeader (paymentHeader);
+			vatPaymentRecord.setStatus (status);
+			vatPaymentRecord.setPeriod (startDate);
+			vatPaymentRecord.setPaymentText (paymentText);
+			vatPaymentRecord.setDateCreated (now ());
+			vatPaymentRecord.setCreatedBy (createdBySignature);
+			vatPaymentRecord.setPlacements (0);
+			vatPaymentRecord.setPieceAmount (0);
+			vatPaymentRecord.setTotalAmount (newTotalVatAmount);
+			vatPaymentRecord.setTotalAmountVAT (0);
+			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
+			vatPaymentRecord.setOwnPosting (ownPosting);
+			vatPaymentRecord.setDoublePosting (doublePosting);
+			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
+			vatPaymentRecord.store();
+		}
+		return vatPaymentRecord;
+	}
+
+	private PaymentRecord createPaymentRecord
+		(final School school,
+		 final SchoolCategory schoolCategory,
+		 final Date period,
+		 final String createdBy,
+		 final Date dateCreated,
+		 final String ruleText,
+		 final Integer totalAmount,
+		 final Integer pieceAmount,
+		 final Integer vatType,
+		 final String ownPosting,
+		 final String doublePosting,
+		 final String regSpecTypeName,
+		 final Integer orderId) throws RemoteException, CreateException {
+		final char status = ConstantStatus.PRELIMINARY;
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
+		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
+		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");
+		paymentRecord.setDateCreated (dateCreated);
+		paymentRecord.setPaymentHeader (paymentHeader);
+		paymentRecord.setPaymentText (ruleText);
+		paymentRecord.setStatus (status);
+		paymentRecord.setPeriod (period);
+		paymentRecord.setTotalAmount (null != totalAmount ? totalAmount.intValue ()
+																	: 0);
+		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
+																	: 0);
+		if (null != orderId) paymentRecord.setOrderId (orderId.intValue ());
+		if (null != vatType) {
+			paymentRecord.setVATRuleRegulationId(vatType.intValue ());
+		}
+		try {
+			final Regulation vatRegulation = paymentRecord.getVATRuleRegulation ();
+			final float vat
+					= getVATBusiness ().getVATPercentForRegulation (vatRegulation);
+			paymentRecord.setTotalAmountVAT (vat);
+		} catch (Exception e) {
+			e.printStackTrace ();
+			paymentRecord.setTotalAmountVAT (0);
+		}
+
+		paymentRecord.setOwnPosting (ownPosting);
+		paymentRecord.setDoublePosting (doublePosting);
+		paymentRecord.setRuleSpecType (regSpecTypeName);
+		paymentRecord.setPlacements (1);
+		paymentRecord.store ();
+
+		return paymentRecord;
+	}	
 
 	public void saveInvoiceRecord
 		(final Integer recordId, final User currentUser, final Integer placementId,
@@ -795,56 +922,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}			
 	}
 
-	private PaymentRecord createPaymentRecord
-		(final School school,
-		 final SchoolCategory schoolCategory,
-		 final Date period,
-		 final String createdBy,
-		 final Date dateCreated,
-		 final String ruleText,
-		 final Integer totalAmount,
-		 final Integer pieceAmount,
-		 final Integer vatType,
-		 final String ownPosting,
-		 final String doublePosting,
-		 final String regSpecTypeName,
-		 final Integer orderId) throws RemoteException, CreateException {
-		final char status = ConstantStatus.PRELIMINARY;
-		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
-		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
-		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");
-		paymentRecord.setDateCreated (dateCreated);
-		paymentRecord.setPaymentHeader (paymentHeader);
-		paymentRecord.setPaymentText (ruleText);
-		paymentRecord.setStatus (status);
-		paymentRecord.setPeriod (period);
-		paymentRecord.setTotalAmount (null != totalAmount ? totalAmount.intValue ()
-																	: 0);
-		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
-																	: 0);
-		if (null != orderId) paymentRecord.setOrderId (orderId.intValue ());
-		if (null != vatType) {
-			paymentRecord.setVATRuleRegulationId(vatType.intValue ());
-		}
-		try {
-			final Regulation vatRegulation = paymentRecord.getVATRuleRegulation ();
-			final float vat
-					= getVATBusiness ().getVATPercentForRegulation (vatRegulation);
-			paymentRecord.setTotalAmountVAT (vat);
-		} catch (Exception e) {
-			e.printStackTrace ();
-			paymentRecord.setTotalAmountVAT (0);
-		}
-
-		paymentRecord.setOwnPosting (ownPosting);
-		paymentRecord.setDoublePosting (doublePosting);
-		paymentRecord.setRuleSpecType (regSpecTypeName);
-		paymentRecord.setPlacements (1);
-		paymentRecord.store ();
-
-		return paymentRecord;
-	}	
-
 	private PaymentHeader findOrElseCreatePaymentHeader
 		(final School school, final SchoolCategory schoolCategory,
 		 final Date period, final char status)
@@ -906,81 +983,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				(new SchoolClassMember [0]);
 	}
 	
-	public PaymentRecord createVatPaymentRecord
-		(final PaymentRecord paymentRecord, final PostingDetail postingDetail,
-		 final School school, final SchoolType schoolType,
-		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
-		 final String createdBySignature)
-	throws RemoteException, CreateException {
-
-		// get payment header
-		final SchoolCategory schoolCategory = schoolType.getCategory ();
-		final Date startDate = month.getFirstDateOfMonth ();
-		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
-				(school, schoolCategory, startDate, status);
-
-		// get vat regulation
-		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
-		if (null == vatRuleRegulation) return null;
-		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
-
-		// get own and double postings
-		final int regSpecTypeId
-				= ((Number) regSpecType.getPrimaryKey ()).intValue ();
-		final Provider provider = new Provider (school);
-		final int schoolYearId = null == schoolYear ? -1
-				: ((Number) schoolYear.getPrimaryKey ()).intValue ();
-		String ownPosting = "";
-		String doublePosting = "";
-		try {
-			final String [] postings = getPostingBusiness ().getPostingStrings
-					(schoolCategory, schoolType, regSpecTypeId, provider, startDate,
-					 schoolYearId);
-			ownPosting = postings [0];
-			doublePosting = postings [1];
-		} catch (PostingException e) {
-			// no postings found
-			e.printStackTrace ();
-		}
-
-		// count increase value for amount
-		final float newTotalVatAmount = AccountingUtil.roundAmount
-				(postingDetail.getVATAmount ());				
-		final String paymentText = vatRuleRegulation.getName ();
-
-		// find or create vat payment record
-		PaymentRecord vatPaymentRecord;
-		try {
-			vatPaymentRecord = getPaymentRecordHome ()
-					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth
-					(ownPosting, doublePosting, null, paymentText,
-					 new CalendarMonth (startDate));
-			vatPaymentRecord.setTotalAmount
-					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
-																			 + newTotalVatAmount));
-			vatPaymentRecord.store ();
-		} catch (FinderException e1) {
-			//It didn't exist, so we create it
-			vatPaymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
-			vatPaymentRecord.setPaymentHeader (paymentHeader);
-			vatPaymentRecord.setStatus (status);
-			vatPaymentRecord.setPeriod (startDate);
-			vatPaymentRecord.setPaymentText (paymentText);
-			vatPaymentRecord.setDateCreated (now ());
-			vatPaymentRecord.setCreatedBy (createdBySignature);
-			vatPaymentRecord.setPlacements (0);
-			vatPaymentRecord.setPieceAmount (0);
-			vatPaymentRecord.setTotalAmount (newTotalVatAmount);
-			vatPaymentRecord.setTotalAmountVAT (0);
-			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
-			vatPaymentRecord.setOwnPosting (ownPosting);
-			vatPaymentRecord.setDoublePosting (doublePosting);
-			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
-			vatPaymentRecord.store();
-		}
-		return vatPaymentRecord;
-	}
-
 	public RegulationSpecType [] getAllRegulationSpecTypes ()
 		throws RemoteException {
 		try {
