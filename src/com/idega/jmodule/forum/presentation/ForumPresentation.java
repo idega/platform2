@@ -7,6 +7,7 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.util.text.*;
 import java.sql.*;
+import java.util.Locale;
 
 /**
  * Title:        idegaForums<p>
@@ -620,6 +621,13 @@ public abstract class ForumPresentation extends JModuleObject {
       }
     }
     language = modinfo.getSpokenLanguage();
+    Locale local = modinfo.getCurrentLocale();
+    if(local.toString().equals("is_IS")){
+      language = "IS";
+    }else if(local.toString().equals("en")){
+      language = "EN";
+    }
+
     if(language == null){
       language = "IS";
     }
