@@ -171,8 +171,7 @@ public class WorkReportMultiEditor extends Block {
 		inActiveConverter.maintainParameters(params);
 		EditOkayButtonConverter okCancelButton = new EditOkayButtonConverter();
 		
-		okCancelButton.addCancelButton(true);
-		okCancelButton.setMaintainParametersList(params);
+		okCancelButton.maintainParameters(params);
 		
     // define path short keys and map corresponding converters
     Object[] columns = {
