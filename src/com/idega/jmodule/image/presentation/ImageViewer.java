@@ -157,6 +157,7 @@ public void main(ModuleInfo modinfo)throws Exception{
   outerTable.setAlignment(1,1,"left");
   outerTable.setAlignment(1,2,"center");
   outerTable.setAlignment(1,3,"center");
+  outerTable.setVerticalAlignment(1,2,"top");
   outerTable.setWidth(outerTableWidth);
   outerTable.setHeight(outerTableHeight);
   outerTable.setHeight(1,1,"23");
@@ -182,6 +183,7 @@ public void main(ModuleInfo modinfo)throws Exception{
   if(edit!=null){
     try{
       getEditor(modinfo);
+      outerTable.setColor(1,2,"FFFFFF");
       add(outerTable);
     }
     catch(Throwable e){
