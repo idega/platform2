@@ -1391,12 +1391,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 						if(pdfBuffers !=null && pdfBuffers.size() == 1 && txtBuffers !=null && txtBuffers.size() == 1){
 							String contractText = txtHandler.bufferToString((MemoryFileBuffer)txtBuffers.get(0));
+							
+							//TODO: (roar) remove debug code:
+							System.out.println("CONTRACT TEXT:/n" + contractText);
 							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)pdfBuffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
 							
 							//contractFile.addTo(Contract.class,contractID);
+							
+							
 							contract.addFileToContract(contractFile);
 			
 						application.setContractId(contractID);
@@ -1440,6 +1445,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			return false;
 		}
+		
+		///TODO: (roar) remove debug code
+		System.out.println("assignContractToApplication ok");
 		return true;
 	}
 	
@@ -1753,23 +1761,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
      
 
-//		boolean hasBankId = false;
-//		try{
-//			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
-//		}catch(SQLException ex){
-//			//ignore
-//		}
-//		//todo (roar) remove code
-//		System.out.println("hasBankId:" + hasBankId);
-		     
+	     
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
 		if (application.getCareTime() != -1 && !isChange)
 			peer.setContent(String.valueOf(application.getCareTime()));
-//		else if (hasBankId){
-//			//todo (roar) remove code
-//			System.out.println("Adding care-time tag");
-//			peer.setContent("<care-time/>");
-//		} 
+
 		else
 			peer.setContent(emptyCareTimeValue);
 		map.put(peer.getAlias(), peer);

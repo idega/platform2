@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.14 2003/07/01 14:07:18 gummi Exp $
+ * $Id: ContractBMPBean.java,v 1.15 2003/07/01 16:46:31 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -375,7 +375,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	}
 
 	public void addFileToContract(ICFile file) throws IDOAddRelationshipException {
+		//TODO: (roar) remove debug code
+		System.out.println("addFileToContract...");
 		idoAddTo(file);
+		System.out.println("...success");
 	}
 	
 	public void removeFileFromContract(ICFile file) throws IDORemoveRelationshipException{
