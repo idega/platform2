@@ -45,10 +45,7 @@ public class MessageBox extends CommuneBlock {
   
   private final static String PARAM_TO_MSG_BOX = "msg_to_msg_box";
   private final static String PARAM_TO_EMAIL = "msg_to_email";
-  
-  public static final String SEND_TO_MESSAGE_BOX = "msg_send_box";
-  public static final String SEND_TO_EMAIL = "msg_send_email";
-  
+   
   private IWPropertyList userProperties;
 
   private Table mainTable = null;
@@ -125,6 +122,7 @@ public class MessageBox extends CommuneBlock {
 
     Form f = new Form();
     Table table = new Table(1,3);
+    table.setCellpaddingAndCellspacing(0);
     f.add(table);
     
     ColumnList messageList = new ColumnList(3);
@@ -174,29 +172,28 @@ public class MessageBox extends CommuneBlock {
 	  	CheckBox email = new CheckBox(PARAM_TO_EMAIL);
 	  		email.setChecked(true);
 	  	
-	  	if ( userProperties.getProperty(SEND_TO_MESSAGE_BOX) != null )
-	  		msgBox.setChecked(new Boolean(userProperties.getProperty(SEND_TO_MESSAGE_BOX)).booleanValue());
-	  	if ( userProperties.getProperty(SEND_TO_EMAIL) != null )
-	  		email.setChecked(new Boolean(userProperties.getProperty(SEND_TO_EMAIL)).booleanValue());
+	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX) != null )
+	  		msgBox.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX)).booleanValue());
+	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL) != null )
+	  		email.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL)).booleanValue());
 	  		
 	  	settingsTable.add(msgBox,1,1);
 	  	settingsTable.add(email,1,2);
 	  	settingsTable.add(getText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)),2,1);
 	  	settingsTable.add(getText(getLocalizedString("message.send_to_email", "Send to email", iwc)),2,2);
 	    
-	    Table submitTable = new Table(2,1);
+	    Table submitTable = new Table(3,1);
 	    submitTable.setCellpaddingAndCellspacing(0);
-	    submitTable.setWidth(Table.HUNDRED_PERCENT);
-	    submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+	    submitTable.setWidth(2,1,"6");
 	    table.add(submitTable,1,3);
 	    
 	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc),PARAM_SHOW_DELETE_INFO,"true");
 	    deleteButton.setAsImageButton(true);
-	    submitTable.add(deleteButton,2,1);
+	    submitTable.add(deleteButton,1,1);
 	    
-	    SubmitButton settings = new SubmitButton(this.getLocalizedString("message.settings", "Settings", iwc),PARAM_SAVE_SETTINGS,"true");
+	    SubmitButton settings = new SubmitButton(this.getLocalizedString("message.settings", "Save settings", iwc),PARAM_SAVE_SETTINGS,"true");
 	    settings.setAsImageButton(true);
-			submitTable.add(settings,1,1);	
+			submitTable.add(settings,3,1);	
     }
 
     add(f);
@@ -292,17 +289,20 @@ public class MessageBox extends CommuneBlock {
   }
 
   private void saveSettings(IWContext iwc) {
-  	String toMsgBox = iwc.getParameter(PARAM_TO_MSG_BOX);
-  	if ( toMsgBox == null )
-  		userProperties.setProperty(SEND_TO_MESSAGE_BOX, new Boolean(false));
-  	else
-  		userProperties.setProperty(SEND_TO_MESSAGE_BOX, new Boolean(true));
-  		
-  	String toEmail = iwc.getParameter(PARAM_TO_EMAIL);
-  	if ( toEmail == null )
-  		userProperties.setProperty(SEND_TO_EMAIL, new Boolean(false));
-  	else
-  		userProperties.setProperty(SEND_TO_EMAIL, new Boolean(true));
+  	if ( userProperties != null ) {
+	  	String toMsgBox = iwc.getParameter(PARAM_TO_MSG_BOX);
+	  	if ( toMsgBox == null )
+	  		userProperties.setProperty(MessageBusiness.SEND_TO_MESSAGE_BOX, new Boolean(false));
+	  	else
+	  		userProperties.setProperty(MessageBusiness.SEND_TO_MESSAGE_BOX, new Boolean(true));
+	  		
+	  	String toEmail = iwc.getParameter(PARAM_TO_EMAIL);
+	  	if ( toEmail == null )
+	  		userProperties.setProperty(MessageBusiness.SEND_TO_EMAIL, new Boolean(false));
+	  	else
+	  		userProperties.setProperty(MessageBusiness.SEND_TO_EMAIL, new Boolean(true));
+	  	iwc.getUserProperties().store();
+  	}
   }
   
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
