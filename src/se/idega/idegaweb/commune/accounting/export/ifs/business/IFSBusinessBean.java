@@ -40,7 +40,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -872,12 +871,12 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 							InvoiceRecord iRec = (InvoiceRecord) irIt.next();
 
 							String posting = iRec.getOwnPosting();
-							if (iRec.getRegSpecType().getLocalizationKey().equals(RegSpecConstant.CHECK)) {
-								posting = iRec.getDoublePosting();
+//							if (iRec.getRegSpecType().getLocalizationKey().equals(RegSpecConstant.CHECK)) {
+//								posting = iRec.getDoublePosting();
 								if (posting == null) {
 									throw new IFSMissingCheckTaxaException("ifs_missing_checktaxa","Missing checktaxa");
 								}
-							}
+//							}
 							
 							if (iRec.getAmount() != 0.0f) {
 								//Posttype
