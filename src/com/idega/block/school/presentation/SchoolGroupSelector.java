@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolGroupSelector.java,v 1.1 2004/11/26 09:07:12 aron Exp $
+ * $Id: SchoolGroupSelector.java,v 1.2 2004/11/26 14:37:51 aron Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,10 +34,10 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 09:07:12 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/26 14:37:51 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolGroupSelector extends InterfaceObject {
     
@@ -132,9 +132,9 @@ public class SchoolGroupSelector extends InterfaceObject {
 		SchoolTypeHome typeHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 		SchoolHome schoolHome = (SchoolHome)IDOLookup.getHome(School.class);
 		SchoolClassHome groupHome = (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
-		if ( types!=null && category != null ) {
+		if ( types==null && category != null ) {
 			types = typeHome.findAllByCategory((String)category.getPrimaryKey());
-		}
+		}		
 		Collection schools = null;
 		Collection groups = null;
 
