@@ -98,28 +98,28 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 			int column = 1;
 			table.add(getSmallHeader(localize(SEARCH_PERSONAL_ID, "Personal ID")), column, 1);
 			TextInput pidInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_PERSONAL_ID));
-			pidInput.setLength(10);
+			pidInput.setLength(15);
 			pidInput.keepStatusOnAction(true);
 			table.add(pidInput, column++, 2);
 			
 			++column;
 			table.add(getSmallHeader(localize(SEARCH_LAST_NAME, "Last name")), column, 1);
 			TextInput lastNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_LAST_NAME));
-			lastNameInput.setLength(10);
+			lastNameInput.setLength(5);
 			lastNameInput.keepStatusOnAction(true);
 			table.add(lastNameInput, column++, 2);
 			
 			++column;
 			table.add(getSmallHeader(localize(SEARCH_MIDDLE_NAME, "Middle name")), column, 1);
 			TextInput middleNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_MIDDLE_NAME));
-			middleNameInput.setLength(10);
+			middleNameInput.setLength(15);
 			middleNameInput.keepStatusOnAction(true);
 			table.add(middleNameInput, column++, 2);
 
 			++column;
 			table.add(getSmallHeader(localize(SEARCH_FIRST_NAME, "First name")), column, 1);
 			TextInput firstNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FIRST_NAME));
-			firstNameInput.setLength(10);
+			firstNameInput.setLength(15);
 			firstNameInput.keepStatusOnAction(true);
 			table.add(firstNameInput, column++, 2);
 		} else {
