@@ -170,8 +170,13 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
   }
 
   public int ejbHomeGetNumberOfThreads(ICCategory category) throws EJBException {
-    String sql = "select count(*) from "+getEntityTableName()+" where "+this.getColumnNameTopicID()+" = "+Integer.toString(category.getID())+" and "+this.getColumnNameParentThreadID()+" = -1 and "+this.getColumnNameValid()+" = 'Y'";
-    return super.idoGetNumberOfRecords(sql);
+    try{
+      String sql = "select count(*) from "+getEntityTableName()+" where "+this.getColumnNameTopicID()+" = "+Integer.toString(category.getID())+" and "+this.getColumnNameParentThreadID()+" = -1 and "+this.getColumnNameValid()+" = 'Y'";
+      return super.idoGetNumberOfRecords(sql);
+    }
+    catch(com.idega.data.IDOException idoe){
+      throw new EJBException(idoe);
+    }
   }
 
   public Collection ejbFindNewestThread(ICCategory category) throws FinderException {
