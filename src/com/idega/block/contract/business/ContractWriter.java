@@ -9,9 +9,12 @@ import java.util.StringTokenizer;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
+import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractText;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
+import com.idega.data.IDOLookup;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -133,13 +136,11 @@ public class ContractWriter
 						{
 							Contract eContract =
 								(
-									(com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(
-										Contract.class)).findByPrimaryKeyLegacy(
-									ids[j]);
+									(ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(ids[j]));
 							if (eContract.getStatus().equalsIgnoreCase(com.idega.block.contract.data.ContractBMPBean.statusCreated))
 							{
 								eContract.setStatusPrinted();
-								eContract.update();
+								eContract.store();
 							}
 						}
 						catch (SQLException ex)
@@ -155,15 +156,14 @@ public class ContractWriter
 			if (ids.length == 1 && ids[0] > 0)
 			{
 				Contract C =
-					((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-						ids[0]);
-				ICFile file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+					((ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(ids[0]));
+				ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
 				file.setFileValue(mis);
 				file.setMimeType("application/x-pdf");
 				file.setName(fileName + ".pdf");
 				file.setFileSize(buffer.length());
 				file.insert();
-				file.addTo(C);
+				file.addTo(Contract.class,ids[0]);
 				id = file.getID();
 				C.setText(dbContractText.toString());
 				C.store();
@@ -237,13 +237,11 @@ public class ContractWriter
 						{
 							Contract eContract =
 								(
-									(com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(
-										Contract.class)).findByPrimaryKeyLegacy(
-									ids[j]);
+									(ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(	new Integer(ids[j]));
 							if (eContract.getStatus().equalsIgnoreCase(com.idega.block.contract.data.ContractBMPBean.statusCreated))
 							{
 								eContract.setStatusPrinted();
-								eContract.update();
+								eContract.store();
 							}
 						}
 						catch (SQLException ex)
@@ -257,8 +255,7 @@ public class ContractWriter
 			if (ids.length == 1 && ids[0] > 0)
 			{
 				Contract C =
-					((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-						ids[0]);
+					((ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(ids[0]));
 				C.setText(dbContractText.toString());
 				C.store();
 			}

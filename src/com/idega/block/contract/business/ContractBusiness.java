@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.10 2003/05/28 00:28:46 roar Exp $
+ * $Id: ContractBusiness.java,v 1.11 2003/05/31 00:49:38 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,24 @@
  */
 package com.idega.block.contract.business;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import javax.ejb.FinderException;
+import javax.ejb.CreateException;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
+import com.idega.block.contract.data.ContractCategoryHome;
+import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
+import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.contract.data.ContractText;
-import com.idega.core.data.ICFile;
+import com.idega.block.contract.data.ContractTextHome;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.data.ICObjectInstanceHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
 /**
 
@@ -37,6 +43,9 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
 
  */
+/**
+  * @deprecated
+  */
 public class ContractBusiness
 {
 	public static String[] getTags()
@@ -47,13 +56,9 @@ public class ContractBusiness
 	{
 		try
 		{
-			Contract C =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-					iContractId);
-			C.setStatus(status);
-			C.update();
+			getContractHome().setStatus(iContractId,status);
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -62,13 +67,11 @@ public class ContractBusiness
 	{
 		try
 		{
-			Contract C =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-					iContractId);
+			Contract C = getContractHome().findByPrimaryKey(new Integer(iContractId));
 			C.setStatusEnded();
-			C.update();
+			C.store();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -77,13 +80,11 @@ public class ContractBusiness
 	{
 		try
 		{
-			Contract C =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-					iContractId);
+			Contract C = getContractHome().findByPrimaryKey(new Integer(iContractId));
 			C.setStatusResigned();
-			C.update();
+			C.store();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -94,8 +95,8 @@ public class ContractBusiness
 		{
 			try
 			{
-				((com.idega.block.contract.data.ContractTagHome) com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class))
-					.findByPrimaryKeyLegacy(id)
+				((com.idega.block.contract.data.ContractTagHome) com.idega.data.IDOLookup.getHome(ContractTag.class))
+					.findByPrimaryKey(id)
 					.delete();
 				return true;
 			}
@@ -110,28 +111,20 @@ public class ContractBusiness
 		try
 		{
 			ContractTag tag =
-				((com.idega.block.contract.data.ContractTagHome) com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class)).createLegacy();
-			boolean update = false;
+				((ContractTagHome) IDOLookup.getHome(ContractTag.class)).create();
 			if (iTagId > 0)
 			{
-				tag =
-					(
-						(com.idega.block.contract.data.ContractTagHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ContractTag.class)).findByPrimaryKeyLegacy(
-						iTagId);
-				update = true;
+				tag =((ContractTagHome) IDOLookup.getHome(ContractTag.class)).findByPrimaryKey(new Integer(iTagId));
+
 			}
 			tag.setName(sName);
 			tag.setInfo(sInfo);
 			tag.setInUse(inUse);
 			tag.setInList(inList);
 			tag.setCategoryId(iCategoryId);
-			if (update)
-				tag.update();
-			else
-				tag.insert();
+			tag.store();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -142,10 +135,10 @@ public class ContractBusiness
 		try
 		{
 			cat =
-				((com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class))
-					.findByPrimaryKey(catId);
+				((com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHome(ContractCategory.class))
+					.findByPrimaryKey(new Integer(catId));
 				
-		}catch(FinderException ex){
+		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		
@@ -160,42 +153,28 @@ public class ContractBusiness
 		int id = -1;
 		try
 		{
-			ContractCategory cat =
-				((com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class))
-					.createLegacy();
-			boolean update = false;
+			ContractCategory cat = getContractCategoryHome().create();
+		
 			if (iCategoryId > 0)
 			{
-				cat =
-					(
-						(com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ContractCategory.class)).findByPrimaryKeyLegacy(
-						iCategoryId);
-				update = true;
+				cat =getContractCategoryHome().findByPrimaryKey(new Integer(iCategoryId));
+				
 			}
 			cat.setName(Name);
 			cat.setDescription(info);
-			if (update)
-				cat.update();
-			else
-				cat.insert();
+			
+				cat.store();
 			// Binding category to instanceId
 			if (iObjectInstanceId > 0)
 			{
-				ICObjectInstance objIns =
-					(
-						(com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ICObjectInstance.class)).findByPrimaryKeyLegacy(
-						iObjectInstanceId);
+				ICObjectInstance objIns =	((ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class)).findByPrimaryKey(new Integer(iObjectInstanceId));
 				// Allows only one category per instanceId
-				objIns.removeFrom(
-					((com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class))
-						.createLegacy());
-				cat.addTo(objIns);
+				objIns.removeFrom(ContractCategory.class);
+				objIns.addTo(ContractCategory.class,((Integer)cat.getPrimaryKey()).intValue());
 			}
-			id = cat.getID();
+			id = ((Integer)cat.getPrimaryKey()).intValue();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -205,7 +184,7 @@ public class ContractBusiness
 	{
 		try
 		{
-			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+			Contract C = ((ContractHome) IDOLookup.getHome(Contract.class)).create();
 			C.setStatus(sStatus);
 			C.setValidFrom(ValFrom.getSQLDate());
 			C.setValidTo(ValTo.getSQLDate());
@@ -214,11 +193,11 @@ public class ContractBusiness
 			while (I.hasNext())
 			{
 				Map.Entry me = (Map.Entry) I.next();
-				C.addMetaData(me.getKey().toString(), me.getValue().toString());
+				C.setMetaData(me.getKey().toString(), me.getValue().toString());
 			}
-			C.insert();
+			C.store();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -228,22 +207,22 @@ public class ContractBusiness
 		try
 		{
 			Contract C =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-					iContractId);
+				((ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(
+					new Integer(iContractId));
 			C.setStatus(status);
-			C.update();
+			C.store();
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
 	}
 	public static boolean disconnectBlock(int instanceid)
 	{
-		List L = ContractFinder.listOfEntityForObjectInstanceId(instanceid);
-		if (L != null)
+		Collection categories = ContractFinder.listOfEntityForObjectInstanceId(instanceid);
+		if (categories != null)
 		{
-			Iterator I = L.iterator();
+			Iterator I = categories.iterator();
 			while (I.hasNext())
 			{
 				ContractCategory N = (ContractCategory) I.next();
@@ -254,24 +233,25 @@ public class ContractBusiness
 		else
 			return false;
 	}
-	public static boolean disconnectCategory(ContractCategory newsCat, int iObjectInstanceId)
+	public static boolean disconnectCategory(ContractCategory Cat, int iObjectInstanceId)
 	{
 		try
 		{
-			newsCat.setValid(false);
-			newsCat.update();
+			Cat.setValid(false);
+			Cat.store();
 			if (iObjectInstanceId > 0)
 			{
 				ICObjectInstance obj =
 					(
-						(com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ICObjectInstance.class)).findByPrimaryKeyLegacy(
+						(ICObjectInstanceHome)IDOLookup.getHome(
+							ICObjectInstance.class)).findByPrimaryKey(
 						iObjectInstanceId);
-				newsCat.removeFrom(obj);
+				obj.removeFrom(ContractCategory.class,((Integer)Cat.getPrimaryKey()).intValue());
+				
 			}
 			return true;
 		}
-		catch (SQLException ex)
+		catch (Exception ex)
 		{
 		}
 		return false;
@@ -309,38 +289,28 @@ public class ContractBusiness
 	{
 		deleteCategory(iCategoryId, ContractFinder.getObjectInstanceIdFromCategoryId(iCategoryId));
 	}
-	public static void deleteCategory(int iCategoryId, int iObjectInstanceId)
+	public static void deleteCategory(int iCategoryID, int iObjectInstanceId)
 	{
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 		try
 		{
 			t.begin();
 			//  List O = TextFinder.listOfObjectInstanceTexts();
-			ContractCategory nc =
-				(
-					(com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(
-						ContractCategory.class)).findByPrimaryKeyLegacy(
-					iCategoryId);
-			List L = ContractFinder.listOfContracts(nc.getID());
+			ContractCategory nc =((ContractCategoryHome) IDOLookup.getHome(ContractCategory.class)).findByPrimaryKey(new Integer(iCategoryID));
+			Collection L = ((ContractHome) IDOLookup.getHome(Contract.class)).findAllByCategory(iCategoryID);
 			if (L != null)
 			{
-				Contract con;
-				for (int i = 0; i < L.size(); i++)
-				{
-					con = (Contract) L.get(i);
-					deleteContract(con.getID());
+				Iterator iter = L.iterator();
+				while(iter.hasNext()){
+					((Contract) iter.next()).remove();				
 				}
 			}
 			if (iObjectInstanceId > 0)
 			{
-				ICObjectInstance obj =
-					(
-						(com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ICObjectInstance.class)).findByPrimaryKeyLegacy(
-						iObjectInstanceId);
-				nc.removeFrom(obj);
+				ICObjectInstance obj =((ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class)).findByPrimaryKey(	iObjectInstanceId);
+				obj.removeFrom(ContractCategory.class,iCategoryID);
 			}
-			nc.delete();
+			nc.remove();
 			t.commit();
 		}
 		catch (Exception e)
@@ -356,20 +326,7 @@ public class ContractBusiness
 			e.printStackTrace();
 		}
 	}
-	public static boolean deleteContract(int iContractId)
-	{
-		try
-		{
-			((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class))
-				.findByPrimaryKeyLegacy(iContractId)
-				.delete();
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			return false;
-		}
-	}
+	
 	public static int createCategory(int iObjectInstanceId)
 	{
 		return saveCategory(-1, iObjectInstanceId, "Contracts", "Contracts");
@@ -383,23 +340,27 @@ public class ContractBusiness
 		{
 			try
 			{
-				CT =
-					(
-						(com.idega.block.contract.data.ContractTextHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ContractText.class)).findByPrimaryKeyLegacy(
-						iTextId);
+				CT =((ContractTextHome) IDOLookup.getHome(ContractText.class)).findByPrimaryKey(new Integer(iTextId));
 				bInsert = false;
 			}
-			catch (SQLException ex)
+			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
 		}
 		else
 		{
-			CT = ((com.idega.block.contract.data.ContractTextHome) com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
-			CT.setCategoryId(iCategoryId);
-			bInsert = true;
+			try {
+				CT = ((ContractTextHome) IDOLookup.getHome(ContractText.class)).create();
+				CT.setCategoryId(iCategoryId);
+				bInsert = true;
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
 		}
 		if (CT != null)
 		{
@@ -427,12 +388,12 @@ public class ContractBusiness
 		{
 			try
 			{
-				((com.idega.block.contract.data.ContractTextHome) com.idega.data.IDOLookup.getHomeLegacy(ContractText.class))
-					.findByPrimaryKeyLegacy(iTextId)
+				((ContractTextHome) IDOLookup.getHome(ContractText.class))
+					.findByPrimaryKey(iTextId)
 					.delete();
 				return true;
 			}
-			catch (SQLException ex)
+			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
@@ -445,29 +406,10 @@ public class ContractBusiness
 		{
 			ContractCategory cat =
 				(
-					(com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(
-						ContractCategory.class)).findByPrimaryKeyLegacy(
-					id);
+					(ContractCategoryHome) IDOLookup.getHome(
+						ContractCategory.class)).findByPrimaryKey(new Integer(id));
 			cat.setDescription(description);
-			cat.update();
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			ex.printStackTrace();
-		}
-		return false;
-	}
-	public static boolean deleteContractFile(int iFileId, int iContractId)
-	{
-		try
-		{
-			Contract C =
-				((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
-					iContractId);
-			ICFile file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iFileId);
-			file.removeFrom(C);
-			file.delete();
+			cat.store();
 			return true;
 		}
 		catch (Exception ex)
@@ -477,79 +419,66 @@ public class ContractBusiness
 		return false;
 	}
 	
-	public static int createAndPrintContract(int userID, int iCategoryId){
+	
+	public static Contract createAndPrintContract(int userID, int iCategoryId){
 		IWTimestamp today = IWTimestamp.RightNow();
 		IWTimestamp tomorrow = IWTimestamp.RightNow().getNextDay();
-		int theReturn = createContract(userID,iCategoryId,today,tomorrow,"C",(Map)null);
-		ContractWriter.writePDF(theReturn,iCategoryId,"ContractX.PDF");
+		Contract theReturn = createContract(userID,iCategoryId,today,tomorrow,"C",(Map)null);
+		ContractWriter.writePDF(((Integer)theReturn.getPrimaryKey()).intValue(),iCategoryId,"ContractX.PDF");
 		return theReturn;
 	}
 	
-	public static int createContract(int userID, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
+	public static Contract createContract(int userID, int iCategoryID, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
 	{
-		try
-		{
-			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
-			C.setStatus(sStatus);
-			C.setValidFrom(ValFrom.getSQLDate());
-			if (userID != -1)
-				C.setUserId(userID);
-			if (ValTo != null)
-				C.setValidTo(ValTo.getSQLDate());
-			C.setCategoryId(iCategoryId);
-			Iterator it = null;
-			if (map != null)  {
-				it = map.entrySet().iterator();
-							
-				while (it.hasNext()) {
-					Map.Entry me = (Map.Entry)it.next();
-					C.addMetaData(me.getKey().toString(), me.getValue().toString());
-				}
+			try {
+				return ((ContractHome)IDOLookup.getHome(Contract.class)).create(userID,iCategoryID,ValFrom,ValTo,sStatus,map);
 			}
-			C.insert();
-//			ContractWriter.writeText(C.getID(), iCategoryId);
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
 			
-			return C.getID();
-		}
-		catch (SQLException ex)
-		{
-			ex.printStackTrace();
-		}
-		
-		return -1;
+		return null;
 	}	
 	
-	public static int createContract(int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
+	public static Contract createContract(int iCategoryID, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
 	{
-		return createContract(-1, iCategoryId, ValFrom, ValTo, sStatus, map);
+		try {
+						return ((ContractHome)IDOLookup.getHome(Contract.class)).create(-1,iCategoryID,ValFrom,ValTo,sStatus,map);
+					}
+					catch (IDOLookupException e) {
+						e.printStackTrace();
+					}
+					catch (CreateException e) {
+						e.printStackTrace();
+					}
+			
+				return null;
 	}	
 	
-	public static int createContract(int userId, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, String text)
+	public static Contract createContract(int userID, int iCategoryID, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, String text)
 	{
-		try
-		{
-			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
-			C.setStatus(sStatus);
-			C.setText(text);
-			C.setValidFrom(ValFrom.getSQLDate());
-			C.setUserId(userId);
-
-			if (ValTo != null)
-				C.setValidTo(ValTo.getSQLDate());
-			C.setCategoryId(iCategoryId);
-			Iterator it = null;
-
-			C.insert();
-//			ContractWriter.writeText(C.getID(), iCategoryId);
+		try {
+				return ((ContractHome)IDOLookup.getHome(Contract.class)).create(userID,iCategoryID,ValFrom,ValTo,sStatus,text);
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (CreateException e) {
+				e.printStackTrace();
+			}
 			
-			return C.getID();
+		return null;
+	}
+	
+	public static ContractHome getContractHome() throws IDOLookupException{
+			return (ContractHome) IDOLookup.getHome(Contract.class);
 		}
-		catch (SQLException ex)
-		{
-			ex.printStackTrace();
-		}
-		
-		return -1;
-	}	
+	
+	public static ContractCategoryHome getContractCategoryHome() throws IDOLookupException{
+			return (ContractCategoryHome)IDOLookup.getHome(ContractCategory.class);
+		}	
 }
 	

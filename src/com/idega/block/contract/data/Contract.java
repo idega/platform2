@@ -1,21 +1,28 @@
 package com.idega.block.contract.data;
 
+import com.idega.data.MetaDataCapable;
 
-public interface Contract extends com.idega.data.IDOLegacyEntity
+
+public interface Contract extends com.idega.data.IDOEntity,MetaDataCapable
 {
  public java.lang.Integer getCategoryId();
  public java.sql.Date getCreationDate();
+ public java.sql.Date getSignedDate();
+ public java.lang.Boolean getSignedFlag();
  public java.lang.String getStatus();
  public java.sql.Date getStatusDate();
+ public java.lang.String getText();
  public java.lang.Integer getUserId();
  public java.sql.Date getValidFrom();
  public java.sql.Date getValidTo();
- public java.lang.String getText();
  public java.lang.String getXmlSignedData();
- public java.lang.Boolean getSignedFlag();
- public void setCategoryId(java.lang.Integer p0);
+ public void initializeAttributes();
+ public boolean isSigned();
  public void setCategoryId(int p0);
+ public void setCategoryId(java.lang.Integer p0);
  public void setCreationDate(java.sql.Date p0);
+ public void setSignedDate(java.sql.Date p0);
+ public void setSignedFlag(java.lang.Boolean p0);
  public void setStatus(java.lang.String p0)throws java.lang.IllegalStateException;
  public void setStatusCreated();
  public void setStatusDate(java.sql.Date p0);
@@ -25,14 +32,10 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setStatusResigned();
  public void setStatusSigned();
  public void setStatusTerminated();
+ public void setText(java.lang.String p0);
  public void setUserId(int p0);
  public void setUserId(java.lang.Integer p0);
  public void setValidFrom(java.sql.Date p0);
  public void setValidTo(java.sql.Date p0);
  public void setXmlSignedData(java.lang.String p0);
- public void setText(java.lang.String p0);
- public void setSignedFlag(Boolean p0);
- public boolean isSigned();
- public void setSignedDate(java.sql.Date time);
- public java.sql.Date getSignedDate(); 
 }

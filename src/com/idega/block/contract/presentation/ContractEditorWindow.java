@@ -2,7 +2,9 @@ package com.idega.block.contract.presentation;
 
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -10,12 +12,14 @@ import java.util.Map;
 
 import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractFinder;
+import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.media.servlet.MediaServlet;
 import com.idega.core.data.ICFile;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -138,7 +142,7 @@ private IWResourceBundle iwrb;
 
 			if(iwc.isParameterSet("deletefile")){
 			  int iFile = Integer.parseInt(iwc.getParameter("deletefile"));
-				deleteFile(iFile,iContractId);
+				deleteFile(iwc,iFile,iContractId);
 			}
 			//add("category id "+iCategoryId);
 			//add(" instance id "+iObjInsId);
@@ -163,8 +167,8 @@ private IWResourceBundle iwrb;
     }
   }
 
-	private void deleteFile(int iFileId,int iContractId){
-		ContractBusiness.deleteContractFile(iFileId,iContractId);
+	private void deleteFile(IWContext iwc,int iFileID,int iContractID) throws RemoteException{
+		getContractService(iwc).removeContractFile(iFileID,iContractID);
 	}
 
 	private int getSaveInfo(IWContext iwc){
@@ -246,7 +250,7 @@ private IWResourceBundle iwrb;
 		int count = 0;
 		List contractTags = null;
 		if(category != null){
-		  contractTags = ContractFinder.listOfContractTags(category.getID());
+		  contractTags = ContractFinder.listOfContractTags(((Integer)category.getPrimaryKey()).intValue());
 			if(contractTags !=null)
 			  count = contractTags.size();
 		}
@@ -395,8 +399,8 @@ private IWResourceBundle iwrb;
 		newLink.addParameter(prmObjInstId,iObjInst);
 		newLink.addParameter(prmFormProcess,"C");
 
-		List L = ContractFinder.listOfContractCategories();
-		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
+		Collection categories = ContractFinder.listOfContractCategories();
+		DropdownMenu catDrop = new DropdownMenu(categories,prmCategory);
 		catDrop.addMenuElementFirst("-1",sCategory);
 		catDrop.setToSubmit();
 
@@ -420,7 +424,7 @@ private IWResourceBundle iwrb;
 		addLeft(sDesc,taDesc,true);
 
     if(hasCategory){
-			int id = eCategory.getID();
+			int id = ((Integer)eCategory.getPrimaryKey()).intValue();
 			int iContractCount = ContractFinder.countContractsInCategory(id);
 			if(eCategory.getName()!=null)
 				tiName.setContent(eCategory.getName());
@@ -466,7 +470,7 @@ private IWResourceBundle iwrb;
 		  ValidFrom.setDate(eContract.getValidFrom());
 			ValidTo.setDate(eContract.getValidTo());
 			status.setSelectedElement(eContract.getStatus());
-      addHiddenInput(new HiddenInput(prmContractId,Integer.toString(eContract.getID())));
+      addHiddenInput(new HiddenInput(prmContractId,eContract.getPrimaryKey().toString()));
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(eContract.getCategoryId())));
     }
 		// if new contract
@@ -502,7 +506,7 @@ private IWResourceBundle iwrb;
 		}
 
 		if(hasContract){
-		  List files = ContractFinder.listOfContractFiles(eContract);
+		  Collection files = ContractFinder.listOfContractFiles(eContract);
 			Table fileTable = new Table();
 			int row = 1;
 			if(files !=null){
@@ -511,14 +515,14 @@ private IWResourceBundle iwrb;
 				  ICFile file = (ICFile) I.next();
 					fileTable.add(formatText(file.getName()),1,row);
 					fileTable.add(conLink(file),2,row);
-					fileTable.add(delLink(file,iCategoryId,eContract.getID()),3,row);
+					fileTable.add(delLink(file,iCategoryId,((Integer)eContract.getPrimaryKey()).intValue()),3,row);
 					row++;
 				}
 			}
 			Link generator = new Link(iwrb.getLocalizedImageButton("generate","Generate"));
 			generator.setWindowToOpen(ContractFilerWindow.class);
 			generator.addParameter(ContractFilerWindow.prmCategoryId,iCategoryId);
-			generator.addParameter(ContractFilerWindow.prmContractId,eContract.getID());
+			generator.addParameter(ContractFilerWindow.prmContractId,((Integer)eContract.getPrimaryKey()).intValue());
 			fileTable.add(generator,1,row);
 			addRight("Files",fileTable,true,false);
 
@@ -565,7 +569,7 @@ private IWResourceBundle iwrb;
       addLeft(iwrb.getLocalizedString("contract_to_delete","Contract to delete"));
       addLeft(iwrb.getLocalizedString("confirm_delete","Are you sure?"));
       addSubmitButton(new SubmitButton(iwrb.getImage("delete.gif"),actDelete));
-      addHiddenInput(new HiddenInput(modeDelete,String.valueOf(eContract.getID())));
+      addHiddenInput(new HiddenInput(modeDelete,eContract.getPrimaryKey().toString()));
       addHiddenInput( new HiddenInput (prmFormProcess,"Y"));
     }
     else {
@@ -580,9 +584,9 @@ private IWResourceBundle iwrb;
   }
 
   private DropdownMenu drpCategories(String name,String valueIfEmpty,String displayIfEmpty){
-    List L = ContractFinder.listOfContractCategories();
-    if(L != null){
-      DropdownMenu drp = new DropdownMenu(L,name);
+    Collection categories = ContractFinder.listOfContractCategories();
+    if(categories != null){
+      DropdownMenu drp = new DropdownMenu(categories,name);
       return drp;
     }
     else{
@@ -633,5 +637,9 @@ private IWResourceBundle iwrb;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+  
+  public ContractService getContractService(IWContext iwc) throws  RemoteException{
+  		return (ContractService)IDOLookup.getServiceInstance(iwc,ContractService.class);
   }
 }

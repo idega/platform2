@@ -7,37 +7,44 @@ public class ContractCategoryHomeImpl extends com.idega.data.IDOFactory implemen
   return ContractCategory.class;
  }
 
+
  public ContractCategory create() throws javax.ejb.CreateException{
-  return (ContractCategory) super.idoCreate();
+  return (ContractCategory) super.createIDO();
  }
 
- public ContractCategory createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractCategoryBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public ContractCategory findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (ContractCategory) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByObjectInstance(com.idega.core.data.ICObjectInstance p0)throws javax.ejb.FinderException,com.idega.data.IDORelationshipException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractCategoryBMPBean)entity).ejbFindByObjectInstance(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public ContractCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (ContractCategory) super.idoFindByPrimaryKey(pk);
+  return (ContractCategory) super.findByPrimaryKeyIDO(pk);
  }
 
- public ContractCategory findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
 
- }
+public com.idega.block.contract.data.ContractCategory create(int p0,int p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.CreateException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	com.idega.block.contract.data.ContractCategory theReturn = ((ContractCategoryBMPBean)entity).ejbHomeCreate(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public boolean updateDescription(int p0,java.lang.String p1){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	boolean theReturn = ((ContractCategoryBMPBean)entity).ejbHomeUpdateDescription(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

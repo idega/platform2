@@ -7,8 +7,11 @@ import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractFinder;
 import com.idega.block.contract.business.ContractWriter;
 import com.idega.block.contract.data.ContractCategory;
+import com.idega.block.contract.data.ContractCategoryHome;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractText;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -46,7 +49,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	protected void control(IWContext iwc) {
+	protected void control(IWContext iwc)throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		int iCategoryId = -1;
@@ -262,11 +265,11 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		sText = sText != null ? sText : "";
 		ContractBusiness.saveContractText(id, iCategoryId, sName, sText, iOrd, useTags);
 	}
-	private void updateTitleForm(IWContext iwc, int iCategoryId) {
+	private void updateTitleForm(IWContext iwc, int iCategoryId) throws IDOLookupException{
 		String sCatId = iwc.getParameter("title_id");
 		String sText = iwc.getParameter("tname");
 		if (sCatId != null && sText != null) {
-			ContractBusiness.updateCategoryDescription(Integer.parseInt(sCatId), sText);
+			((ContractCategoryHome) IDOLookup.getHome(ContractCategory.class)).updateDescription(Integer.parseInt(sCatId),sText);
 		}
 	}
 	private String getTitle(int iCategoryId) {
@@ -320,7 +323,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 		TA.setHeight(20);
 		return TA;
 	}
-	public void main(IWContext iwc) {
+	public void main(IWContext iwc)throws Exception {
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
 		isAdmin = iwc.hasEditPermission(this);
 		control(iwc);

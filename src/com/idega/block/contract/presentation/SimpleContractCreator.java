@@ -6,12 +6,13 @@
  */
 package com.idega.block.contract.presentation;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import com.idega.block.contract.business.ContractFinder;
-import com.idega.block.contract.business.ContractBusiness;
+import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.ContractCategory;
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -39,15 +40,21 @@ public class SimpleContractCreator extends Block {
 		add(form);
 		DropdownMenu menu = new DropdownMenu(PARAM_MENU);
 		form.add(menu);
-		List categories = ContractFinder.listOfContractCategories();
+		Collection categories = ContractFinder.listOfContractCategories();
 		for (Iterator iter = categories.iterator(); iter.hasNext();) {
 			ContractCategory element = (ContractCategory) iter.next();
-			menu.addMenuElement(element.getID(),element.getName());
+			menu.addMenuElement(element.getPrimaryKey().toString(),element.getName());
 		}
 		if(iwc.isParameterSet(PARAM_MENU))
 		{
 			int categoryID = Integer.parseInt(iwc.getParameter(PARAM_MENU));
-			createContract(categoryID,iwc.getCurrentUser());
+			try {
+				createContract(iwc,categoryID,iwc.getCurrentUser());
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		form.add(new SubmitButton(PARAM_SUBMIT,iwrb.getLocalizedString("scc.createcon","Create contract")));
 	}
@@ -56,9 +63,9 @@ public class SimpleContractCreator extends Block {
 	 * @param categoryID
 	 * @param user
 	 */
-	private void createContract(int categoryId, User user) {
+	private void createContract(IWContext iwc,int categoryId, User user)throws Exception {
 		int userID = user.getID();
-		ContractBusiness.createAndPrintContract(userID,categoryId);
+		((ContractService)IBOLookup.getServiceInstance(iwc,ContractService.class)).createAndPrintContract(userID,categoryId);
 	}
 
 	public String getBundleIdentifier(){

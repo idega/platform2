@@ -18,6 +18,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.util.text.Edit;
 
 import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -158,7 +160,7 @@ public class ContractViewer extends Block implements Builderaware {
 	}
 	
 	private PresentationObject getContractTable(IWContext iwc, int iCategoryId) {
-		List L = ContractFinder.listOfStatusContracts(sGlobalStatus, iCategoryId);
+		Collection L = ContractFinder.listOfStatusContracts(sGlobalStatus, iCategoryId);
 		List tags = ContractFinder.listOfContractTagsInList(iCategoryId);
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		Contract C = null;
@@ -171,6 +173,7 @@ public class ContractViewer extends Block implements Builderaware {
 		String field;
 		if (L != null) {
 			int len = L.size();
+			Iterator iter = L.iterator();
 			T = new Table(5 + tagCount, len + 2);
 			T.setCellspacing(1);
 			T.setCellpadding(0);
@@ -190,9 +193,10 @@ public class ContractViewer extends Block implements Builderaware {
 			row++;
 			col = 1;
 			Image propImage = core.getImage("/shared/edit.gif");
-			for (int i = 0; i < len; i++) {
-				C = (Contract) L.get(i);
-				T.add(Edit.formatText(i + 1), col++, row);
+			int i = 1;
+			while(iter.hasNext()){
+				C = (Contract) iter.next();
+				T.add(Edit.formatText(i ++), col++, row);
 				if (isAdmin) {
 					T.add(getPropertyLink(propImage, C), col, row);
 				}
@@ -226,7 +230,7 @@ public class ContractViewer extends Block implements Builderaware {
 	private Link getPropertyLink(PresentationObject obj, Contract C) {
 		Link L = new Link(obj);
 		L.setWindowToOpen(ContractEditorWindow.class);
-		L.addParameter(ContractEditorWindow.prmContractId, C.getID());
+		L.addParameter(ContractEditorWindow.prmContractId, C.getPrimaryKey().toString());
 		return L;
 	}
 	private String getStatus(String status) {
