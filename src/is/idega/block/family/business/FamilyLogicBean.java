@@ -661,7 +661,7 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 				Iterator ents = custodians.iterator();
 				while (ents.hasNext()) {
 					User ent = (User) ents.next();
-					removeAsParentFor(ent,user);
+					removeAsCustodianFor(ent,user);
 				}
 			}
 	
@@ -757,7 +757,7 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 				Iterator ents = custodians.iterator();
 				while (ents.hasNext()) {
 					User ent = (User) ents.next();
-					removeAsParentFor(ent,user,performer);
+					removeAsCustodianFor(ent,user,performer);
 				}
 			}
 	
