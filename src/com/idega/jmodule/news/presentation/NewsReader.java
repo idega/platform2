@@ -45,6 +45,7 @@ private int numberOfDisplayedNews = 3;
 private int numberOfExpandedNews = 3;
 private int currentColumnPosition = 1;
 private int currentRowPosition = 1;
+private String outerTableWidth = "100%";
 
 private boolean limitNumberOfNews = false;
 
@@ -670,6 +671,7 @@ private Table createContainerTable(){
    default: temp = new Table(1,1);
   }
 
+  temp.setWidth(outerTableWidth);
   return temp;
 }
 
@@ -765,11 +767,11 @@ public void setFromDate(String SQLdate){
 }
 
 public void setWidth(int width){
- this.outerTable.setWidth(width);
+  setWidth(Integer.toString(width));
 }
 
 public void setWidth(String width){
-this.outerTable.setWidth(width);
+this.outerTableWidth = width;
 }
 
 public void setChangeImage(String image_name){
