@@ -438,7 +438,7 @@ public class Doc extends FolderBlock implements IWBlock {
 	    categoryImageLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID,icObjectInstanceID);
 	    Link categoryLink = new Link(categoryText);
 	    categoryLink.addParameter(DocBusiness.PARAMETER_CATEGORY_ID, categoryID);
-	    categoryImageLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID,icObjectInstanceID);
+	    categoryLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID,icObjectInstanceID);
 
 	    categoryTable.add(categoryImageLink, 1, a + 1);
 	    categoryTable.add(categoryLink, 2, a + 1);
@@ -507,7 +507,7 @@ public class Doc extends FolderBlock implements IWBlock {
 		row++;
 	    }
 	}
-	if (_hasAddPermission && _catID != -1 && _catID != 0) {
+	if (_hasAddPermission && _catID != -1 && _catID != 0 && ic_obj_inst_id == icObjectInstanceID) {
 	    boxTable.add(getAddLink(category.getID()), 1, row);
 	}
     }
