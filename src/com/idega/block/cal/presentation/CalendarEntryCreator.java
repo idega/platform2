@@ -380,7 +380,7 @@ public class CalendarEntryCreator extends Form{
 			Integer groupID = new Integer(entry.getGroupID());
 			try {
 				if(groupID.intValue() != -1) {
-					attendeesField.setChooserValue(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
 					// prior version:  attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}
 			}catch (Exception e){
@@ -421,7 +421,7 @@ public class CalendarEntryCreator extends Form{
 			if(entryAttendees != null && !entryAttendees.equals("")) {
 				Integer groupID = new Integer(entryAttendees);
 				try {
-					attendeesField.setChooserValue(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
+					attendeesField.setChooserValue(getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName(),groupID.toString());
 					// prior version: attendeesField.setSelectedGroup(groupID.toString(),getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue()).getName());
 				}catch (Exception e){
 					e.printStackTrace();
