@@ -7,11 +7,14 @@ import com.idega.core.data.Country;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CountryDropdownMenu;
 import com.idega.presentation.ui.PostalCodeDropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.presentation.PostalCodeEditorWindow;
 import com.idega.user.presentation.UserGroupTab;
 
 /**
@@ -28,7 +31,7 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 	private TextInput cityField;
 	private TextInput provinceField;
 	private PostalCodeDropdownMenu postalCodeField;
-	private TextInput countryField;
+	private CountryDropdownMenu countryField;
 	private TextInput poBoxField;
 
 	private static final String streetFieldName = "UMstreet";
@@ -74,7 +77,7 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		String city = (String) fieldValues.get(cityFieldName);
 		String province = (String) fieldValues.get(provinceFieldName);
 		String postalId = (String) fieldValues.get(postalCodeFieldName);
-		String country = (String) fieldValues.get(countryFieldName);
+		String countryId = (String) fieldValues.get(countryFieldName);
 		String poBox = (String) fieldValues.get(poBoxFieldName);
 
 		if (street != null)
@@ -87,8 +90,12 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		if (postalId != null && !postalId.equals(""))
 			postalCodeField.setSelectedElement(Integer.parseInt(postalId));
 
-		if (country != null)
-			countryField.setContent(country);
+		if(countryId!=null && !countryId.equals("") ){
+			countryField.setSelectedElement(countryId);	
+		}
+			
+			
+			
 		if (poBox != null)
 			poBoxField.setContent(poBox);
 	}
@@ -109,9 +116,9 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 			postalCodeField.setCountry("Iceland"); //hack
 		}
 
-		countryField = new TextInput(countryFieldName);
-		countryField.setLength(20);
+		countryField = new CountryDropdownMenu(countryFieldName);
 		countryField.setDisabled(true);
+		countryField.setSelectedCountry("Iceland"); //TODO remove hack
 
 		poBoxField = new TextInput(poBoxFieldName);
 		poBoxField.setLength(10);
@@ -142,6 +149,9 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 	}
 
 	public void lineUpFields() {
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = this.getResourceBundle(iwc);
+		
 		resize(1, 1);
 
 		Table addressTable = new Table(2, 4);
@@ -178,6 +188,11 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 
 		addressTable2.add(postalCodeText, 1, 1);
 		addressTable2.add(postalCodeField, 2, 1);
+		addressTable2.add(Text.getNonBrakingSpace(2), 2, 1);
+		Link editPostalCodeLink = new Link(iwrb.getLocalizedImageButton("GroupOfficeAddressTab.postalcodewindow.add","Add"));
+		editPostalCodeLink.setWindowToOpen(PostalCodeEditorWindow.class);
+		addressTable2.add(editPostalCodeLink, 2, 1);
+				
 		addressTable2.add(poBoxText, 3, 1);
 		addressTable2.add(poBoxField, 4, 1);
 
