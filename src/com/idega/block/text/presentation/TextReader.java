@@ -42,9 +42,9 @@ private int textSize = 2;
 private int tableTextSize = 1;
 private int headlineSize = 3;
 private String tableWidth = "";
-private String textBgColor = "#FFFFFF";
+private String textBgColor = null;
 private String textColor = "#000000";
-private String headlineBgColor = "#FFFFFF";
+private String headlineBgColor = null;
 private String headlineColor = "#000000";
 private String tableAlignment = "top";
 private String textWidth = "100%";
@@ -146,8 +146,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setBorder(0);
     T.mergeCells(1,1,2,1);
     T.mergeCells(1,2,2,2);
-    T.setRowColor(1,headlineBgColor);
-    T.setRowColor(2,textBgColor);
+
+    if( headlineBgColor != null ) T.setRowColor(1,headlineBgColor);
+    if( textBgColor != null ) T.setRowColor(2,textBgColor);
+
     T.setWidth("100%");
     String sHeadline = locText.getHeadline()!= null ? locText.getHeadline():"";
     Text headline = new Text(sHeadline);
