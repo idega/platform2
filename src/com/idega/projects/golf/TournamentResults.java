@@ -208,7 +208,7 @@ private String gender;
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
 
-        for ( int b = 0; b < tournamentRounds.length; b++ ) {
+        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
           TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
 
           if ( a == 0 ) {
@@ -227,7 +227,7 @@ private String gender;
                   scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
 
           myTable.add(scorecardLink,b+4,a+2);
-        }
+        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 
@@ -256,15 +256,15 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",tournamentRounds.length+4,a+2);
-        myTable.add(strokesScores[a].getStrokesWithHandicap()+"",tournamentRounds.length+5,a+2);
+        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",4,a+2);
+        myTable.add(strokesScores[a].getStrokesWithHandicap()+"",5,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(bruttoText,tournamentRounds.length+4,1);
-      myTable.add(nettoText,tournamentRounds.length+5,1);
+      myTable.add(bruttoText,4,1);
+      myTable.add(nettoText,5,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
@@ -290,7 +290,7 @@ private String gender;
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
 
-        for ( int b = 0; b < tournamentRounds.length; b++ ) {
+        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
           TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
 
           if ( a == 0 ) {
@@ -309,7 +309,7 @@ private String gender;
                   scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
 
           myTable.add(scorecardLink,b+4,a+2);
-        }
+        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 
@@ -338,15 +338,15 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",tournamentRounds.length+4,a+2);
-        myTable.add(out_differ,tournamentRounds.length+5,a+2);
+        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",4,a+2);
+        myTable.add(out_differ,5,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(strokesText,tournamentRounds.length+4,1);
-      myTable.add(differenceText,tournamentRounds.length+5,1);
+      myTable.add(strokesText,4,1);
+      myTable.add(differenceText,5,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
@@ -373,7 +373,7 @@ private String gender;
 
       for ( int a = 0; a < numberOfGolfers; a++ ) {
 
-        for ( int b = 0; b < tournamentRounds.length; b++ ) {
+        /*for ( int b = 0; b < tournamentRounds.length; b++ ) {
           TournamentScorecard memberScorecard = new TournamentScorecard().getScorecard(tournamentRounds[b].getID(),strokesScores[a].getMemberID());
 
           if ( a == 0 ) {
@@ -392,7 +392,7 @@ private String gender;
                   scorecardLink.addParameter("scorecard_id",memberScorecard.getScorecardID());
 
           myTable.add(scorecardLink,b+4,a+2);
-        }
+        }*/
 
         Text memberName = new Text(strokesScores[a].getName());
 
@@ -421,13 +421,13 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getTotalPoints()+"",tournamentRounds.length+4,a+2);
+        myTable.add(strokesScores[a].getTotalPoints()+"",4,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(pointsText,tournamentRounds.length+4,1);
+      myTable.add(pointsText,4,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");

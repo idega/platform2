@@ -29,6 +29,8 @@ public class ResultsViewer extends JModuleObject {
 
 private int tournament_id = 0;
 private int numberOfGolfers = 10;
+private boolean showHeader = true;
+
 
   public ResultsViewer(int tournament_id) {
     this.tournament_id=tournament_id;
@@ -50,7 +52,9 @@ private int numberOfGolfers = 10;
     tournamentName.setBold();
     tournamentName.setFontSize(4);
 
-    myTable.add(tournamentName,1,1);
+    if ( showHeader ) {
+      myTable.add(tournamentName,1,1);
+    }
 
    for ( int a = 0; a < gender.length; a++ ) {
 
@@ -64,12 +68,17 @@ private int numberOfGolfers = 10;
       else if ( gender[a].equalsIgnoreCase("f") ) {
         genderText.setText("Konur:");
       }
+
+      if ( gender.length == 1 ) {
+        genderText.setText("Opin flokkur");
+      }
+
       genderText.setBold();
       genderText.setFontSize(3);
 
     TournamentResults results = new TournamentResults(tournament_id,gender[a]);
       results.setShowHeader(false);
-      results.setNumberOfGolfers(3);
+      results.setNumberOfGolfers(numberOfGolfers);
 
     genderTable.add(genderText,1,1);
     genderTable.add(results,1,2);
@@ -84,6 +93,14 @@ private int numberOfGolfers = 10;
 
   public void setNumberOfGolfers(int numberOfGolfers){
     this.numberOfGolfers=numberOfGolfers;
+  }
+
+  public void setShowHeader(boolean showHeader){
+    this.showHeader=showHeader;
+  }
+
+  public void showAll(){
+    this.numberOfGolfers=0;
   }
 
   public String[] getGenderInTournament() throws Exception {
