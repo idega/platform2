@@ -479,10 +479,9 @@ public class QueryResultViewer extends Block {
 
 	private void setAccessCondition(Map identifierValueMap, IWContext iwc) throws RemoteException {
 		List groupIds = new ArrayList();
-		int userId = iwc.getCurrentUserId();
+		User user = iwc.getCurrentUser();
 		UserBusiness userBusiness = getUserBusiness();
 		GroupBusiness groupBusiness = getGroupBusiness();
-		User user = userBusiness.getUser(userId);
 		Collection topGroupNodes = userBusiness.getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwc);
 		Iterator iterator = topGroupNodes.iterator();
 		while ( iterator.hasNext())	{
