@@ -232,25 +232,39 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	}
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
+		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
+		mainUnion = ("".equals(mainUnion))?null:mainUnion;
+		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
+		subUnions = ("".equals(subUnions))?null:subUnions;
 		
-		Collection coll = userBusiness.getUserGroups(user, new String[]{GolfConstants.GROUP_TYPE_CLUB}, true);
-		if (coll != null) {
-			Group group;
-			Union union;
-			Iterator iter = coll.iterator();
-			
-			while (iter.hasNext()) {
-				group = (Group) iter.next();
-				union = getUnionFromGroup(group);
-
-				if (union != null){
+		//todo optimize this. it now always has to change every unionmemberinfo for each abbreviation!
+		if(subUnions!=null && mainUnion!=null){
+			StringTokenizer tokens = new StringTokenizer(subUnions,",");
+			while (tokens.hasMoreTokens()) {
+				String subAbbr = tokens.nextToken();
+				Union sub = getUnionFromAbbreviation(subAbbr);
+				if(sub!=null){
 					try {
-						unionCorrect.setMainUnion(member, union.getID());
+						unionCorrect.setMainUnion(member,sub.getID());
 					}
-					catch (SQLException e1) {
-						System.out.println("UserSynchronizationBusinessBean : failed to set main union : "+member.getSocialSecurityNumber()+" ("+member.getID()+")");
+					catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
+			}
+			
+		}
+
+		//must be done last!
+		Union main = getUnionFromAbbreviation(mainUnion);
+		if(main!=null){
+			try {
+				unionCorrect.setMainUnion(member, main.getID());
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -453,42 +467,6 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				synchronizeAddresses(user, member);
 				synchronizePhones(user, member);
 				synchronizeUnion(user, member);
-				
-				String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-				mainUnion = ("".equals(mainUnion))?null:mainUnion;
-				String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
-				subUnions = ("".equals(subUnions))?null:subUnions;
-				
-				//todo optimize this. it now always has to change every unionmemberinfo for each abbreviation!
-				if(subUnions!=null && mainUnion!=null){
-					StringTokenizer tokens = new StringTokenizer(subUnions,",");
-					while (tokens.hasMoreTokens()) {
-						String subAbbr = tokens.nextToken();
-						Union sub = getUnionFromAbbreviation(subAbbr);
-						if(sub!=null){
-							try {
-								unionCorrect.setMainUnion(member,sub.getID());
-							}
-							catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-					
-				}
-		
-				//must be done last!
-				Union main = getUnionFromAbbreviation(mainUnion);
-				if(main!=null){
-					try {
-						unionCorrect.setMainUnion(member, main.getID());
-					}
-					catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 //			}
 //			catch (SQLException e1) {
 //				System.out.println("failed ("+e1.getMessage()+")");
