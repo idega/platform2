@@ -1224,5 +1224,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public boolean getUseVacancies();
 	
 	public boolean getUseEmployment();
+	public boolean getUseParental();
+	public boolean getUsePreschoolLine();
 
 }
