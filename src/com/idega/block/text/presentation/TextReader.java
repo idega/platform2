@@ -256,6 +256,9 @@ public class TextReader extends Block implements Builderaware {
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		T.setBorder(0);
+		if(bgColor != null) {
+		  T.setColor(bgColor);
+		}
 		int column = 1;
 
 		if (iTextId > 0) {
