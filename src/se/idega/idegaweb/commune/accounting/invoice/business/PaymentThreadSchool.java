@@ -63,11 +63,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/17 10:38:59 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/17 10:39:26 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -356,7 +356,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					java.io.StringWriter sw = new java.io.StringWriter();
 					e.printStackTrace(new java.io.PrintWriter(sw, true));
 					errorRelated.append(sw + "</br>");
-//					if (errorRelated.length() > 900)
+//					if (errorRelated.toString().length() > 900)
 //						errorRelated = new StringBuffer(errorRelated.substring(1, 900));
 					createNewErrorMessage(errorRelated, "invoice.createPaymentsForResourceError");
 				}
@@ -481,6 +481,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
+				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName(),1);
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
 			catch (BruttoIncomeException e) {
