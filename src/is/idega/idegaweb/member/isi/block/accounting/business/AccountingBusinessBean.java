@@ -692,6 +692,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				entry.setInfo(tariff.getText());
 			entry.setStatusCreated();
 			entry.setTypeManual();
+			entry.setEntryOpen(true);
 			entry.setInsertedByUser(currentUser);
 			entry.store();
 			
@@ -704,7 +705,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return false;
 	}
 	
-	public Collection findAllOpenAssessmentEntriesByUserGroupAndDivisione(Group club, Group div, User user) {
+	public Collection findAllOpenAssessmentEntriesByUserGroupAndDivision(Group club, Group div, User user) {
 	    try {
             return getFinanceEntryHome().findAllOpenAssessmentByUser(club, div, user);
         } catch (FinderException e) {

@@ -120,6 +120,7 @@ public class AssessmentRoundThread extends Thread {
 							entry.setTariffTypeID(tariff.getTariffTypeId());
 							entry.setStatusCreated();
 							entry.setTypeAssessment();
+							entry.setEntryOpen(true);
 							entry.setInsertedByUser(_round.getExecutedBy());
 							entry.store();
 						}

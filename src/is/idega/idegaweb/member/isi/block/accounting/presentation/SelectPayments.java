@@ -90,8 +90,11 @@ public class SelectPayments extends CashierSubWindowTemplate {
 
 		Collection entries = null;
 		try {
-			if (getClub() != null) {
-				entries = getAccountingBusiness(iwc).findAllOpenAssessmentEntriesByUserGroupAndDivisione(getClub(), getDivision(), getUser());
+		    System.out.println("club = " + getClub());
+		    System.out.println("user = " + getUser());
+		    
+			if (getClub() != null && getUser() != null) {
+				entries = getAccountingBusiness(iwc).findAllOpenAssessmentEntriesByUserGroupAndDivision(getClub(), getDivision(), getUser());
 			}
 		}
 		catch (RemoteException e) {
@@ -136,10 +139,12 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		}
 		
 		f.add(inputTable);
+		f.add(paymentTable);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
+//		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		
 		add(f);
 	}

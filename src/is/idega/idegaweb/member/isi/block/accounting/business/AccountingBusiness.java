@@ -12,7 +12,7 @@ public interface AccountingBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllAssessmentRoundByClubAndDivision(com.idega.user.data.Group p0,com.idega.user.data.Group p1) throws java.rmi.RemoteException;
  public java.util.Collection findAllCreditCardContractByClub(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllCreditCardType() throws java.rmi.RemoteException;
- public java.util.Collection findAllOpenAssessmentEntriesByUserGroupAndDivisione(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2) throws java.rmi.RemoteException;
+ public java.util.Collection findAllOpenAssessmentEntriesByUserGroupAndDivision(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2) throws java.rmi.RemoteException;
  public java.util.Collection findAllTariffByClub(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllTariffByClubAndDivision(com.idega.user.data.Group p0,com.idega.user.data.Group p1) throws java.rmi.RemoteException;
  public java.util.Collection findAllTariffTypeByClub(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
