@@ -799,11 +799,8 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
   public static boolean isOnlineRegistration(Tournament tournament, idegaTimestamp dateToCheck) {
       boolean returner = false;
       if (tournament.getIfRegistrationOnline()) {
-        System.err.println(tournament.getName() + " - er online registration");
           if (dateToCheck.isLaterThan(new idegaTimestamp(tournament.getFirstRegistrationDate()))) {
-          System.err.println(tournament.getName() + " - "+dateToCheck.toSQLString()+ " > "+new idegaTimestamp(tournament.getFirstRegistrationDate()).toSQLString());
               if (new idegaTimestamp(tournament.getLastRegistrationDate()).isLaterThan(dateToCheck) ) {
-            System.err.println(tournament.getName() + " - "+new idegaTimestamp(tournament.getLastRegistrationDate()).toSQLString() +" > "+dateToCheck.toSQLString());
                   returner = true;
               }
           }
