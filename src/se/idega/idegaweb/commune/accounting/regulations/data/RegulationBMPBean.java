@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.3 2003/09/05 16:07:56 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.4 2003/09/06 22:44:56 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolType;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.3 2003/09/05 16:07:56 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.4 2003/09/06 22:44:56 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -34,13 +34,14 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	private static final String COLUMN_PERIOD_FROM = "period_from";
 	private static final String COLUMN_PERIOD_TO = "period_to";
 	private static final String COLUMN_CHANGED_DATE = "changed_date";
+	private static final String COLUMN_CHANGED_SIGN = "changed_sign";
 	private static final String COLUMN_NAME = "name";
 	private static final String COLUMN_AMOUNT = "amount";
 	private static final String COLUMN_OPERATION_ID = "operation_id";
 	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "flow_type_id";
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	private static final String COLUMN_CONDITION_TYPE_ID = "condition_type";
-	private static final String COLUMN_VAT_REGULATION_ID = "vat_regulation_id";
+	private static final String COLUMN_VAT_RULE_ID = "vat_rule_id";
 	private static final String COLUMN_SPECIAL_CALCULATION_ID = "special_calc_id";
 	private static final String COLUMN_CONDITION_ORDER = "condition_order";
 	private static final String COLUMN_VAT_ELIGIBLE = "vat_eligible";
@@ -62,12 +63,13 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, java.sql.Timestamp.class);
+		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings signatur", true, true, String.class);
 		addAttribute(COLUMN_NAME, "Name", true, true, java.lang.String.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_CONDITION_ORDER, "Condition order", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_VAT_ELIGIBLE, "VAT Eligible", true, true, java.lang.Integer.class);
 		
-		addAttribute(COLUMN_OPERATION_ID, "Main activity ID", true, true, 
+		addAttribute(COLUMN_OPERATION_ID, "Operation ID", true, true, 
 						Integer.class, "many-to-one", SchoolType.class);
 						
 		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Flow type relation ID", true, true,
@@ -82,8 +84,8 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_SPECIAL_CALCULATION_ID, "Special calculation relation", true, true,
 						Integer.class, "many-to-one", SpecialCalculationType.class);
 		 
-		addAttribute(COLUMN_VAT_REGULATION_ID, "VAT regulation relation", true, true,
-						Integer.class, "many-to-one", VATRegulation.class);
+		addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true,
+						Integer.class, "many-to-one", VATRule.class);
 		
 		setAsPrimaryKey(getIDColumnName(), true);
 		setNullable(COLUMN_OPERATION_ID, true);
@@ -91,13 +93,14 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		setNullable(COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable(COLUMN_CONDITION_TYPE_ID, true);
 		setNullable(COLUMN_SPECIAL_CALCULATION_ID, true);
-		setNullable(COLUMN_VAT_REGULATION_ID, true);
+		setNullable(COLUMN_VAT_RULE_ID, true);
 		
 	}
 
 	public Date getPeriodFrom() { return getDateColumnValue(COLUMN_PERIOD_FROM); }
 	public Date getPeriodTo() { return getDateColumnValue(COLUMN_PERIOD_TO); }
 	public Timestamp getChangedDate() { return (Timestamp) getColumnValue(COLUMN_CHANGED_DATE); }
+	public String getChangedSign() { return (String) getColumnValue(COLUMN_CHANGED_SIGN); }
 	public String getName() { return getStringColumnValue(COLUMN_NAME); }
 	public String getLocalizationKey() { return getStringColumnValue(COLUMN_NAME); }
 	public Integer getAmount() { return getIntegerColumnValue(COLUMN_AMOUNT); }
@@ -119,13 +122,14 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public SpecialCalculationType getSpecialCalculation() { 
 		return (SpecialCalculationType) getColumnValue(COLUMN_SPECIAL_CALCULATION_ID); 
 	}
-	public VATRegulation getVATRegulation() { 
-		return (VATRegulation) getColumnValue(COLUMN_VAT_REGULATION_ID); 
+	public VATRule getVATRegulation() { 
+		return (VATRule) getColumnValue(COLUMN_VAT_RULE_ID); 
 	}
 		
 	public void setPeriodFrom(Date from) {setColumn(COLUMN_PERIOD_FROM, from);}
 	public void setPeriodTo(Date to) {setColumn(COLUMN_PERIOD_TO, to);}
 	public void setChangedDate(Timestamp date){setColumn(COLUMN_CHANGED_DATE, date);}
+	public void setChangedSign(String sign){setColumn(COLUMN_CHANGED_SIGN, sign);}
 	public void setName(String name) { setColumn(COLUMN_NAME, name); }	
 	public void setLocalizationKey(String name) { setColumn(COLUMN_NAME, name); }	
 	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
@@ -136,7 +140,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public void setRegSpecType(int value) { setColumn(COLUMN_REG_SPEC_TYPE_ID, value); }	
 	public void setConditionType(int value) { setColumn(COLUMN_CONDITION_TYPE_ID, value); }	
 	public void setSpecialCalculation(int value) { setColumn(COLUMN_SPECIAL_CALCULATION_ID, value); }	
-	public void setVATRegulation(int value) { setColumn(COLUMN_VAT_REGULATION_ID, value); }	
+	public void setVATRegulation(int value) { setColumn(COLUMN_VAT_RULE_ID, value); }	
 
 	public Collection ejbFindAllRegulations() throws FinderException {
 		IDOQuery sql = idoQuery();

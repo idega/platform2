@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
+ * $Id: PostingBusinessBean.java,v 1.18 2003/09/06 22:43:10 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -193,7 +193,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 	}	
 
-
+	/**
+	 * Save posting parameter
+	 *  
+	 * @param sppID PostingParameter ID
+	 * @param periodFrom from date
+	 * @param periodTo to date
+	 * @param changedSign changed by user xxx
+	 * @param activityID id for the activity in this parameter 
+	 * @param regSpecTypeID id for the regulation specification in this parameter 
+	 * @param companyTypeID id for the Company type that this parameter has
+	 * @param communeBelonging id to what commune this parameter belongs to
+	 * @param ownPostingString  the own posting string
+	 * @param doublePostingString  the double accounting posting string
+	 * @see se.idega.idegaweb.commune.accounting.posting.-data.PostingParameter#
+	 * @author kelly
+     */
 	public void savePostingParameter(String sppID,
 				Date periodeFrom, 
 				Date periodeTo,
@@ -281,7 +296,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
 			}
-		}
+	}
 
 	/*
 	 * Compares a Posting Parameter with stored parameters

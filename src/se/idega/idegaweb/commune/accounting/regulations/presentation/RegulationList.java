@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.1 2003/09/06 08:46:02 kjell Exp $
+ * $Id: RegulationList.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.1 2003/09/06 08:46:02 kjell Exp $
+ * $Id: RegulationList.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -56,7 +56,7 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_AMOUNT = PP + "amount";
 	private final static String KEY_CONDITION_TYPE = PP + "condition_type";
 	private final static String KEY_CONDITION_ORDER = PP + "condition_order";
-	private final static String KEY_REG_SPEC_TYPE = PP + "reg_spec_type";
+	private final static String KEY_REG_SPEC_TYPE = PP + "reg_specification_type";
 	private final static String KEY_COPY = PP + "copy";
 	private final static String KEY_EDIT = PP + "edit";
 	private final static String KEY_CLICK_REMOVE = PP + "click_to_remove";
@@ -202,10 +202,10 @@ public class RegulationList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_AMOUNT, "Styck-belopp/mån", 3);
 		list.setLocalizedHeader(KEY_CONDITION_TYPE, "Villkorstyp", 4);
 		list.setLocalizedHeader(KEY_CONDITION_ORDER, "Villkorsordning", 5);
-		list.setLocalizedHeader(KEY_REG_SPEC_TYPE, "Egen kontering", 6);
-		list.setLocalizedHeader(KEY_EDIT, "", 7);
-		list.setLocalizedHeader(KEY_COPY, "", 8);
-		list.setLocalizedHeader(KEY_REMOVE, "", 9);
+		list.setLocalizedHeader(KEY_REG_SPEC_TYPE, "Regel-spec. typ", 6);
+		list.setHeader("", 7);
+		list.setHeader("", 8);
+		list.setHeader("", 9);
 		
 		try {
 			rBiz = getRegulationBusiness(iwc);
@@ -218,21 +218,32 @@ public class RegulationList extends AccountingBlock {
 										 PARAM_EDIT_ID, r.getPrimaryKey().toString());
 					
 					link.setPage(_editPage);
-					
 					list.add(link);
 
-					list.add(r.getName(), r.getLocalizationKey());
+					list.add(r.getName() != null ? r.getName() : "" , r.getLocalizationKey());
 
-					list.add(""+(r.getAmount().intValue()/100));
+					if(r.getAmount() != null) {
+						list.add(""+(r.getAmount().intValue()));
+					} else {
+						list.add(getSmallText(""));
+					}
 
-					list.add(r.getConditionType().getLocalizationKey(), 
+					if (r.getConditionType() != null) { 
+						list.add(r.getConditionType().getLocalizationKey(), 
 							r.getConditionType().getLocalizationKey());
+					} else {
+						list.add("");
+					}
 
-					list.add(""+r.getConditionOrder().intValue());
+					list.add(r.getConditionOrder() != null ? 
+							""+r.getConditionOrder().intValue(): "");
 
-					list.add(r.getRegSpecType().getLocalizationKey(), 
+					if (r.getRegSpecType() != null) { 
+						list.add(r.getRegSpecType().getLocalizationKey(), 
 							r.getRegSpecType().getLocalizationKey());
-
+					} else {
+						list.add("");
+					}
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, r.getPrimaryKey().toString());
 					edit.setPage(_editPage);
@@ -272,7 +283,7 @@ public class RegulationList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW_TYPE, "Ström"), 1, 2);
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 3);
 		
-		table.add(mainActivitySelector(iwc, PARAM_SELECTOR_OPERATION, 1), 2, 1);
+		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, 1), 2, 1);
 		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, 1), 2, 2);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 3);
 
@@ -315,7 +326,7 @@ public class RegulationList extends AccountingBlock {
 
 
 	/*
-	 * Generates a DropDownSelector for Main activity (Huvudverksamhet) 
+	 * Generates a DropDownSelector for Main operation (Huvudverksamhet) 
 	 * from the school framework 
 	 * @see com.idega.block.school.data.SchoolCategory#
 	 * @param iwc Idega Web Context 
@@ -323,7 +334,7 @@ public class RegulationList extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
-	private DropdownMenu mainActivitySelector(IWContext iwc, String name, int refIndex) {
+	private DropdownMenu mainOperationSelector(IWContext iwc, String name, int refIndex) {
 		
 		DropdownMenu menu = null;
 		try {
@@ -362,6 +373,7 @@ public class RegulationList extends AccountingBlock {
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 	}
+
 	private RegulationsBusiness getRegulationBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}

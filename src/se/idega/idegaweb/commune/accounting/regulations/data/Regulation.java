@@ -5,6 +5,7 @@ public interface Regulation extends com.idega.data.IDOEntity
 {
  public java.lang.Integer getAmount();
  public java.sql.Timestamp getChangedDate();
+ public java.lang.String getChangedSign();
  public java.lang.Integer getConditionOrder();
  public se.idega.idegaweb.commune.accounting.regulations.data.ConditionType getConditionType();
  public java.lang.String getLocalizationKey();
@@ -16,10 +17,11 @@ public interface Regulation extends com.idega.data.IDOEntity
  public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType getRegSpecType();
  public se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType getSpecialCalculation();
  public java.lang.Integer getVATEligible();
- public se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation getVATRegulation();
+ public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVATRegulation();
  public void initializeAttributes();
  public void setAmount(int p0);
  public void setChangedDate(java.sql.Timestamp p0);
+ public void setChangedSign(java.lang.String p0);
  public void setConditionOrder(int p0);
  public void setConditionType(int p0);
  public void setLocalizationKey(java.lang.String p0);

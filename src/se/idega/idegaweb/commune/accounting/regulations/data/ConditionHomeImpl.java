@@ -27,6 +27,20 @@ public java.util.Collection findAllConditionsByRegulation(se.idega.idegaweb.comm
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public Condition findAllConditionsByRegulationAndIndex(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ConditionBMPBean)entity).ejbFindAllConditionsByRegulationAndIndex(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public java.util.Collection findAllConditionsByRegulationID(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ConditionBMPBean)entity).ejbFindAllConditionsByRegulationID(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public Condition findCondition(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ConditionBMPBean)entity).ejbFindCondition(p0);

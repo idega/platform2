@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.16 2003/09/06 08:44:39 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.17 2003/09/06 22:43:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,7 +18,8 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.ejb.CreateException;
 
-
+import com.idega.util.IWTimestamp;
+import com.idega.data.IDOLookup;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolTypeHome;
@@ -61,9 +62,228 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE = "Kunde inte radera regelspecifikationstypen";
 	public final static String KEY_CANNOT_SAVE_REG_SPEC_TYPE  = KP + "cannot_save_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE = "Kunde inte spara regelspecifikationstypen";
+	public final static String KEY_ERROR_PARAM_DATE_ORDER = KP + "from_date_lare_than_to_date";
+	public final static String KEY_ERROR_REGULATION_CREATE = KP + "cannot_create";
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
-	 
+
+	/**
+	 * Save regulation. Saves the regultion. If non existing, creates it.
+	 *  
+	 * @param regID the regulation id
+	 * @param periodFrom from date
+	 * @param periodTo to date
+	 * @param name name of this regulation
+	 * @param amount
+	 * @param conditionOrder
+	 * @param operation
+	 * @param paymentFlowType in/out 1/2
+	 * @param vatEligible TAX Eligible Yes/No 1/2
+	 * @param regSpecType
+	 * @param conditionType
+	 * @param specialCalculation
+	 * @param vatRule
+	 * @param changedBy  
+	 * @return int of the PK ID for the created/saved regulation
+	 * 
+	 * @author kelly
+	 */
+	public int saveRegulation(
+				String regID,
+				Date periodeFrom, 
+				Date periodeTo,
+				String name,
+				String amount,
+				String conditionOrder,
+				String operation,
+				String paymentFlowType,
+				String vatEligible,
+				String regSpecType,
+				String conditionType,
+				String specialCalculation,
+				String vatRule,
+				String changedBy
+		) throws RegulationException, RemoteException {
+
+		RegulationHome home = null;
+		Regulation r = null;
+		int amountVal = 0;
+		
+		Integer operationID = null;  
+		Integer conditionOrderID = null; 
+		Integer regSpecTypeID = null;  
+		Integer conditionTypeID = null;  
+		Integer specialCalculationID = null;  
+		Integer vatRuleID = null;
+
+		if (periodeFrom.after(periodeTo)) {
+			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
+		}
+	
+		try {
+			home = (RegulationHome) IDOLookup.getHome(Regulation.class);
+
+			if(amount == null) amount = "0"; 
+			
+			if(operation == null) operation = ""; 
+			if(conditionOrder == null) conditionOrder = ""; 
+			if(regSpecType == null) regSpecType = ""; 
+			if(conditionType == null) conditionType = ""; 
+			if(specialCalculation == null) specialCalculation = ""; 
+			if(vatRule == null) vatRule = ""; 
+
+			
+			if(amount.length()!=0) {
+				amountVal = Integer.parseInt(amount);
+			}
+			
+			operationID = operation.length() != 0 ? new Integer(operation) : null;  
+			conditionOrderID = conditionOrder.length() != 0 ? new Integer(conditionOrder) : null;  
+			regSpecTypeID = regSpecType.length() != 0 ? new Integer(regSpecType) : null;  
+			conditionTypeID = conditionType.length() != 0 ? new Integer(conditionType) : null;  
+			specialCalculationID = specialCalculation.length() != 0 ? new Integer(specialCalculation) : null;  
+			vatRuleID = vatRule.length() != 0 ? new Integer(vatRule) : null;  
+
+			int rID = 0;
+			if(regID != null) {
+				rID = Integer.parseInt(regID);
+			}
+			r = null;
+			if(rID != 0) {				
+				int eq = 0;
+				r = home.findRegulation(rID);
+			}
+		} catch (FinderException e) {
+			r = null;
+		}
+		
+		try {
+			if (r == null) {
+				r = home.create();
+			}
+			r.setPeriodFrom(periodeFrom);
+			r.setPeriodTo(periodeTo);
+			r.setName(name);
+			r.setAmount(amountVal);
+			r.setChangedDate(IWTimestamp.getTimestampRightNow());
+
+			if(vatEligible != null) {
+				r.setVATEligible(Integer.parseInt(vatEligible));
+			}
+			if(paymentFlowType != null) {
+				r.setPaymentFlowType(Integer.parseInt(paymentFlowType));
+			}
+			if(operationID != null) {
+			// No data in the bean.				
+//					r.setOperation(operationID.intValue());
+			}
+			if(conditionOrderID != null) {
+				r.setConditionOrder(conditionOrderID.intValue());
+			}
+			if(regSpecTypeID != null) {
+				r.setRegSpecType(regSpecTypeID.intValue());
+			}
+			if(conditionTypeID != null) {
+				r.setConditionType(conditionTypeID.intValue());
+			}
+			if(specialCalculationID != null) {
+				r.setSpecialCalculation(specialCalculationID.intValue());
+			}
+			if(vatRuleID != null) {
+				r.setVATRegulation(vatRuleID.intValue());
+			}							
+			if(changedBy != null) {
+				r.setChangedSign(changedBy);
+			}							
+			r.store();
+		} catch (CreateException ce) {
+			throw new RegulationException(KEY_ERROR_REGULATION_CREATE, "Kan ej skapa regel");			
+		}
+		int id = 0;
+		if(r != null) {
+			id = Integer.parseInt(r.getPrimaryKey().toString());
+		}
+		return id;
+	}
+
+	/**
+	 * Save condition. If non existing, creates it.
+	 *  
+	 * @param regulation_id the regulation id
+	 * @param idx the index that this condition has (among the big 5) Can be expanded.
+	 * @param operation_id the operation index in the lists
+	 * @param interval_id the interval index in the lists
+	 * @author kelly
+	 */
+	public void saveCondition(
+				String regulation_id,
+				String idx,
+				String operation_id,
+				String interval_id
+		) throws RegulationException, RemoteException {
+
+		ConditionHome home = null;
+		Condition c = null;
+		
+		Integer regulationID = null;  
+		Integer index = null; 
+		Integer operationID = null;  
+		Integer intervalID = null;  
+
+		try {
+			regulationID = regulation_id.length() != 0 ? new Integer(regulation_id) : null;  
+			index = idx.length() != 0 ? new Integer(idx) : null;  
+			operationID = operation_id.length() != 0 ? new Integer(operation_id) : null;  
+			intervalID = interval_id.length() != 0 ? new Integer(interval_id) : null;  
+			c = null;
+			home = (ConditionHome) IDOLookup.getHome(Condition.class);
+			c = (Condition) findConditionByRegulationAndIndex(regulationID, index);
+		} catch (Exception e) {}
+
+		try {
+			if (c == null) {
+				c = home.create();
+			}
+			c.setConditionID(operationID.intValue());
+			if(intervalID != null) {
+				c.setIntervalID(intervalID.intValue());
+			}
+			if(index != null) {
+				c.setIndex(index.intValue());
+			}
+			if(regulationID != null) {
+				c.setRegulationID(regulationID.intValue());
+			}
+			c.store();
+		} catch (Exception e) {}
+
+ 	}
+		 
+		 
+	/**
+	 * Gets a Condition by Regulation ID and Index
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters# 
+	 * @param regulationID Regulation ID
+	 * @param index the index of the condition
+	 * @return Condition
+	 * @author Kelly
+	 */
+	public Object findConditionByRegulationAndIndex(Integer regulationID, Integer index) throws FinderException {
+		try {
+			ConditionHome home = getConditionHome();
+			return home.findAllConditionsByRegulationAndIndex(
+					regulationID.intValue(),
+					index.intValue()
+			);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}
+		 
+		 
+		 
 	/**
 	 * Gets all Activity types
 	 * @return collection of Activity Types = School types
@@ -72,7 +292,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllActivityTypes() {
 		try {
-//			ActivityTypeHome home = getActivityTypeHome();
 			SchoolTypeHome home = getSchoolTypeHome();
 			return home.findAllSchoolTypes();				
 		} catch (RemoteException e) {
@@ -172,6 +391,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}		
 	
 	} 
+
+
+
 
 
 	/**
@@ -279,6 +501,24 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
+
+	/**
+	 * Gets all Conditions on a certain regulation
+	 * @return collection of conditions
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
+	 * @author Kelly
+	 */
+	public Collection findAllConditionsByRegulationID(int id) {
+		try {
+			ConditionHome home = getConditionHome();
+			return home.findAllConditionsByRegulationID(id);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
 
 
 	/**
@@ -487,7 +727,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Operations. This is used to get certain data from different 
-	 * parts of the system.
+	 * parts of the system. This could be placed in a bean later...
+	 * As of now I just set the values here.
 	 * 
 	 * @return collection of ConditionHolders
 	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
@@ -495,9 +736,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @author Kelly
 	 */
 	public Collection findAllOperations() {
-
+			// LP = Localization path
 			ArrayList arr = new ArrayList();
 			arr.add(new ConditionHolder(
+					"1", 
 					"Verksamhet", 
 					LP + "verksamhet", 
 					"com.idega.block.school.business.SchoolBusiness", 
@@ -506,6 +748,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 			
 			arr.add(new ConditionHolder(
+					"2", 
 					"Resurs", 
 					LP + "resurs", 
 					"se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness", 
@@ -514,6 +757,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"3", 
 					"Momssats", 
 					LP + "momssats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", 
@@ -522,6 +766,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"4", 
 					"Årskurs", 
 					LP + "aarskurs", 
 					"com.idega.block.school.business.SchoolBusiness", 
@@ -530,6 +775,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"5", 
 					"Timmar", 
 					LP + "timmar", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
@@ -538,6 +784,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"6", 
 					"Syskonnr", 
 					LP + "syskonnr", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
@@ -546,6 +793,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"7", 
 					"Ålder", 
 					LP + "alder", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness", 
@@ -554,6 +802,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
+					"8", 
 					"Rabattsats", 
 					LP + "rabattsats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
@@ -562,6 +811,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 			
 			arr.add(new ConditionHolder(
+					"9", 
 					"Maxbelopp", 
 					LP + "maxbelopp", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
