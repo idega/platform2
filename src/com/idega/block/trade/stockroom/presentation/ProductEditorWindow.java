@@ -409,6 +409,9 @@ public class ProductEditorWindow extends IWAdminWindow {
 					else {
 						System.out.println(iwrb.getLocalizedString("price_not_saved", "Price was not saved"));
 					}
+					
+					saveMetaData(iwc, _product);
+
 					returner = true;
 				}
 				catch (Exception e) {
