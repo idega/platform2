@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.isi.block.cal.business;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,6 +37,17 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 		while(pgIter.hasNext()) {
 			Group g = (Group) pgIter.next();
 			String type = g.getGroupType();
+			if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(type)) {
+				return g.getName();
+			}
+		}
+		return null;
+	}
+	public String getParentOfParentGroupName(Collection parentGroups) {
+		Iterator pgIter = parentGroups.iterator();
+		while(pgIter.hasNext()) {
+			Group g = (Group) pgIter.next();
+			String type = g.getGroupType();
 			if(IWMemberConstants.GROUP_TYPE_CLUB.equals(type)) {
 				return g.getName();
 			}
@@ -58,9 +70,20 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 
 		Collection groupTypes = new ArrayList();
 		groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+		groupTypes.add(IWMemberConstants.GROUP_TYPE_TEMPORARY);
+		groupTypes.add(IWMemberConstants.GROUP_TYPE_GENERAL);
+		
+		String[] groupTypeDivision = { IWMemberConstants.GROUP_TYPE_CLUB_DIVISION };
+		
 
 		if( g!= null) {
-			if(g.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+			String groupType = g.getGroupType();
+			if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION) || groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
+				String abbrevation = null;
+				if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+					abbrevation = g.getAbbrevation();
+					System.out.println("abbrevation: " + g.getAbbrevation());
+				}
 				try {
 					playerGroups = grBiz.getChildGroupsRecursiveResultFiltered(g,groupTypes,true);
 				}catch (Exception e) {
@@ -70,6 +93,13 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 					Iterator playersGroupIter = playerGroups.iterator();
 					while(playersGroupIter.hasNext()) {
 						Group group = (Group) playersGroupIter.next();
+						Collection parentDiv = null;
+						Group parentDivision = null;
+						try{
+							parentDiv = grBiz.getParentGroupsRecursive(group,groupTypeDivision,true);
+						}catch(RemoteException re) {
+							
+						}
 						String n = name;
 						if(n == null || n.equals("")) {
 							n = group.getName();
@@ -81,7 +111,9 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 					parentPage.setOnLoad("window.opener.parent.location.reload()");
 				}
 			}			
-			else if(g.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)){	
+			else if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER) ||
+					groupType.equals(IWMemberConstants.GROUP_TYPE_TEMPORARY) ||
+					groupType.equals(IWMemberConstants.GROUP_TYPE_GENERAL)){	
 				if(name == null || name.equals("")) {
 					name = g.getName();
 				}
