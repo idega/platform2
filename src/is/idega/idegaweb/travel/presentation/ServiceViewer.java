@@ -251,7 +251,7 @@ public class ServiceViewer extends Block {
     try {
       Product product = new Product(service.getID());
       content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,1);
-      content.add(new TextReader(TextFinder.getLocalizedText(product,ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getID()),1,2);//insert a textreader
+      content.add(new TextReader(TextFinder.getLocalizedText(service,ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getID()),1,2);//insert a textreader
       //ProductBusiness.getProductDescription(product),1,2);//insert a textreader
       content.add("META DATA",1,3);
       Link buy = LinkGenerator.getLink(iwc,service.getID());
