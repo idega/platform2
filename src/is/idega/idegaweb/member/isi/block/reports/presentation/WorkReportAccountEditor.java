@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -505,69 +506,74 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   // business method: set values (invoked by 'update' or 'create')
   private void setValuesOfWorkReportClubAccountRecord(EntityPathValueContainer valueContainer, Integer groupId, WorkReportBusiness workReportBusiness)  {
-//    String pathShortKey = valueContainer.getEntityPathShortKey();
-//    Object value = valueContainer.getValue();
-//    
-//    if (pathShortKey.equals(STATUS))  {
-//      member.setStatus(value.toString());
-//    }
-//    else if (pathShortKey.equals(NAME)) {
-//      member.setName(value.toString());
-//    }
-//    else if (pathShortKey.equals(PERSONAL_ID))  {
-//      member.setPersonalId(value.toString());
-//    }
-//    else if (pathShortKey.equals(STREET_NAME))  {
-//      member.setStreetName(value.toString());
-//    }
-//    else if(pathShortKey.equals(POSTAL_CODE_ID))  {
-//      try {
-//        int postalCode = Integer.parseInt(value.toString());
-//        member.setPostalCodeID(postalCode);
-//      }
-//      catch (NumberFormatException ex)  {
-//      }
-//    }
-//    else if(pathShortKey.equals(HOME_PHONE))  {
-//      member.setHomePhone(value.toString());
-//    }
-//    else if (pathShortKey.equals(WORK_PHONE)) {
-//      member.setWorkPhone(value.toString());
-//    }
-//    else if (pathShortKey.equals(FAX))  {
-//      member.setFax(value.toString());
-//    }
-//    else if (pathShortKey.equals(EMAIL))  {
-//      member.setEmail(value.toString());
-//    }
-//    else if (pathShortKey.equals(LEAGUE)) {
-//      // special case, sometimes there is not a previous value
-//      Object previousValue = valueContainer.getPreviousValue();
-//      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
-//      String newWorkGroupName = value.toString();
-//      if (NO_LEAGUE_VALUE.equals(newWorkGroupName)) {
-//        // the entry shall not reference a league, set name to null 
-//        newWorkGroupName = null;
-//      }
-//      if (NO_LEAGUE_VALUE.equals(oldWorkGroupName))  {
-//        // the entry did not reference a league, set name to null
-//        oldWorkGroupName = null;
-//      }
-//      int year = getYear();
-//      try {
-//        workReportBusiness.changeWorkReportGroupOfEntity(oldWorkGroupName, year, newWorkGroupName, year, member);
-//      }
-//      catch (RemoteException ex) {
-//        System.err.println(
-//          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-//            + ex.getMessage());
-//        ex.printStackTrace(System.err);
-//        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-//      }
-//    }
+    String pathShortKey = valueContainer.getEntityPathShortKey();
+    Object value = valueContainer.getValue();
+    Float amount;
+    try {
+      amount = new Float(value.toString());
+    }
+    catch (NumberFormatException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't convert value to float value.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      // give up
+      return;
+    }
+    Integer accountKey;
+    try {
+      accountKey = new Integer(pathShortKey.toString());
+    }
+    catch (NumberFormatException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't convert pathShortKey to an integer value.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      // give up
+      return;
+    }
+    Object previousValue = valueContainer.getPreviousValue();
+    if (value.equals(previousValue))  {
+      // nothing to do
+      return;
+    }
+    // try to get an existing record
+    WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKey);
+    if (record == null)   {
+      // okay, first create a record
+      WorkReportClubAccountRecordHome home;
+      try {
+        home = workReportBusiness.getWorkReportClubAccountRecordHome();
+      }
+      catch (RemoteException ex) {
+        String message =
+          "[WorkAccountEditor]: Can't retrieve WorkReportClubAccountRecordHome.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+        throw new RuntimeException(message);
+      } 
+      try {
+        record = home.create();
+        record.setReportId(getWorkReportId());
+        record.setAccountKeyId(accountKey.intValue());
+        // add this new record to the matrix
+        leagueKeyMatrix.put(groupId, accountKey, amount);
+      }
+      catch (CreateException ex) {
+        String message =
+          "[WorkReportAccountEditor]: Can't create WorkreportClubAccountRecord.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+        // give up
+        return;
+      }
+    }
+    record.setAmount(amount.floatValue());
+    // do not forget to store
+    record.store();
   }
-
-
+    
+    
   /** 
    * WorkReportBoardMemberHelper:
    *
@@ -589,6 +595,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     public Float getEntry(String accountKeyNumber) {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, new Integer(accountKeyNumber));
+      // sometimes the record does not exist yet
+      if (record == null) {
+        return new Float(-1);
+      }
       float amount = record.getAmount();
       return new Float(amount);
     }
