@@ -91,15 +91,15 @@ public class SchoolContentEditor extends IWAdminWindow{
 		init(iwc);
 		if (_school != null) {
 	try {
-				Collection coll = _school.getSchoolTypes();
-								Iterator iterCollection = coll.iterator();	
-					
-				while (iterCollection.hasNext()) {									
-					SchoolType schoolType = (SchoolType) iterCollection.next();
-					_schoolCategory =  schoolType.getSchoolCategory();				
-				}
-										
+			Collection coll = _school.getSchoolTypes();
+				Iterator iterCollection = coll.iterator();	
+				
+			while (iterCollection.hasNext()) {									
+				SchoolType schoolType = (SchoolType) iterCollection.next();
+				_schoolCategory =  schoolType.getSchoolCategory();				
 			}
+										
+		}
 				catch (Exception e){
 			}
 
@@ -607,7 +607,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				if (!fax.equals("")) {
 					_school.setSchoolFax(fax);
 				}
-				if (!email.equals("")) {
+				if (email != null && !email.equals("")) {
 					_school.setSchoolEmail(email);
 				}
 				if (!webPage.equals("")) {
