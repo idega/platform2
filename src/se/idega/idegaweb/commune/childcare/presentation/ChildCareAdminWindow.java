@@ -725,7 +725,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 		
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
-		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
+		ChildCareContract archive = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue()); 
+			//getBusiness().getContractFile(application.getContractFileId());
 
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(2);
