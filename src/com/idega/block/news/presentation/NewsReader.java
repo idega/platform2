@@ -80,6 +80,7 @@ public class NewsReader extends Block implements IWBlock{
   private String headlineImageURL = "/nanar2.gif";
 	private String firstTableColor = null;
 	private String secondTableColor = null;
+	private String dateAlign = "left";
 
   private Hashtable objectsBetween = null;
 	private Text textProxy = new Text();
@@ -517,21 +518,28 @@ public class NewsReader extends Block implements IWBlock{
 		}
 		// if single line view
 		else{
-			T.add(newsInfo,1,1);
-			T.setAlignment(3,1,"left");
+			int headlineCol = 3;
+			int dateCol = 1;
+			if(dateAlign.toLowerCase().equals("right")){
+			  headlineCol = 1;
+				dateCol = 3;
+			}
+
+			T.add(newsInfo,dateCol,1);
+			T.setAlignment(headlineCol,1,"left");
 			T.setAlignment(4,1,"right");
-			T.setWidth(3,1,"100%");
-			T.setWidth(1,1,"45");
+			T.setWidth(headlineCol,1,"100%");
+			T.setWidth(dateCol,1,"45");
 			T.add("&nbsp;&nbsp",2,1);
 		  if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
-				T.add(headlineLink, 3, 1);
+				T.add(headlineLink, headlineCol, 1);
 			}
 			else {
-				T.add(headLine, 3, 1);
+				T.add(headLine, headlineCol, 1);
 			}
 			if(isAdmin){
 			  T.add(getNewsAdminPart(news,iwc),4,1);
@@ -769,6 +777,9 @@ public class NewsReader extends Block implements IWBlock{
   public void setShowOnlyDates(boolean showOnlyDates) {
     this.showOnlyDates=showOnlyDates;
   }
+	public void setDateAlign(String alignment) {
+    this.dateAlign=alignment;
+  }
 
 	public void setViewPage(com.idega.builder.data.IBPage page){
 		viewPageId = page.getID();
@@ -841,6 +852,7 @@ public class NewsReader extends Block implements IWBlock{
 			obj.outerTableWidth = outerTableWidth;
 			obj.sObjectAlign = sObjectAlign;
 			obj.headlineImageURL = headlineImageURL;
+			obj.dateAlign = dateAlign;
 
 			// Nullable :
 			if(firstTableColor !=null)
