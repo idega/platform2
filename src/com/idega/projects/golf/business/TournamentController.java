@@ -80,6 +80,31 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
         return TournamentController.getTournaments(idegaTimestamp.RightNow());
     }
 
+    public static int getTotalStrokes(Tournament tournament, TournamentRound round, com.idega.projects.golf.entity.Member member) throws Exception{
+      int totalStrokes = -1;
+
+      try {
+        StringBuffer sql = new StringBuffer();
+          sql.append("select sum(stroke_count) from stroke st, scorecard s, tournament_round tr, tournament t");
+          sql.append(" where st.scorecard_id = s.scorecard_id");
+          sql.append(" and s.tournament_round_id = tr.tournament_round_id");
+          sql.append(" and tr.tournament_id = t.tournament_id");
+          sql.append(" and t.tournament_id = "+Integer.toString(tournament.getID()));
+          sql.append(" and tr.round_number <= "+Integer.toString(round.getRoundNumber()));
+          sql.append(" and s.member_id = "+Integer.toString(member.getID()));
+
+        String[] overAllScore = com.idega.data.SimpleQuerier.executeStringQuery(sql.toString());
+        if ( overAllScore != null ) {
+          totalStrokes = Integer.parseInt(overAllScore[0]);
+        }
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+
+      return totalStrokes;
+    }
+
     public static Tournament[] getLastClosedTournaments(int number) throws Exception {
       Tournament tournament = new Tournament();
       idegaTimestamp stamp = idegaTimestamp.RightNow();
