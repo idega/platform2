@@ -37,6 +37,9 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 	private static final String PRM_RM_CLASS_MEMBER_ID = "ccc_rm_cl_mb";
     private static final String PRM_UPD_RM_DATE = "ccc_upd_cl_mb_rm_date";
     private static final String PRM_UPD_CLASS_MEMBER_ID = "ccc_upd_cl_mb_id";
+    
+    private boolean allowUnrelatedRemoval = true;
+    private boolean allowPreviousTermination = true;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -197,13 +200,13 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			}
 			
 			// Fix link, when a classmember is not related to any contract, it can be deleted
-			if(contract==null){
+			if(allowUnrelatedRemoval && contract==null){
 				Link removeLink = new Link(getDeleteIcon(localize("child_care.tooltip.removed_noncontract_placement","Remove noncontract placement")));
 				removeLink.addParameter(PRM_RM_CLASS_MEMBER_ID,member.getPrimaryKey().toString());
 				table.add(removeLink,column++,row);
 			}
 			// Fix link , when old classmember's removed_date has not been set
-			if(previousMember!=null && member.getRemovedDate()==null){
+			if(allowPreviousTermination && previousMember!=null && member.getRemovedDate()==null){
 			    IWTimestamp removedDate = new IWTimestamp(previousMember.getRegisterDate());
 			    removedDate.addDays(-1);
 			    java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT,iwc.getCurrentLocale());
@@ -292,4 +295,28 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		
 		return table;
 	}
+    /**
+     * @return Returns the allowPreviousTermination.
+     */
+    public boolean isAllowPreviousTermination() {
+        return allowPreviousTermination;
+    }
+    /**
+     * @param allowPreviousTermination The allowPreviousTermination to set.
+     */
+    public void setAllowPreviousTermination(boolean allowPreviousTermination) {
+        this.allowPreviousTermination = allowPreviousTermination;
+    }
+    /**
+     * @return Returns the allowUnrelatedRemoval.
+     */
+    public boolean isAllowUnrelatedRemoval() {
+        return allowUnrelatedRemoval;
+    }
+    /**
+     * @param allowUnrelatedRemoval The allowUnrelatedRemoval to set.
+     */
+    public void setAllowUnrelatedRemoval(boolean allowUnrelatedRemoval) {
+        this.allowUnrelatedRemoval = allowUnrelatedRemoval;
+    }
 }
