@@ -8,18 +8,29 @@ private StringBuffer params= new StringBuffer();
 private boolean usePlugin = false;
 
   public Applet(String appletClass){
+    super();
     setAppletClass(appletClass);
+    setName(this.getID());
     setWidth(0);
     setHeight(0);
     setCodebase(".");
   }
 
-  public Applet(String appletClass,String name){
+  public Applet(String appletClass,String codeBase){
     this(appletClass);
-    setName(name);
+    setName(this.getID());
     setWidth(0);
     setHeight(0);
-    setCodebase(".");
+    setCodebase(codeBase);
+  }
+
+  public Applet(String appletClass,String codeBase, String archive){
+    this(appletClass);
+    setName(this.getID());
+    setWidth(0);
+    setHeight(0);
+    setCodebase(codeBase);
+    setCodeArchive(archive);
   }
 
   public Applet(String appletClass,String name,int width,int height){
@@ -108,6 +119,14 @@ private boolean usePlugin = false;
 
   public String getCodebase(){
     return getAttribute("CODEBASE");
+  }
+
+  public void setCodeArchive(String ARCHIVE){
+    setAttribute("ARCHIVE",ARCHIVE);
+  }
+
+  public String getCodeArchive(){
+    return getAttribute("ARCHIVE");
   }
 
   public void setAppletClass(String CODE){
