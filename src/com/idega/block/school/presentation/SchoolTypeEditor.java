@@ -39,7 +39,7 @@ public class SchoolTypeEditor extends Block {
   }
 
   private void control(IWContext iwc) throws Exception{
-    debugParameters(iwc);
+    //debugParameters(iwc);
     initBeans(iwc);
     Form F = new Form();
 
