@@ -105,8 +105,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
+         repaint();
         t.sleep(threadSleep);
-        update(getGraphics());
       }
       catch (InterruptedException e) {
         e.printStackTrace(System.err);
@@ -531,7 +531,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
 
-  public void update(Graphics g){
+  /*public void update(Graphics g){
     super.paint(g);
     g.drawString("test",150,150);
     System.out.println("IN UPDATE");
@@ -539,7 +539,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   public void paint(Graphics g){
   //use the update method
-  }
+  }*/
 
 
 
