@@ -78,12 +78,12 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
+		table.setNoWrap();
 		table.setColumnWidth(1, "80");
 		table.setColumnWidth(2, "80");
 		if(showGroup) {
 			table.setColumnWidth(3, "100");
 			table.setColumnWidth(4, "50");
-			table.setNoWrap();
 		}
 		table.setCellspacing(0);
 		Iterator userIter; //group.getChildren();
