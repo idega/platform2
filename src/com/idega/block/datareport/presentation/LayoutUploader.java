@@ -1,5 +1,6 @@
 package com.idega.block.datareport.presentation;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,19 +9,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.block.media.presentation.SimpleFileChooser;
+import com.idega.builder.business.FileBusiness;
+import com.idega.business.IBOLookup;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
+import com.idega.io.export.Storable;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -45,7 +46,10 @@ import com.idega.util.StringHandler;
  */
 public class LayoutUploader extends Block {
 
-	public final static String  KEY_LAYOUT_UPLOAD_IS_SUBMITTED = "key_layout_upload_is_submitted"; 
+	public final static String KEY_LAYOUT_UPLOAD_IS_SUBMITTED = "key_layout_upload_is_submitted"; 
+	public final static String KEY_LAYOUT_DOWNLOAD_IS_SUBMITTED = "key_layout_download_is_submitted";
+	private final static String KEY_CHOSEN_LAYOUT_FOR_DOWNLOADING = "key_chosen_layout_for_downloading";
+
 	
 	private final static String KEY_FILE_ID = "key_file_id";
 	private final static String KEY_NAME = "key_query_name";
@@ -58,6 +62,7 @@ public class LayoutUploader extends Block {
 	
 	private ICFile layoutFolder = null;
 	private String layoutFolderId = null;
+	private String downloadUrl = null;
 	
 	public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -71,38 +76,71 @@ public class LayoutUploader extends Block {
 			add(errorText);
 		}
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
+		
 		// delete form
+		Text deleteText = new Text(resourceBundle.getLocalizedString("layout_uploader_delete_layout_headline", "Delete Layout"));
+		deleteText.setBold();
+		add(deleteText);
 		Form form = new Form();
 		addMaintainParametersToForm(form);
 		int row = 1;
-		Table table = new Table(2, 4);
-		table.add(getDropDownOfLayouts(layoutFolder, iwc), 1,row);
+		Table table = new Table(2, 1);
+		table.add(getDropDownOfLayouts(KEY_CHOSEN_LAYOUT, layoutFolder, iwc), 1,row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(getDeleteButton(resourceBundle), 2, row);
+		form.add(table);
+		add(form);
+		
 		// upload form
-		row++;
+		add(Text.getBreak());
+		Text uploadText = new Text(resourceBundle.getLocalizedString("layout_uploader_upload_layout_headline", "Upload Layout"));
+		uploadText.setBold();
+		add(uploadText);
+		Table uploadTable = new Table(2,2);
+		row = 1;
+		Form uploadForm = new Form();
 		String defaultName = resourceBundle.getLocalizedString("layout_uploader_default_layout_name", "my layout");
 		TextInput textInput = new TextInput(KEY_NAME, defaultName );
 		Text info = new Text(resourceBundle.getLocalizedString("layout_uploader_layout_name", "layout name"));
-		table.add(textInput, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add(info, 2 ,row);
+		uploadTable.add(info, 1 ,row);
+		uploadTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		uploadTable.add(textInput, 2, row);
+		uploadTable.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		row++;
 		SimpleFileChooser uploader = new SimpleFileChooser(form, KEY_FILE_ID);
-		table.add(uploader, 1, row);
-		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		uploadTable.add(uploader, 2, row);
+		uploadTable.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		row++;
-		table.add(getGoBackButton(resourceBundle), 2 ,row);
-		form.add(table);
-		form.addParameter(KEY_LAYOUT_UPLOAD_IS_SUBMITTED, KEY_LAYOUT_UPLOAD_IS_SUBMITTED);
-		add(form);
+		uploadForm.add(uploadTable);
+		uploadForm.addParameter(KEY_LAYOUT_UPLOAD_IS_SUBMITTED, KEY_LAYOUT_UPLOAD_IS_SUBMITTED);
+		add(uploadForm);
+		
+		// downloading
+		add(Text.getBreak());
+		Text downloadingText = new Text(resourceBundle.getLocalizedString("layout_uploader_download_layout_headline", "Download Layout"));
+		downloadingText.setBold();
+		add(downloadingText);
+		Form downloadForm = new Form();
+		row = 1;
+		addMaintainParametersToForm(downloadForm);
+		Table downloadTable = new Table(2, 3);
+		PresentationObject downloadQueryList = getDropDownOfLayouts(KEY_CHOSEN_LAYOUT_FOR_DOWNLOADING, layoutFolder, iwc);
+		downloadTable.add(downloadQueryList, 1, row);
+		downloadTable.add(getDownloadButton(resourceBundle), 2, row++);
+		if (downloadUrl != null) {
+			String downloadText = resourceBundle.getLocalizedString("layout_uploader_download_query", "Download");
+	  		downloadTable.add(new Link(downloadText, downloadUrl), 1, row++);
+		}
+		downloadTable.add(getGoBackButton(resourceBundle), 1 ,row);
+		downloadForm.add(downloadTable);
+		add(downloadForm);
 	}
 	
 	private void addMaintainParametersToForm(Form form) {
 		form.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, layoutFolderId);
 	}
 	
-	private String parseAction(IWContext iwc) throws NumberFormatException, IDOStoreException, FinderException {
+	private String parseAction(IWContext iwc) throws NumberFormatException, FinderException, RemoteException, IOException {
 		int folderId;
 		if (iwc.isParameterSet(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID)) {
 			layoutFolderId = iwc.getParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID);
@@ -130,31 +168,41 @@ public class LayoutUploader extends Block {
 			uploadFile.setName(name);
 			MediaBusiness.saveMediaToDB(uploadFile, folderId, iwc);
 		}
+		else if (iwc.isParameterSet(KEY_LAYOUT_DOWNLOAD_IS_SUBMITTED)) {
+			Object layoutToBeDownloadedId = iwc.getParameter(KEY_CHOSEN_LAYOUT_FOR_DOWNLOADING);
+			Integer layoutToBeDownloaded = new Integer((String) layoutToBeDownloadedId); 
+			ICFileHome fileHome = (ICFileHome)IDOLookup.getHome(ICFile.class);
+			ICFile layout = fileHome.findByPrimaryKey(layoutToBeDownloaded);
+			FileBusiness fileBusiness = (FileBusiness) IBOLookup.getServiceInstance(iwc, FileBusiness.class);
+			downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) layout, iwc);
+		}
 		return null;
 	}
 	
-	private PresentationObject getDropDownOfLayouts(ICFile designFolder, IWContext iwc) {
+	private PresentationObject getDropDownOfLayouts(String key, ICFile designFolder, IWContext iwc) {
 		SortedMap sortedMap = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
-		DropdownMenu drp = new DropdownMenu(KEY_CHOSEN_LAYOUT);
+		DropdownMenu drp = new DropdownMenu(key);
 		Iterator iterator = designFolder.getChildren();
-		while (iterator.hasNext()) {
-			ICTreeNode node = (ICTreeNode) iterator.next();
-	  	String name = node.getNodeName();
-			int id = node.getNodeID();
-	  	String idAsString = Integer.toString(id);
-	  	if (sortedMap.containsKey(name)) {
-	  		// usually all items have different names therefore 
-	  		// we implement a very simple solution
-	  		name += " (1)";
-	  	}
-	  	sortedMap.put(name, idAsString);
-		}
-		Iterator sortedIterator = sortedMap.entrySet().iterator();
-		while (sortedIterator.hasNext()) {
-			Map.Entry entry = (Map.Entry) sortedIterator.next();
-			String id = (String) entry.getValue();
-			String name = (String) entry.getKey();
-			drp.addMenuElement(id, name);
+		if (iterator != null) {
+			while (iterator.hasNext()) {
+				ICTreeNode node = (ICTreeNode) iterator.next();
+				String name = node.getNodeName();
+				int id = node.getNodeID();
+				String idAsString = Integer.toString(id);
+				if (sortedMap.containsKey(name)) {
+					// usually all items have different names therefore 
+					// we implement a very simple solution
+					name += " (1)";
+				}
+				sortedMap.put(name, idAsString);
+			}
+			Iterator sortedIterator = sortedMap.entrySet().iterator();
+			while (sortedIterator.hasNext()) {
+				Map.Entry entry = (Map.Entry) sortedIterator.next();
+				String id = (String) entry.getValue();
+				String name = (String) entry.getKey();
+				drp.addMenuElement(id, name);
+			}
 		}
 		return drp;
 	}
@@ -175,6 +223,13 @@ public class LayoutUploader extends Block {
   	goBack.setAsImageButton(true);
   	return goBack;
 	}
+	
+	private PresentationObject getDownloadButton(IWResourceBundle resourceBundle) {
+	  	SubmitButton downloadButton = new SubmitButton(resourceBundle.getLocalizedString("ro_download","Download..."), KEY_LAYOUT_DOWNLOAD_IS_SUBMITTED, "true");
+	  	downloadButton.setAsImageButton(true);
+	  	return downloadButton;
+		}	
+
 
 	private String checkName(ICFile designFolder, String name) {
 		if (name == null || name.length() == 0) {
