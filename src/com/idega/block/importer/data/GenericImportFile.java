@@ -243,7 +243,7 @@ public class GenericImportFile implements ImportFile{
 	
 	
 	/**
-	 * Method getValueAtIndexFromRecordString. Uses the valueSeparator and a stringtokenizer to read and return a value at a selected index.
+	 * Method getValuesFromRecordString. Uses the valueSeparator and a stringtokenizer to read the record and create an ArrayList of values.
 	 * @param recordString
 	 * @return An ArrayList of values or null is no value was found
 	 */
