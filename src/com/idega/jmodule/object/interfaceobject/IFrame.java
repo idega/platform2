@@ -37,6 +37,10 @@ public IFrame(String name){
 	this(name,"");
 }
 
+public IFrame(String name,Class classToInstanciate){
+	this(name,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+}
+
 public IFrame(String name,String classToInstanciate,String template){
 	this(name,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
 }
