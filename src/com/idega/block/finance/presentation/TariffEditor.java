@@ -158,8 +158,7 @@ public class TariffEditor extends KeyEditor{
           T.add(formatText(tariffs[i].getPrice()),3,i+2);
           T.add(formatText(tariffs[i].getInfo()),4,i+2);
           try{
-          T.add(formatText(new TariffKey(tariffs[i].getTariffKeyId()).getName()),5,i+2);
-          T.add(formatText(new AccountKey(tariffs[i].getAccountKeyId()).getName()),6,i+2);
+            T.add(formatText(new AccountKey(tariffs[i].getAccountKeyId()).getName()),5,i+2);
           }
           catch(SQLException e){}
         }
@@ -227,7 +226,6 @@ public class TariffEditor extends KeyEditor{
         priceInput = new TextInput("te_priceinput"+i,String.valueOf(tariffs[pos].getPrice()));
         infoInput = new TextInput("te_infoinput"+i,tariffs[pos].getInfo());
         drpAK = this.drpAccountKeys(("te_akdrp"+i),String.valueOf(tariffs[pos].getAccountKeyId()));
-        drpTK = this.drpTariffKeys(("te_tkdrp"+i),String.valueOf(tariffs[pos].getTariffKeyId()));
         delCheck = new CheckBox("te_delcheck"+i,"true");
         idInput = new HiddenInput("te_idinput"+i,String.valueOf(tariffs[pos].getID()));
         setStyle(delCheck);
@@ -249,13 +247,11 @@ public class TariffEditor extends KeyEditor{
       setStyle(priceInput);
       setStyle(infoInput);
       setStyle(drpAK);
-      setStyle(drpTK);
 
       T.add(formatText(rownum),1,i+1);
       T.add(nameInput,2,i+1);
       T.add(priceInput,3,i+1);
       T.add(infoInput,4,i+1);
-      T.add(drpTK,5,i+1);
       T.add(drpAK,6,i+1);
       T.add(idInput);
     }
@@ -317,7 +313,6 @@ public class TariffEditor extends KeyEditor{
             tariff.setInfo(sInfo);
             tariff.setPrice(Integer.parseInt(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
-            tariff.setTariffKeyId(Integer.parseInt(sTK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());
             tariff.update();
@@ -334,7 +329,6 @@ public class TariffEditor extends KeyEditor{
             tariff.setInfo(sInfo);
             tariff.setPrice(Integer.parseInt(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
-            tariff.setTariffKeyId(Integer.parseInt(sTK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());
             tariff.insert();

@@ -41,7 +41,7 @@ public BuildingViewer(int building_id){
 
 
   public void main(ModuleInfo modinfo) throws Exception {
-
+    add(""+building_id);
     if ( building_id == 0 ) {
       getAllBuildings(modinfo);
     }
@@ -154,7 +154,7 @@ public BuildingViewer(int building_id){
       }
 
     buildingTable.add(buildingName,1,1);
-
+    add("lengd "+rooms.length);
     for ( int a = 0; a < rooms.length; a++ ) {
 
       Table roomsTable = new Table(3,3);
@@ -183,7 +183,7 @@ public BuildingViewer(int building_id){
 
       Image roomImage = new Image(rooms[a].getImageId());
 
-      Window roomWindow = new Window("Herbergi",400,550,"/room.jsp");
+      Window roomWindow = new Window("Herbergi",400,550,"/building/roomtypes.jsp");
         roomWindow.setScrollbar(false);
       Image moreImage = new Image("/pics/meira.gif");
       Link roomLink = new Link(moreImage,roomWindow);
@@ -198,11 +198,8 @@ public BuildingViewer(int building_id){
       if ( a+1 < rooms.length ) {
         buildingTable.add(divideText,1,a+2);
       }
-
     }
-
     add(buildingTable);
-
   }
 
   public void setNameStyle(String nameStyle) {

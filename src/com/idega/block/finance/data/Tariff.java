@@ -21,83 +21,91 @@ public class Tariff extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("price", "Verð", true, true, "java.lang.Integer");
-    addAttribute("info","Athugasemd",true,true,"java.lang.String");
-    addAttribute("tariff_key_id","GjaldaLiður",true,true,"java.lang.Integer","one-to-many","com.idega.block.finance.data.TariffKey");
-    addAttribute("account_key_id","Bókhaldsliður",true,true,"java.lang.Integer","one-to-many","com.idega.block.finance.data.AccountKey");
-    addAttribute("from_date","Upphafsdags",true,true,"java.sql.Timestamp");
-    addAttribute("to_date","Lokadags",true,true,"java.sql.Timestamp");
-    addAttribute("tariff_attribute","",true,true,"java.lang.String");
-    addAttribute("useindex","Gild",true,true,"java.lang.Boolean");
+    addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
+    addAttribute(getPriceColumnName(), "Verð", true, true, "java.lang.Integer");
+    addAttribute(getInfoColumnName(),"Athugasemd",true,true,"java.lang.String",4000);
+    addAttribute(getAccountKeyIdColumnName(),"Bókhaldsliður",true,true,"java.lang.Integer","one-to-many","com.idega.block.finance.data.AccountKey");
+    addAttribute(getFromdateColumnName(),"Upphafsdags",true,true,"java.sql.Timestamp");
+    addAttribute(getToDateColumnName(),"Lokadags",true,true,"java.sql.Timestamp");
+    addAttribute(getAttributeColumnName(),"",true,true,"java.lang.String");
+    addAttribute(getUseIndexColumnName(),"Gild",true,true,"java.lang.Boolean");
+    addAttribute(getInUseColumnName(),"In Use",true,true,"java.lang.Boolean");
 
   }
+  public static String getTariffEntityName(){return "FIN_TARIFF";}
+  public static String getAccountKeyIdColumnName(){return "FIN_ACC_KEY_ID";}
+  public static String getNameColumnName(){return "NAME";}
+  public static String getInfoColumnName(){return "INFO";}
+  public static String getPriceColumnName(){return "PRICE";}
+  public static String getFromdateColumnName(){return "FROM_DATE";}
+  public static String getToDateColumnName(){return "TO_DATE";}
+  public static String getInUseColumnName(){return "IN_USE";}
+  public static String getUseIndexColumnName(){return "USE_INDEX";}
+  public static String getAttributeColumnName(){return "ATTRIBUTE";}
+
   public String getEntityName() {
-    return "tariff";
+    return getTariffEntityName();
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getNameColumnName(), name);
   }
   public String getTariffAttribute(){
-    return getStringColumnValue("tariff_attribute");
+    return getStringColumnValue(getAttributeColumnName());
   }
   public void setTariffAttribute(String attribute){
-    setColumn("tariff_attribute", attribute);
+    setColumn(getAttributeColumnName(), attribute);
   }
   public int getPrice(){
-    return getIntColumnValue("price");
+    return getIntColumnValue(getPriceColumnName());
   }
   public void setPrice(int price){
-    setColumn("price",price);
+    setColumn(getPriceColumnName(),price);
   }
   public void setPrice(Integer price){
-    setColumn("price",price);
+    setColumn(getPriceColumnName(),price);
   }
   public String getInfo(){
-    return getStringColumnValue("info");
+    return getStringColumnValue(getInfoColumnName());
   }
   public void setInfo(String info){
-    setColumn("info", info);
+    setColumn(getInfoColumnName(), info);
   }
   public int getAccountKeyId(){
-    return getIntColumnValue("account_key_id");
+    return getIntColumnValue(getAccountKeyIdColumnName());
   }
   public void setAccountKeyId(Integer account_key_id){
-    setColumn("account_key_id", account_key_id);
+    setColumn(getAccountKeyIdColumnName(), account_key_id);
   }
   public void setAccountKeyId(int account_key_id){
-    setColumn("account_key_id", account_key_id);
+    setColumn(getAccountKeyIdColumnName(), account_key_id);
   }
-  public int getTariffKeyId(){
-    return getIntColumnValue("tariff_key_id");
-  }
-  public void setTariffKeyId(Integer tariff_key_id){
-    setColumn("tariff_key_id", tariff_key_id);
-  }
-  public void setTariffKeyId(int tariff_key_id){
-    setColumn("tariff_key_id", tariff_key_id);
-  }
+
   public Timestamp getUseFromDate(){
-    return (Timestamp) getColumnValue("from_date");
+    return (Timestamp) getColumnValue(getFromdateColumnName());
   }
   public void setUseFromDate(Timestamp use_date){
-    setColumn("from_date",use_date);
+    setColumn(getFromdateColumnName(),use_date);
   }
    public Timestamp getUseToDate(){
-    return (Timestamp) getColumnValue("to_date");
+    return (Timestamp) getColumnValue(getToDateColumnName());
   }
   public void setUseToDate(Timestamp use_date){
-    setColumn("to_date",use_date);
+    setColumn(getToDateColumnName(),use_date);
   }
 
   public void setUseIndex(boolean useindex){
-    setColumn("useindex",useindex);
+    setColumn(getUseIndexColumnName(),useindex);
   }
   public boolean getUseIndex(){
-    return getBooleanColumnValue("useindex");
+    return getBooleanColumnValue(getUseIndexColumnName());
   }
-
+  public void setInUse(boolean useindex){
+    setColumn(getInUseColumnName(),useindex);
+  }
+  public boolean getInUse(){
+    return getBooleanColumnValue(getInUseColumnName());
+  }
 }

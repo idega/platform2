@@ -23,22 +23,36 @@ public class AccountKey extends GenericEntity implements Key{
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("extra_info","Lýsing",true,true,"java.lang.String");
+    addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Lýsing",true,true,"java.lang.String",4000);
+    addAttribute(getTariffKeyIdColumnName(),"Lykill",true,true,"java.lang.Integer");
   }
+
+  public static String getAccountKeyEntityName(){return "FIN_ACC_KEY"; }
+  public static String getTariffKeyIdColumnName(){return "FIN_TARIFF_KEY_ID";}
+  public static String getNameColumnName(){ return "NAME"; }
+  public static String getInfoColumnName(){return "INFO";}
+
+
   public String getEntityName() {
-    return "account_key";
+    return getAccountKeyEntityName();
+  }
+  public int getTariffKeyId(){
+    return getIntColumnValue(getTariffKeyIdColumnName());
+  }
+  public void setTariffKeyId(int id){
+    setColumn(getTariffKeyIdColumnName(),id);
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getNameColumnName(), name);
   }
   public String getInfo(){
-    return getStringColumnValue("extra_info");
+    return getStringColumnValue(getInfoColumnName());
   }
   public void setInfo(String extra_info){
-    setColumn("extra_info", extra_info);
+    setColumn(getInfoColumnName(), extra_info);
   }
 }

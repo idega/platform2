@@ -84,7 +84,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
 
       roomTable.add(topTable,1,1);
       roomTable.add(getApartmentTable(room),1,3);
-      roomTable.add(getAllRoomTypes(room),1,4);
+      roomTable.add(getAllApartmentTypes(room),1,4);
       roomTable.add(new Image("/pics/room/bottom.gif","",400,66),1,5);
 
       add(roomTable);
@@ -99,6 +99,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
         roomTable.setWidth("100%");
         roomTable.setWidth(2,"20");
         roomTable.setAlignment(1,1,"center");
+
 
        Image floorPlan = new Image(room.getFloorPlanId());
        roomTable.add(floorPlan,1,1);
@@ -119,7 +120,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
           rent.setFontStyle(infoStyle+"font-weight: bold;");
         }
 
-       Text rentPrice = new Text(room.getRent()+"");
+       Text rentPrice = new Text(String.valueOf(room.getRent()));
         if ( infoStyle != null ) {
           rentPrice.setFontStyle(infoStyle);
         }
@@ -153,18 +154,17 @@ public ApartmentTypeViewer(int apartmenttypeid){
       return roomTable;
     }
 
-    private Form getAllRoomTypes(ApartmentType room) throws SQLException {
+    private Form getAllApartmentTypes(ApartmentType type) throws SQLException {
 
       int building_id = 1;
-
-      Room[] appartment = (Room[]) (new Room()).findAllByColumn("sub_type_id",room.getID());
-        if ( appartment.length > 0 ) {
-          Floor floor = new Floor(appartment[0].getFloorId());
+      Apartment[] apartment = (Apartment[]) (new Apartment()).findAllByColumn(Apartment.getApartmentTypeColumnName(),type.getID());
+        if ( apartment.length > 0 ) {
+          Floor floor = new Floor(apartment[0].getFloorId());
           building_id = floor.getBuildingId();
           Building building = new Building(building_id);
         }
 
-      ApartmentType[] rooms = BuildingFinder.findApartmentTypesInBuilding(building_id);
+      ApartmentType[] types = BuildingFinder.findApartmentTypesInBuilding(building_id);
 
       Form roomForm = new Form();
 
@@ -176,10 +176,10 @@ public ApartmentTypeViewer(int apartmenttypeid){
       DropdownMenu roomTypes = new DropdownMenu("room_sub_type_id");
         roomTypes.setToSubmit();
         roomTypes.keepStatusOnAction();
-        for ( int a = 0; a < rooms.length; a++ ) {
-         roomTypes.addMenuElement(rooms[a].getID()+"",rooms[a].getName());
+        for ( int a = 0; a < types.length; a++ ) {
+         roomTypes.addMenuElement(types[a].getID()+"",types[a].getName());
         }
-        roomTypes.setSelectedElement(room.getID()+"");
+        roomTypes.setSelectedElement(type.getID()+"");
 
       formTable.add(roomTypes,1,1);
       roomForm.add(formTable);

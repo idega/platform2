@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import java.util.List;
+import java.util.Hashtable;
 import java.sql.*;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
@@ -22,16 +23,36 @@ import java.lang.StringBuffer;
 
 public class BuildingFinder {
 
-  public static List BuildingsList(){
+  public static List ListOfComplex(){
+    try{
+      return EntityFinder.findAll(new Complex());
+    }
+    catch(SQLException e){return null;}
+  }
+  public static List ListOfBuilding(){
     try{
       return EntityFinder.findAll(new Building());
     }
     catch(SQLException e){return null;}
   }
 
-  public static List FloorsList(){
+  public static List ListOfFloor(){
     try{
       return EntityFinder.findAll(new Floor());
+    }
+    catch(SQLException e){return null;}
+  }
+
+  public static List ListOfApartmentType(){
+    try{
+     return EntityFinder.findAll(new ApartmentType());
+    }
+    catch(SQLException e){return null;}
+  }
+
+  public static List ListOfApartmentCategory(){
+    try{
+     return EntityFinder.findAll(new ApartmentCategory());
     }
     catch(SQLException e){return null;}
   }
@@ -42,8 +63,8 @@ public class BuildingFinder {
     }
     catch(SQLException e){return null;}
   }
- public static Building[] findBuildings(){
-   Building[] buildings = new Building[0];
+  public static Building[] findBuildings(){
+    Building[] buildings = new Building[0];
     try{
       buildings = (Building[]) (new Building().findAll());
     }
@@ -211,6 +232,57 @@ public class BuildingFinder {
     catch(SQLException ex){}
     return r;
 
+  }
+
+  public static Hashtable getLodgingsHash(){
+    Hashtable hashtable = new Hashtable();
+    List BuildingList = ListOfBuilding();
+    List FloorList = ListOfFloor();
+    List TypeList = ListOfApartmentType();
+    List CategoryList = ListOfApartmentCategory();
+    List ComplexList  = ListOfComplex();
+    if(ComplexList != null){
+      int clen = ComplexList.size();
+      Complex C;
+      for (int i = 0; i < clen; i++) {
+        C = (Complex) ComplexList.get(i);
+        hashtable.put("x_"+C.getID(),C);
+      }
+    }
+    if(BuildingList != null){
+      int clen = BuildingList.size();
+      Building B;
+      for (int i = 0; i < clen; i++) {
+        B = (Building) BuildingList.get(i);
+        hashtable.put("b_"+B.getID(),B);
+      }
+    }
+    if(FloorList != null){
+      int len = FloorList.size();
+      Floor F;
+      for (int i = 0; i < len; i++) {
+        F = (Floor) FloorList.get(i);
+        hashtable.put("f_"+F.getID(),F);
+      }
+    }
+    if(TypeList != null){
+      int len = TypeList.size();
+      ApartmentType T;
+      for (int i = 0; i < len; i++) {
+        T = (ApartmentType) TypeList.get(i);
+        hashtable.put("t_"+T.getID(),T);
+      }
+    }
+    if(CategoryList != null){
+      int len = CategoryList.size();
+      ApartmentCategory C;
+      for (int i = 0; i < len; i++) {
+        C = (ApartmentCategory) CategoryList.get(i);
+        hashtable.put("c_"+C.getID(),C);
+      }
+    }
+
+    return hashtable;
   }
 
 }// class end

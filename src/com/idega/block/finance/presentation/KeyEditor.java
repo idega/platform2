@@ -42,7 +42,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   }
 
   protected abstract void control(ModuleInfo modinfo);
-  protected abstract ModuleObject makeLinkTable(int menuNr);
+
 
   public void setColors(String LightColor,String MainColor,String DarkColor){
     if(LightColor.startsWith("#"))

@@ -23,22 +23,26 @@ public class TariffKey extends GenericEntity implements Key{
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("extra_info","Lýsing",true,true,"java.lang.String");
+    addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Lýsing",true,true,"java.lang.String",4000);
   }
+  public static String getAccountKeyEntityName(){return "FIN_TARIFF_KEY"; }
+  public static String getNameColumnName(){ return "NAME"; }
+  public static String getInfoColumnName(){return "INFO";}
+
   public String getEntityName() {
-    return "tariff_key";
+    return getAccountKeyEntityName();
   }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getNameColumnName(), name);
   }
   public String getInfo(){
-    return getStringColumnValue("extra_info");
+    return getStringColumnValue(getInfoColumnName());
   }
-  public void setInfo(String extra_info){
-    setColumn("extra_info", extra_info);
+  public void setInfo(String info){
+    setColumn(getInfoColumnName(), info);
   }
 }

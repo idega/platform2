@@ -2,8 +2,10 @@ package com.idega.block.finance.business;
 
 import com.idega.block.finance.data.*;
 import java.sql.SQLException;
+import java.util.List;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
+import com.idega.data.EntityFinder;
 
 /**
  * Title:
@@ -41,16 +43,27 @@ public class Finder  {
   public static TariffKey[] findTariffKeys(){
    TariffKey[] keys = new TariffKey[0];
     try{
-    keys = (TariffKey[]) (new TariffKey()).findAllOrdered("tariff_key_id");
+    keys = (TariffKey[]) (new TariffKey()).findAllOrdered(TariffKey.getNameColumnName());
     }
     catch(SQLException e){}
     return keys;
   }
 
+  public static List getAccountKeys(){
+    List  L = null;
+    try{
+      L = EntityFinder.findAll(new AccountKey());
+    }
+    catch(SQLException e){
+
+    }
+    return L;
+  }
+
   public static AccountKey[] findAccountKeys(){
    AccountKey[] keys = new AccountKey[0];
     try{
-    keys = (AccountKey[]) (new AccountKey()).findAllOrdered("account_key_id");
+    keys = (AccountKey[]) (new AccountKey()).findAllOrdered(AccountKey.getNameColumnName());
     }
     catch(SQLException e){}
     return keys;
