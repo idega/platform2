@@ -126,7 +126,7 @@ public class ComingAppointments extends EHealthBlock {
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
 		transpImg.setWidth(20);
-		transpImg.setHeight(13);
+		//transpImg.setHeight(13);
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
