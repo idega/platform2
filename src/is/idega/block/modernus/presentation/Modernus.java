@@ -119,6 +119,7 @@ public class Modernus extends Text {
 			obj = (Modernus)super.clone();
 			obj._pageName = _pageName;
 			obj._owner = _owner;
+			obj._siteName = _siteName;
 		}
 		catch(Exception ex) {
 			ex.printStackTrace(System.err);
