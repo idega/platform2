@@ -28,6 +28,8 @@ import com.idega.block.text.data.LocalizedText;
 
 import com.idega.block.text.business.TextFinder;
 
+import java.rmi.RemoteException;
+
 
 
 /**
@@ -84,7 +86,7 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
 
 
-  public static void updateStaff(int user_id, String title, String education, String school, String area, idegaTimestamp began_work) throws SQLException{
+  public static void updateStaff(int user_id, String title, String education, String school, String area, idegaTimestamp began_work) throws RemoteException{
 
     StaffInfo staffToAdd = null;
 
@@ -142,21 +144,13 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
     }
 
-    if(!update){
+//    if(!update){
+//
+//      staffToAdd.setImageID(-1);
+//
+//    }
 
-      staffToAdd.setImageID(-1);
-
-    }
-
-
-
-    if ( update )
-
-      staffToAdd.update();
-
-    else
-
-      staffToAdd.insert();
+    staffToAdd.store();
 
   }
 

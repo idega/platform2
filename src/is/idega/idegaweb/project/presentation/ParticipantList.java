@@ -2,6 +2,8 @@ package is.idega.idegaweb.project.presentation;
 
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
+import com.idega.block.staff.business.StaffBusiness;
+import com.idega.block.staff.presentation.StaffEditor;
 import com.idega.block.staff.presentation.StaffPropertyWindow;
 import com.idega.business.IDOLegacyEntityComparator;
 import com.idega.core.business.UserGroupBusiness;
@@ -228,9 +230,9 @@ public class ParticipantList extends AbstractContentList {
     this.setColumnWidth(1,"4");
     this.setColumnWidth(2,"220");
     this.setColumnWidth(3,"4");
-    this.setColumnWidth(4,"173");
+    this.setColumnWidth(4,"167");
     this.setColumnWidth(5,"4");
-    this.setColumnWidth(6,"69");
+    this.setColumnWidth(6,"75");
     this.setColumnWidth(7,"4");
     this.setColumnWidth(8,"210");
 
@@ -277,6 +279,8 @@ public class ParticipantList extends AbstractContentList {
             boolean staffHolderIsSuperAdmin = iwc.getAccessController().getAdministratorUser().getID() == staffHolder.getUserID();
             if(iwc.isSuperAdmin() && !staffHolderIsSuperAdmin){  //tmp
               text = new Link(staffHolder.getName());
+//              ((Link)text).setWindowToOpen(StaffEditor.class);
+//              ((Link)text).addParameter(StaffBusiness.PARAMETER_USER_ID,staffHolder.getUserID());
               ((Link)text).setWindowToOpen(StaffPropertyWindow.class);
               ((Link)text).addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID, staffHolder.getUserID());
             } else {

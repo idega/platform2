@@ -40,7 +40,7 @@ public class StaffInfoBMPBean extends com.idega.data.GenericEntity implements co
       addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
       addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
       setNullable(getColumnNameUserID(),false);
-      setNullable(getColumnNameImageID(),false);
+      setNullable(getColumnNameImageID(),true);
       setAsPrimaryKey(getColumnNameUserID(),true);
     }
 
