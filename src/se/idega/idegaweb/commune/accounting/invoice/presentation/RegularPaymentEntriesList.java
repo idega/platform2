@@ -1275,7 +1275,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	private Table addIntField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsIntegers(localize(LOCALIZER_PREFIX + "int_format_error", "Format-error: Expecting integer:" )+ " " + localize(key, "")); 
+		input.setAsPosNegIntegers(localize(LOCALIZER_PREFIX + "int_format_error", "Format-error: Expecting integer:" )+ " " + localize(key, "")); 
 		return addWidget(table, key, input, col, row);
 	}
 		
