@@ -45,6 +45,7 @@ private int tableRows=1;
 private String nodeActionParameter=NODE_ACTION_NODE_SELECTED;
 private boolean usesOnClick=false;
 private Link linesLink;
+private String linkStyle;
 
 private TreeViewer(ICTreeNode startNode){
   this.startNode=startNode;
@@ -219,26 +220,29 @@ private int addNode(ModuleInfo modinfo,Table table,int xpos,int ypos,ICTreeNode 
     getTable().resize(tableColumns,tableRows);
   }
   table.add(getNodeIcon(node,nodeIsOpen,bundle),xpos+1,ypos);
+  if ( table.isEmpty(1,ypos) ) {
+    table.add("",1,ypos);
+  }
 
   table.setAlignment(xpos+1,ypos,"left");
-  table.setVerticalAlignment(xpos+1,ypos,"top");
+  //table.setVerticalAlignment(xpos+1,ypos,"top");
 
   table.add(getNodeText(node,nodeIsOpen,bundle),xpos+2,ypos);
 
   table.setAlignment(xpos+2,ypos,"left");
-  table.setVerticalAlignment(xpos+1,ypos,"top");
+  //table.setVerticalAlignment(xpos+1,ypos,"top");
 
   table.mergeCells(xpos+2,tableRows,tableColumns,tableRows);
 
 
   table.add(getTreeLines(node,nodeIsOpen,parentarray,typeOfNode,bundle),xpos,ypos);
   if(recurseLevel>1){
-    int dummy = recurseLevel-1;;
+    int dummy = recurseLevel-1;
     while(dummy>0){
         table.add(getSimpleTreeLine(bundle),xpos-dummy,ypos);
 
         table.setAlignment(xpos-dummy,ypos,"left");
-        table.setVerticalAlignment(xpos-dummy,ypos,"top");
+        //table.setVerticalAlignment(xpos-dummy,ypos,"top");
 
         dummy--;
     }
@@ -291,6 +295,8 @@ public void setLinkProtototype(Link link){
 private Link getLinkPrototype(){
   if(linkPrototype==null){
     linkPrototype=new Link();
+    if ( linkStyle != null )
+      linkPrototype.setFontStyle(linkStyle);
     String target=getTarget();
     if(target!=null){
       linkPrototype.setTarget(target);
@@ -397,6 +403,10 @@ public void setOnClick(String action){
 public void setToMaintainParameter(String parameterName,ModuleInfo modinfo){
   Link link = getLinesLink();
   link.maintainParameter(parameterName,modinfo);
+}
+
+public void setTreeStyle(String style) {
+  linkStyle = style;
 }
 
 private Link getLinesLink(){
