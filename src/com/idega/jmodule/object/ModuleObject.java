@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.8 2001/05/18 19:48:06 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.9 2001/06/14 20:28:57 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import java.util.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import com.idega.util.database.*;
-import com.idega.builder.data.*;
+import com.idega.core.data.*;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWMainApplication;
 import javax.swing.event.EventListenerList;
@@ -406,16 +406,16 @@ public class ModuleObject extends Object implements Cloneable {
   }
 
   /**
-   * @deprecated Replaced with setIBObjectInstanceID()
+   * @deprecated Replaced with setICObjectInstanceID()
    */
-  public void setIBObjectInstanceID(int id) {
+  public void setICObjectInstanceID(int id) {
     this.ib_object_instance_id = id;
   }
 
   /**
-   * @deprecated Replaced with setIBObjectInstance()
+   * @deprecated Replaced with setICObjectInstance()
    */
-  public void setIBObjectInstance(IBObjectInstance instance) {
+  public void setICObjectInstance(ICObjectInstance instance) {
     this.ib_object_instance_id = instance.getID();
   }
 
@@ -424,29 +424,26 @@ public class ModuleObject extends Object implements Cloneable {
    */
 
   /**
-   * @deprecated Replaced with getIBObjectInstanceID()
+   * @deprecated Replaced with getICObjectInstanceID()
    */
-  public int getIBObjectInstanceID(ModuleInfo modinfo) throws SQLException {
+  public int getICObjectInstanceID(ModuleInfo modinfo) throws SQLException {
     return this.ib_object_instance_id;
   }
 
   /**
-   * @deprecated Replaced with getIBObjectInstance()
+   * @deprecated Replaced with getICObjectInstance()
    */
-  public IBObjectInstance getIBObjectInstance(ModuleInfo modinfo) throws SQLException {
-    return new IBObjectInstance(getIBObjectInstanceID(modinfo));
+  public ICObjectInstance getICObjectInstance(ModuleInfo modinfo) throws SQLException {
+    return new ICObjectInstance(getICObjectInstanceID(modinfo));
   }
 
-  /**
-   * @deprecated Replaced with getIBObject()
-   */
-  public IBObject getIBObject() throws SQLException {
-    return (IBObject)(new IBObject()).findAllByColumn("class_name",this.getClass().getName())[0];
+  public ICObject getICObject() throws SQLException {
+    return (ICObject)(new ICObject()).findAllByColumn("class_name",this.getClass().getName())[0];
   }
 
-  public IBObjectInstance getIBInstance(ModuleInfo modinfo) throws IWException {
+  public ICObjectInstance getICInstance(ModuleInfo modinfo) throws IWException {
     try {
-      return new IBObjectInstance(getIBObjectInstanceID(modinfo));
+      return new ICObjectInstance(getICObjectInstanceID(modinfo));
     }
     catch (Exception excep) {
       IWException exep = new IWException(excep.getMessage());

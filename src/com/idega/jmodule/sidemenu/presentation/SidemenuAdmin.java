@@ -15,6 +15,7 @@ import com.idega.jmodule.sidemenu.data.*;
 import java.util.*;
 import com.idega.util.*;
 import com.idega.builder.data.*;
+import com.idega.core.data.ICObject;
 
 public class SidemenuAdmin extends JModuleObject{
         private String attribute_name = "idega_id";
@@ -505,7 +506,7 @@ boolean show_menu_name = false;
           table.setBorder(1);
 
 
-	IBObject[] object = (IBObject[])(new IBObject()).findAllOrdered("object_name");
+	ICObject[] object = (ICObject[])(new ICObject()).findAllOrdered("object_name");
 
 	DropdownMenu dropdown = new DropdownMenu("ar_object_id");
 	if (object != null) {
@@ -584,7 +585,7 @@ boolean show_menu_name = false;
 
         String ar_object_id = getRequest().getParameter("ar_object_id");
         if (ar_object_id != null) {
-          IBObject object = new IBObject(Integer.parseInt(ar_object_id));
+          ICObject object = new ICObject(Integer.parseInt(ar_object_id));
           String class_name = object.getClassName();
           String entity_name = "";
           int entity_id = -1;

@@ -1,12 +1,13 @@
-package com.idega.builder.business;
+package com.idega.core.business;
 
 import com.idega.jmodule.object.*;
+import com.idega.core.data.*;
 import com.idega.builder.data.*;
 import java.lang.*;
 import java.sql.*;
 
 /**
- * Title:        IB
+ * Title:        IC
  * Description:
  * Copyright:    Copyright (c) 2001 idega.is All Rights Reserved
  * Company:      idega margmiðlun
@@ -14,13 +15,13 @@ import java.sql.*;
  * @version 1.0
  */
 
-public class IBJspHandler {
+public class ICJspHandler {
 
-  public IBJspHandler() {
+  public ICJspHandler() {
 
   }
 
-  public static int setIBJspPage(String Url, String AttributeName, String AttributeValue) throws SQLException{
+  public static int setICJspPage(String Url, String AttributeName, String AttributeValue) throws SQLException{
     IBJspPage page = new IBJspPage();
     page.setUrl(Url);
     page.setAttributeName(AttributeName);
@@ -32,14 +33,14 @@ public class IBJspHandler {
 
   public static void setJspPageInstanceID(ModuleInfo modinfo, String AttributeName, String AttributeValue) throws SQLException{
 
-    IBJspHandler.IBJspHandlerVariables variables;
-    Object SessionObject = modinfo.getSession().getAttribute("IBJspHandlerVariables");
+    ICJspHandler.ICJspHandlerVariables variables;
+    Object SessionObject = modinfo.getSession().getAttribute("ICJspHandlerVariables");
     String Url = modinfo.getRequest().getRequestURI();
 
     if (SessionObject == null){
-      variables = (new IBJspHandler()).new IBJspHandlerVariables();
+      variables = (new ICJspHandler()).new ICJspHandlerVariables();
     }else{
-      variables = (IBJspHandlerVariables)SessionObject;
+      variables = (ICJspHandlerVariables)SessionObject;
     }
 
     if (variables.getUrl() != Url || variables.getAttributeName() != AttributeName || variables.getAttributeValue() != AttributeValue ){
@@ -48,14 +49,14 @@ public class IBJspHandler {
       IBJspPage Pages[] = (IBJspPage[])page.findAll("SELECT * FROM " + page.getEntityName() + " WHERE " + page.getUrlColumnName() + " = " + Url + " AND " + page.getAttributeNameColumnName() + " = " + AttributeName + " AND " + page.getAttributeValueColumnName() + " = " + AttributeValue );
 
       if (Pages == null){
-        modinfo.setSessionAttribute("JspPageInstanceID", new Integer(setIBJspPage(Url, AttributeName, AttributeValue)));
+        modinfo.setSessionAttribute("JspPageInstanceID", new Integer(setICJspPage(Url, AttributeName, AttributeValue)));
       }else{
         modinfo.setSessionAttribute("JspPageInstanceID", new Integer(Pages[0].getID()));
       }
       variables.setUrl(Url);
       variables.setAttributeName(AttributeName);
       variables.setAttributeValue(AttributeValue);
-      modinfo.getSession().setAttribute("IBJspHandlerVariables",variables);
+      modinfo.getSession().setAttribute("ICJspHandlerVariables",variables);
     }
 
   }
@@ -74,14 +75,14 @@ public class IBJspHandler {
 
 
 
-  public class IBJspHandlerVariables {
+  public class ICJspHandlerVariables {
 
     String URL;
     String Attribute_name;
     String Attribute_value;
 
 
-    public IBJspHandlerVariables(){
+    public ICJspHandlerVariables(){
 
     }
 
@@ -113,9 +114,9 @@ public class IBJspHandler {
 
 
 
-  }  // inner Class IBJspHandlerVariables
+  }  // inner Class ICJspHandlerVariables
 
 
 
 
-} // class IBJspHandler
+} // class ICJspHandler

@@ -2,7 +2,7 @@
 /*
 *Copyright 2001 idega.is All Rights Reserved.
 */
-package com.idega.builder.data;
+package com.idega.core.data;
 
 //import java.util.*;
 import java.sql.*;
@@ -14,13 +14,13 @@ import com.idega.jmodule.object.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.3
 */
-public class IBObjectInstance extends GenericEntity{
+public class ICObjectInstance extends GenericEntity{
 
-	public IBObjectInstance(){
+	public ICObjectInstance(){
 		super();
 	}
 
-	public IBObjectInstance(int id)throws SQLException{
+	public ICObjectInstance(int id)throws SQLException{
 		super(id);
 	}
 
@@ -29,7 +29,7 @@ public class IBObjectInstance extends GenericEntity{
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 
 		addAttribute(getIDColumnName());
-		addAttribute("ib_object_id","Vefeining",true,true,"java.lang.Integer","many-to-one","com.idega.builder.data.IBObject");
+		addAttribute("ib_object_id","Vefeining",true,true,"java.lang.Integer","many-to-one","com.idega.core.data.ICObject");
 
 	}
 
@@ -49,8 +49,8 @@ public class IBObjectInstance extends GenericEntity{
           this.setColumn("ib_object_id",id);
         }
 
-	public IBObject getObject(){
-		return (IBObject) getColumnValue("ib_object_id");
+	public ICObject getObject(){
+		return (ICObject) getColumnValue("ib_object_id");
 	}
 
 	public ModuleObject getNewInstance()throws Exception{
@@ -116,7 +116,7 @@ public class IBObjectInstance extends GenericEntity{
         /**
          * Returns null if nothing found
          */
-        public IBObjectInstance[] getContainingObjects()throws Exception{
+        public ICObjectInstance[] getContainingObjects()throws Exception{
           /*Connection conn = this.getConnection();
           Statement stmt = conn.createStatement();
           ResultSet RS = stmt.executeQuery("select ib_object_instance_id from ib_object_property where ib_object_property_name='idega_special_add' and ");
@@ -129,7 +129,7 @@ public class IBObjectInstance extends GenericEntity{
               freeConnection(conn);
             }
           }*/
-          IBObjectInstance[] theReturn = null;
+          ICObjectInstance[] theReturn = null;
 
           /*IBObjectProperty[] properties = this.getProperties();
           for(int i=0;i<properties.length;i++){

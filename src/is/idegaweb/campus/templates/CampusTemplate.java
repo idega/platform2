@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTemplate.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: CampusTemplate.java,v 1.2 2001/06/14 20:29:24 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idegaweb.campus.templates;
 
-import com.idega.jmodule.login.presentation.Login;
+import com.idega.block.login.presentation.Login;
 import com.idega.jmodule.poll.moduleobject.BasicPollVoter;
 import com.idega.jmodule.quote.presentation.QuoteReader;
 import is.idegaweb.campus.service.*;

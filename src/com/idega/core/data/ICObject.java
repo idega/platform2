@@ -2,7 +2,7 @@
 /*
 *Copyright 2001 idega.is All Rights Reserved.
 */
-package com.idega.builder.data;
+package com.idega.core.data;
 
 //import java.util.*;
 import java.sql.*;
@@ -14,13 +14,13 @@ import com.idega.jmodule.object.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.3
 */
-public class IBObject extends GenericEntity{
+public class ICObject extends GenericEntity{
 
-	public IBObject(){
+	public ICObject(){
 		super();
 	}
 
-	public IBObject(int id)throws SQLException{
+	public ICObject(int id)throws SQLException{
 		super(id);
 	}
 
@@ -39,7 +39,7 @@ public class IBObject extends GenericEntity{
 	}
 
 	public String getEntityName(){
-		return "ib_object";
+		return "ic_object";
 	}
 
 	public void setDefaultValues(){
