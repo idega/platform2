@@ -83,7 +83,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createCitizen(String firstname, String middlename, String lastname, String personalID) throws CreateException, RemoteException {
+	public User createCitizen(String firstname, String middlename, String lastname, String personalID) throws CreateException {
 		return this.createCitizen(firstname, middlename, lastname, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	/**
@@ -93,7 +93,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Also adds the citizen to the Commune Root Group.
 	 */
 
-	public User createCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth) throws CreateException, RemoteException {
+	public User createCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth) throws CreateException {
 		User newUser = null;
 		try {
 			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootCitizenGroup());
@@ -111,7 +111,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		 * can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth, final Group rootGroup) throws CreateException, RemoteException {
+	public User createCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth, final Group rootGroup) throws CreateException {
 		User newUser = null;
 		try {
 			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, rootGroup);
@@ -127,14 +127,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
+	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID) throws CreateException {
 		return createOrUpdateCitizenByPersonalID(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	/**
 	 * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */	
-	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
+	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException {
 		User user = null;
 		try {
 			final UserHome home = getUserHome();
@@ -172,7 +172,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * dateofbirth can be null.<br> Also adds the citizen to the Commune Special
 	 * Citizen Root Group.
 	 */
-	public User createSpecialCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth) throws CreateException, RemoteException {
+	public User createSpecialCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth) throws CreateException {
 		User newUser = null;
 		try {
 			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootOtherCommuneCitizensGroup());
@@ -189,10 +189,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * middlename, lastname and personalID.<br> Also adds the citizen to the
 	 * Commune Special Citizen Root Group (people who don't live in Nacka).
 	 */
-	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
+	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException {
 		return createOrUpdateCitizenByPersonalID(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
-	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
+	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException {
 		User user = null;
 		try {
 			final UserHome home = getUserHome();
@@ -643,7 +643,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
 
-	public boolean moveCitizenFromCommune(User user, Timestamp time) throws RemoteException {
+	public boolean moveCitizenFromCommune(User user, Timestamp time) {
 
 		/*UserTransaction transaction =  getSessionContext().getUserTransaction();
 		
@@ -699,7 +699,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return true;
 	}
 
-	public boolean moveCitizenToCommune(User user, Timestamp time) throws RemoteException {
+	public boolean moveCitizenToCommune(User user, Timestamp time) {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -757,12 +757,12 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	
-	public boolean moveCitizenToCommune(User user) throws RemoteException {
+	public boolean moveCitizenToCommune(User user) {
 		return moveCitizenToCommune(user,IWTimestamp.getTimestampRightNow());
 	}
 	
 	
-	public boolean moveCitizenToProtectedCitizenGroup(User user,Timestamp time) throws RemoteException {
+	public boolean moveCitizenToProtectedCitizenGroup(User user,Timestamp time) {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -839,7 +839,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return getChildHomePhone(getUser(childId));
 	}
 
-	public boolean getIfUserAddressesMatch(Address userAddress, Address userAddressToCompare) throws RemoteException {
+	public boolean getIfUserAddressesMatch(Address userAddress, Address userAddressToCompare) {
 		if (((Integer) userAddress.getPrimaryKey()).intValue() == ((Integer) userAddressToCompare.getPrimaryKey()).intValue())
 			return true;
 
@@ -899,7 +899,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
 	}
 
-	public int getRootAdministratorGroupID() throws RemoteException {
+	public int getRootAdministratorGroupID() {
 		String ROOT_COMMUNE_ADMINISTRATORS_GROUP = "commune_administrators_group_id";
 		IWBundle bundle = getCommuneBundle();
 		String groupId = bundle.getProperty(ROOT_COMMUNE_ADMINISTRATORS_GROUP);
@@ -1147,13 +1147,13 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenFromCommune(com.idega.user.data.User)
 	 */
-	public boolean moveCitizenFromCommune(User user) throws RemoteException {
+	public boolean moveCitizenFromCommune(User user) {
 		return moveCitizenFromCommune(user,IWTimestamp.getTimestampRightNow());
 	}
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenToProtectedCitizenGroup(com.idega.user.data.User)
 	 */
-	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
+	public boolean moveCitizenToProtectedCitizenGroup(User user) {
 		return moveCitizenToProtectedCitizenGroup(user,IWTimestamp.getTimestampRightNow());
 	}
 		
