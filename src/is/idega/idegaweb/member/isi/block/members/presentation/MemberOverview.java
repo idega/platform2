@@ -75,6 +75,11 @@ public class MemberOverview extends Block {
 	public void main(IWContext iwc) {
 		IWResourceBundle comUserBundle = iwc.getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
 		_collator = Collator.getInstance(iwc.getLocale());
+		
+		String status = iwc.getParameter(PARAM_NAME_SHOW_STATUS);
+		boolean showStatus = status==null || "true".equals(status);
+		boolean showHistory = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_HISTORY));
+		boolean showFinanceOverview = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW));
 
 		Table mainTable = new Table(1, 4);
 		mainTable.setBorder(0);
@@ -104,30 +109,58 @@ public class MemberOverview extends Block {
 		table.setBorder(0);
 		table.setColumns(4);
 		int row = 1;
+		
+		Image minusImg = comUserBundle.getImage("minus.gif");
+		Image plusImg = comUserBundle.getImage("plus.gif");
 
+		Link statusLink = new Link(showStatus?minusImg:plusImg);
+		statusLink.setBold();
+		statusLink.setBelongsToParent(true);
+		statusLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"false":"true");
+		statusLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
+		statusLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
 		String statusHeader = _iwrb.getLocalizedString("member_overview_registration", "Membership status");
 		String statusText = _iwrb.getLocalizedString("member_overview_status", "Status");
-		row = insertSectionHeaderIntoTable(table, row, new String[] { statusHeader, statusText });
-		row = insertRegistrationInfoIntoTable(table, row, false);
-
+		row = insertSectionHeaderIntoTable(table, row, new String[] { statusHeader, statusText }, statusLink);
+		if(showStatus) {
+			row = insertRegistrationInfoIntoTable(table, row, false);
+		}
+		
+		Link historyLink = new Link(showHistory?minusImg:plusImg);
+		historyLink.setBold();
+		historyLink.setBelongsToParent(true);
+		historyLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
+		historyLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"false":"true");
+		historyLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
 		String historyHeader = _iwrb.getLocalizedString("member_overview_history", "Membership history");
 		String beginText = _iwrb.getLocalizedString("member_overview_begin_date", "Started");
 		String endText = _iwrb.getLocalizedString("member_overview_end_date", "Quit");
 		String[] historyHeaders = new String[] { historyHeader, statusText, beginText, endText };
-		row = insertSectionHeaderIntoTable(table, row, historyHeaders);
-		row = insertRegistrationInfoIntoTable(table, row, true);
+		row = insertSectionHeaderIntoTable(table, row, historyHeaders, historyLink);
+		if(showHistory) {
+			row = insertRegistrationInfoIntoTable(table, row, true);
+		}
+		
 
 		Date usersDOB = user.getDateOfBirth();
 		if(usersDOB != null) {
 			if(isUserOverEighteen(usersDOB)) {
+				Link financeOverviewLink = new Link(showFinanceOverview?minusImg:plusImg);
+				financeOverviewLink.setBold();
+				financeOverviewLink.setBelongsToParent(true);
+				financeOverviewLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
+				financeOverviewLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
+				financeOverviewLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"false":"true");
 				String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
 				String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
 				String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
 				String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
 				String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
 				String[] financeOverviewHeaderAlignments = { null, null, "right" };
-				row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
-				row = insertFinanceInfoIntoTable(table, row, true, iwc);
+				row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders, financeOverviewLink);
+				if(showFinanceOverview) {
+					row = insertFinanceInfoIntoTable(table, row, true, iwc);
+				}
 			}
 		}
 		mainTable.add(table, 1, 4);
@@ -317,7 +350,7 @@ public class MemberOverview extends Block {
 	 * @return Index of next empty row in <code>table</code>,
 	 *         <code>row</code>+1
 	 */
-	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers) {
+	private int insertSectionHeaderIntoTable(Table table, int row, String[] headers, Link link) {
 		int length = headers.length;
 		table.mergeCells(1 + length, row, table.getColumns(), row); // merges last column with
 												   // value to last column
@@ -334,6 +367,8 @@ public class MemberOverview extends Block {
 				}
 			}
 		}
+		
+		table.add(link, 1, row);
 
 		table.setCellpaddingLeft(1, row, 20);
 		table.setCellpaddingRight(table.getColumns(), row, 20);
