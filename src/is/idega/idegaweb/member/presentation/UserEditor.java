@@ -275,7 +275,7 @@ public class UserEditor extends Block {
 				try {
 					presentateUserRelations(iwc);
 				}
-				catch (FinderException e) {
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			presentateButtons(iwc);
