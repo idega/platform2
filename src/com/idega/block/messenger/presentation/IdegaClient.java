@@ -158,6 +158,8 @@ public class IdegaClient extends Applet implements Runnable{
         // connect to the servlet
         System.out.println("Connecting to servlet...");
         URL servlet = new URL(hostURL,servletURL);
+         System.out.println("SERVLET URL! :"+hostURL+servletURL);
+
 
         servletConnection = servlet.openConnection();
         System.out.println("Connected");
