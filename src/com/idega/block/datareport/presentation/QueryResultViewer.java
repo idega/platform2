@@ -399,7 +399,7 @@ public class QueryResultViewer extends Block {
 		// that means: if the user has set number of rows to 12 000 and the result contains 11 000 rows
 		// nothing happens even if MAX_NUMBER_OF_ROWS_IN_RESULT is only set to 500 
 		if (resultNumberOfRows > numberOfRows && resultNumberOfRows > QueryConstants.MAX_NUMBER_OF_ROWS_IN_RESULT)  {
-			String error = resourceBundle.getLocalizedString("ro_number_of_rows_in result _is_properly_too_large", "Number of rows in result is properly too large");
+			String error = resourceBundle.getLocalizedString("ro_number_of_rows_in result _might_be_too_large", "Number of rows might be too large");
 			String rows = resourceBundle.getLocalizedString("ro_rows","rows");
 			StringBuffer buffer = new StringBuffer(error);
 			buffer.append(": ").append(resultNumberOfRows).append(" ").append(rows);
