@@ -242,10 +242,17 @@ public class TournamentResults extends JModuleObject {
           case ResultComparator.TOTALSTROKES :
             int roundScoreColumn = 10;
             for ( int b = 1; b <= numberOfRounds; b++ ) {
-              int position = roundScoreColumn + collector.getRound(b) - 1;
-              int roundScore2 = collector.getRoundScore(b);
+              int roundScore2 = 0;
+              int roundIncNumber = collector.getRound(b);
+              int position = roundScoreColumn + roundIncNumber - 1;
+
+              if ( collector.getRoundNumber(b) != 0 ) {
+                roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
+              }
+
               Text roundScoreText = new Text(Integer.toString(roundScore2));
                 roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+
               if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreText,position,a+3);
               }
@@ -387,7 +394,7 @@ public class TournamentResults extends JModuleObject {
 
       String rounds = iwrb.getLocalizedString("tournament.rounds","Rounds");
       if ( tournament.getNumberOfRounds() > 4 ) {
-        roundShort = iwrb.getLocalizedString("tournament.days","Days");
+        rounds = iwrb.getLocalizedString("tournament.days","Days");
       }
 
       switch (tournamentType_) {

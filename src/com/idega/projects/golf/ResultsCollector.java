@@ -68,6 +68,19 @@ public class ResultsCollector {
     roundNumber_.add(new Integer(roundNumber));
   }
 
+  public int getRoundNumber(int roundNumber) {
+    int position = 0;
+
+    if (roundNumber_ != null) {
+      position = roundNumber_.indexOf(new Integer(roundNumber));
+      if ( position == -1 ) {
+        position = 0;
+      }
+    }
+
+    return position;
+  }
+
   public int getRound(int roundNumber) {
     int position = 0;
 

@@ -202,25 +202,25 @@ private Table resultTable;
       groupsMenu.addMenuElement("0",iwrb.getLocalizedString("tournament.all","All"));
       groupsMenu.keepStatusOnAction();
 
-    String round = iwrb.getLocalizedString("tournament.round","Round");
+    String roundShort = iwrb.getLocalizedString("tournament.round","Round");
     if ( tournament.getNumberOfRounds() > 4 ) {
-      round = iwrb.getLocalizedString("tournament.day","Day");
+      roundShort = iwrb.getLocalizedString("tournament.day","Day");
     }
 
-    String rounds = iwrb.getLocalizedString("tournament.rounds","Rounds");
+    String round = iwrb.getLocalizedString("tournament.rounds","Rounds");
     if ( tournament.getNumberOfRounds() > 4 ) {
-      roundShort = iwrb.getLocalizedString("tournament.days","Days");
+      round = iwrb.getLocalizedString("tournament.days","Days");
     }
 
     DropdownMenu roundsMenu = new DropdownMenu("tournament_round_id");
       roundsMenu.setAttribute("style",getStyle());
-      roundsMenu.addMenuElement("","- "+rounds+" -");
+      roundsMenu.addMenuElement("","- "+round+" -");
 
       TournamentRound[] rounds = null;
       try {
         rounds = tournament.getTournamentRounds();
         for ( int a = 0; a < rounds.length; a++ ) {
-          roundsMenu.addMenuElement(rounds[a].getID(),Integer.toString(a+1)+". "+round);
+          roundsMenu.addMenuElement(rounds[a].getID(),Integer.toString(a+1)+". "+roundShort);
         }
       }
       catch (Exception e) {
