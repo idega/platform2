@@ -40,8 +40,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	protected static final String ACTION_DELETE = "aa_delete";
 	
 	protected static final String LABEL_NAME = "isi_acc_aa_name";
-	protected static final String LABEL_CLUB = "isi_acc_aa_club";
-	protected static final String LABEL_DIVISION = "isi_acc_aa_div";
+//	protected static final String LABEL_CLUB = "isi_acc_aa_club";
+//	protected static final String LABEL_DIVISION = "isi_acc_aa_div";
 	protected static final String LABEL_GROUP = "isi_acc_aa_group";
 	protected static final String LABEL_START = "isi_acc_aa_start";
 	protected static final String LABEL_END = "isi_acc_aa_end";
@@ -106,10 +106,10 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		int row = 1;
 		Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
 		labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
-		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
-		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+//		Text labelClub = new Text(iwrb.getLocalizedString(LABEL_CLUB, "Club"));
+//		labelClub.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+//		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
+//		labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelGroup = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
@@ -161,13 +161,13 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		
 		row = 1;
 		t.add(labelName, 2, row);
-		t.add(labelClub, 3, row);
-		t.add(labelDiv, 4, row);
-		t.add(labelGroup, 5, row);
-		t.add(labelStart, 6, row);
-		t.add(labelEnd, 7, row);
-		t.add(labelUser, 8, row);
-		t.add(labelIncludeChildren, 9, row++);
+//		t.add(labelClub, 3, row);
+//		t.add(labelDiv, 4, row);
+		t.add(labelGroup, 3, row);
+		t.add(labelStart, 4, row);
+		t.add(labelEnd, 5, row);
+		t.add(labelUser, 6, row);
+		t.add(labelIncludeChildren, 7, row++);
 		
 		Collection col = null;
 		try {
@@ -198,26 +198,26 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 					nameLink.setWindowToOpen(AssessmentListWindow.class);
 					t.add(nameLink, 2, row);
 				}
-				t.add(round.getClub().getName(), 3, row);
-				if (round.getDivision() != null)
-					t.add(round.getDivision().getName(), 4, row);
+//				t.add(round.getClub().getName(), 3, row);
+//				if (round.getDivision() != null)
+//					t.add(round.getDivision().getName(), 4, row);
 				if (round.getGroup() != null)
-					t.add(round.getGroup().getName(), 5, row);
-				t.add(round.getStartTime().toString(), 6, row);
+					t.add(round.getGroup().getName(), 3, row);
+				t.add(round.getStartTime().toString(), 4, row);
 				if (round.getEndTime() != null)
-					t.add(round.getEndTime().toString(), 7, row);
-				t.add(round.getExecutedBy().getName(), 8, row);
+					t.add(round.getEndTime().toString(), 5, row);
+				t.add(round.getExecutedBy().getName(), 6, row);
 				CheckBox children = (CheckBox)show.clone();
 				if (round.getIncludeChildren())
 					children.setChecked(true);
-				t.add(children, 9, row);
+				t.add(children, 7, row);
 				row++;
 			}
 			
 			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 			delete.setToEnableWhenChecked(LABEL_DELETE);
-			t.add(delete, 9, row);
-			t.setAlignment(9, row, "RIGHT");
+			t.add(delete, 7, row);
+			t.setAlignment(7, row, "RIGHT");
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);

@@ -248,7 +248,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
 	public boolean insertCreditCardContract(Group club, String division, String contractNumber, String type) {
 		Group div = null;
-		if (division != null) {
+		if (division != null || !division.equals("-1")) {
 			try {
 				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
 				div = gHome.findByPrimaryKey(new Integer(division));

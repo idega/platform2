@@ -10,6 +10,7 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffHome;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -31,6 +32,8 @@ import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 
 /**
  * @author palli
@@ -41,6 +44,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	private final static String USER_CHOOSER_NAME = "ma_user_chooser_name";
 	
 	private final static String LABEL_SELECTED_USER = "isi_acc_ma_selected_user";
+	private final static String LABEL_USERS_GROUPS = "isi_acc_ma_user_groups";
 	private final static String LABEL_TARIFF = "isi_acc_ma_tariff";
 	private final static String LABEL_AMOUNT = "isi_acc_ma_amount";
 	private final static String LABEL_INFO = "isi_acc_ma_info";
@@ -96,6 +100,8 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			t.add(getUser().getName(), 1, row);
 			
 			row = 1;
+			Text labelUsersGroups = new Text(iwrb.getLocalizedString(LABEL_USERS_GROUPS, "Users groups"));
+			labelUsersGroups.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF, "Tariff"));
 			labelTariff.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT, "Amount"));
@@ -103,9 +109,12 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
 			labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			
-			inputTable.add(labelTariff, 1, row);
-			inputTable.add(labelAmount, 2, row);
-			inputTable.add(labelInfo, 3, row++);
+			inputTable.add(labelUsersGroups, 1, row);
+			inputTable.add(labelTariff, 2, row);
+			inputTable.add(labelAmount, 3, row);
+			inputTable.add(labelInfo, 4, row++);
+			
+			DropdownMenu usersGroupsInput = new DropdownMenu(LABEL_USERS_GROUPS);
 			
 			Collection tariff = null;
 			try {
@@ -135,9 +144,10 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			infoInput.setLength(20);
 			infoInput.setMaxlength(255);
 			
-			inputTable.add(tariffInput, 1, row);
-			inputTable.add(amountInput, 2, row);
-			inputTable.add(infoInput, 3, row);
+			inputTable.add(usersGroupsInput, 1, row);
+			inputTable.add(tariffInput, 2, row);
+			inputTable.add(amountInput, 3, row);
+			inputTable.add(infoInput, 4, row);
 			
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 			inputTable.add(submit, 4, row++);
@@ -176,4 +186,32 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 
 		return null;
 	}
+	
+	private void getGroupsForUser(IWContext iwc, Collection divisions, Group group) {
+		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+			divisions.add(group);
+		}
+
+//		getUserBusiness(iwc).£
+		
+/*		Iterator it = group.getChildren();
+		if (it != null) {
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				getClubDivisions(iwc, divisions, child);
+			}
+		}*/
+	}
+	
+	private UserBusiness getUserBusiness(IWApplicationContext iwc) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}	
+	
 }
