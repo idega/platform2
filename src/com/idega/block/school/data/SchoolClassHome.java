@@ -42,6 +42,6 @@ public interface SchoolClassHome extends com.idega.data.IDOHome
  public java.util.Collection findByTeacher(com.idega.user.data.User p0)throws javax.ejb.FinderException;
  public SchoolClass findOneBySchool(int p0)throws javax.ejb.FinderException;
  public int getNumberOfStudentsInClass(int p0)throws com.idega.data.IDOException;
- public Collection findBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID,int seasonID,boolean showSubGroups,boolean showNonSeasonGroups)throws FinderException;
+ public Collection findBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID,int seasonID,Boolean showSubGroups,Boolean showNonSeasonGroups)throws FinderException;
 
 }

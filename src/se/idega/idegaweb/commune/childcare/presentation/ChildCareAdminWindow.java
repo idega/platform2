@@ -809,7 +809,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 			if (!types.isEmpty()) {
 				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false,true,localize("child_care.no_school_classes","No school classes"));
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), null,null,localize("child_care.no_school_classes","No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {

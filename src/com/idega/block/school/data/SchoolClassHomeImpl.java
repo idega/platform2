@@ -258,7 +258,7 @@ public int getNumberOfStudentsInClass(int p0)throws com.idega.data.IDOException{
 	 * @see com.idega.block.school.data.SchoolClassHome#findBySchoolAndSchoolTypeAndSeason(int, int, int, boolean)
 	 */
 	public Collection findBySchoolAndSchoolTypeAndSeason(int schoolID,
-			int schoolTypeID, int seasonID, boolean showSubGroups,boolean showNonSeasonGroups)
+			int schoolTypeID, int seasonID, Boolean showSubGroups,Boolean showNonSeasonGroups)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSchoolTypeAndSeason(schoolID,

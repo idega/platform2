@@ -1825,7 +1825,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 	
-	public Collection findSchoolClassesBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID, int schoolSeasonID, boolean showSubGroups,boolean showNonSeasonGroups){
+	public Collection findSchoolClassesBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID, int schoolSeasonID, Boolean showSubGroups,Boolean showNonSeasonGroups){
 		try {
 			return getSchoolClassHome().findBySchoolAndSchoolTypeAndSeason(schoolID, schoolTypeID,schoolSeasonID, showSubGroups,showNonSeasonGroups);
 		}
