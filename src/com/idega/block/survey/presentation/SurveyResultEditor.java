@@ -37,6 +37,7 @@ import com.idega.presentation.ui.FieldSet;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.Legend;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 import com.idega.util.poi.POIUtility;
@@ -160,6 +161,9 @@ public class SurveyResultEditor extends Block {
 		add(getText(_iwrb.getLocalizedString("number_of_participants","Number of participants")));
 		table.add(numberOfParticipantsInput,1,1);
 		table.add(submit,1,1);
+		
+		table.add(new Parameter(PARAMETER_SURVEY_ID, _survey.getPrimaryKey().toString()));
+		table.add(new Parameter(Survey.PRM_SWITCHTO_MODE,Survey.MODE_RESULTS));
 		
 		try {
 			String  prm = iwc.getParameter(prmNumberOfParticipants);
