@@ -131,6 +131,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private IWBundle iwb = null;
 	private ICPage formResponsePage;
 	private ICPage formBackPage;
+	private boolean iUseStyleNames;
 
 	private static String _width = "600";
 	//private String _width = iwb.getProperty("table.width"); 
@@ -151,6 +152,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		this.setResourceBundle(getResourceBundle(iwc));
 		setBundle(getBundle(iwc));
 		_width = iwb.getProperty("table.width", "600"); 
+		iUseStyleNames = new Boolean(iwb.getProperty("layout.use_style_names", "false")).booleanValue();
 		super._main(iwc);
 	}
 	
@@ -336,6 +338,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	public ICPage getBackPage() {
 		return this.formBackPage;
+	}
+	
+	public boolean useStyleNames() {
+		return iUseStyleNames;
 	}
 	
 	public void setBackPage(ICPage page) {
