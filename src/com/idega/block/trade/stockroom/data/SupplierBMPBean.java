@@ -314,7 +314,6 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		query.addColumn(new WildCardColumn(table));
 		query.addCriteria(new MatchCriteria(groupColumn, MatchCriteria.EQUALS, groupID));
 		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
-		System.out.println(query.toString());
 		return this.idoFindPKsBySQL(query.toString());
 	}
 }
