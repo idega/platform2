@@ -295,13 +295,15 @@ public void setLinkProtototype(Link link){
 private Link getLinkPrototype(){
   if(linkPrototype==null){
     linkPrototype=new Link();
-    if ( linkStyle != null )
-      linkPrototype.setFontStyle(linkStyle);
     String target=getTarget();
     if(target!=null){
       linkPrototype.setTarget(target);
     }
   }
+
+  if ( linkStyle != null )
+    linkPrototype.setFontStyle(linkStyle);
+
   return linkPrototype;
 }
 
