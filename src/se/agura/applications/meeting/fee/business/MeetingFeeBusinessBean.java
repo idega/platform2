@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.10 2005/02/15 13:57:41 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.11 2005/02/17 18:58:11 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,6 +34,7 @@ import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.ListUtil;
@@ -43,12 +44,15 @@ import com.idega.util.ListUtil;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
 	protected static final String IW_MEETING_BUNDLE_IDENTIFIER = "se.agura.applications.meeting.fee";
 	
+	private static String PROP_SALARY_DEPARTMENT_EMAIL = "salary_department_mailaddress";
+	private static String PROP_SALARY_DEPARTMENT_EMAIL_CC = "salary_department_mailaddress_cc";
+
 	protected String getBundleIdentifier() {
 		return IW_MEETING_BUNDLE_IDENTIFIER;
 	}
@@ -244,6 +248,13 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 
 	public void acceptApplication(MeetingFee meetingFee, User performer) {
 		changeCaseStatus(meetingFee, getCaseStatusGranted().getStatus(), performer);
+
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "helen.overgaard@svenskakyrkan.se");
+		String cc = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL_CC, "ylva.jacobsson@svenskakyrkan.se");
+		if (email != null) {
+			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), getLocalizedString("meeting_fee.accepted_body", "A meeting fee report has been accepted..."), null);
+		}
 	}
 
 	public void rejectApplication(MeetingFee meetingFee, User performer) {

@@ -6,7 +6,6 @@
  */
 package se.agura.applications.vacation.business;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
@@ -49,12 +48,8 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 
 	protected static final String IW_VACATION_BUNDLE_IDENTIFIER = "se.agura.applications.vacation";
 	
-  private static String DEFAULT_SMTP_MAILSERVER = "mail.agurait.com";
-	private static String PROP_SYSTEM_SMTP_MAILSERVER = "messagebox_smtp_mailserver";
-	private static String PROP_MESSAGEBOX_FROM_ADDRESS = "messagebox_from_mailaddress";
 	private static String PROP_SALARY_DEPARTMENT_EMAIL = "salary_department_mailaddress";
 	private static String PROP_SALARY_DEPARTMENT_EMAIL_CC = "salary_department_mailaddress_cc";
-	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS = "no-reply@aguraintra.se";
 	
 	protected String getBundleIdentifier() {
 		return IW_VACATION_BUNDLE_IDENTIFIER;
@@ -300,33 +295,6 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-	private void sendMessage(String email, String cc, String subject, String body, File attachment) {
-		String receiver = email.trim();
-		String mailServer = DEFAULT_SMTP_MAILSERVER;
-		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
-		try {
-			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER, DEFAULT_SMTP_MAILSERVER);
-			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS, DEFAULT_MESSAGEBOX_FROM_ADDRESS);
-		}
-		catch (Exception e) {
-			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
-			e.printStackTrace();
-		}
-
-		try {
-			if (attachment == null) {
-				com.idega.util.SendMail.send(fromAddress, receiver, cc != null ? cc : "", "", mailServer, subject, body);
-			}
-			else {
-				com.idega.util.SendMail.send(fromAddress, receiver, cc != null ? cc : "", "", mailServer, subject, body, attachment);
-			}
-		}
-		catch (javax.mail.MessagingException me) {
-			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
-		}
-	}
-	
 	public Group getParentGroup(User user) {
 		Group primaryGroup = user.getPrimaryGroup();
 		if (primaryGroup != null) {
