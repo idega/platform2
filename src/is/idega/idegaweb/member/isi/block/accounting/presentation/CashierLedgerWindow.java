@@ -3,10 +3,11 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
+import javax.ejb.FinderException;
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
 import com.idega.block.cal.business.LedgerVariationsHandler;
@@ -21,9 +22,11 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.GroupPropertyWindow;
 import com.idega.user.presentation.UserPropertyWindow;
 
 /**
@@ -33,14 +36,41 @@ import com.idega.user.presentation.UserPropertyWindow;
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
 public class CashierLedgerWindow extends CashierSubWindowTemplate{
+	public static String ADD_USER = "add_user";
 	public static String NEW_USER_IN_LEDGER = "user_new_in_ledger_";
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
+	public static final String PARAMETER_USER_ID = "userID";
+	public static final String PARAMETER_LEDGER_GROUP = "ledgerGroup";
 	private String bold = "bold";
 	
 	public CashierLedgerWindow() {
 		super();
 	}
-	public void main(IWContext iwc) {
+	public void main(IWContext iwc) throws Exception {
+		String addUs = iwc.getParameter(ADD_USER);
+		if(iwc.getParameter(ADD_USER) != null) {
+			String userID = iwc.getParameter(PARAMETER_USER_ID);
+			User user = null;
+			Group ledgerGroup = null;
+			try {
+				user = getUserBusiness(iwc).getUser(Integer.parseInt(userID));
+				ledgerGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(iwc.getParameter(PARAMETER_LEDGER_GROUP)));
+			}
+			catch (NumberFormatException e1) {
+				e1.printStackTrace();
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
+			if(ledgerGroup != null && user != null) {
+				ledgerGroup.addGroup(user);
+			}
+			
+		}
+
 		EntityToPresentationObjectConverter converterLink = new EntityToPresentationObjectConverter() {
 			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
 				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
@@ -53,6 +83,7 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 				boolean isInGroup = false;
 
 				String metaData = user.getMetaData(NEW_USER_IN_LEDGER);
+				System.out.println("metadata for user: " + user.getName() + ": " + metaData);
 				if(metaData != null && !metaData.equals("") && !metaData.equals("-1")) {
 					int ledGroupID = -1;
 					if(metaData != null && !metaData.equals("")) {
@@ -61,11 +92,12 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 						}catch(NumberFormatException nfe) {
 							ledGroupID = -1;
 						}					
-					}				
+					}		
+					UserBusiness userBiz = getUserBusiness(iwc);
 					PresentationObject text = browser.getDefaultConverter().getPresentationObject(entity, path, browser, iwc);
 					Integer userID = (Integer) user.getPrimaryKey();
 					try {
-						groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+						groups = userBiz.getUserGroupsDirectlyRelated(user);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -82,12 +114,20 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 							}
 						}				
 					}
-					UserBusiness userBiz = getUserBusiness(iwc);
+					
 					Collection parentGroups = null;
 					String divisionNameField = null;
 					String clubNameField =  null;
 					LedgerVariationsHandler ledgerVariationsHandler = getLedgerVariationsHandler(iwc);
 					Group ledgerGroup = null;
+//					Image buttonAddToGroup = getResourceBundle(iwc).getLocalizedImageButton("cashierLedgerWindow.add_to_group", "Add user to ledger group");
+					Link button = new Link("Add user to ledger group");
+					button.addParameter(PARAMETER_LEDGER_GROUP,ledGroupID);
+					button.addParameter(PARAMETER_USER_ID,user.getPrimaryKey().toString());
+					button.addParameter(GroupPropertyWindow.PARAMETERSTRING_GROUP_ID, iwc.getParameter(GroupPropertyWindow.PARAMETERSTRING_GROUP_ID));
+					button.addParameter(CashierWindow.ACTION,CashierWindow.ACTION_CASHIER_LEDGER);
+					button.addParameter(ADD_USER, ADD_USER);
+					button.setAsImageButton(true);
 					try{
 						ledgerGroup = userBiz.getGroupBusiness().getGroupByGroupID(ledGroupID);
 						parentGroups = userBiz.getGroupBusiness().getParentGroupsRecursive(userBiz.getGroupBusiness().getGroupByGroupID(ledGroupID));
@@ -126,7 +166,9 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 					displayText.setStyleClass(bold);
 					Table te = new Table();
 					te.add(aLink,1,1);
-					te.add(displayText,1,1);
+					te.add(displayText,2,1);
+					te.add(Text.NON_BREAKING_SPACE,2,1);
+					te.add(button,3,1);
 					return te;
 					
 				}
@@ -137,7 +179,6 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		};
 		
 		Collection users = null;
-		User user = null;
 		
 		try {
 			users = getUserBusiness(getIWApplicationContext()).getUserHome().findUsersByMetaData(NEW_USER_IN_LEDGER,null);
@@ -149,7 +190,13 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		while(usersIter.hasNext()) {
 			User us = (User) usersIter.next();
 			if(us.getMetaData(NEW_USER_IN_LEDGER) != null && !us.getMetaData(NEW_USER_IN_LEDGER).equals("-1")) {
-				u.add(us);
+				String sLedGrID = us.getMetaData(NEW_USER_IN_LEDGER);
+				if(sLedGrID != null && !sLedGrID.equals("") && !sLedGrID.equals("user_new_in_ledger_")) {
+					Group ledgerGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(sLedGrID));
+					if(iwc.getAccessController().hasViewPermissionFor(ledgerGroup,iwc) || iwc.getAccessController().hasEditPermissionFor(ledgerGroup,iwc)) {
+						u.add(us);
+					}
+				}
 			}
 		}
 
@@ -171,8 +218,8 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 		entityBrowser.setEntityToPresentationConverter(nameKey, converterLink);
 		
 		add(entityBrowser);
-		
 	}
+
 	public static LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
 		// the class used to handle ledgerVariations is an applicationProperty... 
 		String bClass = null;
@@ -211,6 +258,16 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 			}
 		}
 		return userBiz;
+	}
+	public GroupBusiness getGroupBusiness(IWApplicationContext iwc) {
+		GroupBusiness groupBiz = null;
+		try {
+			groupBiz = (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+		}
+		catch (java.rmi.RemoteException rme) {
+			throw new RuntimeException(rme.getMessage());
+		}
+		return groupBiz;
 	}
 	public CalBusiness getCalendarBusiness(IWApplicationContext iwc) {
 		CalBusiness calBiz = null;
