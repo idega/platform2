@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.ejb.CreateException;
@@ -99,10 +100,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private boolean updateWorkReportData = false;
   
-  // key: member id, value: collection of league names, to that the member belongs
-  private Map memberLeaguesMap = null;
-  // key: league name, int number of members that belong to that league 
-  private SortedMap leagueCountMap = null;
+  // key: member id, value: collection of league ids, to that the member belongs
+  private Map memberLeaguesIdMap = null;
+  // key: league id, int number of members that belong to that league 
+  private Map leagueCountMap = null;
+  private SortedMap leagueNameId = null;
+  private Integer  mainBoardId = null;
+  
   private int playersCount; 
   private int membersTotalSum;
   
@@ -135,6 +139,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     Collection leagues;
     try {
       leagues = workReportBusiness.getLeaguesOfWorkReportById(getWorkReportId());
+      WorkReportGroup workReportGroup = workReportBusiness.getMainBoardWorkReportGroup(getYear());
+      mainBoardId = (Integer) workReportGroup.getPrimaryKey();
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -156,15 +162,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     fieldList.add(STREET_NAME);
     fieldList.add(POSTAL_CODE_ID);
     Iterator iterator = leagues.iterator();
-    leagueCountMap = new TreeMap();
+    leagueCountMap = new HashMap();
+    leagueNameId = new TreeMap();
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       // special case: REMOVE the league that represents the main board
       // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      String groupName = group.getName();
-      if (! WorkReportConstants.MAIN_BOARD_GROUP_NAME.equals(groupName))  {
-        leagueCountMap.put(groupName, new Integer(0));
+      Integer primaryKey = (Integer) group.getPrimaryKey();
+      if (! mainBoardId.equals(primaryKey))  {
+        leagueCountMap.put( primaryKey, new Integer(0));
+        String shortName = group.getShortName();
+        leagueNameId.put(shortName, primaryKey);
       }
     }
   }
@@ -260,20 +269,20 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         return action;
       }  
       Iterator membersLeagueIterator = membersLeague.iterator();
-      Collection membersLeagueNames = new ArrayList();
+      Collection membersLeagueIds = new ArrayList();
       while (membersLeagueIterator.hasNext())  {
         WorkReportGroup league= (WorkReportGroup) membersLeagueIterator.next();
-        String leagueName = league.getName();
-        membersLeagueNames.add(leagueName);
+        Integer leagueId = (Integer) league.getPrimaryKey();
+        membersLeagueIds.add(leagueId);
       }
       Iterator leagueIterator = leagueCountMap.keySet().iterator();
       while (leagueIterator.hasNext())  {
-        String key = (String) leagueIterator.next();
-        boolean isChecked = CheckBoxConverter.isEntityChecked(iwc, key, primaryKey);
-        boolean wasChecked = membersLeagueNames.contains(key);
+        Integer key = (Integer) leagueIterator.next();
+        boolean isChecked = CheckBoxConverter.isEntityChecked(iwc, key.toString(), primaryKey);
+        boolean wasChecked = membersLeagueIds.contains(key);
         if ( isChecked ^ wasChecked) {
           if (isChecked)  {
-            addLeague(workReportBusiness, key, member);
+            addLeague(workReportBusiness, key , member);
           }
           else {
             removeLeague(workReportBusiness, key, member);
@@ -323,7 +332,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       members = new ArrayList();
     }
     // create map: member as key, leagues as value 
-    memberLeaguesMap = new HashMap();
+    memberLeaguesIdMap = new HashMap();
     playersCount = 0;
     membersTotalSum = members.size();
     Iterator membersIterator = members.iterator();
@@ -338,19 +347,19 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         }
         while (leagues.hasNext()) {
           WorkReportGroup league = (WorkReportGroup) leagues.next();
-          String leagueName = league.getName();
-          if (! WorkReportConstants.MAIN_BOARD_GROUP_NAME.equals(leagueName)) {
-            leaguesList.add(leagueName);
-            Integer count = (Integer) leagueCountMap.get(leagueName);
+          Integer leagueId = (Integer) league.getPrimaryKey();
+          if ( mainBoardId != null && (! mainBoardId.equals(leagueId) ) ) {
+            leaguesList.add(leagueId);
+            Integer count = (Integer) leagueCountMap.get(leagueId);
             // if count is equal to null something is wrong: connection between work report and work report group is
             // missing. So usually count is equal to null should never occur.
             // Also: REMOVE the league that represents the main board
             count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
-            leagueCountMap.put(leagueName, count);
+            leagueCountMap.put(leagueId, count);
           }
         }
         Integer memberId = (Integer) member.getPrimaryKey();
-        memberLeaguesMap.put(memberId, leaguesList);
+        memberLeaguesIdMap.put(memberId, leaguesList);
       }
       catch (IDOException ex) {
         System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
@@ -493,11 +502,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     // add more columns
-    Iterator iterator = leagueCountMap.keySet().iterator();
+    Iterator iterator = leagueNameId.entrySet().iterator();
     int i = 100;
     while (iterator.hasNext())  {
-      String leagueName = (String) iterator.next();
-     WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(leagueName);
+     Map.Entry entry = (Map.Entry) iterator.next();
+     String leagueName = (String) entry.getKey();
+     Integer primaryKey = (Integer) entry.getValue();
+     WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(primaryKey, leagueName);
      converter.setEditable(editable);
      converter.maintainParameters(getParametersToMaintain());
      browser.setMandatoryColumn(i++, leagueName);
@@ -719,10 +730,16 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   }    
  
   // business method: remove league
-  private void removeLeague(WorkReportBusiness workReportBusiness, String groupToBeRemoved, WorkReportMember member) {
-    int year = getYear();
+  private void removeLeague(WorkReportBusiness workReportBusiness, Integer groupToBeRemoved, WorkReportMember member) {
     try {
-      workReportBusiness.removeWorkReportGroupFromEntity(getWorkReportId(), groupToBeRemoved, year, member);
+      WorkReportGroup workReportGroup = workReportBusiness.getWorkReportGroupHome().findByPrimaryKey(groupToBeRemoved);
+      workReportBusiness.removeWorkReportGroupFromEntity(getWorkReportId(), workReportGroup, member);
+    }
+    catch (FinderException findEx) {
+      String message =
+        "[WorkReportMemberEditor]: Can't retrieve work report group.";
+      System.err.println(message + " Message is: " + findEx.getMessage());
+      findEx.printStackTrace(System.err);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -734,10 +751,16 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   }
   
   // business method: add league
-  private void addLeague(WorkReportBusiness workReportBusiness, String groupToBeAdded, WorkReportMember member) {
-    int year = getYear();
+  private void addLeague(WorkReportBusiness workReportBusiness, Integer groupToBeAdded, WorkReportMember member) {
     try {
-      workReportBusiness.addWorkReportGroupToEntity(getWorkReportId(), groupToBeAdded, year, member);
+      WorkReportGroup workReportGroup = workReportBusiness.getWorkReportGroupHome().findByPrimaryKey(groupToBeAdded);
+      workReportBusiness.addWorkReportGroupToEntity(getWorkReportId(), workReportGroup, member);
+    }
+    catch (FinderException findEx) {
+      String message =
+        "[WorkReportMemberEditor]: Can't retrieve work report group.";
+      System.err.println(message + " Message is: " + findEx.getMessage());
+      findEx.printStackTrace(System.err);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -772,14 +795,20 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   class WorkReportCheckBoxConverter extends CheckBoxAsLinkConverter {
     
-    public WorkReportCheckBoxConverter(String key) {
-      super(key);
+    private String leagueName;
+    private Integer leagueId;
+    
+    public WorkReportCheckBoxConverter(Integer key, String leagueName) {
+      super(key.toString());
+      this.leagueName = leagueName;
+      // save convertions from string to integer
+      this.leagueId = key;
     }
     
     protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) { 
 
-      Collection leagues = (Collection) memberLeaguesMap.get(primaryKey);
-      return (leagues != null && leagues.contains(getKeyForCheckBox()));
+      Collection leagues = (Collection) memberLeaguesIdMap.get(primaryKey);
+      return (leagues != null && leagues.contains(leagueId));
     }
 
     
@@ -788,10 +817,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       EntityBrowser browser,
       IWContext iwc) {
        
-      String leagueName = getKeyForCheckBox(); 
       StringBuffer buffer = new StringBuffer(leagueName);
       buffer.append(": ");
-      buffer.append(leagueCountMap.get(leagueName));
+      buffer.append(leagueCountMap.get(leagueId));
       Text text = new Text(buffer.toString());
       text.setBold();
       return text;

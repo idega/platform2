@@ -68,15 +68,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
   private static final String STEP_NAME_LOCALIZATION_KEY = "workreportaccounteditor.step_name";
   
-  private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
-  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_entry_key";
+//  private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
+//  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
-  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+//  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
   
   private static final String LEAGUE_NAME = "FIN_league_name";
   
-  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
+//  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
   private static final String OKAY_BUTTON = "okayButton";
@@ -176,16 +176,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // do not delete an entry
     }
     // does the user want to delete an existings entries?
-    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
-      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
-      if (! entriesToDelete.isEmpty())  {
-        deleteWorkReportAccountGroupHelper(entriesToDelete, iwc);
-        // !! do nothing else !!
-        // do not modify entry
-        // do not create an entry
-        return action;
-      }
-    }
+//    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
+//      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
+//      if (! entriesToDelete.isEmpty())  {
+//        deleteWorkReportAccountGroupHelper(entriesToDelete, iwc);
+//        // !! do nothing else !!
+//        // do not modify entry
+//        // do not create an entry
+//        return action;
+//      }
+//    }
     
     // does th euser want to save a new entry?
 //    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
@@ -211,10 +211,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 //      }
 //      return action;
 //    }
-    // does the user want to create a new entry?
-    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
-      return ACTION_SHOW_NEW_ENTRY;
-    }  
+//    // does the user want to create a new entry?
+//    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
+//      return ACTION_SHOW_NEW_ENTRY;
+//    }  
     // does the user want to modify an existing entity? 
     if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
@@ -428,8 +428,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // sort league collection
     Comparator leagueComparator = new Comparator()  {
       public int compare(Object first, Object second) {
-        String firstName = ((WorkReportGroup) first).getName();
-        String secondName = ((WorkReportGroup) second).getName();
+        String firstName = ((WorkReportGroup) first).getShortName();
+        String secondName = ((WorkReportGroup) second).getShortName();
         return firstName.compareTo(secondName);
       }
     };
@@ -451,16 +451,16 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // the main board is now represented by a real work report group.
       // That means, that the group should never be null. 
       // old data model: String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : group.getName();
-      String groupName = group.getName();
+      String groupName = group.getShortName();
       // old data model: Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
       Integer groupId = (Integer) group.getPrimaryKey();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
-    // add new entry
-    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD_GROUP_NAME));
-    }
+//    // add new entry
+//    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
+//      workReportAccountGroupHelpers.add(new WorkReportAccountGroupHelper(new Integer(-1), WorkReportConstants.MAIN_BOARD_GROUP_NAME));
+//    }
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
     // put browser into a table
@@ -560,98 +560,98 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return browser;
   }
   
-  /**
-   * Converter for league column 
-   */
-  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-      protected Object getValue(
-        Object entity,
-        EntityPath path,
-        EntityBrowser browser,
-        IWContext iwc)  {
-          return ((EntityRepresentation) entity).getColumnValue(LEAGUE_NAME);
-        }
-      };        
-
-        
-    OptionProvider optionProvider = new OptionProvider() {
-      
-    Map optionMap = null;
-      
-    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-      if (optionMap == null)  {
-        optionMap = new TreeMap();
-        WorkReportBusiness business = getWorkReportBusiness(iwc);
-        Collection coll = null;
-        try {
-          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
-        }
-        catch (RemoteException ex) {
-          System.err.println(
-            "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-              + ex.getMessage());
-          ex.printStackTrace(System.err);
-          throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-        }
-        Iterator collIterator = coll.iterator();
-        while (collIterator.hasNext())  {
-          WorkReportGroup league = (WorkReportGroup) collIterator.next();
-          String name = league.getName(); 
-          String display = resourceBundle.getLocalizedString(name, name);
-          optionMap.put(name, display);
-          }
-        }
-        // add default value: no league (because main board members are not assigned to a league)
-        optionMap.put(WorkReportConstants.MAIN_BOARD_GROUP_NAME, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
-        return optionMap;
-      }
-    };     
-    converter.setOptionProvider(optionProvider); 
-    converter.maintainParameters(getParametersToMaintain());
-    return converter;
-  }   
+//  /**
+//   * Converter for league column 
+//   */
+//  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
+//    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
+//      protected Object getValue(
+//        Object entity,
+//        EntityPath path,
+//        EntityBrowser browser,
+//        IWContext iwc)  {
+//          return ((EntityRepresentation) entity).getColumnValue(LEAGUE_NAME);
+//        }
+//      };        
+//
+//        
+//    OptionProvider optionProvider = new OptionProvider() {
+//      
+//    Map optionMap = null;
+//      
+//    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+//      if (optionMap == null)  {
+//        optionMap = new TreeMap();
+//        WorkReportBusiness business = getWorkReportBusiness(iwc);
+//        Collection coll = null;
+//        try {
+//          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
+//        }
+//        catch (RemoteException ex) {
+//          System.err.println(
+//            "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+//              + ex.getMessage());
+//          ex.printStackTrace(System.err);
+//          throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+//        }
+//        Iterator collIterator = coll.iterator();
+//        while (collIterator.hasNext())  {
+//          WorkReportGroup league = (WorkReportGroup) collIterator.next();
+//          String name = league.getName(); 
+//          String display = resourceBundle.getLocalizedString(name, name);
+//          optionMap.put(name, display);
+//          }
+//        }
+//        // add default value: no league (because main board members are not assigned to a league)
+//        optionMap.put(WorkReportConstants.MAIN_BOARD_GROUP_NAME, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
+//        return optionMap;
+//      }
+//    };     
+//    converter.setOptionProvider(optionProvider); 
+//    converter.maintainParameters(getParametersToMaintain());
+//    return converter;
+//  }   
    
-  /** business method: delete WorkReportAccountGroupHelper.
-   * @param ids - List of primaryKeys (Integer)
-   */
-  private void deleteWorkReportAccountGroupHelper(List ids, IWContext iwc) {
-    Iterator idIterator = ids.iterator();
-    while (idIterator.hasNext())  {
-      List removedRecords = new ArrayList();
-      Integer groupId = (Integer) idIterator.next();
-      Map recordsMap = leagueKeyMatrix.get(groupId);
-      Collection records = recordsMap.values();
-      Iterator iteratorRecords = records.iterator();
-      while (iteratorRecords.hasNext())  {
-        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
-        try {
-          int accountKey = record.getAccountKeyId();
-          record.remove();
-          // remove the value from the matrix
-          removedRecords.add(new Integer(accountKey));
-        }
-        catch (EJBException ex) {
-          String message =
-            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
-          System.err.println(message + " Message is: " + ex.getMessage());
-          ex.printStackTrace(System.err);
-        }
-        catch (RemoveException ex)  {
-          String message =
-            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
-          System.err.println(message + " Message is: " + ex.getMessage());
-          ex.printStackTrace(System.err);
-        }
-      }
-      Iterator removedRecordsIterator = removedRecords.iterator();
-      while (removedRecordsIterator.hasNext())  {
-        Integer id = (Integer) removedRecordsIterator.next();
-        // remove the value from the matrix
-        leagueKeyMatrix.remove(groupId, id);
-      }
-    }
-  }
+//  /** business method: delete WorkReportAccountGroupHelper.
+//   * @param ids - List of primaryKeys (Integer)
+//   */
+//  private void deleteWorkReportAccountGroupHelper(List ids, IWContext iwc) {
+//    Iterator idIterator = ids.iterator();
+//    while (idIterator.hasNext())  {
+//      List removedRecords = new ArrayList();
+//      Integer groupId = (Integer) idIterator.next();
+//      Map recordsMap = leagueKeyMatrix.get(groupId);
+//      Collection records = recordsMap.values();
+//      Iterator iteratorRecords = records.iterator();
+//      while (iteratorRecords.hasNext())  {
+//        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
+//        try {
+//          int accountKey = record.getAccountKeyId();
+//          record.remove();
+//          // remove the value from the matrix
+//          removedRecords.add(new Integer(accountKey));
+//        }
+//        catch (EJBException ex) {
+//          String message =
+//            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
+//          System.err.println(message + " Message is: " + ex.getMessage());
+//          ex.printStackTrace(System.err);
+//        }
+//        catch (RemoveException ex)  {
+//          String message =
+//            "[WorkReportAccountEditor]: Can't remove WorkReportClubAccountRecord.";
+//          System.err.println(message + " Message is: " + ex.getMessage());
+//          ex.printStackTrace(System.err);
+//        }
+//      }
+//      Iterator removedRecordsIterator = removedRecords.iterator();
+//      while (removedRecordsIterator.hasNext())  {
+//        Integer id = (Integer) removedRecordsIterator.next();
+//        // remove the value from the matrix
+//        leagueKeyMatrix.remove(groupId, id);
+//      }
+//    }
+//  }
     
   
 //  // business method: create

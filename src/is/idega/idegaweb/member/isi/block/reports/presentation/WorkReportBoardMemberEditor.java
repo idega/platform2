@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -72,13 +73,13 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardmembereditor.step_name";
   
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
-  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+//  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
-  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
+//  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   
-  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
+//  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
 
@@ -175,12 +176,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
 //      action = ACTION_SHOW_NEW_ENTRY;
 //    }  
     // does the user want to save a new entry?
-    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
       if (iwc.isParameterSet(SSN_KEY))  {
         String personalId = iwc.getParameter(SSN_KEY);
-        String leagueName = iwc.getParameter(LEAGUE_KEY);
-        WorkReportBoardMember member = createWorkReportBoardMember(personalId, leagueName, iwc);
+        String leagueId = iwc.getParameter(LEAGUE_KEY);
+        WorkReportBoardMember member = createWorkReportBoardMember(personalId, leagueId, iwc);
         if (member != null) {
           String name = member.getName();
           String ssn = member.getPersonalId();
@@ -228,17 +229,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       member.store();
       return action;
     }  
-      
-      
-//    // does the user want to modify an existing entity?
-//    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
-//    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
-//    if (entityPathValueContainerFromTextEditor.isValid()) {
-//      updateWorkReportBoardMember(entityPathValueContainerFromTextEditor, iwc);
-//    }
-//    if (entityPathValueContainerFromDropDownMenu.isValid()) {
-//      updateWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, iwc);
-//    }
     return action;
   }
   
@@ -281,18 +271,20 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve league.");
       }
-      String leagueName = (league == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : league.getName();
-      WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueName, member);
+      // league is null should never happen but happens, avoid null pointer exception
+      // sometimes data is corrupt 
+      String leagueId = (league == null) ? "Error: league unknown" : league.getPrimaryKey().toString();
+      WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueId, member);
       list.add(helper);
     }
-    // add a value holder for a new entry if desired
-    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-      EntityValueHolder valueHolder = new EntityValueHolder(); 
-      // trick , because postal code is a "foreign" column 
-      valueHolder.setColumnValue("POSTAL_CODE_ID", valueHolder); 
-      WorkReportBoardMemberHelper valueHolderHelper = new WorkReportBoardMemberHelper("", valueHolder);
-      list.add(valueHolderHelper);
-    }
+//    // add a value holder for a new entry if desired
+//    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
+//      EntityValueHolder valueHolder = new EntityValueHolder(); 
+//      // trick , because postal code is a "foreign" column 
+//      valueHolder.setColumnValue("POSTAL_CODE_ID", valueHolder); 
+//      WorkReportBoardMemberHelper valueHolderHelper = new WorkReportBoardMemberHelper("", valueHolder);
+//      list.add(valueHolderHelper);
+//    }
     // sort list
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
@@ -346,7 +338,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     if (editable) {
       PresentationObject inputField = getPersonalIdInputField(resourceBundle);
       PresentationObject dropDownMenu = getLeagueDropDownMenu(resourceBundle, iwc);
-      PresentationObject newEntryButton = getSaveNewEntityButton(resourceBundle);
+      PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
       PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
       PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
       // add buttons
@@ -369,12 +361,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return button;
   }
   
-  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
-    String saveNewEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_save_new_entry", "Save");
-    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }
+//  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
+//    String saveNewEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_save_new_entry", "Save");
+//    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
+//    button.setAsImageButton(true);
+//    return button;
+//  }
   
   private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
     String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
@@ -422,21 +414,23 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
     }
-    // sort 
-    SortedSet names = new TreeSet();
+    DropdownMenu dropdownMenu = new DropdownMenu(LEAGUE_KEY);
+    SortedMap shortNameIdMap = new TreeMap();
     Iterator collIterator = coll.iterator();
     while (collIterator.hasNext())  {
       WorkReportGroup league = (WorkReportGroup) collIterator.next();
-      String name = league.getName(); 
-      names.add(name);
+      String name = league.getShortName(); 
+      String id = league.getPrimaryKey().toString();
+      shortNameIdMap.put(name, id);
     }
-    Iterator nameIterator = names.iterator();
-    DropdownMenu dropdownMenu = new DropdownMenu(LEAGUE_KEY);
-    while (nameIterator.hasNext())  {
-      String name = (String) nameIterator.next();
+    Iterator leagueIterator = shortNameIdMap.entrySet().iterator();
+    while (leagueIterator.hasNext())  {
+      Map.Entry shortNameId = (Map.Entry) leagueIterator.next();
+      String name = (String) shortNameId.getKey();
       String display = resourceBundle.getLocalizedString(name, name);
-      dropdownMenu.addMenuElement(name, display);
-    }
+      String id = (String) shortNameId.getValue();
+      dropdownMenu.addMenuElement(id, display);
+      }
     return dropdownMenu;
   }
 
@@ -560,18 +554,21 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
         }
         // sort 
-        SortedSet names = new TreeSet();
+        SortedMap shortNameIdMap = new TreeMap();
         Iterator collIterator = coll.iterator();
         while (collIterator.hasNext())  {
           WorkReportGroup league = (WorkReportGroup) collIterator.next();
-          String name = league.getName(); 
-          names.add(name);
+          String name = league.getShortName(); 
+          String id = league.getPrimaryKey().toString();
+          shortNameIdMap.put(name, id);
         }
-        Iterator nameIterator = names.iterator();
-        while (nameIterator.hasNext())  {
-          String name = (String) nameIterator.next();
+        Iterator leagueIterator = shortNameIdMap.entrySet().iterator();
+        while (leagueIterator.hasNext())  {
+          Map.Entry shortNameId = (Map.Entry) leagueIterator.next();
+          String name = (String) shortNameId.getKey();
           String display = resourceBundle.getLocalizedString(name, name);
-          optionMap.put(name, display);
+          String id = (String) shortNameId.getValue();
+          optionMap.put(id, display);
           }
         }
         return optionMap;
@@ -619,11 +616,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     
   
   // business method: create
-  private WorkReportBoardMember createWorkReportBoardMember(String personalId, String leagueGroupName, IWApplicationContext iwac)  {
+  private WorkReportBoardMember createWorkReportBoardMember(String personalId, String leagueId, IWApplicationContext iwac)  {
     WorkReportBoardMember workReportBoardMember = null;
     try {
+      Integer workReportGroupId = new Integer(leagueId);
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwac);
-      WorkReportGroup workReportGroup = workReportBusiness.findWorkReportGroupByNameAndYear(leagueGroupName, year);
+      WorkReportGroup workReportGroup = workReportBusiness.getWorkReportGroupHome().findByPrimaryKey(workReportGroupId);
       workReportBoardMember = workReportBusiness.createWorkReportBoardMember(getWorkReportId(), personalId, workReportGroup);
       if (workReportBoardMember == null) {
         personalIdnotCorrect = true;
@@ -631,19 +629,27 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       return workReportBoardMember;
  
     } 
-    catch (IDOLookupException e) {
-      System.err.println("[WorkReportBoardMemberEditor] Could not lookup home of WorkReportBoardMember. Message is: "+ e.getMessage());
-      e.printStackTrace(System.err);
-    } 
+    catch (NumberFormatException numEx) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't find WorkReportGroup.";
+      System.err.println(message + " Message is: " + numEx.getMessage());
+      numEx.printStackTrace(System.err);
+    }
+    catch (FinderException ex) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't find WorkReportGroup.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+    }
     catch (CreateException e) {
       System.err.println("[WorkReportBoardMemberEditor] Could not create new WorkReportBoardMember. Message is: "+ e.getMessage());
       e.printStackTrace(System.err);
     } 
-    catch (RemoteException ex) {
+    catch (RemoteException rmEx) {
       String message =
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
+      System.err.println(message + " Message is: " + rmEx.getMessage());
+      rmEx.printStackTrace(System.err);
       throw new RuntimeException(message);
     }
     return null;
@@ -724,18 +730,26 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       member.setEmail(value.toString());
     }
     else if (pathShortKey.equals(LEAGUE)) {
-      // special case, sometimes there is not a previous value
-//      Object previousValue = valueContainer.getPreviousValue();
-//      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
-      String newWorkReportGroupName = value.toString();
-      int year = getYear();
-      try {
-        //workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, member);
-        WorkReportGroup workReportGroup = workReportBusiness.findWorkReportGroupByNameAndYear(newWorkReportGroupName, year);
+       try {
+        String newWorkReportGroupIdAsString = value.toString();
+        Integer newWorkReportGroupId = new Integer(newWorkReportGroupIdAsString);
+        // just testing if the id really exists (should never happen that the id does not exist)
+        WorkReportGroup workReportGroup = workReportBusiness.getWorkReportGroupHome().findByPrimaryKey(newWorkReportGroupId);
         if (workReportGroup != null)  {
-          Integer pk = (Integer) workReportGroup.getPrimaryKey();
-         member.setWorkReportGroupID(pk.intValue());
+          member.setWorkReportGroupID(newWorkReportGroupId.intValue());
         }
+      }
+      catch (NumberFormatException numEx) {
+        String message =
+          "[WorkReportBoardMemberEditor]: Can't find WorkReportGroup";
+        System.err.println(message + " Message is: " + numEx.getMessage());
+        numEx.printStackTrace(System.err);
+      }
+      catch (FinderException findEx) {
+        String message =
+          "[WorkReportBoardMemberEditor]: Can't find WorkReportGroup";
+        System.err.println(message + " Message is: " + findEx.getMessage());
+        findEx.printStackTrace(System.err);
       }
       catch (RemoteException ex) {
         System.err.println(

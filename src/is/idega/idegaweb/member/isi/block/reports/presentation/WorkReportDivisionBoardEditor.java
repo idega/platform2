@@ -62,18 +62,18 @@ import com.idega.presentation.ui.SubmitButton;
 public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboarddivisioneditor.step_name";
   
-  private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
-  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
-  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+//  private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
+//  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+//  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
 
-  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
-  private static final String NO_LEAGUE_VALUE = "no_league_value";
+//  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
+//  private static final String NO_LEAGUE_VALUE = "no_league_value";
   
-  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
+//  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
-  private static final String CHECK_BOX = "checkBox";
+//  private static final String CHECK_BOX = "checkBox";
 
   private static final String LEAGUE = "league";
 
@@ -142,21 +142,21 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       // do not delete an entry
     }
     // does the user want to delete an existings entries?
-    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
-      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
-      if (! entriesToDelete.isEmpty())  {
-        deleteWorkReportDivisionBoard(entriesToDelete, iwc);
-        // !! do nothing else !!
-        // do not modify entry
-        // do not create an entry
-        return action;
-      }
-    }
-    // does the user want to edit a new entry?
-
-    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
-      action = ACTION_SHOW_NEW_ENTRY;
-    }  
+//    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
+//      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
+//      if (! entriesToDelete.isEmpty())  {
+//        deleteWorkReportDivisionBoard(entriesToDelete, iwc);
+//        // !! do nothing else !!
+//        // do not modify entry
+//        // do not create an entry
+//        return action;
+//      }
+//    }
+//    // does the user want to edit a new entry?
+//
+//    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
+//      action = ACTION_SHOW_NEW_ENTRY;
+//    }  
 //    // does the user want to save a new entry?
 //    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
 //      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
@@ -243,7 +243,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
     Collection coll;
     Collection leagues;
-    Set referencedLeagues = new HashSet();
+//    Set referencedLeagues = new HashSet();
     try {
       int workReportId = getWorkReportId();
       coll = workReportBusiness.getAllWorkReportDivisionBoardForWorkReportId(workReportId);
@@ -271,31 +271,31 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         throw new RuntimeException("[WorkReportDivsionBoardEditor]: Can't retrieve league.");
       }
-      String leagueName = (league == null) ? "" : league.getName();
-      referencedLeagues.add(league.getPrimaryKey());
+      String leagueName = league.getShortName();
+//      referencedLeagues.add(league.getPrimaryKey());
       WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
       list.add(helper);
     }
     // create missing entities
-    Iterator leagueIterator = leagues.iterator();
-    while (leagueIterator.hasNext())  {
-      WorkReportGroup workReportGroup = (WorkReportGroup) leagueIterator.next();
-      Integer pk = (Integer) workReportGroup.getPrimaryKey();
-      if (! referencedLeagues.contains(pk)) {
-        WorkReportDivisionBoard board = createWorkReportDivisionBoard(pk.intValue());
-        String leagueName = workReportGroup.getName();
-        WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
-        list.add(helper);
-      }
-    }         
-    // add a value holder for a new entry if desired
-    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
-      EntityValueHolder valueHolder = new EntityValueHolder(); 
-      // trick , because postal code is a "foreign" column 
-      valueHolder.setColumnValue("POSTAL_CODE_ID", valueHolder); 
-      WorkReportDivisionBoardHelper valueHolderHelper = new WorkReportDivisionBoardHelper("", valueHolder);
-      list.add(valueHolderHelper);
-    }
+//    Iterator leagueIterator = leagues.iterator();
+//    while (leagueIterator.hasNext())  {
+//      WorkReportGroup workReportGroup = (WorkReportGroup) leagueIterator.next();
+//      Integer pk = (Integer) workReportGroup.getPrimaryKey();
+//      if (! referencedLeagues.contains(pk)) {
+//        WorkReportDivisionBoard board = createWorkReportDivisionBoard(pk.intValue());
+//        String leagueName = workReportGroup.getName();
+//        WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
+//        list.add(helper);
+//      }
+//   }         
+//    // add a value holder for a new entry if desired
+//    if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
+//      EntityValueHolder valueHolder = new EntityValueHolder(); 
+//      // trick , because postal code is a "foreign" column 
+//      valueHolder.setColumnValue("POSTAL_CODE_ID", valueHolder); 
+//      WorkReportDivisionBoardHelper valueHolderHelper = new WorkReportDivisionBoardHelper("", valueHolder);
+//      list.add(valueHolderHelper);
+//    }
     // sort list
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
@@ -352,7 +352,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
  
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
-    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
+//    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EditOkayButtonConverter okayConverter = new EditOkayButtonConverter();
@@ -364,7 +364,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     
     // define if the converters should be editable or not
-    checkBoxConverter.setEditable(editable);
+//    checkBoxConverter.setEditable(editable);
     textEditorConverter.setEditable(editable);
     dropDownPostalCodeConverter.setEditable(editable);
     nationalLeagueConverter.setEditable(editable);
@@ -581,29 +581,29 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     else if (pathShortKey.equals(EMAIL))  {
       board.setEmail(value.toString());
     }
-    else if (pathShortKey.equals(LEAGUE)) {
-      // special case, sometimes there is not a previous value
-//      Object previousValue = valueContainer.getPreviousValue();
-//      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
-      String newWorkReportGroupName = value.toString();
-      int year = getYear();
-      try {
-        
-        //workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, board);
-        WorkReportGroup workReportGroup = workReportBusiness.findWorkReportGroupByNameAndYear(newWorkReportGroupName, year);
-        if (workReportGroup != null)  {
-          Integer pk = (Integer) workReportGroup.getPrimaryKey();
-          board.setWorKReportGroupID(pk.intValue());
-        }
-      }
-      catch (RemoteException ex) {
-        System.err.println(
-          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-            + ex.getMessage());
-        ex.printStackTrace(System.err);
-        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-      }
-    }
+//    else if (pathShortKey.equals(LEAGUE)) {
+//      // special case, sometimes there is not a previous value
+////      Object previousValue = valueContainer.getPreviousValue();
+////      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
+//      String newWorkReportGroupName = value.toString();
+//      int year = getYear();
+//      try {
+//        
+//        //workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, board);
+//        WorkReportGroup workReportGroup = workReportBusiness.findWorkReportGroupByNameAndYear(newWorkReportGroupName, year);
+//        if (workReportGroup != null)  {
+//          Integer pk = (Integer) workReportGroup.getPrimaryKey();
+//          board.setWorKReportGroupID(pk.intValue());
+//        }
+//      }
+//      catch (RemoteException ex) {
+//        System.err.println(
+//          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+//            + ex.getMessage());
+//        ex.printStackTrace(System.err);
+//        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+//      }
+//    }
   }
 
   private void setWorkReportAsFinished(IWContext iwc)  {
