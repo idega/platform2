@@ -170,14 +170,14 @@ public class ClubInformationTab extends UserGroupTab {
 
 		if (connection != null && !connection.equals("")) {
 			_connectionToSpecialField.setDisabled(true);
-			_makeField.addMenuElement("2", "Sérgreinafélag");
-			_makeField.addMenuElement("4", "”virkt");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, "Sérgreinafélag");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_INACTIVE_CLUB, "Óvirkt");
 		}
 		else {
-			_makeField.addMenuElement("1", "Fjölgreinafélag");
-			_makeField.addMenuElement("2", "Sérgreinafélag");
-			_makeField.addMenuElement("3", "Félag án i?kenda");
-			_makeField.addMenuElement("4", "Óvirkt");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, "Fjölgreinafélag");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, "Sérgreinafélag");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB, "Félag án i?kenda");
+			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_INACTIVE_CLUB, "Óvirkt");
 			_makeField.setToEnableWhenSelected(_connectionToSpecialFieldName, "2");
 		}
 		_makeField.setSelectedElement(make);
