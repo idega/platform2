@@ -504,6 +504,23 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 		catch (NoParentFound x){}	
 		
 		try {
+			Collection custodians = getCustodiansFor(user);
+			if( custodians != null ){
+				Iterator ents = custodians.iterator();
+				while (ents.hasNext()) {
+					User ent = (User) ents.next();
+					removeAsParentFor(ent,user);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoCustodianFound x){}	
+		
+		
+		try {
 			Collection siblings = getSiblingsFor(user);
 			if( siblings != null ){
 				Iterator sibling = siblings.iterator();
