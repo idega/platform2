@@ -1,6 +1,7 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
+import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.business.IBOLookup;
@@ -36,6 +38,10 @@ public class ProductComparator implements Comparator {
   private int localeId = -1;
   private int sortBy;
   private StockroomBusiness stockroomBusiness;
+
+  private PriceCategory priceCategoryToSortBy;
+  private int currencyId;
+  private Timestamp time;
 
   public ProductComparator() {
     this(1);
@@ -137,21 +143,30 @@ public class ProductComparator implements Comparator {
     try {
       Product p1 = (Product) o1;
       Product p2 = (Product) o2;
+	
+		  float pr1 = 0;
+		  float pr2 = 0;
 
-      ProductPrice price1 = getStockroomBusiness().getPrice(p1);
-      ProductPrice price2 = getStockroomBusiness().getPrice(p2);
+			if (priceCategoryToSortBy == null) {
+      	ProductPrice price1 = getStockroomBusiness().getPrice(p1);
+      	ProductPrice price2 = getStockroomBusiness().getPrice(p2);
 
-      float pr1 = 0;
-      if (price1 != null) pr1 = price1.getPrice();
-      float pr2 = 0;
-      if (price2 != null) pr2 = price2.getPrice();
+	      if (price1 != null) pr1 = price1.getPrice();
+      	if (price2 != null) pr2 = price2.getPrice();
+			} else {
+				try {
+					pr1 = getStockroomBusiness().getPrice(-1, p1.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
+					pr2 = getStockroomBusiness().getPrice(-1, p2.getID(), Integer.parseInt(priceCategoryToSortBy.getPrimaryKey().toString()), currencyId, time);
+				}
+				catch (Exception e) {
+					System.out.println("ProductComparator : cannot get priceCategory specific price");
+				}
+			}
 
       if (pr1 < pr2) return 1;
       else if (pr2 < pr1) return -1;
       else return 0;
-      /**
-       * @todo implementa fyrir mörg verð...
-       */
+
       }catch (RemoteException re) {
         throw new RuntimeException(re.getMessage());
       }
@@ -258,5 +273,10 @@ public class ProductComparator implements Comparator {
     }
   }
 
+	public void setPriceCategoryValues(PriceCategory priceCategory, int currencyId, Timestamp time) {
+		this.priceCategoryToSortBy = priceCategory;
+		this.currencyId = currencyId;
+		this.time = time;
+	}
 
 }
