@@ -159,6 +159,25 @@ public class ChildCareBlock extends CommuneBlock {
 		return table;
 	}
 	
+	protected Table getContractColorTable() {
+		Table table = new Table();
+		table.setHeight(1, 12);
+		table.setWidth(1, "12");
+		table.setWidth(3, "12");
+		table.setWidth(4, "12");
+		table.setWidth(6, "12");
+		table.setWidth(7, "12");
+		
+		table.add(getColorTable(CONTRACT_COLOR), 1, 1);
+		table.add(getColorTable(ACCEPTED_COLOR), 7, 1);
+	
+		table.add(getSmallHeader(localize("child_care.application_status_par_cancelled","Parent cancelled")), 2, 1);
+		table.add(getSmallHeader(localize("child_care.application_status_waiting","Waiting")), 8, 1);
+		
+		
+		return table;
+	}
+	
 	private Table getColorTable(String color) {
 		Table colorTable = new Table(1, 1);
 		colorTable.setHeight(1, 1, "12");
