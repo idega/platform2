@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.12 2003/04/02 20:47:26 laddi Exp $
+ * @version $Id: EventList.java,v 1.13 2003/04/04 12:44:12 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -248,30 +248,30 @@ public class EventList extends CommuneBlock {
 
 			addField(
 				message,
-				localize(LOCALE_MSGID, "Message Id") + ":",
+				localize(LOCALE_MSGID, "Message Id"),
 				String.valueOf(msg.getNodeID()),
 				row++);
 			addField(
 				message,
-				localize(LOCALE_DATE_CREATED, "Message created") + ":",
+				localize(LOCALE_DATE_CREATED, "Message created"),
 				msg.getCreated().toString(),
 				row++);
 			//		addField(message, "From", msg.getSenderName(), row++);
 			addField(
 				message,
-				localize(LOCALE_RECEIVER, "Receiver") + ":",
+				localize(LOCALE_RECEIVER, "Receiver"),
 				msg.getOwner().getName(),
 				row++);
 			addField(
 				message,
-				localize(LOCALE_SSN, "SSN") + ":",
+				localize(LOCALE_SSN, "SSN"),
 				msg.getOwner().getPersonalID(),
 				row++);
 			//		addField(layout, "Type:", msg.getMessageType(), row++);
 			//		addField(layout, "Type:", msg.msg.getLetterType(), row++);
 			addField(
 				message,
-				localize(LOCALE_EVENT, "Event") + ":",
+				localize(LOCALE_EVENT, "Event"),
 				msg.getSubject(),
 				row++);
 			message.add(new Text(""), 1, row++);
@@ -384,14 +384,14 @@ public class EventList extends CommuneBlock {
 
 		SubmitButton search =
 			new SubmitButton(
-				getResourceBundle().getLocalizedString(
+				localize(
 					"printdoc.fetch",
 					"Fetch"));
 		search = (SubmitButton) getButton(search);
 
 		T.add(
 			getHeader(
-				getResourceBundle().getLocalizedString(
+				localize(
 					LOCALE_DATE_FROM,
 					"From")
 					+ ":"),
@@ -402,7 +402,7 @@ public class EventList extends CommuneBlock {
 
 		T.add(
 			getHeader(
-				getResourceBundle().getLocalizedString(LOCALE_DATE_TO, "To")
+				localize(LOCALE_DATE_TO, "To")
 					+ ":"),
 			1,
 			2);
@@ -411,7 +411,7 @@ public class EventList extends CommuneBlock {
 
 		T.add(
 			getHeader(
-				getResourceBundle().getLocalizedString(
+				localize(
 					LOCALE_MSGID,
 					"Message Id")
 					+ ":"),
@@ -420,12 +420,12 @@ public class EventList extends CommuneBlock {
 		T.add(msgid, 2, 3);
 		T.add(
 			getHeader(
-				getResourceBundle().getLocalizedString(LOCALE_SSN, "SSN")
+				localize(LOCALE_SSN, "SSN")
 					+ ":"),
 			4,
 			3);
 		T.add(ssn, 5, 3);
-		//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
+		//T.add(getHeader(localize("printdoc.count","Count")),5,1);
 		T.setWidth(6, 3, 50);
 		T.add(getStyledInterface(getCountDrop(PRM_U_COUNT, count_u)), 7, 3);
 		T.add(search, 8, 3);
@@ -447,7 +447,7 @@ public class EventList extends CommuneBlock {
 		SubmitButton print =
 			new SubmitButton(
 				PRM_PRINT_SELECTED,
-				getResourceBundle().getLocalizedString(
+				localize(
 					"printdoc.print",
 					"Print"));
 		print = (SubmitButton) getButton(print);
