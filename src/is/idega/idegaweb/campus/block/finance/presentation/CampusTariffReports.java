@@ -33,7 +33,10 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.GenericSelect;
+import com.idega.presentation.ui.SelectDropdown;
+import com.idega.presentation.ui.SelectOption;
+import com.idega.presentation.ui.SelectPanel;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -58,6 +61,7 @@ public class CampusTariffReports extends Finance {
   private IWTimestamp from = null,to = null;
   
   Integer building = null,key=null;
+  String[] buildings= null,acckeys= null;
 
   private List reports = null;
   private Collection accountReports = null;
@@ -65,6 +69,7 @@ public class CampusTariffReports extends Finance {
   private Collection distinctKeys = null;
   private Collection keys = null;
   private Map keyMap = null;
+  private boolean useBoxSelection = true;
 
   public CampusTariffReports() {
   	setWidth("100%");
@@ -79,17 +84,18 @@ public class CampusTariffReports extends Finance {
     //debugParameters(iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
- 
-    if(iwc.isParameterSet("search"))
-      parse(iwc);
-    setLocalizedTitle("entry_reports","Entry reports");
-    setSearchPanel(getSearchForm());
-    if(reports!=null)
-      setMainPanel(getResult(iwc));
-    else if (accountReports!=null)
-    	setMainPanel(getAccountResult(iwc));
-    else if(accountEntriesReports!=null)
-    	setMainPanel(getAccountEntriesResult(iwc));
+    if(iwc.isLoggedOn()){
+	    if(iwc.isParameterSet("search"))
+	      parse(iwc);
+	    setLocalizedTitle("entry_reports","Entry reports");
+	    setSearchPanel(getSearchForm());
+	    if(reports!=null)
+	      setMainPanel(getResult(iwc));
+	    else if (accountReports!=null)
+	    	setMainPanel(getAccountResult(iwc));
+	    else if(accountEntriesReports!=null)
+	    	setMainPanel(getAccountEntriesResult(iwc));
+    }
   }
   
 
@@ -107,14 +113,14 @@ public class CampusTariffReports extends Finance {
       }
       catch (Exception ex) {  }
     }
-    building = iwc.isParameterSet(prmBuilding)?Integer.valueOf(iwc.getParameter(prmBuilding)):null;
-    key = iwc.isParameterSet(prmAccountKey)?Integer.valueOf(iwc.getParameter(prmAccountKey)):null;
+    buildings = iwc.isParameterSet(prmBuilding)?iwc.getParameterValues(prmBuilding):null;//Integer.valueOf(iwc.getParameter(prmBuilding)):null;
+    acckeys = iwc.isParameterSet(prmAccountKey)?iwc.getParameterValues(prmAccountKey):null;//Integer.valueOf(iwc.getParameter(prmAccountKey)):null;
     //reports = CampusAccountFinder.getAccountEntryReport(building,key,from,to);
     //reports = CampusAccountFinder.findAccountEntryReports(building,key,from,to);
     if(!iwc.isParameterSet("bycontract")){
     	
         	try{
-        		reports = EntryReportBMPBean.findAllBySearch(building,key,from.getTimestamp(),to.getTimestamp());
+        		reports = EntryReportBMPBean.findAllBySearch(buildings,acckeys,from.getTimestamp(),to.getTimestamp());
         	}
         	catch(java.sql.SQLException ex){
         		ex.printStackTrace();
@@ -126,13 +132,13 @@ public class CampusTariffReports extends Finance {
     	if(iwc.isParameterSet("byjoins")) {
         	try {
         		keys = AccountEntriesReportBMPBean.getAccountKeys(building,from.getDate(),to.getDate());
-    			accountEntriesReports = AccountEntriesReportBMPBean.findAllBySearch(building,key,from.getDate(),to.getDate(),iwc.isParameterSet("bytariffkey"));
+    			accountEntriesReports = AccountEntriesReportBMPBean.findAllBySearch(buildings,acckeys,from.getDate(),to.getDate(),iwc.isParameterSet("bytariffkey"));
     		} catch (SQLException e) {
     			e.printStackTrace();
     		}}
     		else{
     	try{
-    		accountReports = AccountEntryReportBMPBean.findAllBySearch(building,key,from.getTimestamp(),to.getTimestamp(),iwc.isParameterSet("bytariffkey"));
+    		accountReports = AccountEntryReportBMPBean.findAllBySearch(buildings,acckeys,from.getTimestamp(),to.getTimestamp(),iwc.isParameterSet("bytariffkey"));
     	}
     	catch(java.sql.SQLException ex){
     		ex.printStackTrace();
@@ -145,10 +151,12 @@ public class CampusTariffReports extends Finance {
     T.setUseBottom(false);
     T.setUseTop(false);
     T.setTitlesHorizontal(true);
-    DropdownMenu buildings = getBuildingsDrop(prmBuilding);
-    buildings.setSelectedElement(String.valueOf(building));
-    DropdownMenu keys = getAccountKeysDrop(prmAccountKey);
-    keys.setSelectedElement(String.valueOf(key));
+    GenericSelect buildings = getBuildingsSelection(prmBuilding);
+    buildings.setSelectedOption(String.valueOf(building));
+    buildings.keepStatusOnAction(true);
+    GenericSelect keys = getAccountKeysSelection(prmAccountKey);
+    keys.setSelectedOption(String.valueOf(key));
+    keys.keepStatusOnAction(true);
     IWTimestamp today = IWTimestamp.RightNow();
     DateInput inpFrom = new DateInput(prmDateFrom,true);
     if(from!=null)
@@ -182,9 +190,10 @@ public class CampusTariffReports extends Finance {
     T.add(getSmallHeader(localize("show_by_accounts","Show by accounts")),1,3);
     T.add(chkByTariffKey,1,3);
     T.add(getSmallHeader(localize("show_by_tariffkey","Show by tariff key")),1,3);
-    T.add(chkByJoinSQL,1,3);
+    //T.add(chkByJoinSQL,1,3);
     T.add(getSmallHeader(localize("show_by_join_sql","Show by join sql")),1,3);
     T.getContentTable().mergeCells(1,3,4,3);
+    T.getContentTable().setRowVerticalAlignment(2,Table.VERTICAL_ALIGN_TOP);
     
 
     SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"),"search","true");
@@ -421,17 +430,18 @@ public class CampusTariffReports extends Finance {
   }
   
 
-  public DropdownMenu getBuildingsDrop(String name)throws java.rmi.RemoteException{
-    DropdownMenu drp = new DropdownMenu(name);
+  public GenericSelect getBuildingsSelection(String name)throws java.rmi.RemoteException{
+  	GenericSelect drp = useBoxSelection ? (GenericSelect)new SelectPanel(name):(GenericSelect)new SelectDropdown(name);
     try {
 		Collection buildings = ((BuildingHome)IDOLookup.getHome(Building.class)).findAll();
 		if(buildings!=null&&!buildings.isEmpty()){
 		  Iterator iter = buildings.iterator();
 		  Building building;
-		  drp.addMenuElement(-100,iwrb.getLocalizedString("all_buildings","All buildings"));
+		  if(!useBoxSelection)
+		  drp.addOption(new SelectOption(iwrb.getLocalizedString("all_buildings","All buildings"),""));
 		  while(iter.hasNext()){
 		    building = (Building) iter.next();
-		    drp.addMenuElement(building.getPrimaryKey().toString(),building.getName());
+		    drp.addOption(new SelectOption(building.getName(),building.getPrimaryKey().toString()));
 		  }
 		}
 	}
@@ -446,9 +456,10 @@ public class CampusTariffReports extends Finance {
 	}
     return drp;
   }
+  
 
-  public DropdownMenu getAccountKeysDrop(String name)throws java.rmi.RemoteException{
-    DropdownMenu drp = new DropdownMenu(name);
+  public GenericSelect getAccountKeysSelection(String name)throws java.rmi.RemoteException{
+  	GenericSelect drp = useBoxSelection?(GenericSelect)new SelectPanel(name):(GenericSelect)new SelectDropdown(name);
     Collection keys=null;
 	try {
 		keys = ((AccountKeyHome)IDOLookup.getHome(AccountKey.class)).findAll();
@@ -458,10 +469,11 @@ public class CampusTariffReports extends Finance {
 	if(keys!=null&&!keys.isEmpty()){
       Iterator iter = keys.iterator();
       AccountKey key;
-      drp.addMenuElement(-100,iwrb.getLocalizedString("all_account_keys","All account keys"));
+      if(!useBoxSelection)
+      	drp.addOption(new SelectOption(iwrb.getLocalizedString("all_account_keys","All account keys"),""));
       while(iter.hasNext()){
         key = (AccountKey) iter.next();
-        drp.addMenuElement(key.getPrimaryKey().toString(),key.getInfo());
+        drp.addOption(new SelectOption(key.getInfo(),key.getPrimaryKey().toString()));
       }
     }
     return drp;
