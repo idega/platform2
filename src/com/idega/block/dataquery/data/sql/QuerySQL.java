@@ -35,10 +35,6 @@ public class QuerySQL implements DynamicExpression {
   
   private String name;
   
-  // only used if the query contains direct sql
-  private String sqlStatement;
-  
-  
   // tablename : path : number
   private HashMatrix aliasMatrix = new HashMatrix();
   private int counter = 0;
@@ -142,18 +138,16 @@ public class QuerySQL implements DynamicExpression {
   
   public boolean isDynamic()	{
   	//TODO: thi: temporary solution
-  	boolean isDynamic = (query == null) ? false : query.isDynamic();
-  	if (isDynamic) {
-			return true;
-  	}
-  	if (hasPreviousQuery())	{
+  	boolean isDynamic = query.isDynamic();
+  	// do not further ahead if you already know that the query is dynamic 
+  	if ( (! isDynamic) && hasPreviousQuery())	{
   		return previousQuery().isDynamic();
   	}
-  	return false;
+  	return isDynamic;
   }
   
   public Map getIdentifierValueMap()	{
-  	Map myMap = (query == null) ? new HashMap() : query.getIdentifierValueMap();
+  	Map myMap = query.getIdentifierValueMap();
   	if (hasPreviousQuery()) 	{
   		myMap.putAll(previousQuery().getIdentifierValueMap());
   	}
@@ -161,7 +155,7 @@ public class QuerySQL implements DynamicExpression {
   }
   
   public Map getIdentifierDescriptionMap()	{
-  	Map myMap = (query == null) ? new HashMap() : query.getIdentifierDescriptionMap();
+  	Map myMap = query.getIdentifierDescriptionMap();
   	if (hasPreviousQuery()) {
   		myMap.putAll(previousQuery().getIdentifierDescriptionMap());
   	}
@@ -169,9 +163,7 @@ public class QuerySQL implements DynamicExpression {
   }
   
   public void setIdentifierValueMap(Map identifierValueMap) {
-  	if (query != null) {
-  		query.setIdentifierValueMap(identifierValueMap);
-  	}
+  	query.setIdentifierValueMap(identifierValueMap);
   	if (hasPreviousQuery())	{
   		previousQuery().setIdentifierValueMap(identifierValueMap);
   	}
@@ -181,7 +173,7 @@ public class QuerySQL implements DynamicExpression {
    * Returns the corresponding sql statement
    */
   public String toSQLString() {
-  	return (query == null) ? sqlStatement : query.toSQLString();
+  	return query.toSQLString();
   }
   	
   public List getDisplayNames() {
@@ -245,15 +237,15 @@ public class QuerySQL implements DynamicExpression {
   }
     
       
-  private SelectStatement createQuery(QueryHelper queryHelper) throws IOException {
+  private DynamicExpression createQuery(QueryHelper queryHelper) throws IOException {
   	
-  	// direct sql 
+  	// direct sql ?
   	QuerySQLPart querySQLPart = queryHelper.getSQL();
   	if (querySQLPart != null)	{
-  		sqlStatement = querySQLPart.getStatement();
-  		return null;
+  		String identifier = Integer.toString(++counter);
+  		return new DirectSQLStatement(querySQLPart, identifier, this);
   	}
-  	
+  	// no direct sql !
     
     SelectStatement query = new SelectStatement();
     // prepare everything

@@ -22,6 +22,7 @@ public class QuerySQLPart implements QueryPart {
 
 	private String statement;
 	private Map keyValueMap = new HashMap();
+	private Map keyTypeMap = new HashMap();
 	private Map keyDescriptionMap = new HashMap();
 	
 	private Map resultFieldType = new HashMap();
@@ -41,10 +42,11 @@ public class QuerySQLPart implements QueryPart {
 				statement = element.getTextTrim();
 			}
 			if (name.equals(QueryXMLConstants.SQL_VARIABLE))	{
+				String type = element.getChild(QueryXMLConstants.TYPE).getTextTrim();
 				String key = element.getChild(QueryXMLConstants.SQL_VARIABLE_KEY).getTextTrim();
 				String value = element .getChild(QueryXMLConstants.SQL_VARIABLE_VALUE).getTextTrim();
 				String description = element.getChild(QueryXMLConstants.SQL_VARIABLE_DESCRIPTION).getTextTrim();
-				setVariable(key, value, description);
+				setVariable(key, type, value, description);
 			}
 			if (name.equals(QueryXMLConstants.SQL_RESULT))	{
 				String field = element.getChild(QueryXMLConstants.SQL_RESULT_FIELD).getTextTrim();
@@ -55,9 +57,11 @@ public class QuerySQLPart implements QueryPart {
 		}
 	}
 		
-	/* (non-Javadoc)
+	/** WARNING! NOT COMPLETE METHOD!
+	 * 
 	 * @see com.idega.block.dataquery.business.QueryPart#getQueryElement()
 	 */
+//TODO thi: THIS METHOD IS NOT COMPLETE!!!!!!!!
 	public XMLElement getQueryElement() {
 		XMLElement sqlElement = new XMLElement(QueryXMLConstants.SQL);
 		
@@ -99,8 +103,16 @@ public class QuerySQLPart implements QueryPart {
 		return statement;
 	}
 	
+	public Map getVariableValueMap()	{
+		return keyValueMap;
+	}
 	
-	public void setVariable(String key, String value, String description) {	
+	public Map getDescriptionValueMap()	{
+		return keyDescriptionMap;
+	}
+	
+	public void setVariable(String key, String type,  String value, String description) {
+		keyTypeMap.put(key, type);
 		keyValueMap.put(key, value);
 		keyDescriptionMap.put(key, description);
 	}

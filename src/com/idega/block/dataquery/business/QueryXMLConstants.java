@@ -47,11 +47,11 @@ public final static String DYNAMIC = "dynamic";
 public final static String NEXT_QUERY = "nextQuery";
 
 public final static String SQL = "sql";
-public final static String SQL_STATEMENT = "sqlStatement";
-public final static String SQL_VARIABLE = "sqlVariable";
-public final static String SQL_VARIABLE_KEY = "sqlVariableKey";
-public final static String SQL_VARIABLE_VALUE = "sqlVariableValue";
-public final static String SQL_VARIABLE_DESCRIPTION = "sqlVaribleDescription";
+public final static String SQL_STATEMENT = "statement";
+public final static String SQL_VARIABLE = "variable";
+public final static String SQL_VARIABLE_KEY = "variableKey";
+public final static String SQL_VARIABLE_VALUE = "variableValue";
+public final static String SQL_VARIABLE_DESCRIPTION = "variableDescription";
 public final static String SQL_RESULT = "result";
 public final static String SQL_RESULT_FIELD = "resultField";
 public final static String SQL_RESULT_TYPE = "resultType";
