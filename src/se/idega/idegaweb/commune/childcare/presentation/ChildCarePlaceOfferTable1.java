@@ -48,6 +48,11 @@ class ChildCarePlaceOfferTable1 extends Table {
 			new String[] {
 				"ccot_delete_tooltip",
 				"Delete"		
+			},
+		ALERT_TERMINATE_CONTRACT = 
+			new String[] {
+				"ccot_terminate_contract",
+				"After accepting this offer, remember to cancel your active contract./n"		
 			};			
 		
 
@@ -103,7 +108,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 		IWContext iwc,
 		ChildCareCustomerApplicationTable page,
 		SortedSet applications,
-		boolean hasOffer)
+		boolean hasOffer,
+		boolean hasActivePlacement)
 		throws RemoteException {
 
 		//		super(9, applications.size() + 1);
@@ -117,14 +123,16 @@ class ChildCarePlaceOfferTable1 extends Table {
 		boolean offerPresented = false;
 		//To avoid more than the first offer to be presented with accept/reject possibilities
 		StringBuffer validateDateScript = new StringBuffer("false ");
+		StringBuffer alertTerminateContractScript = new StringBuffer("false ");
+		
+				
 
 		boolean choiceOneAccepted = false;
 		while (i.hasNext()) {
 			ChildCareApplication app =
 				((ComparableApp) i.next()).getApplication();
 
-			if (app.getApplicationStatus()
-				== _page.getChildCareBusiness(iwc).getStatusParentsAccept()) {
+			if (app.isActive()) {
 				continue;
 			}
 
@@ -145,7 +153,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 			//Adding row to the table
 			validateDateScript.append(" || ");
-			validateDateScript.append(
+			alertTerminateContractScript.append(" || ");
+			
+			String[] scripts = 
 				addToTable(
 					row,
 					app,
@@ -154,7 +164,11 @@ class ChildCarePlaceOfferTable1 extends Table {
 					offerPresented,
 					disableAccept,
 					iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())
-						!= null));
+						!= null
+				);
+				
+			validateDateScript.append(scripts[0]);				
+			alertTerminateContractScript.append(scripts[1]);				
 
 			if (isOffer) {
 				offerPresented = true;
@@ -174,8 +188,17 @@ class ChildCarePlaceOfferTable1 extends Table {
 				+ validateDateScript
 				+ ") { alert('" + _page.localize(SUBMIT_UNVALID_DATE) + "'); return false; } else {return true;}}");
 
+		script.setFunction(
+			"alertTerminateContract",
+			"function alertTerminateContract() { " +
+			(! hasActivePlacement ? "return true; }" :
+			"if("
+				+ alertTerminateContractScript
+				+ ") { alert('" + _page.localize(ALERT_TERMINATE_CONTRACT) + "'); return false; } else {return true;}}"));
+
+
 		_onSubmitHandler =
-			"if (!validateDates()) return false; else return confirm('"
+			"if (!validateDates()) " +				"return false; " +			"if (!alertTerminateContract()) " +				"return false; " +			"return confirm('"
 				+ _page.localize(SUBMIT_ALERT_1)
 				+ "')";
 
@@ -194,7 +217,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(
+	private String[] addToTable(
 		int row,
 		ChildCareApplication app,
 		boolean hasOffer,
@@ -206,6 +229,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		int providerId = app.getProviderId();
 		int ownerId = app.getOwner().getID();
+		
 		String name =
 			app.getChoiceNumber()
 				+ ": "
@@ -307,6 +331,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//        }
 
 		String validateDateScript = "false";
+		String alertTerminateContractScript = "false";
 
 		if (presentOffer) {
 			RadioButton rb1 =
@@ -331,7 +356,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			} else {
 				rb1.setSelected();
 			}
-
+			
 			DateInput date =
 				(DateInput) _page.getStyledInterface(
 					new DateInput(CCConstants.NEW_DATE + index, true));
@@ -361,6 +386,11 @@ class ChildCarePlaceOfferTable1 extends Table {
 					+ "document.getElementById('"
 					+ date.getIDForYear()
 					+ "').value == 'YY'))";
+					
+			alertTerminateContractScript = 
+				"(document.getElementById('"
+					+ rb1.getID()
+					+ "').checked)";	
 
 		}
 
@@ -394,7 +424,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			setRowColor(row++, _page.getZebraColor2());
 		}
 
-		return validateDateScript;
+		return new String[] {validateDateScript, alertTerminateContractScript};
 
 	}
 
