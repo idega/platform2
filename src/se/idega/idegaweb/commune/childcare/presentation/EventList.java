@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.15 2003/10/01 11:13:23 roar Exp $
+ * @version $Id: EventList.java,v 1.16 2003/10/20 15:23:46 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -507,7 +507,7 @@ public class EventList extends CommuneBlock {
 		int urow = 1;
 		int childCareId = getChildCareSession(iwc).getChildCareID();
 		Collection unprintedLetters =
-			getPrintedLetter().findLetterByChildcare(
+			getPrintedLetter().findLettersByChildcare(
 				childCareId,
 				searchSsn,
 				searchMsgId,
