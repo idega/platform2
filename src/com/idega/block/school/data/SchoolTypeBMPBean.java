@@ -90,7 +90,11 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   }
 
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
-    return super.idoFindAllIDsBySQL();
+	IDOQuery sql = idoQuery();
+	sql.appendSelectAllFrom(this);
+	sql.appendOrderBy();
+	sql.append(NAME);
+	return idoFindPKsByQuery(sql);
   }
 
   public Collection ejbFindAllByCategory(String category) throws javax.ejb.FinderException {
