@@ -172,6 +172,8 @@ public class MessageBox extends CommuneBlock {
 				}
 			}
 
+			messageTable.setColumnAlignment(getDeleteColumn(), Table.HORIZONTAL_ALIGN_CENTER);
+			messageTable.setColumnAlignment(getMessageNumberColumn(), Table.HORIZONTAL_ALIGN_CENTER);
 			messageTable.setHeight(row++,5);
 			
 			if (showSettings) {
