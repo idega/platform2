@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.ejb.FinderException;
 
@@ -252,40 +251,34 @@ public class RunResultViewer extends Block {
 			sortRuns(runs);
 			//System.out.println("Number of runners: " + runs.size());
 			
+			Map runGroups = new HashMap();
+			RunGroupMap map = new RunGroupMap();
 			List groupRunners = new ArrayList();
-			Iterator iter = runs.iterator();
-			while (iter.hasNext()) {
-				Run runner = (Run) iter.next();
+			Iterator iterator = runs.iterator();
+			while (iterator.hasNext()) {
+				Run runner = (Run) iterator.next();
 				if (runner.getRunGroupName() != null && runner.getRunGroupName().trim().length() > 0) {
 					groupRunners.add(runner);
+					RunGroup runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
+					if (runnerGroup == null) {
+						runnerGroup = new RunGroup(runner.getRunGroupName());
+						runGroups.put(runner.getRunGroupName(), runnerGroup);
+						//System.out.println("Creating run group: " + runnerGroup.getGroupName());
+					}
+					map.put(runnerGroup, runner);
 				}
 			}
 			//System.out.println("Number of group runners: " + groupRunners.size());
 
-			Map runGroups = new HashMap();
-			RunGroupMap map = new RunGroupMap();
-			Iterator iterator = groupRunners.iterator();
-			while (iterator.hasNext()) {
-				Run runner = (Run) iterator.next();
-				RunGroup runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
-				if (runnerGroup == null) {
-					runnerGroup = new RunGroup(runner.getRunGroupName());
-					runGroups.put(runner.getRunGroupName(), runnerGroup);
-					//System.out.println("Creating run group: " + runnerGroup.getGroupName());
-				}
-				map.put(runnerGroup, runner);
-			}
-			//System.out.println("Number of groups: " + map.size());
-			
-			Map orderedGroups = new TreeMap();
+			/*Map orderedGroups = new TreeMap();
 			iterator = map.keySet().iterator();
 			while (iterator.hasNext()) {
 				RunGroup group = (RunGroup) iterator.next();
 				orderedGroups.put(group.getCounter(), group);
-			}
+			}*/
 			//System.out.println("Number of ordered groups: " + orderedGroups.size());
 			
-			iterator = orderedGroups.values().iterator();
+			iterator = map.keySet().iterator();
 			while (iterator.hasNext()) {
 				RunGroup runGroup = (RunGroup) iterator.next();
 				Collection runnersInRunGroup = map.getCollection(runGroup);
