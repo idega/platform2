@@ -34,6 +34,9 @@ import com.idega.util.datastructures.HashMatrix;
  * Created on May 30, 2003
  */
 public class SQLQuery implements DynamicExpression {
+	
+	public static final String DYNAMIC_FIELD_VALUE_PREFIX = "dynamic_field_value_";
+	public static final String DYNAMIC_FIELD_DESCRIPTION_PREFIX = "dynamic_field_description_";
   
   private final String DOT = ".";
   private final String ALIAS_PREFIX = "A_";
@@ -191,6 +194,10 @@ public class SQLQuery implements DynamicExpression {
   	return query.toSQLString();
   }
   	
+  public List getFields() {
+  	return fieldOrder;
+  }
+  
   public List getDisplayNames() {
     List displayNames = new ArrayList();
     Iterator fieldOrderIterator = fieldOrder.iterator();
@@ -470,7 +477,7 @@ public class SQLQuery implements DynamicExpression {
 	}		
 	
 	protected String getEntityForField(String path, String fieldName)	{
-		QueryFieldPart field = (QueryFieldPart) getField(path, fieldName);
+		QueryFieldPart field = getField(path, fieldName);
 		return field.getEntity();
 	}
 	

@@ -1,13 +1,14 @@
 package com.idega.block.datareport.presentation;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -23,6 +24,7 @@ import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
+import com.idega.block.datareport.data.DesignBox;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
@@ -54,9 +56,10 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringAlphabeticalComparator;
+import com.idega.util.datastructures.QueueMap;
 
+import dori.jasper.engine.JRException;
 import dori.jasper.engine.JasperPrint;
-import dori.jasper.engine.design.JasperDesign;
 
 
 /**
@@ -102,8 +105,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	
 	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
-	private static final String USER_ACCESS_VARIABLE = "user_access_variable";
-	private static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
+	public static final String USER_ACCESS_VARIABLE = "user_access_variable";
+	public static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
 	
 	// sets the investigation level of the query builder (-1 means, that the query builder is shown in the simple mode)
 	private static final int SIMPLE_MODE = -1; 
@@ -112,7 +115,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	// be careful: high numbers need much performance and time!
 	private static final int EXPERT_MODE = 6;
 
-	private ICFile queryFolder;
 	private ICFile designFolder;
 	
 	private int showOnlyOneQueryWithId = -1;
@@ -151,7 +153,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		if (iwc.isParameterSet(SET_ID_OF_QUERY_FOLDER_KEY))	{
 			String queryFolderKey = iwc.getParameter(SET_ID_OF_QUERY_FOLDER_KEY);
 			parameterMap.put(SET_ID_OF_QUERY_FOLDER_KEY, queryFolderKey);
-				queryFolder = getFileForId(queryFolderKey);
 		}
 		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
 			String designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
@@ -311,7 +312,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	
   	
   	Form form = new Form();
-  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, resourceBundle, form);
+  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
   	if (showOnlyOneQueryWithId != -1)	{
@@ -391,7 +392,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 
 		
   	
-	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, IWResourceBundle resourceBundle, Form form)	{
+	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, Form form)	{
 		EntityBrowser browser = new EntityBrowser();
 		browser.setAcceptUserSettingsShowUserSettingsButton(false, false);
 		browser.setUseExternalForm(true);
@@ -436,7 +437,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			
 			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
 				if (optionMap == null) {
-					optionMap = new HashMap();
+					optionMap = new QueueMap();
+					optionMap.put("-1", "dynamic");
 					if(designFolder!=null){
 		  				Iterator iterator = designFolder.getChildren();
 		  				while (iterator.hasNext())	{
@@ -495,14 +497,14 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	    	}
 	    	else {
 	    		// get the values of the input fields
-	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap,  identifierInputDescriptionMap, iwc);
+	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap, iwc);
 	    		if (calculateAccess) {
 	    			setAccessCondition(modifiedValues, iwc);
 	    		}
 	    		query.setIdentifierValueMap(modifiedValues);
 	    		// show result of query
 	    		List executedSQLStatements = new ArrayList();
-	    		boolean isOkay = executeQueries(query, bridge, executedSQLStatements);
+	    		boolean isOkay = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
 	    		
 	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
 	    			addExecutedSQLQueries(executedSQLStatements);
@@ -545,7 +547,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	    //
 	    else {
 	    	List executedSQLStatements = new ArrayList();
-	    	boolean isOkay = executeQueries(query, bridge, executedSQLStatements);
+	    	boolean isOkay = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
 	    	addExecutedSQLQueries(executedSQLStatements);
 	    	if (! isOkay)	{
 	    		errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
@@ -590,21 +592,20 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	}
 
 	
-	private boolean executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries) throws RemoteException {
+	private boolean executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
 		QueryResult queryResult = bridge.executeQueries(query, executedSQLQueries);
 		// check if everything is fine
 		if (queryResult == null || queryResult.isEmpty())	{
 			// nothing to do
 			return false;
 		}
-    // get the design of the report 
-    JasperReportBusiness reportBusiness = getReportBusiness();
-    int designId = ((Integer) parameterMap.get(CURRENT_LAYOUT_ID)).intValue();
-    JasperDesign design = reportBusiness.getDesign(designId);
+		// get design
+		JasperReportBusiness reportBusiness = getReportBusiness();
+		DesignBox designBox = getDesignBox(query, reportBusiness, resourceBundle, iwc);
     // synchronize design and result
     Map designParameters = new HashMap();
     designParameters.put(REPORT_HEADLINE_KEY, query.getName());
-    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, design);
+    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
     // create html report
     String uri;
     String format = (String) parameterMap.get(CURRENT_OUTPUT_FORMAT);
@@ -624,11 +625,30 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     return true;
 	}
     
-    
-    			
+	private DesignBox getDesignBox(SQLQuery query, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
+    int designId = ((Integer) parameterMap.get(CURRENT_LAYOUT_ID)).intValue();
+    DesignBox design = null;
+    try {
+    	if (designId > 0) {  
+    		design = reportBusiness.getDesignBox(designId);
+    	}
+    	else {
+    		design = reportBusiness.getDynamicDesignBox(query, resourceBundle, iwc);
+    	}
+    }
+    catch (IOException ioEx) {
+    	logError("[ReportQueryOverview] Couldn't retrieve design.");
+    	log(ioEx);
+    }
+    catch (JRException jrEx) {
+    	logError("[ReportQueryOverview] Couldn't retrieve design.");
+    	log(jrEx);
+    }
+    return design;
+	}
     	
    // parsing of the request      	
-	private Map getModifiedIdentiferValueMapByParsingRequest(Map identifierValueMap, Map  identifierInputDescriptionMap, IWContext iwc)	{
+	private Map getModifiedIdentiferValueMapByParsingRequest(Map identifierValueMap, IWContext iwc)	{
 		Map result = new HashMap();
 		Iterator iterator = identifierValueMap.keySet().iterator();
 		while (iterator.hasNext()) {
@@ -676,7 +696,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
 		buffer.append(" )");
 		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
-		identifierValueMap.put(USER_ACCESS_VARIABLE, userBuffer.toString());
+		identifierValueMap.put(USER_ACCESS_VARIABLE, " ( 2, 4) ");//userBuffer.toString());
 		// create the where condition for group view
 		identifierValueMap.put(GROUP_ACCESS_VARIABLE, buffer.toString());
 	}
@@ -794,7 +814,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   private ICFile getFile(Integer fileId) throws FinderException {
     try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByPrimaryKey(fileId);
+      ICFile file = home.findByPrimaryKey(fileId);
       return file;
     }
     catch(RemoteException ex){
@@ -805,7 +825,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   private ICFile getFile(String name)	{
   	try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByFileName(name);
+      ICFile file = home.findByFileName(name);
       return file;
     }
     catch(RemoteException ex){
@@ -838,12 +858,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			}
 		}
 	}
-
-				
-			 
-	
-
-
 
 	// some get service methods
 

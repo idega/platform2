@@ -6,22 +6,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
+import com.idega.block.dataquery.data.sql.InputDescription;
+import com.idega.block.dataquery.data.sql.SQLQuery;
+import com.idega.block.dataquery.data.xml.QueryFieldPart;
+import com.idega.block.datareport.data.DesignBox;
+import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOServiceBean;
+import com.idega.business.InputHandler;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
+import com.idega.util.StringHandler;
 
 import dori.jasper.engine.JRBand;
 import dori.jasper.engine.JRDataSource;
@@ -47,7 +57,7 @@ import dori.jasper.engine.export.JRXlsExporterParameter;
  * @version 1.0
  * Created on Jun 10, 2003
  */
-public class JasperReportBusinessBean extends IBOServiceBean implements JasperReportBusiness {
+public class JasperReportBusinessBean extends IBOServiceBean implements JasperReportBusiness { 
   
   private static String REPORT_FOLDER = "reports";
   private static String HTML_FILE_EXTENSION = "html";
@@ -63,14 +73,16 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return JasperFillManager.fillReport(report, parameterMap, dataSource);
   }
   
-  public JasperPrint printSynchronizedReport(QueryResult dataSource, Map parameterMap, JasperDesign design) {
+  public JasperPrint printSynchronizedReport(QueryResult dataSource, Map parameterMap, DesignBox designBox) {
     JasperPrint print;
-    synchronizeResultAndDesign(dataSource, parameterMap, design);
+    synchronizeResultAndDesign(dataSource, parameterMap, designBox);
     // henceforth we treat the QueryResult as a JRDataSource, 
     // therefore we reset the QueryResult to prepare it 
     dataSource.resetDataSource(); // resets only the DataSource functionality (sets the pointer to the first row)
     try {
-      print = getReport(dataSource, parameterMap, design);
+    	Map map = designBox.getParameterMap();
+    	JasperDesign design = designBox.getDesign();
+      print = getReport(dataSource, map, design);
     }
     catch (JRException ex)  {
       System.err.println("[ReportBusiness]: Jasper print could not be generated.");
@@ -201,7 +213,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     return uri.toString();
   }
 
-  public void synchronizeResultAndDesign(QueryResult result, Map parameterMap, JasperDesign reportDesign)  {
+  public void synchronizeResultAndDesign(QueryResult result, Map parameterMap, DesignBox designBox)  {
+  	JasperDesign reportDesign = designBox.getDesign();
     List designFieldsToRemove = new ArrayList();
     // get fields of the report design
     List fields = reportDesign.getFieldsList();
@@ -261,14 +274,16 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   }
 
 
-  public JasperDesign getDesign(int designFileId) {
+  public DesignBox getDesignBox(int designFileId) {
     ICFile reportDesign = getFile(designFileId);
     InputStream inputStream = null;
     try {
       inputStream = reportDesign.getFileValue();
       JasperDesign design = JasperManager.loadXmlDesign(inputStream);
       inputStream.close();
-      return design;
+      DesignBox designBox = new DesignBox();
+      designBox.setDesign(design);
+      return designBox;
     }
     catch (Exception ex)  {
       System.err.println("[JasperReportBusiness]: File could not be read");
@@ -281,6 +296,120 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       return null;
     }
   }    
+  
+  public DesignBox getDynamicDesignBox(SQLQuery query, IWResourceBundle resourceBundle, IWContext iwc) throws IOException, JRException {
+  	final int columnSpacing = 15;
+  	final int columnWidth = 120;
+  	final int labelWidth = 95;
+  	final int valueWidth = 55;
+  	final int pageMargin = 20;
+  	
+  	Map parameterMap = new HashMap();
+  	
+  	DynamicReportDesign design = new DynamicReportDesign("GeneratedDesign");
+  	//set title
+  	String queryName = query.getName();
+  	parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME, queryName);
+  	// set total width
+  	List fields = query.getFields();
+  	int totalWidth = 0;
+  	if (! fields.isEmpty()) {
+  		totalWidth = ((columnSpacing + columnWidth) * fields.size())  - columnSpacing;
+  	}
+  	design.setColumnWidth(totalWidth);
+  	design.setPageWidth(columnWidth + pageMargin + pageMargin);
+  	// set fields
+  	Iterator fieldIterator = fields.iterator();
+  	while (fieldIterator.hasNext()) {
+  		QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+  		String fieldName =  fieldPart.getName();
+  		String type = fieldPart.getTypeClass();
+  		parameterMap.put(fieldName, resourceBundle.getLocalizedString(fieldName, fieldName));
+  		design.addField(fieldName, type, columnWidth);
+  	}
+  	// add fields for values and descriptions of the dynamic fields to header
+  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
+  	Map identifierValueMap = query.getIdentifierValueMap();
+  	Iterator iterator = identifierInputDescriptionMap.entrySet().iterator();
+  	while (iterator.hasNext()) {
+  		Map.Entry entry = (Map.Entry) iterator.next();
+  		String identifier = entry.getKey().toString();
+  		if ( ! (ReportQueryOverview.USER_ACCESS_VARIABLE.equals(identifier) ||
+  				ReportQueryOverview.GROUP_ACCESS_VARIABLE.equals(identifier))) {
+	   		InputDescription inputDescription = (InputDescription) entry.getValue();
+	  		List inputValues = (List) identifierValueMap.get(identifier);
+	  		// get handler
+	  		String inputHandlerClassName = inputDescription.getHandlerDescription();
+	  		String inputValueDisplay = null;
+	  		if (inputHandlerClassName != null) { 
+	  			try {
+	  				Class inputHandlerClass = Class.forName(inputHandlerClassName);
+	  				InputHandler inputHandler = (InputHandler) inputHandlerClass.newInstance();
+	  				String[] inputValuesAsArray =  (String[]) inputValues.toArray(new String[0]);
+	  				// method below throws Exception 
+	  				Object resultingObject = inputHandler.getResultingObject(inputValuesAsArray, iwc);
+	  				inputValueDisplay = inputHandler.getDisplayNameOfValue(resultingObject, iwc);
+	  			}
+	  			catch (ClassNotFoundException classEx) {
+	  				logError("[JasperReportBusiness] Inputhandler class could not be found");
+	  				log(classEx);
+	  				inputValueDisplay = inputValues.toString();
+	  			}
+	  			catch (InstantiationException insEx) {
+	  				logError("[JasperReportBusiness] Inputhandler class could not be instanciated");
+	  				log(insEx);
+	  				inputValueDisplay = inputValues.toString();
+	  			}
+	  			catch (IllegalAccessException accEx) {
+	  				logError("[JasperReportBusiness] Inputhandler class could not be instanciated");
+	  				log(accEx);
+	  				inputValueDisplay = inputValues.toString();
+	  			}	
+	  			catch (Exception ex) {
+	  				logError("[JasperReportBusiness] Resulting object could not be fetched");
+	  				log(ex);
+	  				inputValueDisplay = inputValues.toString();
+	  			}
+	  		}
+	  		else {
+	  			StringBuffer buffer = new StringBuffer();
+	  			Iterator inputIterator = inputValues.iterator();
+	  			boolean firstTime = true;
+	  			while (inputIterator.hasNext()) {
+	  				if (! firstTime) {
+	  					buffer.append(", ");
+	  				}
+	  				else {
+	  					firstTime = false;
+	  				}
+	  				buffer.append(inputIterator.next().toString());
+	  			}
+	  			inputValueDisplay = buffer.toString();
+	  		}
+	  		String description = inputDescription.getDescription();
+
+	  		int descriptionWidth = (description == null) ? labelWidth : calculateTextFieldWidthForString(description);
+	  		int inputValueDisplayWidth = (inputValueDisplay == null) ? valueWidth : calculateTextFieldWidthForString(inputValueDisplay);
+	  		String descriptionWithPrefix = StringHandler.concat(SQLQuery.DYNAMIC_FIELD_DESCRIPTION_PREFIX, identifier);
+	  		String inputValueDisplayWithPrefix = StringHandler.concat(SQLQuery.DYNAMIC_FIELD_VALUE_PREFIX, identifier);
+	  		parameterMap.put(descriptionWithPrefix, description);
+	  		parameterMap.put(inputValueDisplayWithPrefix, inputValueDisplay);
+	  		design.addHeaderParameter(descriptionWithPrefix, descriptionWidth, inputValueDisplayWithPrefix, String.class, inputValueDisplayWidth);
+  		}
+  	}
+  	design.close();
+  	JasperDesign jasperDesign = design.getJasperDesign(iwc);
+  	DesignBox designBox = new DesignBox();
+  	designBox.setDesign(jasperDesign);
+  	designBox.setParameterMap(parameterMap);
+  	return designBox;
+  }
+  	
+  		
+  		
+  	
+  
+  
   
   public JasperDesign getDesignFromBundle(IWBundle bundle, String layoutXMLFileName) {
 	FileInputStream inputStream = null;
@@ -308,7 +437,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   private ICFile getFile(int fileId)  {
     try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByPrimaryKey(new Integer(fileId));
+      ICFile file = home.findByPrimaryKey(new Integer(fileId));
       return file;
     }
     // FinderException, RemoteException
