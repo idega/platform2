@@ -347,7 +347,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			try{
 				entry = getRegularInvoiceEntryHome().create();
 				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-				entry.setCreatedSign(iwc.getCurrentUser().getName());				
+				entry.setCreatedSign(iwc.getCurrentUser().getName());	
+				entry.setEditSign("");	
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
 				return;

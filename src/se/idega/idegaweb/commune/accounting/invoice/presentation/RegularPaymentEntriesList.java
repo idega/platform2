@@ -81,6 +81,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
+	private String ERROR_PLACING_NULL = "error_placing_null";
 	
 
 	private static String LOCALIZER_PREFIX = "regular_payment_entries_list.";
@@ -111,6 +112,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_EDIT = "edit";
 	private static final String KEY_DELETE = "delete";	
 	private static final String KEY_SCH_TYPE = "school_type";	
+	
+	private static final String KEY_DAY_CREATED = "day_created";
+	private static final String KEY_DAY_REGULATED = "day_regulated";	
+	private static final String KEY_SIGNATURE = "signature";	
 	
 	private static final String LOC_KEY_SELECT=LOCALIZER_PREFIX+"select";
 	
@@ -380,6 +385,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	private void handleSaveAction(IWContext iwc, School school){
 		Map errorMessages = new HashMap();
+		checkNotNull(iwc, RegulationSearchPanel.PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
 				
 
 		RegularPaymentEntry entry = null;
@@ -391,11 +397,17 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		if (entry == null){
 			try{
 				entry = getRegularPaymentEntryHome().create();
+				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
+				entry.setCreatedSign(iwc.getCurrentUser().getName());
+				entry.setEditSign("");								
 			
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
 				return;
 			}			
+		} else{
+			entry.setEditDate(new Date(new java.util.Date().getTime()));
+			entry.setEditSign(iwc.getCurrentUser().getName());
 		}
 
 		long amountMonth = 0;
@@ -425,8 +437,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 		
 		entry.setUser(getUser(iwc));
-		entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 		
+		if (iwc.getParameter(PAR_VAT_TYPE) != null && iwc.getParameter(PAR_VAT_TYPE).length() != 0){
+			entry.setVatRuleRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		}
+
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
 			entry.setOwnPosting(p.getOwnPosting());
@@ -604,6 +619,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
 		searcher.setToFormSubmit(true);
 
+		String pk = iwc.getParameter(PAR_PK);
+		
+		if (pk != null){
+			searcher.add(new HiddenInput(PAR_PK, pk));
+		}
+		
 		try{
 			searcher.process(iwc);	
 			if (searcher.getUser() == null && ! searcher.isHasManyUsers() && ! searcher.isClearedButtonPushed(iwc)){
@@ -740,7 +761,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 //		
 //			
 //		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-		
+		if (errorMessages.get(ERROR_PLACING_NULL) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_PLACING_NULL)), 1, row++);			
+		}		
 
 		RegulationSearchPanel regSearchPanel = new RegulationSearchPanel(iwc, PAR_SELECTED_PROVIDER); 	
 		regSearchPanel.setLeftColumnMinWidth(MIN_LEFT_COLUMN_WIDTH);
@@ -806,6 +829,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		toInput.setContent(formatDate(entry.getTo(), 4));		
 		toInput.setLength(4);
 		table.add(toInput, 2, row++);
+		
+		table.setHeight(row++, EMPTY_ROW_HEIGHT);
+		
+		addField(table, KEY_DAY_CREATED, formatDate(entry.getCreatedDate(), 6), 1, row);
+		addField(table, KEY_SIGNATURE, entry.getCreatedName(), 3, row++);
+		addField(table, KEY_DAY_REGULATED, formatDate(entry.getEditDate(), 6), 1, row);
+		addField(table, KEY_SIGNATURE, entry.getEditName(), 3, row++);		
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
@@ -843,9 +873,21 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		table.mergeCells(1, row, 10, row);
-		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
+		PostingBlock postingBlock = null;
+		if (entry.getOwnPosting() != null && entry.getOwnPosting().length() != 0){
+			postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
+		} else {
+			postingBlock = new PostingBlock(); 
+			try{
+				postingBlock.generateStrings(iwc);
+			}catch(NullPointerException ex){
+				postingBlock = new PostingBlock("", "");
+			} catch (PostingParametersException e) {
+				e.printStackTrace();
+			}			
+		}
 		table.add(postingBlock, 1, row++);
-						
+		
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
@@ -904,11 +946,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		return new RegularPaymentEntry() {
 		
 			public Date getFrom() {
-				return _reg != null ? _reg.getPeriodFrom() : getDateValue(PAR_FROM);
+				return  getDateValue(PAR_FROM);
 			}
 		
 			public Date getTo() {
-				return  _reg != null ? _reg.getPeriodTo() : getDateValue(PAR_TO);
+				return  getDateValue(PAR_TO);
 			}
 		
 			public String getPlacing() {
@@ -1012,11 +1054,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public Date getCreatedDate() {
-				return null;
+				return new Date(System.currentTimeMillis());
 			}
 		
 			public String getCreatedName() {
-				return null;
+				return "";
 			}
 		
 			public Date getEditDate() {
@@ -1024,7 +1066,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public String getEditName() {
-				return null;
+				return "";
 			}
 			
 			public int getSchoolTypeId(){
@@ -1096,6 +1138,26 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setRegSpecType(RegulationSpecType p0) {}
 			public void setRegSpecTypeId(int p0) {}
 			public void setVatRuleRegulation(Regulation p0) {}
+
+			public void setCreatedDate(Date p0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setCreatedSign(String p0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setEditDate(Date p0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setEditSign(String p0) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 	}
 	
@@ -1164,6 +1226,20 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 	
 	/**
+	 * Adds a label and a Text to a table
+	 * @param table
+	 * @param key is used both as localization key for the label and default label value
+	 * @param value
+	 * @param parameter
+	 * @param col
+	 * @param row
+	 * @return
+	 */	
+	private Table addField(Table table, String key, String value, int col, int row){
+		return addWidget(table, key, getText(value), col, row);
+	}	
+	
+	/**
 	 * Adds a label and a TextInput to a table
 	 * @param table
 	 * @param key is used both as localization key for the label and default label value
@@ -1228,4 +1304,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException{
 		return (SchoolBusiness) IDOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 	}	
+	
+	private void checkNotNull(IWContext iwc, String par, Map errorMessages, String errorPar, String errorMsg){
+		if (iwc.getParameter(par) == null || iwc.getParameter(par).length() == 0){
+			errorMessages.put(errorPar, errorMsg);
+		}
+	}
+		
 }
