@@ -188,7 +188,7 @@ public abstract class AbstractSearchForm extends Block{
 		form.add(formTable);
 		form.add(getButtons());
 		outTable.add(form);
-		if (tm.isInPermissionGroup(iwc) || tm.isAdministrator(iwc)) {
+		if (definedProduct != null && (tm.isInPermissionGroup(iwc) || tm.isAdministrator(iwc))) {
 			Link link = getDirectBookingLink();
 			outTable.add(link);
 		} 
