@@ -284,10 +284,10 @@ public class UserEditor extends Block {
 					user = searcher.getUser();
 				}
 				catch (RemoteException e1) {
-					e1.printStackTrace();
+					log(e1);
 				}
 				catch (FinderException e1) {
-					e1.printStackTrace();
+					log(e1);
 				}
 			}
 		}
@@ -311,7 +311,7 @@ public class UserEditor extends Block {
 					presentateUserRelations(iwc);
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					log(e);
 				}
 			}
 			addToMainPart(Text.getBreak());
@@ -1722,6 +1722,13 @@ public class UserEditor extends Block {
 	 */
 	public void setSkipResultsForOneFound(boolean flag) {
 		searcher.setSkipResultsForOneFound(flag);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserSearcher#setSkipResultsForOneFound(boolean)
+	 */
+	public void setLegalNonDigitPIDLetters(String letters) {
+		searcher.setLegalNonDigitPIDLetters(letters);
 	}
 	/**
 	* @param obj
