@@ -52,11 +52,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/22 13:39:45 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/30 10:58:54 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -398,6 +398,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 	}
 	
+	private String getSignature (final User user) {
+		if (null == user) return "";
+		final String firstName = user.getFirstName ();
+		final String lastName = user.getLastName ();
+		return (firstName != null ? firstName + " " : "")
+				+ (lastName != null ? lastName : "");
+	}
+	
 	public InvoiceRecord createInvoiceRecord
 		(final User createdBy,
 		 final Integer invoiceHeaderId,
@@ -420,11 +428,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final String doublePosting,
 		 final Integer pieceAmount,
 		 final String ownPaymentPosting,
-		 final String doublePaymentPosting)
+		 final String doublePaymentPosting,
+		 final Integer orderId)
 		throws CreateException, RemoteException {
 		final InvoiceRecord record = getInvoiceRecordHome ().create ();
-		final String createdBySignature = null != createdBy
-				? createdBy.getFirstName ()	+ " " + createdBy.getLastName () : "";
+		final String createdBySignature = getSignature (createdBy);
 		record.setCreatedBy (createdBySignature);
 		final Date now = new Date (new java.util.Date ().getTime());
 		record.setDateCreated (now);
@@ -454,6 +462,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 		if (null != vatRule)  record.setVATType (vatRule.intValue ());
 		if (null != providerId) record.setProviderId(providerId.intValue ());
+		if (null != orderId) record.setOrderId(orderId.intValue ());
 		if (null != placementId) {
 			record.setSchoolClassMemberId (placementId.intValue ());
 			record.setSchoolType (record.getSchoolClassMember ().getSchoolType ());
@@ -472,9 +481,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					final PaymentRecord paymentRecord
 							= createPaymentRecord
 							(school, schoolCategory, period, createdBySignature, now,
-							 ruleText, amount.intValue (), pieceAmount.intValue (),
-							 vatRule.intValue (), ownPaymentPosting, doublePaymentPosting,
-							 regSpecTypeName);
+							 ruleText, amount, pieceAmount, vatRule, ownPaymentPosting,
+							 doublePaymentPosting, regSpecTypeName);
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
 			}
@@ -491,9 +499,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final String createdBy,
 		 final Date dateCreated,
 		 final String ruleText,
-		 final float totalAmount,
-		 final float pieceAmount,
-		 final int vatType,
+		 final Integer totalAmount,
+		 final Integer pieceAmount,
+		 final Integer vatType,
 		 final String ownPosting,
 		 final String doublePosting,
 		 final String regSpecTypeName) throws RemoteException, CreateException {
@@ -519,9 +527,15 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.setPaymentText (ruleText);
 		paymentRecord.setStatus (status);
 		paymentRecord.setPeriod (period);
-		paymentRecord.setTotalAmount (totalAmount);
-		paymentRecord.setPieceAmount (pieceAmount);
-		paymentRecord.setVATType (vatType);
+		if (null != totalAmount) {
+			paymentRecord.setTotalAmount (totalAmount.intValue ());
+		}
+		if (null != pieceAmount) {
+			paymentRecord.setPieceAmount (pieceAmount.intValue ());
+		}
+		if (null != vatType) {
+			paymentRecord.setVATType (vatType.intValue ());
+		}
 		paymentRecord.setOwnPosting (ownPosting);
 		paymentRecord.setDoublePosting (doublePosting);
 		paymentRecord.setRuleSpecType (regSpecTypeName);
