@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -286,17 +287,44 @@ class ChildCarePlaceOfferTable1 extends Table {
 			//ignore
 		}
 		//todo (roar) remove code
-		System.out.println("hasBankId:" + hasBankId);
+		System.out.println("hasBankId :" + hasBankId);
+		
+
+		
 		if (hasBankId){
-			Contract contract = app.getContract();
-			if (contract != null && ! contract.isSigned()){
-				Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
-				signBtn.setWindowToOpen(ChildCareWindowBig.class);
-				signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
-				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
-				signBtn.setAsImageButton(true);
-				add(signBtn, column++, row);	
-			}	
+			Collection contracts = _page.childCarebusiness.getContractsByApplication(app.getNodeID());
+			System.out.println("contract exists: " + contracts.size());
+			Iterator i = contracts.iterator();
+			
+			createSingButton:
+			while(i.hasNext()){
+				Contract c = (Contract) i.next();
+				
+				if (! c.isSigned()){
+					System.out.println("contract not signed");			
+					
+					Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
+					signBtn.setWindowToOpen(ChildCareWindowBig.class);
+					signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
+					signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, c.getPrimaryKey().toString());
+					signBtn.setAsImageButton(true);
+					add(signBtn, column++, row);	
+				
+					break createSingButton;
+				}
+			}
+						
+//			Contract contract = app.getContract();
+//			System.out.println("contract exists " + (contract != null));
+//			System.out.println("contract not signed " + (contract != null && ! contract.isSigned()));			
+//			if (contract != null && ! contract.isSigned()){
+//				Link signBtn = new Link(_page.localize(SIGN_TOOLTIP));
+//				signBtn.setWindowToOpen(ChildCareWindowBig.class);
+//				signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
+//				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
+//				signBtn.setAsImageButton(true);
+//				add(signBtn, column++, row);	
+//			}	
 		}		
 
 		if (row % 2 == 0) {
