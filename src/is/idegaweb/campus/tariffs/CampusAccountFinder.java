@@ -56,13 +56,15 @@ public class CampusAccountFinder  {
     }
   }
 
-  public static int countAccounts(){
-    String sql = "select count(*) from "+ContractAccountApartment.getEntityTableName();
+  public static int countAccounts(String accType){
+    String sql = "select count(*) from "+ContractAccountApartment.getEntityTableName() +" where "+ContractAccountApartment.getAccountTypeColumnName()+" = '"+accType+"'";
     int count = 0;
+    System.err.println(sql.toString());
     try{
       count = new ContractAccountApartment().getNumberOfRecords(sql.toString());
+
     }
-    catch(SQLException ex){}
+    catch(SQLException ex){ex.printStackTrace();}
     if(count < 0)
       count = 0;
     return count;

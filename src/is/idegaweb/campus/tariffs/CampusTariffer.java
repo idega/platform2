@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.10 2001/09/24 13:02:12 aron Exp $
+ * $Id: CampusTariffer.java,v 1.11 2001/09/24 23:56:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package is.idegaweb.campus.tariffs;
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.finance.data.*;
 import com.idega.block.building.data.*;
-import com.idega.block.finance.business.Finder;
+import com.idega.block.finance.business.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
+import java.util.Iterator;
+import java.util.Hashtable;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
@@ -43,7 +45,7 @@ import is.idegaweb.campus.entity.Contract;
  */
 public class CampusTariffer extends ModuleObjectContainer {
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
+  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   public  String strAction = "tt_action";
   protected boolean isAdmin = false;
   public final char cComplex = 'x';
@@ -83,6 +85,7 @@ public class CampusTariffer extends ModuleObjectContainer {
             case ACT2 : MO = doMainTable(modinfo);      break;
             case ACT3 : MO = doSomeThing( modinfo);      break;
             case ACT4 : MO = getTableOfAssessmentAccounts( modinfo);      break;
+            case ACT5 : MO = doRollback(modinfo); break;
             default: MO = getTableOfAssessments(modinfo);           break;
           }
         }
@@ -104,6 +107,66 @@ public class CampusTariffer extends ModuleObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
+  private ModuleObject doRollback(ModuleInfo modinfo){
+    Table T = new Table();
+    String sRoundId = modinfo.getParameter("rollback");
+    if(sRoundId != null){
+      int iRoundId = Integer.parseInt(sRoundId);
+      if(iRoundId > 0){
+        javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
+        try{
+           t.begin();
+           AssessmentRound AR = new AssessmentRound(iRoundId);
+           List L = AccountManager.listOfAccountEntries(AR.getID());
+           Hashtable H = new Hashtable();
+          if(L!=null){
+            Iterator I = L.iterator();
+            AccountEntry ae;
+            Account a;
+            Integer Aid;
+            float Amount;
+            while(I.hasNext()){
+              ae = (AccountEntry) I.next();
+              Amount = ae.getPrice();
+              Aid = new Integer(ae.getAccountId());
+              if(!ae.getStatus().equals(ae.statusCreated))
+                throw new SQLException("Billed Entries");
+              ae.delete();
+              if( H.containsKey( Aid ) ){
+                a = (Account) H.get(Aid);
+              }
+              else{
+                a = new Account(ae.getAccountId());
+              }
+              // lowering the account
+              a.addKredit( Amount);
+            }
+            Iterator hi = H.values().iterator();
+            while(hi.hasNext()){
+              a = (Account) hi.next();
+              a.update();
+            }
+
+          }
+           AR.delete();
+         t.commit();
+         T.add(iwrb.getLocalizedString("rollbac_success","Rollback was successfull"));
+        }
+        catch(Exception e) {
+          try {
+            t.rollback();
+          }
+          catch(javax.transaction.SystemException ex) {
+            ex.printStackTrace();
+          }
+          e.printStackTrace();
+          T.add(iwrb.getLocalizedString("rollbac_illegal","Rollback was illegal"));
+        }
+      }
+    }
+    return T;
+  }
 
   private ModuleObject doSomeThing(ModuleInfo modinfo){
     ModuleObject MO = new Text("failed");
@@ -111,12 +174,21 @@ public class CampusTariffer extends ModuleObjectContainer {
       String date = modinfo.getParameter("pay_date");
       String roundName = modinfo.getParameter("round_name");
       String accountType = modinfo.getParameter("account_type");
+      String accountKeyId = modinfo.getParameter("account_key_id");
+      add(accountKeyId);
       if(date !=null && date.length() == 10){
-        roundName = roundName == null?"":roundName;
-        accountType = accountType != null?accountType:Account.typeFinancial;
-        idegaTimestamp paydate = new idegaTimestamp(date);
-        //add(paydate.getISLDate());
-        MO = doAssess(paydate,roundName,accountType);
+        if(roundName != null && roundName.trim().length() > 1){
+          roundName = roundName == null?"":roundName;
+          accountType = accountType != null?accountType:Account.typeFinancial;
+          int iAccountKeyId = accountKeyId!=null?Integer.parseInt(accountKeyId):-1;
+          idegaTimestamp paydate = new idegaTimestamp(date);
+          //add(paydate.getISLDate());
+          MO = doAssess(paydate,roundName,accountType,iAccountKeyId);
+        }
+        else{
+          add(iwrb.getLocalizedString("no_name_error","No name entered"));
+          MO = doMainTable(modinfo);
+        }
       }
       else{
         MO = doMainTable(modinfo);
@@ -153,9 +225,12 @@ public class CampusTariffer extends ModuleObjectContainer {
     if(L!= null){
       int len = L.size();
 
+      String sRollBack = iwrb.getLocalizedString("rollback","Rollback");
       T.add(Edit.formatText(iwrb.getLocalizedString("assessment_name","Assessment name")),1,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("assessment_stamp","Timestamp")),2,1);
       T.add(Edit.formatText(iwrb.getLocalizedString("totals","Total amount")),3,1);
+      T.add(Edit.formatText(sRollBack),4,1);
+
 
       int col = 1;
       row = 2;
@@ -167,6 +242,11 @@ public class CampusTariffer extends ModuleObjectContainer {
         T.add(getRoundLink(AR.getName(),AR.getID()),col++,row);
         T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(modinfo)),col++,row);
         T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
+        Link R = new Link(iwb.getImage("rollback.gif"));
+        R.addParameter("rollback",AR.getID());
+        R.addParameter(strAction ,ACT5);
+        T.add(R,col++,row);
+
         row++;
       }
       T.setWidth("100%");
@@ -222,7 +302,7 @@ public class CampusTariffer extends ModuleObjectContainer {
     Table T = new Table();
 
     int iSignedContractCount = ContractFinder.countContracts(Contract.statusSigned);
-    int iAccountCount = CampusAccountFinder.countAccounts();
+    int iAccountCount = CampusAccountFinder.countAccounts(Account.typeFinancial);
     int row = 2;
     T.add(Edit.formatText(iwrb.getLocalizedString("rented_apartments","Rented Apartments")),1,row);
     T.add(String.valueOf(iSignedContractCount),2,row);
@@ -231,14 +311,9 @@ public class CampusTariffer extends ModuleObjectContainer {
     T.add(String.valueOf(iAccountCount),2,row);
     row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
-    T.add(String.valueOf(iAccountCount),2,row);
-    row++;
-    T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
-
-
 
     DateInput di = new DateInput("pay_date",true);
-    di.setStyleAttribute("typ",Edit.styleAttribute);
+    di.setStyleAttribute("type",Edit.styleAttribute);
     idegaTimestamp today = idegaTimestamp.RightNow();
     today.addMonths(1);
     di.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
@@ -251,13 +326,19 @@ public class CampusTariffer extends ModuleObjectContainer {
 
     DropdownMenu drpAccountTypes = new DropdownMenu("account_type");
     drpAccountTypes.addMenuElement(Account.typeFinancial,iwrb.getLocalizedString("financial","Financial"));
-    //drpAccountTypes.addMenuElement(Account.typePhone,iwrb.getLocalizedString("phone","phone"));
+    drpAccountTypes.addMenuElement(Account.typePhone,iwrb.getLocalizedString("phone","phone"));
     Edit.setStyle(drpAccountTypes );
+
+    DropdownMenu drpAccountKeys = drpAccountKeys(Finder.getAccountKeys(),"account_key_id");
+    Edit.setStyle(drpAccountKeys);
 
     T.add(di,2,row);
     row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("type_of_account","Account type")),1,row);
     T.add(drpAccountTypes ,2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),1,row);
+    T.add(drpAccountKeys ,2,row);
     row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("name_of_round","Assessment name")),1,row);
     T.add(rn,2,row);
@@ -275,7 +356,109 @@ public class CampusTariffer extends ModuleObjectContainer {
     return F;
   }
 
-  private ModuleObject doAssess(idegaTimestamp paydate,String roundName,String accountType){
+  private DropdownMenu drpAccountKeys(List AK,String name){
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement(0,"--");
+    if(AK != null){
+      drp.addMenuElements(AK);
+    }
+    return drp;
+  }
+
+  private ModuleObject doAssess(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
+    if(accountType.equalsIgnoreCase(Account.typeFinancial)){
+      return doAssessFinance(paydate,roundName ,accountType);
+    }
+    else if(accountType.equalsIgnoreCase(Account.typePhone)){
+      return doAssessPhone( paydate,roundName,accountType,iAccountKeyId );
+    }
+    return new Table();
+  }
+
+  private ModuleObject doAssessPhone(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
+    Table T = new Table();
+    List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+    if(listOfUsers != null){
+      Iterator I = listOfUsers.iterator();
+      ContractAccountApartment user;
+      AssessmentRound AR = null;
+
+      int iRoundId = -1;
+      int iAccountCount = 0;
+      try {
+          AR = new AssessmentRound();
+          AR.setAsNew(roundName);
+          AR.setType(Account.typePhone);
+          AR.insert();
+          iRoundId = AR.getID();
+        }
+        catch (SQLException ex) {
+          ex.printStackTrace();
+          try {
+            AR.delete();
+          }
+          catch (SQLException ex2) {
+            ex2.printStackTrace();
+            AR = null;
+          }
+        }
+
+        if(AR != null){
+          javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
+          try{
+            t.begin();
+            int totals = 0;
+            int totalAmount = 0;
+            // All tenants accounts (Outer loop)
+            AccountPhoneEntry ape;
+            AccountKey AK = new AccountKey(iAccountKeyId);
+            while (I.hasNext()) {
+              user = (ContractAccountApartment)I.next();
+              Account eAccount = new Account(user.getAccountId());
+              totalAmount = 0;
+              float Amount = 0;
+              List PhoneEntries = AccountManager.listOfPhoneEntries(eAccount.getID(),idegaTimestamp.RightNow(),AccountPhoneEntry.statusRead);
+              if(PhoneEntries != null){
+                Iterator it = PhoneEntries.iterator();
+                while(it.hasNext()){
+                  ape = (AccountPhoneEntry) it.next();
+                  Amount = ape.getPrice();
+                  totalAmount += Amount;
+                }
+                Amount = insertKreditEntry(user,iRoundId,paydate,totalAmount,AK);
+                totals += totalAmount*-1;
+                eAccount.setBalance(eAccount.getBalance()+Amount);
+                eAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                eAccount.update();
+                iAccountCount++;
+              }
+            }
+            AR.setTotals((float)(totals));
+            AR.update();
+            t.commit();
+            T.add(Edit.formatText(iwrb.getLocalizedString("assessment_successful","Assessment was successfull")),1,1);
+            T.add(Edit.formatText(iwrb.getLocalizedString("total_amount","Total amount")),1,2);
+            T.add(Edit.formatText(new java.text.DecimalFormat().format(totals *-1)),2,2);
+            T.add(Edit.formatText(iwrb.getLocalizedString("account_number","Accounts")),1,3);
+            T.add(Edit.formatText(iAccountCount),2,3);
+          }
+          catch(Exception e) {
+            try {
+              t.rollback();
+            }
+            catch(javax.transaction.SystemException ex) {
+              ex.printStackTrace();
+            }
+            e.printStackTrace();
+            T.add(iwrb.getLocalizedString("insert_error","Insert error"));
+          }
+        }
+    }
+    return T;
+  }
+
+  private ModuleObject doAssessFinance(idegaTimestamp paydate,String roundName,String accountType){
     Table T = new Table();
     List listOfTariffs = Finder.listOfTariffs();
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
@@ -294,6 +477,7 @@ public class CampusTariffer extends ModuleObjectContainer {
         try {
           AR = new AssessmentRound();
           AR.setAsNew(roundName);
+          AR.setType(Account.typeFinancial);
           AR.insert();
           iRoundId = AR.getID();
         }
@@ -421,10 +605,12 @@ public class CampusTariffer extends ModuleObjectContainer {
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
     AE.setInfo(T.getInfo());
+    AE.setStatus(AE.statusCreated);
     AE.setCashierId(1);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
-    V.add(AE);
+    if(V!=null)
+      V.add(AE);
     return AE.getPrice();
     /*
     System.err.println("totals before"+totals);
@@ -432,6 +618,22 @@ public class CampusTariffer extends ModuleObjectContainer {
     System.err.println("price"+AE.getPrice());
     System.err.println("totals after"+totals);
     */
+  }
+
+  private float insertKreditEntry(ContractAccountApartment U,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key) throws SQLException{
+    AccountEntry AE = new AccountEntry();
+    AE.setAccountId(U.getAccountId());
+    AE.setAccountKeyId(key.getID());
+    AE.setCashierId(this.iCashierId);
+    AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+    AE.setPrice(-amount);
+    AE.setRoundId(iRoundId);
+    AE.setName(key.getName());
+    AE.setInfo(key.getInfo());
+    AE.setStatus(AE.statusCreated);
+    AE.setPaymentDate(itPaydate.getTimestamp());
+    AE.insert();
+    return AE.getPrice();
   }
 
   private List listOfConAccAprt(char cAttribute, int iAttributeId){
@@ -448,6 +650,7 @@ public class CampusTariffer extends ModuleObjectContainer {
     Link L = new Link(name);
     L.addParameter(strAction,ACT4);
     L.addParameter("ass_round_id",id);
+    L.setFontSize(Edit.textFontSize);
     return L;
   }
 
