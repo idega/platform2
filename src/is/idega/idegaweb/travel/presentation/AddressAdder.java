@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOException;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.data.IDOFinderException;
 import java.util.List;
 import com.idega.presentation.*;
@@ -72,14 +75,14 @@ public class AddressAdder extends TravelWindow {
 
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     try {
       String sProductId = iwc.getParameter(_parameterProductId);
       if (sProductId != null) {
         _productId = Integer.parseInt(sProductId);
-        _product = ProductBusiness.getProduct(_productId);
+        _product = getProductBusiness(iwc).getProduct(_productId);
       }
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace();
     }
   }
@@ -88,7 +91,7 @@ public class AddressAdder extends TravelWindow {
     add("error");
   }
 
-  private boolean saveDepartureAddress(IWContext iwc) {
+  private boolean saveDepartureAddress(IWContext iwc) throws RemoteException, IDOException{
     boolean returner = true;
       String[] name = iwc.getParameterValues(textInputNameAddress);
       String[] ids = iwc.getParameterValues(_parameterAddressId);
@@ -105,7 +108,7 @@ public class AddressAdder extends TravelWindow {
             if (!name[i].equals("")) {
               Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                 newAddress.setStreetName(name[i]);
-                newAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueDepartureAddressType));
+                newAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType));
               newAddress.insert();
 
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
@@ -118,13 +121,15 @@ public class AddressAdder extends TravelWindow {
                   tAddress.setRefillStock(false);
                 }
                 tAddress.insert();
-              tAddress.addTo(_product);
+              _product.addTravelAddress(tAddress);
+//              tAddress.addTo(_product);
             }
           }else {
             if (iwc.getParameter(this._parameterDelete+ids[i]) != null) {
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
               Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
-                tAddress.removeFrom(_product);
+//                tAddress.removeFrom(_product);
+                _product.removeTravelAddress(tAddress);
                 tAddress.delete();
                 newAddress.delete();
             }else if (!name[i].equals("")) {
@@ -149,7 +154,7 @@ public class AddressAdder extends TravelWindow {
       return true;
   }
 
-  private void drawForm(IWContext iwc) {
+  private void drawForm(IWContext iwc) throws RemoteException{
     Form form = new Form();
       form.maintainParameter(_parameterProductId);
 
@@ -179,7 +184,7 @@ public class AddressAdder extends TravelWindow {
       delTxt.setBold(true);
 
     try {
-      List addresses = ProductBusiness.getDepartureAddresses(_product, true);
+      List addresses = _product.getDepartureAddresses(true);
       int addressesSize = addresses.size();
       TravelAddress tAddress;
       TextInput nameInp = new TextInput(textInputNameAddress);

@@ -167,9 +167,10 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
         if (timeframe != null) {
           try {
-            Product product = ProductBusiness.getProduct(id);
-            product.addTo(timeframe);
-          }catch (SQLException sql) {
+            Product product = getProductBusiness().getProduct(id);
+            product.addTimeframe(timeframe);
+//            product.addTo(timeframe);
+          }catch (IDOException sql) {
             //sql.printStackTrace(System.err);
           }
         }else {
@@ -231,8 +232,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   /**
    * @deprecated
    */
-  public Product[] getProducts(int supplierId) {
-    List list = ProductBusiness.getProducts(supplierId);
+  public Product[] getProducts(int supplierId) throws RemoteException{
+    List list = getProductBusiness().getProducts(supplierId);
     if (list == null) {
       return new Product[]{};
     }else {
@@ -243,8 +244,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   /**
    * @deprecated
    */
-  public Product[] getProducts(int supplierId, IWTimestamp stamp) {
-    List list = ProductBusiness.getProducts(supplierId, stamp);
+  public Product[] getProducts(int supplierId, IWTimestamp stamp) throws RemoteException, FinderException{
+    List list = getProductBusiness().getProducts(supplierId, stamp);
     if (list == null) {
       return new Product[]{};
     }else {
@@ -255,8 +256,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   /**
    * @deprecated
    */
-  public Product[] getProducts(int supplierId, IWTimestamp from, IWTimestamp to) {
-    List list = ProductBusiness.getProducts(supplierId, from, to);
+  public Product[] getProducts(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException, RemoteException{
+    List list = getProductBusiness().getProducts(supplierId, from, to);
     if (list == null) {
       return new Product[]{};
     }else {
@@ -276,7 +277,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return service;
   }
 
-  public Timeframe getTimeframe(Product product) throws ServiceNotFoundException, TimeframeNotFoundException {
+  public Timeframe getTimeframe(Product product) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException {
     Timeframe timeFrame = null;
     try {
 //      Service service = TravelStockroomBusiness.getService(product);
@@ -665,19 +666,19 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       return returner;
   }
 
-  public List getDepartureDays(IWContext iwc, Product product) {
+  public List getDepartureDays(IWContext iwc, Product product)throws RemoteException , FinderException{
     return getDepartureDays(iwc, product, null, null, true);
   }
 
-  public List getDepartureDays(IWContext iwc, Product product, boolean showPast) {
+  public List getDepartureDays(IWContext iwc, Product product, boolean showPast) throws RemoteException, FinderException{
     return getDepartureDays(iwc, product, null, null, showPast);
   }
 
-  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) {
+  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws RemoteException, FinderException{
     return getDepartureDays(iwc, product, from, to, true);
   }
 
-  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp fromStamp, IWTimestamp toStamp, boolean showPast) {
+  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp fromStamp, IWTimestamp toStamp, boolean showPast) throws RemoteException, FinderException{
     List returner = new Vector();
     try {
 //      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID());
@@ -820,7 +821,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   private List getTravelAddressesFromRefill(Product product, TravelAddress tAddress) throws RemoteException, IDOFinderException {
-    List addresses = ProductBusiness.getDepartureAddresses(product, true);
+    List addresses = getProductBusiness().getDepartureAddresses(product, true);
     int indexOf = addresses.indexOf(tAddress);
 
     TravelAddress tAdd;
@@ -944,8 +945,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimestamp departureTime) throws SQLException, IDOFinderException{
-    int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueDepartureAddressType);
+  protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimestamp departureTime) throws RemoteException, FinderException, SQLException, IDOFinderException{
+    int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType);
     TravelAddress departureAddress = null;
     Address address = null;
 
@@ -963,8 +964,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       departureAddress.insert();
 
     }else {
-      Product product = ProductBusiness.getProduct(serviceId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
-      List tAddresses = ProductBusiness.getDepartureAddresses(product, false); ///Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+      Product product = getProductBusiness().getProduct(serviceId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
+      List tAddresses = getProductBusiness().getDepartureAddresses(product, false); ///Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
       TravelAddress tAddress;
       if (tAddresses.size() > 0) {
         tAddress = (TravelAddress) tAddresses.get(0);
@@ -993,8 +994,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   }
 
-  protected int[] setArrivalAddress(int serviceId, String arrivalAt) throws SQLException, IDOFinderException{
-    int arrivalAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueArrivalAddressType);
+  protected int[] setArrivalAddress(int serviceId, String arrivalAt) throws RemoteException, FinderException, SQLException, IDOFinderException{
+    int arrivalAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueArrivalAddressType);
     Address arrivalAddress = null;
     Address address = null;
 
@@ -1004,9 +1005,9 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       arrivalAddress.setStreetName(arrivalAt);
       arrivalAddress.insert();
     }else {
-      Product product = ProductBusiness.getProduct(serviceId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
+      Product product = getProductBusiness().getProduct(serviceId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
 
-      Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
+      Address[] tempAddresses = getProductBusiness().getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
       if (tempAddresses.length > 0) {
         arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
@@ -1022,5 +1023,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return new int[]{arrivalAddress.getID()};
   }
 
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 
 }

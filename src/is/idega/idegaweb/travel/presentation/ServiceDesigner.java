@@ -100,14 +100,12 @@ public class ServiceDesigner extends TravelManager {
     }else {
       serviceId = Integer.parseInt(id);
       try {
-        Product prod = ProductBusiness.getProduct(serviceId);
+        Product prod = getProductBusiness(iwc).getProduct(serviceId);
         Collection coll = getProductCategoryFactory(iwc).getProductCategory(prod);
         Iterator iter = coll.iterator();
         if (iter.hasNext()) {
           PRODUCT_CATEGORY_TYPE = ((ProductCategory) iter.next()).getCategoryType();
         }
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
       }catch (FinderException fe) {
         fe.printStackTrace(System.err);
       }
@@ -243,7 +241,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  private void priceCategoryCreation(IWContext iwc) throws SQLException, RemoteException{
+  private void priceCategoryCreation(IWContext iwc) throws SQLException, RemoteException, FinderException{
       setCategoryCreation(iwc, true);
       if (this.getService(iwc) != null) {
 
@@ -258,7 +256,7 @@ public class ServiceDesigner extends TravelManager {
             table.setCellspacing(1);
             int row = 1;
 
-          Product product = ProductBusiness.getProduct((Integer)this.service.getPrimaryKey());
+          Product product = getProductBusiness(iwc).getProduct((Integer)this.service.getPrimaryKey());
           com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
           if (product.getText() != null) {
             tc.setValue(product.getText());
@@ -281,7 +279,7 @@ public class ServiceDesigner extends TravelManager {
           Timeframe[] tFrames = product.getTimeframes();
           List addresses = com.idega.util.ListUtil.getEmptyList();
           try {
-            addresses = ProductBusiness.getDepartureAddresses(product, true);
+            addresses = product.getDepartureAddresses(true);
           }catch (IDOFinderException ido) {
             ido.printStackTrace(System.err);
           }
@@ -289,7 +287,7 @@ public class ServiceDesigner extends TravelManager {
           TravelAddress address;
 
           Text serviceNameText = (Text) super.theBoldText.clone();
-            serviceNameText.setText(ProductBusiness.getProductNameWithNumber(product));
+            serviceNameText.setText(getProductBusiness(iwc).getProductNameWithNumber(product));
 
           table.add(serviceNameText,1,row);
           table.mergeCells(1,row,3,row);
@@ -510,12 +508,13 @@ public class ServiceDesigner extends TravelManager {
           int priceCategoryId = 0;
           int productPriceId = -1;
 
-          Product product = ProductBusiness.getProduct((Integer)service.getPrimaryKey());
+          Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
           if (text_id != null && !text_id.equals("")) {
             TxText pText = product.getText();
             if (pText == null) {
               TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(Integer.parseInt(text_id));
-              text.addTo(product);
+              product.addText(text);
+//              text.addTo(product);
             }
           }
 

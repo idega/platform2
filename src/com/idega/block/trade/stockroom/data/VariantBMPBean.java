@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.data.*;
 import java.sql.SQLException;
@@ -46,8 +48,8 @@ public class VariantBMPBean extends com.idega.data.GenericEntity implements com.
     setColumn(getColumnNameProductId(), productId);
   }
 
-  public void setProduct(Product product) {
-    setProductId(product.getID());
+  public void setProduct(Product product) throws RemoteException{
+    setProductId(((Integer) product.getPrimaryKey() ).intValue() );
   }
 
 
@@ -59,10 +61,13 @@ public class VariantBMPBean extends com.idega.data.GenericEntity implements com.
     return getIntColumnValue(getColumnNameProductId());
   }
 
-  public Product getProduct() throws SQLException {
-    return ProductBusiness.getProduct(getProductId());
+  public Product getProduct() throws RemoteException, FinderException {
+    return getProductHome().findByPrimaryKey(new Integer(getProductId()));
   }
 
+  private ProductHome getProductHome() throws RemoteException {
+    return (ProductHome) IDOLookup.getHome(Product.class);
+  }
 
 
 }

@@ -77,9 +77,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private boolean setupData(int serviceId) {
     try {
       ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
-      ProductHome pHome = (ProductHome) IDOLookup.getHomeLegacy(Product.class);
+      ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
       _service = sHome.findByPrimaryKey(new Integer(serviceId));
-      _product = pHome.findByPrimaryKeyLegacy(serviceId);
+      _product = pHome.findByPrimaryKey(new Integer(serviceId));
       _timeframe = _product.getTimeframe();
       return true;
     }catch (Exception e) {
@@ -268,7 +268,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       TextInput number = new TextInput( PARAMETER_NUMBER );
       number.setSize( 20 );
       number.keepStatusOnAction();
-      DropdownMenu locales = ProductBusiness.getLocaleDropDown( iwc );
+      DropdownMenu locales = getProductBusiness(iwc).getLocaleDropDown( iwc );
 
       int currentYear = IWTimestamp.RightNow().getYear();
 
@@ -507,9 +507,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           active_yearly.setSelected( _timeframe.getIfYearly() );
         }
 
-        name.setContent( ProductBusiness.getProductName( _product, super.getLocaleId() ) );
+        name.setContent( _product.getProductName( super.getLocaleId() ) );
         number.setContent( _product.getNumber() );
-        description.setContent( ProductBusiness.getProductDescription( _product, iwc ) );
+        description.setContent( _product.getProductDescription( super.getLocaleId() ) );
 
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {

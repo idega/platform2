@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.data.IDOFinderException;
 import com.idega.business.IBOLookup;
 import java.rmi.RemoteException;
 import com.idega.data.IDOLookup;
@@ -224,7 +226,7 @@ public class ServiceViewer extends Window {
     return duration;
   }
 
-  private Table getServiceListTable(IWContext iwc){
+  private Table getServiceListTable(IWContext iwc) throws RemoteException, FinderException{
     List prodlist;
     Table content = new Table();
     content.setCellspacing(0);
@@ -237,10 +239,12 @@ public class ServiceViewer extends Window {
     }
 
     if( (dateFrom!=null) && (dateTo!=null) ){
-      prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
+      prodlist = getProductBusiness(iwc).getProducts(supplier.getID(),dateFrom,dateTo);
     }
     else{
-      prodlist = ProductBusiness.getProducts(supplier.getID());
+      Collection coll = getProductHome().getProducts(supplier.getID());
+      prodlist = new Vector(coll);
+//      prodlist = getProductHome().getProducts(supplier.getID());
     }
 
     if( prodlist!=null ){
@@ -290,7 +294,7 @@ public class ServiceViewer extends Window {
 
         //name
           Text desc = (Text) text.clone();
-          desc.setText(ProductBusiness.getProductName(prod, iLocaleID));
+          desc.setText(prod.getProductName(iLocaleID));
 //          content.add(desc,++x,y);
             Link more = new Link(desc);
             more.setWindowToOpen(ServiceViewer.class);
@@ -365,9 +369,9 @@ public class ServiceViewer extends Window {
 
     try {
       int y = 1;
-      Product product = ProductBusiness.getProduct((Integer)service.getPrimaryKey());
+      Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
       //number
-      Text numberAndName = getBoldText(ProductBusiness.getProductNameWithNumber(product, true, iLocaleID));//.getNumber()+" - "+ProductBusiness.getProductName(product, iLocaleID));
+      Text numberAndName = getBoldText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iLocaleID));//.getNumber()+" - "+ProductBusiness.getProductName(product, iLocaleID));
         numberAndName.setFontStyle("font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14pt;font-weight:bold;color:#000099;");
       content.add(numberAndName,1,y);
       content.mergeCells(1,y,2,y);
@@ -521,7 +525,7 @@ public class ServiceViewer extends Window {
     return texti;
   }
 
-  private Table getServicePrice(IWContext iwc, Service service, boolean cutOff) throws RemoteException{
+  private Table getServicePrice(IWContext iwc, Service service, boolean cutOff) throws RemoteException, FinderException{
     Table pTable = new Table();
       pTable.setWidth(Table.HUNDRED_PERCENT);
     int pRow = 1;
@@ -535,15 +539,16 @@ public class ServiceViewer extends Window {
 
     Text nameOfCategory = getText("");
 
-    Product product = ProductBusiness.getProduct((Integer)service.getPrimaryKey());
-    TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+    Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
+    List depAddresses = product.getDepartureAddresses(true);
+    TravelAddress tAddress;
     Timeframe[] timeframes = product.getTimeframes();
     ProductPrice[] prices = null;
 
     if (cutOff) {
-      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
+      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[0].getID(), ((TravelAddress) depAddresses.get(0)).getID(), true);
       if (prices.length > 0) {
-        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
+        pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(getTravelStockroomBusiness(iwc).getPrice(prices[0].getID(), ((Integer) service.getPrimaryKey()).intValue(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[0].getID(),  ((TravelAddress) depAddresses.get(0)).getID()) ) );
       }
     }else {
       Currency currency;
@@ -552,12 +557,15 @@ public class ServiceViewer extends Window {
       String stampTxt2 = "";
 
 
-        for (int l = 0; l < depAddresses.length; l++) {
-          departureFromTextBold = getBoldText(depAddresses[l].getName());
+//        for (int l = 0; l < depAddresses.length; l++) {
+        Iterator iter = depAddresses.iterator();
+        while (iter.hasNext()) {
+          tAddress = (TravelAddress) iter.next();
+          departureFromTextBold = getBoldText(tAddress.getName());
             departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
           pTable.add(departureFromTextBold, 1, pRow);
           for (int i = 0; i < timeframes.length; i++) {
-            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), tAddress.getID(), true);
             if (prices.length > 0) {
               stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
               stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
@@ -613,8 +621,14 @@ public class ServiceViewer extends Window {
     return pTable;
   }
 
+  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
+  }
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
+  protected ProductHome getProductHome() throws RemoteException {
+    return (ProductHome) IDOLookup.getHome(Product.class);
   }
 }
 

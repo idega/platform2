@@ -1,13 +1,15 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.data.*;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.block.presentation.CategoryWindow;
-import com.idega.data.IDOFinderException;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.localisation.business.*;
 import com.idega.core.data.*;
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.builder.data.IBPage;
-import com.idega.data.EntityFinder;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.util.IWTimestamp;
 import java.util.*;
@@ -93,7 +95,7 @@ public class ProductCatalog extends CategoryBlock{
     super.setAutoCreate(false);
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws RemoteException, FinderException {
     init(iwc);
     catalog(iwc);
   }
@@ -150,7 +152,7 @@ public class ProductCatalog extends CategoryBlock{
 
   }
 
-  private void catalog(IWContext iwc) {
+  private void catalog(IWContext iwc) throws RemoteException, FinderException{
     try {
       Link createLink = ProductEditorWindow.getEditorLink(-1);
 	createLink.setImage(iCreate);
@@ -405,15 +407,15 @@ public class ProductCatalog extends CategoryBlock{
     return anchor;
   }
 
-  PresentationObject getNamePresentationObject(Product product) {
+  PresentationObject getNamePresentationObject(Product product) throws RemoteException{
     return getNamePresentationObject(product, false);
   }
 
-  PresentationObject getNamePresentationObject(Product product, boolean useCategoryStyle) {
-    return getNamePresentationObject(product, ProductBusiness.getProductName(product,_currentLocaleId), useCategoryStyle);
+  PresentationObject getNamePresentationObject(Product product, boolean useCategoryStyle) throws RemoteException {
+    return getNamePresentationObject(product, product.getProductName(_currentLocaleId), useCategoryStyle);
   }
 
-  PresentationObject getNamePresentationObject(Product product, String displayString, boolean useCategoryStyle) {
+  PresentationObject getNamePresentationObject(Product product, String displayString, boolean useCategoryStyle) throws RemoteException {
     Text nameText = null;
     if (useCategoryStyle) {
       nameText = getCategoryText(displayString);
@@ -441,7 +443,7 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
-  public Link getNameLink(Product product, PresentationObject nameText, boolean useAnchor) {
+  public Link getNameLink(Product product, PresentationObject nameText, boolean useAnchor) throws RemoteException{
     Link productLink;
     if (_productIsLink) {
       if (useAnchor) {
@@ -450,7 +452,7 @@ public class ProductCatalog extends CategoryBlock{
 	productLink = new Link(nameText);
       }
 
-      productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+      productLink.addParameter(ProductBusinessBean.PRODUCT_ID, product.getID());
       if (_productLinkPage != null) {
 	productLink.setPage(_productLinkPage);
       }else if (this._windowString != null) {
@@ -469,7 +471,7 @@ public class ProductCatalog extends CategoryBlock{
 	    }
 	  }
 	  else {
-	    List list = ProductBusiness.getProductCategories(product);
+	    List list = getProductBusiness().getProductCategories(product);
 	    if ( list != null ) {
 	      Iterator iter = list.iterator();
 	      while (iter.hasNext()) {
@@ -478,7 +480,7 @@ public class ProductCatalog extends CategoryBlock{
 	    }
 	  }
 	}
-	catch (IDOFinderException e) {
+	catch (IDORelationshipException e) {
 
 	}
 	//productLink.addParameter(CATEGORY_ID,product.g);
@@ -504,7 +506,7 @@ public class ProductCatalog extends CategoryBlock{
     return categoryLink;
   }
 
-  Link getProductEditorLink(Product product) {
+  Link getProductEditorLink(Product product) throws RemoteException{
     Link link =  ProductEditorWindow.getEditorLink(product.getID());
       link.setImage(this.iEdit);
       link.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, this.getICObjectInstanceID());
@@ -519,11 +521,11 @@ public class ProductCatalog extends CategoryBlock{
   }
 
 
-  static Product getSelectedProduct(IWContext iwc) {
-    String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
+  Product getSelectedProduct(IWContext iwc) {
+    String sProductId = iwc.getParameter(ProductBusinessBean.PRODUCT_ID);
     if (sProductId != null) {
       try {
-	Product product = ProductBusiness.getProduct(Integer.parseInt(sProductId));
+	Product product = getProductBusiness().getProduct(Integer.parseInt(sProductId));
 	return product;
       }catch (Exception e) {
 	e.printStackTrace(System.err);
@@ -532,12 +534,12 @@ public class ProductCatalog extends CategoryBlock{
     return null;
   }
 
-  List getProducts(List productCategories) {
+  List getProducts(List productCategories) throws RemoteException, FinderException{
     return getProducts(productCategories, true);
   }
 
-  List getProducts(List productCategories, boolean order) {
-    List list = ProductBusiness.getProducts(productCategories);
+  List getProducts(List productCategories, boolean order) throws RemoteException, FinderException{
+    List list = getProductBusiness().getProducts(productCategories);
     if (order) {
       sortList(list);
     }
@@ -565,7 +567,11 @@ public class ProductCatalog extends CategoryBlock{
       returnString = returnString+"_"+iwc.getParameter(CATEGORY_ID);
     }
     if (prod != null) {
-      returnString = returnString+"_"+prod.getID();
+      try {
+        returnString = returnString+"_"+prod.getID();
+      }catch (RemoteException re) {
+        throw new RuntimeException(re.getMessage());
+      }
     }
     return returnString;
   }
@@ -593,8 +599,12 @@ public class ProductCatalog extends CategoryBlock{
  * Sets the _linkImage.
  * @param _linkImage The _linkImage to set
  */
-public void setLinkImage(Image _linkImage) {
-	this._linkImage = _linkImage;
-}
+  public void setLinkImage(Image _linkImage) {
+          this._linkImage = _linkImage;
+  }
+
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(this.iwc, ProductBusiness.class);
+  }
 
 }

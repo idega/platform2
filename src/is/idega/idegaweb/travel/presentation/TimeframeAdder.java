@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
+import com.idega.data.IDOException;
+import javax.ejb.FinderException;
 import java.sql.SQLException;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -48,15 +51,15 @@ public class TimeframeAdder extends TravelWindow {
     mainMenu(iwc);
   }
 
-  private void initialize(IWContext iwc) {
+  private void initialize(IWContext iwc) throws RemoteException{
     iwrb = super.iwrb;
     try {
       String sProductId = iwc.getParameter(_parameterProductId);
       if (sProductId != null) {
         _productId = Integer.parseInt(sProductId);
-        _product = ProductBusiness.getProduct(_productId);
+        _product = getProductBusiness(iwc).getProduct(_productId);
       }
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }catch (NumberFormatException n) {
       n.printStackTrace(System.err);
@@ -65,7 +68,7 @@ public class TimeframeAdder extends TravelWindow {
 
   }
 
-  private void mainMenu(IWContext iwc) {
+  private void mainMenu(IWContext iwc) throws RemoteException{
     String action = iwc.getParameter(sAction);
 
     add(Text.BREAK);
@@ -76,6 +79,7 @@ public class TimeframeAdder extends TravelWindow {
       if (action == null) {
         add(getMainForm(iwc));
       }else if (action.equals(this._actionSaveTimeframe)) {
+
         add(handleInsert(iwc));
       }else if (action.equals(this._actionCloseWindow )) {
         closeWindow();
@@ -86,7 +90,7 @@ public class TimeframeAdder extends TravelWindow {
 
   }
 
-  private Form getMainForm(IWContext iwc) {
+  private Form getMainForm(IWContext iwc) throws RemoteException{
     Form form = getEmptyForm();
 
     Timeframe[] timeframes = {};
@@ -201,7 +205,7 @@ public class TimeframeAdder extends TravelWindow {
     return form;
   }
 
-  private Form handleInsert(IWContext iwc) {
+  private Form handleInsert(IWContext iwc) throws RemoteException{
     boolean success = saveTimeframe(iwc);
     if (success) {
       return getMainForm(iwc);
@@ -227,7 +231,7 @@ public class TimeframeAdder extends TravelWindow {
     return form;
   }
 
-  private boolean saveTimeframe(IWContext iwc) {
+  private boolean saveTimeframe(IWContext iwc) throws RemoteException{
     boolean returner = true;
 
     Timeframe tFrame;
@@ -258,7 +262,8 @@ public class TimeframeAdder extends TravelWindow {
               tFrame.setYearly(false);
             }
             tFrame.insert();
-            _product.addTo(tFrame);
+            _product.addTimeframe(tFrame);
+//            _product.addTo(tFrame);
           }
         }else {
           if (tfId != null && !tfId.equals("-1")) {
@@ -279,7 +284,8 @@ public class TimeframeAdder extends TravelWindow {
               }
               tFrame.update();
             }else {
-              tFrame.removeFrom(_product);
+              _product.removeTimeframe(tFrame);
+//              tFrame.removeFrom(_product);
               tFrame.delete();
             }
           }else {
@@ -289,6 +295,9 @@ public class TimeframeAdder extends TravelWindow {
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
+      returner = false;
+    }catch (IDOException ide) {
+      ide.printStackTrace(System.err);
       returner = false;
     }
 

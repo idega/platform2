@@ -1,12 +1,11 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.*;
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
 import java.util.*;
 import is.idega.idegaweb.travel.business.*;
-import com.idega.data.IDOLookup;
 import java.util.Vector;
-import com.idega.data.IDOFinderException;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -89,7 +88,6 @@ public class ServiceOverview extends TravelManager {
       }else {
         add(super.getLoggedOffTable(iwc));
       }
-      //super.add(tm);
   }
 
   private void init(IWContext iwc) throws RemoteException {
@@ -155,7 +153,7 @@ public class ServiceOverview extends TravelManager {
   }
 
 
-  public void displayForm(IWContext iwc) throws RemoteException{
+  public void displayForm(IWContext iwc) throws RemoteException, IDOFinderException, SQLException{
       add(Text.getBreak());
       Form form = new Form();
       Table topTable = this.getTopTable(iwc);
@@ -199,7 +197,7 @@ public class ServiceOverview extends TravelManager {
 
 
       if (supplier != null) {
-        List products = ProductBusiness.getProducts(supplier.getID());
+        List products = getProductBusiness(iwc).getProducts(supplier.getID());
         if (products == null) { products = com.idega.util.ListUtil.getEmptyList(); }
 
         int productsSize = products.size();
@@ -320,8 +318,6 @@ public class ServiceOverview extends TravelManager {
             snf.printStackTrace(System.err);
           }catch (TimeframeNotFoundException tnf) {
             tnf.printStackTrace(System.err);
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
           }
         }
 
@@ -413,7 +409,7 @@ public class ServiceOverview extends TravelManager {
 
 
 
-  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
+  public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
         Table contentTable;
         int contRow = 0;
         contentTable = new Table();
@@ -484,13 +480,13 @@ public class ServiceOverview extends TravelManager {
 //        timeframe = TravelStockroomBusiness.getTimeframe(product);
         timeframes = product.getTimeframes();
         try {
-          depAddresses = ProductBusiness.getDepartureAddresses(product, true);
+          depAddresses = product.getDepartureAddresses(true);
         }catch (IDOFinderException ido) {
           ido.printStackTrace(System.err);
           depAddresses = new Vector();
         }
-        depAddress = ProductBusiness.getDepartureAddress(product);
-        arrAddress = ProductBusiness.getArrivalAddress(product);
+        depAddress = getProductBusiness(iwc).getDepartureAddress(product);
+        arrAddress = getProductBusiness(iwc).getArrivalAddress(product);
         if (product.getFileId() != -1) {
           image = new Image(product.getFileId());
           image.setMaxImageWidth(138);
@@ -498,7 +494,7 @@ public class ServiceOverview extends TravelManager {
           image = (Image) imageToClone.clone();
         }
         prodName = (Text) theBoldText.clone();
-            prodName.setText(ProductBusiness.getProductNameWithNumber(product));
+            prodName.setText(getProductBusiness(iwc).getProductNameWithNumber(product));
             prodName.setFontColor(super.BLACK);
 
 

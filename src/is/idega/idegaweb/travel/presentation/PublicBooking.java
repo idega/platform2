@@ -101,7 +101,7 @@ public class PublicBooking extends Block  {
       try {
 
         productId = Integer.parseInt(sProductId);
-        product = ProductBusiness.getProduct(productId);
+        product = getProductBusiness(iwc).getProduct(productId);
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
@@ -273,8 +273,8 @@ public class PublicBooking extends Block  {
       table.setBorder(0);
 
       IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
-      List depAddresses = ProductBusiness.getDepartureAddresses(product, true);
-      TravelAddress depAddress = ProductBusiness.getDepartureAddress(product);
+      List depAddresses = product.getDepartureAddresses(true);
+      TravelAddress depAddress = getProductBusiness(iwc).getDepartureAddress(product);
       Currency currency;
 
       Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
@@ -306,7 +306,7 @@ public class PublicBooking extends Block  {
       Text priceText = getBoldText("");
       Text currencyText = getBoldText("");
 
-      nameTextBold.setText(ProductBusiness.getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
+      nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
       supplierTextBold.setText(supplier.getName());
       departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
@@ -549,7 +549,7 @@ public class PublicBooking extends Block  {
 //    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
-    Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddressId));
+    Timeframe tFrame = getProductBusiness(iwc).getTimeframe(this.product, stamp, Integer.parseInt(depAddressId));
     if (tFrame != null && depAddressId != null) {
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
       misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
@@ -568,7 +568,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.name_of_trip","Name of trip")),1,row);
-      table.add(getBoldTextWhite(ProductBusiness.getProductName(product, iwc.getCurrentLocaleId())),2,row);
+      table.add(getBoldTextWhite(product.getProductName(iwc.getCurrentLocaleId())),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -838,7 +838,7 @@ public class PublicBooking extends Block  {
 
         ProductPrice[] pPrices = {};
         ProductPrice[] misc = {};
-        Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
+        Timeframe tFrame = getProductBusiness(iwc).getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
         if (tFrame != null) {
           pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
           misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
@@ -991,7 +991,8 @@ public class PublicBooking extends Block  {
       if (success && gBooking != null) {
         boolean sendEmail = false;
         try {
-          Product prod = ((ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(gBooking.getServiceID());
+          ProductHome pHome = (ProductHome)com.idega.data.IDOLookup.getHome(Product.class);
+          Product prod = pHome.findByPrimaryKey(new Integer(gBooking.getServiceID()));
           Supplier suppl = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(prod.getSupplierId());
           Settings settings = suppl.getSettings();
           Email sEmail = suppl.getEmail();
@@ -1008,7 +1009,7 @@ public class PublicBooking extends Block  {
               StringBuffer mailText = new StringBuffer();
               mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 
@@ -1028,7 +1029,7 @@ public class PublicBooking extends Block  {
               StringBuffer mailText = new StringBuffer();
               mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness(iwc).getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
               if (doubleSendSuccessful) {
@@ -1114,4 +1115,9 @@ public class PublicBooking extends Block  {
   protected ServiceHandler getServiceHandler(IWApplicationContext iwac) throws RemoteException {
     return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
   }
+
+  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
+  }
+
 }

@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -23,21 +25,21 @@ public class ProductItemLink extends ProductItem {
   private int _height = 0;
 
   public ProductItemLink() { }
-  public ProductItemLink(int productId) throws SQLException{
+  public ProductItemLink(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemLink(Product product) {
+  public ProductItemLink(Product product) throws RemoteException {
     super(product);
   }
 
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    drawObject();
+    drawObject(iwc);
   }
 
-  private void drawObject() {
+  private void drawObject(IWContext iwc) throws RemoteException{
     Link link = new Link(new ProductItemName());
-      link.addParameter(ProductBusiness.PRODUCT_ID, _productId);
+      link.addParameter(getProductBusiness(iwc).getProductIdParameter(), _productId);
     add(link);
   }
 

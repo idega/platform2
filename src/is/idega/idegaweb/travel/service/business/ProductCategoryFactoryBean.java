@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.service.business;
 
+import com.idega.business.IBOLookup;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 import java.util.*;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -41,12 +43,9 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
       if (ids != null) {
         pHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
         if (ids.size() == 0) {
-          try {
-            pCat = pHome.getProductCategory(this.CATEGORY_TYPE_DEFAULT);
-            product.addTo(pCat);
-          }catch (SQLException sql) {
-            throw new FinderException(sql.getMessage());
-          }
+          pCat = pHome.getProductCategory(this.CATEGORY_TYPE_DEFAULT);
+          product.addCategory(pCat);
+//            product.addTo(pCat);
         }
 
       }
@@ -74,7 +73,7 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
     List list = new Vector();
       list.add(pHome.getProductCategory(this.CATEGORY_TYPE_TOUR).getPrimaryKey());
       list.add(pHome.getProductCategory(this.CATEGORY_TYPE_HOTEL).getPrimaryKey());
-      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_FISHING).getPrimaryKey());
+//      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_FISHING).getPrimaryKey());
 //      list.add(pHome.getProductCategory(this.CATEGORY_TYPE_PRODUCT).getPrimaryKey());
     return list;
   }
@@ -112,5 +111,7 @@ public class ProductCategoryFactoryBean extends IBOServiceBean implements Produc
     return menu;
   }
 
-
+  public ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 }

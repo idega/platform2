@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -64,7 +67,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 	  --row;
 	}
 
-	catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
+	catProducts = getProductBusiness(iwc).getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
 	productCatalog.sortList(catProducts);
 	for (int j = 0; j < catProducts.size(); j++) {
 	  ++row;
@@ -91,14 +94,14 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 	    }
 
 	    if (productCatalog._showTeaser) {
-	      teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
+	      teaser = product.getProductTeaser(productCatalog._currentLocaleId);
 	      if (!teaser.equals("")) {
 		++row;
 		table.mergeCells(1, row, 3, row);
 		table.setWidth(1, row, "100%");
 	    if (productCatalog._showThumbnail) {
 	      if (fileId != -1) {
-			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileId);  
+			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileId);
 			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
 			if ( attributes != null )
@@ -113,13 +116,13 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 			table.mergeCells(1, row, 3, row);
 			table.add(productCatalog.getNameLink(product, productCatalog._linkImage, false),1,row);
 		}
-		
+
 		table.setHeight(++row,"12");
 	      }
 	    }
 
 	    if (productCatalog._showDescription) {
-	      description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
+	      description = product.getProductDescription(productCatalog._currentLocaleId);
 	      if (!description.equals("")) {
 		++row;
 		table.setWidth(2, row, "100%");
@@ -145,5 +148,6 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 
     return table;
   }
+
 
 }

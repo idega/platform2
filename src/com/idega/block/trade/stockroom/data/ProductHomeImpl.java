@@ -7,37 +7,30 @@ public class ProductHomeImpl extends com.idega.data.IDOFactory implements Produc
   return Product.class;
  }
 
+
  public Product create() throws javax.ejb.CreateException{
-  return (Product) super.idoCreate();
+  return (Product) super.createIDO();
  }
 
- public Product createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public Product findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Product) super.idoFindByPrimaryKey(id);
- }
 
  public Product findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Product) super.idoFindByPrimaryKey(pk);
+  return (Product) super.findByPrimaryKeyIDO(pk);
  }
 
- public Product findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
 
- }
+public java.util.Collection getProducts(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((ProductBMPBean)entity).ejbHomeGetProducts(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public java.util.Collection getProducts(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((ProductBMPBean)entity).ejbHomeGetProducts(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 
 
 }

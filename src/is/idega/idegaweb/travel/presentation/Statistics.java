@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.*;
 import java.rmi.RemoteException;
@@ -85,7 +86,7 @@ public class Statistics extends TravelManager {
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
         if (productId != null && !productId.equals("-1")) {
-          product = ProductBusiness.getProduct(Integer.parseInt(productId));
+          product = getProductBusiness(iwc).getProduct(Integer.parseInt(productId));
           service = tsb.getService(product);
           timeframe = tsb.getTimeframe(product);
         }
@@ -93,7 +94,7 @@ public class Statistics extends TravelManager {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+      }catch (FinderException sql) {sql.printStackTrace(System.err);}
 
       fromStamp = getFromIdegaTimestamp(iwc);
       toStamp = getToIdegaTimestamp(iwc);
@@ -165,7 +166,7 @@ public class Statistics extends TravelManager {
   }
 
 
-  public Table getTopTable(IWContext iwc) {
+  public Table getTopTable(IWContext iwc) throws RemoteException{
       Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -178,7 +179,7 @@ public class Statistics extends TravelManager {
 
 
       DropdownMenu trip = null;
-        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
+        trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, supplier.getID());
 //        trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
 
       if (product != null) {
@@ -248,7 +249,7 @@ public class Statistics extends TravelManager {
       Text toTimeText = (Text) theText.clone();
           toTimeText.setText(toStamp.getLocaleDate(iwc));
       Text nameText = (Text) theText.clone();
-          nameText.setText(service.getName());
+          nameText.setText(service.getName(super.getTravelSessionManager(iwc).getLocaleId()));
       Text statusText = (Text) theBoldText.clone();
           statusText.setFontColor(super.textColor);
           statusText.setText(iwrb.getLocalizedString("travel.status","Status"));

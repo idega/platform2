@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.block.trade.stockroom.data.Product;
 import java.util.*;
 import com.idega.presentation.*;
@@ -18,6 +19,6 @@ public abstract class AbstractProductViewerLayout extends Block {
   public AbstractProductViewerLayout() {
   }
 
-  public abstract PresentationObject getDemo(ProductViewer productViewer, IWContext iwc);
-  public abstract PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc);
+  public abstract PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) throws RemoteException;
+  public abstract PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc)throws RemoteException ;
 }

@@ -57,35 +57,39 @@ public class ProductComparator implements Comparator {
       Product p2 = (Product) o2;
       int result = 0;
 
-      switch (this.sortBy) {
-	case NAME     : result = nameSort(o1, o2);
-	break;
-	case NUMBER   : result = numberSort(o1, o2);
-	break;
-	/*case DEPARTURETIME   : result = departureTimeSort(o1, o2);
-	break;
-	case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
-	break;*/
-	case PRICE : result = priceSort(o1, o2);
-	break;
-	case CREATION_DATE : result = dateSort(o1, o2);
-	break;
+      try {
+        switch (this.sortBy) {
+          case NAME     : result = nameSort(o1, o2);
+          break;
+          case NUMBER   : result = numberSort(o1, o2);
+          break;
+          /*case DEPARTURETIME   : result = departureTimeSort(o1, o2);
+          break;
+          case DEPARTURETIME_NAME   : result = departureTimeNameSort(o1, o2);
+          break;*/
+          case PRICE : result = priceSort(o1, o2);
+          break;
+          case CREATION_DATE : result = dateSort(o1, o2);
+          break;
+        }
+      }catch (RemoteException rme) {
+        rme.printStackTrace(System.err);
       }
 
       return result;
   }
 
-  private int nameSort(Object o1, Object o2) {
+  private int nameSort(Object o1, Object o2) throws RemoteException{
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 
-    String one = ProductBusiness.getProductName(p1, localeId)!=null?ProductBusiness.getProductName(p1, localeId):"";
-    String two = ProductBusiness.getProductName(p2, localeId)!=null?ProductBusiness.getProductName(p2, localeId):"";
+    String one = p1.getProductName(localeId)!=null?p1.getProductName(localeId):"";
+    String two = p2.getProductName(localeId)!=null?p2.getProductName(localeId):"";
 
     return IsCollator.getIsCollator().compare(one,two);
   }
 
-  private int numberSort(Object o1, Object o2) {
+  private int numberSort(Object o1, Object o2) throws RemoteException {
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 
@@ -153,7 +157,7 @@ public class ProductComparator implements Comparator {
       }
   }
 
-  private int dateSort(Object o1, Object o2) {
+  private int dateSort(Object o1, Object o2) throws RemoteException {
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 

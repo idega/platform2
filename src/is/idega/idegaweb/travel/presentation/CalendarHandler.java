@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
 
+import com.idega.data.IDOLookup;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import java.rmi.RemoteException;
@@ -101,7 +102,7 @@ public class CalendarHandler extends TravelManager {
       sm.setDayFontColor(IWTimestamp.RightNow(),this.backgroundColor);
   }
 
-  private void timeframeCheck() {
+  private void timeframeCheck() throws RemoteException {
     if (_service != null) {
       try {
         if (_timeframes == null) {
@@ -113,14 +114,14 @@ public class CalendarHandler extends TravelManager {
     }
   }
 
-  public Table getCalendarTable(IWContext iwc) throws RemoteException{
+  public Table getCalendarTable(IWContext iwc) throws RemoteException, FinderException{
     /**
      * @todo Perform check of some sort
      */
     return getCalendarTablePrivate(iwc);
   }
 
-  private Table getCalendarTablePrivate(IWContext iwc) throws RemoteException{
+  private Table getCalendarTablePrivate(IWContext iwc) throws RemoteException, FinderException{
       int instanceId = -2;
       sm.setTimestamp(_fromStamp);
       sm.setICObjectInstanceID(instanceId);
@@ -491,7 +492,7 @@ public class CalendarHandler extends TravelManager {
   }
 
 
-  public void setProduct(Product product) {
+  public void setProduct(Product product) throws RemoteException{
     _product = product;
     _productId = product.getID();
     try {
@@ -511,8 +512,10 @@ public class CalendarHandler extends TravelManager {
   public void setTour(Tour tour) throws RemoteException{
     this._tour = tour;
     try {
-      setProduct(ProductBusiness.getProduct((Integer)tour.getPrimaryKey()));// Product(tour.getID() ));
-    }catch (SQLException s) {
+      ProductHome home = (ProductHome) IDOLookup.getHome(Product.class);
+      setProduct(home.findByPrimaryKey(_tour.getPrimaryKey()));
+//      setProduct(getProductBusiness(iwc).getProduct((Integer)tour.getPrimaryKey()));// Product(tour.getID() ));
+    }catch (FinderException s) {
       s.printStackTrace(System.err);
     }
   }
@@ -607,11 +610,11 @@ public class CalendarHandler extends TravelManager {
     this._showPast = showPast;
   }
 
-  public List getDepartureDays(IWContext iwc) throws RemoteException{
+  public List getDepartureDays(IWContext iwc) throws RemoteException, FinderException{
     return getDepartureDays(iwc, _showPast);
   }
 
-  public List getDepartureDays(IWContext iwc, boolean showPast) throws RemoteException {
+  public List getDepartureDays(IWContext iwc, boolean showPast) throws RemoteException, FinderException {
     List depDays = new Vector();
     /**
      * @todo skoða betur, er bara tomt rugl

@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.business.IBOLookup;
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
@@ -21,9 +23,13 @@ public abstract class AbstractProductCatalogLayout extends Block {
   public AbstractProductCatalogLayout() {
   }
 
-  public abstract PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories);
+  public abstract PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException, FinderException;
 
   protected StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException{
     return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
+  }
+
+  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 }

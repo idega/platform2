@@ -31,10 +31,9 @@ public class LoginPage extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
+    super.getTravelSessionManager(iwc).clearAll();
     bundle = super.getBundle();
     iwrb = super.getResourceBundle();
-
-    super.getTravelSessionManager(iwc).clearAll();
 
     insertLogin(iwc);
   }

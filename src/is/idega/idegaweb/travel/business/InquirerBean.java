@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -124,7 +125,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
         responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
         responseString.append(" "+inquery.getNumberOfSeats()+" ");
         responseString.append(iwrb.getLocalizedString("travel.spaces_for_the_service","spaces for the service"));
-        responseString.append(" \""+tempService.getName()+"\" ");
+        responseString.append(" \""+tempService.getName(iwc.getCurrentLocaleId())+"\" ");
         if (inquiries.size() == 1) {
           responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
           responseString.append(" "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
@@ -175,7 +176,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                 responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
                 responseString.append(" "+inquery.getNumberOfSeats()+" ");
                 responseString.append(iwrb.getLocalizedString("travel.spaces_for_the_service","spaces for the service"));
-                responseString.append(" \""+tempService.getName()+"\" ");
+                responseString.append(" \""+tempService.getName(iwc.getCurrentLocaleId())+"\" ");
                 responseString.append(iwrb.getLocalizedString("travel.for","for"));
                 responseString.append(" "+inquery.getName()+",\n\n");
                 if (inquiries.size() == 1) {
@@ -270,7 +271,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
       SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 
       Inquery inq = iHome.findByPrimaryKey(new Integer(inquiryId));
-      Product prod = pHome.findByPrimaryKey(inq.getServiceID());
+      Product prod = pHome.findByPrimaryKey(new Integer(inq.getServiceID()));
       Supplier suppl = sHome.findByPrimaryKey(prod.getSupplierId());
       Settings settings = suppl.getSettings();
       List inqs = getInquiryHome().create().getMultibleInquiries(inq);
@@ -294,7 +295,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
 
           mailText.append("\n\n").append(iwrb.getLocalizedString("travel.your_inquiry_was",   "Your inquiry was")).append(" : ");
           mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
-          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness().getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
           if (inqsSize == 1) {
             mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
           }else {
@@ -329,7 +330,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
           mailText.append(iwrb.getLocalizedString("travel.email_after_online_inquiry","You have just received an inquiry through nat.sidan.is."));
           mailText.append("\n\n").append(iwrb.getLocalizedString("travel.the_inquiry_was",   "The inquiry was")).append(" : ");
           mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
-          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness().getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
           if (inqsSize == 1) {
             mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
           }else {
@@ -378,4 +379,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
     return (Inquery[]) coll.toArray(new Inquery[]{});
   }
 
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 }

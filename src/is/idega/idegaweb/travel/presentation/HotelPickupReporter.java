@@ -136,7 +136,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
           table.mergeCells(1,row,3,row);
           productNameTxt = new Text();
             productNameTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");
-            productNameTxt.setText(ProductBusiness.getProductNameWithNumber(prod, true) );
+            productNameTxt.setText(getProductBusiness(iwc).getProductNameWithNumber(prod, true) );
             productNameTxt.setFontColor(super.WHITE);
           productTimeTxt = new Text();
             productTimeTxt.setFontStyle(super.theBoldTextStyle+";text-decoration: underline");

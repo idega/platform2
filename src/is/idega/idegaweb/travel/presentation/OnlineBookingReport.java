@@ -68,7 +68,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     } else {
       SupplierHome sHome = (SupplierHome) IDOLookup.getHomeLegacy(Supplier.class);
       _supplier = sHome.findByPrimaryKey(new Integer(view_supplier));
-      List products = ProductBusiness.getProducts(iwc, Integer.parseInt(view_supplier));
+      List products = getProductBusiness(iwc).getProducts(iwc, Integer.parseInt(view_supplier));
 
       return getReport(iwc, products, fromStamp, toStamp);
     }
@@ -174,7 +174,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     Iterator iter = suppliers.iterator();
     while (iter.hasNext()) {
       _supplier = (Supplier) iter.next();
-      products = ProductBusiness.getProducts(iwc, _supplier.getID());
+      products = getProductBusiness(iwc).getProducts(iwc, _supplier.getID());
       bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null);
       iCount = bookings.length;
       price = getBooker(iwc).getBookingPrice(iwc, bookings);

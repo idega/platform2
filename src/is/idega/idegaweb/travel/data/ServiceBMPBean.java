@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.data;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.data.ProductHome;
 import java.util.Iterator;
 import java.util.Collection;
 import java.sql.*;
@@ -47,15 +50,23 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
   public void delete() throws SQLException {
       setColumn(getIsValidColumnName(),false);
       this.update();
-      Product product = this.getProduct();
-      product.delete();
+      try {
+        Product product = this.getProduct();
+        product.invalidate();
+      }catch (IDOException ido) {
+        throw new SQLException(ido.getMessage());
+      }catch (RemoteException re) {
+        throw new RuntimeException(re.getMessage());
+      }
   }
 
-  public Product getProduct()  {
+  public Product getProduct() throws RemoteException{
     if (this.product == null) {
       try {
-      product = ProductBusiness.getProduct(this.getID());
-      }catch (SQLException sql) {
+        ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+        product = pHome.findByPrimaryKey(this.getPrimaryKey());
+//        product = ProductBusiness.getProduct(this.getID());
+      }catch (FinderException sql) {
         sql.printStackTrace(System.err);
       }
     }
@@ -66,12 +77,12 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
     return getServiceTableName();
   }
 
-  public String getName(){
-    return ProductBusiness.getProductName(getProduct());
+  public String getName(int localeId) throws RemoteException{
+    return getProduct().getProductName(localeId);
   }
 
-  public String getDescription() {
-    return ProductBusiness.getProductDescription(getProduct());
+  public String getDescription(int localeId) throws RemoteException{
+    return getProduct().getProductDescription(localeId);
   }
 
   public Timestamp getArrivalTime() {

@@ -52,7 +52,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       if (super.timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
 
-      int hotelPickupAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueHotelPickupAddressType);
+      int hotelPickupAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType);
 
 
       int[] departureAddressIds = setDepartureAddress(tourId, departureFrom, departureTime);
@@ -77,7 +77,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       try {
           userT.begin();
           Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(serviceId));
-          Product product = ProductBusiness.getProduct(serviceId);// Product(serviceId);
+          Product product = getProductBusiness().getProduct(serviceId);// Product(serviceId);
           Tour tour;
 
           if (tourId == -1) {
@@ -99,11 +99,18 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           if (estimatedSeatsUsed != -1)
             tour.setEstimatedSeatsUsed(estimatedSeatsUsed);
 
-          if (arrivalAddressIds.length > 0)
-          for (int i = 0; i < arrivalAddressIds.length; i++) {
+          if (arrivalAddressIds.length > 0) {
+            Address addrs;
+            AddressHome aHome = (AddressHome) IDOLookup.getHome(Address.class);
             try {
-              product.addTo(Address.class,arrivalAddressIds[i]);
-            }catch (SQLException sql) {}
+              for (int i = 0; i < arrivalAddressIds.length; i++) {
+                addrs = aHome.findByPrimaryKey(arrivalAddressIds[i]);
+                product.addArrivalAddress(addrs);
+  //                product.addTo(Address.class,arrivalAddressIds[i]);
+              }
+            }catch (Exception e) {
+              e.printStackTrace(System.err);
+            }
           }
 
 
@@ -135,7 +142,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           ProductCategory pCat = ( (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class)).getProductCategory(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR);
           try {
             if (pCat != null) {
-              product.removeFrom(ProductCategory.class);
+              product.removeAllFrom(ProductCategory.class);
               pCat.addTo(Product.class, serviceId);
       //        product.addTo(pCat);
             }
@@ -293,7 +300,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     try {
       IWTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
-        return getIfDay(iwc, contract, ProductBusiness.getProduct((Integer) tour.getPrimaryKey()), stamp);
+        return getIfDay(iwc, contract, getProductBusiness().getProduct((Integer) tour.getPrimaryKey()), stamp);
       }else {
         return (stamp.equals(temp));
       }
@@ -308,7 +315,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     try {
       IWTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
       if (temp == null) {
-        Product product = ProductBusiness.getProduct((Integer) tour.getPrimaryKey());
+        Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
         return getIfDay(iwc, product, product.getTimeframes(), stamp, includePast, true);
       }else {
         return (stamp.equals(temp));
@@ -343,7 +350,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     List returner = new Vector();
 
     try {
-      Product product = ProductBusiness.getProduct((Integer) tour.getPrimaryKey());
+      Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(tour.getPrimaryKey());
       Timeframe[] frames = product.getTimeframes();
       Timeframe tempFrame = (Timeframe) IDOLookup.create(Timeframe.class);
@@ -469,7 +476,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     return getNextAvailableDay(iwc, tour, product, new Timeframe[] {timeframe}, from);
   }
 
-  public IWTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product,  IWTimestamp from) throws SQLException {
+  public IWTimestamp getNextAvailableDay(IWContext iwc, Tour tour, Product product,  IWTimestamp from) throws SQLException, RemoteException {
     return getNextAvailableDay(iwc, tour, product, product.getTimeframes(), from);
   }
 
@@ -504,8 +511,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       return null;
     }
   }
-/*
-  protected TravelStockroomBusiness getTravelStockroomBusiness() throws RemoteException {
-    return (TravelStockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), TravelStockroomBusiness.class);
-  }*/
+
+  protected ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 }

@@ -1,9 +1,9 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.*;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.business.IBOLookup;
 import java.rmi.RemoteException;
-import is.idega.idegaweb.travel.business.Booker;
 import com.idega.idegaweb.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -120,5 +120,12 @@ public class TravelWindow extends Window {
 
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+  }
+  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
+  }
+
+  protected TravelSessionManager getTravelSessionManager(IWApplicationContext iwac) throws RemoteException {
+    return (TravelSessionManager) IBOLookup.getServiceInstance(iwac, TravelSessionManager.class);
   }
 }

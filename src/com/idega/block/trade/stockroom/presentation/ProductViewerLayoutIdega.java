@@ -1,10 +1,11 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.data.*;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import java.util.*;
 import com.idega.block.trade.stockroom.data.ProductCategory;
-import com.idega.data.IDOFinderException;
 import com.idega.core.data.ICFile;
-import com.idega.data.EntityFinder;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
@@ -37,7 +38,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   /**
    * @todo Handle multible images...
    */
-  public PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) {
+  public PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) throws RemoteException {
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
     Image image = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
     _images.add(image);
@@ -48,11 +49,11 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   }
 
 
-  public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) {
-    _name = ProductBusiness.getProductName(product, productViewer._localeId);
-    _description = ProductBusiness.getProductDescription(product, productViewer._localeId);
+  public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) throws RemoteException{
+    _name = product.getProductName(productViewer._localeId);
+    _description = product.getProductDescription(productViewer._localeId);
     _description = TextFormatter.formatText(_description,1,Table.HUNDRED_PERCENT);
-    _teaser = ProductBusiness.getProductTeaser(product,productViewer._localeId);
+    _teaser = product.getProductTeaser(productViewer._localeId);
     _teaser = TextFormatter.formatText(_teaser,1,Table.HUNDRED_PERCENT);
     _product = product;
     _price = new ProductItemPrice(product);
@@ -62,15 +63,23 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       _price.setShowCurrency(productViewer._showCurrency);
 
     try {
-      _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
-    }catch (IDOFinderException ido) {
+      Collection coll = product.getICFile();
+      if (coll != null) {
+        Iterator iter = coll.iterator();
+        while (iter.hasNext()) {
+          ICFile item = (ICFile) iter.next();
+          _images.add(item);
+        }
+      }
+//      _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
+    }catch (IDORelationshipException ido) {
       ido.printStackTrace(System.err);
     }
 
     return printViewer(productViewer, iwc);
   }
 
-  public PresentationObject printViewer(ProductViewer productViewer, IWContext iwc) {
+  public PresentationObject printViewer(ProductViewer productViewer, IWContext iwc) throws RemoteException{
     Table table = new Table();
       table.setWidth(Table.HUNDRED_PERCENT);
       table.setCellpadding(0);
@@ -155,11 +164,11 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
       if ( productViewer._productPage != null )
 	link.setPage(productViewer._productPage);
-      link.addParameter(ProductBusiness.PRODUCT_ID, _product.getID());
+      link.addParameter(getProductBusiness(iwc).getProductIdParameter(), _product.getID());
 
       if ( productViewer._addCategoryID ) {
 	try {
-	  List list = ProductBusiness.getProductCategories(_product);
+	  List list = getProductBusiness(iwc).getProductCategories(_product);
 	  if ( list != null ) {
 	    Iterator iter = list.iterator();
 	    while (iter.hasNext()) {
@@ -167,7 +176,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 	    }
 	  }
 	}
-	catch (IDOFinderException e) {
+	catch (IDORelationshipException e) {
 	}
       }
 
@@ -175,5 +184,9 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     }
 
     return table;
+  }
+
+  private ProductBusiness getProductBusiness(IWContext iwc) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
   }
 }

@@ -156,7 +156,7 @@ public class DailyReport extends TravelManager implements Report{
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
       Timeframe tframe;
-      List addresses = ProductBusiness.getDepartureAddresses(product, true);
+      List addresses = product.getDepartureAddresses(true);
       TravelAddress address;
       int addressesSize = addresses.size();
       ProductPrice[] prices = {};
@@ -189,7 +189,7 @@ public class DailyReport extends TravelManager implements Report{
 
       for (int ta = 0; ta < addressesSize; ta++) {
         address = (TravelAddress) addresses.get(ta);
-        tframe = ProductBusiness.getTimeframe(product, stamp, address.getID());
+        tframe = getProductBusiness(iwc).getTimeframe(product, stamp, address.getID());
         if (tframe != null) {
           prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), address.getID(), false);
           misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tframe.getID(),address.getID(), false);
@@ -623,7 +623,7 @@ public class DailyReport extends TravelManager implements Report{
 	  if (closerLook)
 	  for (int k = 0; k < addressesSize; k++) {
             address = (TravelAddress) addresses.get(k);
-            tframe = ProductBusiness.getTimeframe(product, stamp, address.getID());
+            tframe = getProductBusiness(iwc).getTimeframe(product, stamp, address.getID());
 	      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), address.getID(), false);
 	      misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tframe.getID(), address.getID(), false);
 	      addressText = (Text) smallText.clone();
@@ -888,7 +888,7 @@ public class DailyReport extends TravelManager implements Report{
 	pPriceTxt.setFontColor(super.BLACK);
 
 	pNumberTxt.setText(prod.getNumber());
-	pNameTxt.setText(ProductBusiness.getProductName(prod, getLocaleId()));
+	pNameTxt.setText(prod.getProductName(getLocaleId()));
 	pTimeTxt.setText(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()));
 	pCountTxt.setText(Integer.toString(count));
 	pPriceTxt.setText(TextSoap.decimalFormat(price, 2));

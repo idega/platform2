@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.hotel.business;
 
+import com.idega.idegaweb.IWApplicationContext;
 import is.idega.idegaweb.travel.business.TravelStockroomBusinessBean;
 import is.idega.idegaweb.travel.service.business.*;
 import is.idega.idegaweb.travel.data.*;
@@ -66,8 +67,10 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
     try {
       ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHomeLegacy(ProductCategory.class);
       ProductCategory pCat = pCatHome.getProductCategory(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL);
-      Product product = ProductBusiness.getProduct(productId);
-      product.removeFrom(ProductCategory.class);
+      ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+      Product product = pHome.findByPrimaryKey(new Integer(productId));
+      product.removeAllFrom(ProductCategory.class);
+//      product.removeFrom(ProductCategory.class);
       pCat.addTo(Product.class, productId);
     }catch (SQLException sql) {}
 

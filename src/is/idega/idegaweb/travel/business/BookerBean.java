@@ -169,7 +169,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
       try {
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
         Iterator iter = reseller.getChildren();
-        Product product = ProductBusiness.getProduct(serviceId);
+        Product product = getProductBusiness().getProduct(serviceId);
         List items = new Vector();
         Collection coll;
         if (travelAddress != null) {
@@ -198,7 +198,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
         }
       }catch (SQLException sql) {
         return 0;
-      }catch (IDOFinderException idoFE) {
+      }catch (FinderException idoFE) {
         idoFE.printStackTrace(System.err);
         return 0;
       }
@@ -632,5 +632,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return (ProductCategoryFactory) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductCategoryFactory.class);
   }
 
+  public ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 
 }

@@ -137,7 +137,7 @@ public class BookingDeleterWindow extends TravelWindow {
       booking = (GeneralBooking) _bookings.get(i);
       bookingId = booking.getID();
       table.add(getText(booking.getName()), 1, row);
-      table.add(getText(_service.getName()), 2, row);
+      table.add(getText(_service.getName(super.getTravelSessionManager(iwc).getLocaleId())), 2, row);
       table.add(getText(new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)), 3, row);
       box = new CheckBox(this.parameterDeleteBId+bookingId);
       table.add(box, 4, row);

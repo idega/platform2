@@ -55,7 +55,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
     }
     finally {
       if (conn != null){
-          product.freeConnection(conn);
+          ConnectionBroker.freeConnection(conn);
       }
     }
     return returner;
@@ -100,7 +100,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
   }
 
 
-  public Contract[] getContracts(Product product) {
+  public Contract[] getContracts(Product product) throws RemoteException{
     Contract[] contracts = {};
     try {
       contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );

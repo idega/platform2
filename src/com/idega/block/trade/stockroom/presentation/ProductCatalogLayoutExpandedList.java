@@ -1,5 +1,9 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.business.IBOLookup;
+import java.rmi.RemoteException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.core.data.ICCategory;
 import com.idega.presentation.text.*;
 import com.idega.block.text.business.TextFormatter;
@@ -32,7 +36,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
  public ProductCatalogLayoutExpandedList() { }
 
 
- public PresentationObject getCatalog( ProductCatalog productCatalog, IWContext iwc, List productCategories ) {
+ public PresentationObject getCatalog( ProductCatalog productCatalog, IWContext iwc, List productCategories ) throws RemoteException, FinderException{
   this.productCatalog = productCatalog;
   this.iwc = iwc;
   Table table = new Table();
@@ -56,7 +60,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
   for (int j = 0; j < productCategories.size(); j++) {
     pCat = (ICCategory) productCategories.get(j);
-    products = ProductBusiness.getProducts((ICCategory) pCat);
+    products = getProductBusiness(iwc).getProducts((ICCategory) pCat);
     productCatalog.sortList(products);
 
     if (productCatalog._hasEditPermission) {
@@ -85,22 +89,22 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
       if ( productCatalog._productIsLink ) {
 	if (productCatalog._useAnchor) {
-	  nameLink = new AnchorLink(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
+	  nameLink = new AnchorLink(productCatalog.getText(product.getProductName(productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
 	  nameLink.setBold();
 	}else {
-	  nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+	  nameLink = new Link(productCatalog.getText(product.getProductName(productCatalog._currentLocaleId)));
 	  nameLink.setBold();
 	}
-	nameLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+	nameLink.addParameter(getProductBusiness(iwc).getProductIdParameter(), product.getID());
 	productTable.add(nameLink, 1,1);
       }
       else {
 	if ( productCatalog._showCategoryName ) {
-	  nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	  nameText = productCatalog.getText(product.getProductName(productCatalog._currentLocaleId));
 	  nameText.setBold();
 	}
 	else {
-	  nameText = productCatalog.getCategoryText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	  nameText = productCatalog.getCategoryText(product.getProductName(productCatalog._currentLocaleId));
 	}
 	productTable.add(nameText, 1,1);
       }
@@ -114,7 +118,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   return table;
  }
 
-  private int expand(Product product, Table table, Table productTable, int row) {
+  private int expand(Product product, Table table, Table productTable, int row) throws RemoteException{
     if (productCatalog._showThumbnail) {
       imageId = product.getFileId();
       if (imageId != -1) {
@@ -132,7 +136,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     }
 
     if (productCatalog._showDescription) {
-      description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
+      description = product.getProductDescription(productCatalog._currentLocaleId);
       description = TextFormatter.formatText(description, -1, null);
       productTable.add(productCatalog.getText(description), 1, 2);
     }
@@ -142,4 +146,5 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
     return row;
   }
+
 }

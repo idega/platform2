@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.builder.data.IBPage;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -61,7 +64,7 @@ public class ProductViewer extends Block {
 
 
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception {
 
     init(iwc);
 
@@ -79,7 +82,7 @@ public class ProductViewer extends Block {
       return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
 
@@ -87,17 +90,17 @@ public class ProductViewer extends Block {
     this._localeId = ICLocaleBusiness.getLocaleId(_locale);
 
     try {
-      String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
+      String sProductId = iwc.getParameter(getProductBusiness(iwc).getProductIdParameter());
       if (sProductId != null) {
 	_productId = Integer.parseInt(sProductId);
-	_product = ProductBusiness.getProduct(_productId);
+	_product = getProductBusiness(iwc).getProduct(_productId);
 	if (!_product.getIsValid()) {
 	  _product = null;
 	}
       }
 
       if ( _product != null ) {
-	List list = ProductBusiness.getProductCategories(_product);
+	List list = getProductBusiness(iwc).getProductCategories(_product);
 	if ( list != null && categoryList != null ) {
 	  boolean showProduct = false;
 	  Iterator iter = list.iterator();
@@ -118,25 +121,29 @@ public class ProductViewer extends Block {
     }
 
     if ( _product == null ) {
-      if ( _showRandom ) {
-	if ( categoryList != null ) {
-	  List products = ProductBusiness.getProducts(categoryList);
-	  if ( products != null && products.size() > 0 ) {
-	    int random = (int) Math.round(Math.random() * (products.size() - 1));
-	    this._product = (Product) products.get(random);
-	    this._productId = _product.getID();
-	  }
-	}
-      }
-      if ( _showNewest ) {
-	if ( categoryList != null ) {
-	  List products = ProductBusiness.getProducts(categoryList);
-	  if ( products != null && products.size() > 0 ) {
-	    Collections.sort(products,new ProductComparator(ProductComparator.CREATION_DATE));
-	    this._product = (Product) products.get(0);
-	    this._productId = _product.getID();
-	  }
-	}
+      try {
+        if ( _showRandom ) {
+          if ( categoryList != null ) {
+            List products = getProductBusiness(iwc).getProducts(categoryList);
+            if ( products != null && products.size() > 0 ) {
+              int random = (int) Math.round(Math.random() * (products.size() - 1));
+              this._product = (Product) products.get(random);
+              this._productId = ((Integer) _product.getPrimaryKey()).intValue() ;
+            }
+          }
+        }
+        if ( _showNewest ) {
+          if ( categoryList != null ) {
+            List products = getProductBusiness(iwc).getProducts(categoryList);
+            if ( products != null && products.size() > 0 ) {
+              Collections.sort(products,new ProductComparator(ProductComparator.CREATION_DATE));
+              this._product = (Product) products.get(0);
+              this._productId = ((Integer) _product.getPrimaryKey()).intValue() ;
+            }
+          }
+        }
+      }catch (FinderException fe) {
+        fe.printStackTrace(System.err);
       }
     }
 
@@ -146,7 +153,7 @@ public class ProductViewer extends Block {
 
 
 
-  private void getViewer(IWContext iwc) {
+  private void getViewer(IWContext iwc) throws RemoteException {
     try {
       AbstractProductViewerLayout layout = (AbstractProductViewerLayout) this._viewerLayoutClass.newInstance();
       PresentationObject po = null;
@@ -237,10 +244,11 @@ public class ProductViewer extends Block {
     this._useHRasSeperator = use;
   }
 
-  public void setCategory(String name,String categoryID) {
+  public void setCategory(String name,String categoryID) throws RemoteException{
     if ( categoryList == null )
       categoryList = new Vector();
-    ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categoryID));
+    /** @todo FIXA getInstanceCRAP ..... */
+    ProductCategory category = getProductBusiness(IWContext.getInstance()).getProductCategory(Integer.parseInt(categoryID));
     if ( category != null )
       categoryList.add(category);
   }
@@ -299,17 +307,21 @@ public class ProductViewer extends Block {
     _priceFontStyle = style;
   }
 
-  private List getCategoriesFromParameter(IWContext iwc) {
+  private List getCategoriesFromParameter(IWContext iwc) throws RemoteException {
     Vector vector = new Vector();
     String[] categories = iwc.getParameterValues(ProductCatalog.CATEGORY_ID);
     if ( categories != null ) {
       for ( int a = 0; a < categories.length; a++ ) {
-	ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categories[a]));
+	ProductCategory category = getProductBusiness(iwc).getProductCategory(Integer.parseInt(categories[a]));
 	if ( category != null )
 	  vector.add(category);
       }
     }
     return vector;
+  }
+
+  private ProductBusiness getProductBusiness(IWContext iwc) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
   }
 }
 

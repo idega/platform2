@@ -140,7 +140,7 @@ public class Booking extends TravelManager {
         }
         if (sProductId != null && !sProductId.equals("-1")) {
           productId = Integer.parseInt(sProductId);
-          product = ProductBusiness.getProduct(productId);
+          product = getProductBusiness(iwc).getProduct(productId);
           service = tsb.getService(product);
           try {
             tour = getTourBusiness(iwc).getTour(product);
@@ -152,7 +152,7 @@ public class Booking extends TravelManager {
 
           String travelAddressId = iwc.getParameter(BookingForm.parameterDepartureAddressId);
           if (travelAddressId == null) {
-            List addresses = ProductBusiness.getDepartureAddresses(product, true);
+            List addresses = product.getDepartureAddresses(true);
             travelAddress = (TravelAddress) addresses.get(0);
           }else {
             travelAddress = ((TravelAddressHome) (IDOLookup.getHomeLegacy(TravelAddress.class))).findByPrimaryKey(Integer.parseInt(travelAddressId));
@@ -165,7 +165,7 @@ public class Booking extends TravelManager {
           snfe.printStackTrace(System.err);
       }catch (TimeframeNotFoundException tfnfe) {
           tfnfe.printStackTrace(System.err);
-      }catch (SQLException sql) {sql.printStackTrace(System.err);}
+      }
       catch (FinderException fe) {fe.printStackTrace(System.err);}
 
       if ((reseller != null) && (product != null)){
@@ -241,11 +241,11 @@ public class Booking extends TravelManager {
 
       DropdownMenu trip = null;
       if (supplier != null) {
-        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplierId);
+        trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, supplierId);
       }else if (reseller != null) {
         trip = getContractBusiness(iwc).getDropdownMenuWithProducts(iwc, resellerId);
       }else if (product == null) {
-        trip = new DropdownMenu(ProductBusiness.getProducts(iwc, -1));
+        trip = new DropdownMenu(getProductBusiness(iwc).getProducts(iwc, -1));
       }
 
       if (trip != null)

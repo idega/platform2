@@ -74,7 +74,7 @@ public class ServiceDaySetter extends TravelWindow {
         ProductHome productHome = (ProductHome)IDOLookup.getHome(Product.class);
         _serviceDayHome = (ServiceDayHome)IDOLookup.getHome(ServiceDay.class);
 
-        _product = productHome.findByPrimaryKey(Integer.parseInt(serviceId));
+        _product = productHome.findByPrimaryKey(new Integer(serviceId));
 
         ServiceDay sDay = _serviceDayHome.create();
         _serviceDays = sDay.getServiceDaysOfWeek(Integer.parseInt(serviceId));

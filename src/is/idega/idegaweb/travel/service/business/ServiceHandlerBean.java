@@ -81,7 +81,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   public Voucher getVoucher(Booking booking) throws Exception {
     int productId = booking.getServiceID();
     ProductCategoryFactory pcFact = (ProductCategoryFactory) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductCategoryFactory.class);
-    Collection coll = pcFact.getProductCategory(ProductBusiness.getProduct(productId));
+    Collection coll = pcFact.getProductCategory(getProductBusiness().getProduct(productId));
     if (coll != null) {
       Iterator iter = coll.iterator();
       if (iter.hasNext()) {
@@ -119,7 +119,7 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
 
 
-  public IWTimestamp getDepartureTime(Product product) throws SQLException {
+  public IWTimestamp getDepartureTime(Product product) throws SQLException, RemoteException {
     return getDepartureTime(product.getID());
  }
 
@@ -134,11 +134,14 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     }
   }
 
-  public void removeProductApplication(IWContext iwc, int supplierId) {
-    ProductBusiness.clearProductCache(iwc, supplierId);
+  public void removeProductApplication(IWContext iwc, int supplierId) throws RemoteException{
+    getProductBusiness().clearProductCache(supplierId);
     iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+""+supplierId);
   }
 
+  public ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 
 
 }

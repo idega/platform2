@@ -1,5 +1,10 @@
 package is.idega.idegaweb.travel.business;
 
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
+import javax.ejb.FinderException;
+import java.util.List;
+import com.idega.data.EntityFinder;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.IWContext;
@@ -31,15 +36,14 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
     Supplier[] suppliers =  {};
     try {
       Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
-      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(s.*) FROM "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append("SELECT distinct(s.*) FROM "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c, "+ProductBMPBean.getProductEntityName()+" p");
         buffer.append(" WHERE ");
         buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+ProductBMPBean.getIdColumnName());
         buffer.append(" AND ");
         buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
         if (orderBy != null && !orderBy.equals("")) {
@@ -60,20 +64,19 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
   private Product[] getProductsWithContracts(int ownerResellerId, int contractedResellerId, int supplierId, String orderBy) {
     Product[] products =  {};
     try {
-      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
       Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
         buffer.append("SELECT distinct(p.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
-        buffer.append(", "+product.getEntityName()+" p");
+        buffer.append(", "+ProductBMPBean.getProductEntityName()+" p");
         if (ownerResellerId != -1) {
           buffer.append(", "+reseller.getTreeRelationshipTableName(reseller)+" r");
         }
         buffer.append(" WHERE ");
         buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+contractedResellerId);
         buffer.append(" AND ");
-        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+ProductBMPBean.getIdColumnName());
         if (supplierId != -1) {
           buffer.append(" AND ");
           buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = "+supplierId);
@@ -87,8 +90,9 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
 //          buffer.append(" ORDER BY p."+orderBy);
         }
 
-      products = (Product[]) product.findAll(buffer.toString());
-    }catch (SQLException sql) {
+      List prods = EntityFinder.getInstance().findAll(Product.class, buffer.toString());
+      products = (Product[]) prods.toArray(new Product[] {});
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }
     return products;
@@ -98,13 +102,12 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
     boolean returner = false;
 
     try {
-      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
         buffer.append("SELECT distinct(c.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
         if (supplierId != -1) {
-          buffer.append(", "+product.getEntityName()+" p");
+          buffer.append(", "+ProductBMPBean.getProductEntityName()+" p");
         }
         buffer.append(" WHERE ");
         buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+resellerId);
@@ -112,7 +115,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
         buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = "+productId);
         if (supplierId != -1) {
           buffer.append(" AND ");
-          buffer.append("p."+product.getIDColumnName()+" = c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId());
+          buffer.append("p."+ProductBMPBean.getIdColumnName()+" = c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId());
           buffer.append(" AND ");
           buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = "+supplierId);
         }
@@ -187,23 +190,24 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
 
     try {
         Reseller reseller = (Reseller) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
-        Product product = (Product) (com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class));
 
         StringBuffer sql = new StringBuffer();
           sql.append("SELECT p.* FROM "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName()+" p, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName()+" c");
           sql.append(" WHERE ");
           sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
           sql.append(" AND ");
-          sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+          sql.append(" c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+" = p."+ProductBMPBean.getIdColumnName());
           sql.append(" AND ");
           sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
           sql.append(" AND ");
           sql.append(" p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
 //          sql.append(" ORDER BY p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
 
-        products = (Product[]) product.findAll(sql.toString());
+      List prods = EntityFinder.getInstance().findAll(Product.class, sql.toString());
+      products = (Product[]) prods.toArray(new Product[] {});
+//        products = (Product[]) product.findAll(sql.toString());
 
-    }catch (SQLException sql) {
+    }catch (FinderException sql) {
       sql.printStackTrace(System.err);
     }
 
@@ -211,14 +215,14 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
     //(Product[]) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
   }
 
-  public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int resellerId) {
+  public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int resellerId) throws RemoteException{
     try {
       Product[] list = getProductsForReseller(iwc, resellerId);
-      DropdownMenu menu = new DropdownMenu(((Product)com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class)).getEntityName());
+      DropdownMenu menu = new DropdownMenu(ProductBMPBean.getProductEntityName());
       Product product;
       if (list != null && list.length > 0) {
         for (int i = 0; i < list.length; i++) {
-          menu.addMenuElement(list[i].getID(), ProductBusiness.getProductNameWithNumber(list[i]));
+          menu.addMenuElement(list[i].getID(), getProductBusiness().getProductNameWithNumber(list[i]));
         }
       }
       return menu;
@@ -228,4 +232,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
     }
   }
 
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 }

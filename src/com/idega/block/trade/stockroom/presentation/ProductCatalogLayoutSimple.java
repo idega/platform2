@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -22,7 +23,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
   public ProductCatalogLayoutSimple() {
   }
 
-  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
+  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException{
     Table table = new Table();
       table.setWidth("100%");
       table.setCellpaddingAndCellspacing(0);
@@ -51,7 +52,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	  table.add(productCatalog.getCategoryText(pCat.getName()),1,row++);
 	}
 
-	catProducts = ProductBusiness.getProducts(pCat);
+	catProducts = getProductBusiness(iwc).getProducts(pCat);
 	productCatalog.sortList(catProducts);
 	Table productTable = new Table();
 	  productTable.setCellpaddingAndCellspacing(0);
@@ -59,7 +60,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	table.setHeight(row++,"9");
 	int pRow = 1;
 	int pColumn = 1;
-	
+
     Image spaceBetween = (Image) spacer.clone();
 	spaceBetween.setHeight(productCatalog._spaceBetween);
 

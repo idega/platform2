@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.block.text.business.TextFormatter;
 import java.sql.SQLException;
 import com.idega.presentation.text.Text;
@@ -22,22 +24,22 @@ public class ProductItemTeaser extends ProductItem {
   private String defaultText = "Product Teaser";
 
   public ProductItemTeaser() { }
-  public ProductItemTeaser(int productId) throws SQLException{
+  public ProductItemTeaser(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemTeaser(Product product) {
+  public ProductItemTeaser(Product product) throws RemoteException {
     super(product);
   }
 
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    drawObject();
+    drawObject(iwc);
   }
 
-  private void drawObject() {
+  private void drawObject(IWContext iwc) throws RemoteException {
     Text text = getText(defaultText);
     if ( _product != null ) {
-      String textString = TextFormatter.formatText(ProductBusiness.getProductTeaser(_product,_localeId),1,"100%");
+      String textString = TextFormatter.formatText(_product.getProductTeaser(_localeId),1,"100%");
       text.setText(textString);
     }
     add(text);

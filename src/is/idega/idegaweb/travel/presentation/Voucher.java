@@ -92,7 +92,7 @@ public abstract class Voucher extends TravelManager {
         _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
         _reseller = ResellerManager.getReseller(_user);
       }
-      _timeframe = ProductBusiness.getTimeframe(_product, new IWTimestamp(_booking.getBookingDate()));
+      _timeframe = getProductBusiness(iwc).getTimeframe(_product, new IWTimestamp(_booking.getBookingDate()));
       Collection coll = gBooking.getTravelAddresses();
       TravelAddress[] addresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
       _address = addresses[addresses.length - 1];
@@ -280,7 +280,7 @@ public abstract class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
-        table.add(getText(ProductBusiness.getProductNameWithNumber(_product, true, _localeId)),1,2);
+        table.add(getText(getProductBusiness(iwc).getProductNameWithNumber(_product, true, _localeId)),1,2);
         table.add(Text.BREAK,1,2);
         if (_bookings.size() > 0) {
           IWTimestamp fromStamp = new IWTimestamp(((Booking)_bookings.get(0)).getBookingDate());

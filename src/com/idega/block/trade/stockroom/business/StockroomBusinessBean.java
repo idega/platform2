@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
+import com.idega.business.IBOLookup;
 import java.rmi.RemoteException;
 import com.idega.business.IBOServiceBean;
 import java.sql.Timestamp;
@@ -91,7 +92,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return getPrice(productPriceId, productId, priceCategoryId, currencyId,time, -1, -1);
   }
 
-  public  ProductPrice getPrice(Product product) {
+  public  ProductPrice getPrice(Product product) throws RemoteException {
     ProductPrice pPrice = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
     StringBuffer buffer = new StringBuffer();
       buffer.append("SELECT * FROM "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPriceTableName());
@@ -377,14 +378,16 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   }
 
   public  int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return ProductBusiness.createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return getProductBusiness().createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
   public  int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return ProductBusiness.createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return getProductBusiness().createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
-
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
 
 
 

@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -25,10 +26,10 @@ public class ProductItemPrice extends ProductItem {
   private boolean showCurrency = false;
 
   public ProductItemPrice() { }
-  public ProductItemPrice(int productId) throws SQLException{
+  public ProductItemPrice(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemPrice(Product product) {
+  public ProductItemPrice(Product product) throws RemoteException{
     super(product);
   }
 

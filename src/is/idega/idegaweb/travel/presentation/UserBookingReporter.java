@@ -149,7 +149,7 @@ public class UserBookingReporter extends TravelManager implements Report{
       for (int i = 0; i < bookings.length; i++) {
         ++row;
         owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
-        prod = ProductBusiness.getProduct(bookings[i].getServiceID());
+        prod = getProductBusiness(iwc).getProduct(bookings[i].getServiceID());
         price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
@@ -159,7 +159,7 @@ public class UserBookingReporter extends TravelManager implements Report{
           ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
 
         table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
+        table.add(getText(prod.getProductName(getLocaleId())), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(ownerLink, 4, row);
         table.add(getText(TextSoap.decimalFormat(price, 0)), 5, row);
@@ -236,7 +236,7 @@ public class UserBookingReporter extends TravelManager implements Report{
       for (int i = 0; i < bookings.length; i++) {
         ++row;
         user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
-        prod = ProductBusiness.getProduct(bookings[i].getServiceID());
+        prod = getProductBusiness(iwc).getProduct(bookings[i].getServiceID());
         price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
@@ -246,7 +246,7 @@ public class UserBookingReporter extends TravelManager implements Report{
           userLink.addParameter(PARAMETER_USER_ID, user.getID());
 
         table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
+        table.add(getText(prod.getProductName(getLocaleId())), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(userLink, 4, row);
         table.add(getText(TextSoap.decimalFormat(price, 0)), 5, row);
@@ -338,11 +338,11 @@ public class UserBookingReporter extends TravelManager implements Report{
             table.add(getText(iwrb.getLocalizedString("travel.-online-","-online-")), 5, row);
           }
         }
-        prod = ProductBusiness.getProduct(bookings[i].getServiceID());
+        prod = getProductBusiness(iwc).getProduct(bookings[i].getServiceID());
 
 
         table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
+        table.add(getText(prod.getProductName(getLocaleId())), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
         table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(iwc, bookings[i]), 0)), 6, row);
 

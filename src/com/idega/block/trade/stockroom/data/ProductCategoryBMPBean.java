@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
 import com.idega.data.IDOLookup;
@@ -44,6 +45,18 @@ public class ProductCategoryBMPBean extends com.idega.core.data.ICCategoryBMPBea
 
   public String getCategoryType() {
     return getStringColumnValue(com.idega.core.data.ICCategoryBMPBean.getColumnType());
+  }
+
+  public void removeProducts(List products) throws IDORemoveRelationshipException{
+    if (products != null) {
+      Iterator iter = products.iterator();
+      Product prod;
+      while (iter.hasNext()) {
+        prod = (Product) iter.next();
+        this.idoRemoveFrom(prod);
+      }
+    }
+//    this.idoRemoveFrom();
   }
 
   public ProductCategory ejbHomeGetProductCategory(String type) throws FinderException, RemoteException {

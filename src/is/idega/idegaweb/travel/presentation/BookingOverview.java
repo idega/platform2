@@ -113,7 +113,7 @@ public class BookingOverview extends TravelManager {
         if (productId != null && _productId != -1 && !productId.equals(parameterViewAll)) {
           //System.err.println(" productId = "+productId);
           //System.err.println("_productId = "+_productId);
-          product = ProductBusiness.getProduct(_productId);
+          product = getProductBusiness(iwc).getProduct(_productId);
           service = getTravelStockroomBusiness(iwc).getService(product);
 //          tour = getTourBusiness(iwc).getTour(product);
           timeframe = getTravelStockroomBusiness(iwc).getTimeframe(product);
@@ -124,7 +124,7 @@ public class BookingOverview extends TravelManager {
           tfnfe.printStackTrace(System.err);
       }/*catch (TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
-      }*/catch (SQLException sql) {sql.printStackTrace(System.err);}
+      }*/catch (FinderException sql) {sql.printStackTrace(System.err);}
 
 
       if ((reseller != null) && (product != null)){
@@ -223,7 +223,7 @@ public class BookingOverview extends TravelManager {
 
       DropdownMenu trip = null;
         if (supplier != null) {
-          trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
+          trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, supplier.getID());
           // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
         }else if (reseller != null){
           trip = getContractBusiness(iwc).getDropdownMenuWithProducts(iwc, reseller.getID());
@@ -383,15 +383,15 @@ public class BookingOverview extends TravelManager {
               dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
               try {
                   if (viewAll) {
-                    products = ProductBusiness.getProducts(supplierId, tempStamp);
+                    products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
                   }
                   else {
                     products = new Vector();
-                      products.add(ProductBusiness.getProduct(productId));
+                      products.add(getProductBusiness(iwc).getProduct(productId));
                   }
-              }catch (SQLException sql) {
+              }catch (FinderException sql) {
                 sql.printStackTrace(System.err);
-                products = ProductBusiness.getProducts(supplierId, tempStamp);
+                products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
               }
               upALine = false;
               ++row;
@@ -456,7 +456,7 @@ public class BookingOverview extends TravelManager {
 
 
                           nameTextBold  = (Text) theSmallBoldText.clone();
-                            nameTextBold.setText(service.getName());
+                            nameTextBold.setText(service.getName(super.getTravelSessionManager(iwc).getLocaleId() ));
 
                           assignedTextBold = (Text) theSmallBoldText.clone();
                             assignedTextBold.setText(Integer.toString(iAssigned));
@@ -728,7 +728,7 @@ public class BookingOverview extends TravelManager {
           }
 
 
-          List addresses = ProductBusiness.getDepartureAddresses(product, true);
+          List addresses = product.getDepartureAddresses(true);
           TravelAddress trAddress;
           int addressesSize = addresses.size();
           int tempRow;

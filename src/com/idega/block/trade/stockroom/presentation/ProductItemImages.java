@@ -1,12 +1,12 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import java.util.*;
+import com.idega.data.*;
+import javax.ejb.FinderException;
 import com.idega.builder.handler.HorizontalVerticalViewHandler;
 import java.sql.SQLException;
-import java.util.Vector;
-import com.idega.data.IDOFinderException;
 import com.idega.core.data.ICFile;
-import java.util.List;
-import com.idega.data.EntityFinder;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.presentation.*;
@@ -36,10 +36,10 @@ public class ProductItemImages extends ProductItem {
    *  Constructor for the ProductItemThumbnail object
    */
   public ProductItemImages() { }
-  public ProductItemImages(int productId) throws SQLException{
+  public ProductItemImages(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemImages(Product product) {
+  public ProductItemImages(Product product) throws RemoteException{
     super(product);
   }
 
@@ -56,15 +56,17 @@ public class ProductItemImages extends ProductItem {
   /**
    *  Description of the Method
    */
-  private void drawObject() {
+  private void drawObject() throws RemoteException {
     List images = null;
     try {
       if (_product != null) {
-	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
+        Collection coll = _product.getICFile();
+        images = new Vector(coll);
+//	images = new Vector(EntityFinder.getInstance().findRelated(_product, ICFile.class));
       }else {
 	images = new Vector();
       }
-    }catch (IDOFinderException ido) {
+    }catch (IDORelationshipException ido) {
       ido.printStackTrace(System.err);
       images = new Vector();
     }

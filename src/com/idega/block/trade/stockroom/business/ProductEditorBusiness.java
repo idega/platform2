@@ -1,4 +1,7 @@
 package com.idega.block.trade.stockroom.business;
+import javax.ejb.FinderException;
+import com.idega.core.data.ICFileHome;
+import com.idega.data.*;
 import com.idega.business.IBOServiceBean;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
@@ -7,9 +10,7 @@ import com.idega.block.trade.business.CurrencyHolder;
 import java.util.*;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.data.EntityFinder;
 import com.idega.core.business.Category;
-import com.idega.data.IDOFinderException;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.util.IWTimestamp;
@@ -39,39 +40,26 @@ public class ProductEditorBusiness extends IBOServiceBean{
     }
   }
 
-  public void setCategories(Product product, String[] categoryIds) {
-    try {
-      product.removeFrom(ProductCategory.class);
-      if (categoryIds != null) {
-	ProductCategory pCat;
-	for (int i = 0; i < categoryIds.length; i++) {
-	  pCat = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(categoryIds[i]));
-	  addCategory(product, pCat);
-	}
+  public void setCategories(Product product, String[] categoryIds) throws RemoteException, IDOException, FinderException{
+    if (categoryIds != null) {
+      int[] iCategoryIds = new int[categoryIds.length];
+      for (int i = 0; i < categoryIds.length; i++) {
+        iCategoryIds[i] = Integer.parseInt(categoryIds[i]) ;
       }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+
+      product.setProductCategories(iCategoryIds);
     }
   }
 
-  public boolean addCategory(Product product, ProductCategory productCategory) {
-    try {
-      productCategory.addTo(product);
-      return true;
-    }catch (Exception e) {
-      return false;
-    }
-  }
-
-  public void dropImage(Product product, boolean update) throws SQLException {
+  public void dropImage(Product product, boolean update)  throws RemoteException {
     product.setFileId(null);
     if (update) {
-      product.update();
+      product.store();
     }
   }
 
 
-  public void setThumbnail(Product product, int thumbnailId) {
+  public void setThumbnail(Product product, int thumbnailId) throws RemoteException, FinderException, IDOException {
     try {
       boolean perform = true;
       if (thumbnailId != -1) {
@@ -82,6 +70,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	  perform = false;
 	}
 
+
 	if (perform) {
 	  if (newThumbId == -1) {
 	    dropImage(product, true);
@@ -89,19 +78,25 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	    //product.update();
 	  }else {
 	    product.setFileId(newThumbId);
-	    product.update();
-	    product.removeFrom(ICFile.class, newThumbId);
+	    product.store();
+            ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+            ICFile file = fileHome.findByPrimaryKey(newThumbId);
+            product.removeICFile(file);
+	    //product.removeFrom(ICFile.class, newThumbId);
 	  }
 	}
 
 	if (perform) {
 	  if (oldThumbId != -1) {
-	    product.addTo(ICFile.class, oldThumbId);
+            ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+            ICFile file = fileHome.findByPrimaryKey(oldThumbId);
+            product.addICFile(file);
+//	    product.addTo(ICFile.class, oldThumbId);
 	  }
 	}
       }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+    }catch (IDOException ido) {
+      ido.printStackTrace(System.err);
     }
   }
 
@@ -137,13 +132,13 @@ public class ProductEditorBusiness extends IBOServiceBean{
     }
   }
 
-  public SelectionBox getCategorySelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
+  public SelectionBox getCategorySelectionBox(Product product, String name, int productCatalogObjectInstanceId) throws RemoteException{
     SelectionBox catSel = new SelectionBox(name);
     List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
     if (product != null) {
       try {
-        cats = ProductBusiness.getProductCategories(product);
-      }catch (IDOFinderException ido) {
+        cats = getProductBusiness().getProductCategories(product);
+      }catch (IDORelationshipException ido) {
         ido.printStackTrace(System.err);
       }
     }
@@ -159,13 +154,13 @@ public class ProductEditorBusiness extends IBOServiceBean{
     return catSel;
   }
 
-  public SelectionBox getSelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
+  public SelectionBox getSelectionBox(Product product, String name, int productCatalogObjectInstanceId) throws RemoteException{
 	  SelectionBox catSel = new SelectionBox(name);
 	  List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
 	  if (product != null) {
 		try {
-	 	  cats = ProductBusiness.getProductCategories(product);
-		}catch (IDOFinderException ido) {
+	 	  cats = getProductBusiness().getProductCategories(product);
+		}catch (IDORelationshipException ido) {
 		  ido.printStackTrace(System.err);
 		}
 	  }
@@ -180,15 +175,16 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	  return catSel;
   }
 
-  public List getFiles(Product product) {
+  public List getFiles(Product product) throws RemoteException {
     List files = new Vector();
     if (product == null) {
       return null;
     }else {
       try {
-	List list = EntityFinder.getInstance().findRelated(product, ICFile.class);
-	files = new Vector(list);
-      }catch (IDOFinderException ido) {
+        Collection coll = product.getICFile();
+//	List list = EntityFinder.getInstance().findRelated(product, ICFile.class);
+	files = new Vector(coll);
+      }catch (IDORelationshipException ido) {
 	ido.printStackTrace(System.err);
       }
     }
@@ -208,37 +204,41 @@ public class ProductEditorBusiness extends IBOServiceBean{
   }
 
 
-  public void addImage(Product product, int imageId) {
+  public void addImage(Product product, int imageId) throws RemoteException, FinderException {
     if (imageId != -1 && product != null) {
       try {
-	product.addTo(ICFile.class, imageId);
-      }catch (SQLException sql){
+        ICFileHome fHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+        product.addICFile(fHome.findByPrimaryKey(imageId));
+//	product.addTo(ICFile.class, imageId);
+      }catch (IDOAddRelationshipException re){
 	//sql.printStackTrace(System.err);
       }
     }
   }
 
-  public void removeImage(Product product, int imageId) {
+  public void removeImage(Product product, int imageId) throws RemoteException, FinderException {
     if (imageId != -1) {
       try {
 	if (product.getFileId() == imageId) {
 	  product.setFileId(null);
-	  product.update();
+	  product.store();
 	}else {
-	  product.removeFrom(ICFile.class, imageId);
+          ICFileHome fHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+          product.removeICFile(fHome.findByPrimaryKey(imageId));
+//	  product.removeFrom(ICFile.class, imageId);
 	}
-      }catch (SQLException sql){
-	sql.printStackTrace(System.err);
+      }catch (IDOException ido){
+	ido.printStackTrace(System.err);
       }
     }
   }
 
-  public boolean deleteProduct(Product product) {
+  public boolean deleteProduct(Product product) throws RemoteException {
     try {
-      ProductBusiness.deleteProduct(product);
+      getProductBusiness().deleteProduct(product);
       return true;
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+    }catch (IDOException ido) {
+      ido.printStackTrace(System.err);
       return false;
     }
   }
@@ -274,4 +274,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
     return (StockroomBusiness) IBOLookup.getServiceInstance(super.getIWApplicationContext(), StockroomBusiness.class);
   }
 
+  private ProductBusiness getProductBusiness() throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(super.getIWApplicationContext(), ProductBusiness.class);
+  }
 }

@@ -78,7 +78,7 @@ public class Contracts extends TravelManager {
           addResellers(iwc);
           selectReseller(iwc);
         }else if (action.equals(this.parameterViewContract)) {
-          add(viewContract(iwc, ProductBusiness.getProduct(Integer.parseInt(iwc.getParameter(this.parameterProductId)))));
+          add(viewContract(iwc, getProductBusiness(iwc).getProduct(Integer.parseInt(iwc.getParameter(this.parameterProductId)))));
         }else if (action.equals(this.parameterViewProducts)) {
           assignReseller(iwc);
           //add(viewProducts(iwc));
@@ -322,7 +322,7 @@ public class Contracts extends TravelManager {
         ++row;
         table.setRowColor(row, theColor);
         pName = (Text) theBoldText.clone();
-          pName.setText(ProductBusiness.getProductNameWithNumber(products[i]));
+          pName.setText(getProductBusiness(iwc).getProductNameWithNumber(products[i]));
           pName.setFontColor(super.BLACK);
 
         table.add(pName,1,row);

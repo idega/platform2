@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import javax.transaction.*;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.data.EntityFinder;
@@ -49,7 +51,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
     super.setUnMerged();
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws Exception{
     init(iwc);
 
     if ( _selectedCategory != -1) {
@@ -75,7 +77,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
         _selectedCategory = Integer.parseInt(sSelCat);
         _productCategory = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(_selectedCategory);
       }
-      _categories = ProductBusiness.getProductCategories();
+      _categories = getProductBusiness(iwc).getProductCategories();
     }catch (Exception e) {
       e.printStackTrace(System.err);
       _categories = new Vector();
@@ -86,15 +88,15 @@ public class ProductCategoryEditor extends IWAdminWindow {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void viewCategory(IWContext iwc) {
+  private void viewCategory(IWContext iwc) throws RemoteException {
     try {
-      List products = ProductBusiness.getProducts(_productCategory);
-      List allProducts = ProductBusiness.getProducts();
+      List products = getProductBusiness(iwc).getProducts(_productCategory);
+      List allProducts = getProductBusiness(iwc).getProducts();
       allProducts.removeAll(products);
-      
+
       /*ProductComparator compare = new ProductComparator();
       compare.sortBy(compare.NAME);
-      
+
       Collections.sort(allProducts, compare);
       Collections.sort(products, compare);*/
 
@@ -170,7 +172,7 @@ public class ProductCategoryEditor extends IWAdminWindow {
     }
   }
 
-  private void saveAssignment(IWContext iwc) {
+  private void saveAssignment(IWContext iwc) throws RemoteException {
     String[] in = iwc.getParameterValues(this._parameterProductIn);
 
     Product product;
@@ -178,7 +180,8 @@ public class ProductCategoryEditor extends IWAdminWindow {
     try {
       tm.begin();
       List products = EntityFinder.getInstance().findRelated(_productCategory, Product.class);
-      _productCategory.removeFrom((Product[]) products.toArray(new Product[]{}));
+      _productCategory.removeProducts(products);
+//      _productCategory.removeFrom((Product[]) products.toArray(new Product[]{}));
 
 
       if (in != null) {
@@ -188,7 +191,6 @@ public class ProductCategoryEditor extends IWAdminWindow {
       }
 
       tm.commit();
-      System.err.println("productCategoryEditor...invalidating...");
       iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -205,6 +207,10 @@ public class ProductCategoryEditor extends IWAdminWindow {
     Text text = new Text(content);
 
     return text;
+  }
+
+  private ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException{
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 
 }

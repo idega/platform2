@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -22,7 +23,7 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
   public ProductCatalogLayoutMultibleColumns() {
   }
 
-  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
+  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException {
     Table table = new Table();
       table.setWidth("100%");
     int row = 1;
@@ -55,7 +56,7 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 	  ++row;
 	}
 
-	catProducts = ProductBusiness.getProducts(pCat);
+	catProducts = getProductBusiness(iwc).getProducts(pCat);
 	productCatalog.sortList(catProducts);
 
 	int numberOfRows = ( catProducts.size() / productCatalog._numberOfColumns ) + firstRow;

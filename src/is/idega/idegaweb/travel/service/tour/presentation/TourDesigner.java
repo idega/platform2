@@ -84,9 +84,11 @@ public class TourDesigner extends TravelManager implements DesignerForm{
    *@param  tourId  Description of the Parameter
    *@return         Description of the Return Value
    */
-  private boolean setupData( int tourId ) throws RemoteException, FinderException {
+  private boolean setupData( IWContext iwc, int tourId ) throws RemoteException, FinderException {
     try {
-      product = ProductBusiness.getProduct( tourId );
+//      ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+//      product = pHome.findByPrimaryKey(new Integer(tourId));
+      product = getProductBusiness(iwc).getProduct( tourId );
       service = ( ( is.idega.idegaweb.travel.data.ServiceHome ) com.idega.data.IDOLookup.getHome( Service.class ) ).findByPrimaryKey( product.getPrimaryKey() );
       try {
         tour = ( ( is.idega.idegaweb.travel.service.tour.data.TourHome ) com.idega.data.IDOLookup.getHome( Tour.class ) ).findByPrimaryKey( product.getPrimaryKey() );
@@ -95,8 +97,8 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       }
       timeframe = product.getTimeframe();
 
-      arrAddress = ProductBusiness.getArrivalAddress( product );
-      depAddress = ProductBusiness.getDepartureAddress( product );
+      arrAddress = getProductBusiness(iwc).getArrivalAddress( product );
+      depAddress = getProductBusiness(iwc).getDepartureAddress( product );
 
       return true;
     } catch ( SQLException sql ) {
@@ -135,7 +137,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
     boolean isDataValid = true;
 
     if ( tourId != -1 ) {
-      isDataValid = setupData( tourId );
+      isDataValid = setupData( iwc, tourId );
     }
 
     Form form = new Form();
@@ -160,7 +162,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       TextInput number = new TextInput( "number" );
       number.setSize( 20 );
       number.keepStatusOnAction();
-      DropdownMenu locales = ProductBusiness.getLocaleDropDown( iwc );
+      DropdownMenu locales = getProductBusiness(iwc).getLocaleDropDown( iwc );
 
       int currentYear = IWTimestamp.RightNow().getYear();
 
@@ -481,9 +483,9 @@ public class TourDesigner extends TravelManager implements DesignerForm{
           active_yearly.setSelected( timeframe.getIfYearly() );
         }
 
-        name.setContent( ProductBusiness.getProductName( product, super.getLocaleId() ) );
+        name.setContent( product.getProductName(  super.getLocaleId() ) );
         number.setContent( product.getNumber() );
-        description.setContent( ProductBusiness.getProductDescription( product, iwc ) );
+        description.setContent( product.getProductDescription( super.getLocaleId() ) );
 
         int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
         try {
@@ -774,7 +776,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
 
         serviceId = tb.updateTourService( tourId, supplier.getID(), iImageId, name, number, description, true, departureFrom, departureStamp, arrivalAt, arrivalStamp, hotelPickup, activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType );
         if ( useImageId == null ) {
-          Product product = ProductBusiness.getProduct( serviceId );
+          Product product = getProductBusiness(iwc).getProduct( serviceId );
           ProductEditorBusiness.getInstance().dropImage( product, true );
         }
       }

@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import com.idega.business.IBOLookup;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.idegaweb.*;
 import com.idega.block.trade.stockroom.data.Product;
@@ -28,29 +30,28 @@ public class ProductEditor extends Block {
   public ProductEditor() {
   }
 
-  public void main(IWContext iwc) {
+  public void main(IWContext iwc) throws RemoteException{
     init(iwc);
-    if (_product != null) {
-      add("repps");
-    }else {
-      add("Product == NULL");
-    }
   }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
 
     try {
       String sProductId = iwc.getParameter(this.PRODUCT_ID);
       _productId = Integer.parseInt(sProductId);
-      _product = ProductBusiness.getProduct(_productId);
+      _product = getProductBusiness(iwc).getProduct(_productId);
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
+  }
+
+  private ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 }

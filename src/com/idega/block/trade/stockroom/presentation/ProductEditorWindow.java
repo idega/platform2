@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
 import com.idega.block.category.business.CategoryFinder;
@@ -80,7 +82,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   }
 
 
-  public void main(IWContext iwc) throws RemoteException{
+  public void main(IWContext iwc) throws RemoteException, FinderException{
     init(iwc);
 
     String action = iwc.getParameter(ACTION);
@@ -126,7 +128,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
     core = iwc.getApplication().getCoreBundle();
@@ -136,7 +138,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       String sProductId = iwc.getParameter(this.PRODUCT_ID);
       _productId = Integer.parseInt(sProductId);
       if (_productId != -1) {
-	_product = ProductBusiness.getProduct(_productId);
+	_product = getProductBusiness(iwc).getProduct(_productId);
       }
     }catch (Exception e) {
       //e.printStackTrace(System.err);
@@ -156,9 +158,9 @@ public class ProductEditorWindow extends IWAdminWindow {
     _currencies = _business.getCurrencyDropdown(this.PAR_CURRENCY, currCurr);
   }
 
-  private void setCurrencies(IWContext iwc) {
+  private void setCurrencies(IWContext iwc) throws RemoteException{
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-    String sLocaleId = iwc.getParameter(ProductBusiness.PARAMETER_LOCALE_DROP);
+    String sLocaleId = iwc.getParameter(getProductBusiness(iwc).getParameterLocaleDrop());
     iLocaleID = -1;
     if(sLocaleId!= null){
       iLocaleID = Integer.parseInt(sLocaleId);
@@ -199,9 +201,9 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     if (_product != null) {
       number.setContent(_product.getNumber());
-      name.setContent(ProductBusiness.getProductName(_product, iLocaleID));
-      description.setContent(ProductBusiness.getProductDescription(_product, iLocaleID));
-      teaser.setContent(ProductBusiness.getProductTeaser(_product, iLocaleID));
+      name.setContent(_product.getProductName(iLocaleID));
+      description.setContent(_product.getProductDescription(iLocaleID));
+      teaser.setContent(_product.getProductTeaser(iLocaleID));
       ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
       if (pPrice != null) {
 	price.setContent(Integer.toString((int) pPrice.getPrice()));
@@ -211,7 +213,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       }
     }
 
-    DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(ProductBusiness.PARAMETER_LOCALE_DROP);
+    DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(getProductBusiness(iwc).getParameterLocaleDrop());
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleID));
     super.addLeft(iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
@@ -292,10 +294,10 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (!name.equals("")) {
       if (_product == null) {
 	try {
-	  _productId = ProductBusiness.createProduct(null, name, number, description, true, iLocaleID);
-	  _product = ProductBusiness.getProduct(_productId);
+	  _productId = getProductBusiness(iwc).createProduct(null, name, number, description, true, iLocaleID);
+	  _product = getProductBusiness(iwc).getProduct(_productId);
 	  _business.setCategories(_product, categories);
-	  ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
+	  _product.setProductTeaser(iLocaleID, teaser);
 	  if (_business.setPrice(_product, price, currency)) {
 	  }else {
 	    System.out.println(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
@@ -307,11 +309,11 @@ public class ProductEditorWindow extends IWAdminWindow {
 	}
       }else {
 	try {
-	  _product = ProductBusiness.getProduct(ProductBusiness.updateProduct(this._productId, null, name, number, description, true, iLocaleID));
+	  _product = getProductBusiness(iwc).getProduct(getProductBusiness(iwc).updateProduct(this._productId, null, name, number, description, true, iLocaleID));
 
 	  _business.setThumbnail(_product, Integer.parseInt(thumbnailId));
 	  _business.setCategories(_product, categories);
-	  ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
+	  _product.setProductTeaser(iLocaleID, teaser);
 	  if (_business.setPrice(_product, price, currency)) {
 	  }else {
 	    System.out.println(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
@@ -335,10 +337,10 @@ public class ProductEditorWindow extends IWAdminWindow {
     super.addSubmitButton(back);
   }
 
-  private void verifyDelete(IWContext iwc) {
+  private void verifyDelete(IWContext iwc)  throws RemoteException{
     super.addHiddenInput(new HiddenInput(this.PRODUCT_ID, Integer.toString(_productId)));
     StringBuffer text = new StringBuffer();
-      text.append(iwrb.getLocalizedString("are_you_sure_you_want_to_delete","Are you sure you want to delete this product")).append(" : ").append(ProductBusiness.getProductName(_product, iLocaleID));
+      text.append(iwrb.getLocalizedString("are_you_sure_you_want_to_delete","Are you sure you want to delete this product")).append(" : ").append(_product.getProductName(iLocaleID));
     super.addLeft(iwrb.getLocalizedString("delete","Delete"), text.toString() );
 
     SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("ok","OK"), this.ACTION, this.PAR_DEL_VERIFIED);
@@ -353,7 +355,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     this.close();
   }
 
-  private Table getImageTable(IWContext iwc) {
+  private Table getImageTable(IWContext iwc) throws RemoteException {
     ImageInserter imageInserter = new ImageInserter(PAR_IMAGE);
     imageInserter.setHasUseBox(false);
     SubmitButton addButton = new SubmitButton(core.getImage("/shared/create.gif","Add to news"),ACTION, PAR_ADD_FILE);
@@ -417,6 +419,10 @@ public class ProductEditorWindow extends IWAdminWindow {
 
   private StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
+  }
+
+  private ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 
 }

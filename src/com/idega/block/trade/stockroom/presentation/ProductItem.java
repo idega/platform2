@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.business.IBOLookup;
@@ -36,11 +38,11 @@ public class ProductItem extends Block {
   public ProductItem() {
   }
 
-  public ProductItem(int productId) throws SQLException {
+  public ProductItem(int productId) throws FinderException, RemoteException {
     setProduct(productId);
   }
 
-  public ProductItem(Product product) {
+  public ProductItem(Product product) throws RemoteException {
     setProduct(product);
   }
 
@@ -52,14 +54,14 @@ public class ProductItem extends Block {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void initialize(IWContext iwc) {
-    String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
+  private void initialize(IWContext iwc) throws RemoteException{
+    String sProductId = iwc.getParameter(getProductBusiness(iwc).getProductIdParameter());
     if (sProductId != null) {
       if (!sProductId.equals("-1")) {
         try {
           _productId = Integer.parseInt(sProductId);
-          _product = ProductBusiness.getProduct(_productId);
-        }catch (SQLException sql) {
+          _product = getProductBusiness(iwc).getProduct(_productId);
+        }catch (FinderException sql) {
           sql.printStackTrace(System.err);
         }
       }
@@ -87,14 +89,15 @@ public class ProductItem extends Block {
     }
   }
 
-  protected void setProduct(Product product) {
+  protected void setProduct(Product product) throws RemoteException{
     _product = product;
     _productId = _product.getID();
   }
 
-  protected void setProduct(int productId) throws SQLException {
+  protected void setProduct(int productId) throws FinderException, RemoteException {
     _productId = productId;
-    _product = ProductBusiness.getProduct(_productId);
+    _product = ((ProductHome) IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKey(new Integer(_productId));
+//    _product = getProductBusiness.getProduct(_productId);
   }
 
   public void setFontStyle(String style) {
@@ -103,5 +106,9 @@ public class ProductItem extends Block {
 
   protected StockroomBusiness getStockroomBusiness(IWApplicationContext iwac) throws RemoteException{
     return (StockroomBusiness) IBOLookup.getServiceInstance(iwac, StockroomBusiness.class);
+  }
+
+  protected ProductBusiness getProductBusiness(IWApplicationContext iwac) throws RemoteException {
+    return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 }

@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import java.sql.SQLException;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -21,10 +23,10 @@ public class ProductItemName extends ProductItem {
   private String defaultText = "Product Name";
 
   public ProductItemName() { }
-  public ProductItemName(int productId) throws SQLException{
+  public ProductItemName(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemName(Product product) {
+  public ProductItemName(Product product) throws RemoteException{
     super(product);
   }
 
@@ -33,10 +35,10 @@ public class ProductItemName extends ProductItem {
     drawObject();
   }
 
-  private void drawObject() {
+  private void drawObject() throws RemoteException{
     Text text = getText(defaultText);
     if ( _product != null ) {
-      text.setText(ProductBusiness.getProductName(_product,_localeId));
+      text.setText(_product.getProductName(_localeId));
     }
     add(text);
   }

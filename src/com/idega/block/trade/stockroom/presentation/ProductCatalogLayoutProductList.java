@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
@@ -32,7 +34,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
   public ProductCatalogLayoutProductList() {
   }
 
-  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
+  public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException, FinderException{
     _productCatalog = productCatalog;
     _iwrb = _productCatalog.iwrb;
     _iwc = _productCatalog.iwc;
@@ -47,7 +49,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     return toEMM(productCategories);
   }
 
-  private Form toEMM(List productCategories) {
+  private Form toEMM(List productCategories) throws RemoteException, FinderException{
     Form form = new Form();
 
     List products = new Vector();
@@ -55,7 +57,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     if (productCategories != null && productCategories.size() > 0) {
       products = _productCatalog.getProducts(productCategories, false);
     }else {
-      products = ProductBusiness.getProducts();
+      products = getProductBusiness(_iwc).getProducts();
     }
 
     int manyProducts = products.size();
@@ -180,12 +182,12 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
         if (_productCatalog._showTeaser) {
           ++row;
-          table.add(_productCatalog.getText(ProductBusiness.getProductTeaser(product, _productCatalog._currentLocaleId)), 2, row);
+          table.add(_productCatalog.getText(product.getProductTeaser(_productCatalog._currentLocaleId)), 2, row);
         }
 
         if (_productCatalog._showDescription) {
           ++row;
-          table.add(_productCatalog.getText(ProductBusiness.getProductDescription(product, _productCatalog._currentLocaleId)), 2, row);
+          table.add(_productCatalog.getText(product.getProductDescription(_productCatalog._currentLocaleId)), 2, row);
         }
 
       }catch (Exception e) {

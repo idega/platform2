@@ -61,7 +61,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     boolean returner = false;
     String del;
     String add;
-    List products = ProductBusiness.getProducts(supplier.getID());
+    List products = getProductBusiness(iwc).getProducts(supplier.getID());
     int prodsSize = products.size();
     Product product;
     if (hppNames != null && hppIds != null)
@@ -70,7 +70,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
         if (hppIds[i].equals("-1")) {
           if  ( (hppNames[i] != null) && (!hppNames[i].equals("")) ) {
             Address hotelPickupAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-              hotelPickupAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueHotelPickupAddressType));
+              hotelPickupAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType));
               hotelPickupAddress.setStreetName(hppNames[i]);
               hotelPickupAddress.insert();
 

@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import com.idega.data.*;
 import java.sql.SQLException;
 
@@ -52,12 +54,16 @@ public class VariantValueBMPBean extends com.idega.data.GenericEntity implements
     return getIntColumnValue(getColumnNameVariantId());
   }
 
-  public Variant getVariant() throws SQLException {
-    return ((com.idega.block.trade.stockroom.data.VariantHome)com.idega.data.IDOLookup.getHomeLegacy(Variant.class)).findByPrimaryKeyLegacy(getVariantId());
+  public Variant getVariant() throws RemoteException, FinderException {
+    return getVariantHome().findByPrimaryKey(new Integer(getVariantId()));
   }
 
   public String getValue() {
     return getStringColumnValue(getColumnNameVariantValue());
+  }
+
+  private VariantHome getVariantHome() throws RemoteException {
+    return (VariantHome) IDOLookup.getHome(Variant.class);
   }
 
 }

@@ -129,7 +129,7 @@ public class TourBookingForm extends BookingForm{
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       List addresses;
       try {
-        addresses = ProductBusiness.getDepartureAddresses(_product, false);
+        addresses = _product.getDepartureAddresses(false);
       }catch (IDOFinderException ido) {
         ido.printStackTrace(System.err);
         addresses = new Vector();
@@ -146,7 +146,7 @@ public class TourBookingForm extends BookingForm{
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, addressId);
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
 //      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
         prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
@@ -707,7 +707,7 @@ public class TourBookingForm extends BookingForm{
 */
       List addresses;
       try {
-        addresses = ProductBusiness.getDepartureAddresses(_product, false);
+        addresses = _product.getDepartureAddresses(false);
       }catch (IDOFinderException ido) {
         ido.printStackTrace(System.err);
         addresses = new Vector();
@@ -722,7 +722,7 @@ public class TourBookingForm extends BookingForm{
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp, addressId);
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, addressId);
       if (tFrame != null) {
         prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
         misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, true);
@@ -1410,9 +1410,9 @@ public class TourBookingForm extends BookingForm{
 
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
     int iAddressId = Integer.parseInt(sAddressId);
-    Collection addressIds = getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID()), iAddressId);
+    Collection addressIds = getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(getProductBusiness(iwc).getProduct(_service.getID()), iAddressId);
 //    getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(ProductBusiness.getProduct(_service.getID(), ta));
-    Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
+    Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
 
@@ -1698,7 +1698,7 @@ public class TourBookingForm extends BookingForm{
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       ProductPrice[] misc = {};
-      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
       if (tFrame != null) {
         pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
         misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);

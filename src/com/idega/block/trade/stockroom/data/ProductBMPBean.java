@@ -1,20 +1,19 @@
 package com.idega.block.trade.stockroom.data;
 
-import java.util.Collections;
+import java.util.*;
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.data.*;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
-import java.util.List;
 import java.sql.Timestamp;
 import com.idega.util.IWTimestamp;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.business.TimeframeComparator;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDORelationshipException;
-import java.util.Collection;
 
 /**
  *  Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -75,25 +74,17 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     this.addManyToManyRelationShip( ICFile.class );
   }
 
-  /**
-   *  Description of the Method
-   *
-   *@exception  SQLException  Description of the Exception
-   */
-  public void delete() throws SQLException {
-    /*
-     *  List prices = EntityFinder.findAllByColumn(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class),com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId(), this.getID() );
-     *  if (prices != null) {
-     *  ProductPrice price;
-     *  for (int i = 0; i < prices.size(); i++) {
-     *  price = (ProductPrice) prices.get(i);
-     *  price.delete();
-     *  }
-     *  }
-     *  super.delete();
-     */
+
+  public void invalidate() throws IDOException{
     this.setIsValid( false );
-    this.update();
+    this.store();
+  }
+
+  /**
+   * deprecated
+   */
+  public int getID() {
+    return ((Integer) getPrimaryKey()).intValue();
   }
 
   /**
@@ -115,95 +106,17 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     return getProductEntityName();
   }
 
-  /**
-   *  Gets the productEntityName attribute of the Product class
-   *
-   *@return    The productEntityName value
-   */
-  public static String getProductEntityName() {
-    return "SR_PRODUCT";
-  }
-
-  /**
-   *  Gets the columnNameSupplierId attribute of the Product class
-   *
-   *@return    The columnNameSupplierId value
-   */
-  public static String getColumnNameSupplierId() {
-    return "SR_SUPPLIER_ID";
-  }
-
-  /**
-   *  Gets the columnNameFileId attribute of the Product class
-   *
-   *@return    The columnNameFileId value
-   */
-  public static String getColumnNameFileId() {
-    return "IC_FILE_ID";
-  }
-
-  /**
-   *  Gets the columnNameProductName attribute of the Product class
-   *
-   *@return    The columnNameProductName value
-   */
-  public static String getColumnNameProductName() {
-    return "PRODUCT_NAME";
-  }
-
-  /**
-   *  Gets the columnNameProductDescription attribute of the Product class
-   *
-   *@return    The columnNameProductDescription value
-   */
-  public static String getColumnNameProductDescription() {
-    return "PRODUCT_DESCRIPTION";
-  }
-
-  /**
-   *  Gets the columnNameIsValid attribute of the Product class
-   *
-   *@return    The columnNameIsValid value
-   */
-  public static String getColumnNameIsValid() {
-    return "IS_VALID";
-  }
-
-  /**
-   *  Gets the discountTypeIdColumnName attribute of the Product class
-   *
-   *@return    The discountTypeIdColumnName value
-   */
-  public static String getDiscountTypeIdColumnName() {
-    return "DISCOUNT_TYPE_ID";
-  }
-
-  /**
-   *  Gets the columnNameNumber attribute of the Product class
-   *
-   *@return    The columnNameNumber value
-   */
-  public static String getColumnNameNumber() {
-    return "PRODUCT_NUMBER";
-  }
-
-  /**
-   *  Gets the columnNameCreationDate attribute of the Product class
-   *
-   *@return    The columnNameCreationDate value
-   */
-  public static String getColumnNameCreationDate() {
-    return "CREATION_DATE";
-  }
-
-  /**
-   *  Gets the columnNameModificationDate attribute of the Product class
-   *
-   *@return    The columnNameModificationDate value
-   */
-  public static String getColumnNameModificationDate() {
-    return "MODIFICATION_DATE";
-  }
+  public static String getIdColumnName() { return ProductBMPBean.getProductEntityName()+"_ID";}
+  public static String getProductEntityName() {    return "SR_PRODUCT";  }
+  public static String getColumnNameSupplierId() {    return "SR_SUPPLIER_ID";  }
+  public static String getColumnNameFileId() {    return "IC_FILE_ID";  }
+  public static String getColumnNameProductName() {    return "PRODUCT_NAME";  }
+  public static String getColumnNameProductDescription() {    return "PRODUCT_DESCRIPTION";  }
+  public static String getColumnNameIsValid() {    return "IS_VALID";  }
+  public static String getDiscountTypeIdColumnName() {    return "DISCOUNT_TYPE_ID";  }
+  public static String getColumnNameNumber() {    return "PRODUCT_NUMBER";  }
+  public static String getColumnNameCreationDate() {    return "CREATION_DATE";  }
+  public static String getColumnNameModificationDate() {    return "MODIFICATION_DATE";  }
 
 
   /*
@@ -345,24 +258,6 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
   }
 
   /**
-   *@return        The productName value
-   *@deprecated
-   */
-  public String getProductName() {
-    return ProductBusiness.getProductName( this );
-//    return this.getStringColumnValue(getColumnNameProductName());
-  }
-
-  /**
-   *@return        The prodcutDescription value
-   *@deprecated
-   */
-  public String getProdcutDescription() {
-    return ProductBusiness.getProductDescription( this );
-//    return this.getStringColumnValue(getColumnNameProductDescription());
-  }
-
-  /**
    *  Gets the isValid attribute of the Product object
    *
    *@return    The isValid value
@@ -371,14 +266,6 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     return this.getBooleanColumnValue( getColumnNameIsValid() );
   }
 
-  /**
-   *@return        The name value
-   *@deprecated
-   */
-  public String getName() {
-    return this.getProductName();
-//    return "Ekki nota";
-  }
 
   /**
    *  Gets the discountTypeId attribute of the Product object
@@ -489,5 +376,335 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     Collection coll = this.idoGetRelatedEntities(ProductCategory.class);
     return coll;
   }
+
+  public void setProductCategories(int[] categoryIds) throws RemoteException, FinderException, IDORemoveRelationshipException{
+    this.idoRemoveFrom(ProductCategory.class);
+    ProductCategory pCat;
+    ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHome(ProductCategory.class);
+    for (int i = 0; i < categoryIds.length; i++) {
+      pCat = pCatHome.findByPrimaryKey(categoryIds[i]);
+      //pCat = ((com.idega.block.trade.stockroom.data.ProductCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ProductCategory.class)).findByPrimaryKeyLegacy(categoryIds[i]);
+      addCategory(pCat);
+    }
+  }
+
+  public boolean addCategory(ProductCategory productCategory) {
+    try {
+      productCategory.addTo(this);
+      return true;
+    }catch (Exception e) {
+      return false;
+    }
+  }
+
+  public void removeCategory(ProductCategory productCategory) throws IDORemoveRelationshipException{
+    this.idoRemoveFrom(productCategory);
+  }
+
+  public void removeAllFrom(Class entityInterface) throws IDORemoveRelationshipException{
+    this.idoRemoveFrom(entityInterface);
+  }
+
+  public void addTravelAddresses(int[] addressIds) throws RemoteException, FinderException, IDOAddRelationshipException{
+    TravelAddress address;
+    TravelAddressHome home = (TravelAddressHome) IDOLookup.getHome(TravelAddress.class);
+    if(addressIds != null){
+      for (int i = 0; i < addressIds.length; i++) {
+        address = home.findByPrimaryKey(addressIds[i]);
+        addTravelAddress(address);
+//	  product.addTo(TravelAddress.class, addressIds[i]);
+      }
+    }
+  }
+
+  public void addTravelAddress(TravelAddress address)  {
+    try {
+      this.idoAddTo(address);
+    }catch (IDOAddRelationshipException e) {
+      debug("product already connencted to address");
+    }
+  }
+
+  public void removeTravelAddress(TravelAddress address) throws IDORemoveRelationshipException {
+    this.idoRemoveFrom(address);
+  }
+
+  public String getProductName(int localeId) {
+    LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+    if (text == null) text = TextFinder.getLocalizedText(this, 1);
+    String name = "";
+    if (text != null) {
+      name = text.getHeadline();
+    }
+    return name;
+  }
+
+  public void setProductName(int localeId, String name) {
+    LocalizedText locText = TextFinder.getLocalizedText(this,localeId);
+    boolean newLocText = false;
+    if ( locText == null ) {
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+      newLocText = true;
+    }
+
+    locText.setHeadline(name);
+
+    if ( newLocText ) {
+      locText.setLocaleId(localeId);
+      try {
+	locText.insert();
+	locText.addTo(this);
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+    else {
+      try {
+	locText.update();
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+  }
+
+
+  public String getProductDescription(int localeId) {
+    LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+    if (text == null) text = TextFinder.getLocalizedText(this, 1);
+    String description = "";
+    if (text != null) {
+      description = text.getBody();
+    }
+    return description;
+  }
+
+  public void setProductDescription(int localeId, String description) {
+    LocalizedText locText = TextFinder.getLocalizedText(this,localeId);
+    boolean newLocText = false;
+    if ( locText == null ) {
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+      newLocText = true;
+    }
+
+    locText.setBody(description);
+
+    if ( newLocText ) {
+      locText.setLocaleId(localeId);
+      try {
+	locText.insert();
+	locText.addTo(this);
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+    else {
+      try {
+	locText.update();
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+  }
+
+
+  public String getProductTeaser(int localeId) {
+    LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+    if (text == null) text = TextFinder.getLocalizedText(this, 1);
+    String teaser = "";
+    if (text != null) {
+      teaser = text.getTitle();
+      if (teaser == null) teaser = "";
+    }
+    return teaser;
+  }
+
+  public void setProductTeaser(int localeId, String teaser) {
+    LocalizedText locText = TextFinder.getLocalizedText(this,localeId);
+    boolean newLocText = false;
+    if ( locText == null ) {
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
+      newLocText = true;
+    }
+
+    locText.setTitle(teaser);
+
+    if ( newLocText ) {
+      locText.setLocaleId(localeId);
+      try {
+	locText.insert();
+	locText.addTo(this);
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+    else {
+      try {
+	locText.update();
+      }
+      catch (SQLException e) {
+	e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  public Collection ejbHomeGetProducts(int supplierId) throws FinderException {
+    String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
+
+    StringBuffer sqlQuery = new StringBuffer();
+      sqlQuery.append("SELECT * FROM ").append(pTable);
+      sqlQuery.append(" WHERE ");
+      sqlQuery.append(pTable).append(".").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
+      if (supplierId != -1)
+      sqlQuery.append(" AND ").append(pTable).append(".").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()).append(" = ").append(supplierId);
+      sqlQuery.append(" order by ").append(com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameNumber());
+
+    return this.idoFindPKsBySQL(sqlQuery.toString());
+  }
+
+
+  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to) throws FinderException{
+    Collection coll;
+
+    Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
+    Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+    ProductCategory pCat = (ProductCategory) com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getStaticInstance(ProductCategory.class);
+    Product prod = null;
+    //Service tService = (Service) is.idega.idegaweb.travel.data.ServiceBMPBean.getStaticInstance(Service.class);
+
+    String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
+    String Ttable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
+    String Ptable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
+    String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
+
+    StringBuffer timeframeSQL = new StringBuffer();
+      timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
+      if (from != null && to != null) {
+        timeframeSQL.append(", "+Ttable+", "+middleTable);
+      }
+      if (productCategoryId != -1) {
+        timeframeSQL.append(", "+catMiddle);
+      }
+      timeframeSQL.append(" WHERE ");
+      timeframeSQL.append(Ptable+"."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
+      if (from != null && to != null) {
+        timeframeSQL.append(" AND ");
+        timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+        timeframeSQL.append(" AND ");
+        timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" = "+middleTable+"."+this.getIDColumnName());
+      }
+
+      if (productCategoryId != -1) {
+        timeframeSQL.append(" AND ");
+        timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" = "+catMiddle+"."+this.getIDColumnName());
+        timeframeSQL.append(" AND ");
+        timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+productCategoryId);
+      }
+
+    // Hondla ef supplierId != -1
+    Collection tempProducts = null;;
+    if (supplierId != -1) tempProducts = ejbHomeGetProducts(supplierId);
+    if (tempProducts != null)
+    if (tempProducts.size() > 0) {
+      timeframeSQL.append(" AND ");
+      timeframeSQL.append(middleTable+"."+this.getIDColumnName()+" in (");
+      Iterator iter = tempProducts.iterator();
+      Object item;
+      int counter = 0;
+      while (iter.hasNext()) {
+        item = iter.next();
+        ++counter;
+        if (counter == 1) {
+          timeframeSQL.append(item.toString() );
+        }else {
+          timeframeSQL.append(","+item.toString() );
+        }
+      }
+      timeframeSQL.append(")");
+    }
+
+    if (from != null && to != null) {
+      timeframeSQL.append(" AND ");
+      timeframeSQL.append("(");
+      timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
+      timeframeSQL.append(" OR ");
+      timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
+      timeframeSQL.append(" OR ");
+      timeframeSQL.append(" ("+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
+      timeframeSQL.append(")");
+    }
+
+    if (from != null && to != null) {
+      timeframeSQL.append(" ORDER BY "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName());
+    }
+
+    coll = this.idoFindPKsBySQL(timeframeSQL.toString());
+//    products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
+    return coll;
+  }
+
+  public List getDepartureAddresses(boolean ordered) throws IDOFinderException  {
+    List list = EntityFinder.getInstance().findRelated(this, TravelAddress.class, com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE) );
+    if (list == null) {
+      list = new Vector();
+    }
+    return list;
+  }
+
+  public void addArrivalAddress(Address address)  {
+    try {
+      this.idoAddTo(address);
+/*
+      StringBuffer sql = new StringBuffer();
+        sql.append("INSERT INTO ").append(EntityControl.getManyToManyRelationShipTableName(Product.class, Address.class))
+           .append(" (SR_PRODUCT_ID, IC_ADDRESS_ID, ").append(TravelAddressBMPBean.getColumnNameAddressTypeId())
+           .append(") VALUES (")
+           .append(this.getPrimaryKey().toString()).append(", ")
+           .append(address.getID()).append(", ")
+           .append(Integer.toString(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_ARRIVAL))
+           .append(")");
+      this.idoExecuteTableUpdate(sql.toString());*/
+    }catch (Exception e) {
+//      e.printStackTrace();
+      debug("product already connected to address");
+    }
+  }
+
+  public List getArrivalAddresses() throws IDOFinderException  {
+    List list = EntityFinder.getInstance().findRelated(this, Address.class);//, com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_ARRIVAL) );
+    if (list == null) {
+      list = new Vector();
+    }
+    return list;
+  }
+
+  public Collection getICFile() throws IDORelationshipException {
+    return this.idoGetRelatedEntities(ICFile.class);
+  }
+
+  public void removeICFile(ICFile file) throws IDORemoveRelationshipException{
+    this.idoRemoveFrom(file);
+  }
+
+  public void addICFile(ICFile file) throws IDOAddRelationshipException{
+    this.idoAddTo(file);
+  }
+
+  public void addTimeframe(Timeframe frame) throws IDOAddRelationshipException{
+    this.idoAddTo(frame);
+  }
+
+  public void removeTimeframe(Timeframe frame) throws IDORemoveRelationshipException{
+    this.idoRemoveFrom(frame);
+  }
+
+  public void addText(TxText text) throws IDOAddRelationshipException{
+    this.idoAddTo(text);
+  }
+
 }
 

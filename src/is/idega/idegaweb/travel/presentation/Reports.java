@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.util.text.TextSoap;
 import is.idega.idegaweb.travel.business.Booker;
@@ -84,13 +85,13 @@ public class Reports extends TravelManager {
       String productId = iwc.getParameter(PARAMETER_PRODUCT_ID);
       ProductHome phome = (ProductHome) IDOLookup.getHomeLegacy(Product.class);
       if (productId != null && !productId.equals("-1")) {
-        _product = phome.findByPrimaryKey(Integer.parseInt(productId));
+        _product = getProductBusiness(iwc).getProduct(Integer.parseInt(productId)); //phome.findByPrimaryKey(Integer.parseInt(productId));
         _products = new Vector();
           _products.add(_product);
       }else if (productId == null || productId.equals("-1")) {
         _products = new Vector();
         if (_supplier != null) {
-          _products = ProductBusiness.getProducts(iwc, _supplier.getID());
+          _products = getProductBusiness(iwc).getProducts(iwc, _supplier.getID());
         }else if (_reseller != null) {
           /** @todo laga kannski til */
           Product[] repps = getContractBusiness(iwc).getProductsForReseller(iwc, _reseller.getID());
@@ -191,7 +192,7 @@ public class Reports extends TravelManager {
   }
 
 
-  protected Table topTable(IWContext iwc) {
+  protected Table topTable(IWContext iwc) throws RemoteException{
       Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -201,7 +202,7 @@ public class Reports extends TravelManager {
           tframeText.addToText(":");
 
       DropdownMenu trip = null;
-        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, _supplier.getID(), PARAMETER_PRODUCT_ID);
+        trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, _supplier.getID(), PARAMETER_PRODUCT_ID);
         if (_product != null) {
             trip.setSelectedElement(Integer.toString(_product.getID()));
         }

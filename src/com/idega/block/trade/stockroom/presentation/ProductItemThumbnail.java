@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import java.sql.SQLException;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -26,10 +28,10 @@ public class ProductItemThumbnail extends ProductItem {
    */
   public ProductItemThumbnail() { }
 
-  public ProductItemThumbnail(int productId) throws SQLException{
+  public ProductItemThumbnail(int productId) throws RemoteException, FinderException{
     super(productId);
   }
-  public ProductItemThumbnail(Product product) {
+  public ProductItemThumbnail(Product product) throws RemoteException {
     super(product);
   }
   /**
@@ -45,7 +47,7 @@ public class ProductItemThumbnail extends ProductItem {
   /**
    *  Description of the Method
    */
-  private void drawObject() {
+  private void drawObject() throws RemoteException {
     Image image = defaultImage;
     if ( _product != null ) {
       int fileId = _product.getFileId();

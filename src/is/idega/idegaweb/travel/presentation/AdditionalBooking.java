@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOFinderException;
+import java.util.List;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import java.rmi.RemoteException;
@@ -85,17 +87,15 @@ public class AdditionalBooking extends TravelWindow {
         this.isCorrection = true;
       }
         service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(iwc.getParameter(this.parameterServiceId));
-        product = ProductBusiness.getProduct(service.getID());
+        product = getProductBusiness(iwc).getProduct(service.getID());
         stamp = new IWTimestamp(iwc.getParameter(this.parameterDate));
-        timeframe = ProductBusiness.getTimeframe(product, stamp);
+        timeframe = getProductBusiness(iwc).getTimeframe(product, stamp);
     }catch (FinderException fe) {
       fe.printStackTrace(System.err);
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
     }
   }
 
-  private void displayForm(IWContext iwc) throws RemoteException, SQLException{
+  private void displayForm(IWContext iwc) throws RemoteException, SQLException, IDOFinderException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -105,9 +105,9 @@ public class AdditionalBooking extends TravelWindow {
       String addId = iwc.getParameter(this.parameterDepartureAddressId);
       String tfrId = iwc.getParameter(this.parameterTimeframeId);
 
-      TravelAddress[] addresses = ProductBusiness.getDepartureAddresses(product);
+      List addresses = product.getDepartureAddresses(true);
       Timeframe[] timeframes = product.getTimeframes();
-      int iAddressId = addresses[0].getID();
+      int iAddressId = ((TravelAddress) addresses.get(0)).getID();
       int iTimeframeId = timeframe.getID();
       if (addId != null) iAddressId = Integer.parseInt(addId);
       if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
@@ -168,12 +168,12 @@ public class AdditionalBooking extends TravelWindow {
     table.add(nameText,1,row);
     table.add(name,2,row);
 
-    if (addresses.length > 1) {
+    if (addresses.size() > 1) {
       ++row;
       table.add(depPlaceText, 1, row);
       table.add(depAddr, 2,row);
     }else {
-      table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addresses[0].getID())));
+      table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(iAddressId))); // var addresses[0].getID();
     }
 
     if (timeframes.length > 1) {

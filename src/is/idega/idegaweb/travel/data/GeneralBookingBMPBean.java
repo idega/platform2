@@ -407,10 +407,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 //      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(serviceId));
 
       /** @todo lonsa við getInstance crap */
-      ProductBusiness pBus = new ProductBusiness();//(ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
+//      ProductBusiness pBus = new ProductBusiness();//(ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
+      ProductBusiness pBus = (ProductBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), ProductBusiness.class);
 
-      Timeframe timeframe = pBus.getTimeframe(ProductBusiness.getProduct(serviceId), fromStamp);
-      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+      Timeframe timeframe = pBus.getTimeframe(pBus.getProduct(serviceId), fromStamp);
+//      Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, Timeframe.class);
       String addressMiddleTable = EntityControl.getManyToManyRelationShipTableName(GeneralBooking.class, TravelAddress.class);
 
@@ -442,7 +443,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append(") and ");
             }
 
-            sql.append("p."+product.getIDColumnName()+" = m."+product.getIDColumnName());
+            sql.append("p."+ProductBMPBean.getIdColumnName()+" = m."+ProductBMPBean.getIdColumnName());
             sql.append(" and ");
             sql.append("m."+timeframe.getIDColumnName()+" = t."+timeframe.getIDColumnName());
             sql.append(" and ");
@@ -450,9 +451,9 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append("t."+timeframe.getIDColumnName()+" = "+timeframe.getID());
               sql.append(" and ");
             }
-            sql.append("p."+product.getIDColumnName()+"="+serviceId);
+            sql.append("p."+ProductBMPBean.getIdColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append("b."+getServiceIDColumnName()+"= p."+product.getIDColumnName());
+            sql.append("b."+getServiceIDColumnName()+"= p."+ProductBMPBean.getIdColumnName());
             sql.append(" and ");
             sql.append("b."+getIsValidColumnName()+" = 'Y'");
             if (bookingType != -1) {
