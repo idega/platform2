@@ -36,6 +36,10 @@ public class SchoolClassMemberBusinessBean extends CaseBusinessBean implements S
 	public Collection findClassMember(int studentID) throws FinderException, RemoteException {
 		return getSchoolClassMemberHome().findByStudent(studentID);
 	}
+	
+	public Collection findStudentsInClass(int studentClassID) throws FinderException, RemoteException {
+		return getSchoolClassMemberHome().findBySchoolClass(studentClassID);	
+	}
 
 	public void removeSchoolClassMemberFromClass(int studentID, int schoolClassID) throws FinderException, RemoveException, RemoteException {
 		SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
