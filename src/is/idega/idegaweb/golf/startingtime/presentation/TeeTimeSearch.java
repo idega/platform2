@@ -831,7 +831,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public SubmitButton insertButton(String btnName, String Method, String Action, Form theForm) {
 		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(btnName));
-		theForm.addObject(mySubmit);
+		theForm.getChildren().add(mySubmit);
 
 		theForm.setMethod(Method);
 		theForm.setAction(Action);
@@ -841,7 +841,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	private SubmitButton insertButton(Image image, String imageName, String Method, String Action, Form theForm) {
 		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(image, imageName));
-		theForm.addObject(mySubmit);
+		theForm.getChildren().add(mySubmit);
 
 		theForm.setMethod(Method);
 		theForm.setAction(Action);
