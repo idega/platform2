@@ -47,8 +47,8 @@ public class RunResultViewer extends Block {
 	private static final String STYLENAME_LIST_ROW = "listRow";
 
 	private static final String DEFAULT_INTERFACE_STYLE = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8px;font-weight:bold;border-width:1px;border-color:#000000;border-style:solid;";
-	private static final String DEFAULT_GROUP_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;padding:4px;background-color:#ACACAC";
-	private static final String DEFAULT_HEADER_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF;padding:2px;";
+	private static final String DEFAULT_GROUP_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;padding:4px;background-color:#ACACAC;color:#FFFFFF";
+	private static final String DEFAULT_HEADER_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;padding:2px;";
 	private static final String DEFAULT_LIST_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;padding:2px;";
 	
 	private static final String HEADLINE_BACKGROUND_COLOR = "#ACACAC";
@@ -379,7 +379,7 @@ public class RunResultViewer extends Block {
 		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
 
 		table.add(getRunnerRowText(iwrb.getLocalizedString("results.name", "Name")), 7, row);
-		table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setStyleClass(7, row, getStyleName(STYLENAME_HEADER_ROW));
 
 		table.add(getRunnerRowText(iwrb.getLocalizedString("results.birth_year", "Year")), 9, row);
 		table.setStyleClass(9, row, getStyleName(STYLENAME_HEADER_ROW));
@@ -390,7 +390,7 @@ public class RunResultViewer extends Block {
 		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
 
 		table.add(getRunnerRowText(iwrb.getLocalizedString("results.group", "Group")), 13, row);
-		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setStyleClass(13, row, getStyleName(STYLENAME_HEADER_ROW));
 		table.setHeight(++row, 2);
 		
 		return ++row;
