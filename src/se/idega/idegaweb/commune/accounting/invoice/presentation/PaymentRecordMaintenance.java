@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/14 08:19:29 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/14 21:13:51 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -237,7 +237,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
 	public void init (final IWContext context) {
-		
 		try {
 			int actionId = ACTION_SHOW_PAYMENT;
 			
@@ -659,7 +658,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		map.put (ACTION_KEY, getSubmitButton (ACTION_SAVE_RECORD,
 																					SAVE_EDITS_KEY,
 																					SAVE_EDITS_DEFAULT));
-		
 		renderRecordDetailsOrForm (context, map);
 	}
 	
@@ -1789,7 +1787,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void addStyledInput (final java.util.Map map, final String key,
 															 final float number) {
-		addStyledInput (map, key, roundAmount (number));
+		final TextInput input
+				= getStyledInput (key, roundAmount (number) + "");
+		map.put (key, input);
 	}
 	
 	private void addSmallText (final java.util.Map map, final String mapKey,
