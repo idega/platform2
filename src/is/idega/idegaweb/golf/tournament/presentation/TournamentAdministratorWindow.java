@@ -3,16 +3,14 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import javax.ejb.FinderException;
-
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -37,8 +35,7 @@ public class TournamentAdministratorWindow extends GolfWindow {
 
 	private String width = "100%";
 
-	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+
 
 	private String adminView;
 
@@ -79,9 +76,7 @@ public class TournamentAdministratorWindow extends GolfWindow {
 		selectedTabText = text;
 	}
 	
-	public void _main(IWContext iwc) throws Exception {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+	protected void doIn_main(IWContext iwc) throws Exception {
 
 		if (AccessControl.isAdmin(iwc) || AccessControl.isClubAdmin(iwc)) {
 			String view = iwc.getParameter(ADMIN_VIEW_PARAMETER);
@@ -208,7 +203,6 @@ public class TournamentAdministratorWindow extends GolfWindow {
 			this.addMenuLink(lCreateTournament);
 
 		}
-		super._main(iwc);
 	}
 	
 	public void main(IWContext iwc) throws FinderException {
@@ -221,10 +215,10 @@ public class TournamentAdministratorWindow extends GolfWindow {
 				Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(tourID);
 				tournamentName = tournament.getName()+" : "+selectedTabText;
 			} else {
-				tournamentName = iwrb.getLocalizedString("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
+				tournamentName = localize("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
 			}
 		} else {
-			tournamentName = iwrb.getLocalizedString("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
+			tournamentName = localize("tournament.no_tournament_selected", "No tournament selected")+" : "+selectedTabText;
 		}
 		addHeading(tournamentName);
 	}

@@ -409,11 +409,19 @@ public class GolfWindow extends Window {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    doIn_main(modinfo);
     super._main(modinfo);
     setStyleSheetURL(this.getStyleSheetPath(modinfo)+styleScript);
   }
 
-  /*
+  /**
+ * @param modinfo
+ */
+protected void doIn_main(IWContext modinfo) throws Exception {
+	
+}
+
+/*
    * (non-Javadoc)
    * 
    * @see java.lang.Object#clone()

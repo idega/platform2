@@ -328,7 +328,7 @@ public class TournamentList extends GolfBlock {
 							registerImage.setName(iwrb.getLocalizedString("tournament.register_me", "Register me"));
 							registerImage.setToolTip(iwrb.getLocalizedString("tournament.register_me", "Register me"));
 							Link register = new Link(registerImage);
-							register.setWindowToOpen(TournamentRegistrationWindow.class);
+							register.setWindowToOpen(RegistrationForMembersWindow.class);
 							register.addParameter("action", "open");
 							register.addParameter("tournament_id", Integer.toString(tournaments[i].getID()));
 							table.add(register, column, row);
