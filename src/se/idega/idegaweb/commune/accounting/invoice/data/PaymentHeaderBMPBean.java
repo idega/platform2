@@ -34,7 +34,6 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	private static final String COLUMN_DATE_ATTESTED = "date_attested";
 	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_PERIOD = "period";
-	
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -45,7 +44,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_SIGNATURE, User.class);
-		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class,1);
+		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_DATE_ATTESTED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 	}
@@ -53,7 +52,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return getIntColumnValue(COLUMN_SCHOOL_ID);
 	}
 	public School getSchool() {
-		return (School)getColumnValue(COLUMN_SCHOOL_ID);
+		return (School) getColumnValue(COLUMN_SCHOOL_ID);
 	}
 	public String getSchoolCategoryID() {
 		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
@@ -70,7 +69,6 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
 	}
-
 
 	public void setSchoolID(int i) {
 		setColumn(COLUMN_SCHOOL_ID, i);
@@ -99,7 +97,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public void setPeriod(Date d) {
 		setColumn(COLUMN_PERIOD, d);
 	}
-	
+
 	/**
 	 * Finds one school for the given input paramters
 	 * @param school
@@ -114,9 +112,9 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		ts.setDay(1);
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school.getPrimaryKey());
-		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
 		sql.appendAndEquals(COLUMN_PERIOD, ts.getDate());
-		return (Integer)idoFindOnePKByQuery(sql);
+		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
 	/**
@@ -133,9 +131,9 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
 		end.addMonths(1);
-		
+
 		IDOQuery sql = idoQuery();
-		sql.appendSelect().append("count (distinct "+COLUMN_SCHOOL_ID+") from "+getEntityName());
+		sql.appendSelect().append("count (distinct " + COLUMN_SCHOOL_ID + ") from " + getEntityName());
 		sql.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryID);
 		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
@@ -158,16 +156,16 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
 		end.addMonths(1);
-		
-		String managementType = (String)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
-		
+
+		String managementType = (String) ((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
+
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(ENTITY_NAME+" ph, "+SchoolBMPBean.SCHOOL+" s");
-		sql.appendWhere("ph."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append("ph."+COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
-		sql.appendAndEqualsQuoted("ph."+COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
-		sql.appendAndEquals("ph."+COLUMN_SCHOOL_ID,"s.sch_school_id");
-		sql.appendAndEqualsQuoted("s.management_type",managementType);
+		sql.appendSelectAllFrom(ENTITY_NAME + " ph, " + SchoolBMPBean.SCHOOL + " s");
+		sql.appendWhere("ph." + COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("ph." + COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		sql.appendAndEqualsQuoted("ph." + COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
+		sql.appendAndEquals("ph." + COLUMN_SCHOOL_ID, "s.sch_school_id");
+		sql.appendAndEqualsQuoted("s.management_type", managementType);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -185,32 +183,51 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public Collection ejbFindByStatusAndSchoolId(char status, int schoolID) throws IDOLookupException, EJBException, FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhereEquals(COLUMN_STATUS, status);
+		sql.appendWhereEqualsWithSingleQuotes(COLUMN_STATUS, String.valueOf(status));
 		sql.appendAndEquals(COLUMN_SCHOOL_ID, schoolID);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-    public Collection ejbFindBySchoolCategoryAndSchoolAndPeriod
-        (final String schoolCategory, final Integer providerId,
-         final Date startPeriod, final Date endPeriod) throws FinderException {
-		final IDOQuery sql = idoQuery ();
-		sql.appendSelectAllFrom (this)
-                .appendWhereEquals(COLUMN_SCHOOL_ID, providerId + "")
-                .appendAndEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID,
-                                        schoolCategory);
-        if (null != startPeriod) {
-            sql.appendAnd ()
-                    .append (COLUMN_PERIOD)
-                    .appendGreaterThanOrEqualsSign ()
-                    .append (startPeriod);
-        }
-        if (null != endPeriod) {
-            sql.appendAnd ()
-                    .append (endPeriod)
-                    .appendGreaterThanOrEqualsSign ()
-                    .append (COLUMN_PERIOD);
-        }
+	public Collection ejbFindBySchoolCategoryAndSchoolAndPeriod(final String schoolCategory, final Integer providerId, final Date startPeriod, final Date endPeriod) throws FinderException {
+		final IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, providerId + "").appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategory);
+		if (null != startPeriod) {
+			sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(startPeriod);
+		}
+		if (null != endPeriod) {
+			sql.appendAnd().append(endPeriod).appendGreaterThanOrEqualsSign().append(COLUMN_PERIOD);
+		}
 
-        return idoFindPKsBySQL (sql.toString ());
-    }
+		return idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement(String schoolCategory, char status) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, sch_school s, ic_commune c");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "s.sch_school_id");
+		sql.appendAndEquals("s.commune", "c.ic_commune_id");
+		sql.appendAndEqualsQuoted("c.default_commune","Y");
+		sql.appendAndEqualsQuoted("s.management_type","COMMUNE");
+		
+		System.out.println(sql.toString());
+		
+		return idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(String schoolCategory, char status) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select p.* from " + ENTITY_NAME + " p, sch_school s, ic_commune c");
+		sql.appendWhereEqualsWithSingleQuotes("p." + COLUMN_SCHOOL_CATEGORY_ID,schoolCategory);
+		sql.appendAndEqualsQuoted("p." + COLUMN_STATUS,String.valueOf(status));
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, "s.sch_school_id");
+		sql.appendAndEquals("s.commune", "c.ic_commune_id");
+		sql.appendAnd();
+		sql.append("((c.default_commune = 'N' or c.default_commune is null) or (not s.management_type = 'COMMUNE'))");
+		
+		System.out.println(sql.toString());
+		
+		return idoFindPKsBySQL(sql.toString());
+	}
 }

@@ -20,11 +20,32 @@ public java.util.Collection findBySchoolCategoryAndPeriodForPrivate(com.idega.bl
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySchoolCategoryAndSchoolAndPeriod(java.lang.String p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndSchoolAndPeriod(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public PaymentHeader findBySchoolCategorySchoolPeriod(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,java.sql.Date p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategorySchoolPeriod(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
+}
+
+public java.util.Collection findBySchoolCategoryStatusInCommuneWithCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryStatusInCommuneWithCommunalManagement(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(java.lang.String p0,char p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
 public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException{
@@ -46,10 +67,5 @@ public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.s
 	return theReturn;
 }
 
-    public java.util.Collection findBySchoolCategoryAndSchoolAndPeriod (String schoolCategory, Integer providerId, java.sql.Date startPeriod, java.sql.Date endPeriod) throws javax.ejb.FinderException {
-        com.idega.data.IDOEntity entity = idoCheckOutPooledEntity();
-        java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndSchoolAndPeriod(schoolCategory, providerId, startPeriod, endPeriod);
-        idoCheckInPooledEntity(entity);
-        return getEntityCollectionForPrimaryKeys(ids);
-    }
+
 }
