@@ -32,10 +32,6 @@ public class PageCounter extends Block {
   public PageCounter() {
   }
 
-  public void init(IWContext iwc) throws Exception{
-
-  }
-
   public void main(IWContext iwc) throws Exception{
     if( (update) && (updateStats(iwc.getRemoteIpAddress())) ){
       TrackerBusiness.runThroughTheStatsMachine(iwc);
@@ -152,8 +148,8 @@ public class PageCounter extends Block {
    ipFilter.put(name,ipNumber);
   }
 
-  public void removeIpFilterNumber(String ipNumber){
-   ipFilter.remove(ipNumber);
+  public void removeIpFilterNumber(String nameOrIpNumber){
+   ipFilter.remove(nameOrIpNumber);
   }
 
   private boolean updateStats(String ipNumber){
