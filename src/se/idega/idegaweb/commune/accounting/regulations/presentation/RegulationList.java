@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: RegulationList.java,v 1.5 2003/09/11 14:34:58 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
+ * $Id: RegulationList.java,v 1.5 2003/09/11 14:34:58 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -144,7 +144,7 @@ public class RegulationList extends AccountingBlock {
 	 */
 	private void deletePost(IWContext iwc) {
 		String id = iwc.getParameter(PARAM_DELETE_ID);
-		if(id != null) {
+		if (id != null) {
 			try {
 				getRegulationBusiness(iwc).deleteRegulation(Integer.parseInt(id));
 			} catch ( Exception e) {
@@ -208,7 +208,7 @@ public class RegulationList extends AccountingBlock {
 		try {
 			rBiz = getRegulationBusiness(iwc);
 			Collection items = rBiz.findRegulationsByPeriod(_currentFromDate, _currentToDate);
-			if(items != null) {
+			if (items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					Regulation r = (Regulation) iter.next();
@@ -220,7 +220,7 @@ public class RegulationList extends AccountingBlock {
 
 					list.add(r.getName() != null ? r.getName() : "" , r.getLocalizationKey());
 
-					if(r.getAmount() != null) {
+					if (r.getAmount() != null) {
 						list.add(""+(r.getAmount().intValue()));
 					} else {
 						list.add(getSmallText(""));

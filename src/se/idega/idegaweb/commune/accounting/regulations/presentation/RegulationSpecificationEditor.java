@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.9 2003/09/09 14:09:44 laddi Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.10 2003/09/11 14:34:20 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/09/09 14:09:44 $
+ * $Date: 2003/09/11 14:34:20 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -187,7 +187,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		String errorMessage = null;
 
 		try {
-			if(getIntParameter(iwc, PARAMETER_MAIN_RULE_ID) == 0) {
+			if (getIntParameter(iwc, PARAMETER_MAIN_RULE_ID) == 0) {
 				throw new RegulationException(KEY_SELECT_MAIN_RULE_ERROR, DEFAULT_SELECT_MAIN_RULE_ERROR);
 			}
 			RegulationsBusiness rb = getRegulationsBusiness(iwc);
@@ -288,7 +288,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 
 		if (regSpecTypes != null) {
 			Iterator iter = regSpecTypes.iterator();
-			if(iter.hasNext()) {
+			if (iter.hasNext()) {
 					iter.next();
 			}
 			while (iter.hasNext()) {
@@ -360,7 +360,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		table.setCellspacing(getCellspacing());
 
 		table.add(getLocalizedLabel(KEY_REG_SPEC_TYPE, "Regespecificeringstyp"), 1, 1);
-		if(isNew) {
+		if (isNew) {
 			table.add(getTextInput(PARAMETER_REGULATION_SPEC_TYPE, regSpecType, 200), 2, 1);
 		} else {
 			table.add(getTextInput(PARAMETER_REGULATION_SPEC_TYPE, localize(regSpecType, regSpecType), 200), 2, 1);
