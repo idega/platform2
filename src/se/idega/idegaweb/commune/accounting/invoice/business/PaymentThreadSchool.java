@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/11 14:19:20 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/11 15:52:26 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -455,7 +455,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			for (Iterator i = getRegularPayments().iterator(); i.hasNext();) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) i.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
-				PaymentRecord record = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
+				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
