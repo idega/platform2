@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.63 2004/10/12 08:32:54 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.64 2004/10/14 07:34:54 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -613,7 +613,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 
 	public PrintedLetterMessage createPrintedPasswordLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
 		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
-		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
+		PrintedLetterMessage message = home.create();
 		message.setOwner(user);
 		message.setSubject(subject);
 		message.setBody(body);
@@ -643,7 +643,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 		return message;
 	}
 
-	private PrintedLetterMessage createPrintedLetterMessage(MessageValue msgValue) throws CreateException, RemoteException {
+	private PrintedLetterMessage createPrintedLetterMessage(MessageValue msgValue) throws CreateException {
 		PrintedLetterMessageHome home = getPrintedLetterMessageHome();
 		PrintedLetterMessage message = home.create();
 		message.setOwner(msgValue.receiver);
