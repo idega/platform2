@@ -1589,18 +1589,6 @@ public class HotelBookingForm extends BookingForm {
 //    int betw = 1;
 //    int heildarbokanir = 0;
     int bookingTotal = 0;
-		int iManyDays = 1;
-		try {
-			iManyDays = Integer.parseInt(manyDays);
-		}catch (NumberFormatException n) {
-			try {
-				toStamp = new IWTimestamp(iwc.getParameter(this.parameterToDate));
-				iManyDays = IWTimestamp.getDaysBetween(fromStamp, toStamp);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-  
     try {
       fromStamp = new IWTimestamp(fromDate);
 //      heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
@@ -1616,6 +1604,21 @@ public class HotelBookingForm extends BookingForm {
     }catch (Exception e) {
     	e.printStackTrace(System.err);
     }
+
+		int iManyDays = 1;
+		
+		
+		try {
+			iManyDays = Integer.parseInt(manyDays);
+		}catch (NumberFormatException n) {
+			try {
+				toStamp = new IWTimestamp(iwc.getParameter(this.parameterToDate));
+				iManyDays = IWTimestamp.getDaysBetween(fromStamp, toStamp);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+  
 
 		int totalRooms = 0;
 		
