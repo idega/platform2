@@ -150,10 +150,6 @@ public class MessengerApplet extends Applet implements Runnable{
 
         aMessage = (Message) enum.nextElement();
         if( messageDialog == null ) {//debug this should be one window per chat
-          messageDialog = new MessageDialog(FRAME_NAME,aMessage);
-          Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-          messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
-          messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
           Image logo = null;
           try {
             logo = getImage(new URL(hostURL+resourceURL),"idegalogo.gif");
@@ -161,7 +157,13 @@ public class MessengerApplet extends Applet implements Runnable{
           catch (MalformedURLException ex) {
             ex.printStackTrace(System.err);
           }
-          if( logo != null ) messageDialog.setLogoImage(logo);
+          if( logo != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logo);
+          else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
+
+
+          Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+          messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
+          messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
           messageDialog.setVisible(true);
 
