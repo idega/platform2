@@ -2,11 +2,9 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.GroupApplicationBusiness;
 import is.idega.idegaweb.member.data.GroupApplication;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.event.IWPresentationEvent;
@@ -21,7 +19,6 @@ import com.idega.presentation.text.Text;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserGroupPlugIn;
-import com.idega.user.presentation.UserGroupPlugInPresentable;
 import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.util.IWColor;
 import com.idega.util.ListUtil;
@@ -31,7 +28,7 @@ import com.idega.util.ListUtil;
  * @version 1.0
  */
 
-public class GroupApplicationOverView extends Page implements IWBrowserView, UserGroupPlugInPresentable {
+public class GroupApplicationOverView extends Page implements IWBrowserView {
 	//implements IWBrowserView, StatefullPresentation, UserGroupPlugInPresentable {
 
 
