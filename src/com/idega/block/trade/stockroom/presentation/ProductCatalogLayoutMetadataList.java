@@ -15,6 +15,7 @@ import com.idega.block.trade.stockroom.business.ProductEditorBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -96,30 +97,38 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 				}
 			}
 			
-			Collection coll = getEditorBusiness(iwc).getFiles(product);
-			Iterator images = coll.iterator();
-			Image image;
-			int counter = 0;
-			while (images.hasNext()) {
-				++counter;
-				try {
-					image = new Image( new Integer(( (ICFile) images.next()).getPrimaryKey().toString()).intValue() );
-					Window window = new Window(image);
-
-					Link link = new Link(productCatalog.getText(Integer.toString(counter)));
-					
-					if (productCatalog._iconPhoto != null) {
-						link = new Link(productCatalog._iconPhoto);
+			//Collection coll = getEditorBusiness(iwc).getFiles(product);
+			Collection coll;
+			try {
+				coll = product.getICFile();
+				Iterator images = coll.iterator();
+				Image image;
+				int counter = 0;
+				while (images.hasNext()) {
+					++counter;
+					try {
+						image = new Image( new Integer(( (ICFile) images.next()).getPrimaryKey().toString()).intValue() );
+						Window window = new Window(image);
+	
+						Link link = new Link(productCatalog.getText(Integer.toString(counter)));
+						
+						if (productCatalog._iconPhoto != null) {
+							link = new Link(productCatalog._iconPhoto);
+						}
+						
+						link.setWindow(window);
+						
+						table.add(link, imageColumn, row);
+						table.add(productCatalog.getText(Text.NON_BREAKING_SPACE), imageColumn, row);
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
 					}
-					
-					link.setWindow(window);
-					
-					table.add(link, imageColumn, row);
-					table.add(productCatalog.getText(Text.NON_BREAKING_SPACE), imageColumn, row);
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
 				}
 			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
+
 			table.setRowColor(row, productCatalog.getBackgroundColor());
 		}
 		
