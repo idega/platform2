@@ -137,36 +137,38 @@ public class CampusContracts extends Block{
     DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],"--",sValues[0]);
     DropdownMenu building = drpLodgings(new Building(),prmArray[1],"--",sValues[1]);
     DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
-    DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
-    DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
+    //DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
+    //DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
     Edit.setStyle(status);
     Edit.setStyle(complex);
     Edit.setStyle(building);
     Edit.setStyle(floor);
-    Edit.setStyle(cat);
-    Edit.setStyle(type);
+    //Edit.setStyle(cat);
+    //Edit.setStyle(type);
     Edit.setStyle(order);
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("filter","Filter"));
+    T.setTitlesHorizontal(true);
+    T.setBottomHeight(3);
+    //Table T = new Table();
       T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),1,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("complex","Complex")),1,3);
-      T.add(Edit.formatText(iwrb.getLocalizedString("building","Building")),2,3);
-      T.add(Edit.formatText(iwrb.getLocalizedString("floor","Floor")),3,3);
-      T.add(Edit.formatText(iwrb.getLocalizedString("category","Category")),4,3);
-      T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),5,3);
-      T.add(Edit.formatText(iwrb.getLocalizedString("order","Order")),2,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("complex","Complex")),2,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("building","Building")),3,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("floor","Floor")),4,1);
+     // T.add(Edit.formatText(iwrb.getLocalizedString("category","Category")),4,1);
+     // T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),5,1);
+      T.add(Edit.formatText(iwrb.getLocalizedString("order","Order")),5,1);
       T.add(status,1,2);
-      T.add(complex,1,4);
-      T.add(building,2,4);
-      T.add(floor,3,4);
-      T.add(cat,4,4);
-      T.add(type,5,4);
-      T.add(order,2,2);
+      T.add(complex,2,2);
+      T.add(building,3,2);
+      T.add(floor,4,2);
+      //T.add(cat,4,2);
+      //T.add(type,5,2);
+      T.add(order,5,2);
       SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
       Edit.setStyle(get);
-      T.add(get,3,2);
-    T.setCellpadding(1);
-    T.setCellspacing(0);
+      T.add(get,6,2);
 
     myForm.add(T);
     return myForm;
@@ -180,7 +182,7 @@ public class CampusContracts extends Block{
     catch(SQLException e){}
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
-      drp.addDisabledMenuElement("-1",display);
+      drp.addMenuElement("-1",display);
     int len = lods.length;
     if(len > 0){
       for(int i = 0; i < len ; i++){
@@ -201,7 +203,7 @@ public class CampusContracts extends Block{
     catch(SQLException e){}
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
-      drp.addDisabledMenuElement("-1",display);
+      drp.addMenuElement("-1",display);
     for(int i = 0; i < lods.length ; i++){
       if(withBuildingName){
         try{
@@ -268,16 +270,38 @@ public class CampusContracts extends Block{
     Building B = null;
     Floor F = null;
     Complex CX = null;
+    Image printImage =  iwb.getImage("/print.gif");
+    Image registerImage = iwb.getImage("/pen.gif");
+    Image resignImage = iwb.getImage("/scissors.gif");
+    Image keyImage = iwb.getImage("/key.gif");
+    Image nokeyImage = iwb.getImage("/nokey.gif");
+    int row = 1;
+    int col = 1;
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("contracts","Contracts"));
+    T.setTitlesHorizontal(true);
+    T.setWidth("100%");
+    T.add(Edit.formatText("#"),col++,1);
+    T.add((printImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("print","Print")
+    T.add((resignImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
+    T.add((registerImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
+    //col = 4;
+    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),col++,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("validfrom","Valid from")),col++,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("validto","Valid To")),col++,1);
+    T.add(keyImage,col++,1);//Edit.titleText(iwrb.getLocalizedString("key","Key")),col++,1);
+    /*
     Table T = new Table();
     T.setCellspacing(0);
     T.setCellpadding(2);
+    */
+    row++;
     if(L!=null){
-      Image printImage =  iwb.getImage("/print.gif");
-      Image registerImage = iwb.getImage("/pen.gif");
-      Image resignImage = iwb.getImage("/scissors.gif");
+
       int len = L.size();
-      int row = 2;
-      int col = 1;
+
       StringBuffer sbIDs = new StringBuffer();
       for (int i = 0; i < len; i++) {
         col = 1;
@@ -291,7 +315,7 @@ public class CampusContracts extends Block{
           A = new Apartment(C.getApartmentId().intValue());
           T.add(Edit.formatText(i+1),col++,row);
           //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
-          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col,row);
+          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
           if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
@@ -303,21 +327,19 @@ public class CampusContracts extends Block{
           T.add((getApartmentTable(A)),col++,row);
           T.add(Edit.formatText(C.getValidFrom().toString()),col++,row);
           T.add(Edit.formatText(C.getValidTo().toString()),col++,row);
+          if(C.getIsRented())
+            T.add(getKeyLink(keyImage,C.getID()),col++,row);
+          else
+            T.add(getKeyLink(nokeyImage,C.getID()),col++,row);
           row++;
           col = 1;
         }
         catch (SQLException ex) {  ex.printStackTrace(); }
         }
+        /*
         T.add(getPDFLink(printImage,sbIDs.toString()),1,row);
-        T.add(Edit.titleText(" "),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("print","Print")),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("sign","Sign")),col++,1);
-        col = 4;
-        T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("apartment","Apartment")),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("validfrom","Valid from")),col++,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("validto","Valid To")),col++,1);
+
+        /*
         T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
         T.setRowColor(1,Edit.colorBlue);
         T.setRowColor(row,Edit.colorRed);
@@ -326,10 +348,11 @@ public class CampusContracts extends Block{
         T.add(Edit.formatText(" "),1,row);
         T.setColumnAlignment(1,"left");
         T.setHeight(row,Edit.bottomBarThickness);
-        T.setWidth("100%");
+        */
+
     }
-    else
-      add(Edit.formatText(iwrb.getLocalizedString("no_contracts","No contracts")));
+    //else
+     // add(Edit.formatText(iwrb.getLocalizedString("no_contracts","No contracts")));
     return T;
   }
 
@@ -416,6 +439,13 @@ public class CampusContracts extends Block{
     Link L = new Link(MO);
     L.setWindowToOpen(ContractReSignWindow.class);
     L.addParameter("contract_id",contractId);
+    return L;
+  }
+
+   public Link getKeyLink(PresentationObject MO,int contractId){
+    Link L = new Link(MO);
+    L.setWindowToOpen(ContractKeyWindow.class);
+    L.addParameter(ContractKeyWindow.prmContractId,contractId);
     return L;
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.3 2001/12/05 21:57:25 aron Exp $
+ * $Id: Contract.java,v 1.4 2002/01/12 02:25:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.block.allocation.data;
 
 import com.idega.data.GenericEntity;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.lang.IllegalStateException;
 import java.sql.SQLException;
 import com.idega.util.idegaTimestamp;
@@ -33,6 +34,8 @@ public class Contract extends GenericEntity {
   private static final String resignInfo_ = "resign_info";
   private static final String statusDate_ = "status_date";
   private static final String movingDate_ = "moving_date";
+  private static final String deliverDate_ = "deliver_date";
+  private static final String returnDate_ = "return_date";
   private static final String file_ = "ic_file_id";
 
   public static final String statusCreated = "C";
@@ -53,6 +56,8 @@ public class Contract extends GenericEntity {
   public static String getStatusDateColumnName(){return movingDate_ ;}
   public static String getRentedColumnName(){return rented_ ;}
   public static String getMovingDateColumnName(){return movingDate_ ;}
+  public static String getColumnReturnDate(){return returnDate_ ;}
+  public static String getColumnDeliverDate(){return deliverDate_ ;}
   public static String getFileColumnName(){return file_;}
   public static String getContractEntityName(){return name_;}
 
@@ -72,6 +77,8 @@ public class Contract extends GenericEntity {
     addAttribute(validTo_,"Valid to",true,true,java.sql.Date.class);
     addAttribute(statusDate_,"Resign date",true,true,java.sql.Date.class);
     addAttribute(movingDate_,"Moving date",true,true,java.sql.Date.class);
+    addAttribute(deliverDate_,"Deliver date",true,true,java.sql.Timestamp.class);
+    addAttribute(returnDate_,"Return date",true,true,java.sql.Timestamp.class);
     addAttribute(status_,"Status",true,true,java.lang.String.class,1);
     addAttribute(rented_,"Rented",true,true,java.lang.Boolean.class,1);
     addAttribute(resignInfo_,"Resign info",true,true,java.lang.String.class,4000);
@@ -160,6 +167,22 @@ public class Contract extends GenericEntity {
     return (Date) getColumnValue(statusDate_ );
   }
 
+   public void setDeliverTime(Timestamp stamp) {
+    setColumn(deliverDate_,stamp);
+  }
+
+  public Timestamp getDeliverTime() {
+    return((Timestamp)getColumnValue(deliverDate_));
+  }
+
+   public void setReturnTime(Timestamp stamp) {
+    setColumn(returnDate_,stamp);
+  }
+
+  public Timestamp getReturnTime() {
+    return((Timestamp)getColumnValue(returnDate_));
+  }
+
   public String getResignInfo(){
     return getStringColumnValue( resignInfo_);
   }
@@ -168,12 +191,22 @@ public class Contract extends GenericEntity {
      setColumn(resignInfo_ , info);
   }
 
-  public String getIsRented(){
-    return getStringColumnValue( rented_);
+  public boolean  getIsRented(){
+    return getBooleanColumnValue( rented_);
   }
 
   public void setIsRented(boolean rented){
      setColumn(rented_ , rented);
+  }
+
+  public void setEnded(){
+    setIsRented(false);
+    setReturnTime(idegaTimestamp.getTimestampRightNow());
+  }
+
+   public void setStarted(){
+    setIsRented(true);
+    setDeliverTime(idegaTimestamp.getTimestampRightNow());
   }
 
   public void setStatus(String status) throws IllegalStateException {

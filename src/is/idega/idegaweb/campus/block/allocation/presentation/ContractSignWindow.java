@@ -31,12 +31,13 @@ import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
 import com.idega.util.SendMail;
+
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 
@@ -61,23 +62,23 @@ public class ContractSignWindow extends Window{
   */
 
   public ContractSignWindow() {
-		keepFocus();
+    //keepFocus();
+    setResizable(true);
   }
 
   protected void control(IWContext iwc){
 
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-
     if(isAdmin){
-      add(iwrb.getLocalizedString("manual","Instructions"));
+      //add(iwrb.getLocalizedString("manual","Instructions"));
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
 
-      if(iwc.getParameter("sign")!=null || iwc.getParameter("save")!=null){
+      if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
         doSignContract(iwc);
-				setParentToReload();
+        setParentToReload();
       }
       add(getSignatureTable(iwc));
     }
@@ -120,7 +121,12 @@ public class ContractSignWindow extends Window{
         }
       }
       LoginTable loginTable = LoginDBHandler.getUserLogin(eContract.getUserId().intValue());
-      Table T = new Table();
+      DataTable T = new DataTable();
+      T.setWidth("100%");
+      T.addTitle(iwrb.getLocalizedString("contract_signing","Contract signing"));
+      T.addButton(new CloseButton(iwrb.getImage("close.gif")));
+      T.addButton(new SubmitButton(iwrb.getImage("save.gif"),"save"));
+
 
       SubmitButton save = new SubmitButton("save",iwrb.getLocalizedString("save","Save"));
       SubmitButton signed = new SubmitButton("sign",iwrb.getLocalizedString("signed","Signed"));
@@ -134,18 +140,23 @@ public class ContractSignWindow extends Window{
       CheckBox loginCheck = new CheckBox("new_login","true");
       loginCheck.setChecked(true);
 
-      int row = 2;
-      T.add(Edit.headerText(iwrb.getLocalizedString("name","Name")+" : "),1,row);
-      T.add(eApplicant.getFullName(),2,row);
+      int row = 1;
+      HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+      T.add(HI,1,row);
+      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
+      T.add(Edit.formatText(eApplicant.getFullName()),2,row);
       row++;
-      T.add(Edit.headerText(iwrb.getLocalizedString("ssn","SocialNumber")+" : "),1,row);
-      T.add(eApplicant.getSSN(),2,row);
+      T.add(Edit.formatText(iwrb.getLocalizedString("ssn","SocialNumber")),1,row);
+      T.add(Edit.formatText(eApplicant.getSSN()),2,row);
       row++;
-      T.add(Edit.headerText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,row);
+      T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
       T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
       row++;
-      T.add(Edit.headerText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
-      T.add(Edit.formatText(from.getLocaleDate(iwc)+" "+to.getLocaleDate(iwc)),2,row);
+      T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
+      T.add(Edit.formatText(from.getLocaleDate(iwc)),2,row);
+      row++;
+      T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
+      T.add(Edit.formatText(to.getLocaleDate(iwc)),2,row);
       row++;
       boolean canSign = true;
       if(listOfContracts != null){
@@ -154,10 +165,11 @@ public class ContractSignWindow extends Window{
           canSign = false;
       }
       if(canSign ){
-        T.add(Edit.headerText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
+        T.add(Edit.formatText(iwrb.getLocalizedString("email","Email")),1,row);
         if(lEmails !=null){
           //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
           int pos = lEmails.size()-1;
+          Edit.setStyle(email);
           email.setContent(((Email)lEmails.get(pos)).getEmailAddress());
           T.add(email,2,row);
         }
@@ -165,48 +177,48 @@ public class ContractSignWindow extends Window{
           T.add(email,2,row);
         }
         row++;
-        row++;
         if(eGroup != null){
           HiddenInput Hgroup = new HiddenInput("user_group",String.valueOf(eGroup.getID()));
           T.add(Hgroup);
           if(lFinanceAccounts == null){
             T.add(accountCheck,2,row);
-            T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
           }
           else{
             int len = lFinanceAccounts.size();
             for (int i = 0; i < len; i++) {
-              T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
+              T.add(Edit.formatText(iwrb.getLocalizedString("fin_account","Finance account")),1,row);
               T.add(Edit.formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
             }
           }
           row++;
           if(lPhoneAccounts == null){
             T.add(phoneAccountCheck,2,row);
-            T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
           }
           else{
             int len = lPhoneAccounts.size();
             for (int i = 0; i < len; i++) {
-              T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
+              T.add(Edit.formatText(iwrb.getLocalizedString("phone_account","Phone account")),1,row);
               T.add(Edit.formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
             }
           }
           row++;
           if(loginTable != null ){
-            T.add(Edit.headerText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("login","Login")),1,row);
             T.add(Edit.formatText(loginTable.getUserLogin()),2,row);
             row++;
-            T.add(Edit.headerText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("passwd","Passwd")),1,row);
             if(passwd != null)
               T.add(Edit.formatText(passwd),2,row++);
           }
           else{
             T.add(loginCheck,2,row);
-            T.add(Edit.headerText(iwrb.getLocalizedString("new_login","New login")),2,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("new_login","New login")),2,row);
           }
           row++;
-          HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+
+          /*
           if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
             T.add(save,2,row);
           else
@@ -215,8 +227,8 @@ public class ContractSignWindow extends Window{
             T.add(PB,2,row);
           }
           T.add(close,2,row);
+          */
 
-          T.add(HI,1,row);
         }
         else{
         T.add(Edit.formatText(iwrb.getLocalizedString("syspropserror","System property error")),2,row++);

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.4 2001/12/17 00:40:05 aron Exp $
+ * $Id: ContractBusiness.java,v 1.5 2002/01/12 02:25:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -215,6 +215,28 @@ public  class ContractBusiness {
       C.setMovingDate(movingDate.getSQLDate());
       C.setResignInfo(info);
       C.setStatusEnded();
+      C.update();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace( );
+    }
+  }
+
+  public static void returnKey(int iContractId){
+    try {
+      Contract C = new Contract(iContractId );
+      C.setEnded();
+      C.update();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace( );
+    }
+  }
+
+  public static void deliverKey(int iContractId){
+     try {
+      Contract C = new Contract(iContractId );
+      C.setStarted();
       C.update();
     }
     catch (SQLException ex) {
