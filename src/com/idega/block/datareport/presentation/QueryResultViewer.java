@@ -40,6 +40,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.StringHandler;
 
 import dori.jasper.engine.JRException;
 import dori.jasper.engine.JasperPrint;
@@ -225,7 +226,7 @@ public class QueryResultViewer extends Block {
   private PresentationObject getInputFields(String queryName, String queryDescription, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
 
   	// create a nice headline for the confused user
-  	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query") + ":";
+  	String currentQuery = StringHandler.concat(resourceBundle.getLocalizedString("ro_current_query", "Current Query"),":");
   	Text currentQueryHeader = new Text(currentQuery);
   	currentQueryHeader.setBold();
   	add(currentQueryHeader);
@@ -237,7 +238,7 @@ public class QueryResultViewer extends Block {
   	if (queryDescription != null) {
   		add(Text.getBreak());
   		
-  		String descriptionHeader = resourceBundle.getLocalizedString("ro_query_description", "Query description") + ":";
+  		String descriptionHeader = StringHandler.concat(resourceBundle.getLocalizedString("ro_query_description", "Query description"),":");
   		Text descriptionHeaderText = new Text(descriptionHeader);
   		descriptionHeaderText.setBold();
   		add(descriptionHeaderText);
