@@ -122,7 +122,7 @@ public abstract class BillingThread extends Thread{
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 			
-			paymentRecord = prechome.findByPostingStrings(ownPosting,doublePosting);
+			paymentRecord = prechome.findByPostingStringsAndRuleSpecType(ownPosting,doublePosting,postingDetail.getRuleSpecType());
 			
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
