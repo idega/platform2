@@ -1,5 +1,5 @@
 /*
- * $Id: ContractText.java,v 1.1 2001/07/30 09:46:47 aron Exp $
+ * $Id: ContractText.java,v 1.2 2001/07/30 11:01:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ public class ContractText extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String",300);
     addAttribute(getTextColumnName(),"Text",true,true,"java.lang.String",4000);
     addAttribute(getOrdinalColumnName(),"Ordinal",true,true,"java.lang.Integer");
     addAttribute(getLanguageColumnName(),"Language",true,true,"java.lang.String");
