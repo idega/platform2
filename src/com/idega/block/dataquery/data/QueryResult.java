@@ -132,6 +132,16 @@ public class QueryResult implements JRDataSource {
     designIdFieldIdMapping.put(designId, fieldId);
   }
   
+  /** Returns true if there aren't any results stored.
+   * Even if a QueryResult is empty you can use it as a JRDataSource,
+   * that is an empty QueryResult causes no errors.
+   * 
+   * @return true if there aren't any results stored.
+   */
+  public boolean isEmpty()  {
+    return cells.isEmpty();
+  }
+  
   /** @see dori.jasper.engine.JRDataSource#next()
    * 
    */
@@ -178,8 +188,13 @@ public class QueryResult implements JRDataSource {
     QueryResultCell cell = (QueryResultCell) cells.get(currentCellId, fieldId);
     // return the value of the cell
     
-	
-    return (cell == null) ? null : cell.getValue();
+    Object value;
+    if (cell == null || (value = cell.getValue()) == null )  {
+      return "";
+    }
+    else {
+      return value.toString();
+    }
   }
   
   

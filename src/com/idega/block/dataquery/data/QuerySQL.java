@@ -27,6 +27,7 @@ import com.idega.data.GenericEntity;
 public class QuerySQL {
   
   private final String DOT = ".";
+  private final String ALIAS_PREFIX = "A_";
   
   private Set usedEntities = new HashSet();
   // source
@@ -40,6 +41,8 @@ public class QuerySQL {
   private List conditions = new ArrayList();
   
   private SQLQueryExpression query = null;
+  // caching of table names
+  private Map beanClassNameTableNameMap = new HashMap();
   
   public void initialize(QueryHelper queryHelper) {
     try {
@@ -140,14 +143,18 @@ public class QuerySQL {
       }
       // note that this entity is used
 	  usedEntities.add(entity);
-      String entityVaribleName = entity.substring(entity.lastIndexOf('.')+1);
-      StringBuffer entityWithDot = new StringBuffer(entityVaribleName).append(DOT);
+      // use alias name
+      String alias = getUniqueAliasName(entity);
+      StringBuffer aliasPlusDot = new StringBuffer(alias);
+      aliasPlusDot.append(DOT);
       // add alias name to each column
       int i;
       for (i=0; i < columns.length ; i++) {
         String column = columns[i];
-        String entityDotColumn = entityWithDot.append(column).toString(); 
-        query.addSelectClause(entityDotColumn);
+        StringBuffer aliasPlusDotColumn = new StringBuffer();
+        aliasPlusDotColumn.append(aliasPlusDot).append(column);
+        String aliasPlusDotColumnAsString = aliasPlusDotColumn.toString();
+        query.addSelectClause(aliasPlusDotColumnAsString);
       }
     }
     // set conditions (where clause)
@@ -167,7 +174,9 @@ public class QuerySQL {
       String entity = queryEntity.getBeanClassName();
       // add only entities that are actually used
       if (usedEntities.contains(entity))  {
-        query.addFromClause(table, queryEntity.getName());
+        // use alias name
+        String alias = getUniqueAliasName(entity);
+        query.addFromClause(table, alias);
       }
     }    
     return query;
@@ -199,16 +208,30 @@ public class QuerySQL {
     // get columnclass
     String columnClass = getClassOfColumn(queryEntity.getBeanClassName(), column);
     SQLCriterionExpression criterion = new SQLCriterionExpression();
-    criterion.add( entity, column, columnClass, pattern, type);
+    // use alias name
+    String alias = getUniqueAliasName(entity);
+    criterion.add( alias , column, columnClass, pattern, type);
     return criterion;
   }
   
   private String getTableName(String beanClassName) {
-    return GenericEntity.getStaticInstance(beanClassName).getTableName();
+    // performance improvement
+    String tableName = (String) beanClassNameTableNameMap.get(beanClassName);
+    if (tableName == null)  {
+      tableName = GenericEntity.getStaticInstance(beanClassName).getTableName();
+      beanClassNameTableNameMap.put(beanClassName, tableName);
+    }
+    return tableName;
   }
   
   private String getClassOfColumn(String beanClassName, String columnName)  {
     return GenericEntity.getStaticInstance(beanClassName).getStorageClassName(columnName);
+  }
+  
+  private String getUniqueAliasName(String beanClassName) {
+    StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
+    buffer.append(getTableName(beanClassName));
+    return buffer.toString();
   }
     
     

@@ -80,7 +80,7 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_COND_ENTITY = "entity";
-	private static final String PARAM_FOLDER_ID = "qb_fid";
+	public static final String PARAM_FOLDER_ID = "qb_fid";
 	public static final String PARAM_QUERY_ID = "qb_qid";
 	public static final String PARAM_QUERY_NAME = "q_name";
 	private static final String PERM_TEMPL_EDIT = "template";
