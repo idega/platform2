@@ -496,9 +496,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		//study paths...
 		
-		//added 23.February - ac
-		form.maintainAllParameters();
-		
 		Link link = new Link(localize("create_school_user", "Create school user"));
 		link.setAsImageButton(true);
 		link.setWindowToOpen(com.idega.block.school.presentation.SchoolUserWindow.class);
