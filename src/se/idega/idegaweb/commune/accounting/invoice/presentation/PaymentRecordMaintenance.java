@@ -4,6 +4,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -15,6 +17,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -35,11 +38,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/12 14:20:54 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/12 15:56:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -176,11 +179,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText (table, col++, row++,
-                      periodFormatter.format (record.getPeriod ()));
+                      getFormattedPeriod (record.getPeriod ()));
         col = 1;
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getDetailedPaymentRecordListTable (record, business), 1,
-                   row++);
+        table.add (getDetailedPaymentRecordListTable
+                   (context, record, business), 1, row++);
 
         // add to form
         final Form form = new Form ();
@@ -194,7 +197,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
 
     private Table getDetailedPaymentRecordListTable
-        (final PaymentRecord paymentRecord, final InvoiceBusiness business)
+        (final IWContext context, final PaymentRecord paymentRecord,
+         final InvoiceBusiness business)
     throws RemoteException, javax.ejb.FinderException {
         // set up header row
         final String [][] columnNames =
@@ -224,35 +228,54 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 = home.findByPaymentRecord (paymentRecord);
 
         //render
+        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolClassMemberHome memberHome
+                = schoolBusiness.getSchoolClassMemberHome ();
         for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
             final InvoiceRecord invoiceRecord = (InvoiceRecord) i.next ();
-			showDetailedPaymentRecordOnARow (table, row++, invoiceRecord);
+			showDetailedPaymentRecordOnARow (table, row++, invoiceRecord,
+                                             memberHome);
         }
         
         return table;
     }
 
+    private String getFormattedPeriod (Date date) {
+        return null != date ? periodFormatter.format (date) : "";
+    }
+
+    private String getFormattedDate (Date date) {
+        return null != date ? dateFormatter.format (date) : "";
+    }
+
 	private void showDetailedPaymentRecordOnARow
-        (final Table table, final int row, final InvoiceRecord record)
+        (final Table table, final int row, final InvoiceRecord record,
+         final SchoolClassMemberHome home)
     throws RemoteException, javax.ejb.FinderException {
-        final String checkPeriod = periodFormatter.format
+        final String checkPeriod = getFormattedPeriod
                 (record.getPeriodStartCheck ()) + " - "
-                + periodFormatter.format (record.getPeriodEndCheck ());
+                + getFormattedPeriod (record.getPeriodEndCheck ());
         final String days = record.getDays () + "";
         final String amount = ((long) record.getAmount ()) + "";
-        final String placementPeriod = periodFormatter.format
+        final String placementPeriod = getFormattedPeriod
                 (record.getPeriodStartPlacement ()) + " - "
-                + periodFormatter.format (record.getPeriodEndPlacement ());
+                + getFormattedPeriod (record.getPeriodEndPlacement ());
         final String dateChanged
-                = dateFormatter.format (record.getDateChanged ());
+                = getFormattedDate (record.getDateChanged ());
         final String changedBy = record.getChangedBy ();
+        final Integer memberId = new Integer (record.getSchoolClassMemberId ());
+        final SchoolClassMember member = home.findByPrimaryKey (memberId);
+        final User user = member.getStudent ();
+        final String ssn = formatSsn (user.getPersonalID ());
+        final String userName = getUserName (user);
 
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                            : getZebraColor2 ());
 		addSmallText (table, col++, row, "");
-		addSmallText (table, col++, row, "");
-		addSmallText (table, col++, row, "");
+		addSmallText (table, col++, row, ssn);
+		addSmallText (table, col++, row, userName);
 		addSmallText (table, col++, row, checkPeriod);
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row, days);
@@ -262,6 +285,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, dateChanged);
 		addSmallText (table, col++, row, changedBy);
 	}
+
+    private String formatSsn (final String ssn) {
+        return null == ssn || 12 != ssn.length () ? ssn
+                : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
+    }
+
+    private static String getUserName (final User user) {
+        return user.getLastName () + ", " + user.getFirstName ();
+    }
 
     private void showPayment (final IWContext context) throws RemoteException {
         final Table table = createTable (3);
@@ -340,8 +372,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                    { PAYMENT_RECORD_KEY, record.getPrimaryKey () + "" }};
 		final char status = record.getStatus ();
         final Date period = record.getPeriod ();
-        final String periodText = null != period
-                ? periodFormatter.format (period) : "?";
+        final String periodText = getFormattedPeriod (period);
         final Link paymentTextLink = createSmallLink (record.getPaymentText (),
                                                       editLinkParameters);
         final int placements = record.getPlacements();
@@ -467,10 +498,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         final Date now = new Date (System.currentTimeMillis ());
-        table.add (getStyledInput (START_PERIOD_KEY, periodFormatter.format
+        table.add (getStyledInput (START_PERIOD_KEY, getFormattedPeriod
                                    (now)), col, row);
         table.add (new Text (" - "), col, row);
-        table.add (getStyledInput (END_PERIOD_KEY, periodFormatter.format
+        table.add (getStyledInput (END_PERIOD_KEY, getFormattedPeriod
                                    (now)), col, row);
     }
 

@@ -55,10 +55,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/12 11:20:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/12 15:56:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -66,7 +66,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  */
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
-
 
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String AMOUNT_DEFAULT = "Belopp";
@@ -79,11 +78,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
+    private static final String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
     private static final String CREATE_INVOICE_COMPILATION_DEFAULT = "Skapa fakturaunderlag";
     private static final String CREATE_INVOICE_COMPILATION_KEY = PREFIX + "create_invoice_compilation";
     private static final String CREATE_INVOICE_RECORD_DEFAULT = "Skapa fakturarad";
     private static final String CREATE_INVOICE_RECORD_KEY = PREFIX + "create_invoice_record";
-    private static final String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
     private static final String DATE_ADJUSTED_DEFAULT = "Justeringsdag";
     private static final String DATE_ADJUSTED_KEY = PREFIX + "date_adjusted";
     private static final String DATE_CREATED_DEFAULT = "Skapandedag";
@@ -133,24 +132,27 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NEW_KEY = PREFIX + "new";
     private static final String NOTE_DEFAULT = "Anmärkning";
     private static final String NOTE_KEY = PREFIX + "note";
+    private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades för denna vårdnadshavare eller barn";
+    private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String OWN_POSTING_DEFAULT = "Egen kontering";
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String PLACEMENT_DEFAULT = "Placering";
     private static final String PLACEMENT_END_PERIOD_KEY = PREFIX + "placement_end_period";
+    private static final String PLACEMENT_KEY = PREFIX + "placement";
     private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
-    private static final String PLACEMENT_DEFAULT = "Placering";
-    private static final String PLACEMENT_KEY = PREFIX + "placement";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
+    private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -179,8 +181,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
-    private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
-
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
@@ -662,8 +662,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 table.add (getInvoiceCompilationListTable (context, headers), 1,
                            row++);
             } else {
-                table.add (new Text ("no compilations found for this custodian"
-                                     + " or child!"), 1, row++);
+                table.add (new Text (localize (NO_COMPILATION_FOUND_KEY,
+                                               NO_COMPILATION_FOUND_DEFAULT)),
+                           1, row++);
             }
         } else if (null != searcher.getUsersFound ()) {
             table.mergeCells (1, row, table.getColumns (), row);            
@@ -1091,8 +1092,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		                   : getZebraColor2 ());
         final User child = business.getChildByInvoiceRecord (record);
         if (null != child) {
-            table.add (formatSsn (child.getPersonalID ()), col++, row);
-            table.add (child.getFirstName (), col++, row);
+            table.add (getSmallText (formatSsn (child.getPersonalID ())),
+                       col++, row);
+            table.add (getSmallText (child.getFirstName ()), col++, row);
         } else {
             col += 2;
         }
@@ -1104,10 +1106,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                editLinkParameters);
         table.add (textLink, col++, row);
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (record.getDays () + "", col++, row);
+		table.add (getSmallText (record.getDays () + ""), col++, row);
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.add (((long) record.getAmount ()) + "", col++, row);
-		table.add (record.getNotes (), col++, row);
+		table.add (getSmallText (((long) record.getAmount ()) + ""), col++,
+                   row);
+		table.add (getSmallText (record.getNotes ()), col++, row);
         final Link editLink = createIconLink (getEditIcon (),
                                               editLinkParameters);
         table.add (editLink, col++, row);
