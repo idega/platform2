@@ -730,6 +730,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				if (leagueCell != null) {
 					league = leagueCell.getStringCellValue();
 					if (league != null) {
+						league = league.toUpperCase();
 						try {
 							group = getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
 						}
