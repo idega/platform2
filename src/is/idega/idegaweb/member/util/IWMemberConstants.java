@@ -82,6 +82,9 @@ public class IWMemberConstants extends ICUserConstants{
 	public static final String MEMBER_STAND_IN = "stand_in";
 	public static final String MEMBER_CO_CHIEF = "co-chief";
 	
+	public static final String STATUS_COACH = "STAT_COACH";
+	public static final String STATUS_ASSISTANT_COACH = "STAT_ASSCOACH";
+	
 	public static final String ORDER_BY_NAME = "name_order";
 	public static final String ORDER_BY_ADDRESS = "address_order";
 	public static final String ORDER_BY_POSTAL_CODE = "postal_code_order";
