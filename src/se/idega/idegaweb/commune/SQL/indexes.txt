@@ -1,7 +1,8 @@
 /**
 *
 * Only put indexes in this file.
-*
+* 08.04.2003 Only put indexes related to se.idega.idegaweb.commune in this file. indexes for the user system have been moved to
+* a file undir com.idega.user.sql
 *
 **/
 
