@@ -15,6 +15,8 @@ public interface PrintedLetterMessage extends com.idega.data.IDOEntity,se.idega.
  public java.lang.String getMessageType();
  public java.lang.String getPrintType();
  public java.lang.String getPrintedCaseStatusForType(java.lang.String p0);
+ public com.idega.user.data.User getSender();
+ public int getSenderID();
  public java.lang.String getSenderName();
  public java.lang.String getSubject();
  public java.lang.String getUnPrintedCaseStatusForType(java.lang.String p0);
@@ -22,10 +24,12 @@ public interface PrintedLetterMessage extends com.idega.data.IDOEntity,se.idega.
  public void setAsPasswordLetter();
  public void setBody(java.lang.String p0);
  public void setLetterType(java.lang.String p0);
- public void setMessageBulkData(com.idega.core.file.data.ICFile p0);
  public void setMessageBulkData(int p0);
+ public void setMessageBulkData(com.idega.core.file.data.ICFile p0);
  public void setMessageData(com.idega.core.file.data.ICFile p0);
  public void setMessageData(int p0);
  public void setMessageType(java.lang.String p0);
+ public void setSender(com.idega.user.data.User p0);
+ public void setSenderID(int p0);
  public void setSubject(java.lang.String p0);
 }

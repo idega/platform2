@@ -546,6 +546,50 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		
 	}
 	
+	public Collection ejbFindAllLettersBySchool(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
+		IDOQuery sql = idoQuery();
+		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_sch_choice c";
+		if (ssn != null && ! ssn.equals("")){
+			sqlFrom += ", ic_user u";
+		}
+			
+		sql.appendSelectAllFrom(sqlFrom);
+		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
+		sql.appendAndEquals("p.parent_case_id", "c.comm_sch_choice_id");
+		sql.appendAndEquals("c.chosen_school", providerID);
+		if (ssn != null && ! ssn.equals("")){
+			sql.appendAndEquals("p.user_id", "u.ic_user_id");
+			sql.appendAndEqualsQuoted("u.personal_id", ssn);
+		}
+		if (msgId != null && ! msgId.equals("")){
+			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
+		}
+			
+		to.setHour(23);
+		to.setMinute(59);
+		to.setSecond(59);
+		from.setHour(0);
+		from.setMinute(0);
+		from.setSecond(0);
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" >= '");
+		sql.append(from.toSQLString());
+		sql.append("'");
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" <= '");
+		sql.append(to.toSQLString());
+		sql.append("' ");
+		sql.appendOrderBy("p.created");
+			
+	//	System.out.println("########### SQL:" + sql.toString() + ".");
+			
+		Collection tmp = this.idoFindPKsByQuery(sql);
+		return tmp;
+			
+	}
+	
 		
 	public Collection ejbFindLetters(String[] msgId) throws FinderException {
 		IDOQuery sql = idoQuery();
