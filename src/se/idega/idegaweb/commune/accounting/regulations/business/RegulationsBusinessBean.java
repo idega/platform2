@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.26 2003/09/15 17:34:39 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.27 2003/09/17 08:57:04 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -967,7 +967,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Function to return all the regulations that fit the description/selection 
-	 * according to the input parameters.
+	 * according to the input parameters and sorted by the condition order.
 	 * 
 	 * @param operation
 	 * @param flow
