@@ -62,9 +62,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	public void main(IWContext iwc) throws NBSException, Exception{
 		try{
 		
-			add(new Text("Sign Contract:"));
+			add(new Text("<h2>Sign Contract</h2>"));
 			
-			if (iwc.isInPreviewMode()){
+			if (iwc.isInEditMode() || iwc.isInPreviewMode()){
 				return;
 			}
 	
@@ -97,6 +97,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 	public IBPage getGotoPage(){
+		System.out.println("forwardToIBPage : " + _page.getName());
 		return _page;
 	}
 			
