@@ -17,6 +17,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -45,41 +46,74 @@ public class CashierLedgerWindow extends CashierSubWindowTemplate{
 				CalendarLedger ledger = null;
 				Collection groups = null;
 				boolean isInGroup = false;
-				
-				PresentationObject text = browser.getDefaultConverter().getPresentationObject(entity, path, browser, iwc);
-				Integer userID = (Integer) user.getPrimaryKey();
-				try {
-					groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
-				Iterator groupIter = groups.iterator();
-				//go through the groupIDs to see if the user is in the ledgerGroup
-				while(groupIter.hasNext()) {
-					Group g = (Group) groupIter.next();
-//					int ledgerID = getCalendarBusiness(iwc).getLedgerIDByName(g.getName()+"_ledger");
-//					ledger = getCalendarBusiness(iwc).getLedger(ledgerID);
-//					Integer groupID = (Integer) g.getPrimaryKey();
-//					if(groupID.intValue() == ledger.getGroupID()) {
-//						isInGroup = true;
-//					}
-				}
-				Link aLink = new Link(text);
-				if(isInGroup == false) {
-					aLink.setStyleClass("errorMessage");
+
+				String metaData = user.getMetaData(NEW_USER_IN_LEDGER);
+				if(metaData != null && !metaData.equals("") && !metaData.equals("-1")) {
+					int ledGroupID = -1;
+					if(metaData != null && !metaData.equals("")) {
+						try {
+							ledGroupID = Integer.parseInt(metaData);
+						}catch(NumberFormatException nfe) {
+							ledGroupID = -1;
+						}					
+					}				
+					PresentationObject text = browser.getDefaultConverter().getPresentationObject(entity, path, browser, iwc);
+					Integer userID = (Integer) user.getPrimaryKey();
+					try {
+						groups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					Iterator groupIter = groups.iterator();
+					//go through the groupIDs to see if the user is in the ledgerGroup
+					while(groupIter.hasNext()) {
+						Group g = (Group) groupIter.next();
+						if(g != null) {
+							Integer groupID = (Integer) g.getPrimaryKey();
+							if(ledGroupID == groupID.intValue()) {
+								isInGroup = true;
+								user.setMetaData(NEW_USER_IN_LEDGER,"-1");
+								user.store();
+							}
+						}				
+					}
+					Group ledgerGroup = null;
+					try{
+						ledgerGroup = getUserBusiness(iwc).getGroupBusiness().getGroupByGroupID(ledGroupID);
+					}catch(Exception e) {
+						ledgerGroup = null;
+					}					
+					Link aLink = null;
+					if(ledgerGroup != null) {
+						IWResourceBundle iwrb = getResourceBundle(iwc);
+						Text t = new Text(iwrb.getLocalizedString("cashierLedgerWindow.in_group_text","in group"));
+						aLink = new Link(text + " - "+ t + " " + ledgerGroup.getName());
+					}
+					else {
+						aLink = new Link(text);
+					}
+					if(!isInGroup) {
+						aLink.setStyleClass("errorMessage");
+					}
+					else {
+						aLink.setStyleClass("styledLink");
+					}
 					aLink.setWindowToOpen(UserPropertyWindow.class);
 					aLink.addParameter(UserPropertyWindow.PARAMETERSTRING_USER_ID, user.getPrimaryKey().toString());
+					return aLink;
+					
 				}
-				return aLink;
+				else {
+					return null;
+				}				
 			}
 		};
 		
 		Collection users = null;
 		User user = null;
 		
-		
 		try {
-			users = getUserBusiness(getIWApplicationContext()).getUserHome().findUsersByMetaData(NEW_USER_IN_LEDGER,NEW_USER_IN_LEDGER);
+			users = getUserBusiness(getIWApplicationContext()).getUserHome().findUsersByMetaData(NEW_USER_IN_LEDGER,null);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
