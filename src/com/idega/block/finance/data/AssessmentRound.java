@@ -31,7 +31,8 @@ public class AssessmentRound extends GenericEntity{
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
     addAttribute(getTotalsColumnName(), "Totals", true, true, java.lang.Float.class);
     addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class,1);
-    addAttribute(getTypeColumnName(),"Type",true,true,java.lang.String.class,1);
+    addAttribute(getAccountCountColumnName(),"Account count",true,true,java.lang.Integer.class);
+
 
   }
 
@@ -45,6 +46,7 @@ public class AssessmentRound extends GenericEntity{
   public static String getTotalsColumnName(){return "TOTALS";}
   public static String getStatusColumnName(){return "STATUS";}
   public static String getTypeColumnName(){return "ENTRY_TYPE";}
+  public static String getAccountCountColumnName(){return "ACC_COUNT";}
 
   public String getEntityName(){
     return getEntityTableName();
@@ -56,6 +58,14 @@ public class AssessmentRound extends GenericEntity{
 
   public void setName(String name){
     setColumn(getNameColumnName(), name);
+  }
+
+  public int getAccountCount(){
+    return getIntColumnValue(getAccountCountColumnName());
+  }
+
+  public void setAccountCount(int count){
+    setColumn( getAccountCountColumnName(),count);
   }
 
   public Timestamp getRoundStamp(){

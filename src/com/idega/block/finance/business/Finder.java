@@ -113,6 +113,37 @@ public class Finder  {
     }
   }
 
+  public static int countUnGroupedEntries(){
+     String sql = "select count(*) from fin_acc_entry where FIN_ENTRY_GROUP_ID is not null or FIN_ENTRY_GROUP_ID > 0 ";
+    int count = 0;
+    try{
+      count = new Account().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
+
+  public static List listOfEntryGroups(){
+    try {
+      return EntityFinder.findAllDescendingOrdered(new EntryGroup(),EntryGroup.getColumnNameGroupDate());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+
+  }
+
+  public static List listOfEntriesInGroup(int id){
+     try {
+      return EntityFinder.findAll(new AccountEntry(),AccountEntry.getEntryTypeColumnName(),id);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
   public static List listOfAccountsInAssessmentRound(int roundid){
     StringBuffer sql = new StringBuffer("select distinct a.* ");
     sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
@@ -195,6 +226,31 @@ public class Finder  {
     }
     return ti;
   }
+
+  public static List listOfFinanceEntriesWithoutGroup(idegaTimestamp from,idegaTimestamp to){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(AccountEntry.getEntityTableName());
+    sql.append(" where fin_entry_group_id is null ");
+    if(from !=null){
+      sql.append(" and last_updated >= ");
+      sql.append(from.getSQLDate());
+    }
+    if(to !=null){
+      sql.append(" and last_updated <= ");
+      sql.append('\'');
+      sql.append(to.getSQLDate());
+      sql.append(" 23:59:59'");
+    }
+    //System.err.println(sql.toString());
+    try {
+      return EntityFinder.findAll(new AccountEntry(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+
 
 
 

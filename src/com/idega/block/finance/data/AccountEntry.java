@@ -29,6 +29,7 @@ public class AccountEntry extends GenericEntity implements Entry {
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
     addAttribute(getAccountKeyIdColumnName(),"Account key",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AccountKey.class);
+    addAttribute(getEntryGroupIdColumnName(),"Entry group",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.EntryGroup.class);
     addAttribute(getEntryTypeColumnName(),"Entry type",true,true,java.lang.String.class);
     addAttribute(getPriceColumnName(), "Amount", true, true, java.lang.Float.class);
     addAttribute(getPaymentDateColumnName(),"Payment date",true,true,java.sql.Timestamp.class);
@@ -40,6 +41,7 @@ public class AccountEntry extends GenericEntity implements Entry {
 
   public static String getEntityTableName(){ return "FIN_ACC_ENTRY"; }
   public static String getRoundIdColumnName(){ return "FIN_ASSESSMENT_ROUND_ID"; }
+  public static String getEntryGroupIdColumnName(){ return "FIN_ENTRY_GROUP_ID"; }
   public static String getAccountIdColumnName(){ return "FIN_ACCOUNT_ID"; }
   public static String getCashierIdColumnName(){ return "FIN_CASHIER_ID"; }
   public static String getAccountKeyIdColumnName(){ return "FIN_ACC_KEY_ID"; }
@@ -63,6 +65,12 @@ public class AccountEntry extends GenericEntity implements Entry {
   }
   public void setAccountId(int account_id){
     setColumn(getAccountIdColumnName(), account_id);
+  }
+  public int getEntryGroupId(){
+    return getIntColumnValue(getEntryGroupIdColumnName());
+  }
+  public void setEntryGroupId(int entry_group_id){
+    setColumn(getEntryGroupIdColumnName(), entry_group_id);
   }
   public String getEntryType(){
     return getStringColumnValue(getEntryTypeColumnName());

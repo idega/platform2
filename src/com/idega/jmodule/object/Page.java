@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.27 2001/10/02 19:40:20 tryggvil Exp $
+ * $Id: Page.java,v 1.28 2001/10/04 12:29:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -425,6 +425,15 @@ public class Page extends ModuleObjectContainer{
   public String getRedirectInfo() {
     return _redirectInfo;
   }
+
+  /**
+   *
+   */
+  public void setToClose(int milliseconds){
+    getAssociatedScript().addFunction("close_time","setTimeout(\"window.close()\","+milliseconds +")");
+  }
+
+
 
   /*
    *
