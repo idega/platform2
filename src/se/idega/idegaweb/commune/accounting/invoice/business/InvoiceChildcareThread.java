@@ -408,19 +408,41 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * for the Regular payments
 	 */
 	private void regularInvoice(){
-		int custodianID;
-		InvoiceHeader invoiceHeader;
+		int childID;
 		RegularInvoiceEntry regularInvoiceEntry=null;
 		try {
 			Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
 			//Go through all the regular invoices
 			while(regularInvoiceIter.hasNext()){
 				try{
+					User custodian = null;
+					InvoiceHeader invoiceHeader = null;
+					int custodianID = -1;
+					
 					regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-					custodianID = regularInvoiceEntry.getUserID();
-					try{
-						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
-					} catch (FinderException e) {
+					StringBuffer errorRelated = new StringBuffer("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey()+"<br>");
+					
+					//Get the child and then look up the custodian
+					childID = regularInvoiceEntry.getUserID();
+					errorRelated.append("Child "+childID+"<br>");
+					MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+					User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
+					errorRelated.append("Child name "+child.getName()+"<br>");
+					Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
+					while (custodianIter.hasNext() && invoiceHeader == null) {
+						custodian = (User) custodianIter.next();
+						try{
+							invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
+							custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
+							errorRelated.append("Parent "+custodianID+"<br>");
+						} catch (FinderException e) {
+							//That's OK, just keep looking
+						}
+					}
+					if(invoiceHeader==null){
+//					try{
+//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
+//					} catch (FinderException e) {
 						//No header was found so we have to create it
 						invoiceHeader = getInvoiceHeaderHome().create();
 						//Fill in all the field available at this times
@@ -429,12 +451,14 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setCustodianId(custodianID);
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
-                        // SN: posting not applicable in invoice header anymore
+                  // SN: posting not applicable in invoice header anymore
 						// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 						// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
+						createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
 					}
+					errorRelated.append("Note "+regularInvoiceEntry.getNote()+"<br>");
 				
 					calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
 							new Date(regularInvoiceEntry.getTo().getTime()));
@@ -462,18 +486,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.store();
 				} catch (RemoteException e) {
 					e.printStackTrace();
-					if(regularInvoiceEntry!=null){
-						createNewErrorMessage(regularInvoiceEntry.getNote(),"invoice.DBSetupProblem");
-					}else{
-						createNewErrorMessage("invoice.CouldNotFindRegularInvoiceEntry","invoice.DBSetupProblem");
-					}
+					createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
 				} catch (CreateException e) {
 					e.printStackTrace();
-					if(regularInvoiceEntry!=null){
-						createNewErrorMessage(regularInvoiceEntry.getNote(),"invoice.DBSetupProblem");
-					}else{
-						createNewErrorMessage("invoice.CouldNotFindRegularInvoiceEntry","invoice.DBSetupProblem");
-					}
+					createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
 				}
 			}
 		} catch (RemoteException e) {
