@@ -71,7 +71,7 @@ public class CampusAccountFinder  {
   public static TariffIndex getTariffIndex(String type){
     TariffIndex ti = new TariffIndex();
     try {
-      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,ti.getColumnNameType(),type,ti.getColumnNameDate());
+      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,ti.getColumnNameType(),type,ti.getIDColumnName());
       if(L!= null)
         ti =  (TariffIndex) L.get(0);
       else

@@ -24,8 +24,8 @@ public class CampusPhone extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(getColumnNamePhoneNumber(),"Phone number",true,true,String.class);
     addAttribute(getColumnNameApartmentId(),"Apartment",true,true,Integer.class,"one-to-one",com.idega.block.building.data.Apartment.class);
-    addAttribute(getColumnNameDateInstalled(),"Cypher Key",true,true,java.sql.Date.class);
-    addAttribute(getColumnNameDateResigned(),"Admin email",true,true,java.sql.Date.class);
+    addAttribute(getColumnNameDateInstalled(),"Installed",true,true,java.sql.Date.class);
+    addAttribute(getColumnNameDateResigned(),"Resigned",true,true,java.sql.Date.class);
   }
   public String getEntityName() {
     return getEntityTableName();

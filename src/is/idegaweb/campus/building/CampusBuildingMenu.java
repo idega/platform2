@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuildingMenu.java,v 1.1 2001/08/30 06:48:48 aron Exp $
+ * $Id: CampusBuildingMenu.java,v 1.2 2001/09/11 00:00:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.Window;
 import com.idega.block.building.presentation.BuildingEditor;
+import is.idegaweb.campus.phone.presentation.CampusPhones;
 import com.idega.jmodule.object.Page;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -59,6 +60,7 @@ public class CampusBuildingMenu extends FrameList{
 
       addToList(ApartmentFreezer.class,iwrb.getLocalizedString("apartment_freeze","Freeze apartments"),CampusBuilding.FRAME_NAME);
       addToList(ApartmentSerie.class,iwrb.getLocalizedString("apartment_serie","Apartment serie"),CampusBuilding.FRAME_NAME);
+      addToList(CampusPhones.class,iwrb.getLocalizedString("apartment_phones","Phones"),CampusBuilding.FRAME_NAME);
 
 
 

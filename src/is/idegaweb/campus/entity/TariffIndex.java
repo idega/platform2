@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.6 2001/08/17 10:23:49 aron Exp $
+ * $Id: TariffIndex.java,v 1.7 2001/09/11 00:00:10 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.data.GenericEntity;
 public class TariffIndex extends GenericEntity{
 
   public static final String A ="A",B="B",C="C",D="D",E="E";
+  public static final String indexType =  "ABCDEFGHIJK";
 
   public TariffIndex(){
           super();
@@ -31,7 +32,8 @@ public class TariffIndex extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameIndex(), "Index", true, true, java.lang.Float.class);
+    addAttribute(getColumnNameNewValue(), "New Value", true, true, java.lang.Float.class);
+    addAttribute(getColumnNameOldValue(), "Old alue", true, true, java.lang.Float.class);
     addAttribute(getColumnNameDate(), "LastUpdated", true, true, java.sql.Date.class);
     addAttribute(getColumnNameName(), "Name", true, true, java.lang.String.class);
     addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
@@ -39,7 +41,8 @@ public class TariffIndex extends GenericEntity{
   }
 
   public static String getTariffIndexEntityName(){ return "CAM_TARIFF_INDEX"; }
-  public static String getColumnNameIndex(){ return "RENT_INDEX";}
+  public static String getColumnNameNewValue(){ return "NEW_VALUE";}
+  public static String getColumnNameOldValue(){ return "OLD_VALUE";}
   public static String getColumnNameName(){return "NAME";}
   public static String getColumnNameInfo(){return "INFO";}
   public static String getColumnNameType(){return "INDEX_TYPE";}
@@ -49,13 +52,31 @@ public class TariffIndex extends GenericEntity{
     return getTariffIndexEntityName();
   }
   public float getIndex(){
-    return getFloatColumnValue(getColumnNameIndex());
+    return getFloatColumnValue(getColumnNameNewValue());
   }
   public void setIndex(float index){
-    setColumn(getColumnNameIndex(),index);
+    setColumn(getColumnNameNewValue(),index);
   }
   public void setIndex(Float index){
-    setColumn(getColumnNameIndex(),index);
+    setColumn(getColumnNameNewValue(),index);
+  }
+  public float getNewValue(){
+    return getFloatColumnValue(getColumnNameNewValue());
+  }
+  public void setNewValue(float index){
+    setColumn(getColumnNameNewValue(),index);
+  }
+  public void setNewValue(Float index){
+    setColumn(getColumnNameNewValue() ,index);
+  }
+  public float getOldValue(){
+    return getFloatColumnValue(getColumnNameOldValue());
+  }
+  public void setOldValue(float index){
+    setColumn(getColumnNameOldValue(),index);
+  }
+  public void setOldValue(Float index){
+    setColumn(getColumnNameOldValue() ,index);
   }
   public String getName(){
     return getStringColumnValue(getColumnNameName());

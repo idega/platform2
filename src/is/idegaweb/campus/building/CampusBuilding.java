@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuilding.java,v 1.1 2001/08/30 06:48:48 aron Exp $
+ * $Id: CampusBuilding.java,v 1.2 2001/09/11 00:00:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,8 +27,8 @@ import is.idegaweb.campus.tariffs.CampusFinanceMenu;
  */
 public class CampusBuilding extends JModuleObject {
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
-  public final static String FRAME_NAME = "rightFrame";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
+  public final static String FRAME_NAME = "cbu_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
