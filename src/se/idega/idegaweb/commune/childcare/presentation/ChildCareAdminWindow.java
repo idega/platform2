@@ -61,6 +61,7 @@ import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 import com.idega.util.TimePeriod;
 import com.idega.util.URLUtil;
 import com.idega.util.text.TextSoap;
@@ -398,7 +399,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			child = getBusiness().getUserBusiness().getUser(_userID);
 
 			if (child != null) {
-				personalId = child.getPersonalID();
+				personalId = PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale());
 				userName = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 			}
 		}
@@ -1174,7 +1175,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						dateInput.setDate(application.getRequestedCancelDate());
 					}			
 					
-					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
+					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);					
+					table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
+					table.add(getSmallText(localize("child_care.cancel_info", "Info about cancelling")), 1, row++);
 					table.add(dateInput, 1, row++);
 					if (helper.hasDeadlinePassed())
 						table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
@@ -1193,6 +1196,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					dateInput.setDate(stampNow.getDate());
 					
 					table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
+					table.add(getSmallText(localize("child_care.cancel_confirmation_info", "Info about cancel confirmation received")), 1, row++);
 					table.add(dateInput, 1, row++);
 					
 					SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_received", "Set"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
