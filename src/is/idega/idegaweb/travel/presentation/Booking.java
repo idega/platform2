@@ -882,7 +882,7 @@ public class Booking extends TravelManager {
 
           try {
               if ( (day != null) && (month != null) && (year != null)) {
-                  stamp = new IWTimestamp(day,month,year);
+                  stamp = new IWTimestamp(Integer.parseInt(day),Integer.parseInt(month),Integer.parseInt(year));
               }
               else if ((day == null) && (month == null) && (year != null)) {
                   stamp = new IWTimestamp(1,IWTimestamp.RightNow().getMonth(),Integer.parseInt(year));

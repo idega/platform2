@@ -16,6 +16,8 @@ import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
+
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
@@ -542,7 +544,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     }
 
 
-    Text dateText = new Text(business.getFieldName(Integer.parseInt(this.currentField))+ sDayTime +this.currentDay.getISLDate());
+    Text dateText = new Text(business.getFieldName(Integer.parseInt(this.currentField))+ sDayTime +this.currentDay.getLocaleDate(LocaleUtil.getIcelandicLocale()));
     dateText.setBold();
     dateText.setFontSize(3);
     dateText.setFontColor("#000000");
@@ -808,7 +810,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
           }
 
 
-          this.setTitle( business.getFieldName(Integer.parseInt(this.currentField)) + sDayTimeString + this.currentDay.getISLDate());
+          this.setTitle( business.getFieldName(Integer.parseInt(this.currentField)) + sDayTimeString + this.currentDay.getLocaleDate(LocaleUtil.getIcelandicLocale()));
           lineUpTable(iwc);
         }else{
           noPermission();

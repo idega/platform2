@@ -240,7 +240,7 @@ private Link textLink = new Link();
 
       IWTimestamp date = new IWTimestamp(scoreCards[a].getScorecardDate());
       Text date2 = ((Text) tableText.clone());
-      date2.setText(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
+      date2.setText(date.getDay()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
 
       Window deleteWindow = new Window(iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),400,220,"/handicap/handicap_delete.jsp");
 

@@ -42,6 +42,9 @@ import java.lang.*;
 
 
 
+/**
+ * @deprecated
+ */
 public class Forums extends ForumPresentation{
 
 
@@ -390,7 +393,7 @@ public class Forums extends ForumPresentation{
 
       if (lastUpdate != null){
 
-        Lastupdated.setText(new IWTimestamp(theList.getNewThreadDate()).toString(true, false, false));
+        Lastupdated.setText(new IWTimestamp(theList.getNewThreadDate()).toString());
 
         Lastupdated.setFontSize(1);
 
@@ -636,7 +639,7 @@ public class Forums extends ForumPresentation{
 
     if (thread.getThreadDate() != null){
 
-      Text date2 = new Text(new IWTimestamp(thread.getThreadDate()).toString(true, false, false));
+      Text date2 = new Text(new IWTimestamp(thread.getThreadDate()).toString());
 
       date2.setFontColor(MenuFontColor);
 

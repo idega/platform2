@@ -15,6 +15,7 @@ import com.idega.core.user.data.*;
 import com.idega.data.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        IW Trade
@@ -406,4 +407,45 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return menu;
   }
 
+	public boolean isInTimeframe(IWTimestamp from, IWTimestamp to, IWTimestamp stampToCheck, boolean yearly) {
+		return isBetween(from, to, stampToCheck, yearly, true);
+	}
+
+	public boolean isBetween(IWTimestamp from, IWTimestamp to, IWTimestamp stampToCheck, boolean yearly, boolean bordersCount) {
+		from.setAsDate();
+		to.setAsDate();
+		if (yearly) {
+			IWTimestamp temp = new IWTimestamp(stampToCheck);
+			temp.setAsDate();
+			if (from.getYear() == to.getYear()) {
+				temp.setYear(from.getYear());
+				if (bordersCount) {
+					return (temp.isLaterThanOrEquals(from) && to.isLaterThanOrEquals(temp));
+				}
+				else {
+					return (temp.isLaterThan(from) && to.isLaterThan(temp));
+				}
+			}
+			else {
+				if (temp.getYear() >= to.getYear()) {
+					if (temp.getMonth() > to.getMonth()) {
+						temp.setYear(from.getYear());
+					}
+					else {
+						temp.setYear(to.getYear());
+					}
+				}
+				return isBetween(from, to, temp, false, bordersCount);
+			}
+		}
+		else {
+			if (bordersCount) {
+				return (stampToCheck.isLaterThanOrEquals(from) && to.isLaterThanOrEquals(stampToCheck));
+			}
+			else {
+				return (stampToCheck.isLaterThan(from) && to.isLaterThan(stampToCheck));
+			}
+		}
+	}
+	
 }

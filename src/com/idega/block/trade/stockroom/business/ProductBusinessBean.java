@@ -3,6 +3,7 @@ package com.idega.block.trade.stockroom.business;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.block.trade.stockroom.presentation.ProductCatalog;
 import com.idega.presentation.*;
@@ -370,7 +371,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
           }
         }
 
-	if (stamp.isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+	if (getStockroomBusiness().isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
 	  return returner;
 	}
       }
@@ -457,4 +458,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
     return (ProductHome) IDOLookup.getHome(Product.class);
   }
 
+  protected StockroomBusiness getStockroomBusiness() throws RemoteException {
+    return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+  }
 }

@@ -189,7 +189,7 @@ public SmallCalendar() {
 	String dayString = (String) enum.nextElement();
 	if ( inThisMonth(dayString,year,month) ) {
 	  IWTimestamp newStamp = new IWTimestamp(dayString);
-	  int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDate());
+	  int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDay());
 	  T.setColor(XY[0],XY[1],getDayColor(dayString));
 	}
       }

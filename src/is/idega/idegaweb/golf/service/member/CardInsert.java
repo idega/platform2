@@ -330,7 +330,7 @@ public class CardInsert extends EntityInsert{
 
     if(! isInvalid(expireMonthValue) && ! isInvalid(expireYearValue)) {
 
-        IWTimestamp stamp = new IWTimestamp("1", expireMonthValue, expireYearValue);
+        IWTimestamp stamp = new IWTimestamp(1, Integer.parseInt(expireMonthValue), Integer.parseInt(expireYearValue));
 
         eCard.setExpireDate(stamp.getSQLDate());
 

@@ -517,7 +517,7 @@ public Calendar(IWTimestamp timestamp){
       _stamp = new IWTimestamp(day,month,year);
     }
     else {
-      _stamp.setDate(day);
+      _stamp.setDay(day);
       _stamp.setMonth(month);
       _stamp.setYear(year);
     }

@@ -71,7 +71,7 @@ public class ForumsBox extends Block {
       userText.setFontSize(1);
       userText.setFontColor("#666666");
 
-      Text chatDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
+      Text chatDate = new Text(stampur.getDay()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
       chatDate.setFontSize(1);
       chatDate.setFontColor("#666666");
 

@@ -308,7 +308,7 @@ public class GiroFile  {
 
       price = ePayments[i].getPrice();
 
-      year = String.valueOf(PayDate.getYear(2));
+      year = String.valueOf(PayDate.getYear());
 
       month = dateFormatter.format(PayDate.getMonth());
 
@@ -596,7 +596,7 @@ public class GiroFile  {
 
       price = payments[i].getPrice();
 
-      year = String.valueOf(PayDate.getYear(2));
+      year = String.valueOf(PayDate.getYear());
 
       month = dateFormatter.format(PayDate.getMonth());
 

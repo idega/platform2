@@ -26,4 +26,7 @@ public interface StockroomBusiness extends com.idega.business.IBOService
  public com.idega.block.trade.stockroom.data.ProductPrice setPrice(int p0,int p1,int p2,java.sql.Timestamp p3,float p4,int p5,int p6,int p7,int p8)throws java.sql.SQLException, java.rmi.RemoteException;
  public void setSupplyStatus(int p0,float p1) throws java.rmi.RemoteException;
  public int updateProduct(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,int p8)throws java.lang.Exception, java.rmi.RemoteException;
+ public boolean isInTimeframe(com.idega.util.IWTimestamp p0, com.idega.util.IWTimestamp p1, com.idega.util.IWTimestamp p2, boolean p3);
+ public boolean isBetween(com.idega.util.IWTimestamp p0, com.idega.util.IWTimestamp p1, com.idega.util.IWTimestamp p2, boolean p3, boolean p4);
+ 
 }

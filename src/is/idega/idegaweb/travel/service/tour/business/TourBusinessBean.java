@@ -430,7 +430,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
             temp = getNextAvailableDay(iwc, tour, product,tempFrame, stamp);
 //            temp = getNextAvailableDay(iwc, tour, product,frames[i], stamp);
             if (temp != null) {
-              if (IWTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
+              if (getStockroomBusiness().isInTimeframe(tFrom, tTo, temp, yearly)) {
                 //System.err.println("TEMP : "+temp.toSQLDateString()+" .... yearsBetween : "+yearsBetween+" ... yearly ("+yearly+")");
                 if (yearly) {
                   temp.addYears(-yearsBetween);
@@ -514,5 +514,9 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
   protected ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
+  
+  protected StockroomBusiness getStockroomBusiness() throws RemoteException {
+    return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
   }
 }

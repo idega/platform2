@@ -1234,7 +1234,7 @@ public void setTournamentDays(IWContext iwc)throws Exception{
 
           input.setMonth(stamp.getMonth());
 
-          input.setDay(stamp.getDate());
+          input.setDay(stamp.getDay());
 
          form.add("Dagur "+i+1+":");
 

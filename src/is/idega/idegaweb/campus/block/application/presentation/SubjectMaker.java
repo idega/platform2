@@ -15,6 +15,8 @@ import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.building.data.*;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
+
 import java.sql.SQLException;
 import java.util.List;
 /**
@@ -102,7 +104,7 @@ public class SubjectMaker extends Block{
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
         T.add(Edit.formatText(AS.getDescription()),1,a);
-        T.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getISLDate()),2,a);
+        T.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
         T.add((getDeleteLink(AS)),3,a);
         a++;
       }

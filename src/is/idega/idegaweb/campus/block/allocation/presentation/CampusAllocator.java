@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.41 2002/08/29 18:57:15 palli Exp $
+ * $Id: CampusAllocator.java,v 1.42 2002/09/04 10:52:40 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -63,6 +63,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 
 /**
  * @author  <a href="mailto:aron@idega.is">aron@idega.is
@@ -772,7 +773,7 @@ public class CampusAllocator extends Block implements Campus {
 				T.add(formatText(F.getName()), 3, row);
 				T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()), 4, row);
 				if (nextAvailable != null) {
-					Text text = formatText(nextAvailable.getISLDate());
+					Text text = formatText(nextAvailable.getLocaleDate(LocaleUtil.getIcelandicLocale()));
           if(nextAvailable.equals(IWTimestamp.RightNow()))
             text = formatText(iwrb.getLocalizedString("today","Í dag"));
 					T.add(getApartmentContractsLink(text, applicant_id, iContractId, A.getID(), nextAvailable), 5, row);

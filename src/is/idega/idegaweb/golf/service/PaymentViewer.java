@@ -1400,7 +1400,7 @@ import java.util.*;
 
         T.add(" "+(i+1),1,i+2);
 
-        T.add(new IWTimestamp(payments[i].getPaymentDate()).getISLDate(),2,i+2);
+        T.add(new IWTimestamp(payments[i].getPaymentDate()).getLocaleDate(LocaleUtil.getIcelandicLocale()),2,i+2);
 
         T.add(payments[i].getExtraInfo(),3,i+2);
 

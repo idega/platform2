@@ -87,7 +87,7 @@ public class ClubNewsBox extends Block {
           minutes = "0" + stampur.getMinute();
         }
 
-        Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
+        Text newsDate = new Text(stampur.getDay()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
         newsDate.setFontSize(1);
         newsDate.setFontColor("#666666");
 

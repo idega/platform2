@@ -2493,7 +2493,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       stamp = entry[i].getDate();
                       i_stamp = new IWTimestamp(stamp);
                       project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
-                      day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDate());
+                      day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDay());
                       if (viewAll) {
                           current_user = entry[i].getUser();
                           member_name = current_user.getName();

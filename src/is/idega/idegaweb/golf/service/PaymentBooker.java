@@ -2012,7 +2012,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
           T.add(Long.toString(Fs[i].length()/1000)+" KB",2,row);
 
-          T.add(new IWTimestamp(Fs[i].lastModified()).getISLDate(),3,row);
+          T.add(new IWTimestamp(Fs[i].lastModified()).getLocaleDate(LocaleUtil.getIcelandicLocale()),3,row);
 
 
 

@@ -20,6 +20,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 import com.idega.util.text.Edit;
 import java.util.List;
 
@@ -111,7 +112,7 @@ public class ApplicationSubjectMaker extends Block{
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
         dTable.add(getSubjectLink(AS),1,a);
-        dTable.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getISLDate()),2,a);
+        dTable.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getLocaleDate(LocaleUtil.getIcelandicLocale())),2,a);
         dTable.add((getDeleteLink(AS)),3,a);
         a++;
       }

@@ -417,7 +417,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     IWTimestamp theStamp= IWTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);
 
-    return IWTimestamp.isInTimeframe(new IWTimestamp(contract.getFrom()), new IWTimestamp(contract.getTo()), stamp, false);
+    return getStockroomBusiness().isInTimeframe(new IWTimestamp(contract.getFrom()), new IWTimestamp(contract.getTo()), stamp, false);
     /*
     if (stamp.isLaterThan(theStamp)) {
       return new IWTimestamp(contract.getTo()).isLaterThan(stamp);
@@ -464,7 +464,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           }
 //          System.err.println(".............. : year : "+frames[i].getYearly());
           isYearly = frames[i].getIfYearly();
-          returner = IWTimestamp.isInTimeframe(new IWTimestamp(frames[i].getFrom()), new IWTimestamp(frames[i].getTo() ), stamp, isYearly);
+          returner = getStockroomBusiness().isInTimeframe(new IWTimestamp(frames[i].getFrom()), new IWTimestamp(frames[i].getTo() ), stamp, isYearly);
           if (returner) break;
         }
 
@@ -785,11 +785,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  public boolean isWithinTimeframe(Timeframe timeframe, IWTimestamp stamp) {
+  public boolean isWithinTimeframe(Timeframe timeframe, IWTimestamp stamp) throws RemoteException {
     boolean yearly = timeframe.getIfYearly();
     IWTimestamp from = new IWTimestamp(timeframe.getFrom());
     IWTimestamp to   = new IWTimestamp(timeframe.getTo());
-    return IWTimestamp.isInTimeframe(from, to, stamp,yearly);
+    return getStockroomBusiness().isInTimeframe(from, to, stamp,yearly);
   }
 
 
@@ -1030,4 +1030,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
 
+  private StockroomBusiness getStockroomBusiness() throws RemoteException {
+    return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
+  }
 }

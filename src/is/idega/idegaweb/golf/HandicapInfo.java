@@ -166,7 +166,7 @@ private Table myTable;
 
 
 
-      drawTable();
+      drawTable(iwc);
 
 
 
@@ -178,7 +178,7 @@ private Table myTable;
 
 
 
-  private void drawTable() throws IOException,SQLException {
+  private void drawTable(IWContext iwc) throws IOException,SQLException {
 
 
 
@@ -332,7 +332,7 @@ private Table myTable;
 
             Field fieldId = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(scoreCards[0].getFieldID());
 
-            scoreCardsText = new Text(scoreTime.getISLDate()+"  -  "+fieldId.getName());
+            scoreCardsText = new Text(scoreTime.getLocaleDate(LocaleUtil.getIcelandicLocale())+"  -  "+fieldId.getName());
 
           }
 
@@ -356,7 +356,7 @@ private Table myTable;
 
             Field fieldId = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(scoreCards2[0].getFieldID());
 
-            pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+" "+iwrb.getLocalizedString("handicap.points","points")+"  -  "+fieldId.getName()+", "+scoreTime.getISLDate());
+            pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+" "+iwrb.getLocalizedString("handicap.points","points")+"  -  "+fieldId.getName()+", "+scoreTime.getLocaleDate(LocaleUtil.getIcelandicLocale()));
 
           }
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.24 2002/08/12 12:59:34 palli Exp $
+ *  $Id: TPosClient.java,v 1.25 2002/09/04 10:50:36 laddi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -486,7 +486,7 @@ public class TPosClient {
 
       stamp.setYear(Integer.parseInt(date.substring(0, 4)));
       stamp.setMonth(Integer.parseInt(date.substring(4, 6)));
-      stamp.setDate(Integer.parseInt(date.substring(6, 8)));
+      stamp.setDay(Integer.parseInt(date.substring(6, 8)));
       stamp.setHour(Integer.parseInt(time.substring(0, 2)));
       stamp.setMinute(Integer.parseInt(time.substring(2, 4)));
       stamp.setSecond(Integer.parseInt(time.substring(4, 6)));

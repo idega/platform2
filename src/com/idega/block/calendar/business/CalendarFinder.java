@@ -165,13 +165,13 @@ public class CalendarFinder {
     try {
       IWTimestamp stampPlus = new IWTimestamp(stamp.getTimestamp());
 	stampPlus.addMonths(1);
-	stampPlus.setDate(1);
+	stampPlus.setDay(1);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
       IWTimestamp stampMinus = new IWTimestamp(stamp.getTimestamp());
-	stampMinus.setDate(1);
+	stampMinus.setDay(1);
 	stampMinus.setMinute(0);
 	stampMinus.setHour(0);
 	stampMinus.setSecond(0);
@@ -202,13 +202,13 @@ public class CalendarFinder {
     try {
       IWTimestamp stampPlus = new IWTimestamp(stamp.getTimestamp());
 	stampPlus.addMonths(1);
-	stampPlus.setDate(1);
+	stampPlus.setDay(1);
 	stampPlus.setMinute(59);
 	stampPlus.setHour(23);
 	stampPlus.setSecond(59);
 
       IWTimestamp stampMinus = new IWTimestamp(stamp.getTimestamp());
-	stampMinus.setDate(1);
+	stampMinus.setDay(1);
 	stampPlus.setMinute(0);
 	stampPlus.setHour(0);
 	stampPlus.setSecond(0);
