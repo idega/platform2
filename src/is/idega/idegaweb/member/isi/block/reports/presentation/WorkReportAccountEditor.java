@@ -400,6 +400,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     EntityBrowser browser = new EntityBrowser();
+    browser.setLeadingEntity(WorkReportClubAccountRecord.class);
+    browser.setShowMirroredView(true);
     // no settings button 
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setEntities("dummy_string", entities);
