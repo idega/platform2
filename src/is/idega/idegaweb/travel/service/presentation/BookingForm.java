@@ -40,11 +40,11 @@ import is.idega.idegaweb.travel.presentation.*;
 
 public abstract class BookingForm extends TravelManager{
 
-	protected static final int errorTooMany = -1;
-	protected List errorDays = new Vector();
-	protected static final int errorFieldsEmpty = -2;
-	protected List errorFields = new Vector();
-	protected static final int errorTooFew = -3;
+	public static final int errorTooMany = -1;
+	public List errorDays = new Vector();
+	public static final int errorFieldsEmpty = -2;
+	public List errorFields = new Vector();
+	public static final int errorTooFew = -3;
   public static final int inquirySent = -10;
   public static String parameterDepartureAddressId = "depAddrId";
 
@@ -88,17 +88,17 @@ public abstract class BookingForm extends TravelManager{
 
   public static String parameterFromDate = "bookingFromDate";
   public static String parameterManyDays = "bookingManyDays";
-  protected String parameterOnlineBooking = "pr_onl_bking";
+  public static String parameterOnlineBooking = "pr_onl_bking";
 
-	protected String PARAMETER_FIRST_NAME = "surname";
-	protected String PARAMETER_LAST_NAME = "lastname";
-	protected String PARAMETER_ADDRESS = "address";
-	protected String PARAMETER_AREA_CODE = "area_code";
-	protected final String PARAMETER_EMAIL = "e-mail";
-	protected final String PARAMETER_PHONE = "telephone_number";
-	protected final String PARAMETER_CITY = "city";
-	protected final String PARAMETER_COUNTRY = "country";
-	protected final String PARAMETER_COMMENT = "comment";
+  public static final String PARAMETER_FIRST_NAME = "surname";
+  public static final String PARAMETER_LAST_NAME = "lastname";
+  public static final String PARAMETER_ADDRESS = "address";
+  public static final String PARAMETER_AREA_CODE = "area_code";
+  public static final String PARAMETER_EMAIL = "e-mail";
+  public static final String PARAMETER_PHONE = "telephone_number";
+  public static final String PARAMETER_CITY = "city";
+  public static final String PARAMETER_COUNTRY = "country";
+  public static final String PARAMETER_COMMENT = "comment";
   
 	protected int pWidthLeft = 60;
 	protected int pWidthCenter = 60;
@@ -1588,21 +1588,25 @@ public abstract class BookingForm extends TravelManager{
 	}
 
   public int saveBooking(IWContext iwc) throws CreateException, RemoveException, FinderException, SQLException, TPosException, RemoteException, IDOException{
-  		//System.out.println("[Bookingform] saveBooking");
-      String surname = iwc.getParameter("surname");
-      String lastname = iwc.getParameter("lastname");
-      String address = iwc.getParameter("address");
-      String areaCode = iwc.getParameter("area_code");
-      String email = iwc.getParameter("e-mail");
-      String phone = iwc.getParameter("telephone_number");
 
-      String city = iwc.getParameter("city");
-      String country = iwc.getParameter("country");
+	
+	      String surname = iwc.getParameter(PARAMETER_FIRST_NAME);
+      String lastname = iwc.getParameter(PARAMETER_LAST_NAME);
+      String address = iwc.getParameter(PARAMETER_ADDRESS);
+      String areaCode = iwc.getParameter(PARAMETER_AREA_CODE);
+      String email = iwc.getParameter(PARAMETER_EMAIL);
+      String phone = iwc.getParameter(PARAMETER_PHONE);
+
+      String city = iwc.getParameter(PARAMETER_CITY);
+      String country = iwc.getParameter(PARAMETER_COUNTRY);
       String pickupId = iwc.getParameter(parameterPickupId);
       String pickupInfo = iwc.getParameter(parameterPickupInf);
       String sPaymentType = iwc.getParameter("payment_type");
-      String comment = iwc.getParameter("comment");
+      String comment = iwc.getParameter(PARAMETER_COMMENT);
 
+			if (phone == null) {
+				phone = "";
+			}
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
       int iAddressId = -1;
@@ -2012,7 +2016,7 @@ public abstract class BookingForm extends TravelManager{
 				System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
 				//float price = this.getOrderPrice(iwc, _product, _stamp, true);
 				String currency = getCurrencyForBooking(gBooking);
-				System.out.println(" Price          = "+price+" "+currency);
+				System.out.println("  Price = "+price+" "+currency);
 				//System.out.println(" Booking prices = "+getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(gBooking)));
 				if (currency == null) {
 					currency = "ISK";	
