@@ -408,14 +408,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	 */ 
 	private UserQuery storeOrUpdateQueryWithoutTransaction(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
 			throws IDOStoreException, IOException, CreateException, SQLException, FinderException {
-		Group group = null;
-		if (iwuc.isSuperAdmin()) {
-	  		User user = iwuc.getCurrentUser();
-	  		group = user;
-		}
-		else {
-		 group = getTopGroupForCurrentUser(iwuc);
-		}
+		Group group = getCorrespondingGroup(iwuc);
 		// get user query, get xml data
 		XMLData data = null;
 		UserQuery userQuery = queryHelper.getUserQuery();
@@ -490,14 +483,13 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	
 	
 	private UserQuery storeQueryWithoutTransaction(String name, ICFile file, boolean isPrivate, Object userQueryToBeReplacedId, IWUserContext iwuc) throws CreateException, FinderException, RemoteException {
-		Group group = getTopGroupForCurrentUser(iwuc);
+		Group group = getCorrespondingGroup(iwuc);
 		name = modifyNameIfNameAlreadyExists(name, group);
 		UserQueryHome queryHome = getUserQueryHome();
 		UserQuery userQuery = queryHome.create();
 		userQuery.setName(name);
 		userQuery.setOwnership(group);
 		userQuery.setSource(file);
-		userQuery.setOwnership(group);
 		if (isPrivate) {
 			userQuery.setPermission(QueryConstants.PERMISSION_PRIVATE_QUERY);
 		}
@@ -537,6 +529,23 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return userQuery;
 	}
 	
+	/**
+	 * @param iwuc
+	 * @return
+	 * @throws RemoteException
+	 */
+	private Group getCorrespondingGroup(IWUserContext iwuc) throws RemoteException {
+		Group group = null;
+		if (iwuc.isSuperAdmin()) {
+	  		User user = iwuc.getCurrentUser();
+	  		group = user;
+		}
+		else {
+		 group = getTopGroupForCurrentUser(iwuc);
+		}
+		return group;
+	}
+
 	private String modifyNameIfNameAlreadyExists(String name, Group group) throws FinderException {
 		return modifyNameIfNameAlreadyExistsIgnoreUserQuery(null, name, group );
 	}
@@ -679,7 +688,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			}
 		}
   }
-	
+
+
 		
 }
 
