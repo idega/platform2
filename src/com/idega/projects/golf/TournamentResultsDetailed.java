@@ -41,6 +41,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   private Text whiteText;
 
   private int[] pastTournamentRounds_;
+  private int[] allTournamentRounds_;
 
 
   private int totalPar = 0;
@@ -60,6 +61,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       tournament = new Tournament(tournamentId_);
       getMemberVector();
       setMemberVectorPastRounds();
+      setMemberVectorAllRounds();
       if ( result != null ) {
         if ( result.size() > 1 ) {
           sortMemberVector();
@@ -80,9 +82,24 @@ public class TournamentResultsDetailed extends JModuleObject {
       int size = result.size();
       int row = 4;
 
+      int[] tournamentRounds_ = new int[1];
+        tournamentRounds_[0] = tournamentRound_;
+
+      ResultDataHandler handler;
+
       for ( int a = 0; a < size; a++ ) {
         ResultsCollector r = (ResultsCollector) result.elementAt(a);
+
+        handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,tournamentRounds_,r.getMemberId());
+        Vector v = handler.getTournamentMembers();
+        if (v != null) {
+          if (v.size() > 0) {
+            r = (ResultsCollector) v.elementAt(0);
+          }
+        }
+
         if ( size <= 1 ) {
+
           r.calculateCompareInfo();
         }
         getMemberScore(r,row);
@@ -349,7 +366,6 @@ public class TournamentResultsDetailed extends JModuleObject {
   }
 
   private void setMemberVectorPastRounds() throws SQLException{
-
       TournamentRound[] rounds = tournament.getTournamentRounds();
       TournamentRound tRound = new TournamentRound(tournamentRound_);
       Vector ids = new Vector();
@@ -371,13 +387,22 @@ public class TournamentResultsDetailed extends JModuleObject {
       }
   }
 
+  private void setMemberVectorAllRounds() throws SQLException{
+      TournamentRound[] allRounds = tournament.getTournamentRounds();
+      allTournamentRounds_ = new int[allRounds.length];
+      for (int i = 0; i < allRounds.length; i++) {
+          allTournamentRounds_[i] = allRounds[i].getID();
+      }
+
+  }
+
   private void getMemberVector() {
     try {
           int[] tournamentRounds_ = new int[1];
             tournamentRounds_[0] = tournamentRound_;
 
 
-      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTAL_STROKES_V_2,tournamentGroupId_,tournamentRounds_,null);
+      ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,this.allTournamentRounds_ ,null);
       result = handler.getTournamentMembers();
 
     }
@@ -419,7 +444,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   }
 
   private void sortMemberVector() {
-    ResultComparator comparator = new ResultComparator(ResultComparator.TOTAL_STROKES_V_2);
+    ResultComparator comparator = new ResultComparator(ResultComparator.TOTALSTROKES);
     Collections.sort(result,comparator);
   }
 
