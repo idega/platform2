@@ -4,14 +4,11 @@ import java.util.List;
 
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.accesscontrol.data.PermissionGroupBMPBean;
-//import com.idega.core.data.GenericGroup;
-//import com.idega.core.data.GenericGroupBMPBean;
 import com.idega.core.user.data.PrimaryUserGroup;
 import com.idega.core.user.data.PrimaryUserGroupBMPBean;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOCopier;
 import com.idega.data.IDOEntityBean;
-import com.idega.data.GenericEntity;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupBMPBean;
 /**
@@ -88,7 +85,7 @@ public class CommuneCopier extends IDOCopier {
 			//groupClassesList.add(GenericGroup.class);
 			//groupClassesList.add(GenericGroupBMPBean.class);
 			groupClassesList.add(PermissionGroup.class);
-			groupClassesList.add(PermissionGroupBMPBean.class);
+			//groupClassesList.add(PermissionGroupBMPBean.class);
 			groupClassesList.add(Group.class);
 			groupClassesList.add(GroupBMPBean.class);
 			groupClassesList.add(PrimaryUserGroup.class);
