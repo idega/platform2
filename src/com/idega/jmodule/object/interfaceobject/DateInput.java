@@ -1,8 +1,12 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
+ * $Id: DateInput.java,v 1.3 2001/04/30 16:40:40 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.jmodule.object.interfaceobject;
 
 import java.io.*;
@@ -237,9 +241,14 @@ public void setDay(String day){
 }
 
 public void setDate(java.sql.Date date){
-	setYear(date.getYear()+1900);
-	setMonth(date.getMonth()+1);
-	setDay(date.getDate());
+  GregorianCalendar greg = new GregorianCalendar();
+  greg.setTime(date);
+//	setYear(date.getYear()+1900);
+//	setMonth(date.getMonth()+1);
+//	setDay(date.getDate());
+	setYear(greg.get(Calendar.YEAR));
+	setMonth(greg.get(Calendar.MONTH)+1);
+	setDay(greg.get(Calendar.DAY_OF_MONTH));
 	//System.out.println("Date gefur year: "+date.getYear()+" fyrir "+this.getName());
 	//System.out.println("Date gefur month: "+date.getMonth()+" fyrir "+this.getName());
 	//System.out.println("Date gefur day: "+date.getDay()+" fyrir "+this.getName());

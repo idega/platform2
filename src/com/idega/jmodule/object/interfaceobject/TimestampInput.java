@@ -1,8 +1,12 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
+ * $Id: TimestampInput.java,v 1.2 2001/04/30 16:40:41 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.jmodule.object.interfaceobject;
 
 import java.io.*;
@@ -368,21 +372,33 @@ public void setDay(String day){
 	}
 }
 
-public void setDate(java.sql.Date date){
-	setYear(date.getYear()+1900);
-	setMonth(date.getMonth()+1);
-	setDay(date.getDate());
+public void setDate(java.sql.Date date) {
+  GregorianCalendar greg = new GregorianCalendar();
+  greg.setTime(date);
+//	setYear(date.getYear()+1900);
+//	setMonth(date.getMonth()+1);
+//	setDay(date.getDate());
+	setYear(greg.get(Calendar.YEAR));
+	setMonth(greg.get(Calendar.MONTH)+1);
+	setDay(greg.get(Calendar.DAY_OF_MONTH));
 }
 
 
 
 public void setTimestamp(java.sql.Timestamp timestamp){
-	setYear(timestamp.getYear()+1900);
-	setMonth(timestamp.getMonth()+1);
-	setDay(timestamp.getDate());
+  GregorianCalendar greg = new GregorianCalendar();
+  greg.setTime(new Date(timestamp.getTime()));
+//	setYear(date.getYear()+1900);
+//	setMonth(date.getMonth()+1);
+//	setDay(date.getDate());
+//	setHour(timestamp.getHours());
+//	setMinute(timestamp.getMinutes());
+	setYear(greg.get(Calendar.YEAR));
+	setMonth(greg.get(Calendar.MONTH)+1);
+	setDay(greg.get(Calendar.DAY_OF_MONTH));
 
-	setHour(timestamp.getHours());
-	setMinute(timestamp.getMinutes());
+	setHour(greg.get(Calendar.HOUR_OF_DAY));
+	setMinute(greg.get(Calendar.MINUTE));
 	//setSecond(timestamp.getMinutes());
 
 	//System.out.println("Timestamp gefur year: "+timestamp.getYear()+" fyrir "+this.getName());
@@ -422,8 +438,14 @@ public void setHour(String hour){
 
 
 public void setTime(java.sql.Time time){
-	setHour(time.getHours());
-	setMinute(time.getMinutes());
+  GregorianCalendar greg = new GregorianCalendar();
+  greg.setTime(new Date(time.getTime()));
+
+	setHour(greg.get(Calendar.HOUR_OF_DAY));
+	setMinute(greg.get(Calendar.MINUTE));
+
+//	setHour(time.getHours());
+//	setMinute(time.getMinutes());
 	//setSecond(time.getMinutes());
 }
 

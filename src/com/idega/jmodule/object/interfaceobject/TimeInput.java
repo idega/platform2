@@ -1,8 +1,12 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
+ * $Id: TimeInput.java,v 1.2 2001/04/30 16:40:41 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.jmodule.object.interfaceobject;
 
 import java.io.*;
@@ -261,8 +265,15 @@ public void setHour(String hour){
 
 
 public void setTime(java.sql.Time time){
-	setHour(time.getHours());
-	setMinute(time.getMinutes());
+//	setHour(time.getHours());
+//	setMinute(time.getMinutes());
+
+  GregorianCalendar greg = new GregorianCalendar();
+  greg.setTime(new Date(time.getTime()));
+
+	setHour(greg.get(Calendar.HOUR_OF_DAY));
+	setMinute(greg.get(Calendar.MINUTE));
+
 	//setSecond(time.getMinutes());
 }
 

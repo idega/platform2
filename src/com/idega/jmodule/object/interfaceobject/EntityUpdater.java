@@ -1,8 +1,12 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
+ * $Id: EntityUpdater.java,v 1.2 2001/04/30 16:40:40 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.jmodule.object.interfaceobject;
 
 import com.idega.jmodule.*;
@@ -227,7 +231,7 @@ public void theMain(ModuleInfo modinfo)throws IOException{
 	HttpServletRequest request = modinfo.getRequest();
 	HttpServletResponse response = modinfo.getResponse();
 	if (thisObjectSubmitted(modinfo)){
-		ModuleObjectContainer cont = (ModuleObjectContainer) request.getSession().getValue("idega_special_editablelist_parameters");
+		ModuleObjectContainer cont = (ModuleObjectContainer) request.getSession().getAttribute("idega_special_editablelist_parameters");
 		if (cont != null){
 			theForm.add(cont);
 		}
@@ -250,7 +254,7 @@ public void theMain(ModuleInfo modinfo)throws IOException{
 			cont.add(new Parameter(tempString,request.getParameter(tempString)));
 		}
 		theForm.add(cont);
-		request.getSession().putValue("idega_special_editablelist_parameters",cont);
+		request.getSession().setAttribute("idega_special_editablelist_parameters",cont);
 	}
 }
 

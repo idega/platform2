@@ -71,8 +71,8 @@ public class HttpChatApplet extends Applet implements Runnable {
         URL url = new URL(getCodeBase(), "/servlet/ChatServlet");
         HttpMessage msg = new HttpMessage(url);
         InputStream in = msg.sendGetMessage();
-        DataInputStream data = new DataInputStream(
-                               new BufferedInputStream(in));
+        BufferedReader data = new BufferedReader(
+                               new InputStreamReader(in));
         nextMessage = data.readLine();
       }
       catch (SocketException e) {
@@ -97,7 +97,7 @@ public class HttpChatApplet extends Applet implements Runnable {
 
   public void run() {
     while (true) {
-      text.appendText(getNextMessage());
+      text.append(getNextMessage());
     }
   }
 
