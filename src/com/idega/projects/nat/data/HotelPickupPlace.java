@@ -1,0 +1,49 @@
+//idega 2001 - Gimmi
+
+package com.idega.projects.nat.data;
+
+import java.sql.*;
+import com.idega.data.*;
+import com.idega.core.data.*;
+
+public class HotelPickupPlace extends GenericEntity{
+
+  public HotelPickupPlace(){
+          super();
+  }
+  public HotelPickupPlace(int id)throws SQLException{
+          super(id);
+  }
+  public void initializeAttributes(){
+    addAttribute(getIDColumnName());
+    addAttribute(getNameColumnName(), "Name", true, true, String.class);
+    addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
+
+    this.addManyToManyRelationShip(Supplier.class,"TB_HOTEL_PICKUP_PLACE_SUPPLIER");
+  }
+
+  public void insertStartData()throws Exception{
+  }
+
+  public static String getServiceTableName(){return "TB_HOTEL_PICKUP_PLACE";}
+  public static String getNameColumnName() {return "NAME";}
+  public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
+
+
+
+  public String getEntityName(){
+    return getServiceTableName();
+  }
+  public String getName(){
+    return getNameColumnName();
+  }
+
+  public void setName(String name){
+    setColumn(getNameColumnName(),name);
+  }
+
+  public Address getAddress() {
+      return (Address) getColumnValue("IC_ADDRESS_ID");
+  }
+
+}
