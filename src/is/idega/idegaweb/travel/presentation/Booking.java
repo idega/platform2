@@ -780,7 +780,7 @@ public class Booking extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
 
       if (pPrices.length > 0) {
           int row = 1;
@@ -1044,7 +1044,7 @@ public class Booking extends TravelManager {
     if (iAvailable != -1234) {
       String many;
       int iMany = 0;
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
             form.maintainParameter("priceCategory"+i);
@@ -1111,7 +1111,7 @@ public class Booking extends TravelManager {
       int iMany = 0;
       int iHotelId;
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
       int bookingId = -1;
 
       boolean displayFormInternal = false;

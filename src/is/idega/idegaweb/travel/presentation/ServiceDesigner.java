@@ -40,9 +40,12 @@ public class ServiceDesigner extends TravelManager {
   private String ServiceSessionAttribute = "service_designer_service_id";
   public static String parameterUpdateAction = "seviceDesignerUpdate";
   public static String parameterUpdateServiceId = "serviceDesignerUpdateServiceId";
+  public static String parameterProductPriceId = "serviceDesignerProductPriceId";
 
+  public static String parameterCreate = "create";
 
   public static String NAME_OF_FORM = "service_designer_form";
+  public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
   private static Boolean priceCategoryCreation;
 
@@ -68,7 +71,7 @@ public class ServiceDesigner extends TravelManager {
 
         if (action.equals("")) {
             displayForm(iwc);
-        }else if (action.equals("create")) {
+        }else if (action.equals(this.parameterCreate)) {
             createService(iwc);
         }else if (action.equals(parameterUpdateAction)) {
             add("unimplemented");
@@ -92,16 +95,24 @@ public class ServiceDesigner extends TravelManager {
      * @todo implement for other types
      */
     TourDesigner td = new TourDesigner(iwc);
+
+    String id = iwc.getParameter(this.parameterUpdateServiceId);
+    if (id != null) {
+      add(td.getTourDesignerForm(Integer.parseInt(id)));
+    }else {
       add(td.getTourDesignerForm());
+    }
   }
 
 
   private void createService(IWContext iwc) throws SQLException{
+
       if ( this.priceCategoryCreation == null ) {
         TourDesigner td = new TourDesigner(iwc);
           int tourId = td.createTour(iwc);
           setService(iwc,tourId);
       }
+
       priceCategoryCreation(iwc);
 
   }
@@ -128,19 +139,28 @@ public class ServiceDesigner extends TravelManager {
   private void priceCategoryCreation(IWContext iwc) {
       this.priceCategoryCreation = new Boolean(true);
       if (this.getService(iwc) != null) {
-
+        ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
           ShadowBox sb = new ShadowBox();
             sb.setWidth("90%");
 
           String sHowMany = iwc.getParameter("how_many");
+          int iHowMany = 2;
           if (sHowMany == null) {
-            sHowMany = "2";
+            if (prices.length > 0) {
+              sHowMany = Integer.toString(prices.length);
+            }else {
+              sHowMany = "2";
+            }
+          }else {
+            //Integer.parseInt(sHowMany);
           }
-          int iHowMany = Integer.parseInt(sHowMany);
+          iHowMany = Integer.parseInt(sHowMany);
 
           Form howManyForm = new Form();
               sb.add(howManyForm);
-              howManyForm.addParameter(this.ServiceAction ,this.PriceCategoryRefresh);
+              Parameter par = new Parameter(this.ServiceAction, this.PriceCategoryRefresh);
+                par.keepStatusOnAction();
+              howManyForm.add(par);
 
           Table tableHowMany = new Table();
             howManyForm.add(tableHowMany);
@@ -160,6 +180,7 @@ public class ServiceDesigner extends TravelManager {
 
 
           Form form = new Form();
+            form.setName(this.NAME_OF_PRICE_CATEGORY_FORM);
             sb.add(form);
 
           Table table = new Table();
@@ -168,7 +189,9 @@ public class ServiceDesigner extends TravelManager {
             table.setWidth("95%");
             int row = 1;
 
-          DropdownMenu toClone = new DropdownMenu(tsb.getPriceCategories(this.supplier.getID()),"price_category_id");
+          PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
+          DropdownMenu toClone = new DropdownMenu(cats,"price_category_id");
+  //          toClone.keepStatusOnAction();
           DropdownMenu categories;
           TextInput priceDiscount;
 
@@ -195,8 +218,18 @@ public class ServiceDesigner extends TravelManager {
           for (int i = 1; i <= iHowMany; i++) {
               priceDiscount = new TextInput("price_discount");
                 priceDiscount.setAsNotEmpty("T - verður að skrá verð eða afslátt á allt verðliði");
-
+                priceDiscount.keepStatusOnAction();
               categories = (DropdownMenu) toClone.clone();
+//              categories = new DropdownMenu(cats,"price_category_id");
+//                categories.keepStatusOnAction();
+
+              try {
+                priceDiscount.setContent(Integer.toString((int)prices[i-1].getPrice()));
+                categories.setSelectedElement(Integer.toString(prices[i-1].getPriceCategoryID()));
+                table.add(new HiddenInput(this.parameterProductPriceId,Integer.toString(prices[i-1].getID())),1,row);//PriceCategoryID())),1,row);
+              }catch (ArrayIndexOutOfBoundsException a) {
+                table.add(new HiddenInput(this.parameterProductPriceId,"-1"),1,row);
+              }
 
               ++row;
               table.add(catName,2,row);
@@ -208,6 +241,7 @@ public class ServiceDesigner extends TravelManager {
 
               ++row;
               table.mergeCells(1,row,3,row);
+              table.setHeight(row,"15");
               table.setColor(1,row, super.backgroundColor);
 
           }
@@ -217,7 +251,7 @@ public class ServiceDesigner extends TravelManager {
 
 
           if (iHowMany > 0) {
-            SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
+            //SubmitButton savePrice = new SubmitButton(this.ServiceAction, this.PriceCategorySave);
 
           }
 
@@ -225,6 +259,7 @@ public class ServiceDesigner extends TravelManager {
           add(sb);
       }else {
         add("TEMP SERVICE ER NULL");
+        this.priceCategoryCreation = null;
       }
 
   }
@@ -233,21 +268,27 @@ public class ServiceDesigner extends TravelManager {
       String[] priceDiscount = (String[]) iwc.getParameterValues("price_discount");
       String[] priceCategoryIds = (String[]) iwc.getParameterValues("price_category_id");
 
+      String[] productPriceIds = (String[]) iwc.getParameterValues(this.parameterProductPriceId);
+
       Service service = this.getService(iwc);
 
       try {
         if (priceDiscount != null) {
           int priceCategoryId = 0;
+          int productPriceId = -1;
 
-                    PriceCategory pCategory;
+          ProductPrice.clearPrices(service.getID());
+
+          PriceCategory pCategory;
           for (int i = 0; i < priceDiscount.length; i++) {
-                priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
+              productPriceId = Integer.parseInt(productPriceIds[i]);
+              priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
               pCategory = new PriceCategory(priceCategoryId);
 
               if (pCategory.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)) {
-                tsb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT);
               }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
-                tsb.setPrice(service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_PRICE);
               }
           }
         }

@@ -128,32 +128,52 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
 
-
   public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception{
+    return createService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival);
+  }
 
+  public int updateService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception {
+    return createService(serviceId,supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival);
+  }
 
+  private int createService(int serviceId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception{
 //    TransactionManager transaction = IdegaTransactionManager.getInstance();
     try{
       //transaction.begin();
 
-      int id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
-      Service service = new Service();
-      service.setID(id);
+      int id = -1;
+      if (serviceId == -1) {
+        id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
+      }else {
+        id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,serviceDescription,isValid);
+      }
 
-      service.setDepartureTime(departure);
-      service.setAttivalTime(arrival);
-      service.insert();
+        Service service = new Service();
+        service.setID(id);
 
-      if(addressIds != null){
-        for (int i = 0; i < addressIds.length; i++) {
-          service.addTo(Address.class, addressIds[i]);
+        service.setDepartureTime(departure);
+        service.setAttivalTime(arrival);
+
+      if (serviceId == -1) {
+        service.insert();
+      }else {
+        service.update();
+      }
+
+        if(addressIds != null){
+          for (int i = 0; i < addressIds.length; i++) {
+            try {
+              service.addTo(Address.class, addressIds[i]);
+            }catch (SQLException sql) {}
+          }
         }
-      }
 
-      if (timeframe != null) {
-          service.addTo(timeframe);
-      }
-      //transaction.commit();
+        if (timeframe != null) {
+            try {
+              service.addTo(timeframe);
+            }catch (SQLException sql) {}
+        }
+        //transaction.commit();
 
       return id;
     }catch(SQLException e){
@@ -164,10 +184,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
 
-  /**
-   * @todo createTourService
-   */
+  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception{
+    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  }
+
   public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
+    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats);
+  }
+
+  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats) throws Exception {
 
       boolean isError = false;
 
@@ -181,6 +206,51 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       int arrivalAddressTypeId = AddressType.getId(uniqueArrivalAddressType);
       int hotelPickupAddressTypeId = AddressType.getId(uniqueHotelPickupAddressType);
 
+      Address departureAddress = null;
+      Address arrivalAddress = null;
+
+      if (tourId == -1) {
+
+        departureAddress = new Address();
+        departureAddress.setAddressTypeID(departureAddressTypeId);
+        departureAddress.setStreetName(departureFrom);
+        departureAddress.insert();
+
+        arrivalAddress = new Address();
+        arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+        arrivalAddress.setStreetName(arrivalAt);
+        arrivalAddress.insert();
+
+      }else {
+          Service service = new Service(tourId);
+          Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
+          if (tempAddresses.length > 0) {
+            arrivalAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+            arrivalAddress.setStreetName(arrivalAt);
+            arrivalAddress.update();
+          }else {
+            arrivalAddress = new Address();
+            arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
+            arrivalAddress.setStreetName(arrivalAt);
+            arrivalAddress.insert();
+          }
+
+          tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+          if (tempAddresses.length > 0) {
+            departureAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+            departureAddress.setAddressTypeID(departureAddressTypeId);
+            departureAddress.setStreetName(departureFrom);
+            departureAddress.update();
+          }else {
+            departureAddress = new Address();
+            departureAddress.setAddressTypeID(departureAddressTypeId);
+            departureAddress.setStreetName(departureFrom);
+            departureAddress.insert();
+          }
+
+      }
+/*
       Address departureAddress = new Address();
         departureAddress.setAddressTypeID(departureAddressTypeId);
         departureAddress.setStreetName(departureFrom);
@@ -190,12 +260,14 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
         arrivalAddress.setStreetName(arrivalAt);
         arrivalAddress.insert();
+*/
 /*
       Address hotelPickupAddress = new Address();
         hotelPickupAddress.setAddressTypeID(hotelPickupAddressTypeId);
         hotelPickupAddress.setStreetName(pickupPlace);
         hotelPickupAddress.insert();
 */
+
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
       int[] hotelPickupPlaceIds ={};
@@ -204,9 +276,18 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
       }
 
-      int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+      int serviceId = -1;
+      if (tourId == -1) {
+        serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+      }else {
+        serviceId = createService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
+      }
 
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+      if (serviceId == -1)
+      System.err.println("UpdateTour() - serviceID == -1");
+
+      if (serviceId != -1)
       try {
           //tm.begin();
           Service service = new Service(serviceId);
@@ -215,17 +296,28 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             tour.setID(serviceId);
             tour.setTotalSeats(numberOfSeats.intValue());
 
+          if (arrivalAddressIds.length > 0)
+          for (int i = 0; i < arrivalAddressIds.length; i++) {
+            try {
+              service.addTo(Address.class,arrivalAddressIds[i]);
+            }catch (SQLException sql) {}
+          }
+
 
           if(hotelPickupPlaceIds.length > 0){
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
               if (hotelPickupPlaceIds[i] != -1)
+              try{
               service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
+              }catch (SQLException sql) {}
             }
             tour.setHotelPickup(true);
           }else{
             tour.setHotelPickup(false);
           }
           tour.insert();
+
+          ServiceDay.deleteService(serviceId);
 
           if (activeDays.length > 0) {
             ServiceDay sDay;
@@ -248,13 +340,27 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public void setTimeframe(idegaTimestamp from, idegaTimestamp to, boolean yearly) throws SQLException {
-        if ((from != null) && (to != null)) {
-          timeframe = new Timeframe();
-            timeframe.setTo(to.getTimestamp());
-            timeframe.setFrom(from.getTimestamp());
-            timeframe.setYearly(yearly);
-            timeframe.insert();
-        }
+    setTimeframe(-1,from,to,yearly);
+  }
+
+  public void setTimeframe(int timeframeId, idegaTimestamp from, idegaTimestamp to, boolean yearly) throws SQLException {
+    if (timeframeId != -1) {
+      if ((from != null) && (to != null)) {
+        timeframe = new Timeframe(timeframeId);
+          timeframe.setTo(to.getTimestamp());
+          timeframe.setFrom(from.getTimestamp());
+          timeframe.setYearly(yearly);
+          timeframe.update();
+      }
+    }else {
+      if ((from != null) && (to != null)) {
+        timeframe = new Timeframe();
+          timeframe.setTo(to.getTimestamp());
+          timeframe.setFrom(from.getTimestamp());
+          timeframe.setYearly(yearly);
+          timeframe.insert();
+      }
+    }
   }
 
   public Product[] getProducts(int supplierId) {
@@ -495,6 +601,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
+
   private static HashtableDoubleKeyed getServiceDayHashtable(IWContext iwc) {
       HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(serviceDayHashtableSessionName);
       if (hash == null) {
@@ -669,7 +776,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         if (id == null || id.length == 0) {
             curr = new com.idega.block.trade.data.Currency();
             curr.setCurrencyName(iceKr);
-            curr.setCurrencyAbbreviation("Kr");
+            curr.setCurrencyAbbreviation("IKr");
             curr.insert();
             returner = curr.getID();
         } else if (id.length > 0) {
@@ -682,39 +789,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }
 
       return returner;
-  }
-
-
-  public ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
-      ProductPrice[] prices = {};
-
-      try {
-        ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
-        PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
-
-        String pTable = price.getProductPriceTableName();
-        String cTable = category.getEntityName();
-
-
-        StringBuffer SQLQuery = new StringBuffer();
-          SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
-          SQLQuery.append(" WHERE ");
-          SQLQuery.append(pTable+"."+ProductPrice.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
-          SQLQuery.append(" AND ");
-          SQLQuery.append(pTable+"."+ProductPrice.getColumnNameProductId() +" = " + productId);
-          if (netBookingOnly) {
-            SQLQuery.append(" AND ");
-            SQLQuery.append(cTable+"."+PriceCategory.getColumnNameNetbookingCategory()+" = 'Y'");
-          }
-          SQLQuery.append(" ORDER BY "+category.getIDColumnName());
-
-        prices = (ProductPrice[]) (ProductPrice.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
-
-
-      return prices;
   }
 
 
@@ -816,10 +890,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       sql.printStackTrace(System.err);
     }
 
-
-
     return products;
-
     //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
   }
 

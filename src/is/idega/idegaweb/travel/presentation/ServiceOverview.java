@@ -15,6 +15,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.business.ProductPriceException;
 
 import is.idega.travel.data.*;
 import com.idega.core.data.*;
@@ -156,7 +157,9 @@ public class ServiceOverview extends TravelManager {
       Link delete;
       Link getLink;
       Link bookClone = new Link(iwrb.getImage("/buttons/book.gif"),Booking.class);
+        bookClone.addParameter(super.sAction, super.parameterBooking);
       Link editClone = new Link(iwrb.getImage("/buttons/change.gif"),ServiceDesigner.class);
+        editClone.addParameter(super.sAction, super.parameterServiceDesigner);
 
       Link book;
       Link edit;
@@ -218,6 +221,7 @@ public class ServiceOverview extends TravelManager {
                 timeframeTxt.addToText(new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc));
 
             depFrom = (Text) theBoldText.clone();
+            if (address != null)
                 depFrom.setText(address.getStreetName());
 
             depTimeStamp = new idegaTimestamp(service.getDepartureTime());
@@ -272,7 +276,7 @@ public class ServiceOverview extends TravelManager {
             table.add(actDays,3,row);
 
 
-            prices = tsb.getProductPrices(service.getID(), false);
+            prices = ProductPrice.getProductPrices(service.getID(), false);
             table.mergeCells(2,row,2,(row+prices.length-1));
             table.mergeCells(3,row,3,(row+prices.length-1));
 
@@ -282,12 +286,18 @@ public class ServiceOverview extends TravelManager {
                 nameOfCategory.setText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(":");
               priceText = (Text) theBoldText.clone();
-                priceText.setText(Integer.toString((int)tsb.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              try {
+                priceText.setText(Integer.toString((int)tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
-                if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
-                  priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-                }
+              }catch (ProductPriceException p) {
+                priceText.setText("T - rangt upp sett");
+              }
+
+              if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
+                priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+              }
+
 
 
               table.setVerticalAlignment(4,row,"top");
@@ -319,6 +329,11 @@ public class ServiceOverview extends TravelManager {
             book = (Link) bookClone.clone();
               book.addParameter(Booking.parameterProductId,products[i].getID());
 
+            edit = (Link) editClone.clone();
+              edit.addParameter(ServiceDesigner.parameterUpdateServiceId, products[i].getID());
+
+            table.add(edit,1,row);
+            table.add("&nbsp;&nbsp;",1,row);
             table.add(book,1,row);
             table.add("&nbsp;&nbsp;",1,row);
             table.add(getLink,1,row);

@@ -336,7 +336,7 @@ public class DailyReport extends TravelManager {
       float amount;
 
       int[] bookingTypeIds = {is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
-      ProductPrice[] prices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
       ProductPrice price;
       Integer entryCount;
       int iEntryCount;

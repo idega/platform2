@@ -69,7 +69,7 @@ public class AdditionalBooking extends TravelWindow {
         form.add(table);
       int row = 1;
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
       PriceCategory category;
 
       Text nameText = (Text) text.clone();
@@ -144,7 +144,7 @@ public class AdditionalBooking extends TravelWindow {
       int iMany = 0;
       int iHotelId;
 
-      ProductPrice[] pPrices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
       int bookingId;
 
       try {

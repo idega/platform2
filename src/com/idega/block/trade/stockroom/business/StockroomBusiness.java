@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.data.*;
+import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
@@ -49,8 +50,18 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
 
-  public void setPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
-    if (productPriceId == -1) {
+
+  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
+    if (productPriceIdToReplace != -1) {
+        ProductPrice pPrice = new ProductPrice(productPriceIdToReplace);
+          pPrice.invalidate();
+          pPrice.update();
+    }
+
+    setPrice(productId, priceCategoryId, currencyId, time, price, priceType);
+  }
+
+  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
        ProductPrice prPrice = new ProductPrice();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
@@ -59,27 +70,40 @@ public class StockroomBusiness /* implements SupplyManager */ {
          prPrice.setPrice(price);
          prPrice.setPriceType(priceType);
        prPrice.insert();
-    }else if (productPriceId != -1) {
-       ProductPrice prPrice = new ProductPrice(productPriceId);
-         prPrice.setProductId(productId);
-         prPrice.setCurrencyId(currencyId);
-         prPrice.setPriceCategoryID(priceCategoryId);
-         prPrice.setPriceDate(time);
-         prPrice.setPrice(price);
-         prPrice.setPriceType(priceType);
-       prPrice.update();
-    }
   }
 
   public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
+    return getPrice(-1, productId, priceCategoryId, currencyId, time);
+  }
+
+  public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
     PriceCategory cat = new PriceCategory(priceCategoryId);
 
-
     if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE +" order by "+ProductPrice.getColumnNamePriceDate());
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("select * from "+ppr.getEntityName());
+        buffer.append(" where ");
+        buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+        if (productPriceId != -1) {
+          buffer.append(" and ");
+          buffer.append(ppr.getIDColumnName()+" = "+productPriceId);
+        }
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNameCurrencyId()+" = "+currencyId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
+        buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+      List result = EntityFinder.findAll(ppr,buffer.toString());
+
       if(result != null && result.size() > 0){
         return ((ProductPrice)result.get(0)).getPrice();
       }else{
@@ -87,7 +111,20 @@ public class StockroomBusiness /* implements SupplyManager */ {
       }
     }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' and "+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT+" order by "+ProductPrice.getColumnNamePriceDate());
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("select * from "+ppr.getEntityName());
+        buffer.append(" where ");
+        buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
+        buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+      List result = EntityFinder.findAll(ppr,buffer.toString());
       float disc = 0;
       if(result != null && result.size() > 0){
         disc = ((ProductPrice)result.get(0)).getPrice();
@@ -100,6 +137,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
     }
   }
 
+
   /**
    * returns 0.0 if pricecategory is not of type PriceCategory.PRICETYPE_DISCOUNT
    */
@@ -107,7 +145,18 @@ public class StockroomBusiness /* implements SupplyManager */ {
     PriceCategory cat = new PriceCategory(priceCategoryId);
     if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
       ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
-      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      StringBuffer buffer = new StringBuffer();
+        buffer.append("select * from "+ppr.getEntityName());
+        buffer.append(" where ");
+        buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+        buffer.append(" and ");
+        buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
+        buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+      List result = EntityFinder.findAll(ppr,buffer.toString());
       if(result != null && result.size() > 0){
         return ((ProductPrice)result.get(0)).getPrice();
       }else{

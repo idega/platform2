@@ -39,7 +39,16 @@ public class TravelManager extends Block {
     public static String LIGHTORANGE = "#FFCC99";
     public static String DARKBLUE = "#85839D";
 
-    private static String sAction = "travelManagerAction";
+    protected static String sAction = "travelManagerAction";
+    protected static String parameterServiceDesigner = "lServiceDesigner";
+    protected static String parameterServiceOverview = "lServiceOverview";
+    protected static String parameterBookingOverview = "lBookingOverview";
+    protected static String parameterBooking = "lBooking";
+    protected static String parameterStatistics = "lStatistics";
+    protected static String parameterDailyReport = "lDailyReport";
+    protected static String parameterContracts = "lContracts";
+    protected static String parameterInitialData = "lInitialData";
+
 
 
     public TravelManager(){
@@ -105,24 +114,24 @@ public class TravelManager extends Block {
         Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
         Image iContracts = iwrb.getImage("buttons/contracts.gif");
         Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
-        if (action.equals("lDesign")) {
+        if (action.equals(this.parameterServiceDesigner)) {
           iDesign = iwrb.getImage("buttons/design_trip_on.gif");
-        }else if (action.equals("lMyTrip")) {
+        }else if (action.equals(this.parameterServiceOverview)) {
           iMyTrip = iwrb.getImage("buttons/my_trips_on.gif");
-        }else if (action.equals("lOverview")) {
+        }else if (action.equals(this.parameterBookingOverview)) {
           iOverview = iwrb.getImage("buttons/booking_overview_on.gif");
-        }else if (action.equals("lBooking")) {
+        }else if (action.equals(this.parameterBooking)) {
           iBooking = iwrb.getImage("buttons/booking_on.gif");
-        }else if (action.equals("lStatistics")) {
+        }else if (action.equals(this.parameterStatistics)) {
           iStatistics = iwrb.getImage("buttons/statistics_on.gif");
-        }else if (action.equals("lDailyReport")) {
+        }else if (action.equals(this.parameterDailyReport)) {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
         }
 
         if ( AccessControl.isAdmin(iwc)){
 
             Link lInitialData = new Link(iInitialData,InitialData.class);
-              lInitialData.addParameter(this.sAction,"lInitialData");
+              lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
 
             Link lHome = new Link("heim","/index.jsp");
@@ -130,21 +139,21 @@ public class TravelManager extends Block {
         }else if (supplier != null) {
 
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
-              lDesign.addParameter(this.sAction,"lDesign");
+              lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
             Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
-              lMyTrip.addParameter(this.sAction,"lMyTrip");
+              lMyTrip.addParameter(this.sAction,this.parameterServiceOverview);
             Link lOverview = new Link(iOverview,BookingOverview.class);
-              lOverview.addParameter(this.sAction,"lOverview");
+              lOverview.addParameter(this.sAction,this.parameterBookingOverview);
             Link lBooking = new Link(iBooking,Booking.class);
-              lBooking.addParameter(this.sAction,"lBooking");
+              lBooking.addParameter(this.sAction,this.parameterBooking);
             Link lStatistics = new Link(iStatistics,Statistics.class);
-              lStatistics.addParameter(this.sAction,"lStatistics");
+              lStatistics.addParameter(this.sAction,this.parameterStatistics);
             Link lDailyReport = new Link(iDailyReport,DailyReport.class);
-              lDailyReport.addParameter(this.sAction,"lDailyReport");
+              lDailyReport.addParameter(this.sAction,this.parameterDailyReport);
             Link lContracts = new Link(iContracts,Contracts.class);
-              lContracts.addParameter(this.sAction,"lContracts");
+              lContracts.addParameter(this.sAction,this.parameterContracts);
             Link lInitialData = new Link(iInitialData,InitialData.class);
-              lInitialData.addParameter(this.sAction,"lInitialData");
+              lInitialData.addParameter(this.sAction,this.parameterInitialData);
 
             table.add(lDesign,1,1);
             table.add(lMyTrip,1,1);
@@ -161,10 +170,10 @@ public class TravelManager extends Block {
         else if (reseller!= null) {
 
             Link lBooking = new Link(iBooking,Booking.class);
-              lBooking.addParameter(this.sAction,"lBooking");
+              lBooking.addParameter(this.sAction,this.parameterBooking);
             table.add(lBooking,1,1);
             Link lOverview = new Link(iOverview,BookingOverview.class);
-              lOverview.addParameter(this.sAction,"lOverview");
+              lOverview.addParameter(this.sAction,this.parameterBookingOverview);
             table.add(lOverview,1,1);
 
             Link lHome = new Link("heim","/index.jsp");
@@ -225,6 +234,7 @@ public class TravelManager extends Block {
         text.setText(string);
       this.add(text);
     }
+
 
 
 }

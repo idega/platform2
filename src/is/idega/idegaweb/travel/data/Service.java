@@ -114,7 +114,6 @@ public class Service extends GenericEntity{
     }
   }
 
-
   public static String getServiceTableName(){return "TB_SERVICE";}
   public static String getArrivalTimeColumnName() {return "ARRIVAL_TIME";}
   public static String getDepartureTimeColumnName() {return "DEPARTURE_TIME";}

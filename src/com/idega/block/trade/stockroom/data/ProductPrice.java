@@ -34,13 +34,29 @@ public class ProductPrice extends GenericEntity{
     addAttribute(getColumnNamePrice(), "Verð", true, true, Float.class);
     addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, Timestamp.class);
     addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
+    addAttribute(getColumnNameIsValid(), "virkt", true, true, Boolean.class);
   }
 
+
+  public void delete() {
+    this.invalidate();
+  }
+
+  public void invalidate() {
+    this.setIsValid(false);
+  }
+
+  public void validate() {
+    this.setIsValid(true);
+  }
 
   public String getEntityName(){
     return getProductPriceTableName();
   }
 
+  public void setDefaultValues() {
+    this.setIsValid(true);
+  }
 
   public int getProductId() {
     return getIntColumnValue(getColumnNameProductId());
@@ -131,6 +147,53 @@ public class ProductPrice extends GenericEntity{
     setColumn(getColumnNamePriceType(), type);
   }
 
+  public void setIsValid(boolean isValid) {
+    setColumn(getColumnNameIsValid(), isValid);
+  }
+
+  public boolean getIsValid() {
+    return getBooleanColumnValue(getColumnNameIsValid());
+  }
+
+  public static void clearPrices(int productId) throws SQLException {
+    ProductPrice[] prices = getProductPrices(productId, false);
+    for (int i = 0; i < prices.length; i++) {
+      prices[i].invalidate();
+      prices[i].update();
+    }
+  }
+
+  public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
+      ProductPrice[] prices = {};
+      try {
+        ProductPrice price = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
+        PriceCategory category = (PriceCategory) PriceCategory.getStaticInstance(PriceCategory.class);
+
+        String pTable = price.getProductPriceTableName();
+        String cTable = category.getEntityName();
+
+        StringBuffer SQLQuery = new StringBuffer();
+          SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
+          SQLQuery.append(" WHERE ");
+          SQLQuery.append(pTable+"."+ProductPrice.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
+          SQLQuery.append(" AND ");
+          SQLQuery.append(pTable+"."+ProductPrice.getColumnNameProductId() +" = " + productId);
+          SQLQuery.append(" AND ");
+          SQLQuery.append(pTable+"."+ProductPrice.getColumnNameIsValid() +"='Y'");
+          if (netBookingOnly) {
+            SQLQuery.append(" AND ");
+            SQLQuery.append(cTable+"."+PriceCategory.getColumnNameNetbookingCategory()+" = 'Y'");
+          }
+          SQLQuery.append(" ORDER BY "+pTable+"."+price.getColumnNamePriceType()+","+cTable+"."+category.getColumnNameName());
+
+        prices = (ProductPrice[]) (ProductPrice.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+      return prices;
+  }
+
+
   public static String getProductPriceTableName(){return "SR_PRODUCT_PRICE";}
   public static String getColumnNameProductId(){return "SR_PRODUCT_ID";}
   public static String getColumnNamePriceCategoryId() {return "SR_PRICE_CATEGORY_ID";}
@@ -138,6 +201,7 @@ public class ProductPrice extends GenericEntity{
   public static String getColumnNamePriceDate() {return "PRICE_DATE"; }
   public static String getColumnNameCurrencyId() {return "TR_CURRENCY_ID"; }
   public static String getColumnNamePriceType() {return "PRICE_TYPE"; }
+  public static String getColumnNameIsValid() {return "IS_VALID";}
 
 
 

@@ -9,6 +9,10 @@ import is.idega.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 
+import com.idega.core.data.Address;
+import com.idega.core.data.AddressType;
+import is.idega.travel.data.*;
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -26,6 +30,15 @@ public class TourDesigner extends TravelManager {
   String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
   String ServiceAction = ServiceDesigner.ServiceAction;
 
+  Service service;
+  Tour tour;
+  Timeframe timeframe;
+  Address depAddress;
+  Address arrAddress;
+
+
+  private String parameterIsUpdate = "isTourUpdate";
+  private String parameterTimeframeId = "td_timeframeId";
 
   public TourDesigner(IWContext iwc) throws SQLException{
     init(iwc);
@@ -38,7 +51,41 @@ public class TourDesigner extends TravelManager {
     supplier = super.getSupplier();
   }
 
+  private boolean setupData(int tourId) {
+    try {
+      service = new Service(tourId);
+      tour = new Tour(tourId);
+      timeframe = service.getTimeframe();
+
+      int addressTypeId = AddressType.getId(tsb.uniqueArrivalAddressType);
+      Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(addressTypeId)));
+      if (tempAddresses.length > 0) {
+        arrAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+      }
+      addressTypeId = AddressType.getId(tsb.uniqueDepartureAddressType);
+
+      tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(addressTypeId)));
+      if (tempAddresses.length > 0) {
+        depAddress = new Address(tempAddresses[tempAddresses.length -1].getID());
+      }
+
+      return true;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
+  }
+
   public Form getTourDesignerForm() {
+    return getTourDesignerForm(-1);
+  }
+
+
+  public Form getTourDesignerForm(int tourId) {
+    boolean isDataValid = true;
+    if (tourId != -1)
+      isDataValid = setupData(tourId);
+
       Form form = new Form();
         form.setName(NAME_OF_FORM);
       Table table = new Table();
@@ -48,6 +95,8 @@ public class TourDesigner extends TravelManager {
         sb.setWidth("90%");
         sb.setAlignment("center");
         sb.add(table);
+
+    if (isDataValid) {
 
       table.setWidth("95%");
 
@@ -300,17 +349,76 @@ public class TourDesigner extends TravelManager {
       ++row;
       table.mergeCells(1,row,2,row);
       table.setAlignment(1,row,"right");
-      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),ServiceAction,"create");
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),ServiceDesigner.ServiceAction,ServiceDesigner.parameterCreate);
       table.add(submit,1,row);
 
 
       table.setColumnAlignment(1,"right");
       table.setColumnAlignment(2,"left");
 
+      if (service != null) {
+        table.add(new HiddenInput(this.parameterIsUpdate, Integer.toString(tourId)));
+        table.add(new HiddenInput(this.parameterTimeframeId, Integer.toString(timeframe.getID())));
+
+          name.setContent(service.getName());
+          description.setContent(service.getDescription());
+          active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
+          active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
+          active_yearly.setSelected(timeframe.getIfYearly());
+
+          int[] days = ServiceDay.getDaysOfWeek(service.getID());
+          for (int i = 0; i < days.length; i++) {
+              if (days[i] == ServiceDay.SUNDAY) sundays.setChecked(true);
+              else if (days[i] == ServiceDay.MONDAY) mondays.setChecked(true);
+              else if (days[i] == ServiceDay.TUESDAY) tuesdays.setChecked(true);
+              else if (days[i] == ServiceDay.WEDNESDAY) wednesdays.setChecked(true);
+              else if (days[i] == ServiceDay.THURSDAY) thursdays.setChecked(true);
+              else if (days[i] == ServiceDay.FRIDAY) fridays.setChecked(true);
+              else if (days[i] == ServiceDay.SATURDAY) saturdays.setChecked(true);
+          }
+
+          if (depAddress != null)
+          departure_from.setContent(depAddress.getStreetName());
+          idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());
+          departure_time.setHour(tempStamp.getHour());
+          departure_time.setMinute(tempStamp.getMinute());
+
+          if (arrAddress != null)
+          arrival_at.setContent(arrAddress.getStreetName());
+          tempStamp = new idegaTimestamp(service.getArrivalTime());
+          arrival_time.setHour(tempStamp.getHour());
+          arrival_time.setMinute(tempStamp.getMinute());
+
+          HotelPickupPlace[] places = tsb.getHotelPickupPlaces(service);
+          for (int i = 0; i < places.length; i++) {
+            hotels.setSelectedElement(Integer.toString(places[i].getID()));
+          }
+
+
+          if (tour.getIsHotelPickup()) {
+            hotelPickupYes.setSelected();
+          }else {
+            hotelPickupNo.setSelected();
+          }
+
+          numberOfSeats.setContent(Integer.toString(tour.getTotalSeats()));
+
+
+      }
+
+
+      }else {
+        table.add("Gögn eru ósamræmd");
+      }
       return form;
+
   }
 
   public int createTour(IWContext iwc) {
+      String sTourId = iwc.getParameter(this.parameterIsUpdate);
+      int tourId = -1;
+      if (sTourId != null) tourId = Integer.parseInt(sTourId);
+
 
       String name = iwc.getParameter("name_of_trip");
       String description = iwc.getParameter("description");
@@ -415,9 +523,15 @@ public class TourDesigner extends TravelManager {
       System.arraycopy(tempDays,0,activeDays,0,counter);
 
       try {
-          TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+
+        if (tourId == -1) {
             tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
             serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+        } else {
+            String timeframeId = iwc.getParameter(this.parameterTimeframeId);
+            tsb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
+            serviceId = tsb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+        }
         /**
          * @todo TravelStockroomBusiness.removeServiceDayHashtable....
          */

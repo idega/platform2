@@ -79,13 +79,18 @@ public class PriceCategoryDesigner extends TravelWindow {
         saveUpdate(iwc,true);
         mainMenu(iwc);
       }else if (sAction.equals(parameterClose)) {
-        super.close(true);
+        closer();
       }
 
 
     }
   }
 
+  public void closer() {
+    jPage.setParentToReload();
+    //jPage.setOnUnLoad("window.opener."+ServiceDesigner.NAME_OF_PRICE_CATEGORY_FORM+".submit()");
+    super.close(false);
+  }
 
   public void mainMenu(IWContext iwc) {
       Form form = new Form();
