@@ -49,17 +49,11 @@ import com.idega.util.IWTimestamp;
  */
 public class VacationBusinessBean extends ApplicationsBusinessBean implements VacationBusiness {
 
-  private final static String IW_BUNDLE_IDENTIFIER = "se.agura";
-
   private static String DEFAULT_SMTP_MAILSERVER="mail.agurait.com";
 	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
 	
-	protected String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
-	}
-
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) {
 		VacationRequest request = getVacationApplicationInstance(theCase);
 		VacationType type = request.getVacationType();
