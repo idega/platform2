@@ -85,7 +85,7 @@ public class ChildCareEndContractWindow extends Window {
 		layoutTbl.add(fromDate, 2, row++);
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, 2);
-		fromDate.setEarliestPossibleDate(cal.getTime(), "Date must be not earlier than two months from today.");
+		fromDate.setEarliestPossibleDate(cal.getTime(), style.localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
 		
 		row++;
 		
