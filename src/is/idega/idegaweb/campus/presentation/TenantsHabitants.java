@@ -149,25 +149,33 @@ private String darkRed = "#932A2D";
       table.setWidth("100%");
 
     Vector vector = new Vector();
+    Building building = null;
+    Contract contract = null;
+    Applicant applicant = null;
+    Apartment apartment = null;
+    Floor floor = null;
     HabitantsCollector collector = null;
-    Contract contract = ContractFinder.findApplicant(_userID);
-    Applicant applicant = ContractFinder.getApplicant(contract);
     CampusApplication campusApplication = null;
-    Apartment apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-    Floor floor = BuildingCacher.getFloor(apartment.getFloorId());
-    Building building = BuildingCacher.getBuilding(floor.getBuildingId());
+    if(!_isAdmin){
+      contract = ContractFinder.findApplicant(_userID);
+      applicant = ContractFinder.getApplicant(contract);
+      apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+      floor = BuildingCacher.getFloor(apartment.getFloorId());
+      building = BuildingCacher.getBuilding(floor.getBuildingId());
+    }
     Complex complex = null;
     if ( _campusID != -1 )
       complex = BuildingCacher.getComplex(_campusID);
-    else
+    else if(!_isAdmin)
       complex = BuildingCacher.getComplex(building.getComplexId());
     Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
     CampusPhone phone = null;
 
-    if ( _campusID == -1 ) {
+    if ( _campusID == -1 && complex !=null ) {
       _campusID = complex.getID();
     }
 
+    if(complex !=null)
     table.add(formatText(complex.getName(),"#FFFFFF",true),1,1);
 
     Link nameLink = new Link(formatText(iwrb.getLocalizedString("name","Name")));

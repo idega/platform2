@@ -131,6 +131,7 @@ public class AssessmentBusiness  {
       }
       catch(Exception ex){ ex.printStackTrace();}
       bulk.addAll(H.values(),bulk.update);
+      bulk.add(AR,bulk.delete);
       bulk.execute();
     }
   }

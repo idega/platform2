@@ -28,6 +28,7 @@ public class AssessmentRound extends GenericEntity{
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
+    addAttribute(getColumnTariffGroupId(),"Tariff group",true,true,Integer.class,"",TariffGroup.class);
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
     addAttribute(getTotalsColumnName(), "Totals", true, true, java.lang.Float.class);
@@ -43,6 +44,7 @@ public class AssessmentRound extends GenericEntity{
 
   public static String getEntityTableName(){return "FIN_ASSESSMENT_ROUND";}
   public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
+  public static String getColumnTariffGroupId(){return "FIN_TARIFF_GROUP_ID";}
   public static String getNameColumnName(){return "NAME";}
   public static String getRoundStampColumnName(){return "ROUND_STAMP";}
   public static String getTotalsColumnName(){return "TOTALS";}
@@ -124,6 +126,13 @@ public class AssessmentRound extends GenericEntity{
   }
   public void setCategoryId(int categoryId){
     setColumn(getColumnCategoryId(),categoryId);
+  }
+
+  public int getTariffGroupId(){
+    return getIntColumnValue( getColumnTariffGroupId() );
+  }
+  public void setTariffGroupId(int groupId){
+    setColumn(getColumnTariffGroupId(),groupId);
   }
 
 

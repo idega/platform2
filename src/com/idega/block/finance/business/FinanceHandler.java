@@ -17,7 +17,8 @@ public interface FinanceHandler {
 
   public String getAccountType();
   public List listOfAttributes();
-  public boolean executeAssessment(int iTariffGroupId,String assessmentName,int iCashierId,idegaTimestamp payDate);
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String assessmentName,int iCashierId,int iAccountKeyId,idegaTimestamp payDate);
+  public boolean rollbackAssessment(int iAssessmentRoundId);
   public Map getAttributeMap();
   public Collection listOfAssessmentTariffPreviews(int iTariffGroupId);
 

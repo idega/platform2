@@ -66,6 +66,8 @@ public class TariffAssessments extends Block {
       TariffGroup group = null;
       if(iwc.isParameterSet(prmGroup))
         iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
+
+      //add("group "+iGroupId);
       if(iGroupId > 0 ){
         group = FinanceFinder.getTariffGroup(iGroupId);
       }
@@ -84,20 +86,20 @@ public class TariffAssessments extends Block {
         PresentationObject MO = new Text();
 
         if(iwc.getParameter(strAction) == null){
-          MO = getTableOfAssessments(iwc);
+          MO = getTableOfAssessments(iwc,iGroupId);
         }
         if(iwc.getParameter(strAction) != null){
           String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO = getTableOfAssessments(iwc); break;
-            case ACT2 : MO = doMainTable(iwc,iCategoryId,handler);      break;
+            case ACT1 : MO = getTableOfAssessments(iwc,iGroupId); break;
+            case ACT2 : MO = doMainTable(iwc,iCategoryId,iGroupId,handler);      break;
             case ACT3 : MO = doAssess( iwc,iCategoryId,iGroupId,handler);      break;
             case ACT4 : MO = getTableOfAssessmentAccounts( iwc);      break;
-            case ACT5 : MO = doRollback(iwc); break;
+            case ACT5 : MO = doRollback(iwc,handler); break;
             case ACT6 : MO = getPreviewTable(handler,group); break;
-            default: MO = getTableOfAssessments(iwc);           break;
+            default: MO = getTableOfAssessments(iwc,iGroupId);           break;
           }
         }
         Table T = new Table();
@@ -139,23 +141,28 @@ public class TariffAssessments extends Block {
     return T;
   }
 
-  private PresentationObject doRollback(IWContext iwc){
+  private PresentationObject doRollback(IWContext iwc,FinanceHandler handler){
     Table T = new Table();
     String sRoundId = iwc.getParameter("rollback");
     if(sRoundId != null){
       int iRoundId = Integer.parseInt(sRoundId);
       try{
-        AssessmentBusiness.rollBackAssessment(iRoundId);
-        T.add(iwrb.getLocalizedString("rollbac_success","Rollback was successfull"));
+        boolean rb = handler.rollbackAssessment(iRoundId);
+        //AssessmentBusiness.rollBackAssessment(iRoundId);
+        if(rb)
+          T.add(iwrb.getLocalizedString("rollback_success","Rollback was successfull"));
+        else
+          T.add(iwrb.getLocalizedString("rollback_unsuccess","Rollback was unsuccessfull"));
       }
       catch(Exception ex){
-        T.add(iwrb.getLocalizedString("rollbac_illegal","Rollback was illegal"));
+        T.add(iwrb.getLocalizedString("rollback_illegal","Rollback was illegal"));
       }
     }
     return T;
   }
 
   private PresentationObject doAssess(IWContext iwc,int iCategoryId,int iGroupId,FinanceHandler handler){
+    //add(handler.getClass().getName());
     PresentationObject MO = new Text("failed");
     if(iwc.getParameter("pay_date")!=null){
       String date = iwc.getParameter("pay_date");
@@ -168,17 +175,23 @@ public class TariffAssessments extends Block {
           int iAccountKeyId = accountKeyId!=null?Integer.parseInt(accountKeyId):-1;
           idegaTimestamp paydate = new idegaTimestamp(date);
           //add(paydate.getISLDate());
-          boolean assessed = handler.executeAssessment(iGroupId,roundName,1,paydate);
+          boolean assessed = handler.executeAssessment(iCategoryId, iGroupId,roundName,1,iAccountKeyId,paydate);
+          if(assessed)
+            MO = new Text("done");
+          else
+            MO = new Text("assessment failed");
         }
         else{
           add(iwrb.getLocalizedString("no_name_error","No name entered"));
-          MO = doMainTable(iwc,iCategoryId,handler);
+          MO = doMainTable(iwc,iCategoryId,iGroupId,handler);
         }
       }
       else{
-        MO = doMainTable(iwc,iCategoryId,handler);
+        MO = doMainTable(iwc,iCategoryId,iGroupId,handler);
       }
     }
+    else
+      System.err.println("did not have pay_date");
     return MO;
   }
 
@@ -213,10 +226,11 @@ public class TariffAssessments extends Block {
     return LinkTable;
   }
 
-  private PresentationObject getTableOfAssessments(IWContext iwc){
+  private PresentationObject getTableOfAssessments(IWContext iwc,int iGroupId){
     Table T = new Table();
     int row = 2;
-    List L = Finder.listOfAssessments();
+    //List L = Finder.listOfAssessments();
+    List L = FinanceFinder.listOfAssessments(iGroupId);
     if(L!= null){
       int len = L.size();
 
@@ -233,12 +247,13 @@ public class TariffAssessments extends Block {
       for (int i = 0; i < len; i++) {
         col = 1;
         AR = (AssessmentRound) L.get(i);
-        T.add(getRoundLink(AR.getName(),AR.getID()),col++,row);
+        T.add(getRoundLink(AR.getName(),AR.getID(),iGroupId),col++,row);
         T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(iwc)),col++,row);
         T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
         Link R = new Link(iwb.getImage("rollback.gif"));
         R.addParameter("rollback",AR.getID());
         R.addParameter(strAction ,ACT5);
+        R.addParameter(prmGroup,iGroupId);
         T.add(R,col++,row);
 
         row++;
@@ -292,8 +307,8 @@ public class TariffAssessments extends Block {
     Table T = new Table();
     String id = iwc.getParameter("ass_round_id");
     if(id != null){
-      //List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
-      List L = null ;//CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
+      List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
+      //List L = null ;//CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
       if(L!= null){
         int len = L.size();
         T.add(Edit.titleText(iwrb.getLocalizedString("account_name","Account name")),1,1);
@@ -327,7 +342,7 @@ public class TariffAssessments extends Block {
     return T;
   }
 
-  private PresentationObject doMainTable(IWContext iwc,int iCategoryId , FinanceHandler handler){
+  private PresentationObject doMainTable(IWContext iwc,int iCategoryId ,int iGroupId, FinanceHandler handler){
     Form F = new Form();
     Table T = new Table();
     int iAccountCount = FinanceFinder.countAccounts(iCategoryId,handler.getAccountType());
@@ -369,13 +384,14 @@ public class TariffAssessments extends Block {
     T.mergeCells(1,1,2,1);
     T.setWidth("100%");
     F.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    F.add(new HiddenInput(prmGroup,String.valueOf(iGroupId)));
     F.add(T);
     return F;
   }
 
   private DropdownMenu drpAccountKeys(List AK,String name){
     DropdownMenu drp = new DropdownMenu(name);
-    drp.addMenuElement(0,"--");
+    drp.addMenuElement(-1,"--");
     if(AK != null){
       drp.addMenuElements(AK);
     }
@@ -411,10 +427,11 @@ public class TariffAssessments extends Block {
     return T;
   }
 
-  private Link getRoundLink(String name,int id){
+  private Link getRoundLink(String name,int id,int iGroupId){
     Link L = new Link(name);
     L.addParameter(strAction,ACT4);
     L.addParameter("ass_round_id",id);
+    L.addParameter(prmGroup,iGroupId);
     L.setFontSize(Edit.textFontSize);
     return L;
   }

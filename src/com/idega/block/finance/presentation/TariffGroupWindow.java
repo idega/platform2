@@ -52,8 +52,8 @@ private IWBundle core;
 private IWResourceBundle iwrb;
 
   public TariffGroupWindow(){
-    setWidth(420);
-    setHeight(350);
+    setWidth(500);
+    setHeight(500);
     setResizable(true);
     setUnMerged();
   }

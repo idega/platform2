@@ -167,6 +167,15 @@ public class FinanceFinder  {
     return null;
   }
 
+  public static List listOfAssessments(int iTariffGroupId){
+    try {
+      return EntityFinder.findAllByColumn(new AssessmentRound(),AssessmentRound.getColumnTariffGroupId(),iTariffGroupId);
+    }
+    catch (SQLException ex) {
+    }
+    return null;
+  }
+
 
   public static Map mapOfTariffKeys(int iCategoryId){
     Hashtable h = new Hashtable();
@@ -236,11 +245,11 @@ public class FinanceFinder  {
           return (FinanceHandler) Class.forName(handler.getClassName()).newInstance();
         }
         catch(Exception ex){
-
+          ex.printStackTrace();
         }
     }
     catch (SQLException ex) {
-
+      ex.printStackTrace();
     }
     return null;
   }

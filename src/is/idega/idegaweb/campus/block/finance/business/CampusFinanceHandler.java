@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.finance.business;
 
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
@@ -10,6 +11,7 @@ import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
+import com.idega.data.EntityBulkUpdater;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.List;
@@ -35,10 +37,51 @@ public class CampusFinanceHandler implements FinanceHandler{
     return Account.typeFinancial;
   }
 
-  public List listOfAttributes(){
-    return null;
+  public boolean rollbackAssessment(int iAssessmentRoundId){
+    EntityBulkUpdater bulk = new EntityBulkUpdater();
+    Hashtable H = new Hashtable();
+    Vector V = new Vector();
+    if(iAssessmentRoundId > 0){
+      AssessmentRound AR = new AssessmentRound();
+      try{
+        AR = new AssessmentRound(iAssessmentRoundId);
+
+      List L = AccountManager.listOfAccountEntries(AR.getID());
+
+      if(L!=null){
+        java.util.Iterator I = L.iterator();
+        AccountEntry ae;
+        Account a;
+        Integer Aid;
+        float Amount;
+        while(I.hasNext()){
+          ae = (AccountEntry) I.next();
+          if(ae.getStatus().equals(ae.statusCreated)){
+            Amount = ae.getTotal();
+            Aid = new Integer(ae.getAccountId());
+            if( H.containsKey( Aid ) ){
+              a = (Account) H.get(Aid);
+            }
+            else{
+              a = new Account(ae.getAccountId());
+              H.put(new Integer(a.getID()),a);
+            }
+            bulk.add(ae,bulk.delete);
+            // lowering the account
+            a.addKredit( Amount);
+          }
+        }
+      }
+      }
+      catch(Exception ex){ ex.printStackTrace();}
+      bulk.addAll(H.values(),bulk.update);
+      bulk.add(AR,bulk.delete);
+      bulk.execute();
+    }
+    return false;
   }
-  public boolean executeAssessment(int iTariffGroupId,String roundName,int iCashierId,idegaTimestamp paydate){
+
+  public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate){
     List listOfTariffs = FinanceFinder.listOfTariffs(iTariffGroupId);
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
     //Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
@@ -57,6 +100,8 @@ public class CampusFinanceHandler implements FinanceHandler{
         try {
           AR = new AssessmentRound();
           AR.setAsNew(roundName);
+          //AR.setCategoryId(iCategoryId);
+          AR.setTariffGroupId(iTariffGroupId);
           AR.setType(Account.typeFinancial);
           AR.insert();
           iRoundId = AR.getID();
@@ -269,7 +314,7 @@ public class CampusFinanceHandler implements FinanceHandler{
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-    AE.setPrice(-T.getPrice());
+    AE.setTotal(-T.getPrice());
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
     AE.setInfo(T.getInfo());
@@ -289,7 +334,15 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   public Map getAttributeMap(){
-    return BuildingCacher.mapOfLodgingsNames();
+    Map map = BuildingCacher.mapOfLodgingsNames();
+    map.put("a","All");
+    return map;
+  }
+
+  public List listOfAttributes(){
+    List list = BuildingCacher.listOfMapEntries();
+    list.add(0,"a");
+    return list;
   }
 
 

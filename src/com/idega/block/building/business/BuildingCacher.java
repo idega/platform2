@@ -320,6 +320,60 @@ public class BuildingCacher {
     return hashtable;
   }
 
+  public static List listOfMapEntries(){
+    Vector list = new Vector();
+    List BuildingList = getBuildings();
+    List FloorList = getFloors();
+    List TypeList = getTypes();
+    List CategoryList = getCategories();
+    List ComplexList  = getComplexes();
+    if(TypeList != null){
+      int len = TypeList.size();
+      ApartmentType T;
+      for (int i = 0; i < len; i++) {
+        T = (ApartmentType) TypeList.get(i);
+        list.add(PREFIXTYPE+T.getID());
+      }
+    }
+    if(CategoryList != null){
+      int len = CategoryList.size();
+      ApartmentCategory C;
+      for (int i = 0; i < len; i++) {
+        C = (ApartmentCategory) CategoryList.get(i);
+        list.add(PREFIXCATEGORY+C.getID());
+      }
+    }
+
+    if(FloorList != null){
+      int len = FloorList.size();
+      Floor F;
+      for (int i = 0; i < len; i++) {
+        F = (Floor) FloorList.get(i);
+        list.add(PREFIXFLOOR+F.getID());
+      }
+    }
+
+    if(BuildingList != null){
+      int clen = BuildingList.size();
+      Building B;
+      for (int i = 0; i < clen; i++) {
+        B = (Building) BuildingList.get(i);
+        list.add(PREFIXBUILDING+B.getID());
+      }
+    }
+
+    if(ComplexList != null){
+      int clen = ComplexList.size();
+      Complex C;
+      for (int i = 0; i < clen; i++) {
+        C = (Complex) ComplexList.get(i);
+        list.add(PREFIXCOMPLEX+C.getID());
+      }
+    }
+
+    return list;
+  }
+
   public static Map mapOfLodgingsNames(){
     Hashtable hashtable = new Hashtable();
     List BuildingList = getBuildings();

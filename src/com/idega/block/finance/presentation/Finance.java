@@ -77,6 +77,7 @@ public class Finance extends Block implements IWBlock{
     if(isAdmin && administrative && getICObjectInstanceID() > 0){
       T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
     }
+    /*
     String className = null;
     if(iwc.isParameterSet(prmFinanceClass)){
       className = iwc.getParameter(prmFinanceClass);
@@ -100,16 +101,15 @@ public class Finance extends Block implements IWBlock{
     else{
 
      T.add(getBoxedLinks(),1,1);
+    */
 
-/*
     FinanceIndex index = new FinanceIndex(iCategoryId);
     if(FinanceObjects !=null)
       index.addFinanceObjectAll(FinanceObjects);
-    //index.addBreak();
 
-    T.add(index,1,1);
-    */
-    }
+    T.add(index,1,2);
+
+
 
     add(T);
 
@@ -244,7 +244,7 @@ public class Finance extends Block implements IWBlock{
     return new Parameter(prmFinanceClass,financeClass.getName());
   }
 
-  public void addFinanceObject(FinanceObject obj){
+  public void addFinanceObject(Block obj){
     if(FinanceObjects == null)
       FinanceObjects = new java.util.Vector();
     FinanceObjects.add(obj);

@@ -100,13 +100,13 @@ public class NewsFormatter {
     String spacer = " | ";
     if(showOnlyDates && NewsDate != null){
       info.append(NewsDate);
-			if(showTime && !"".equals(NewsTime)){
-				if(showTimeFirst){
-					info.insert(0,NewsTime+" ");
-				}
-				else
-				  info.append(" ");
-					info.append(NewsTime);
+      if(showTime && !"".equals(NewsTime)){
+        if(showTimeFirst){
+          info.insert(0,NewsTime+" ");
+        }
+        else
+          info.append(" ");
+          info.append(NewsTime);
       }
     }
     else{
@@ -135,8 +135,8 @@ public class NewsFormatter {
       }
     }
 
-		String inf = TextSoap.findAndReplace(info.toString(), " ","&nbsp;");
-		//System.err.println(inf);
+    String inf = TextSoap.findAndReplace(info.toString(), " ","&nbsp;");
+    //System.err.println(inf);
     return inf;
 
   }

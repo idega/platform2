@@ -1,5 +1,5 @@
 /*
- * $Id: FinanceIndex.java,v 1.5 2001/12/19 17:46:30 aron Exp $
+ * $Id: FinanceIndex.java,v 1.6 2002/01/06 23:59:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,6 +61,7 @@ public class FinanceIndex extends Block {
     menu.setClassParameterName("fin_clss");
     addStandardObjects();
     menu.addAll(FinanceObjects);
+    menu.addParameterToMaintain(Finance.getCategoryParameter(iCategoryId));
     add(menu);
   }
 

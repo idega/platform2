@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.7 2001/12/29 11:19:33 laddi Exp $
+ * $Id: CampusFactory.java,v 1.8 2002/01/06 23:58:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -101,13 +101,15 @@ public class CampusFactory extends Block implements Campus {
         obj = new CampusHome();
         break;
       case ADM_FINANCE :
-        FinanceIndex fin = new FinanceIndex(1);
+        Finance fin = new Finance(1);
+        //FinanceIndex fin = new FinanceIndex(1);
 
         fin.addFinanceObject(new PhoneFiles());
         obj = fin;
         break;
       case ADM_HABITANTS :
-        obj = new CampusHabitants();
+        //obj = new CampusHabitants();
+        obj = new TenantsHabitants();
         break;
       case ADM_ALLOCATION :
         obj = new CampusAllocation();
