@@ -40,6 +40,8 @@ public interface InvoiceStrings {
 	String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
 	String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
 	String END_PERIOD_KEY = PREFIX + "end_period";
+	String FILES_SENT_BY_EMAIL_KEY = PREFIX + "sent_by_email";
+	String FILES_SENT_BY_PAPERMAIL_KEY = PREFIX + "sent_by_papermail";
 	String HEADER_KEY = PREFIX + "end_period";
 	String LAST_PROVIDER_KEY = PREFIX + "last_provider";
 	String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";

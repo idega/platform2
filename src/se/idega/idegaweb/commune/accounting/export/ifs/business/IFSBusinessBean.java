@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
@@ -321,8 +323,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	 * 
 	 * @author palli
 	 */
-	public void sendFiles(String schoolCategory, User user) {
+	public Map sendFiles(String schoolCategory, User user) {
 		UserTransaction trans = null;
+		Map result = new HashMap ();
 		try {
 			trans = getSessionContext().getUserTransaction();
 			trans.begin();
@@ -341,7 +344,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir
 			// status
 			// ur L i e-d annad.
-			getCheckAmountBusiness().sendCheckAmountLists(IWContext.getInstance(), schoolCategory);
+			result = getCheckAmountBusiness().sendCheckAmountLists(IWContext.getInstance(), schoolCategory);
 
 			//copy files from folder A to folder B. Must get folder info from
 			// ExportMappingBean!!!
@@ -354,13 +357,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			if (trans != null) {
 				try {
 					trans.rollback();
+					result = new HashMap ();
 				}
 				catch (SystemException se) {
 					se.printStackTrace();
 				}
 			}
 		}
-
+		return result;
 	}
 
 	public ExportBusiness getExportBusiness() {

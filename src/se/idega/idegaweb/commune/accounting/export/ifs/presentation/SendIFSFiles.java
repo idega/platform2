@@ -8,6 +8,8 @@
 package se.idega.idegaweb.commune.accounting.export.ifs.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Map;
 
 import se.idega.idegaweb.commune.accounting.export.ifs.business.IFSBusiness;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -18,6 +20,7 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 
 /**
  * @author palli
@@ -47,8 +50,27 @@ public class SendIFSFiles extends AccountingBlock {
 					viewForm();
 					break;
 				case ACTION_SEND :
-					sendFiles(iwc);
 					viewForm();
+					final Map filesMaps = sendFiles(iwc);
+					for (Iterator i = filesMaps.keySet ().iterator (); i.hasNext ();) {
+						final String mapKey = "" + i.next ();
+						add ("<p>" + localize (mapKey, mapKey) + ":</p>");
+						final Map fileMap = (Map) filesMaps.get (mapKey);
+						for (Iterator j = fileMap.keySet ().iterator (); j.hasNext ();) {
+							final String providerName = "" + j.next ();
+							final int fileId
+									= ((Integer) fileMap.get (providerName)).intValue ();
+							if (0 < fileId) {
+								final Link viewLink = new Link (providerName);
+								viewLink.setFile (fileId);
+								viewLink.setTarget ("letter_window_" + fileId);
+								add (viewLink);
+							} else {
+								add (providerName);
+							}
+							add ("<br/>");
+						}
+					}
 					break;
 			}
 		}
@@ -72,15 +94,8 @@ public class SendIFSFiles extends AccountingBlock {
 		return ACTION_VIEW;
 	}
 
-	private void sendFiles(IWContext iwc) {
-		try {
-			getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
-		}
-		catch (RemoteException e1) {
-			e1.printStackTrace();
-			
-			//Throw new Exception?
-		}
+	private Map sendFiles(IWContext iwc) throws RemoteException {
+			return getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
 	}
 
 	private void viewForm() {
