@@ -622,7 +622,8 @@ public class RunRegistration extends Block {
 			
 			t.setHeight(row++, 8);
 			
-			Text groupCompetitionText = new Text(iwrb.getLocalizedString("run_reg.group_competition_info", "Information about group competition."));
+			String message = iwrb.getLocalizedString("run_reg.group_competition_info", "Information about group competition.");
+			Text groupCompetitionText = new Text(TextFormatter.formatText(message));
 
 			t.add(groupCompetitionText, column, row++);
 			t.setHeight(row++, 3);
