@@ -84,7 +84,19 @@ public class FavoriteQuickLink extends Block {
 		Iterator iter = quickLinkList.iterator();
 		while (iter.hasNext()) {
 			Favorite element = (Favorite) iter.next();
-			quickLinks.addMenuElement(element.getURL(), element.getName());
+			String URI = element.getURL();
+			
+			if (URI != null) {
+				try {
+					if (element.getFavoriteType().equals(getBusiness(iwc).getFavoriteTypeInternet()) && URI.indexOf("http://") == -1) {
+						URI = "http://" + URI;
+					}
+				}
+				catch (RemoteException re) {
+					log(re);
+				}
+			}
+			quickLinks.addMenuElement(URI, element.getName());
 		}
 
 		table.add(quickLinks, column++, 1);
