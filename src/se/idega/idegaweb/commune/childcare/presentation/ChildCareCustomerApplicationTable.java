@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.31 2003/05/23 14:37:10 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.32 2003/05/26 10:11:03 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -376,6 +376,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			+ localize(CCConstants.TEXT_CHILD)
 			+ ": "
 			+ application.getChild().getDisplayName()
+			+ " (" + application.getChild().getPersonalID()	+ ") "		
 			+ "<br>"
 			+ localize(CCConstants.TEXT_FROM)
 			+ ": "
