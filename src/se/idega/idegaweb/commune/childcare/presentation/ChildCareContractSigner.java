@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.swing.text.html.HTMLWriter;
+
+import org.apache.poi.hssf.record.PrecisionRecord;
+
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 
@@ -20,9 +24,12 @@ import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.URLIncluder;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.PreformattedText;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.lowagie.text.html.HtmlEncoder;
 
 /**
  * @author Roar
@@ -121,15 +128,18 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		System.out.println("makeTableOfContracts()");			
 		
 		Collection contracts = ContractFinder.findContractsByUserId(iwc.getCurrentUser().getID());
+		
+		
 		if (contracts == null){
 			return new Table();
 		}
 		
 		Iterator i = contracts.iterator();
 		
-		Table t = new Table(2, contracts.size());
+		Table t = new Table(3, contracts.size());
 		t.setCellpadding(0);
-		t.setCellspacing(0);		
+		t.setCellspacing(0);	
+		t.setBorder(1);	
 		
 		int row = 1;
 		while (i.hasNext()){
@@ -137,16 +147,24 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 
 			System.out.println("Contract.id: " + contract.getID());
 			
-			if (contract.getSignedFlag() == null || ! contract.getSignedFlag().booleanValue()) {
-				t.add(new Text(contract.getValidFrom().toString()), 1, row);
+			if (contract.isSigned()) {
+				t.add(new Text("Signed " + contract.getSignedDate()), 1, row);
+			}else {
 				Link signBtn = new Link("Sign Contract");
 				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
 				signBtn.setParameter(ACTION, ACTION_SIGN);
-				t.add(signBtn, 2, row);
+				t.add(signBtn, 1, row);				
 			}
+				
+//			t.add(new Text(""+contract.getID()), 2, row);
+			t.add(new Text(contract.getText()), 2, row);
+			t.add(new Text(escapeHTML(contract.getXmlSignedData())), 3, row);
+
+			
 			row ++;
 		}
-		
+		setStyle(this, "font-size:10px");		
+		setStyle(this, "font-family: sans-serif");
 		return t;
 	}
 
@@ -160,5 +178,66 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 	public IBPage getResponsePage(){
 		return _page;
 	}
+	
+	public static final String escapeHTML(String s){
+		if (s == null){
+			return "";
+		}
+		
+	   StringBuffer sb = new StringBuffer();
+	   int n = s.length();
+	   for (int i = 0; i < n; i++) {
+		  char c = s.charAt(i);
+		  switch (c) {
+			 case '<': sb.append("&lt;"); break;
+			 case '>': sb.append("&gt;"); break;
+			 case '&': sb.append("&amp;"); break;
+			 case '"': sb.append("&quot;"); break;
+			 case 'à': sb.append("&agrave;");break;
+			 case 'À': sb.append("&Agrave;");break;
+			 case 'â': sb.append("&acirc;");break;
+			 case 'Â': sb.append("&Acirc;");break;
+			 case 'ä': sb.append("&auml;");break;
+			 case 'Ä': sb.append("&Auml;");break;
+			 case 'å': sb.append("&aring;");break;
+			 case 'Å': sb.append("&Aring;");break;
+			 case 'æ': sb.append("&aelig;");break;
+			 case 'Æ': sb.append("&AElig;");break;
+			 case 'ç': sb.append("&ccedil;");break;
+			 case 'Ç': sb.append("&Ccedil;");break;
+			 case 'é': sb.append("&eacute;");break;
+			 case 'É': sb.append("&Eacute;");break;
+			 case 'è': sb.append("&egrave;");break;
+			 case 'È': sb.append("&Egrave;");break;
+			 case 'ê': sb.append("&ecirc;");break;
+			 case 'Ê': sb.append("&Ecirc;");break;
+			 case 'ë': sb.append("&euml;");break;
+			 case 'Ë': sb.append("&Euml;");break;
+			 case 'ï': sb.append("&iuml;");break;
+			 case 'Ï': sb.append("&Iuml;");break;
+			 case 'ô': sb.append("&ocirc;");break;
+			 case 'Ô': sb.append("&Ocirc;");break;
+			 case 'ö': sb.append("&ouml;");break;
+			 case 'Ö': sb.append("&Ouml;");break;
+			 case 'ø': sb.append("&oslash;");break;
+			 case 'Ø': sb.append("&Oslash;");break;
+			 case 'ß': sb.append("&szlig;");break;
+			 case 'ù': sb.append("&ugrave;");break;
+			 case 'Ù': sb.append("&Ugrave;");break;         
+			 case 'û': sb.append("&ucirc;");break;         
+			 case 'Û': sb.append("&Ucirc;");break;
+			 case 'ü': sb.append("&uuml;");break;
+			 case 'Ü': sb.append("&Uuml;");break;
+			 case '®': sb.append("&reg;");break;         
+			 case '©': sb.append("&copy;");break;   
+			 case '€': sb.append("&euro;"); break;
+			 // be carefull with this one (non-breaking whitee space)
+			 case ' ': sb.append("&nbsp;");break;         
+         
+			 default:  sb.append(c); break;
+		  }
+	   }
+	   return sb.toString();
+	}	
 	
 }
