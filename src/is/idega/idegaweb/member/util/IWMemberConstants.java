@@ -5,7 +5,7 @@ package is.idega.idegaweb.member.util;
  * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  *
  */
-public final class IWMemberConstants {
+public class IWMemberConstants {
 
 	public static final String APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL = "IW_MEMBER_ADMINISTRATOR_MAIN_EMAIL";
 	public static final String APPLICATION_PARAMETER_MAIL_SERVER = "IW_MEMBER_MAIL_SERVER_ADDRESS";
