@@ -69,6 +69,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
+  private static final String OKAY_BUTTON = "okayButton";
+  
+  // -1 is reserved for "new entity"
+  private static final Integer NULL_GROUP_ID = new Integer(-42);
 
   private List fieldList = new ArrayList();
       
@@ -426,8 +430,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       browser.setMandatoryColumn(i++, fieldName);
       browser.setEntityToPresentationConverter(fieldName, textEditorConverter);
     }
-    browser.setMandatoryColumn(i++, "okay");
-    browser.setEntityToPresentationConverter("okay", new EditOkayButtonConverter());
+    browser.setMandatoryColumn(i++, CHECK_BOX);
+    browser.setEntityToPresentationConverter(CHECK_BOX, checkBoxConverter);
+    browser.setMandatoryColumn(i++, OKAY_BUTTON);
+    browser.setEntityToPresentationConverter(OKAY_BUTTON, new EditOkayButtonConverter());
     return browser;
   }
   
@@ -567,6 +573,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       return;
     }
     // try to get an existing record
+    if (groupId.equals(NULL_GROUP_ID)) {
+      groupId = null;
+    }
     WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKey);
     if (record == null)   {
       // okay, first create a record
@@ -634,7 +643,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     public int getGroupId() {
       if (groupId == null)  {
-        return -1;
+        return NULL_GROUP_ID.intValue();
       }
       return groupId.intValue();
     }
