@@ -971,7 +971,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		providerCapacity.setLength(3);
 		providerCapacity.setAsNotEmpty(localize("child_care.capacity_required","You must fill in the provider capacity."));
 		providerCapacity.setAsIntegers(localize("child_care.capacity_only_integers_allowed","Not a valid number."));
-		if (prognosis != null && prognosis.getOneYearPriority() != -1)
+		if (prognosis != null && prognosis.getProviderCapacity() != -1)
 			providerCapacity.setContent(String.valueOf(prognosis.getProviderCapacity()));
 
 		table.add(getSmallText(localize("child_care.provider_capacity", "Provider capacity")+":"), 1, row);
