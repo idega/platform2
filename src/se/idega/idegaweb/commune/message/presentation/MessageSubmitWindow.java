@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.message.presentation;
 
 import se.idega.idegaweb.commune.message.event.MessageListener;
-import sun.security.krb5.internal.i;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -9,11 +8,6 @@ import com.idega.presentation.ui.Window;
 
 /**
  * @author laddi
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class MessageSubmitWindow extends Window {
 
