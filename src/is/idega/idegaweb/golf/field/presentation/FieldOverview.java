@@ -44,6 +44,9 @@ public class FieldOverview extends GolfBlock {
   private ICPage gameHandicapPage;
   public final static String PRM_FIELD_ID = "field_id";
   private int iMaxImageWidth = 0;
+  
+  private ICPage holeViewPage;
+  private ICPage fieldViewPage;
 
 	public void main(IWContext modinfo) throws Exception {
 		String union_id = modinfo.getParameter("union_id");
@@ -138,6 +141,7 @@ public class FieldOverview extends GolfBlock {
 			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", String.valueOf(field.getID()), "tee_color_id", String.valueOf(teeColor[a].getIntColumnValue("tee_color_id")), "hole_number");
 
 			Text teeColorName = getSmallText(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
+			teeColorName.setFontColor("#000000");
 			myTable.add(teeColorName, 1, a + 2);
 
 			int teeLength = 0;
@@ -148,6 +152,7 @@ public class FieldOverview extends GolfBlock {
 
 				int holeLength = tee[b].getIntColumnValue("tee_length");
 				Text lengthText = getSmallText(String.valueOf(holeLength));
+				lengthText.setFontColor("#000000");
 				myTable.add(lengthText, b + 2, a + 2);
 
 				teeLength += tee[b].getIntColumnValue("tee_length");
@@ -162,7 +167,9 @@ public class FieldOverview extends GolfBlock {
 					par += tee[b].getPar();
 
 					Text parText = getSmallText(String.valueOf(holePar));
+					parText.setFontColor("#000000");
 					Text handicapText = getSmallText("" + ((int) tee[b].getFloatColumnValue("handicap")));
+					handicapText.setFontColor("#000000");
 					myTable.add(handicapText, b + 2, a + 3);
 					myTable.add(parText, b + 2, a + 4);
 				}
@@ -172,10 +179,16 @@ public class FieldOverview extends GolfBlock {
 					Text totalText = getSmallHeader(getResourceBundle().getLocalizedString("field.total", "Total"));
 					Text rating = getSmallText(tee[b].getStringColumnValue("course_rating") + "/" + tee[b].getStringColumnValue("slope"));
 					Text teeLengthText = getSmallText(String.valueOf(teeLength));
-					Text totalPar = getSmallHeader(String.valueOf(par));
+					teeLengthText.setFontColor("#000000");
+					Text totalPar = getSmallText(String.valueOf(par));
+					totalPar.setFontColor("#000000");
 					Text ratingText = getSmallHeader(getResourceBundle().getLocalizedString("field.cr_slope", "CR/Slope"));
-					Text parText2 = getSmallHeader(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
-					Text handicap = getSmallHeader(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
+					Text parText2 = getSmallText(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
+					parText2.setFontColor("#000000");
+					parText2.setBold(true);
+					Text handicap = getSmallText(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
+					handicap.setFontColor("#000000");
+					handicap.setBold(true);
 
 					myTable.add(rating, b + 4, a + 2);
 					myTable.add(teeLengthText, b + 3, a + 2);
@@ -207,7 +220,7 @@ public class FieldOverview extends GolfBlock {
 			}
 
 			else if (a > teeColor.length + 1) {
-				if (a == myTable.getRows()) {
+				if (a != myTable.getRows()) {
 					myTable.setRowStyleClass(a, getDarkRowClass());
 				}
 				else {
@@ -216,6 +229,7 @@ public class FieldOverview extends GolfBlock {
 			}
 		}
 
+		myTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
 		myTable.setWidth(Table.HUNDRED_PERCENT);
 		myTable.setCellpadding(0);
 		myTable.setCellspacing(0);
@@ -291,6 +305,9 @@ public class FieldOverview extends GolfBlock {
 
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("field_id", field_id));
+		if (holeViewPage != null) {
+			myForm.setPageToSubmitTo(holeViewPage);
+		}
 
 		DropdownMenu holeChooser = new DropdownMenu("hole_number");
 
@@ -432,6 +449,9 @@ public class FieldOverview extends GolfBlock {
 		Link courseOverview = new Link(getResourceBundle().getLocalizedString("field.field_overview", "-&nbsp;Field&nbsp;overview&nbsp;-"));
 		courseOverview.addParameter("field_id", field_id);
 		courseOverview.setToMaintainAllParameter(false);
+		if (fieldViewPage != null) {
+			courseOverview.setPage(fieldViewPage);
+		}
 
 		Link nextHole = new Link(getResourceBundle().getLocalizedString("field.next_hole", "Next&nbsp;hole&nbsp;&gt;&gt;"));
 		nextHole.addParameter("hole_number", String.valueOf(Integer.parseInt(hole_number) + 1));
@@ -477,5 +497,17 @@ public class FieldOverview extends GolfBlock {
 	 */
 	public void setMaxImageWidth(int maxImageWidth) {
 		iMaxImageWidth = maxImageWidth;
+	}
+	/**
+	 * @param fieldViewPage The fieldViewPage to set.
+	 */
+	public void setFieldViewPage(ICPage fieldViewPage) {
+		this.fieldViewPage = fieldViewPage;
+	}
+	/**
+	 * @param holeViewPage The holeViewPage to set.
+	 */
+	public void setHoleViewPage(ICPage holeViewPage) {
+		this.holeViewPage = holeViewPage;
 	}
 }
