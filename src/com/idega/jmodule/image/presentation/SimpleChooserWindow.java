@@ -27,12 +27,12 @@ import com.idega.util.idegaTimestamp;
     }
 
     public void  main(ModuleInfo modinfo) throws Exception{
-      super.main(modinfo);
       SimpleChooser SC = new SimpleChooser();
       SC.setToIncludeLinks(false);
       add(SC);
       addHeaderObject(SC.getLinkTable());
       setTitle("Image Chooser");
+      addTitle("Image Chooser" );
 
       setParentToReload();
     }

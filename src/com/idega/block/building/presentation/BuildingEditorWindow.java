@@ -24,6 +24,7 @@ public class BuildingEditorWindow extends IWAdminWindow {
     add(BE);
     BE.setToIncludeLinks(false);
     setTitle("Building Editor");
+    addTitle("Building Editor");
     addHeaderObject(BE.getLinkTable(modinfo));
   }
 }
