@@ -314,7 +314,7 @@ public class CampusContracts extends Block{
           U = new User(C.getUserId().intValue());
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
-          T.add(Edit.formatText(i+1),col++,row);
+          T.add(getEditLink(Edit.formatText(i+1),C.getID()),col++,row);
           //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
           T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
           if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
@@ -433,6 +433,13 @@ public class CampusContracts extends Block{
     Link L = new Link(MO);
     L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);
+    return L;
+  }
+
+  public static Link getEditLink(PresentationObject MO,int contractId){
+    Link L = new Link(MO);
+    L.setWindowToOpen(ContractEditWindow.class);
+    L.addParameter("contract_id",contractId);
     return L;
   }
 

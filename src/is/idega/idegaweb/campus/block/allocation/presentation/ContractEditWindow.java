@@ -40,7 +40,7 @@ import com.idega.util.SendMail;
  * @version 1.0
  */
 
-public class ContractReSignWindow extends Window{
+public class ContractEditWindow extends Window{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
@@ -62,26 +62,22 @@ public class ContractReSignWindow extends Window{
     Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
   */
 
-  public ContractReSignWindow() {
-    setWidth(300);
-    setHeight(300);
+  public ContractEditWindow() {
+    setWidth(530);
+    setHeight(370);
     setResizable(true);
   }
 
   protected void control(IWContext iwc){
-
+    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if(isAdmin || isLoggedOn){
-      if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-        SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
-      }
-
+    if(isAdmin){
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
-        doReSignContract(iwc);
+        doSaveContract(iwc);
       }
-      add(getSignatureTable(iwc));
+      add(getEditTable(iwc));
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -99,12 +95,12 @@ public class ContractReSignWindow extends Window{
     return LinkTable;
   }
 
-  private PresentationObject getSignatureTable(IWContext iwc){
+  private PresentationObject getEditTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter("contract_id"));
     //Table T = new Table(2,8);
     DataTable T = new DataTable();
     T.setWidth("100%");
-    T.addTitle(iwrb.getLocalizedString("contract_resign","Contract resign"));
+    T.addTitle(iwrb.getLocalizedString("contract_info","Contract info"));
     T.addButton(new CloseButton(iwrb.getImage("close.gif")));
     T.addButton(new SubmitButton(iwrb.getImage("save.gif"),"save"));
 
@@ -128,46 +124,64 @@ public class ContractReSignWindow extends Window{
           T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
           T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
+          DateInput from = new DateInput("from_date",true);
+          if(eContract.getValidFrom()!=null)
+            from.setDate(eContract.getValidFrom());
+          Edit.setStyle(from);
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
-          T.add(Edit.formatText(new idegaTimestamp(eContract.getValidFrom()).getLocaleDate(iwc)),2,row);
+          T.add(from,2,row);
           row++;
+          DateInput to = new DateInput("to_date",true);
+          if(eContract.getValidTo()!=null)
+            to.setDate(eContract.getValidTo());
+          Edit.setStyle(to);
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
-          T.add(Edit.formatText(new idegaTimestamp(eContract.getValidTo()).getLocaleDate(iwc)),2,row);
+          T.add(to,2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,row);
-          idegaTimestamp movdate = eContract.getMovingDate()!=null?new idegaTimestamp(eContract.getMovingDate()):null;
-          DateInput movDate = new DateInput("mov_date",true);
-          idegaTimestamp moving = idegaTimestamp.RightNow();
-          int termofnotice = 1;
-          if(SysProps !=null)
-            termofnotice = (int)SysProps.getTermOfNoticeDays();
-          moving.addDays(termofnotice);
-
-          if(moving.isLaterThan(new idegaTimestamp(eContract.getValidTo())))
-            movDate.setDate(eContract.getValidTo());
-          else
-            movDate.setDate(moving.getSQLDate());
-
-          //Edit.setStyle(movDate);
-          movDate.setStyleAttribute("style",Edit.styleAttribute);
-
-          if(movdate !=null )
-            movDate.setDate(movdate.getSQLDate());
-          if(isAdmin || isContractUser)
-            T.add(movDate,2,row);
-          else if(movdate !=null)
-            T.add(Edit.formatText(movdate.getLocaleDate(iwc)),2,row);
+          DateInput moving = new DateInput("moving_date",true);
+          if(eContract.getMovingDate()!=null)
+            moving.setDate(eContract.getMovingDate());
+          Edit.setStyle(moving);
+          T.add(Edit.formatText(iwrb.getLocalizedString("moving_to","Moving date")),1,row);
+          T.add(moving,2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("new_address","New address")),1,row);
-          T.add(new TextInput("new_address"),2,row);
+          TimestampInput deliver = new TimestampInput("deliver_date",true);
+          if(eContract.getDeliverTime()!=null)
+            deliver.setTimestamp(eContract.getDeliverTime());
+          Edit.setStyle(deliver);
+          T.add(Edit.formatText(iwrb.getLocalizedString("deliver_date","Deliver date")),1,row);
+          T.add(deliver,2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("new_zip","New zip")),1,row);
-          T.add(new TextInput("new_zip"),2,row);
+          TimestampInput returnd = new TimestampInput("return_date",true);
+          if(eContract.getReturnTime()!=null)
+            returnd.setTimestamp(eContract.getReturnTime());
+          Edit.setStyle(returnd);
+          T.add(Edit.formatText(iwrb.getLocalizedString("return_date","Return date")),1,row);
+          T.add(returnd,2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("new_phone","New phone")),1,row);
-          T.add(new TextInput("new_phone"),2,row);
+          T.add(Edit.formatText(iwrb.getLocalizedString("has_key","Has key")),1,row);
+          //T.add(status,2,row);
+          T.add(Edit.formatText(getStatus(eContract.getIsRented()?"yes":"no")),2,row);
           row++;
-
+          //DropdownMenu status = getStatusDrop("status",eContract.getStatus());
+          //Edit.setStyle(status);
+          T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),1,row);
+          //T.add(status,2,row);
+          T.add(Edit.formatText(getStatus(eContract.getStatus())),2,row);
+          row++;
+          T.add(Edit.formatText(iwrb.getLocalizedString("status_date","Status date")),1,row);
+          if(eContract.getStatusDate()!=null){
+            String sdate = eContract.getStatusDate().toString();
+            T.add(Edit.formatText(sdate),2,row);
+          }
+          row++;
+          TextArea info = new TextArea("info");
+          if(eContract.getResignInfo()!=null)
+            info.setContent(eContract.getResignInfo());
+          T.add(Edit.formatText(iwrb.getLocalizedString("resign_info","Resign info")),1,row);
+          Edit.setStyle(info);
+          T.add(info,2,row);
+          row++;
 
         }
       }
@@ -179,21 +193,42 @@ public class ContractReSignWindow extends Window{
     return F;
   }
 
-  private void doReSignContract(IWContext iwc){
+  private void doSaveContract(IWContext iwc){
+    try{
 
-    int id = Integer.parseInt(iwc.getParameter("contract_id"));
-    String sInfo = iwc.getParameter("resign_info");
-    if(sInfo == null)
-      sInfo = "";
-    String sMovDate = iwc.getParameter("mov_date");
-    idegaTimestamp movDate = null;
-    if(sMovDate !=null && sMovDate.length() == 10 )
-      movDate = new idegaTimestamp(sMovDate);
-    if(isAdmin)
-      ContractBusiness.endContract(id,movDate,sInfo);
-    else if(eUser !=null)
-      ContractBusiness.resignContract(id,movDate,sInfo);
-    close();
+      int id = Integer.parseInt(iwc.getParameter("contract_id"));
+      Contract eContract = new Contract(id);
+
+      idegaTimestamp from = null,to = null,moving = null,deliver = null, retur = null;
+      String sfrom = iwc.getParameter("from_date");
+      if(sfrom!=null && sfrom.length() == 10)
+        eContract.setValidFrom(new idegaTimestamp(sfrom).getSQLDate());
+      String to_date = iwc.getParameter("to_date");
+      if(to_date!=null && to_date.length() == 10)
+        eContract.setValidTo(new idegaTimestamp(to_date).getSQLDate());
+      String moving_date = iwc.getParameter("moving_date");
+      if(moving_date!=null && moving_date.length() == 10)
+        eContract.setMovingDate(new idegaTimestamp(moving_date).getSQLDate());
+      String deliver_date = iwc.getParameter("deliver_date");
+      if(deliver_date!=null && deliver_date.length() > 0)
+        eContract.setDeliverTime(new idegaTimestamp(deliver_date).getTimestamp());
+      String return_date = iwc.getParameter("return_date");
+      if(return_date!=null && return_date.length() > 0)
+        eContract.setReturnTime(new idegaTimestamp(return_date).getTimestamp());
+      if(iwc.isParameterSet("status")){
+        eContract.setStatus((iwc.getParameter("status")));
+        eContract.setStatusDate(idegaTimestamp.RightNow().getSQLDate());
+      }
+      if(iwc.isParameterSet("info")){
+        eContract.setResignInfo((iwc.getParameter("info")));
+      }
+
+      eContract.update();
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+    }
+
   }
 
   private void doAddEmail( int iUserId ,IWContext iwc){
@@ -231,5 +266,31 @@ public class ContractReSignWindow extends Window{
     isAdmin = iwc.hasEditPermission(this);
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
+  }
+
+  private String getStatus(String status){
+    String r = "";
+    char c = status.charAt(0);
+    switch (c) {
+      case 'C': r = iwrb.getLocalizedString("created","Created"); break;
+      case 'P': r = iwrb.getLocalizedString("printed","Printed"); break;
+      case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
+      case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
+      case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
+      case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
+    }
+    return r;
+  }
+
+  private DropdownMenu getStatusDrop(String name,String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("C",getStatus("C"));
+    drp.addMenuElement("P",getStatus("P"));
+    drp.addMenuElement("S",getStatus("S"));
+    drp.addMenuElement("R",getStatus("R"));
+    drp.addMenuElement("T",getStatus("T"));
+    drp.addMenuElement("E",getStatus("E"));
+    drp.setSelectedElement(selected);
+    return drp;
   }
 }

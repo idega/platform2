@@ -166,10 +166,12 @@ public class CampusAllocator extends Block{
         }
         // save allocation
         else if(iwc.getParameter("save_allocation")!=null){
-          if(saveAllocation(iwc))
-            System.err.println("vistadist");
-          else
-             System.err.println("vistadist ekki");
+          String msg = saveAllocation(iwc);
+          //System.err.println(msg);
+          Text Te = formatText(msg);
+          Te.setFontSize(3);
+          Te.setFontColor("#FF0000");
+          Frame.add( Te,1,row++ );
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
         }
         // delete allocation
@@ -866,8 +868,8 @@ public class CampusAllocator extends Block{
     return myForm;
   }
 
-  private boolean saveAllocation(IWContext iwc){
-    boolean returner = false;
+  private String saveAllocation(IWContext iwc){
+    String returner = iwrb.getLocalizedString("allocation_failure","Allocation failure");
     String sContractId = iwc.getParameter("contract_id");
     String sApartmentId = iwc.getParameter("apartmentid");
     String sApplicantId = iwc.getParameter("applicantid");
@@ -879,8 +881,10 @@ public class CampusAllocator extends Block{
     if( sDateFrom!=null && sDateTo!=null){
       idegaTimestamp from = new idegaTimestamp(sDateFrom);
       idegaTimestamp to = new idegaTimestamp(sDateTo);
-      if(mustBeFrom!=null && mustBeFrom.isLaterThanOrEquals(from))
-        System.err.println("Contracts overlap");//return false;
+      if(mustBeFrom!=null && mustBeFrom.isLaterThanOrEquals(from)){
+        returner = iwrb.getLocalizedString("alloc_contract_overlap","Contracts overlap !!");
+        return returner;
+      }
       if(sApplicantId !=null && sApartmentId!=null ){
         int iApartmentId = Integer.parseInt(sApartmentId);
         int iApplicantId = Integer.parseInt(sApplicantId);
@@ -895,7 +899,10 @@ public class CampusAllocator extends Block{
         if(L == null && eApplicant != null ){
           User eUser = makeNewUser(eApplicant);
           if(eUser!=null){
-            returner = makeNewContract(eUser,eApplicant,iApartmentId,from,to);
+            if(makeNewContract(eUser,eApplicant,iApartmentId,from,to))
+              returner = iwrb.getLocalizedString("alloc_was_saved","Contract was saved");
+            else
+              returner = iwrb.getLocalizedString("alloc_not_saved","Contract was not saved");
           }
         }
       }
@@ -912,7 +919,7 @@ public class CampusAllocator extends Block{
             eContract.setApartmentId(iApartmentId);
           }
           eContract.update();
-          returner = true;
+          returner = iwrb.getLocalizedString("alloc_was_updated","Contract updated");
         }
         catch(SQLException ex){
           ex.printStackTrace();
