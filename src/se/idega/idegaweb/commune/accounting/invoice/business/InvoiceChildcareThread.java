@@ -191,7 +191,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
 					User child = schoolClassMember.getStudent();
-					errorRelated.append("SchoolClassMmeberid "+schoolClassMember.getPrimaryKey());
+					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("SchoolType "+schoolType.getName());
@@ -207,12 +207,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(age.getYears())));
-					String employment = "";
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
-						employment = employmentType.getLocalizationKey();
-						errorRelated.append("EmploymentType "+employment);
+						errorRelated.append("EmploymentType "+employmentType.getLocalizationKey());
 					}
 					errorRelated.append("Category:"+category.getCategory());
 					errorRelated.append("PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT);
@@ -424,7 +422,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (UserInfoService.SiblingOrderException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
+						createNewErrorMessage(errorRelated.toStringForWeb() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					} else{
 						createNewErrorMessage(contract.getChild().getName() + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");
 					}
@@ -467,6 +465,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					e.printStackTrace();
 					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
 				}
+				errorRelated.logToConsoleCompact();
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -951,7 +950,6 @@ public class InvoiceChildcareThread extends BillingThread{
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProvider(school);
-        //		invoiceRecord.setContractId(contract.getContractID());
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMmeber());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(placementTimes.getDays());
@@ -965,6 +963,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setAmountVAT(postingDetail.getVat()*placementTimes.getMonths());
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
+		invoiceRecord.setSchoolType(contract.getSchoolClassMmeber().getSchoolType());
+		errorRelated.append("Order ID = "+postingDetail.getOrderID(),1);
 		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		try {
 		    RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
