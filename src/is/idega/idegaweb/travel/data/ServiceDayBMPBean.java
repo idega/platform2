@@ -158,33 +158,13 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   
 
   public int[] ejbHomeGetDaysOfWeek(int serviceId) throws RemoteException, RemoveException, FinderException{
-/*    int[] returner = {};
-    try {
-        ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek());
-        returner = new int[days.length];
-        for (int i = 0; i < days.length; i++) {
-          if (days[i].getDayOfWeek() == -1) {
-            days[i].remove();
-            debug("deleting ServiceDay with dayOfWeek is NULL");
-          }else {
-            returner[i] = days[i].getDayOfWeek();
-          }
-        }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
-    return returner;
-*/
     int[] returner = {};
     try {
     		IDOQuery query = this.idoQuery();
     		query.appendSelect().append(getColumnNameDayOfWeek()).appendFrom().append(getEntityName())
     		.appendWhereEquals(getColumnNameServiceId(), new Integer(serviceId));
 				String[] days = SimpleQuerier.executeStringQuery(query.toString());
-    		//Collection coll = this.find
-    		//Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(),Integer.toString(serviceId));
-    //    ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(), Integer.toString(serviceId),getColumnNameDayOfWeek());
-    		if (days != null && days.length > 0) {
+   		if (days != null && days.length > 0) {
 	        returner = new int[days.length];
 	        for (int i = 0; i < days.length; i++) {
 	          returner[i] = Integer.parseInt(days[i]);
@@ -202,32 +182,6 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   public Object ejbFindServiceDay(int serviceId, IWTimestamp stamp) throws FinderException, RemoteException{
     return this.ejbFindByServiceAndDay(serviceId, stamp.getDayOfWeek());
   }
-  /**
-   * returns null if nothing...
-   */
-  /*
-  public ServiceDay getServiceDay(int serviceId, int dayOfWeek) throws FinderException, RemoteException{
-    try {
-			Collection coll = this.idoFindAllIDsByColumnsBySQL(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
-      //ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
-      //Collection coll = super.idoFindIDsBySQL("Select "+this.getIDColumnName()+" from "+getTableName()+" where "+this.getColumnNameServiceId()+" = "+serviceId+" and "+this.getColumnNameDayOfWeek()+" = "+dayOfWeek);
-      if (coll != null && coll.size() > 0) {
-        ServiceDayHome serviceDayHome = (ServiceDayHome)IDOLookup.getHome(ServiceDay.class);
-        Iterator iter = coll.iterator();
-        return (ServiceDay) serviceDayHome.findByPrimaryKey(iter.next());
-      }
-      //if (days.length == 1) {
-        //return days[0];
-      //}else if (days.length > 1) {
-        //System.err.println("ServiceDay : getIfDay : Primary Key Error");
-      //}
-    }catch (FinderException sql) {
-      throw new FinderException(sql.getMessage());
-    }
-    return null;
-    //    ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
-  }
-*/
   
   public boolean ejbHomeGetIfDay(int serviceId, int dayOfWeek) {
     boolean returner = false;
@@ -257,21 +211,8 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   }
 
   public boolean ejbHomeDeleteService(int serviceId) throws RemoteException , RemoveException, FinderException{
-/*    Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(serviceId));
-    Iterator days = coll.iterator();
-    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-    ServiceDay sDay;
-    while (days.hasNext()) {
-      sDay = sDayHome.findByPrimaryKey(days.next());
-//      sDay = (ServiceDay) this.ejbFindByPrimaryKey(days.next());
-      sDay.remove();
-    }*/
-
-
     try {
     	int[] days = this.ejbHomeGetDaysOfWeek(serviceId);
-			//Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(),Integer.toString(serviceId));
-//    ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(), Integer.toString(serviceId),getColumnNameDayOfWeek());
 			if (days != null && days.length > 0) {
 					ServiceDayHome serviceDayHome = (ServiceDayHome)IDOLookup.getHome(ServiceDay.class);
 					ServiceDay sd;
@@ -281,12 +222,6 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
 						sd.store();
 					}
 			}
-      //ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumn(getColumnNameServiceId(),Integer.toString(serviceId));
-//      ServiceDay[] days = (ServiceDay[]) (((is.idega.idegaweb.travel.data.ServiceDayHome)com.idega.data.IDOLookup.getHomeLegacy(ServiceDay.class)).createLegacy()).findAllByColumn(getColumnNameServiceId(), serviceId);
-/*
-      for (int i = 0; i < days.length; i++) {
-          days[i].remove();
-      }*/
       
       return true;
     }catch (FinderException sql) {

@@ -1,12 +1,14 @@
 package is.idega.idegaweb.travel.data;
 
-import javax.ejb.FinderException;
 import java.rmi.RemoteException;
-import com.idega.data.*;
-import com.idega.block.trade.stockroom.data.Reseller;
-import java.sql.Timestamp;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.data.IDOQuery;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -116,10 +118,21 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
     return getIntColumnValue(getColumnNameExpiresDaysBeforeDeparture());
   }
   
-  public Collection ejbHomeFindByProductId(int productId) throws FinderException {
+  public Collection ejbFindByProductId(int productId) throws FinderException {
   	return this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(), Integer.toString(productId));
   }
 
+  public Collection ejbFindByResellerId(int resellerID) throws FinderException {
+  	return super.idoFindAllIDsByColumnBySQL(getColumnNameResellerId(), Integer.toString(resellerID));
+  }
+  
+  public Object ejbFindByProductAndReseller(int productId, int resellerId) throws FinderException {
+  	IDOQuery query = idoQuery();
+  	query.appendSelectAllFrom(this)
+		.appendWhereEquals(getColumnNameServiceId(), productId)
+		.appendAndEquals(getColumnNameResellerId(), resellerId);
+  	return this.idoFindOnePKByQuery(query);
+  }
 
   public static String getContractTableName() { return "TB_CONTRACT";}
   public static String getColumnNameServiceId() { return "TB_SERVICE_ID";}

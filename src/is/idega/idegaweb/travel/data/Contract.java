@@ -12,7 +12,6 @@ public interface Contract extends com.idega.data.IDOEntity
  public is.idega.idegaweb.travel.data.Service getService()throws java.rmi.RemoteException,javax.ejb.FinderException;
  public int getServiceId();
  public java.sql.Timestamp getTo();
- public void initializeAttributes();
  public void setAlotment(int p0);
  public void setDiscount(java.lang.String p0);
  public void setExpireDays(int p0);
