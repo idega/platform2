@@ -78,8 +78,9 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 	 */
 	public String getDisplayNameOfValue(Object value, IWContext iwc) {
 		String displayName = "";
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if (value != null) {
-			IWResourceBundle iwrb = getResourceBundle(iwc);
+			
 			if(TYPE_MULTI_DIVISION_CLUB.equals(value)) {
 				return iwrb.getLocalizedString(LOCALIZED_MULTI_DIVISION_CLUB, "Multi Division Club");
 			} else if(TYPE_SINGLE_DIVISION_CLUB.equals(value)) {
@@ -91,6 +92,9 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 			} else if(TYPE_INACTIVE_CLUB.equals(value)) {
 				return iwrb.getLocalizedString(LOCALIZED_INACTIVE_CLUB, "Inactive Club");
 			}
+		}
+		else{
+			displayName = iwrb.getLocalizedString("all_club_types", "All types");
 		}
 		return displayName;
 	}
