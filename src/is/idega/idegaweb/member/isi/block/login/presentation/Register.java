@@ -253,7 +253,7 @@ public class Register extends Block {
 				user.store();
 			}
 			LoginBusiness.changeUserPassword(user, password);
-			msg = sendMessage(user, kt, password);
+			msg = sendMessage(user, kt, password, hintQ, hintA);
 			if(msg!=null) {
 				_mailError = true;
 			}
@@ -320,16 +320,26 @@ public class Register extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(_iwc.getApplicationContext(),UserBusiness.class);
 	}
 	
-	private String sendMessage(User user, String login, String password) {
+	private String sendMessage(User user, String login, String password, String hintQ, String hintA) {
 		String server = _iwb.getProperty("register.email_server");
 		
 		if(server == null) {
 			return _iwrb.getLocalizedString("register.no_email_server_configured", "Couldn't send email notification of registration (no server defined)");
 		}
 		
-		String letter = _iwrb.getLocalizedString("register.email_body", "You have been registered on Felix.\nUsername : {0} \nPassword: {1} \n");
+		String letter;
+		Object[] objs;
+		if(hintQ!=null && hintQ.length()>0 && hintA!=null && hintA.length()>0 ) {
+			// hintstuff in email
+			letter = _iwrb.getLocalizedString("register.email_body_with_hint", "You have been registered on Felix.\nUsername : {0} \nPassword: {1} \nYou supplied a hint question and answer\nQuestion: {2} \nAnswer:   {3} \n");
+			objs = new String[] {login,password,hintQ,hintA};
+		} else {
+			// no hintstuff in email
+			letter = _iwrb.getLocalizedString("register.email_body", "You have been registered on Felix.\nUsername: {0} \nPassword: {1} \n");
+			objs = new String[] {login,password};
+		}
 		
-		Object[] objs = {login,password};
+		
 		
 		if (letter != null) {
 			try {
