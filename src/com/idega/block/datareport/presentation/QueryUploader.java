@@ -22,8 +22,8 @@ import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.io.Storable;
 import com.idega.io.UploadFile;
+import com.idega.io.export.Storable;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -161,7 +161,7 @@ public class QueryUploader extends Block {
 				UserQuery userQuery = userQueryHome.findByPrimaryKey(queryToBeDownloaded);
 				ICFile realQuery = userQuery.getSource();
 				FileBusiness fileBusiness = (FileBusiness) IBOLookup.getServiceInstance(iwc, FileBusiness.class);
-				downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) realQuery);
+				downloadUrl = fileBusiness.getURLForOfferingDownload((Storable) realQuery, iwc);
 			}
 		}
 	}
