@@ -298,11 +298,20 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 			}
 			if (holderEmails != null && !holderEmails.isEmpty()) {
 				Iterator eIter = holderEmails.iterator();
-				String email;
+				String email=null;
+				Object emailObject ;
 				while (eIter.hasNext()) {
-					email = (String) eIter.next();
-					System.err.println("Sending letter to " + email);
-					SendMail.send(letter.getFrom(), email, "", "", letter.getHost(), subject, Body);
+					emailObject = eIter.next();
+					if(emailObject instanceof String)
+						email = (String)emailObject;
+					else if(emailObject instanceof Email)
+						email = ((Email)emailObject).getEmailAddress();
+					if(email!=null){
+						email = (String) eIter.next();
+						System.err.println("Sending letter to " + email);
+						SendMail.send(letter.getFrom(), email, "", "", letter.getHost(), subject, Body);
+					}
+					email = null;
 				}
 			}
 			return true;
