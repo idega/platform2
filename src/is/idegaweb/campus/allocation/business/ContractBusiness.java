@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.1 2001/09/27 11:50:36 aron Exp $
+ * $Id: ContractBusiness.java,v 1.2 2001/10/01 00:22:53 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package is.idegaweb.campus.allocation.business;
 
+import is.idegaweb.campus.allocation.SysPropsSetter;
 import is.idegaweb.campus.entity.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +29,9 @@ import com.idega.block.login.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
 import java.util.Iterator;
 import com.idega.util.SendMail;
@@ -65,8 +68,10 @@ public  class ContractBusiness {
       if(newLogin  && iGroupId > 0){
         try {
           User eUser = new User(iUserId);
-          GenericGroup gg = new GenericGroup(iGroupId);
-          gg.addTo(eUser);
+          //GenericGroup gg = new GenericGroup(iGroupId);
+          PermissionGroup pg = new PermissionGroup(iGroupId);
+          AccessControl.addUserToPermissionGroup(pg,eUser.getID());
+          //gg.addTo(eUser);
           login = LoginCreator.createLogin(eUser.getName());
           passwd = LoginCreator.createPasswd(8);
 
@@ -103,6 +108,7 @@ public  class ContractBusiness {
         }
       }
       if(sendMail){
+        SystemProperties sp = SysPropsSetter.seekProperties();
         List lEmails = UserBusiness.listOfUserEmails(iUserId);
         if(lEmails != null){
           String address = ((Email)lEmails.get(0)).getEmailAddress();
@@ -117,7 +123,17 @@ public  class ContractBusiness {
             sbody.append(passwd  );
             sbody.append("\n");
             String header = iwrb.getLocalizedString("signed_contract","Signed Contract");
-            SendMail.send("admin@campus.is","aron@idega.is","","palli@idega.is","mail.idega.is",header,sbody.toString());
+            String from = sp!=null?sp.getAdminEmail():"admin@campus.is";
+            if(from==null || "".equals(from))
+              from = "admin@campus.is";
+            String host = sp != null?sp.getEmailHost():"mail.idega.is";
+            if(host ==null || "".equals(host))
+              host = "mail.idega.is";
+            if(address == null || "".equals(address))
+              address = "aron@idega.is";
+            SendMail.send(from,address,"","",host,header,sbody.toString());
+
+            //SendMail.send("admin@campus.is","aron@idega.is","","","mail.idega.is",header,sbody.toString());
           }
           catch (Exception ex) {
             ex.printStackTrace();

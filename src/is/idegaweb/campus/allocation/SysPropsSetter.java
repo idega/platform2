@@ -78,6 +78,13 @@ public class SysPropsSetter extends ModuleObjectContainer{
 
   }
 
+  public static SystemProperties getSystemProperties(ModuleInfo modinfo){
+    if(isSysPropsInMemoryElseLoad( modinfo))
+      return (SystemProperties) modinfo.getApplicationAttribute(propParameter);
+    else
+      return null;
+  }
+
   public static boolean loadSystemProperties(ModuleInfo modinfo){
     SystemProperties Props = seekProperties();
       if(Props != null){
