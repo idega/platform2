@@ -30,7 +30,7 @@ public class WorkReportOverView extends Block {
 
 
 		table.add(new WorkReportMultiEditor(), 1, 1);//this order so multieditor logic is done before the overview
-		table.add(new WorkReportOverViewStats(),2,1);
+	//	table.add(new WorkReportOverViewStats(),2,1);
 		
 		table.setWidthAndHeightToHundredPercent();
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);

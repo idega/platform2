@@ -90,7 +90,7 @@ public class WorkReportMultiEditor extends Block {
   
   
   public void main(IWContext iwc) throws Exception {
-    super.main(iwc);
+   
     IWResourceBundle iwrb = getResourceBundle(iwc);
 
     String action = parseAction(iwc);
@@ -204,11 +204,14 @@ public class WorkReportMultiEditor extends Block {
 			INACTIVE, inActiveConverter,
 			WHATS_LEFT,new WhatIsMissingConverter(),
 			CONTINUANCE_TILL,textEditorConverter,
+			"more",new MoreButtonConverter(resourceBundle),
 		};
       
       
     EntityBrowser browser = new EntityBrowser();
     browser.setWidth(browser.HUNDRED_PERCENT);
+    browser.setCellpadding(3);
+    browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReport.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     if( entities!=null && !entities.isEmpty()){
@@ -451,6 +454,31 @@ public class WorkReportMultiEditor extends Block {
 		}
 		
 	}
+	
+	class MoreButtonConverter implements EntityToPresentationObjectConverter {
+		IWResourceBundle iwrb;
+		
+			public MoreButtonConverter(IWResourceBundle iwrb) {
+				this.iwrb = iwrb;
+			}
+		
+			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc){
+				return new Text("");
+			}
+		
+			public PresentationObject getPresentationObject(Object value, EntityPath path, EntityBrowser browser, IWContext iwc){
+			
+				WorkReport report = (WorkReport)value;
+				Link moreLink = new Link(iwrb.getLocalizedString("workreportmultieditor.more_button","more"));
+				moreLink.setAsImageButton(true);
+				moreLink.addParameter(WorkReportWindow.ACTION,WorkReportWindow.ACTION_REPORT_OVERVIEW_CLOSE_VIEW);
+				moreLink.addParameter("wr_id",report.getPrimaryKey().toString());
+				
+				return moreLink;
+			}
+		
+		}
+	
 	
 	/** 
 	 * CheckBoxConverterHelper:

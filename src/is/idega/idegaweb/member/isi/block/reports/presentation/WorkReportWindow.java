@@ -46,6 +46,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION_IMPORT_ACCOUNT = "iwme_wr_act_b8";
 	protected static final String ACTION_IMPORT_BOARD = "iwme_wr_act_b9";
 	protected static final String ACTION_REPORT_OVERVIEW = "iwme_wr_act_b10";
+	protected static final String ACTION_REPORT_OVERVIEW_CLOSE_VIEW = "iwme_wr_act_b10.2";
 	protected static final String ACTION_CLOSE_REPORT = "iwme_wr_act_b11";
 	protected static final String ACTION_STATISTICS = "iwme_wr_act_b12";
 	protected static final String ACTION_CREATE_REPORTS = "iwme_wr_act_b13";
@@ -87,7 +88,9 @@ public class WorkReportWindow extends IWAdminWindow {
 		table.setCellpaddingAndCellspacing(0);
 
 		//add left menu of links
-		table.add(getMenuTable(iwc), 1, 1);
+		Table menuTable = getMenuTable(iwc);
+		
+		table.add(menuTable, 1, 1);
 
 		add(table);
 
@@ -135,6 +138,13 @@ public class WorkReportWindow extends IWAdminWindow {
 			else if (action.equals(ACTION_REPORT_OVERVIEW)) {
 				WorkReportOverView overView = new WorkReportOverView();
 				table.add(overView,2,1);	//not a selector
+				menuTable.add(new WorkReportOverViewStats(),1,15);
+				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
+			}
+			else if( action.equals(ACTION_REPORT_OVERVIEW_CLOSE_VIEW)) {
+				
+				table.add(new WorkReportOverViewCloseView(),2,1);	//not a selector
+				menuTable.add(new WorkReportOverViewStats(),1,15);
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
@@ -215,9 +225,9 @@ public class WorkReportWindow extends IWAdminWindow {
 	private Table getMenuTable(IWContext iwc) {
 		String type = getUserType();
 
-		Table menu = new Table(1, 14);
+		Table menu = new Table(1, 15);
 		menu.setWidth(Table.HUNDRED_PERCENT);
-		menu.setHeight(Table.HUNDRED_PERCENT);
+		menu.setCellpadding(3);
 		menu.setCellspacing(0);
 
 		Text operations = formatHeadline(iwrb.getLocalizedString("workreportwindow.operations", "Operations"));
@@ -342,6 +352,11 @@ public class WorkReportWindow extends IWAdminWindow {
 			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
 				menu.add(createReports, 1, 13);
 			}
+			
+
+			
+			
+			
 		}
 		
 		return menu;

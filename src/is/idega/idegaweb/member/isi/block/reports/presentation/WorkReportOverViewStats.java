@@ -31,6 +31,7 @@ public class WorkReportOverViewStats extends Block {
 
 	public void main(IWContext iwc) throws Exception {
 		Table table = new Table(2,14);
+		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setLineFrame(true);
 		table.setRowColor(1,	COLOR_MIDDLE );
 		table.setCellspacing(0);
