@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.47 2003/12/07 20:24:09 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.48 2003/12/09 11:55:12 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -778,10 +778,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @return the Posting strings as String[]
 	 */
 	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date) throws PostingException{
-		return getPostingStrings(category, type, regSpecType, provider, date, null);
+		return getPostingStrings(category, type, regSpecType, provider, date, -1);
 	}
 
-	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, String schoolYear) throws PostingException{
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, int schoolYearId) throws PostingException{
 		if (type == null){
 			throw new PostingException("postingException.missing_school_tpe", "No school type found");
 		} else if (category == null){
@@ -800,12 +800,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				findByPrimaryKeyIDO(category.getPrimaryKey());				
 			//Set the posting strings
 	
-			PostingParameters parameters;
-			int year = 0;
-			if(schoolYear!=null){
-				year = parseYear(schoolYear);
-			}
-			parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), year);
+			PostingParameters  parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId);
 //			System.out.println("Parameters:"+parameters.getPostingString()+"+"+parameters.getDoublePostingString()+".");
 //			System.out.println("Parameters:"+provider.getOwnPosting()+"+"+provider.getDoublePosting()+".");
 //			System.out.println("Parameters:"+categoryPosting.getAccount()+"+"+categoryPosting.getCounterAccount()+".");

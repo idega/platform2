@@ -58,11 +58,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/09 08:32:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/09 11:55:12 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -269,8 +269,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                + "\n  RegSpecType "+ ((Integer) regSpecType.getPrimaryKey()).intValue()
                                + "\n  provider "+ provider.getSchool().getName()
                                + "\n  Date "+ currentDate.toString()
+                               + "\n  SchoolYear "+schoolClassMember.getSchoolYear().getName()
                                );
-			String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
+			String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue ());
             //								dispTime("about to create payment record");
 			createPaymentRecord(postingDetail, postings[0], postings[1]);
             //								dispTime("created payment record");
@@ -349,7 +350,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				log.info("Found regulation '"+regulation.getName()+"' for resource "+resource.getResource().getResourceName());
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
+				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,((Integer) schoolClassMember.getSchoolYear().getPrimaryKey ()).intValue());
 				createPaymentRecord(postingDetail, postings[0], postings[1]);
 				log.info("Payment record created "+postingDetail.getTerm());
 			} catch (BruttoIncomeException e) {
@@ -378,7 +379,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
                 Regulation regulation = (Regulation) regulationForTypeIter.next();
                 PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
                 RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-                String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
+                String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, ((Integer)schoolClassMember.getSchoolYear().getPrimaryKey()).intValue ());
                 createPaymentRecord(postingDetail, postings[0], postings[1]);
                 System.out.println("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
             } catch (BruttoIncomeException e) {
@@ -406,7 +407,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				Regulation regulation = (Regulation) regulationForTypeIter.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
+				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,((Integer)schoolClassMember.getSchoolYear().getPrimaryKey ()).intValue());
 				createPaymentRecord(postingDetail, postings[0], postings[1]);
 				System.out.println("created payment info for oppen verksamhet " + schoolClassMember.getStudent().getName());
 			} catch (BruttoIncomeException e) {

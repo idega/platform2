@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.23 2003/12/08 16:13:56 staffan Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.24 2003/12/09 11:55:12 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.23 2003/12/08 16:13:56 staffan Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.24 2003/12/09 11:55:12 staffan Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -364,6 +364,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			sql.appendAnd().append(COLUMN_PERIODE_TO);
 			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
 		} else {
+            logDebug ("No date set in ejbFindPostingParameter (null"
+                      + act_id + ", " + reg_id + ", " + com_id + ", " 
+                      + com_bel_id + ", "	+ school_year);
 			return null;
 		}
 
@@ -421,6 +424,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			sql.appendAnd().append(COLUMN_SCHOOL_YEAR2_ID);
 			sql.appendGreaterThanOrEqualsSign().append("'"+school_year+"'");
 		}
+
 		return idoFindOnePKByQuery(sql);
 	}
 
