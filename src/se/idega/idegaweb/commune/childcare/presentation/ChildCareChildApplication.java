@@ -150,7 +150,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 		}
 		
-		if (!_noCheckError && !hasOffers && !hasPendingApplications) {
+		if ((!_noCheckError && !hasOffers && !hasPendingApplications) || isAdmin) {
 			Form form = new Form();
 		
 			Table table = new Table();
