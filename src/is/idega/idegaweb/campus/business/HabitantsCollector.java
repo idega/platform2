@@ -3,6 +3,7 @@ package is.idega.idegaweb.campus.business;
 import java.util.*;
 
 public class HabitantsCollector {
+  private int userID_ = -1;
   private String firstName_ = null;
   private String middleName_ = null;
   private String lastName_ = null;
@@ -12,6 +13,10 @@ public class HabitantsCollector {
   private String email_ = null;
 
   public HabitantsCollector() {
+  }
+
+  public void setUserID(int userID) {
+    userID_ = userID;
   }
 
   public void setFirstName(String firstName) {
@@ -40,6 +45,10 @@ public class HabitantsCollector {
 
   public void setEmail(String email) {
     email_ = email;
+  }
+
+  public int getUserID() {
+    return userID_;
   }
 
   public String getName() {

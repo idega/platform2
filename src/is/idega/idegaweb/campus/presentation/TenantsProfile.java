@@ -16,6 +16,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.Parameter;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -62,6 +63,7 @@ private final static String NAME="name",SSN="ssn",MOBILE="mobile",EMAIL="email",
 private final static String PARAMETER_MODE = "profile_mode";
 private final static String PARAMETER_SAVE = "save";
 private final static String PARAMETER_EDIT = "edit";
+private final static String PARAMETER_USER_ID = "campus_user_id";
 
 private boolean _isAdmin = false;
 private boolean _isLoggedOn = false;
@@ -97,11 +99,26 @@ public static final String darkRed = "#932A2D";
     }
 
     if( _isAdmin || _isLoggedOn ) {
-      try {
-        _userID = LoginBusiness.getUser(iwc).getID();
+      if ( iwc.getParameter(PARAMETER_USER_ID) != null ) {
+        try {
+          _userID = Integer.parseInt(iwc.getParameter(PARAMETER_USER_ID));
+        }
+        catch (NumberFormatException e) {
+          try {
+            _userID = LoginBusiness.getUser(iwc).getID();
+          }
+          catch (Exception ex) {
+            _userID = -1;
+          }
+        }
       }
-      catch (Exception e) {
-        _userID = -1;
+      else {
+        try {
+          _userID = LoginBusiness.getUser(iwc).getID();
+        }
+        catch (Exception e) {
+          _userID = -1;
+        }
       }
 
       contract = ContractFinder.findApplicant(_userID);
@@ -465,6 +482,10 @@ public static final String darkRed = "#932A2D";
       T.setFontStyle(styler.getStyleString());
 
     return T;
+  }
+
+  public static Parameter getUserParameter(int userID) {
+    return new Parameter(PARAMETER_USER_ID,Integer.toString(userID));
   }
 
   public String getBundleIdentifier(){

@@ -213,6 +213,7 @@ private String darkRed = "#932A2D";
           phone = null;
 
         collector = new HabitantsCollector();
+        collector.setUserID(contract.getUserId().intValue());
         collector.setApartment(apartment.getName());
         collector.setEmail(campusApplication.getEmail());
         collector.setFirstName(applicant.getFirstName());
@@ -228,14 +229,23 @@ private String darkRed = "#932A2D";
 
     HabitantsComparator comparator = new HabitantsComparator(_orderID);
     Collections.sort(vector,comparator);
+    Link adminLink = null;
+    int column = 1;
 
     for ( int a = 0; a < vector.size(); a++ ) {
+      column = 1;
       HabitantsCollector collected = (HabitantsCollector) vector.get(a);
-      table.add(formatText(collected.getName()),1,row);
-      table.add(formatText(collected.getApartment()),2,row);
-      table.add(formatText(collected.getFloor()),3,row);
-      table.add(formatText(collected.getPhone()),4,row);
-      table.add(new Link(formatText(collected.getEmail()),"mailto:"+collected.getEmail()),5,row);
+      if ( _isAdmin ) {
+        adminLink = new Link(iwb.getImage("view.gif"));
+          adminLink.addParameter(TenantsProfile.getUserParameter(collected.getUserID()));
+          adminLink.addParameter(TabAction.sAction,20);
+        table.add(adminLink,column++,row);
+      }
+      table.add(formatText(collected.getName()),column++,row);
+      table.add(formatText(collected.getApartment()),column++,row);
+      table.add(formatText(collected.getFloor()),column++,row);
+      table.add(formatText(collected.getPhone()),column++,row);
+      table.add(new Link(formatText(collected.getEmail()),"mailto:"+collected.getEmail()),column,row);
       row++;
     }
 
