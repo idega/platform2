@@ -13,16 +13,16 @@ public class SpecialCalculationTypeHomeImpl extends com.idega.data.IDOFactory im
  }
 
 
-public java.util.Collection findAllConditionTypes()throws javax.ejb.FinderException{
+public java.util.Collection findAllSpecialCalculationTypes()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((SpecialCalculationTypeBMPBean)entity).ejbFindAllConditionTypes();
+	java.util.Collection ids = ((SpecialCalculationTypeBMPBean)entity).ejbFindAllSpecialCalculationTypes();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public SpecialCalculationType findConditionType(int p0)throws javax.ejb.FinderException{
+public SpecialCalculationType findSpecialCalculationType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SpecialCalculationTypeBMPBean)entity).ejbFindConditionType(p0);
+	Object pk = ((SpecialCalculationTypeBMPBean)entity).ejbFindSpecialCalculationType(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

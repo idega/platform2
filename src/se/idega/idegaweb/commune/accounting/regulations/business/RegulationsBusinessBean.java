@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.15 2003/09/05 16:22:28 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.16 2003/09/06 08:44:39 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,18 +44,20 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ConditionType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType;
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 
 
 
 
 /**
- * @author Kjell Lindman
+ * @author Kelly Lindman
  * 
  */ 
 public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness {
 
 	private final static String KP = "regulation_spec_type_error."; // key prefix 
-	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE  = KP + "cannot_delete_reg_spec_type_regulation";
+	private final static String LP = "cacc_regulation."; // Localization prefex	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE  = KP + "cannot_delete_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE = "Kunde inte radera regelspecifikationstypen";
 	public final static String KEY_CANNOT_SAVE_REG_SPEC_TYPE  = KP + "cannot_save_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE = "Kunde inte spara regelspecifikationstypen";
@@ -66,7 +68,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Activity types
 	 * @return collection of Activity Types = School types
 	 * @see import com.idega.block.school.data.SchoolType#
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllActivityTypes() {
 		try {
@@ -84,7 +86,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Commune belonging types
 	 * @return collection of Commune belonging types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType 
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllCommuneBelongingTypes() {
 		try {
@@ -102,7 +104,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Company Types
 	 * @return collection of Company Types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType 
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllCompanyTypes() {
 		try {
@@ -119,7 +121,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Regulation specification types
 	 * @return collection of Regulation specification types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType 
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllRegulationSpecTypes() throws RegulationException {
 		try {
@@ -265,7 +267,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Conditions on a certain regulation
 	 * @return collection of conditions
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllConditionsByRegulation(Regulation r) {
 		try {
@@ -283,7 +285,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all Regulations
 	 * @return collection of Regulations
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllRegulations() {
 		try {
@@ -296,13 +298,37 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
+	/**
+	 * Gets all VAT Rules
+	 * @return collection of VAT Rules
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
+	 * @author Kelly
+	 */
+	public Collection findAllVATRules() {
+		try {
+			VATRuleHome home = getVATRuleHome();
+			Collection c = home.findAllVATRules();
+			if(c == null) {
+				VATRule vr = home.create();
+				vr.store();
+			}
+			return home.findAllVATRules();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		} catch (CreateException e) {
+			return null;
+		}
+	}	
+
 
 	/**
 	 * Gets regulations for a certain periode
 	 * @param from periode (Date)
 	 * @param to periode (Date)
 	 * @return collection of Regulations
-	 * @author Kjell
+	 * @author Kelly
 	 * 
 	 */
 	public Collection findRegulationsByPeriod(Date from, Date to) {
@@ -321,7 +347,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets a Regulation
 	 * @return Regulations
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Regulation findRegulation(int id) {
 		try {
@@ -334,11 +360,76 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
+	/**
+	 * Finds all sibling values
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of sibling numbers
+	 * @author Kelly
+	 */
+	public Collection findAllSiblingValues() {
+		ArrayList arr = new ArrayList();
+		for(int i = 0; i <= 9; i++) {
+			arr.add(new Object[]{new Integer(i), ""+i});
+		}
+		return arr; 
+	}	
 
+	/**
+	 * Finds all sibling values
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of hour intervals
+	 * @author Kelly
+	 */
+	public Collection findAllHourIntervals() {
+		ArrayList arr = new ArrayList();
+
+		arr.add(new Object[]{new Integer(1), "<10"});
+		arr.add(new Object[]{new Integer(2), "11-25"});
+		arr.add(new Object[]{new Integer(3), "0-25"});
+		arr.add(new Object[]{new Integer(4), ">25"});
+
+		return arr; 
+	}	
+
+	/**
+	 * Finds all Max Amounts
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of Max Amounts
+	 * @author Kelly
+	 */
+	public Collection findAllMaxAmounts() {
+		ArrayList arr = new ArrayList();
+		for(int i = 1; i <= 100; i++) {
+			String s = i+"%";
+			arr.add(new Object[]{new Integer(i), s});
+	}
+		return arr; 
+	}	
+
+
+	/**
+	 * Finds all discount values
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of discount values
+	 * @author Kelly
+	 */
+	public Collection findAllDiscountValues() {
+		ArrayList arr = new ArrayList();
+		for(int i = 0; i <= 100; i++) {
+			String s = i+"%";
+			arr.add(new Object[]{new Integer(i), "-" + s});
+		}
+		return arr; 
+	}	
+	
 	/**
 	 * Deletes a regulation
 	 * @param id Regulation ID
-	 * @author Kjell
+	 * @author Kelly
 	 * 
 	 */
 	public void deleteRegulation(int id) throws java.rmi.RemoteException {
@@ -352,10 +443,36 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
+	 * Gets all Special Calculation types
+	 * @return collection of Special calculation types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType#
+	 * @author Kelly
+	 */
+	public Collection findAllSpecialCalculationTypes() {
+		try {
+			SpecialCalculationTypeHome home = getSpecialCalculationTypeHome();
+			Collection c = home.findAllSpecialCalculationTypes();
+			if (c == null) {
+				SpecialCalculationType sct = home.create();
+				sct.store();
+			}
+			return home.findAllSpecialCalculationTypes();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		} catch (CreateException e) {
+			return null;
+		}
+	}	
+
+
+
+	/**
 	 * Gets all ConditionTypes
 	 * @return collection of condition types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionType#
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllConditionTypes() {
 		try {
@@ -375,15 +492,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return collection of ConditionHolders
 	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
-	 * @author Kjell
+	 * @author Kelly
 	 */
 	public Collection findAllOperations() {
 
 			ArrayList arr = new ArrayList();
-			String PP = "cacc_regulation_conditions_";
 			arr.add(new ConditionHolder(
 					"Verksamhet", 
-					PP + "verksamhet", 
+					LP + "verksamhet", 
 					"com.idega.block.school.business.SchoolBusiness", 
 					"findAllSchoolTypes",
 					"getLocalizationKey")
@@ -391,7 +507,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			
 			arr.add(new ConditionHolder(
 					"Resurs", 
-					PP + "resurs", 
+					LP + "resurs", 
 					"se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness", 
 					"findAllResources",
 					"getResourceName")
@@ -399,15 +515,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	
 			arr.add(new ConditionHolder(
 					"Momssats", 
-					PP + "momssats", 
+					LP + "momssats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", 
 					"findAllVATRegulations",
-					"getLocalizationKey")
+					"getDescription")
 			);
 	
 			arr.add(new ConditionHolder(
 					"Årskurs", 
-					PP + "aarskurs", 
+					LP + "aarskurs", 
 					"com.idega.block.school.business.SchoolBusiness", 
 					"findAllSchoolYears",
 					"getSchoolYearName")
@@ -415,7 +531,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	
 			arr.add(new ConditionHolder(
 					"Timmar", 
-					PP + "timmar", 
+					LP + "timmar", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"findAllHourIntervals",
 					"")
@@ -423,7 +539,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	
 			arr.add(new ConditionHolder(
 					"Syskonnr", 
-					PP + "syskonnr", 
+					LP + "syskonnr", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"findAllSiblingValues",
 					"")
@@ -431,7 +547,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	
 			arr.add(new ConditionHolder(
 					"Ålder", 
-					PP + "alder", 
+					LP + "alder", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness", 
 					"findAllAgeRegulations",
 					"getAgeInterval")
@@ -439,9 +555,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	
 			arr.add(new ConditionHolder(
 					"Rabattsats", 
-					PP + "rabattsats", 
+					LP + "rabattsats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"findAllDiscountValues",
+					"")
+			);
+			
+			arr.add(new ConditionHolder(
+					"Maxbelopp", 
+					LP + "maxbelopp", 
+					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
+					"findAllMaxAmounts",
 					"")
 			);
 			return (Collection) arr;	
@@ -500,6 +624,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	protected ConditionTypeHome getConditionTypeHome() throws RemoteException {
 		return (ConditionTypeHome) com.idega.data.IDOLookup.getHome(ConditionType.class);
+	}	
+
+	protected VATRuleHome getVATRuleHome() throws RemoteException {
+		return (VATRuleHome) com.idega.data.IDOLookup.getHome(VATRule.class);
 	}	
 
 	protected SpecialCalculationTypeHome getSpecialCalculationTypeHome() throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.1 2003/09/03 23:32:28 kjell Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.2 2003/09/06 08:45:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,14 +21,14 @@ import com.idega.data.IDOLookup;
  * Holds special calculation types ("Subventionerad", "Syskon", "Maxtaxa", "Låginkomst". "Allmän förskola") 
  * 
  * <p>
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.1 2003/09/03 23:32:28 kjell Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.2 2003/09/06 08:45:08 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SpecialCalculationTypeBMPBean extends GenericEntity implements SpecialCalculationType {
 	
-	private static final String ENTITY_NAME = "cacc_special_calculation_type";
+	private static final String ENTITY_NAME = "cacc_sp_calc_type";
 	private static final String COLUMN_SPECIAL_CALCULATION_TYPE = "special_calculation_type";
 
 	public String getEntityName() {
@@ -72,15 +72,15 @@ public class SpecialCalculationTypeBMPBean extends GenericEntity implements Spec
 		return (String) getStringColumnValue(COLUMN_SPECIAL_CALCULATION_TYPE);
 	}
 
-	public Collection ejbFindAllConditionTypes() throws FinderException {
+	public Collection ejbFindAllSpecialCalculationTypes() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Object ejbFindConditionType(int activityID) throws FinderException {
+	public Object ejbFindSpecialCalculationType(int id) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), activityID);
+		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
 		return idoFindOnePKByQuery(sql);
 	}
 
