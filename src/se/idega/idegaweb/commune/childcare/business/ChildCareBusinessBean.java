@@ -39,6 +39,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
@@ -512,6 +513,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		Collection parents = getUserBusiness().getParentsForChild(child);
+		try {
+			UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
+			Collection moreParents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
+			if (moreParents != null) {
+				parents.addAll(moreParents);
+			}	
+		} catch (Exception e) {}
+		
 		if (parents != null) {
 			IWTimestamp stamp = new IWTimestamp();
 			Iterator iter = parents.iterator();
@@ -547,7 +556,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -1091,6 +1099,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				User child = application.getChild();
 				Collection parents = getUserBusiness().getParentsForChild(child);
 				if (parents != null) {
+					try {
+						UserInfoService uis = (UserInfoService) getServiceInstance(UserInfoService.class);
+						Collection moreParents = uis.getCustodiansAndTheirPartnersAtSameAddress(child);
+						if (moreParents != null) {
+							parents.addAll(moreParents);
+						}	
+					} catch (Exception e) {}
 					Iterator iter = parents.iterator();
 					String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept()), String.valueOf(getStatusContract()), String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
 					while (iter.hasNext()) {
