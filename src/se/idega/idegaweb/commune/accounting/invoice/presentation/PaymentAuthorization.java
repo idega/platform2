@@ -1,6 +1,6 @@
 
 /*
- * $Id: PaymentAuthorization.java,v 1.2 2004/03/23 12:09:38 roar Exp $
+ * $Id: PaymentAuthorization.java,v 1.3 2004/05/12 16:00:58 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,11 +13,17 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.accounting.invoice.business.PaymentAuthorizationBusiness;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -27,10 +33,10 @@ import com.idega.user.data.User;
  * PaymentAuthorization is an idegaWeb block that handles Authorization of
  * payment to providers
  * <p>
- * $Id: PaymentAuthorization.java,v 1.2 2004/03/23 12:09:38 roar Exp $
+ * $Id: PaymentAuthorization.java,v 1.3 2004/05/12 16:00:58 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kelly</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PaymentAuthorization extends AccountingBlock {
 
@@ -106,11 +112,13 @@ public class PaymentAuthorization extends AccountingBlock {
 	private void viewDefaultForm(IWContext iwc) {
 		boolean hasPayments = false;
 		try{
-			hasPayments = getPaymentAuthorizationBusiness(iwc).hasAuthorizablePayments(_user);		
+			hasPayments = getPaymentAuthorizationBusiness(iwc).hasAuthorizablePayments(iwc, _user);		
 		}catch(RemoteException ex){
 			ex.printStackTrace();
 		}
 		ApplicationForm app = new ApplicationForm(this);
+		app.maintainParameter(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER);
+		
 		app.setLocalizedTitle(KEY_TITLE, "Payment authorization");
 		if (hasPayments){
 			app.setMainPanel(getAuthorizationPanel());
@@ -185,19 +193,36 @@ public class PaymentAuthorization extends AccountingBlock {
 			_user = getUserBusiness(iwc).getUser(iwc.getCurrentUserId());
 			if (_user != null) {
 				_providerName = getPaymentAuthorizationBusiness(iwc).getProviderNameForUser(_user);
+				
+				//If no provider for current user, read from the parameter set in the PaymentRecordMaintenance class
+				if (_providerName.length() == 0){
+					String providerID = iwc.getParameter(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER);
+					School school = null;
+					try{
+						SchoolHome sh = (SchoolHome) IDOLookup.getHome(School.class);
+						school = sh.findByPrimaryKey(providerID);
+						_providerName = school.getName();
+					}catch(IDOLookupException ex){
+						ex.printStackTrace(); 
+					}catch(FinderException ex){
+						ex.printStackTrace(); 
+					}
+				}
 				_userName = _user.getName();
 			}
 			_authDate = new Date(System.currentTimeMillis());
 		} catch (Exception e) {
 		}
-		return (_userName.length() != 0 && _providerName.length() != 0) ? true : false; 
+		return (_userName.length() != 0 ); 
+//		return (_userName.length() != 0 && _providerName.length() != 0) ? true : false; 
 	}
-	
+		
 	/*
 	 * Returns the button panel for this block
 	 */
 	private ButtonPanel getButtonPanel(boolean includeSave, boolean useAbort) {
 		ButtonPanel bp = new ButtonPanel(this);
+		
 		if (includeSave){
 			bp.addLocalizedButton(PARAM_SAVE, KEY_SAVE, "Save");
 		}
@@ -211,7 +236,7 @@ public class PaymentAuthorization extends AccountingBlock {
 
 	private void updatePayments(IWContext iwc) {
 		try {
-			getPaymentAuthorizationBusiness(iwc).authorizePayments(_user);
+			getPaymentAuthorizationBusiness(iwc).authorizePayments(iwc, _user);
 		} catch (Exception e) {	
 		}
 	}

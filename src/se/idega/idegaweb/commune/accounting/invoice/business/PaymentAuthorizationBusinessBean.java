@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.3 2004/03/23 12:08:45 roar Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.4 2004/05/12 16:00:58 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,11 +14,14 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.presentation.ManuallyPaymentEntriesList;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
@@ -32,6 +35,8 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 
 
@@ -39,7 +44,7 @@ import com.idega.user.data.User;
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.3 2004/03/23 12:08:45 roar Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.4 2004/05/12 16:00:58 roar Exp $
  *
  * @author Kelly
  */
@@ -55,11 +60,20 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 	 * and sets status i PaymentRecord from U to P
 	 * @return 
 	 */
-	public void authorizePayments(User user) {
+	public void authorizePayments(IWContext iwc, User user) {
 	
 		try {
-			School provider = getCommuneUserBusiness().getProviderForUser(user);
-			int providerID = Integer.parseInt(provider.getPrimaryKey().toString());
+			int providerID = -1;
+			try{
+				School provider = getCommuneUserBusiness().getProviderForUser(user);
+				providerID = Integer.parseInt(provider.getPrimaryKey().toString());
+			} catch(FinderException ex){
+				//If no provider for current user, and current user is administrator, read from the parameter set in the PaymentRecordMaintenance class
+				
+				if (isCentralAdministrator(iwc)){
+					providerID = Integer.parseInt(iwc.getParameter(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER));
+				} 				
+			}				
 			Iterator payments; 
 			payments = getPaymentHeaderHome().
 					findByStatusAndSchoolId(ConstantStatus.BASE, providerID).iterator();
@@ -84,15 +98,26 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 		}
 	}
 
-	public boolean hasAuthorizablePayments(User user) {
+	public boolean hasAuthorizablePayments(IWContext iwc, User user) {
 		boolean ret = false;
 		try {
-			School provider = getCommuneUserBusiness().getProviderForUser(user);
-			int providerID = Integer.parseInt(provider.getPrimaryKey().toString());
-			Collection payments = getPaymentHeaderHome().
-					findByStatusAndSchoolId(ConstantStatus.BASE, providerID);
-			if (! payments.isEmpty()) {
-				ret = true;
+			int providerID = -1;		
+			try{
+				School provider = getCommuneUserBusiness().getProviderForUser(user);
+				providerID = Integer.parseInt(provider.getPrimaryKey().toString());				
+			} catch(FinderException ex){
+				//If no provider for current user, and current user is administrator, read from the parameter set in the PaymentRecordMaintenance class
+				
+				if (isCentralAdministrator(iwc)){
+					providerID = Integer.parseInt(iwc.getParameter(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER));
+				} 				
+			}
+			
+			if (providerID != -1){
+				Collection payments = getPaymentHeaderHome().findByStatusAndSchoolId(ConstantStatus.BASE, providerID);
+				if (! payments.isEmpty()) {
+					ret = true;
+				}
 			}
 							
 		} catch (Exception e) {
@@ -100,6 +125,42 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 		}
 		return ret;
 	}
+	
+	private boolean isCentralAdministrator(final IWContext context) {
+		try {
+			// first see if we have cached certificate
+			final String sessionKey = getClass() + ".isCentralAdministrator";
+			final User verifiedCentralAdmin = (User) context
+					.getSessionAttribute(sessionKey);
+			final User user = context.getCurrentUser();
+
+			if (null != verifiedCentralAdmin
+					&& user.equals(verifiedCentralAdmin)) {
+			// certificate were cached
+			return true; }
+
+			// since no cert were cached, check current users group instaed
+			final int groupId = getCommuneUserBusiness()
+					.getRootAdministratorGroupID();
+			final GroupHome home = (GroupHome) IDOLookup.getHome(Group.class);
+			final Group communeGroup = home.findByPrimaryKey(new Integer(
+					groupId));
+			final Collection usersGroups = getUserBusiness().getUserGroups(
+					((Integer) user.getPrimaryKey()).intValue());
+			if (usersGroups != null
+					&& communeGroup != null
+					&& (usersGroups.contains(communeGroup) || user
+							.getPrimaryKey().equals(new Integer(1)))) {
+				// user is allaowed, cache certificate and return true
+				context.setSessionAttribute(sessionKey, user);
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+		
 
 	public String getProviderNameForUser(User user) {
 		String name = ""; 

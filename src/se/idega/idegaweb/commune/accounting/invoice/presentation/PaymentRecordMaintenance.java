@@ -81,11 +81,11 @@ import com.lowagie.text.DocumentException;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/04/05 11:14:22 $ by $Author: palli $
+ * Last modified: $Date: 2004/05/12 16:00:58 $ by $Author: roar $
  * 
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson </a>
- * @version $Revision: 1.109 $
+ * @version $Revision: 1.110 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -529,9 +529,16 @@ public class PaymentRecordMaintenance extends AccountingBlock implements
                 table.mergeCells(1, row, columnCount, row);
                 table.add(getPaymentSummaryTable(records), 1, row++);
                 if (null != providerAuthorizationPage) {
-                    buttonPanel.addLocalizedButton("no_param",
-                            PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
-                            providerAuthorizationPage);
+//                    buttonPanel.addLocalizedButton("no_param",
+//                            PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
+//                            providerAuthorizationPage);
+					GenericButton button = new GenericButton("no_param",
+							localize(PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT));
+					button.setPageToOpen(providerAuthorizationPage);
+					button.addParameterToPage(
+							ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER,
+							providerId + "");                            
+					buttonPanel.addButton(button);                         
                 }
             } else {
                 addSmallText(table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
