@@ -47,7 +47,7 @@ public class UserStatsBusinessBean extends IBOSessionBean  implements UserStatsB
     private GroupBusiness groupBiz = null;
 	private IWBundle _iwb = null;
 	private IWResourceBundle _iwrb = null;
-	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
 	private static final String LOCALIZED_CURRENT_DATE = "UserStatsBusiness.current_date";
 	private static final String LOCALIZED_NAME = "UserStatsBusiness.name";
