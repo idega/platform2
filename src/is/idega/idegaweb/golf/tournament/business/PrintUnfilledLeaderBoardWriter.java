@@ -8,7 +8,6 @@
  */
 package is.idega.idegaweb.golf.tournament.business;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Connection;
@@ -17,7 +16,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
 import com.idega.util.IWTimestamp;
 
 /**

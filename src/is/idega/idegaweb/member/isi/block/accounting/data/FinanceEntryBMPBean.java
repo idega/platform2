@@ -21,7 +21,6 @@ import com.idega.data.IDOUtil;
 import com.idega.data.PrimaryKey;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
 
 /**
