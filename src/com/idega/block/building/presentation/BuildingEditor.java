@@ -6,6 +6,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingBusiness;
 import com.idega.block.media.presentation.SimpleChooserWindow;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -56,6 +57,15 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
   }
 
   protected void control(IWContext iwc){
+    java.util.Enumeration E = iwc.getParameterNames();
+    System.err.println();
+    while(E.hasMoreElements()){
+      String prm = (String) E.nextElement();
+      System.err.println("prm : "+ prm +" = "+iwc.getParameter(prm));
+    }
+    System.err.println();
+
+
     outerTable = new Table(1,2);
       outerTable.setCellpadding(0);
       outerTable.setCellspacing(0);
@@ -77,6 +87,8 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
        iwc.removeSessionAttribute("dr_id");
     }
 
+    System.err.println("Entity id " + eId);
+
     if(iwc.getParameter(prmSave)!=null || iwc.getParameter(prmSave+".x")!=null){
       if(iwc.getParameter("bm_choice")!=null){
         int i = Integer.parseInt(iwc.getParameter("bm_choice"));
@@ -94,15 +106,15 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
        if(iwc.getParameter("bm_choice")!=null && eId > 0){
         int i = Integer.parseInt(iwc.getParameter("bm_choice"));
          switch (i) {
-            case COMPLEX  : deleteComplex(eId);   break;
-            case BUILDING : deleteBuilding(eId);  break;
-            case FLOOR    : deleteFloor(eId);     break;
-            case APARTMENT: deleteApartment(eId); break;
-            case CATEGORY : deleteApartmentCategory(eId);  break;
-            case TYPE     : deleteApartmentType(eId);   break;
+            case COMPLEX  : BuildingBusiness.deleteComplex(eId);   break;
+            case BUILDING : BuildingBusiness.deleteBuilding(eId);  break;
+            case FLOOR    : BuildingBusiness.deleteFloor(eId);     break;
+            case APARTMENT: BuildingBusiness.deleteApartment(eId); break;
+            case CATEGORY : BuildingBusiness.deleteApartmentCategory(eId);  break;
+            case TYPE     : BuildingBusiness.deleteApartmentType(eId);   break;
         }
         eId = 0;
-        BuildingCacher.setToReloadNextTimeReferenced();
+        //BuildingCacher.setToReloadNextTimeReferenced();
       }
     }
     if(includeLinks)
@@ -122,34 +134,20 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
 
   }
   private void doComplex(IWContext iwc){
-    try{
-      Complex eComplex = eId > 0 ? new Complex(eId) : null;
-      outerTable.add(makeComplexFields(eComplex),1,2);
-    }
-    catch(SQLException sql){}
+    Complex eComplex = eId > 0 ? BuildingCacher.getComplex(eId) : null;
+    outerTable.add(makeComplexFields(eComplex),1,2);
   }
   private void doBuilding(IWContext iwc){
-    try{
-      Building eBuilding = eId > 0 ? new Building(eId) : null;
-      outerTable.add(makeBuildingFields(eBuilding),1,2);
-    }
-    catch(SQLException sql){}
+    Building eBuilding = eId > 0 ? BuildingCacher.getBuilding(eId) : null;
+    outerTable.add(makeBuildingFields(eBuilding),1,2);
   }
   private void doFloor(IWContext iwc){
-    try{
-      Floor eFloor = eId > 0 ? new Floor(eId) : null;
-      outerTable.add(makeFloorFields(eFloor),1,2);
-    }
-    catch(SQLException sql){}
+    Floor eFloor = eId > 0 ? BuildingCacher.getFloor(eId) : null;
+    outerTable.add(makeFloorFields(eFloor),1,2);
   }
   private void doApartment(IWContext iwc){
-    try{
-      Apartment eApartment = eId > 0 ? new Apartment(eId) : null;
-      outerTable.add(makeApartmentFields(eApartment),1,2);
-
-    }
-    catch(SQLException sql){}
-    //add(getApartments());
+    Apartment eApartment = eId > 0 ? BuildingCacher.getApartment(eId) : null;
+    outerTable.add(makeApartmentFields(eApartment),1,2);
   }
   private void doType(IWContext iwc){
     // Dirty job below
@@ -180,56 +178,6 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       outerTable.add(makeCategoryFields(eApartmentCategory),1,2);
     }
     catch(SQLException sql){}
-  }
-
-  private void deleteComplex(int id){
-    try{
-      Complex C = new Complex(id);
-      C.delete();
-    }
-    catch(SQLException sql){}
-  }
-  private void deleteBuilding(int id){
-    try {
-      Building B = new Building(id);
-      B.delete();
-    }
-    catch (SQLException ex) {
-    }
-  }
-  private void deleteFloor(int id){
-    try {
-      Floor F = new Floor(id);
-      F.delete();
-    }
-    catch (SQLException ex) {
-
-    }
-  }
-  private void deleteApartment(int id){
-    try {
-      Apartment A = new Apartment(id);
-      A.delete();
-    }
-    catch (SQLException ex) {
-    }
-  }
-  private void deleteApartmentCategory(int id){
-    try {
-      ApartmentCategory C = new ApartmentCategory(id);
-      C.delete();
-    }
-    catch (SQLException ex) {
-    }
-  }
-  private void deleteApartmentType(int id){
-    try {
-      ApartmentType T = new ApartmentType(id);
-      T.delete();
-    }
-    catch (SQLException ex) {
-
-    }
   }
 
   private void doQuit(IWContext iwc) throws SQLException{  }
@@ -283,27 +231,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     try {  imageid = Integer.parseInt(sImageId); }
     catch (NumberFormatException ex) { imageid = 1;  }
 
-    Building ebuilding = new Building();
-    boolean update = false;
-    try{
-      if(complexid > 0){
-        if(id > 0 ){
-          ebuilding = new Building(id);
-          update = true;
-        }
-        ebuilding.setName(sName);
-        ebuilding.setStreet(sAddress);
-        ebuilding.setInfo(sInfo);
-        ebuilding.setImageId(imageid);
-        ebuilding.setComplexId(complexid);
-        ebuilding.setSerie(sSerie);
-        if(update)
-          ebuilding.update();
-        else
-          ebuilding.insert();
-      }
-    }
-    catch(SQLException e){}
+    BuildingBusiness.saveBuilding(id,sName,sAddress,sInfo,imageid,complexid,sSerie);
   }
   private void storeFloor(IWContext iwc){
 
@@ -321,25 +249,8 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     catch (NumberFormatException ex) { buildingid = -1;  }
     try {  imageid = Integer.parseInt(sImageId);  }
     catch (NumberFormatException ex) { imageid = 1;  }
-    try{
 
-      Floor efloor = new Floor();
-      boolean update = false;
-      if(id > 0){
-        efloor = new Floor(id);
-        update = true;
-      }
-      efloor.setName(sName);
-      efloor.setBuildingId(buildingid);
-      efloor.setInfo(sInfo);
-      efloor.setImageId(imageid);
-      if(update)
-        efloor.update();
-      else
-        efloor.insert();
-    }
-    catch(SQLException e){e.printStackTrace();}
-
+    BuildingBusiness.saveFloor(id,sName,buildingid,sInfo,imageid);
   }
   private void storeApartmentCategory(IWContext iwc){
     String sName = iwc.getParameter("bm_name").trim();
@@ -353,22 +264,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     try {  id = Integer.parseInt(sId);  }
     catch (NumberFormatException ex) { id = -1;  }
 
-    try{
-      boolean update = false;
-      ApartmentCategory eACategory = new ApartmentCategory();
-      if(id >0){
-        eACategory = new ApartmentCategory(id);
-        update = true;
-      }
-      eACategory.setName(sName);
-      eACategory.setInfo(sInfo);
-      eACategory.setImageId(imageid);
-      if(update)
-        eACategory.update();
-      else
-        eACategory.insert();
-    }
-    catch(SQLException e){}
+    BuildingBusiness.saveApartmentCategory(id,sName,sInfo,imageid);
 
   }
   private void storeApartmentType(IWContext iwc){
@@ -396,6 +292,8 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     int id = -1;
     int categoryid = -1;
     int rent = 0;
+    float area = 0;
+    int count = 0;
     try { id = Integer.parseInt(sId);  }
     catch (NumberFormatException ex) { id = -1;  }
     try { categoryid = Integer.parseInt(sCategoryId);  }
@@ -405,47 +303,16 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     try{  planid = Integer.parseInt(sPlanId); }
     catch (NumberFormatException ex) { planid = 1;  }
      try{  rent = Integer.parseInt(sRent); }
-    catch (NumberFormatException ex) { rent = 1;  }
+    catch (NumberFormatException ex) { rent = 0;  }
+     try{  area = Float.parseFloat(sArea); }
+    catch (NumberFormatException ex) { area = 0;  }
+     try{  count = Integer.parseInt(sRoomCount); }
+    catch (NumberFormatException ex) { count = 1;  }
 
-    try{
-      if(categoryid > 0){
-        ApartmentType etype = new ApartmentType();
-        boolean update = false;
-        if(id > 0){
-          etype = new ApartmentType(id);
-          update = true;
-        }
-        etype.setName(sName);
-        etype.setInfo(sInfo);
-        etype.setExtraInfo(sExtraInfo);
-        etype.setFloorPlanId(planid);
-        etype.setImageId(imageid);
-        etype.setApartmentCategoryId(categoryid);
-        etype.setArea(Float.parseFloat(sArea));
-        etype.setRoomCount(Integer.parseInt(sRoomCount));
-        etype.setRent(rent);
-
-        etype.setBalcony(sBalcony!=null?true:false);
-        etype.setBathRoom(sBath!=null?true:false);
-        etype.setKitchen(sKitch !=null?true:false);
-        etype.setLoft(sLoft != null?true:false);
-        etype.setStorage(sStorage !=null?true:false);
-        etype.setStudy(sStudy != null?true:false);
-        etype.setFurniture(sFurniture!= null?true:false);
-
-        if(update){
-          etype.update();
-        }
-        else{
-          etype.insert();
-        }
-      }
-      else
-        add("Vantar Flokk");
-      }
-      catch(SQLException e){e.printStackTrace();}
-      catch(Exception e){e.printStackTrace();}
-
+    BuildingBusiness.saveApartmentType(id,sName,sInfo,sExtraInfo,planid,imageid,
+      categoryid,area,count,rent,sBalcony!=null?true:false,sBath!=null?true:false,
+      sKitch !=null?true:false,sLoft != null?true:false,sStorage !=null?true:false,
+      sFurniture!= null?true:false);
 
   }
   private void storeApartment(IWContext iwc){
@@ -473,77 +340,42 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     try { typeid = Integer.parseInt(sType);  }
     catch (NumberFormatException ex) { typeid = -1;  }
 
-    try{
-      String slname = sName;
-      StringTokenizer st2 = new StringTokenizer(slname,",");
-      StringTokenizer st = new StringTokenizer(sName,":");
-      int count = st.countTokens();
-      int count2 = st2.countTokens();
-      if( count == 2){
-        String sLower = st.nextToken();
-        String sUpper = st.nextToken();
-        int iLower = 0,iUpper = 0;
-        try{
-           iLower = Integer.parseInt(sLower);
-           iUpper = Integer.parseInt(sUpper);
-        }
-        catch(NumberFormatException nfe){}
+    System.err.println("id is "+id);
 
-        if(iUpper - iLower != 0){
-          for (int i = iLower; i <= iUpper; i++) {
-            Apartment apartment = new Apartment();
-            apartment.setName(String.valueOf(i));
-            apartment.setFloorId( floorid);
-            apartment.setApartmentTypeId(typeid);
-            apartment.setInfo(sInfo);
-            apartment.setRentable(bRentable);
-            apartment.setImageId(imageid);
-            apartment.setSerie(sSerie);
-            try{
-              apartment.insert();
-            }
-            catch(SQLException sql){sql.printStackTrace();}
-          }
-        }
+    String slname = sName;
+    /*
+    StringTokenizer st2 = new StringTokenizer(slname,",");
+    StringTokenizer st = new StringTokenizer(sName,":");
+    int count = st.countTokens();
+    int count2 = st2.countTokens();
+    if( count == 2){
+      String sLower = st.nextToken();
+      String sUpper = st.nextToken();
+      int iLower = 0,iUpper = 0;
+      try{
+         iLower = Integer.parseInt(sLower);
+         iUpper = Integer.parseInt(sUpper);
       }
-      else if(count2 > 0  ){
-        for (int i = 0; i < count2; i++) {
-          Apartment apartment = new Apartment();
-          apartment.setName(st2.nextToken());
-          apartment.setFloorId( floorid);
-          apartment.setApartmentTypeId(typeid);
-          apartment.setInfo(sInfo);
-          apartment.setRentable(bRentable);
-          apartment.setImageId(imageid);
-          apartment.setSerie(sSerie);
-          try{
-            apartment.insert();
-          }
-          catch(SQLException sql){sql.printStackTrace();}
-        }
-      }
-      else{
-        Apartment apartment = new Apartment();
-        boolean update = false;
-        if(id >0){
-          apartment = new Apartment(id);
-          update = true;
-        }
-        apartment.setName(sName);
-        apartment.setFloorId( floorid);
-        apartment.setApartmentTypeId(typeid);
-        apartment.setInfo(sInfo);
-        if(sRentable !=null)
-          apartment.setRentable(true);
-        apartment.setImageId(imageid);
-        if(update)
-          apartment.update();
-        else{
-          apartment.insert();
+      catch(NumberFormatException nfe){}
+
+      if(iUpper - iLower != 0){
+
+        for (int i = iLower; i <= iUpper; i++) {
+          BuildingBusiness.saveApartment(-1,String.valueOf(i),sInfo,floorid,
+            typeid,bRentable,imageid,sSerie);
         }
       }
     }
-    catch(SQLException sql){sql.printStackTrace();}
+    else if(count2 > 0  ){
+      for (int i = 0; i < count2; i++) {
+        BuildingBusiness.saveApartment(-1,st2.nextToken(),sInfo,floorid,
+            typeid,bRentable,imageid,sSerie);
+      }
+    }
+    else*/{
+      BuildingBusiness.saveApartment(id,sName,sInfo,floorid,
+            typeid,bRentable,imageid,sSerie);
+    }
   }
 
   public PresentationObject getLinkTable(IWContext iwc){
