@@ -215,8 +215,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			for (int i = 0; i < 5; i++) {
 				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
-				if (isAdmin)
-					queueDates[i] = iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1)) ? new IWTimestamp(iwc.getParameter(PARAM_QUEUE_DATE + "_" + (i + 1))).getDate() : null;
+				if (isAdmin) {
+					if (iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1))) {
+						queueDates[i] = new IWTimestamp(iwc.getParameter(PARAM_QUEUE_DATE + "_" + (i + 1))).getDate();
+					}
+					else
+						queueDates[i] = null;
+				}
 			}
 				
 			if (!isAdmin) {
@@ -242,7 +247,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			boolean sendMessages = true;
 			if (isAdmin) {
 				parent = getBusiness().getUserBusiness().getCustodianForChild(child);
-				System.out.println("Parent: "+parent.getPersonalID());
 				sendMessages = false;
 			}
 			else {
