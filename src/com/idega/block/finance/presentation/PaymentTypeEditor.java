@@ -3,9 +3,8 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
+import javax.faces.component.UIComponent;
 import com.idega.block.finance.data.PaymentType;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -52,7 +51,7 @@ public class PaymentTypeEditor extends Finance {
 	protected void control(IWContext iwc) {
 		if (isAdmin) {
 			try {
-				PresentationObject MO = new Text();
+				UIComponent MO = new Text();
 				if (iwc.getParameter(strAction) == null) {
 					MO = getMain(iwc, iCategoryId);
 				}
@@ -186,7 +185,7 @@ protected PresentationObject getMain(IWContext iwc,int iCategoryId){
 
     return (keyTable);
 
-  }	protected PresentationObject getChange(IWContext iwc, int iCategoryId) throws SQLException {
+  }	protected UIComponent getChange(IWContext iwc, int iCategoryId) throws SQLException {
 		Form myForm = new Form();
 		myForm.add(Finance.getCategoryParameter(iCategoryId));
 		//myForm.maintainAllParameters();
