@@ -3134,15 +3134,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						Iterator iterator = providers.iterator();
 						while (iterator.hasNext()) {
 							School provider = (School) iterator.next();
-							if (!provider.getInvisibleForCitizen()) {
-								addSchool = true;
-							}
-							else {
+							if (provider.getInvisibleForCitizen()) {
 								addSchool = false;
 							}
-							
-							if (currentSchool != null) {
-								addSchool = !currentSchool.equals(provider);
+							else {
+								if (currentSchool != null) {
+									addSchool = !currentSchool.equals(provider);
+								}
 							}
 							
 							if (addSchool) {
