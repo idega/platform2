@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,6 +17,7 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
@@ -22,6 +25,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -114,6 +118,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			if (parents != null) {
 				table.add(getLocalizedSmallHeader("child_care.parents","Parents"), 1, row);
 				Phone phone;
+				Phone phoneMobile = null;
+				Phone phoneWork = null;
 				Email email;
 
 				Iterator iter = parents.iterator();
@@ -122,7 +128,15 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					address = getBusiness().getUserBusiness().getUsersMainAddress(parent);
 					email = getBusiness().getUserBusiness().getEmail(parent);
 					phone = getBusiness().getUserBusiness().getHomePhone(parent);
-
+					try {
+						phoneMobile = getBusiness().getUserBusiness().getUsersMobilePhone(parent);
+						phoneWork = getBusiness().getUserBusiness().getUsersWorkPhone(parent);	
+					}
+					catch (NoPhoneFoundException e){
+						log(e);
+					}
+					
+					
 					table.add(getSmallText(parent.getNameLastFirst(true)), 3, row);
 					table.add(getSmallText(" - "), 3, row);
 					table.add(getSmallText(PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
@@ -137,11 +151,23 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						table.add(getSmallText(localize("child_care.phone","Phone")+": "), 3, row);
 						table.add(getSmallText(phone.getNumber()), 3, row++);
 					}
+					if (phoneMobile != null && phoneMobile.getNumber() != null) {
+						table.add(new Break(), 2, row);
+						table.add(getSmallText(localize("school.phone_mobile", "Mobile phone") + ": "), 3, row);
+						table.add(getSmallText(phoneMobile.getNumber()), 3, row++);
+					}
+					if (phoneWork != null && phoneWork.getNumber() != null) {
+						table.add(new Break(), 2, row);
+						table.add(getSmallText(localize("school.phone_work", "Work phone") + ": "), 3, row);
+						table.add(getSmallText(phoneWork.getNumber()), 3, row++);
+					}
+					
 					if (email != null && email.getEmailAddress() != null) {
 						Link link = getSmallLink(email.getEmailAddress());
 						link.setURL("mailto:"+email.getEmailAddress(), false, false);
 						table.add(link, 3, row++);
 					}
+					
 			
 					table.setHeight(row++, 12);
 				}
