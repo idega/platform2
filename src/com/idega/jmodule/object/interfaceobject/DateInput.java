@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.4 2001/05/23 15:32:31 laddi Exp $
+ * $Id: DateInput.java,v 1.5 2001/06/26 20:52:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,8 @@ import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -31,6 +33,16 @@ private int fromYear;
 private int toYear;
 private int selectedYear=-1;
 private String styleAttribute = "font-size: 8pt";
+private boolean inShort=false;
+
+
+private final static String DAY_KEY = "dateinput.day_long";
+private final static String MONTH_KEY = "dateinput.month_long";
+private final static String YEAR_KEY = "dateinput.year_long";
+
+private final static String DAY_KEY_S = "dateinput.day_short";
+private final static String MONTH_KEY_S = "dateinput.month_short";
+private final static String YEAR_KEY_S = "dateinput.year_short";
 
 public DateInput(){
 	this("dateinput");
@@ -49,7 +61,7 @@ public DateInput(String name){
   super.add(theYear);
   super.add(theWholeDate);
 
-  doSomeShit("Dagur", "Mánuður", "Ár");
+  //doSomeShit("Dagur", "Mánuður", "Ár");
 
 }
 
@@ -66,7 +78,8 @@ public DateInput(String name, boolean inShort){
   super.add(theYear);
   super.add(theWholeDate);
 
-  doSomeShit("D", "M", "Y");
+  this.inShort=inShort;
+  //doSomeShit("D", "M", "Y");
 
 }
 
@@ -297,6 +310,28 @@ public void setYearRange(int fromYear,int toYear){
   //	theYear.addMenuElement("2002","2002");
 
 //}
+public void main(ModuleInfo modinfo)throws Exception{
+  String dayString;
+  String monthString;
+  String yearString;
+
+
+  IWBundle iwb = this.getBundle(modinfo);
+  IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
+
+  if(inShort){
+    dayString = iwrb.getLocalizedString(DAY_KEY);
+    monthString = iwrb.getLocalizedString(MONTH_KEY);
+    yearString = iwrb.getLocalizedString(YEAR_KEY);
+  }
+  else{
+    dayString = iwrb.getLocalizedString(DAY_KEY_S);
+    monthString = iwrb.getLocalizedString(MONTH_KEY_S);
+    yearString = iwrb.getLocalizedString(YEAR_KEY_S);
+  }
+
+  doSomeShit(dayString,monthString,yearString);
+}
 
 
 public void print(ModuleInfo modinfo)throws IOException{
