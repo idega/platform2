@@ -497,7 +497,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     try{
-      isAdmin = iwc.isAdmin();
+      isAdmin = iwc.hasEditPermission(this);
       isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     }
     catch(Exception sql){ isAdmin = false;}

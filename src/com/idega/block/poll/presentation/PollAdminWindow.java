@@ -58,7 +58,7 @@ public PollAdminWindow(){
      * @todo permission
      */
     isAdmin = iwc.hasEditPermission(this);
-    superAdmin = iwc.isAdmin();
+    superAdmin = iwc.isSuperAdmin();
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
