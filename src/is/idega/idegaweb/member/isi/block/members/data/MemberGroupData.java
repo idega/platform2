@@ -160,7 +160,9 @@ public class MemberGroupData {
 				}
 			}
 		} else {
-			buf.append(" - ").append(name);
+			if(!isFirstGroup) {
+				buf.append(" - ").append(name);
+			}
 		}
 	}
 	
@@ -218,18 +220,12 @@ public class MemberGroupData {
 	}
 	
 	private String getStatusLocalizedName(String statusKey) {
-		String value = _comUserBundle.getLocalizedString(statusKey, null);
-		if(value==null) {
-			System.out.println("No localized name found for user status, key was " + statusKey);
-		}
+		String value = _comUserBundle.getLocalizedString(statusKey, statusKey);
 		return value;
 	}
 	
 	private String getGroupTypeLocalizedName(String groupTypeKey) {
-		String value = _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, null);
-		if(value==null) {
-			System.out.println("No localized name found for group type, key was " + groupTypeKey);
-		}
+		String value = _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey);
 		return value;
 	}
 	
