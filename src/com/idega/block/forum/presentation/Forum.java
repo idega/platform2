@@ -258,13 +258,15 @@ public class Forum extends CategoryBlock implements IWBlock {
     int row = 1;
 
     Collection categories = this.getCategories();
+    if ( categories != null && categories.size() == 1 ) {
+      _topicID = ((ICCategory)new Vector(categories).get(0)).getID();
+    }
+
     List list = forumBusiness.getThreadsInCategories(categories,_numberOfThreads);
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
 	ForumData thread = (ForumData) iter.next();
-	if ( row == 1 && categories.size() == 1 )
-	  _topicID = thread.getTopicID();
 
 	table.add(getUser(thread),1,row);
 	table.add(formatText(","+Text.NON_BREAKING_SPACE),1,row);
