@@ -85,7 +85,6 @@ public abstract class Voucher extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception{
-  	System.out.println("[Voucher] starting voucher for bookingId = "+_booking.getID());
     super.initializer(iwc);
 		setupVoucher(iwc);
     _bundle = super.getBundle();
@@ -113,7 +112,6 @@ public abstract class Voucher extends TravelManager {
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
-		System.out.println("[Voucher] finished voucher for bookingId = "+_booking.getID());
   }
 
   private Text getBigText(String content) {
@@ -360,6 +358,7 @@ public abstract class Voucher extends TravelManager {
         _table.add(Text.BREAK,1,2);
 
 				String ccAuthNumber =  _booking.getCreditcardAuthorizationNumber();
+				String cardType = null;
 				if (ccAuthNumber != null) {
 					try {
 						TPosAuthorisationEntriesBeanHome authEntHome = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
@@ -367,6 +366,7 @@ public abstract class Voucher extends TravelManager {
 						if (authEnts != null && !authEnts.isEmpty()) {
 							Iterator iter = authEnts.iterator();
 							TPosAuthorisationEntriesBean authEnt = (TPosAuthorisationEntriesBean) authEntHome.findByPrimaryKey( iter.next() );
+							cardType = authEnt.getBrandName();
 							_table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
 							_table.add(getText(" : "),1,2);
 							String amount = authEnt.getAuthorisationAmount();
@@ -380,7 +380,11 @@ public abstract class Voucher extends TravelManager {
 				}
 				_table.add(getText(_iwrb.getLocalizedString("travel.payment_type_lg","PAYMENT TYPE")),1,2);
 				_table.add(getText(" : "),1,2);
-				_table.add(getText(getBooker(_iwc).getPaymentType(_iwrb, _booking.getPaymentTypeId())), 1, 2);
+				if (cardType == null) {
+					_table.add(getText(getBooker(_iwc).getPaymentType(_iwrb, _booking.getPaymentTypeId())), 1, 2);
+				}else {
+					_table.add(getText(cardType), 1, 2);
+				}
 				_table.add(Text.BREAK, 1, 2);
 				
 		_table.add(Text.BREAK, 1, 2);
