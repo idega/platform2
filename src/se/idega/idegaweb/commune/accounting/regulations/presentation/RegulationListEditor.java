@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.11 2003/10/04 22:43:56 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.12 2003/10/06 12:21:20 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.11 2003/10/04 22:43:56 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.12 2003/10/06 12:21:20 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -136,7 +136,7 @@ public class RegulationListEditor extends AccountingBlock {
 	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
-			setDefaultParameters(iwc);
+			setDefaultParameters();
 			switch (action) {
 				case ACTION_DEFAULT :
 					viewMainForm(iwc, "");
@@ -325,7 +325,7 @@ public class RegulationListEditor extends AccountingBlock {
 		
 		
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
-		Date dd = new Date(System.currentTimeMillis());
+		//Date dd = new Date(System.currentTimeMillis());
 
 		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedLabel(KEY_HEADER_NAME, "Benämning"), 1, 2);
@@ -729,7 +729,7 @@ public class RegulationListEditor extends AccountingBlock {
 
 	private void closeMe(IWContext iwc) {
 
-		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID());
+		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, ((Integer)_responsePage.getPrimaryKey()).intValue());
 		backUrl += 	"&" + RegulationList.PARAM_SELECTOR_OPERATION + "=" + 
 						iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION) +
 					"&"	+ RegulationList.PARAM_SELECTOR_PAYMENT_FLOW_TYPE + "=" + 
@@ -737,7 +737,7 @@ public class RegulationListEditor extends AccountingBlock {
 		getParentPage().setToRedirect(backUrl);
 	}
 
-	private void setDefaultParameters(IWContext iwc) {
+	private void setDefaultParameters() {
 		String ds = formatDate(new Date(System.currentTimeMillis()), 4);
 		if(_pMap == null) {
 			_pMap = new HashMap();
