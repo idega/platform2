@@ -23,8 +23,8 @@ import com.idega.presentation.awt.SingleLineItem;
  * @version 1.0
  */
 
-//public class MessengerApplet extends Applet implements Runnable, ActionListener{
-public class MessengerApplet extends Applet implements ActionListener{
+public class MessengerApplet extends Applet implements Runnable, ActionListener{
+//public class MessengerApplet extends Applet implements ActionListener{
   private boolean runThread = false;
   private boolean isfirstRun = true;
   private static String FRAME_NAME= "IdegaWeb Messenger";
@@ -103,13 +103,18 @@ public class MessengerApplet extends Applet implements ActionListener{
     add(userPanel);*/
 
   }
-/*
+
   public void run(){
 
     while(runThread){
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
-         repaint();
+        repaint();
+      if(isfirstRun){
+        cycler.start();
+        isfirstRun=false;
+      }
+
         t.sleep(threadSleep);
       }
       catch (InterruptedException e) {
@@ -118,7 +123,7 @@ public class MessengerApplet extends Applet implements ActionListener{
       }
     }
   }
-*/
+
     /**
    * Display the list of Messages <br>
    *
@@ -449,31 +454,23 @@ public class MessengerApplet extends Applet implements ActionListener{
   //use the update method
     g.drawString("test",150,150);
     System.out.println("IN Paint");
-    if(isfirstRun){
-         cycler.start();
-      isfirstRun=false;
-    }
   }
 
 
 
   /**Start the applet*/
   public void start() {
-/*    runThread = true;
+    runThread = true;
 
     if ( t == null ){
       t = new Thread(this);
       t.start();
     }
-*/
+
     if(cycler==null){
      cycler = new MessageListener(checkTimer);
      cycler.addActionListener(this);
     }
-
-   // run();
-
-
 
   }
   /**Stop the applet*/
