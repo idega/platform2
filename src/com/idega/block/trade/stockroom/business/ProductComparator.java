@@ -95,7 +95,7 @@ public class ProductComparator implements Comparator {
     String one = p1.getProductName(localeId)!=null?p1.getProductName(localeId):"";
     String two = p2.getProductName(localeId)!=null?p2.getProductName(localeId):"";
 
-    return IsCollator.getIsCollator().compare(one,two);
+    return IsCollator.getIsCollator().compare(two,one);
   }
 
   private int numberSort(Object o1, Object o2) throws RemoteException {
