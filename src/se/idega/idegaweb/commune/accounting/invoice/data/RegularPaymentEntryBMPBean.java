@@ -245,7 +245,11 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setUser(com.idega.user.data.User)
 	 */
 	public void setUser(User user) {
-		setColumn(COLUMN_USER_ID, user.getPrimaryKey());
+		if (user == null){
+			//TODO (roar) how to handle this?
+		}else{
+			setColumn(COLUMN_USER_ID, user.getPrimaryKey());
+		}
 	}
 
 	
