@@ -41,7 +41,7 @@ public class CalendarHandler extends TravelManager {
   private String colorForToday = "#71CBFB";
 
   private idegaCalendar cal = new idegaCalendar();
-  private SmallCalendar sm = new SmallCalendar();
+  public SmallCalendar sm = new SmallCalendar();
 
   private Product _product;
   private Service _service;

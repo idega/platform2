@@ -139,9 +139,10 @@ public class PublicBooking extends Block  {
       Image seeAndBuy = iwrb.getImage("images/see_and_buy.gif");
 
       table.setBackgroundImage(1, 3, background);
-      table.setRowColor(4, backgroundColor);
-      table.setColor(2, 2, backgroundColor);
+      table.setColor(1, 4, backgroundColor);
+      table.setColor(2, 2, "#CCCCCC");
       table.setColor(2, 3, "#CCCCCC");
+      table.setColor(2, 4, "#CCCCCC");
       table.setAlignment(1,1,"left");
       table.setVerticalAlignment(1,2,"top");
       table.setVerticalAlignment(1,3,"top");
@@ -175,7 +176,7 @@ public class PublicBooking extends Block  {
 
     Image arrow = bundle.getImage("images/white_arrow.gif");
     Image bookNow = iwrb.getImage("images/day_requested.gif");
-    Text checkAvail = getBoldTextWhite(iwrb.getLocalizedString("travel.check_availability","Check availability and select date by the calendar below"));
+    Text checkAvail = getBoldText(iwrb.getLocalizedString("travel.check_availability","Check availability and select date by the calendar below"));
 
     table.add(bookNow,1,1);
     table.add(checkAvail,1,2);
@@ -202,6 +203,8 @@ public class PublicBooking extends Block  {
         ch.setClassToLinkTo(PublicBooking.class);
         ch.setTimestamp(stamp);
         ch.showInquiries(false);
+        ch.sm.T.setBorder(0);
+        ch.sm.T.setCellspacing(2);
       table.add(ch.getCalendarTable(iwc),1,1);
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -369,8 +372,8 @@ public class PublicBooking extends Block  {
 
   private Form leftBottom(IWContext iwc) {
     try {
-      TourBookingForm tbf = new TourBookingForm(iwc);
-        tbf.setProduct(product);
+      TourBookingForm tbf = new TourBookingForm(iwc, product);
+//        tbf.setProduct(product);
 
       Form form = new Form();
       String action = iwc.getParameter(this.sAction);
@@ -410,14 +413,139 @@ public class PublicBooking extends Block  {
 
 
   private Table getVerifyBookingTable(IWContext iwc) {
-    Table table = new Table();
+    String surname = iwc.getParameter("surname");
+    String lastname = iwc.getParameter("lastname");
+    String address = iwc.getParameter("address");
+    String area_code = iwc.getParameter("area_code");
+    String email = iwc.getParameter("e-mail");
+    String telephoneNumber = iwc.getParameter("telephone_number");
+    String city = iwc.getParameter("city");
+    String country = iwc.getParameter("country");
+    String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+    String room_number = iwc.getParameter("room_number");
 
-      Text viss = getBoldTextWhite("Ertu viss");
+    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), false);
+
+    Table table = new Table();
+      table.setCellpadding(3);
+      table.setCellspacing(3);
+      int row = 1;
+
+      table.mergeCells(1,1,2,1);
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.is_information_correct","Is the following information correct ?")),1,1);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.name","Name")),1,row);
+      table.add(getBoldTextWhite(surname+" "+lastname),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.address","Address")),1,row);
+      table.add(getBoldTextWhite(address),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.area_code","Area code")),1,row);
+      table.add(getBoldTextWhite(area_code),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
+      table.add(getBoldTextWhite(city),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.country","Country")),1,row);
+      table.add(getBoldTextWhite(country),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.email","E-mail")),1,row);
+      table.add(getBoldTextWhite(email),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
+      table.add(getBoldTextWhite(telephoneNumber),2,row);
+
+      /*
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
+      table.add(getBoldTextWhite(city),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
+      table.add(getBoldTextWhite(city),2,row);
+      */
+      ++row;
+
+      float price = 0;
+      int total = 0;
+      int current = 0;
+      Currency currency = null;
+
+      for (int i = 0; i < pPrices.length; i++) {
+        ++row;
+        table.setAlignment(1,row,"right");
+        table.setAlignment(2,row,"left");
+
+        try {
+          current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+        }catch (NumberFormatException n) {
+          current = 0;
+        }
+
+        total += current;
+        try {
+          if (i == 0)
+          currency = new Currency(pPrices[i].getCurrencyId());
+          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow());
+        }catch (SQLException sql) {}
+
+        table.add(getTextWhite(pPrices[i].getPriceCategory().getName()),1,row);
+        table.add(getBoldTextWhite(Integer.toString(current)),2,row);
+      }
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.total_passengers","Total passengers")),1,row);
+      table.add(getBoldTextWhite(Integer.toString(total)),2,row);
+
+      ++row;
+      table.setAlignment(1,row,"right");
+      table.setAlignment(2,row,"left");
+      table.add(getTextWhite(iwrb.getLocalizedString("travel.price","Price")),1,row);
+      table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
+      if (currency != null)
+      table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+
       SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
-      SubmitButton no = new SubmitButton(iwrb.getImage("buttons/no.gif"),this.sAction, "");
-      table.add(viss,1,1);
-      table.add(yes,2,1);
-      table.add(no,3,1);
+      Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
+          no.setAttribute("onClick","history.go(-1)");
+
+//        return backLink;
+
+  //    SubmitButton no = new SubmitButton(iwrb.getImage("buttons/no.gif"),this.sAction, "");
+
+      ++row;
+//      table.setWidth(1,"20%");
+      table.setAlignment(1,row,"left");
+      table.setAlignment(2,row,"right");
+      table.add(no,1,row);
+      table.add(yes,2,row);
 
 
 
@@ -455,13 +583,31 @@ public class PublicBooking extends Block  {
       if (success) {
         try {
           int bookingId = -1;
-          TourBookingForm tbf = new TourBookingForm(iwc);
-            tbf.setProduct(product);
+          TourBookingForm tbf = new TourBookingForm(iwc,product);
           bookingId = tbf.handleInsert(iwc);
 
-          Voucher v = new Voucher(iwc, bookingId);
+          GeneralBooking gBooking = new GeneralBooking(bookingId);
 
-          table.add(v.getVoucher());
+          table.add(getBoldTextWhite(gBooking.getName()));
+          table.add(getBoldTextWhite(", "));
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
+          table.add(Text.BREAK);
+          table.add(Text.BREAK);
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
+          table.add(Text.BREAK);
+          table.add(Text.BREAK);
+          table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+          table.add(Text.BREAK);
+          table.add(Text.BREAK);
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write this number down else proceed to printing the voucher.")));
+
+          Link printVoucher = new Link("Print voucher");
+            printVoucher.addParameter(VoucherWindow.parameterBookingId, bookingId);
+            printVoucher.setWindowToOpen(VoucherWindow.class);
+
+          table.add(printVoucher,1,2);
+          table.setAlignment(1,1,"left");
+          table.setAlignment(1,2,"right");
         }catch (Exception e) {
           table.add("Villa í try");
           e.printStackTrace(System.err);

@@ -12,6 +12,7 @@ import is.idega.idegaweb.travel.data.GeneralBooking;
 import com.idega.util.database.ConnectionBroker;
 import java.sql.Connection;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.*;
 
 import is.idega.idegaweb.travel.service.tour.data.*;
@@ -310,6 +311,16 @@ public class Booker {
       menu.addMenuElement(Booking.PAYMENT_TYPE_ID_VOUCHER ,iwrb.getLocalizedString("travel.voucher","Voucher"));
       menu.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     return menu;
+  }
+
+  public static Currency getCurrency(Booking booking) throws SQLException {
+      Currency currency = null;
+      BookingEntry[] entries = booking.getBookingEntries();
+
+      if (entries.length > 0)
+        currency = new Currency(entries[0].getProductPrice().getCurrencyId());
+
+      return currency;
   }
 
 

@@ -59,8 +59,9 @@ public class TourBookingForm extends TravelManager {
 
 
 
-  public TourBookingForm(IWContext iwc) throws Exception{
+  public TourBookingForm(IWContext iwc, Product product) throws Exception{
     super.main(iwc);
+    setProduct(product);
     iwrb = super.getResourceBundle(iwc);
     supplier = super.getSupplier();
 
@@ -783,8 +784,14 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.parameterCCMonth);
       form.maintainParameter(this.parameterCCYear);
       form.maintainParameter(this.BookingAction);
+      ProductPrice[] pPrices = ProductPrice.getProductPrices(this._productId, false);
+      for (int i = 0; i < pPrices.length; i++) {
+        form.maintainParameter("priceCategory"+i);
+      }
+
     return form;
   }
+
 
   private int checkBooking(IWContext iwc) throws Exception {
     Form form = getFormMaintainingAllParameters();
@@ -1080,17 +1087,21 @@ public class TourBookingForm extends TravelManager {
  */
 
 
-  public void setProduct(Product product) {
+  private void setProduct(Product product) {
     _product = product;
     _productId = product.getID();
     try {
       _service = TravelStockroomBusiness.getService(product);
-      _tour = new Tour(product.getID());
+      try {
+        _tour = new Tour(product.getID());
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
     }catch (Exception e) {
-      e.printStackTrace();
+      e.printStackTrace(System.err);
     }
   }
-
+/*
   public void setTour(Tour tour) {
     this._tour = tour;
     try {
@@ -1099,7 +1110,7 @@ public class TourBookingForm extends TravelManager {
       s.printStackTrace(System.err);
     }
   }
-
+*/
   public void setReseller(Reseller reseller) {
     _reseller = reseller;
     _resellerId = reseller.getID();

@@ -425,7 +425,12 @@ public class TourDesigner extends TravelManager {
           kilometers.setContent(Float.toString(tour.getLength()));
 
       }
-
+      /*
+      String newImageId = (String)iwc.getSessionAttribute("design_image_id");
+      System.err.println("ServiceDesigner : newImageId = "+newImageId);
+      if (newImageId != null) {
+        imageInserter.setImageId(Integer.parseInt(newImageId));
+      }*/
 
     }else {
       table.add("Gögn eru ósamræmd");

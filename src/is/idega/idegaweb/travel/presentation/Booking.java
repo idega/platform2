@@ -623,11 +623,11 @@ public class Booking extends TravelManager {
   }
 
   public Form getBookingForm(IWContext iwc) throws Exception{
-    TourBookingForm tbf = new TourBookingForm(iwc);
+    TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
-      if (product != null)  tbf.setProduct(product);
+//      if (product != null)  tbf.setProduct(product);
       if (reseller != null) tbf.setReseller(reseller);
-      if (tour != null)     tbf.setTour(tour);
+//      if (tour != null)     tbf.setTour(tour);
       tbf.setTimestamp(stamp);
       if (booking != null)  tbf.setBooking(booking);
       return tbf.getBookingForm();
@@ -690,11 +690,11 @@ public class Booking extends TravelManager {
 
   private int handleInsert(IWContext iwc, boolean displayForm) throws Exception {
 
-    TourBookingForm tbf = new TourBookingForm(iwc);
+    TourBookingForm tbf = new TourBookingForm(iwc, product);
     try {
-      if (product != null)  tbf.setProduct(product);
+//      if (product != null)  tbf.setProduct(product);
       if (reseller != null) tbf.setReseller(reseller);
-      if (tour != null)     tbf.setTour(tour);
+//      if (tour != null)     tbf.setTour(tour);
       tbf.setTimestamp(stamp);
 
       if (displayForm) {
