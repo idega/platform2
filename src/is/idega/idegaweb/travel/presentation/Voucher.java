@@ -343,13 +343,15 @@ public abstract class Voucher extends TravelManager {
         }
         // SECTION CLIENT_INFO ENDS
 
+        /*
         _table.add(Text.BREAK,1,2);
         _table.add(getText(_iwrb.getLocalizedString("travel.party_of_lg","PARTY OF")),1,2);
         _table.add(getText(" : "),1,2);
         _table.add(getText(Integer.toString(_booking.getTotalCount())),1,2);
+        */
         _table.add(Text.BREAK,1,2);
         for (int i = 0; i < _entries.length; i++) {
-          _table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
+          //_table.add(getText(Text.NON_BREAKING_SPACE+ Text.NON_BREAKING_SPACE),1,2);
           _table.add(getText(_entries[i].getProductPrice().getPriceCategory().getName()),1,2);
           _table.add(getText(" : "),1,2);
           _table.add(getText(Integer.toString(_entries[i].getCount())),1,2);

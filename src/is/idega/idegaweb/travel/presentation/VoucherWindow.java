@@ -1,20 +1,27 @@
 package is.idega.idegaweb.travel.presentation;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-
-import javax.ejb.FinderException;
-
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.*;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.*;
-
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PrintButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 
 
 /**
@@ -75,9 +82,12 @@ public class VoucherWindow extends Window {
 			  if (searchAction.equals(searchMethodReferenceNumber)) {
 			    String refMethod = iwc.getParameter(this.parameterReferenceNumber);
 			    if (refMethod != null && !refMethod.equals("")) {
-			      GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
-			      if (gBooking.length > 0) {
-			        Voucher voucher = sh.getVoucher(gBooking[0]);
+			    		Collection all = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findAllByReferenceNumber(refMethod);
+			    		//IDOLegacyEntity[] legs = (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
+			      //GeneralBooking[] gBooking = (GeneralBooking[]) legs; 
+			      if (all != null && !all.isEmpty()) {
+			      		Iterator iter = all.iterator();
+			        Voucher voucher = sh.getVoucher((GeneralBooking)iter.next());
 			        table.add(voucher);
 			      }else {
 			        error = true;
