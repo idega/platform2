@@ -34,6 +34,10 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+		getSession().setChildID(-1);
+		getSession().setChildCareID(-1);
+		getSession().setApplicationID(-1);
+
 		Table applicationTable = new Table();
 		applicationTable.setWidth(getWidth());
 		applicationTable.setCellpadding(getCellpadding());
