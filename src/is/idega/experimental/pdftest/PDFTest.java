@@ -1,11 +1,15 @@
 package is.idega.experimental.pdftest;
 
 import java.awt.Graphics2D;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import com.idega.block.messenger.data.Message;
 import com.idega.core.data.ICFile;
@@ -31,6 +35,8 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.xml.SAXmyHandler;
+import com.lowagie.text.xml.XmlParser;
 
 /**
  * @author laddi
@@ -78,7 +84,7 @@ public class PDFTest {
 			{
 				try{
 					outerDocument.newPage();
-					String sAddrString = "Þórhallur Bæring Sveinn Hreinn Helgason\nStafnaseli 5\n109 Reykjavík\nIceland";
+					String sAddrString = "ï¿½ï¿½rhallur Bï¿½ring Sveinn Hreinn Helgason\nStafnaseli 5\n109 Reykjavï¿½k\nIceland";
 
 					Paragraph P1, P2, P3, P4, P5, P6, P7, P8, P9;
 					
@@ -105,21 +111,21 @@ public class PDFTest {
 					
 					P1 = new Paragraph(new Phrase("Hej,"));
 
-					String sBodyText = "Din ansškan om medborgarkonto fšr Nacka24 har blivit godkŠnd. Du har dŠrmed fŒtt tillgŒng till din personliga sida pŒ Nacka24.";
+					String sBodyText = "Din ansï¿½kan om medborgarkonto fï¿½r Nacka24 har blivit godkï¿½nd. Du har dï¿½rmed fï¿½tt tillgï¿½ng till din personliga sida pï¿½ Nacka24.";
 					P2 = new Paragraph(new Phrase(sBodyText));
 					
-					sBodyText = "AnvŠndarnamn: ";
+					sBodyText = "Anvï¿½ndarnamn: ";
 					P3 = new Paragraph();
 					P3.add(new Phrase(sBodyText));
 					P3.add(new Phrase("Laddi\n", paragraphFont));
-					P3.add(new Phrase("Lšsenord: "));
+					P3.add(new Phrase("Lï¿½senord: "));
 					P3.add(new Phrase("Rapperson", paragraphFont));
 					
-					P4 = new Paragraph(new Phrase("Webbadressen till Nacka24 Šr: http://www.nacka24.nacka.se. Skriv in ditt anvŠndarnamn och lšsenord šverst till hšger i fšnstret. Klicka pŒ Logga in. Min sida, ditt personliga medborgarkonto šppnas."));
-					P5 = new Paragraph(new Phrase("Fšr att du ska fŒ tillgŒng till din personliga sida krŠvs att du anvŠnder en webblŠsare med tillrŠckligt hšg sŠkerhet. WebblŠsaren mŒste ocksŒ ha stšd fšr cookies och i de flesta webblŠsare fungerar det automatiskt. Du ska alltsŒ inte inaktivera funktionen med cookies."));
-					P6 = new Paragraph(new Phrase("Du bšr anvŠnda nŒgon av fšljande webblŠsare:"));
-					P7 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.5 fšr Windows eller senare versioner "));
-					P8 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.1 fšr Mac eller senare versioner"));
+					P4 = new Paragraph(new Phrase("Webbadressen till Nacka24 ï¿½r: http://www.nacka24.nacka.se. Skriv in ditt anvï¿½ndarnamn och lï¿½senord ï¿½verst till hï¿½ger i fï¿½nstret. Klicka pï¿½ Logga in. Min sida, ditt personliga medborgarkonto ï¿½ppnas."));
+					P5 = new Paragraph(new Phrase("Fï¿½r att du ska fï¿½ tillgï¿½ng till din personliga sida krï¿½vs att du anvï¿½nder en webblï¿½sare med tillrï¿½ckligt hï¿½g sï¿½kerhet. Webblï¿½saren mï¿½ste ocksï¿½ ha stï¿½d fï¿½r cookies och i de flesta webblï¿½sare fungerar det automatiskt. Du ska alltsï¿½ inte inaktivera funktionen med cookies."));
+					P6 = new Paragraph(new Phrase("Du bï¿½r anvï¿½nda nï¿½gon av fï¿½ljande webblï¿½sare:"));
+					P7 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.5 fï¿½r Windows eller senare versioner "));
+					P8 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.1 fï¿½r Mac eller senare versioner"));
 					P9 = new Paragraph(new Phrase("\t-\tNetscape 6.0 eller senare versioner"));
 
 					ColumnText ct = new ColumnText(cb);
@@ -159,15 +165,15 @@ public class PDFTest {
 					//outerDocument.add(emptyLine);
 					outerDocument.add(P9);
 					outerDocument.add(emptyLine);
-					/*outerDocument.add(new Paragraph("Du kan ladda ner nŒgon av webblŠsarna frŒn fšljande webbsidor."));
+					/*outerDocument.add(new Paragraph("Du kan ladda ner nï¿½gon av webblï¿½sarna frï¿½n fï¿½ljande webbsidor."));
 					outerDocument.add(emptyLine);
-					outerDocument.add(new Paragraph("Internet Explorer 5.5 fšr Windows och Internet Explorer 5.1 fšr Mac"));
+					outerDocument.add(new Paragraph("Internet Explorer 5.5 fï¿½r Windows och Internet Explorer 5.1 fï¿½r Mac"));
 					outerDocument.add(new Paragraph("http://www.microsoft.com/downloads"));
 					outerDocument.add(emptyLine);
 					outerDocument.add(new Paragraph("Netscape 6.0"));
 					outerDocument.add(new Paragraph("http://www.netscape.com"));
 					outerDocument.add(emptyLine);*/
-					outerDocument.add(new Paragraph("PŒ Nacka24 under FrŒgor & Svar finns mer hjŠlp om hur du ser vilken version av webblŠsare du har och hur du laddar ner nya versioner. Om du har frŒgor Šr du ocksŒ vŠlkommen att kontakta kundvalsgruppen i Nacka kommun pŒ telefon 08-718 80 00 eller via e-post kundvalsgruppen.bun@nacka.se."));
+					outerDocument.add(new Paragraph("Pï¿½ Nacka24 under Frï¿½gor & Svar finns mer hjï¿½lp om hur du ser vilken version av webblï¿½sare du har och hur du laddar ner nya versioner. Om du har frï¿½gor ï¿½r du ocksï¿½ vï¿½lkommen att kontakta kundvalsgruppen i Nacka kommun pï¿½ telefon 08-718 80 00 eller via e-post kundvalsgruppen.bun@nacka.se."));
 
 				}
 				catch(Exception e){
@@ -202,4 +208,21 @@ public class PDFTest {
 		float pointPerMM=72/25.4f;
 		return millimeters*pointPerMM;
 	}
+	
+	// Example of XML template usage, creating a PDF
+	public MemoryFileBuffer createPDFFromXML(String  xmlFileURL)throws Exception{
+		Document  document =new Document(PageSize.A4);
+		MemoryFileBuffer buf = new MemoryFileBuffer();
+		OutputStream DocOS = new MemoryOutputStream(buf);
+	
+		PdfWriter writer = PdfWriter.getInstance(document, DocOS);
+		
+		XmlParser.parse(document,xmlFileURL);
+		// see http://www.lowagie.com/iText/tutorial/ch07.html for examples
+		// and http://www.lowagie.com/iText/examples/Chap0703.xml for a XML file
+		//
+		return buf;
+	}
+	
+	
 }
