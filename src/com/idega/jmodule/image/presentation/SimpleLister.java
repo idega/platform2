@@ -71,6 +71,7 @@ public class SimpleLister extends PresentationObjectContainer {
     Link L = new Link(image.getName(),SimpleViewer.class);
     L.setFontSize(1);
     L.setOnClick("top.iImageId = "+image.getID() );
+    L.setOnClick("top.sImageName = "+image.getName() );
     L.addParameter(sessImageParameter,image.getID());
     L.setTarget(target);
     return L;

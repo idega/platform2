@@ -32,10 +32,15 @@ import com.idega.idegaweb.IWBundle;
       return IW_BUNDLE_IDENTIFIER ;
     }
 
+    public static String getSaveImageFunctionName(){
+      return "saveImageId()";
+    }
+
     public static String getSaveImageFunction(){
-      StringBuffer function = new StringBuffer("function saveImageId(){\n \t");
-      function.append("top.opener.setImageId(iImageId) ;\n \t");
-      function.append("self.window.close(); \n }");
+      StringBuffer function = new StringBuffer(" var iImageId = -1 ; \n");
+      function.append("function "+getSaveImageFunctionName()+" {\n \t");
+      function.append("top.window.opener.setImageId(iImageId) ; \n \t");
+      function.append("window.close(); \n }");
       return function.toString();
     }
 
@@ -43,7 +48,7 @@ import com.idega.idegaweb.IWBundle;
       IWBundle iwb = getBundle(iwc);
       checkParameterName(iwc);
 
-      getParentPage().getAssociatedScript().addFunction("callbim","var iImageId = 108 ;\n "+getSaveImageFunction() );
+      getParentPage().getAssociatedScript().addFunction("callbim",getSaveImageFunction() );
 
 
       Table Frame = new Table();
@@ -129,10 +134,7 @@ import com.idega.idegaweb.IWBundle;
     public Link getSaveLink(PresentationObject mo){
       Link L = new Link(mo,SimpleViewer.class);
       L.addParameter(prmAction,actSave);
-      L.setOnClick("top.opener.setImageId(iImageId)");
-      //L.setOnClick("top.opener..setParentImageId(108)");
-      //L.setOnClick(getCallFunction(108) );
-      //L.setOnClick("window.close()");
+      L.setOnClick(getSaveImageFunctionName());
       L.setTarget(target2);
       return L;
     }

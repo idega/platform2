@@ -38,7 +38,7 @@ private int maxImageWidth = 140;
 private boolean hasUseBox = true;
 private boolean selected = false;
 private boolean openInWindow = false;
-private Class windowClass = SimpleUploaderWindow.class;
+private Class windowClass = SimpleChooserWindow.class;
 private Image setImage;
 private boolean limitWidth = true;
 public final String sessionImageParameterName = "im_image_session_name";
@@ -111,12 +111,13 @@ public ImageInserter(Class WindowToOpen) {
             image = iwrb.getImage("picture.gif",iwrb.getLocalizedString("new_image","New image"),138,90);
           }
           else {
-            image = new Image(imageId,"rugl");
+            image = new Image(imageId);//,"rugl");
           }
           if( limitWidth ) image.setMaxImageWidth(this.maxImageWidth);
           image.setNoImageLink();
         }
-        //image.setName("rugl");
+        image.setName("rugl");
+
         String s = image.getMediaServletString();
         Page P = getParentPage();
         if(P!=null){
@@ -170,20 +171,13 @@ public ImageInserter(Class WindowToOpen) {
   }
 
   public String getImageChangeJSFunction(){
-    StringBuffer function = new StringBuffer("function setImageId(imageId) { \n \t");
+    StringBuffer function = new StringBuffer("var imageName = \"rugl\"; \n");
+    function.append("function setImageId(imageId) { \n \t");
     function.append("if (document.images) { \n \t\t");
     function.append("document.rugl.src = \"/servlet/MediaServlet/\"+imageId+\"image?image_id=\"+imageId; \n\t ");
     function.append("document.forms[0]."+sHiddenInputName+".value = imageId \n\t}\n }");
 
     return function.toString();
-  }
-
-  public static String getSaveImageFunction(){
-      StringBuffer function = new StringBuffer(" var imageId = -1 ; \n");
-      function.append("function saveImageId() {\n \t");
-      function.append("window.opener.setImageId(imageId) ; \n \t");
-      //function.append("self.window.close(); \n }");
-      return function.toString();
   }
 
   public void setHasUseBox(boolean useBox){
