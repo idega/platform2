@@ -879,9 +879,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		IWTimestamp fromDate = new IWTimestamp(newDate);
 
 		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-		MemoryFileBuffer[]  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 	
-			ICFile contractFile = pdfHandler.writeToDatabase(buffers[0],"contract.pdf",pdfHandler.getPDFMimeType());
+			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 			int fileID = ((Integer)contractFile.getPrimaryKey()).intValue();
 
 		application.setContractFileId(fileID);
@@ -1327,10 +1327,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				terminateContract(application.getContractFileId(), terminationDate.getDate());
 			}
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-						MemoryFileBuffer[]  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-						if(buffers !=null && buffers.length == 2){
-							String contractText = pdfHandler.bufferToString(buffers[1]);
-							ICFile contractFile = pdfHandler.writeToDatabase(buffers[0],"contract.pdf",pdfHandler.getPDFMimeType());
+						List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+						if(buffers !=null && buffers.size() == 2){
+							String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
+							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(application.getChildId(),2,validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
@@ -2394,10 +2394,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 	
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-			MemoryFileBuffer[]  buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			if(buffers !=null && buffers.length == 2){
-				String contractText = pdfHandler.bufferToString(buffers[1]);
-				ICFile contractFile = pdfHandler.writeToDatabase(buffers[0],"contract.pdf",pdfHandler.getPDFMimeType());
+			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			if(buffers !=null && buffers.size() == 2){
+				String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
+				ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 				ContractService service = (ContractService) getServiceInstance(ContractService.class);
 				Contract contract = service.getContractHome().create(application.getChildId(),2,fromDate,toDate,"C",contractText);
 				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
