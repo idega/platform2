@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.accounting.business;
 import java.text.Collator;
 import java.util.Comparator;
 
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 
 import com.idega.util.LocaleUtil;
