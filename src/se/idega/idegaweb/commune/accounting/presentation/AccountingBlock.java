@@ -61,9 +61,7 @@ public abstract class AccountingBlock extends CommuneBlock {
 	 * @param iwc
 	 * @throws Exception
 	 */
-	public void init(IWContext iwc) throws Exception{
-		//Does nothing
-	}
+	public abstract void init(IWContext iwc) throws Exception;
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()

@@ -24,7 +24,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private static String PARAM_MONTH=PREFIX+"month";
 	private static String PARAM_READ_DATE=PREFIX+"read_date";
 
-	public void main(IWContext iwc){
+	public void init(IWContext iwc){
 		
 		handleAction(iwc);
 		
