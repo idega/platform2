@@ -19,8 +19,8 @@ public class BorderTable extends ModuleObjectContainer {
   private Table contentTable;
   private Table borderTable;
   private int iBorder = 1;
-  private String sHeight = "100%";
-  private String sWidth = "100%";
+  private String sHeight = "";
+  private String sWidth = "";
   private String sBorderColor = "#FFFFFF";
   private String sContentColor = "#FFFFFF";
   private String vAlign = "middle";
@@ -60,7 +60,7 @@ public class BorderTable extends ModuleObjectContainer {
   public void setVerticalAlignment(String align ){
     this.vAlign = align;
   }
-  public void setHorisontalAlignment(String align){
+  public void setHorizontalAlignment(String align){
     this.hAlign = align;
   }
   public void setWidth(int tableWidth){
