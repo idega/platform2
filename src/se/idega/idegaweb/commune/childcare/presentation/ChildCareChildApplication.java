@@ -141,7 +141,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		boolean hasOffers = false;
 		if (child != null) {
 			try {
-				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue());
+				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
 			}
 			catch (RemoteException e) {
 				hasOffers = false;
