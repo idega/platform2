@@ -129,6 +129,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public ChildCareApplication getNonActiveApplication(int childID, int choiceNumber) throws RemoteException {
+		try {
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+			return getChildCareApplicationHome().findApplicationByChildAndChoiceNumberInStatus(childID, choiceNumber, caseStatus);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
 	public ChildCareApplication getNewestApplication(int providerID, Date date) throws RemoteException {
 		try {
 			return getChildCareApplicationHome().findNewestApplication(providerID, date);
@@ -250,7 +260,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			User child = getUserBusiness().getUser(childId);
 			IWTimestamp now;
-			
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+						
 			try {
 				IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
 				now = new IWTimestamp();
@@ -269,7 +280,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				int providerID = provider[i];
 				if (providerID != -1) {
 					try {
-						appl = getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childId, i + 1);
+						appl = getChildCareApplicationHome().findApplicationByChildAndChoiceNumberInStatus(childId, i + 1, caseStatus);
 					}
 					catch (FinderException fe) {
 						appl = getChildCareApplicationHome().create();

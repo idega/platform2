@@ -101,4 +101,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void exportQueue(java.util.Collection choices) throws java.rmi.RemoteException;
  public int getOldQueueTotal(String[] queueType, boolean exported) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getValidContract(int applicationID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getNonActiveApplication(int childID, int choiceNumber) throws java.rmi.RemoteException;
 }
