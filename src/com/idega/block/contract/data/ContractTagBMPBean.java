@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTagBMPBean.java,v 1.4 2003/06/11 11:33:21 roar Exp $
+ * $Id: ContractTagBMPBean.java,v 1.5 2003/06/11 15:45:54 roar Exp $
 
  *
 
@@ -89,7 +89,7 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 
 	public static String getColumnNameInList(){return "IN_LIST";}
 	
-	public static String getColumnNameType(){return "TYPE";}
+	public static String getColumnNameType(){return "TAG_TYPE";}
 
 
 
@@ -169,10 +169,11 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 	
 	public Class getType(){
 		try{
-			return Class.forName(getStringColumnValue(getColumnNameType()));
-		}catch(ClassNotFoundException ex){
-			
-		}
+			String value = getStringColumnValue(getColumnNameType());
+			if (value != null){
+				return Class.forName(value);
+			}
+		}catch(ClassNotFoundException ex){		}
 		return null;
 	}
 	
