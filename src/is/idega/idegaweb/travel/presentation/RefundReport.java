@@ -15,7 +15,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -69,7 +68,7 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     types.setSelectedElement(CC_CLIENT_TYPE);
     types.setToSubmit();
     table.add(types, 5, row);
-    table.mergeCells(5, row, 6, row);
+    table.mergeCells(5, row, 7, row);
     table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_RIGHT);
     table.setRowColor(row, super.backgroundColor);
     
@@ -79,7 +78,8 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     table.add(getHeaderText(iwrb.getLocalizedString("travel.price","Price")), 3, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.card_type","Card type")), 4, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.oroginal_payment","Original payment")), 5, row);
-    table.add(getHeaderText(iwrb.getLocalizedString("travel.search_engine","Search Engine")), 6, row);
+    table.mergeCells(5, row, 6, row);
+    table.add(getHeaderText(iwrb.getLocalizedString("travel.search_engine","Search Engine")), 7, row);
     table.setRowColor(row, super.backgroundColor);
     
     CreditCardAuthorizationEntry entry;
@@ -113,9 +113,10 @@ public class RefundReport extends TravelManager implements AdministratorReport {
 	    		booking = bookingHome.findByAuthorizationNumber(parent.getAuthorizationCode(), new IWTimestamp(parent.getDate()));
 	  	    table.add(getText(booking.getService().getProduct().getSupplier().getName()), 2, row);
 	  	    table.add(getText(parent.getBrandName()), 4, row);
-	  	    table.add(getText(TextSoap.decimalFormat(parentAmount, 2)+" "+entry.getCurrency()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+parentStamp.getLocaleDate(iwc)), 5, row);
+	  	    table.add(getText(TextSoap.decimalFormat(parentAmount, 2)+" "+entry.getCurrency()), 5, row);
+	  	    table.add(getText(parentStamp.getLocaleDate(iwc)), 6, row);
 	  	    if (booking.getCode() != null) {
-	  	    		table.add(getText(booking.getCode()), 6, row);
+	  	    		table.add(getText(booking.getCode()), 7, row);
 	  	    }
 	  		}
 
@@ -130,6 +131,7 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_RIGHT);
     table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_RIGHT);
     
+    table.setAlignment(5, 2, Table.HORIZONTAL_ALIGN_CENTER);
     return table;
 	}
 	
