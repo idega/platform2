@@ -62,7 +62,7 @@ public class SchoolDropDownMenu extends DropdownMenu implements InputHandler {
 		if (value[0].equals("-1")) {
 			return null;
 		}
-		return value[0];
+		return new Integer(value[0]);
 	}
 
 	/* (non-Javadoc)
