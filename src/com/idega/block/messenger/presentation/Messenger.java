@@ -40,6 +40,8 @@ public class Messenger extends Block {
 //test delete this
     add(iwc.getApplication().getImageFactory().createButton("RAPPSON",iwb));
 
+    add(new com.idega.presentation.ui.SubmitButton(iwc.getApplication().getImageFactory().createButton("RAPPSON",iwb)));
+
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
         messenger = new Applet();
