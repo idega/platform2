@@ -6,6 +6,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
@@ -30,12 +31,22 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	DateInput readDateInput;	
 
 	public void init(IWContext iwc){
-		
-		handleAction(iwc);
+		String schoolCategory=null;
+		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
+		try {
+			schoolCategory = getSession().getOperationalField();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		handleAction(iwc,schoolCategory);
 		
 		Form form = new Form();
 		add(form);
 		
+		add(opFields);
+
 		monthInput = new DateInput(PARAM_MONTH,true);
 		monthInput.setToCurrentDate();
 		monthInput.setToShowDay(false);
@@ -57,19 +68,19 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	/**
 	 * @param iwc
 	 */
-	private void handleAction(IWContext iwc) {
+	private void handleAction(IWContext iwc, String schoolCategory) {
 		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(iwc);
+			handleSave(iwc, schoolCategory);
 		}
 	}
 	
 	/**
 	 * @param iwc
 	 */
-	private void handleSave(IWContext iwc) {
+	private void handleSave(IWContext iwc, String schoolCategory) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			invoiceBusiness.startPostingBatch(new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate(), iwc);
+			invoiceBusiness.startPostingBatch(new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate(), schoolCategory, iwc);
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}

@@ -7,6 +7,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
@@ -27,10 +28,21 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 	private static String PARAM_MONTH=PREFIX+"month";
 
 	public void init(IWContext iwc){
-		
-		handleAction(iwc);
+		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
+		String schoolCategory=null;
+		  
+		try {
+			schoolCategory = getSession().getOperationalField();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			add(new ExceptionWrapper(e, this));
+		}
+
+		handleAction(schoolCategory, iwc);
 		
 		Form form = new Form();
+		
+		add(opFields);
 		add(form);
 		
 		DateInput monthInput = new DateInput(PARAM_MONTH,true);
@@ -49,19 +61,19 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 	/**
 	 * @param iwc
 	 */
-	private void handleAction(IWContext iwc) {
+	private void handleAction(String schoolCategory, IWContext iwc) {
 		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(iwc);
+			handleSave(schoolCategory, iwc);
 		}
 	}
 	
 	/**
 	 * @param iwc
 	 */
-	private void handleSave(IWContext iwc) {
+	private void handleSave(String schoolCategory, IWContext iwc) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			invoiceBusiness.removePreliminaryInvoice(new Date(System.currentTimeMillis()));
+			invoiceBusiness.removePreliminaryInvoice(new Date(System.currentTimeMillis()), schoolCategory);
 			add(this.localize(PREFIX+"records_removed","Records have been removed."));
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));

@@ -6,15 +6,17 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
+import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -24,19 +26,28 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
+ * Displays the results of the batchrun, and all possible errors that could have occured
+ * see fonster 33 in C&P req spec.
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
+ * 
  * @author Joakim
- *
  */
 public class InvoiceBatchResult extends AccountingBlock{
 	
 	public void init(IWContext iwc){
 		Form form = new Form();
 		Table table = new Table(2,6);
+		OperationalFieldsMenu opFields = new OperationalFieldsMenu();  
 		
 		try {
 			handleAction(iwc);
 		
+			//"Top section"
 			add(form);
+			
+			add(opFields);
 
 			table.add(getLocalizedLabel("invbr.period","Period"),1,1);
 			table.add(getLocalizedLabel("invbr.batchrun_starttime","Batchrun start-time"),1,2);
@@ -45,31 +56,29 @@ public class InvoiceBatchResult extends AccountingBlock{
 			table.add(getLocalizedLabel("invbr.number_of_billed_children","Number of handled children"),1,5);
 			table.add(getLocalizedLabel("invbr.totalAmount","Total amount"),1,6);
 
-			BatchRunHome batchRunHome = (BatchRunHome)IDOLookup.getHome(BatchRun.class);
-			Collection runColl = batchRunHome.findAllOrderByStart();
-			Iterator runIter = runColl.iterator();
+			InvoiceBusiness invoiceBusiness = getInvoiceBusiness(iwc);
+			String schoolCategory = getSession().getOperationalField();
+			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory);
+			IWTimestamp period = new IWTimestamp(batchRun.getPeriod());
+			IWTimestamp start = new IWTimestamp(batchRun.getStart());
+			IWTimestamp end = new IWTimestamp(batchRun.getEnd());
+			table.add(period.getDateString("MMM yyyy"),2,1);
+			table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,2);
+			table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
+			table.add(""+invoiceBusiness.getNoProviders(batchRun),2,4);
+			table.add(""+invoiceBusiness.getNoPlacements(batchRun),2,5);
+			table.add(""+invoiceBusiness.getTotAmountWithoutVAT(batchRun),2,6);
 			
-			if(runIter.hasNext()){
-				BatchRun run = (BatchRun)runIter.next();
-				IWTimestamp period = new IWTimestamp(run.getPeriod());
-				IWTimestamp start = new IWTimestamp(run.getStart());
-				IWTimestamp end = new IWTimestamp(run.getEnd());
-				table.add(period.getDateString("MMM yyyy"),2,1);
-				table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,2);
-				table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
-			}
 		
 			form.add(table);
 			
+			//Middle section with the error list
 			Table errorTable = new Table();
 			
-			
 			int row = 1;
-			System.out.println("1: ");
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
-			System.out.println("2: ");
-			Collection errorColl = batchRunErrorHome.findAllOrdered();
-			System.out.println("Size of table BatchRunError: "+errorColl.size());
+			Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun);
+//			System.out.println("Size of table BatchRunError: "+errorColl.size());
 			Iterator errorIter = errorColl.iterator();
 			if(errorIter.hasNext()){
 				System.out.println("Found error description");
@@ -80,13 +89,18 @@ public class InvoiceBatchResult extends AccountingBlock{
 				while(errorIter.hasNext()){
 					BatchRunError batchRunError = (BatchRunError)errorIter.next();
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
-					errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
+					if(batchRunError.getRelated().indexOf('.')!=-1){
+						errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
+					}else{
+						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
+					}
 					errorTable.add(new Text(batchRunError.getDescription()),3,row+1);
 					row++;
 				}
 				add(errorTable);
 			}
 			
+			//Bottom section
 			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
 			add(new Text(new Integer(row-1).toString()));
 
@@ -122,7 +136,20 @@ public class InvoiceBatchResult extends AccountingBlock{
 		}
 	}
 
-	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
-		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
-	}
+//	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
+//		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
+//	}
+
+//	public InvoiceBusinessHome getInvoiceBusinessHome() throws RemoteException {
+//		return (InvoiceBusinessHome) IDOLookup.getHome(InvoiceBusiness.class);
+//	}
+
+	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {
+		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
+	}	
+	
+	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
+		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
+	}	
+	
 }
