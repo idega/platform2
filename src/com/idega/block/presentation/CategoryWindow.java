@@ -11,11 +11,15 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+
+import java.util.Collections;
 import java.util.Vector;
 import java.util.List;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
+
+import com.idega.block.category.business.CategoryComparator;
 import com.idega.core.business.Category;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.business.CategoryBusiness;
@@ -229,6 +233,7 @@ public class CategoryWindow extends IWAdminWindow {
 
     /** @todo  permission handling */
 		List L = CategoryFinder.getInstance().listOfCategories(sType);
+		Collections.sort(L, new CategoryComparator());
     Collection coll = CategoryFinder.getInstance().collectCategoryIntegerIds(iObjectInstanceId);
 
     int chosenId = eCategory!=null?eCategory.getID():-1;
