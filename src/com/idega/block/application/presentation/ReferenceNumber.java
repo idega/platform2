@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.12 2002/02/25 19:08:42 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.13 2002/02/27 16:10:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ public class ReferenceNumber extends Block {
   private int referenceTextSize_ = -1;
   private int inputLength_ = 10;
   private int layout_ = -1;
+  private int pageId;
 
   private String backgroundImageUrl_ = "";
   private String referenceWidth_ = "";
@@ -199,6 +200,9 @@ public class ReferenceNumber extends Block {
 
     referenceTable.add(submitTable,1,2);
     myForm_.add(referenceTable);
+    if(pageId > 0){
+      myForm_.setPageToSubmitTo(pageId);
+    }
   }
 
   public String getBundleIdentifier() {
@@ -285,6 +289,10 @@ public class ReferenceNumber extends Block {
 
   public void setTextStyle(String styleAttribute){
     this.textStyles=styleAttribute;
+  }
+
+  public void setPage(com.idega.builder.data.IBPage page){
+    this.pageId = page.getID();
   }
 
   public synchronized Object clone() {
