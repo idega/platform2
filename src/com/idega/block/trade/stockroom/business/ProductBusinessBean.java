@@ -371,27 +371,31 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   }
 
   public Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) throws RemoteException {
-    Timeframe returner = null;
-    try {
-      Timeframe[] frames = product.getTimeframes();
-      ProductPrice[] pPrices;
-      for (int i = 0; i < frames.length; i++) {
-	returner = frames[i];
-        if (travelAddressId != -1) {
-          pPrices = ProductPriceBMPBean.getProductPrices(((Integer) product.getPrimaryKey()).intValue() , frames[i].getID(), travelAddressId, false);
-//          System.err.println("getting prices : length = "+pPrices.length);
-          if (pPrices.length == 0) {
-            continue;
-          }
-        }
+  	try {
+  		return getTimeframe(product, product.getTimeframes(), stamp, travelAddressId);
+  	} catch (SQLException e) {
+  		e.printStackTrace(System.err);
+  		return null;
+  	}
+  }
+  
+  public Timeframe getTimeframe(Product product, Timeframe[] timeframes, IWTimestamp stamp, int travelAddressId) throws RemoteException {
+		Timeframe returner = null;
+	  ProductPrice[] pPrices;
+	  for (int i = 0; i < timeframes.length; i++) {
+	  	returner = timeframes[i];
+	    if (travelAddressId != -1) {
+	      pPrices = ProductPriceBMPBean.getProductPrices(((Integer) product.getPrimaryKey()).intValue() , timeframes[i].getID(), travelAddressId, false);
+	//          System.err.println("getting prices : length = "+pPrices.length);
+	      if (pPrices.length == 0) {
+	        continue;
+	      }
+	    }
 
-	if (getStockroomBusiness().isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
-	  return returner;
-	}
-      }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
+			if (getStockroomBusiness().isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+			  return returner;
+			}
+	  }
     return returner;
   }
 
