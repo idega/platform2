@@ -20,6 +20,7 @@ import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.user.data.Group;
 import com.idega.user.data.Status;
+import com.idega.user.data.User;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -222,6 +223,13 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
+		try {
+			
+		}
+		catch(Exception e) {
+		}
+		
+		
 		return true;
 	}
 
