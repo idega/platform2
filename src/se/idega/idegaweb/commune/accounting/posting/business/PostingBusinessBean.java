@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.39 2003/11/19 00:36:46 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.40 2003/11/20 17:02:08 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -786,6 +786,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 			PostingParameters parameters;
 			parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue());
+			System.out.println("Parameters "+parameters.getPostingString()+" + "+parameters.getDoublePostingString());
+			System.out.println("Parameters "+provider.getOwnPosting()+" + "+provider.getDoublePosting());
+			System.out.println("Parameters "+categoryPosting.getAccount()+" + "+categoryPosting.getCounterAccount());
 	
 			ownPosting = parameters.getPostingString();
 			ownPosting = generateString(ownPosting, provider.getOwnPosting(), date);
