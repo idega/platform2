@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
+import com.idega.servlet.filter.BaseFilter;
 
 /**
  * 
@@ -24,7 +25,7 @@ import com.idega.presentation.IWContext;
  * 
  * @author eiki
  */
-public class GolfAuthenticatorFilter {
+public class GolfAuthenticatorFilter extends BaseFilter{
 
 	private GolfLoginBusiness loginBusiness = new GolfLoginBusiness();
 
