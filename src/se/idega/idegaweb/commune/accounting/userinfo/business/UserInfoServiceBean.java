@@ -361,36 +361,19 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	}
 
 	/**
-	 * This is an temporary implemenation of isEqual, designed to logg the
-	 * difference between the new and the old implementation. This method will
-	 * later be replaced with the method now called _isEqual, as soon as the
-	 * later has been verified.
-	 */
-	private static boolean isEqual (final Address address1,
-																	final Address address2) {
-		final boolean oldResult = address1.isEqualTo (address2);
-		final boolean newResult = _isEqual (address1, address2);
-		if (oldResult != newResult) {
-			System.err.println ("### old:" + oldResult + " new:" + newResult + " "
-													+ address1.getPrimaryKey () + " =? "
-													+ address2.getPrimaryKey ());
-		}
-		return newResult;
-	}
-
-	/**
 	 * Compares two addresses on street name, the number part of street number,
 	 * postal code and country. Address.isEqualTo compares the whole number part,
 	 * including nb, 1tr etc., which isn't sufficiant here. This a formal request
 	 * from the customer.
 	 */
-	private static boolean _isEqual (final Address address1,
+	private static boolean isEqual (final Address address1,
 																	 final Address address2) {
 		// In order to make this method as fast as possible...
-		// 1. retreive fields lazy - return as soon as differ is known
-		// 2. compare what's expected to be most differing field first
-		// 3. fields joined from other tables with foreign keys are considered late
+		// - retreive fields lazy - return as soon as differ is known
+		// - compare what's expected to be most differing field first
+		// - fields joined from other tables with foreign keys are considered late
 
+		// if this is the same address row, then return immediately
 		if (address1.getPrimaryKey ().equals (address2.getPrimaryKey ())) {
 			return true;
 		}
@@ -405,7 +388,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					if (address1.getPostalCode ().equals (address2.getPostalCode ())) {
 						// they have sam postal code
 						if (address1.getCountryId () == address2.getCountryId ()) {
-							// they have same address id
+							// they have same country id
 							return true;
 						}
 					}
