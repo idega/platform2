@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.2 2001/07/12 21:25:44 laddi Exp $
+ * $Id: Title.java,v 1.3 2001/08/24 17:45:10 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,8 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.login.business.*;
 import java.sql.SQLException;
 import java.io.IOException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  *
@@ -34,6 +36,10 @@ public class Title extends JModuleObject{
   private final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
   private final int ACT5 = 5, ACT6 = 6, ACT7 = 7, ACT8 = 8;
   private final int NOACT = 0;
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
+
 
   public Title(){
     MiddleColor = "#9FA9B3";
@@ -47,7 +53,7 @@ public class Title extends JModuleObject{
 
       if(modinfo.getParameter(strAction) == null){
         if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getServletContext().getAttribute(strAction);
+          sAct = (String) modinfo.getSessionAttribute(strAction);
           iAct = Integer.parseInt(sAct);
         }
         else {
@@ -57,8 +63,8 @@ public class Title extends JModuleObject{
       if(modinfo.getParameter(strAction) != null){
         sAct = modinfo.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
-        if ( ((String) modinfo.getServletContext().getAttribute(strAction)) != (sAct) ) {
-          modinfo.getServletContext().setAttribute(strAction,sAct);
+        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
+          modinfo.setSessionAttribute(strAction,sAct);
         }
       }
       doAct();
@@ -70,25 +76,32 @@ public class Title extends JModuleObject{
   private void doAct(){
     String TitleUrl;
     String lang = "IS";
+    Image image = null;
     switch (iAct) {
-      case ACT1:  TitleUrl = "/pics/titles/"+lang+"/info2.gif";             break;
-      case ACT2:  TitleUrl = "/pics/titles/"+lang+"/office.gif";            break;
-      case ACT3:  TitleUrl = "/pics/titles/"+lang+"/application2.gif";      break;
-      case ACT4:  TitleUrl = "/pics/titles/"+lang+"/apartment2.gif";        break;
-      case ACT5:  TitleUrl = "/pics/titles/"+lang+"/links2.gif";            break;
-      case ACT6:  TitleUrl = "/pics/titles/"+lang+"/english2.gif";          break;
-      case ACT7:  TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";         break;
-      //case ACT8:  TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";       break;
-      default: TitleUrl = "/pics/titles/"+lang+"/maintitle.gif";            break;
+      case ACT1:  image = iwrb.getImage("/title/info.gif");             break;
+      case ACT2:  image = iwrb.getImage("/title/office.gif");            break;
+      case ACT3:  image = iwrb.getImage("/title/application.gif");      break;
+      case ACT4:  image = iwrb.getImage("/title/apartment.gif");        break;
+      case ACT5:  image = iwrb.getImage("/title/links.gif");            break;
+      case ACT6:  image = iwrb.getImage("/title/english.gif");          break;
+      case ACT7:  image = iwrb.getImage("/title/maintitle.gif");         break;
+      //case ACT8:  TitleUrl = iwrb.getImage("/title/maintitle.gif";       break;
+      //default: image = iwrb.getImage("/title/maintitle.gif");            break;
     }
-    add(new Image(TitleUrl));
+    add(image);
   }
 
   public String getObjectName(){
       return iObjectName;
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   public void main(ModuleInfo modinfo)  {
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
     try{
     isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     }
