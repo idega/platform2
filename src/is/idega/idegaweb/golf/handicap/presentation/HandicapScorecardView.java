@@ -397,10 +397,10 @@ public class HandicapScorecardView extends GolfWindow {
 			Text medalGreensText = getSmallText(medalgreens + "%");
 			Text medalPuttsText = getSmallText(medalputts);
 
-			if (total_fairway > 0) {
+			if (total_fairway > 0 || total_greens > 0) {
 				infoTable.add(medalFairwayText, 3, 8);
 			}
-			if (total_greens > 0) {
+			if (total_fairway > 0 || total_greens > 0) {
 				infoTable.add(medalGreensText, 3, 9);
 			}
 			if (total_putts > 0) {
