@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.2 2004/11/25 11:03:53 aron Exp $
+ * $Id: ChildCareContractHomeImpl.java,v 1.3 2005/01/12 08:04:41 anders Exp $
  * Created on 22.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 11:03:53 $ by $Author: aron $
+ *  Last modified: $Date: 2005/01/12 08:04:41 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
     protected Class getEntityInterfaceClass() {
@@ -238,12 +238,19 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
         return this.findByPrimaryKey(pk);
     }
 
-    public Collection findByDateRange(Date startDate, Date endDate) throws FinderException {
-        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-        java.util.Collection ids = ((ChildCareContractBMPBean) entity).ejbFindByDateRange(startDate, endDate);
-        this.idoCheckInPooledEntity(entity);
-        return this.getEntityCollectionForPrimaryKeys(ids);
-    }
+	public Collection findByDateRange(Date startDate, Date endDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareContractBMPBean) entity).ejbFindByDateRange(startDate, endDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findChangedSinceDate(Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareContractBMPBean) entity).ejbFindChangedSinceDate(date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
     public Collection findByDateRangeAndProviderWhereStatusActive(Date startDate, Date endDate, School school)
             throws FinderException {

@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContractHome.java,v 1.2 2004/11/25 11:03:53 aron Exp $
+ * $Id: ChildCareContractHome.java,v 1.3 2005/01/12 08:04:42 anders Exp $
  * Created on 22.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 11:03:53 $ by $Author: aron $
+ *  Last modified: $Date: 2005/01/12 08:04:42 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ChildCareContractHome extends IDOHome {
     public ChildCareContract create() throws javax.ejb.CreateException;
@@ -169,10 +169,15 @@ public interface ChildCareContractHome extends IDOHome {
      */
     public ChildCareContract findByContractFileID(int contractFileID) throws FinderException;
 
-    /**
-     * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindByDateRange
-     */
-    public Collection findByDateRange(Date startDate, Date endDate) throws FinderException;
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindByDateRange
+	 */
+	public Collection findByDateRange(Date startDate, Date endDate) throws FinderException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindChangedSinceDate
+	 */
+	public Collection findChangedSinceDate(Date date) throws FinderException;
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#ejbFindByDateRangeAndProviderWhereStatusActive
