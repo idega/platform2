@@ -176,7 +176,7 @@ public class AlbumDetails extends Block {
 
 				contentTable.add(infoTable, 1, 1);
 
-				String description = TextSoap.formatText(album.getDescription());
+				String description = TextSoap.formatTabsAndReturnsToHtml(album.getDescription());
 				if (description != null && !"".equals(description)) {
 					Table t = new Table();
 					t.add(AlbumCollectionBusiness.getMainTextClone(description), 1, 1);

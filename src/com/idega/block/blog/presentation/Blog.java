@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import com.idega.block.blog.BlogBundle;
 import com.idega.block.blog.business.BlogFinder;
 import com.idega.block.blog.business.BlogFormatter;
@@ -19,7 +18,6 @@ import com.idega.block.category.business.FolderBlockBusiness;
 import com.idega.block.category.data.InformationFolder;
 import com.idega.block.category.presentation.FolderBlock;
 import com.idega.block.text.business.ContentHelper;
-import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.business.IBOLookup;
@@ -654,7 +652,7 @@ public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTrig
 					needMoreButton = true;
 				}
 
-				sBlogBody = TextFormatter.formatText(sBlogBody, 1, Table.HUNDRED_PERCENT);
+				sBlogBody = TextSoap.formatText(sBlogBody);
 
 				Text blogBody = new Text(sBlogBody);
 				blogBody = setTextAttributes(blogBody);

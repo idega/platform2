@@ -2,22 +2,18 @@ package com.idega.block.quote.presentation;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.idega.block.text.business.TextFormatter;
-import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.block.quote.business.QuoteHolder;
 import com.idega.block.quote.business.QuoteBusiness;
-
+import com.idega.block.quote.business.QuoteHolder;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title: Quote block
@@ -112,7 +108,7 @@ public class Quote extends Block implements Builderaware {
 			if ( this.originStyle_ != null )
 				quoteOrigin.setStyleAttribute(originStyle_);
 			
-			Text quoteText = getStyleText("\"" + TextFormatter.formatText(textString, 1, Table.HUNDRED_PERCENT) + "\"", QUOTE_STYLE_NAME);
+			Text quoteText = getStyleText("\"" + TextSoap.formatText(textString) + "\"", QUOTE_STYLE_NAME);
 			quoteText.setHorizontalAlignment(alignment_);
 			if ( this.quoteStyle_ != null )
 				quoteText.setStyleAttribute(quoteStyle_);

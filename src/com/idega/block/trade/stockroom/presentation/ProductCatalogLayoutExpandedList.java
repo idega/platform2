@@ -3,11 +3,8 @@ package com.idega.block.trade.stockroom.presentation;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.category.data.ICCategory;
-import com.idega.block.text.business.TextFormatter;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -16,6 +13,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.AnchorLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 
 /**
  *  Title: idegaWeb ProductCatalog Description: Copyright: Copyright (c) 2002
@@ -147,7 +145,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
 		if (productCatalog._showDescription) {
 			description = product.getProductDescription(productCatalog._currentLocaleId);
-			description = TextFormatter.formatText(description, -1, null);
+			description = TextSoap.formatText(description);
 			productTable.add(productCatalog.getText(description), column, 2);
 		}
 

@@ -5,24 +5,22 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.dictionary.business.DictionaryBusiness;
 import com.idega.block.dictionary.business.DictionaryComparator;
 import com.idega.block.dictionary.data.Word;
-import com.idega.block.text.business.TextFormatter;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 
 public class Dictionary extends CategoryBlock implements Builderaware {
 
@@ -181,7 +179,7 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 					image.setAlignment(Image.ALIGNMENT_RIGHT);
 					table.add(image, 1, row);
 				}
-				table.add(formatText(TextFormatter.formatText(word.getDescription(), 1, Table.HUNDRED_PERCENT)), 1, row++);
+				table.add(formatText(TextSoap.formatText(word.getDescription())), 1, row++);
 				if (_state != DictionaryBusiness.RANDOM_WORD)
 					table.add(getBackLink(), 1, row++);
 

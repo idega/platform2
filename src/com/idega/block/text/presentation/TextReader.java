@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextBusiness;
@@ -28,6 +26,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -35,6 +34,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 
 public class TextReader extends Block implements Builderaware {
 
@@ -183,7 +183,7 @@ public class TextReader extends Block implements Builderaware {
 			textBody = TextFormatter.textCrazy(textBody);
 		}
 
-		textBody = TextFormatter.formatText(textBody, tableTextSize, "100%");
+		textBody = TextSoap.formatText(textBody);
 
 		if (displayHeadline) {
 			if (headline.getText() != null) {

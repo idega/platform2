@@ -113,7 +113,7 @@ public class TournamentInfo extends GolfBlock {
 	
 			Text extraInfo = getText("");
 			if (tournament.getExtraText() != null) {
-				String theExtraInfo = TextSoap.formatText(tournament.getExtraText());
+				String theExtraInfo = TextSoap.formatTabsAndReturnsToHtml(tournament.getExtraText());
 				extraInfo.setText(theExtraInfo);
 			}
 	

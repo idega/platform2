@@ -4,8 +4,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
-
-import com.idega.block.text.business.TextFormatter;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
@@ -13,6 +11,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 
 /**
@@ -39,8 +38,8 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 
 	public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) throws RemoteException {
 		_name = product.getProductName(productViewer._localeId);
-		_description = TextFormatter.formatText(product.getProductDescription(productViewer._localeId), 1, Table.HUNDRED_PERCENT);
-		_teaser = TextFormatter.formatText(product.getProductTeaser(productViewer._localeId), 1, Table.HUNDRED_PERCENT);
+		_description = TextSoap.formatText(product.getProductDescription(productViewer._localeId));
+		_teaser = TextSoap.formatText(product.getProductTeaser(productViewer._localeId));
 		
 		_product = product;
 		_price = new ProductItemPrice(product);

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.data.ICCategory;
@@ -16,7 +15,6 @@ import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
-import com.idega.block.text.business.TextFormatter;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -36,6 +34,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        Forum block<p>
@@ -588,7 +587,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		String bodyString = thread.getThreadBody();
 		if (bodyString == null)
 			bodyString = "";
-		Text body = formatText(TextFormatter.formatText(bodyString, 1, "100%"));
+		Text body = formatText(TextSoap.formatText(bodyString));
 
 		return body;
 	}

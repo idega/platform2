@@ -2,14 +2,11 @@ package se.idega.idegaweb.commune.message.presentation;
 
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import com.idega.block.text.business.TextFormatter;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -21,6 +18,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author Laddi
@@ -136,7 +134,7 @@ public class MessageViewer extends CommuneBlock {
 		table.add(getSmallHeader(localize("message.subject","Subject")),1,row);
 		table.add(getSmallText(msg.getSubject()),2,row++);
 
-		table.add(getSmallText(TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT)),2,row++);
+		table.add(getSmallText(TextSoap.formatText(msg.getBody())),2,row++);
 
 		if (msg.getSenderID() != -1) {
 			SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.Reply", "Reply"), PARAMETER_METHOD, String.valueOf(METHOD_REPLY_MESSAGE)));
@@ -185,7 +183,7 @@ public class MessageViewer extends CommuneBlock {
 		Object[] arguments = { sender.getNameLastFirst(true), stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT) };
 		String bodyMessage = MessageFormat.format(localize("message.reply_info", "On {1}, {0} wrote:\n"), arguments);
 		if (msg.getBody() != null)
-			bodyMessage += "\"" + TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT) + "\"";
+			bodyMessage += "\"" + TextSoap.formatText(msg.getBody()) + "\"";
 		body.setContent("\n\n"+bodyMessage);
 
 		table.add(getSmallHeader(localize("message.body","Body")+":"), 1, row);

@@ -1,13 +1,11 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
-import com.idega.block.text.business.TextFormatter;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001
@@ -38,7 +36,7 @@ public class ProductItemDescription extends ProductItem {
   private void drawObject(IWContext iwc) throws RemoteException{
     Text text = getText(defaultText);
     if ( _product != null ) {
-      String textString = TextFormatter.formatText(_product.getProductDescription(_localeId),1,"100%");
+      String textString = TextSoap.formatText(_product.getProductDescription(_localeId));
       text.setText(textString);
     }
     add(text);

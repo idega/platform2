@@ -1,26 +1,36 @@
 package com.idega.block.book.presentation;
 
-import com.idega.data.IDOException;
-import java.text.NumberFormat;
-import com.idega.presentation.text.*;
-import com.idega.block.book.business.BookComparator;
-import com.idega.core.builder.data.ICPage;
-
 import java.rmi.RemoteException;
 import java.text.DateFormat;
-import java.util.*;
+import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import javax.ejb.FinderException;
-
-import com.idega.block.text.business.TextFormatter;
-import com.idega.presentation.*;
-import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.block.book.data.*;
 import com.idega.block.book.business.BookBusiness;
+import com.idega.block.book.business.BookComparator;
+import com.idega.block.book.data.Author;
+import com.idega.block.book.data.Book;
+import com.idega.block.book.data.Publisher;
+import com.idega.block.book.data.Review;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.presentation.CategoryBlock;
+import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.util.text.TextSoap;
 
 
 public class BookViewer extends CategoryBlock implements Builderaware {
@@ -144,7 +154,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 	    image.setAlignment(Image.ALIGNMENT_RIGHT);
 	  table.add(image,1,row);
 	}
-	table.add(formatText(TextFormatter.formatText(author.getDescription(),1,Table.HUNDRED_PERCENT)),1,row++);
+	table.add(formatText(TextSoap.formatText(author.getDescription())),1,row++);
 	table.add(getBackLink(),1,row++);
 
 	if ( _isAdmin )
@@ -199,7 +209,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 	    image.setAlignment(Image.ALIGNMENT_RIGHT);
 	  table.add(image,1,row);
 	}
-	table.add(formatText(TextFormatter.formatText(publisher.getDescription(),1,Table.HUNDRED_PERCENT)),1,row++);
+	table.add(formatText(TextSoap.formatText(publisher.getDescription())),1,row++);
 	table.add(getBackLink(),1,row++);
 
 	if ( _isAdmin )
@@ -229,7 +239,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 	    image.setAlignment(Image.ALIGNMENT_RIGHT);
 	  table.add(image,1,row);
 	}
-	table.add(formatText(TextFormatter.formatText(book.getDescription(),1,Table.HUNDRED_PERCENT)),1,row);
+	table.add(formatText(TextSoap.formatText(book.getDescription())),1,row);
 	table.add(new Break(2),1,row);
 	table.add(getBookInfo(book),1,row++);
 
@@ -334,7 +344,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 	reviewTable.add(formatText(review.getName(),_informationStyle),1,1);
 	reviewTable.add(formatText(","+Text.NON_BREAKING_SPACE,_informationStyle),1,1);
 	reviewTable.add(formatText(getThreadDate(iwc,review.getDateAdded().getTime()),_informationStyle),1,1);
-	reviewTable.add(formatText(TextFormatter.formatText(review.getReview(),1,Table.HUNDRED_PERCENT)),1,2);
+	reviewTable.add(formatText(TextSoap.formatText(review.getReview())),1,2);
 	reviewTable.add(formatText(_iwrb.getLocalizedString("rating","Rating")+":"+Text.NON_BREAKING_SPACE+Integer.toString(review.getRating()),_ratingStyle),1,3);
 	if ( _isAdmin )
 	  reviewTable.add(getAdminButtons(ReviewEditor.class,BookBusiness.PARAMETER_REVIEW_ID,((Integer)review.getPrimaryKey()).intValue()),1,4);
@@ -373,7 +383,7 @@ public class BookViewer extends CategoryBlock implements Builderaware {
 	}
 	String desc = book.getDescription();
 	if ( desc.length() > 512 ) desc = desc.substring(0,512) + "...";
-	table.add(formatText(TextFormatter.formatText(desc,1,Table.HUNDRED_PERCENT)),1,row++);
+	table.add(formatText(TextSoap.formatText(desc)),1,row++);
 	table.add(getMoreLink(((Integer)book.getPrimaryKey()).intValue()),1,row++);
 	table.setHeight(row++,"8");
       }
