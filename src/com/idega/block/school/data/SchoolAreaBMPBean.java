@@ -75,6 +75,7 @@ public class SchoolAreaBMPBean extends GenericEntity implements SchoolArea {
 		sql.append(" and s.sch_school_id = m.sch_school_id ");
 		sql.append(" and t.sch_school_type_id = ");
 		sql.append(type_id);
+		sql.append(" order by a.AREA_NAME asc");
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}
