@@ -1,7 +1,8 @@
-package is.idega.travel.data;
+package is.idega.idegaweb.travel.data;
 
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
 
 import java.sql.SQLException;
 /**
@@ -20,7 +21,7 @@ public class BookingEntry extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getBookingIDColumnName(), "booking id", true, true, Integer.class, "many-to-one", Booking.class);
+    addAttribute(getBookingIDColumnName(), "booking id", true, true, Integer.class, "many-to-one", GeneralBooking.class);
     addAttribute(getCountColumnName(), "Fjöldi", true, true, Integer.class);
     addAttribute(getProductPriceIDColumnName(), "product price id", true, true, Integer.class, "many-to-one",ProductPrice.class);
   }
@@ -49,7 +50,7 @@ public class BookingEntry extends GenericEntity {
   }
 
   public Booking getBooking() throws SQLException {
-    return new Booking(getBookingId());
+    return new GeneralBooking(getBookingId());
   }
 
   public void setCount(int count) {

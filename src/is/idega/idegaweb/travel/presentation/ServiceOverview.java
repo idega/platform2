@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -12,13 +12,13 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import java.text.DecimalFormat;
 
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
 
 /**
@@ -187,6 +187,14 @@ public class ServiceOverview extends TravelManager {
           departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
           departureTimeText.addToText(":");
           departureTimeText.setFontColor(super.BLACK);
+      Text arrivalFromText = (Text) theText.clone();
+          arrivalFromText.setText(iwrb.getLocalizedString("travel.arrival_at","Arrival at"));
+          arrivalFromText.addToText(":");
+          arrivalFromText.setFontColor(super.BLACK);
+      Text arrivalTimeText = (Text) theText.clone();
+          arrivalTimeText.setText(iwrb.getLocalizedString("travel.arrival_time","Arrival time"));
+          arrivalTimeText.addToText(":");
+          arrivalTimeText.setFontColor(super.BLACK);
       Text activeDaysText = (Text) theText.clone();
           activeDaysText.setText(iwrb.getLocalizedString("travel.active_days","Active days"));
           activeDaysText.addToText(":");
@@ -203,13 +211,17 @@ public class ServiceOverview extends TravelManager {
 
         Service service;
         Timeframe timeframe;
-        Address address;
+        Address depAddress;
+        Address arrAddress;
 
         idegaTimestamp depTimeStamp;
+        idegaTimestamp arrTimeStamp;
         Text prodName;
         Text timeframeTxt;
         Text depFrom;
         Text depTime;
+        Text arrFrom;
+        Text arrTime;
         Text actDays;
 
         Text nameOfCategory;
@@ -231,7 +243,8 @@ public class ServiceOverview extends TravelManager {
 
             service = TravelStockroomBusiness.getService(products[i]);
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
-            address = service.getAddress();
+            depAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getDepartureAddress(service);
+            arrAddress = is.idega.idegaweb.travel.service.tour.business.TourBusiness.getArrivalAddress(service);
             if (products[i].getFileId() != -1) {
               image = new Image(products[i].getFileId());
               image.setMaxImageWidth(138);
@@ -259,13 +272,25 @@ public class ServiceOverview extends TravelManager {
 
             depFrom = (Text) theBoldText.clone();
                 depFrom.setFontColor(super.BLACK);
-            if (address != null)
-                depFrom.setText(address.getStreetName());
+            if (depAddress != null)
+                depFrom.setText(depAddress.getStreetName());
 
             depTimeStamp = new idegaTimestamp(service.getDepartureTime());
             depTime = (Text) theBoldText.clone();
                 depTime.setFontColor(super.BLACK);
                 depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+
+            arrFrom = (Text) theBoldText.clone();
+                arrFrom.setFontColor(super.BLACK);
+            if (arrAddress != null)
+                arrFrom.setText(arrAddress.getStreetName());
+
+            arrTimeStamp = new idegaTimestamp(service.getArrivalTime());
+            arrTime = (Text) theBoldText.clone();
+                arrTime.setFontColor(super.BLACK);
+                arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
+
+
 
             actDays = (Text) theBoldText.clone();
                 actDays.setFontColor(super.BLACK);
@@ -306,6 +331,21 @@ public class ServiceOverview extends TravelManager {
             contentTable.setAlignment(5,contRow,"left");
             contentTable.add(depFrom,3,contRow);
             contentTable.add(depTime,5,contRow);
+            contentTable.setRowColor(contRow, super.GRAY);
+
+            ++contRow;
+            contentTable.setVerticalAlignment(2,contRow,"top");
+            contentTable.setVerticalAlignment(3,contRow,"top");
+            contentTable.setVerticalAlignment(4,contRow,"top");
+            contentTable.setVerticalAlignment(5,contRow,"top");
+            contentTable.add(arrivalFromText,2,contRow);
+            contentTable.add(arrivalTimeText,4,contRow);
+            contentTable.setAlignment(2,contRow,"right");
+            contentTable.setAlignment(3,contRow,"left");
+            contentTable.setAlignment(4,contRow,"right");
+            contentTable.setAlignment(5,contRow,"left");
+            contentTable.add(arrFrom,3,contRow);
+            contentTable.add(arrTime,5,contRow);
             contentTable.setRowColor(contRow, super.GRAY);
 
             ++contRow;

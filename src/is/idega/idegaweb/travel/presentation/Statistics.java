@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -12,10 +12,14 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
-import is.idega.travel.business.*;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
-import is.idega.travel.business.Booker;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
+import is.idega.idegaweb.travel.service.tour.presentation.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.business.Booker;
 
 
 /**
@@ -164,7 +168,7 @@ public class Statistics extends TravelManager {
 
 
   public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(4,3);
+      Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
@@ -215,8 +219,8 @@ public class Statistics extends TravelManager {
       topTable.mergeCells(2,1,4,1);
       topTable.mergeCells(2,2,4,2);
 
-      topTable.setAlignment(4,3,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),4,3);
+      topTable.setAlignment(5,2,"right");
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),5,2);
 
       return topTable;
   }
@@ -328,10 +332,10 @@ public class Statistics extends TravelManager {
           seatNrText.setFontColor(super.BLACK);
           usageNrText.setFontColor(super.BLACK);
 
-      int iNetBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
-      int iInqBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
-      int iSupBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
-      int i3rdBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
+      int iNetBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
+      int iInqBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
+      int iSupBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+      int i3rdBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;

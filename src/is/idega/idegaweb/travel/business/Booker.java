@@ -1,4 +1,4 @@
-package is.idega.travel.business;
+package is.idega.idegaweb.travel.business;
 
 import java.sql.SQLException;
 import com.idega.data.EntityControl;
@@ -6,11 +6,13 @@ import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.ProductPrice;
-import is.idega.travel.data.BookingEntry;
-import is.idega.travel.data.Booking;
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.GeneralBooking;
 import com.idega.util.database.ConnectionBroker;
 import java.sql.Connection;
+import is.idega.idegaweb.travel.interfaces.Booking;
 
+import is.idega.idegaweb.travel.service.tour.data.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -25,21 +27,26 @@ public class Booker {
   public Booker() {
   }
 
-  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(-1, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
   }
 
-  public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    return Book(-1, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
+  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
   }
 
-  public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(bookingId, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode);
+  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode);
   }
 
-  private static int Book(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+    Booking booking = null;
+    int returner = bookingId;
+    Object type = getServiceType(serviceId);
+
+    if (type != null)
     if (bookingId == -1) {
-      Booking booking = new Booking();
+      if (type instanceof Tour) booking = new TourBooking();
         booking.setServiceID(serviceId);
         booking.setAddress(address);
         booking.setBookingDate(date.getTimestamp());
@@ -48,23 +55,16 @@ public class Booker {
         booking.setCountry(country);
         booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
         booking.setEmail(email);
-        if (hotelPickupPlaceId != -1) {
-          booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-          if (roomNumber != null) {
-            booking.setRoomNumber(roomNumber);
-          }
-        }
         booking.setName(name);
         booking.setPostalCode(postalCode);
 
         booking.setTelephoneNumber(telephoneNumber);
-  //      booking.setProductPriceId(productPriceId);
         booking.setTotalCount(totalCount);
       booking.insert();
 
-      return booking.getID();
+      returner =  booking.getID();
     }else {
-      Booking booking = new Booking(bookingId);
+      if (type instanceof Tour) booking = new TourBooking(bookingId);
         booking.setServiceID(serviceId);
         booking.setAddress(address);
         booking.setBookingDate(date.getTimestamp());
@@ -74,43 +74,37 @@ public class Booker {
         booking.setCountry(country);
         booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
         booking.setEmail(email);
-        if (hotelPickupPlaceId != -1) {
-          booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-          if (roomNumber != null) {
-            booking.setRoomNumber(roomNumber);
-          }
-        }
         booking.setName(name);
         booking.setPostalCode(postalCode);
         booking.setTelephoneNumber(telephoneNumber);
-  //      booking.setProductPriceId(productPriceId);
         booking.setTotalCount(totalCount);
       booking.update();
 
-      return bookingId;
     }
+
+    return returner;
   }
 
 
   public static int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
     int returner = 0;
     try {
-        Booking booking = (Booking) (Booking.getStaticInstance(Booking.class));
+        GeneralBooking booking = (GeneralBooking) (GeneralBooking.getStaticInstance(GeneralBooking.class));
         Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select sum(b."+Booking.getTotalCountColumnName()+") from "+Booking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
+            sql.append("Select sum(b."+GeneralBooking.getTotalCountColumnName()+") from "+GeneralBooking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
             sql.append(" where ");
             sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
             sql.append(" and ");
             sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
             sql.append(" and ");
-            sql.append(" b."+Booking.getIsValidColumnName()+"='Y'");
+            sql.append(" b."+GeneralBooking.getIsValidColumnName()+"='Y'");
             sql.append(" and ");
-            sql.append(" b."+Booking.getServiceIDColumnName()+"="+serviceId);
+            sql.append(" b."+GeneralBooking.getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append(" b."+Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+            sql.append(" b."+GeneralBooking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
         many = SimpleQuerier.executeStringQuery(sql.toString());
 
         if (many != null) {
@@ -145,59 +139,32 @@ public class Booker {
       conn = ConnectionBroker.getConnection();
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select "+Booking.getTotalCountColumnName()+" from "+Booking.getBookingTableName());
+            sql.append("Select "+GeneralBooking.getTotalCountColumnName()+" from "+GeneralBooking.getBookingTableName());
             sql.append(" where ");
-            sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
-            //sql.append(" and ");
-            //sql.append(Booking.getAttendanceColumnName()+" = -1");
+            sql.append(GeneralBooking.getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
-            sql.append(Booking.getIsValidColumnName()+" = 'Y'");
+            sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
             if ( (fromStamp != null) && (toStamp == null) ) {
               sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+fromStamp.toSQLDateString()+"'");
             }else if ( (fromStamp != null) && (toStamp != null)) {
               sql.append(" and (");
-              sql.append(Booking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
+              sql.append(GeneralBooking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
             }
             if (bookingType != -1) {
               sql.append(" and ");
-              sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
+              sql.append(GeneralBooking.getBookingTypeIDColumnName()+" = "+bookingType);
             }
+
         many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
+
 
         for (int i = 0; i < many.length; i++) {
             returner += Integer.parseInt(many[i]);
         }
-/*
-        sql = new StringBuffer();
-            sql.append("Select "+Booking.getAttendanceColumnName()+" from "+Booking.getBookingTableName());
-            sql.append(" where ");
-            sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
-            sql.append(" and ");
-            sql.append(Booking.getAttendanceColumnName()+" > 0");
-            sql.append(" and ");
-            sql.append(Booking.getIsValidColumnName()+" = 'Y'");
-            if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
-            }else if ( (fromStamp != null) && (toStamp != null)) {
-              sql.append(" and (");
-              sql.append(Booking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
-              sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
-            }
-            if (bookingType != -1) {
-              sql.append(" and ");
-              sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
-            }
-        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
-        for (int i = 0; i < many.length; i++) {
-            returner += Integer.parseInt(many[i]);
-        }
-*/
     }catch (Exception e) {
         e.printStackTrace(System.err);
     }finally {
@@ -219,27 +186,28 @@ public class Booker {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();
     try {
-        sql.append("Select * from "+Booking.getBookingTableName());
+
+        sql.append("Select * from "+GeneralBooking.getBookingTableName());
         sql.append(" where ");
-        sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
+        sql.append(GeneralBooking.getServiceIDColumnName()+"="+serviceId);
         sql.append(" and ");
-        sql.append(Booking.getIsValidColumnName()+" = 'Y'");
+        sql.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
         sql.append(" and ");
-        sql.append(Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+        sql.append(GeneralBooking.getBookingDateColumnName()+" containing '"+stamp.toSQLDateString()+"'");
         if (bookingTypeIds != null) {
           if (bookingTypeIds.length > 0 ) {
             sql.append(" and (");
             for (int i = 0; i < bookingTypeIds.length; i++) {
               if (bookingTypeIds[i] != -1) {
                 if (i > 0) sql.append(" OR ");
-                sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
+                sql.append(GeneralBooking.getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
               }
             }
             sql.append(") ");
           }
         }
 
-        returner = (Booking[]) (new Booking()).findAll(sql.toString());
+        returner = (GeneralBooking[]) (new GeneralBooking()).findAll(sql.toString());
     }catch (Exception e) {
         e.printStackTrace(System.err);
     }
@@ -277,11 +245,7 @@ public class Booker {
         ProductPrice pPrice;
 
         for (int i = 0; i < entries.length; i++) {
-          //pPrice = entries[i].getProductPrice();
-          //price = TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
-
           total += getBookingEntryPrice(entries[i], booking);
-          //price * entries[i].getCount();
         }
 
       }catch (SQLException sql) {
@@ -303,7 +267,7 @@ public class Booker {
 
   public static boolean deleteBooking(int bookingId) {
     try {
-      Booking booking = new Booking(bookingId);
+      Booking booking = new GeneralBooking(bookingId);
       return deleteBooking(booking);
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -320,7 +284,16 @@ public class Booker {
       sql.printStackTrace(System.err);
       return false;
     }
+  }
 
+  private static Object getServiceType(int serviceId) {
+    Object object;
+    try {
+      object = new Tour(serviceId);
+      return object;
+    }catch (Exception e) {
+      return null;
+    }
   }
 
 }

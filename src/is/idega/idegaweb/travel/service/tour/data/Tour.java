@@ -1,6 +1,7 @@
-package is.idega.travel.data;
+package is.idega.idegaweb.travel.service.tour.data;
 
 import com.idega.data.*;
+import is.idega.idegaweb.travel.data.Service;
 import java.sql.*;
 
 
@@ -105,7 +106,7 @@ public class Tour extends GenericEntity {
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
   public static String getTotalSeatsColumnName() {return "TOTAL_SEATS";}
   public static String getMinimumSeatsColumnName() {return "MINIMUM_SEATS";}
-  public static String getNumberOfDaysColumnName() {return "NUMBER_OF_SEATS";}
+  public static String getNumberOfDaysColumnName() {return "NUMBER_OF_DAYS";}
   public static String getLengthColumnName() {return "TOUR_LENGTH";}
 
 }

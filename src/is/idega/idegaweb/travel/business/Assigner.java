@@ -1,8 +1,8 @@
-package is.idega.travel.business;
+package is.idega.idegaweb.travel.business;
 
 import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
-import is.idega.travel.data.Contract;
+import is.idega.idegaweb.travel.data.Contract;
 import com.idega.block.trade.stockroom.data.Product;
 import java.sql.SQLException;
 import java.sql.Connection;

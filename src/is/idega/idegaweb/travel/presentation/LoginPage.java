@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.block.login.presentation.Login;

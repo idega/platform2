@@ -1,12 +1,12 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.block.trade.stockroom.data.*;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
 import java.sql.SQLException;
 
@@ -29,14 +29,13 @@ public class HotelPickupPlaceDesigner extends TravelManager {
   private Supplier supplier = null;
   private IWResourceBundle iwrb = null;
 
-  public HotelPickupPlaceDesigner() {
-  }
-
 
   public HotelPickupPlaceDesigner(IWContext iwc) throws Exception{
     super.main(iwc);
     supplier = super.getSupplier();
     iwrb = super.getResourceBundle();
+
+    //handleInsert(iwc, supplier);
   }
 
   public static void handleInsert(IWContext iwc, Supplier supplier) {

@@ -1,9 +1,9 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
-import is.idega.travel.presentation.TravelManager;
+import is.idega.idegaweb.travel.presentation.TravelManager;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -30,7 +30,7 @@ public class TravelWindow extends Window {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
+  public static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.travel";
 
 
   public TravelWindow() {

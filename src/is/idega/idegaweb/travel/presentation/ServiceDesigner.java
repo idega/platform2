@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -9,14 +9,15 @@ import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.business.*;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 
-import is.idega.travel.data.Service;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.service.tour.presentation.TourDesigner;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -133,6 +134,7 @@ public class ServiceDesigner extends TravelManager {
           removeSessionServiceId(iwc);
       }
 
+      tsb.removeServiceDayHashtable(iwc);
       priceCategoryCreation(iwc);
 
   }

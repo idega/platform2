@@ -1,4 +1,4 @@
-package is.idega.travel.data;
+package is.idega.idegaweb.travel.data;
 
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.Reseller;

@@ -1,16 +1,16 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
-import is.idega.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.util.*;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.util.idegaTimestamp;
 
 /**

@@ -1,11 +1,11 @@
-package is.idega.travel.business;
+package is.idega.idegaweb.travel.business;
 
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import com.idega.block.trade.stockroom.data.*;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.data.*;
 import java.sql.Timestamp;
 import com.idega.core.data.*;
-import is.idega.travel.data.HotelPickupPlace;
+import is.idega.idegaweb.travel.data.HotelPickupPlace;
 import java.sql.SQLException;
 import com.idega.util.*;
 import java.sql.SQLException;

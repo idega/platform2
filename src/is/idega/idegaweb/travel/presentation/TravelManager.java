@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
@@ -6,8 +6,8 @@ import com.idega.presentation.text.*;
 import javax.servlet.jsp.JspPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import is.idega.travel.business.TravelStockroomBusiness;
-import is.idega.travel.presentation.*;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.presentation.*;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.block.login.presentation.Login;
@@ -302,8 +302,8 @@ public class TravelManager extends Block {
         theBigBoldText.setFontColor(this.textColor);
         theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
         theBoldText.setFontColor(this.textColor);
-        theText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
-        theBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
+        theText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";");
+        theBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
         smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
         theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
 

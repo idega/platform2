@@ -1,5 +1,5 @@
 
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -13,13 +13,18 @@ import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.travel.business.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
 import java.sql.SQLException;
 
-import is.idega.travel.business.Assigner;
-import is.idega.travel.business.Booker;
-import is.idega.travel.business.Inquirer;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.business.Assigner;
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.business.Inquirer;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
+import is.idega.idegaweb.travel.service.tour.presentation.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -128,11 +133,12 @@ public class BookingOverview extends TravelManager {
 
   }
 
-  public void displayForm(IWContext iwc) {
+  public void displayForm(IWContext iwc) throws SQLException{
 
       Form form = new Form();
       Table topTable = getTopTable(iwc);
         form.add(topTable);
+        form.add(Text.BREAK);
       Table table = new Table();
 
       String action = iwc.getParameter(this.bookingOverviewAction);
@@ -153,14 +159,7 @@ public class BookingOverview extends TravelManager {
 
 
       form.add(table);
-      /*
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-        sb.add(getContentHeader(iwc));
-        sb.add(table);
-*/
+
       Table par = new Table(1,1);
         par.setAlignment(1,1,"right");
         par.setAlignment("center");
@@ -168,7 +167,6 @@ public class BookingOverview extends TravelManager {
         par.add(new PrintButton(iwrb.getImage("buttons/print.gif")),1,1);
         form.add(Text.BREAK);
         form.add(par);
-//        sb.add(par);
 
 
       int row = 0;
@@ -206,7 +204,7 @@ public class BookingOverview extends TravelManager {
 
 
   public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(4,4);
+      Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
@@ -258,22 +256,6 @@ public class BookingOverview extends TravelManager {
           inqOnlyText.setText(iwrb.getLocalizedString("travel.inqueries_only","Inqueries only"));
           inqOnlyText.addToText(":");
 
-
-      String parMode = iwc.getParameter("mode");
-      if (parMode == null) {parMode = Text.emptyString().toString();}
-      RadioButton generalRadio = new RadioButton("mode","general_overview");
-        if (parMode.equals(Text.emptyString().toString())) {
-            generalRadio.setSelected();
-        }else if (parMode.equals("general_overview")){
-            generalRadio.setSelected();
-        }
-      RadioButton inqRadio = new RadioButton("mode","inqueries_only");
-        if (parMode.equals("inqueries_only")){
-            inqRadio.setSelected();
-        }
-
-
-
       topTable.setColumnAlignment(1,"right");
       topTable.setColumnAlignment(2,"left");
       topTable.add(nameText,1,1);
@@ -287,16 +269,8 @@ public class BookingOverview extends TravelManager {
       topTable.mergeCells(2,2,4,2);
 
 
-      topTable.add(generalOverviewText,1,3);
-      topTable.add(generalRadio,2,3);
-      topTable.add(inqOnlyText,3,3);
-      topTable.add(inqRadio,4,3);
-      topTable.setAlignment(3,3,"right");
-      topTable.setAlignment(4,3,"left");
-      topTable.setWidth(4,3,"500");
-
-      topTable.setAlignment(4,4,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),4,4);
+      topTable.setAlignment(5,2,"right");
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),5,2);
 
       return topTable;
   }
@@ -421,15 +395,7 @@ public class BookingOverview extends TravelManager {
               table.add(dateTextBold,1,row);
 
               table.setRowColor(row,theColor);
-/*
-              table.setColor(2,row,theColor);
-              table.setColor(3,row,theColor);
-              table.setColor(4,row,theColor);
-              table.setColor(5,row,theColor);
-              table.setColor(6,row,theColor);
-              table.setColor(7,row,theColor);
-              table.setColor(8,row,theColor);
-*/
+
               boolean bContinue= false;
 
               for (int i = 0; i < products.length; i++) {
@@ -488,8 +454,8 @@ public class BookingOverview extends TravelManager {
 
                           Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
                               btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
-                          Link btnBook = new Link(iwrb.getImage("/buttons/book.gif"), Booking.class);
-                              btnBook.addParameter(Booking.parameterProductId, this.product.getID());
+                          Link btnBook = new Link(iwrb.getImage("/buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
+                              btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, this.product.getID());
                               btnBook.addParameter("year",tempStamp.getYear());
                               btnBook.addParameter("month",tempStamp.getMonth());
                               btnBook.addParameter("day",tempStamp.getDay());
@@ -564,7 +530,7 @@ public class BookingOverview extends TravelManager {
   }
 
 
-  public Table getViewService(IWContext iwc)  {
+  public Table getViewService(IWContext iwc) throws SQLException {
     String view_id = iwc.getParameter(this.closerLookIdParameter);
     String view_date = iwc.getParameter(this.closerLookDateParameter);
 
@@ -740,26 +706,27 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ BOOKINGS ------------------------
-          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),Booking.class);
+          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),is.idega.idegaweb.travel.presentation.Booking.class);
           Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
             deleteLink.addParameter(this.bookingOverviewAction,this.parameterDeleteBooking);
             deleteLink.addParameter(this.closerLookDateParameter, view_date);
             deleteLink.addParameter(this.closerLookIdParameter, view_id);
           Link link;
-          is.idega.travel.data.Booking[] bookings = Booker.getBookings(this.service.getID(), currentStamp);
+          Booking[] bookings = TourBooker.getBookings(this.service.getID(), currentStamp);
+          TourBooking tBooking;
           for (int i = 0; i < bookings.length; i++) {
               ++row;
+              tBooking = new TourBooking(bookings[i].getID());
               if (tour.getHotelPickup()) {
                   try {
-
-                      HotelPickupPlace place = new HotelPickupPlace(bookings[i].getHotelPickupPlaceID());
+                      HotelPickupPlace place = new HotelPickupPlace(tBooking.getHotelPickupPlaceID());
                       Thotel = (Text) super.theSmallBoldText.clone();
                         Thotel.setFontColor(super.BLACK);
                       Thotel.setText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
                       Thotel.addToText(place.getName());
                       Thotel.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-                      if (bookings[i].getRoomNumber() != null)
-                      Thotel.addToText(bookings[i].getRoomNumber());
+                      if (tBooking.getRoomNumber() != null)
+                      Thotel.addToText(tBooking.getRoomNumber());
                   }catch (Exception e){Thotel.setText("");}
               }else {
                   Thotel.setText("");
@@ -787,8 +754,8 @@ public class BookingOverview extends TravelManager {
               table.setRowColor(row, super.GRAY);
 
               link = (Link) changeLink.clone();
-                link.addParameter(Booking.BookingAction,Booking.parameterUpdateBooking);
-                link.addParameter(Booking.parameterBookingId,bookings[i].getID());
+                link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
+                link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
               table.add(link, 9, row);
               table.add(Text.NON_BREAKING_SPACE,9,row);
 

@@ -1,13 +1,17 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
-import is.idega.travel.business.*;
+import is.idega.idegaweb.travel.business.*;
 import com.idega.util.idegaTimestamp;
-import is.idega.travel.business.Booker;
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
+import is.idega.idegaweb.travel.service.tour.presentation.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
 
 import java.sql.SQLException;
 /**
@@ -190,11 +194,11 @@ public class AdditionalBooking extends TravelWindow {
             }
         }
 
-        int bookingTypeId = is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING;
+        int bookingTypeId = Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING;
         if (isCorrection) {
-          bookingTypeId = is.idega.travel.data.Booking.BOOKING_TYPE_ID_CORRECTION;
+          bookingTypeId = Booking.BOOKING_TYPE_ID_CORRECTION;
         }
-        bookingId = Booker.Book(service.getID(),-1,"","",name,"","","","",stamp,iMany,bookingTypeId,"");
+        bookingId = Booker.Book(service.getID(),"",name,"","","","",stamp,iMany,bookingTypeId,"");
 
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {

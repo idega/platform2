@@ -1,10 +1,11 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
-import is.idega.travel.business.TravelStockroomBusiness;
-import is.idega.travel.presentation.TravelWindow;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import com.idega.block.trade.stockroom.data.*;
 
 import java.sql.SQLException;
@@ -18,328 +19,218 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class PriceCategoryDesigner extends TravelWindow {
-  public static String SERVICE_ID_PARAMETER_NAME = "serviceId";
-
-  private int serviceId = -1;
-  private int supplierId = -1;
-
-  private String action = "priceCategoryDesignerAction";
-  private String parameterNew = "newPriceCategory";
-  private String parameterDelete = "deletePriceCategory";
-  private String parameterCloserLook = "viewPriceCategory";
-  private String parameterSave = "savePriceCategory";
-  private String parameterUpdate = "updatePriceCategory";
-  private String parameterClose = "closeWindow";
-
+public class PriceCategoryDesigner extends TravelManager {
+  private IWResourceBundle iwrb;
+  private Supplier supplier;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-  private int iCatId;
-  private String sCatId;
 
-  boolean fillForm = false;
-  boolean newCat = false;
+  private static String parameterSavePriceCategories = "parameterSavePriceCategories";
+  private static String parameterPriceCategoryId = "parameterPriceCategoryId";
 
-  Text tName;
-  Text tDescription;
-  Text tExtraInfo;
-  Text tOnline;
-  Text tType;
-  Text tPrice;
-  Text tDiscountOf;
+  private static String sAction = "actionForPCD";
 
-  private PriceCategory priceCategory;
-
-
-  public PriceCategoryDesigner() {
-    super.setHeight(450);
-    super.setWidth(650);
-    super.setScrollbar(false);
-    super.setTitle("idegaWeb Travel");
+  public PriceCategoryDesigner(IWContext iwc) throws Exception {
+    super.main(iwc);
+    iwrb = super.getResourceBundle();
+    supplier = super.getSupplier();
   }
 
-  public void main(IWContext iwc) {
-    super.main(iwc);
-
-    if (checkForEverything(iwc)) {
-      String sAction = iwc.getParameter(action);
-      if (sAction == null) sAction = "";
-
-      if ( (sAction.equals("")) || (sAction.equals(this.parameterCloserLook)) ){
-        if (sAction.equals(this.parameterCloserLook)) fillForm = true;
-        mainMenu(iwc);
-      }else if (sAction.equals(parameterNew)) {
-        newCat = true;
-        mainMenu(iwc);
-      }else if (sAction.equals(parameterDelete)) {
-        delete();
-        mainMenu(iwc);
-      }else if (sAction.equals(parameterSave)) {
-        saveUpdate(iwc,false);
-        mainMenu(iwc);
-      }else if (sAction.equals(parameterUpdate)) {
-        saveUpdate(iwc,true);
-        mainMenu(iwc);
-      }else if (sAction.equals(parameterClose)) {
-        closer();
+  public void handleInsert(IWContext iwc) {
+    String action = iwc.getParameter(sAction);
+    if (action != null) {
+      if (action.equals(parameterSavePriceCategories)) {
+        savePriceCategories(iwc);
       }
-
-
     }
   }
 
-  public void closer() {
-    jPage.setParentToReload();
-    //jPage.setOnUnLoad("window.opener."+ServiceDesigner.NAME_OF_PRICE_CATEGORY_FORM+".submit()");
-    super.close(false);
-  }
+  public Form getPriceCategoriesForm(int supplierId) {
+    int extraRows = 3;
 
-  public void mainMenu(IWContext iwc) {
-      Form form = new Form();
-        form.add(getHeaderTable(iwc));
-
-      HorizontalRule hr = new HorizontalRule();
-        hr.setWidth("90%");
-      add(form);
-      add(hr);
-
-      if (newCat || fillForm)
-      add(getBodyForm(iwc));
-
-      Table p = new Table(1,1);
-        p.setAlignment("center");
-        p.setWidth("90%");
-        p.setAlignment(1,1,"right");
-
-      SubmitButton close = new SubmitButton(iwrb.getImage("/buttons/close.gif"),this.action,this.parameterClose );
-      p.add(close);
-      form.add(p);
-  }
-
-  public Table getHeaderTable(IWContext iwc) {
-      Table table = new Table();
-        table.setAlignment("center");
-        table.setWidth("90%");
-        table.setColor(TravelManager.WHITE);
-        table.setBorder(0);
-        table.setCellspacing(1);
-
-
-      PriceCategory[] categories = TravelStockroomBusiness.getPriceCategories(this.supplierId);
-      DropdownMenu cats = new DropdownMenu(categories,"price_category_id");
-        cats.setSelectedElement(sCatId);
-
-      Text tPriceCategory = (Text) text.clone();
-        tPriceCategory.setBold();
-        tPriceCategory.setText("T - PriceCategory");
-
-      SubmitButton sNew = new SubmitButton(iwrb.getImage("buttons/new.gif"),action, parameterNew);
-      SubmitButton sDel = new SubmitButton(iwrb.getImage("/buttons/delete.gif"),action, parameterDelete);
-      SubmitButton sClo= new SubmitButton(iwrb.getImage("/buttons/closer.gif"),action, parameterCloserLook);
-
-      add(Text.BREAK);
-
-      table.add(tPriceCategory,1,1);
-      table.add(Text.BREAK,1,1);
-      table.add(Text.BREAK,1,1);
-      table.mergeCells(1,1,2,1);
-      table.add(sNew,1,2);
-      table.mergeCells(1,2,2,2);
-
-      table.add(cats,1,3);
-      table.setColor(1,3,TravelManager.GRAY);
-      table.setColor(2,3,TravelManager.GRAY);
-      table.add(sClo,2,3);
-      table.add(Text.NON_BREAKING_SPACE,2,3);
-      table.add(sDel,2,3);
-
-
-      table.setAlignment(2,3,"right");
-
-    return table;
-  }
-
-  private Form getBodyForm(IWContext iwc) {
     Form form = new Form();
+
     Table table = new Table();
       form.add(table);
-      table.setWidth("90%");
-      table.setAlignment("center");
+      table.setColor(super.WHITE);
+      table.setCellspacing(1);
 
+      PriceCategory[] categories = tsb.getPriceCategories(supplierId);
+      Text nameTxt = (Text) theText.clone();
+        nameTxt.setFontColor(super.WHITE);
+        nameTxt.setBold();
+        nameTxt.setText(iwrb.getLocalizedString("travel.name","Name"));
 
-      TextInput tiName = new TextInput("name");
-      BooleanInput tiOnline = new BooleanInput("online");
-        tiOnline.setSelected(true);
+      Text onlineTxt = (Text)  theText.clone();
+        onlineTxt.setFontColor(super.WHITE);
+        onlineTxt.setBold();
+        onlineTxt.setText(iwrb.getLocalizedString("travel.online","Online"));
 
-      TextInput tiDescription = new TextInput("description");
+      Text typeTxt = (Text)  theText.clone();
+        typeTxt.setFontColor(super.WHITE);
+        typeTxt.setBold();
+        typeTxt.setText(iwrb.getLocalizedString("travel.type","Type"));
 
-      DropdownMenu tiType = new DropdownMenu("price_type");
-            tiType.addMenuElement(PriceCategory.PRICETYPE_PRICE,"Verð");
-            tiType.addMenuElement(PriceCategory.PRICETYPE_DISCOUNT,"Afsláttur");
+      Text discOfTxt = (Text)  theText.clone();
+        discOfTxt.setFontColor(super.WHITE);
+        discOfTxt.setBold();
+        discOfTxt.setText(iwrb.getLocalizedString("travel.discount_of","Discount of"));
 
-      TextArea tiExtraInfo = new TextArea("extra_info");
-        tiExtraInfo.setHeight(4);
-        tiExtraInfo.setWidth(60);
+      Text deleteTxt = (Text)  theText.clone();
+        deleteTxt.setFontColor(super.WHITE);
+        deleteTxt.setBold();
+        deleteTxt.setText(iwrb.getLocalizedString("travel.delete","Delete"));
 
-//      TextInput tiPrice = new TextInput("price");
-      DropdownMenu tiDiscountOf = new DropdownMenu(TravelStockroomBusiness.getPriceCategories(this.supplierId),"discount_of");
-          tiDiscountOf.addMenuElementFirst("-1","T-Ekkert");
+      int row = 1;
+      int counter = 0;
 
-      SubmitButton saveUpdate = new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.action, this.parameterSave);
+      table.add(nameTxt,2,row);
+      table.add(onlineTxt,3,row);
+      table.add(typeTxt,4,row);
+      table.add(discOfTxt,5,row);
+      table.add(deleteTxt,6,row);
+      table.setRowColor(row,super.backgroundColor);
 
-    if (this.priceCategory != null) {
-      if (fillForm) {
-        saveUpdate = new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.action, this.parameterUpdate);
-        tiName.setContent(this.priceCategory.getName());
-        tiOnline.setSelected(this.priceCategory.isNetbookingCategory());
-        tiDescription.setContent(this.priceCategory.getDescription());
-        tiType.setSelectedElement(this.priceCategory.getType());
-        tiExtraInfo.setContent(this.priceCategory.getExtraInfo());
-        //tiPrice.setContent("fix");
-        tiDiscountOf.setSelectedElement(Integer.toString(this.priceCategory.getParentId()));
-        table.add(new HiddenInput("price_category_id_to_update",Integer.toString(this.priceCategory.getID())));
+      Text numberTxt;
+      TextInput nameInp;
+      BooleanInput online;
+      DropdownMenu ddType = new DropdownMenu("priceCategoryType");
+        ddType.addMenuElement(PriceCategory.PRICETYPE_PRICE, iwrb.getLocalizedString("travel.price","Price"));
+        ddType.addMenuElement(PriceCategory.PRICETYPE_DISCOUNT, iwrb.getLocalizedString("travel.discount","Discount"));
+      DropdownMenu ddDisc = new DropdownMenu(categories,"priceCategoryParent");
+        ddDisc.addMenuElementFirst("-1",Text.NON_BREAKING_SPACE);
+
+      DropdownMenu ddOne;
+      DropdownMenu ddTwo;
+
+      CheckBox delete;
+
+      for (int i = 0; i < categories.length; i++) {
+        ++counter;
+        ++row;
+        numberTxt = (Text) super.smallText.clone();
+          numberTxt.setFontColor(super.BLACK);
+          numberTxt.setText(Integer.toString(counter));
+
+        nameInp = new TextInput("priceCategoryName");
+          nameInp.setContent(categories[i].getName());
+
+        online = new BooleanInput("priceCategoryOnline");
+          online.setSelected(categories[i].isNetbookingCategory());
+
+        ddOne = (DropdownMenu) ddType.clone();
+          ddOne.setSelectedElement(categories[i].getType());
+
+        ddTwo = (DropdownMenu) ddDisc.clone();
+          ddTwo.setSelectedElement(Integer.toString(categories[i].getParentId()));
+
+        delete = new CheckBox("priceCategoryToDelete_"+categories[i].getID());
+
+        table.add(new HiddenInput(this.parameterPriceCategoryId,Integer.toString(categories[i].getID())));
+        table.add(numberTxt,1,row);
+        table.add(nameInp,2,row);
+        table.add(online,3,row);
+        table.add(ddOne,4,row);
+        table.add(ddTwo,5,row);
+        table.add(delete,6,row);
+        table.setRowColor(row,super.GRAY);
       }
-    }
+      for (int i = 0; i < extraRows; i++) {
+        ++counter;
+        ++row;
+        numberTxt = (Text) super.smallText.clone();
+          numberTxt.setFontColor(super.BLACK);
+          numberTxt.setText(Integer.toString(counter));
+        nameInp = new TextInput("priceCategoryName");
+        online = new BooleanInput("priceCategoryOnline");
+          online.setSelected(true);
+        ddOne = (DropdownMenu) ddType.clone();
+        ddTwo = (DropdownMenu) ddDisc.clone();
+
+        table.add(new HiddenInput(this.parameterPriceCategoryId,"-1"));
+        table.add(numberTxt,1,row);
+        table.add(nameInp,2,row);
+        table.add(online,3,row);
+        table.add(ddOne,4,row);
+        table.add(ddTwo,5,row);
+        table.setRowColor(row,super.GRAY);
+      }
+      ++row;
+      table.setRowColor(row,super.GRAY);
+      SubmitButton lSave = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction, this.parameterSavePriceCategories);
+      table.mergeCells(1,row,6,row);
+      table.setColumnAlignment(1,"center");
+      table.setColumnAlignment(6,"center");
+      table.setWidth(1,row-1,"15");
+      table.setAlignment(1,row,"right");
+      table.add(lSave,1,row);
 
 
-      table.add(this.tName,1,1);
-      table.add(tiName,2,1);
-      table.add(this.tOnline,3,1);
-      table.add(tiOnline,4,1);
-      table.add(this.tDescription,1,2);
-      table.add(tiDescription,2,2);
-      table.add(this.tType,3,2);
-      table.add(tiType,4,2);
-      table.add(this.tExtraInfo,1,3);
-      table.add(Text.getBreak(),1,3);
-      table.add(tiExtraInfo,1,3);
-      table.mergeCells(1,3,4,3);
-//      table.add(this.tPrice,1,4);
-//      table.add(tiPrice,2,4);
-      table.add(this.tDiscountOf,3, 4);
-      table.add(tiDiscountOf,4,4);
-
-      table.add(saveUpdate,4,6);
-      table.setAlignment(4,6,"right");
-
-    return form;
+      return form;
   }
 
-  private boolean checkForEverything(IWContext iwc) {
-    boolean returner = true;
-    try {
-      String service_id = iwc.getParameter(SERVICE_ID_PARAMETER_NAME);
-      this.supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
 
-      iCatId = -1;
-      sCatId = iwc.getParameter("price_category_id");
-      if (sCatId != null) {
-        iCatId = Integer.parseInt(sCatId);
-        priceCategory = new PriceCategory(iCatId);
-      }else {
-        sCatId = "";
-        priceCategory = null;
+
+  public void savePriceCategories(IWContext iwc) {
+    String[] catIds = iwc.getParameterValues(this.parameterPriceCategoryId);
+    String[] names  = iwc.getParameterValues("priceCategoryName");
+    String[] online = iwc.getParameterValues("priceCategoryOnline");
+    String[] type   = iwc.getParameterValues("priceCategoryType");
+    String[] parent = iwc.getParameterValues("priceCategoryParent");
+
+
+    try {
+      for (int i = 0; i < catIds.length; i++) {
+        if (catIds[i].equals("-1")) {   //NEW
+          if ((names[i] != null) && (!names[i].equals(""))){
+            int priceCategoryId = 0;
+            int parentId;
+            boolean bOnline;
+            if (online[i].equals("Y")) {
+                bOnline = true;
+            }else {
+              bOnline = false;
+            }
+
+            if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+              parentId = Integer.parseInt(parent[i]);
+              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline, parentId);
+            }else if (type[i].equals(PriceCategory.PRICETYPE_PRICE)) {
+              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline);
+            }
+          }
+        }else {   //UPDATE
+          String del = iwc.getParameter("priceCategoryToDelete_"+catIds[i]);
+          PriceCategory pCat = new PriceCategory(Integer.parseInt(catIds[i]));
+          if (del != null) {
+            pCat.delete();
+          }else {
+            boolean bOnline;
+            if (online[i].equals("Y")) {
+                bOnline = true;
+            }else {
+              bOnline = false;
+            }
+
+              pCat.setName(names[i]);
+              pCat.setDescription("");
+              pCat.setType(type[i]);
+              if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+                pCat.setParentId(Integer.parseInt(parent[i]));
+              }
+              pCat.setSupplierId(supplier.getID());
+              pCat.setExtraInfo("");
+              pCat.isNetbookingCategory(bOnline);
+            pCat.update();
+          }
+        }
       }
 
-      tName = (Text) text.clone();
-      tDescription = (Text) text.clone();
-      tExtraInfo = (Text) text.clone();
-      tOnline = (Text) text.clone();
-      tType = (Text) text.clone();
-      tPrice = (Text) text.clone();
-      tDiscountOf = (Text) text.clone();
-        tName.setBold();
-        tDescription.setBold();
-        tExtraInfo.setBold();
-        tOnline.setBold();
-        tType.setBold();
-        tPrice.setBold();
-        tDiscountOf.setBold();
 
-        tName.setText("T - tName");
-        tDescription.setText("T - tDescription");
-        tExtraInfo.setText("T - tExtraInfo");
-        tOnline.setText("T - tOnline");
-        tType.setText("T - tType");
-        tPrice.setText("T - tPrice");
-        tDiscountOf.setText("T - tDiscountOf");
 
 
     }catch (Exception e) {
       e.printStackTrace(System.err);
-      returner = false;
     }
-    return returner;
-  }
-
-  private void delete() {
-    this.priceCategory.delete();
-    this.priceCategory = null;
-    this.sCatId = null;
-    this.iCatId = -1;
-  }
-
-  private void saveUpdate(IWContext iwc, boolean isUpdate) {
-
-      String name =   iwc.getParameter("name");
-      String desc =   iwc.getParameter("description");
-      String online = iwc.getParameter("online");
-      String type =   iwc.getParameter("price_type");
-      String info =   iwc.getParameter("extra_info");
-      String discountOf = iwc.getParameter("discount_of");
-
-      if (isUpdate) {
-          String updatePriceCategoryId = iwc.getParameter("price_category_id_to_update");
-          try {
-            boolean bOnline;
-                if (online.equals("Y")) {
-                    bOnline = true;
-                }else {
-                  bOnline = false;
-                }
-
-            PriceCategory pCat = new PriceCategory(Integer.parseInt(updatePriceCategoryId));
-              pCat.setName(name);
-              pCat.setDescription(desc);
-              pCat.setType(type);
-              if (type.equals(PriceCategory.PRICETYPE_DISCOUNT)) {
-                pCat.setParentId(Integer.parseInt(discountOf));
-              }
-              pCat.setSupplierId(supplierId);
-              pCat.setExtraInfo(info);
-              pCat.isNetbookingCategory(bOnline);
-            pCat.update();
-
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
-          }
-
-      }
-      else {
-
-          try {
-            if ((name != null) && (!name.equals(""))){
-              int priceCategoryId = 0;
-              int parentId;
-              boolean bOnline;
-                  if (online.equals("Y")) {
-                      bOnline = true;
-                  }else {
-                    bOnline = false;
-                  }
-
-                  if (type.equals(PriceCategory.PRICETYPE_DISCOUNT)) {
-                    parentId = Integer.parseInt(discountOf);
-                    priceCategoryId = tsb.createPriceCategory(supplierId, name, desc,type, info, bOnline, parentId);
-                  }else if (type.equals(PriceCategory.PRICETYPE_PRICE)) {
-                    priceCategoryId = tsb.createPriceCategory(supplierId, name, desc,type, info, bOnline);
-                  }
-            }
-
-          }catch (Exception e) {
-            e.printStackTrace(System.err);
-          }
-      }
-
   }
 
 

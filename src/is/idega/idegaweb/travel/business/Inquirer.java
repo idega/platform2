@@ -1,11 +1,11 @@
-package is.idega.travel.business;
+package is.idega.idegaweb.travel.business;
 
 import java.sql.SQLException;
 import com.idega.data.EntityControl;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.SimpleQuerier;
 import com.idega.block.trade.stockroom.data.Reseller;
-import is.idega.travel.data.Inquery;
+import is.idega.idegaweb.travel.data.Inquery;
 
 
 /**

@@ -1,4 +1,4 @@
-package is.idega.travel.presentation;
+package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -15,10 +15,14 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Hashtable;
 
-import is.idega.travel.business.Booker;
-import is.idega.travel.business.TravelStockroomBusiness;
-import is.idega.travel.business.TourBusiness;
-import is.idega.travel.data.*;
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.service.tour.business.*;
+import is.idega.idegaweb.travel.service.tour.presentation.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
+
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -333,7 +337,7 @@ public class DailyReport extends TravelManager {
       int ibookings;
       float amount;
 
-      int[] bookingTypeIds = {is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
+      int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
       ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
       ProductPrice price;
       Integer entryCount;
@@ -345,7 +349,7 @@ public class DailyReport extends TravelManager {
       }
 
 
-      is.idega.travel.data.Booking[] bookings = Booker.getBookings(product.getID(),stamp,bookingTypeIds);
+      Booking[] bookings = TourBooker.getBookings(product.getID(),stamp,bookingTypeIds);
 
       String theColor = super.GRAY;
 
@@ -376,16 +380,16 @@ public class DailyReport extends TravelManager {
           iBookingId = bookings[i].getBookingTypeID();
 
           switch (iBookingId) {
-            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING :
+            case Booking.BOOKING_TYPE_ID_ONLINE_BOOKING :
                 payTypeText.setText(iwrb.getLocalizedString("travel.credit_card","Credit card"));
               break;
-            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING :
+            case Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING :
                 payTypeText.setText(iwrb.getLocalizedString("travel.voucher_reseller","Voucher - Reseller"));
             break;
-            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING :
+            case Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING :
                 payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
             break;
-            case is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING :
+            case Booking.BOOKING_TYPE_ID_INQUERY_BOOKING :
                 payTypeText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
             break;
             default:
@@ -476,7 +480,7 @@ public class DailyReport extends TravelManager {
           addTable.setWidth(4,fourWidth);
           addTable.setWidth(5,fiveWidth);
 
-      bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+      bookings = Booker.getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
       if (bookings.length == 0) {
         addRow++;
         addTable.setRowColor(addRow,theColor);
@@ -583,7 +587,7 @@ public class DailyReport extends TravelManager {
           correctionTable.setWidth(4,fourWidth);
           correctionTable.setWidth(5,fiveWidth);
 
-      bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_CORRECTION);
+      bookings = Booker.getBookings(product.getID(),stamp,Booking.BOOKING_TYPE_ID_CORRECTION);
       if (bookings.length == 0) {
         corrRow++;
         correctionTable.setRowColor(corrRow,theColor);
@@ -784,11 +788,11 @@ public class DailyReport extends TravelManager {
     String[] booking_ids = (String[]) iwc.getParameterValues("booking_id");
     String[] attendance  = (String[]) iwc.getParameterValues("attendance");
 
-    is.idega.travel.data.Booking booking;
+    Booking booking;
     if (booking_ids != null)
     for (int i = 0; i < booking_ids.length; i++) {
       try {
-        booking = new is.idega.travel.data.Booking(Integer.parseInt(booking_ids[i]));
+        booking = new GeneralBooking(Integer.parseInt(booking_ids[i]));
         booking.setAttendance(Integer.parseInt(attendance[i]));
         booking.update();
       }catch (SQLException sql) {

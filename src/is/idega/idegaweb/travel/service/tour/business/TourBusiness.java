@@ -1,23 +1,16 @@
-package is.idega.travel.business;
+package is.idega.idegaweb.travel.service.tour.business;
 
-import com.idega.block.trade.stockroom.business.StockroomBusiness;
-import com.idega.block.trade.stockroom.data.*;
-import is.idega.travel.data.*;
-import java.sql.Timestamp;
+import is.idega.idegaweb.travel.service.tour.data.*;
+import is.idega.idegaweb.travel.business.*;
+import com.idega.block.trade.stockroom.data.Product;
+import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
-import is.idega.travel.data.HotelPickupPlace;
-import java.sql.SQLException;
 import com.idega.util.*;
 import java.sql.SQLException;
-import com.idega.data.EntityFinder;
-import com.idega.data.EntityControl;
 import java.util.*;
-import com.idega.util.datastructures.HashtableDoubleKeyed;
 import com.idega.presentation.IWContext;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
-import java.sql.Date;
-import com.idega.data.SimpleQuerier;
 import com.idega.presentation.ui.DropdownMenu;
 
 /**
@@ -34,15 +27,15 @@ public class TourBusiness extends TravelStockroomBusiness {
   public TourBusiness() {
   }
 
-  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays) throws Exception{
-    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats, minNumberOfSeats, numberOfDays);
+  public int updateTourService(int tourId,int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers) throws Exception{
+    return createTourService(tourId,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats, minNumberOfSeats, numberOfDays, kilometers);
   }
 
-  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays) throws Exception {
-    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats,minNumberOfSeats, numberOfDays);
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats, Integer numberOfDays, Float kilometers) throws Exception {
+    return createTourService(-1,supplierId, fileId, serviceName, serviceDescription, isValid, departureFrom, departureTime, arrivalAt, arrivalTime, pickupPlaceIds, activeDays, numberOfSeats,minNumberOfSeats, numberOfDays, kilometers);
   }
 
-  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays) throws Exception {
+  private int createTourService(int tourId, int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String[] pickupPlaceIds,  int[] activeDays, Integer numberOfSeats, Integer minNumberOfSeats,Integer numberOfDays, Float kilometers) throws Exception {
 
       boolean isError = false;
 
@@ -133,9 +126,14 @@ public class TourBusiness extends TravelStockroomBusiness {
           }else {
             tour = new Tour(tourId);
           }
+          if (numberOfSeats != null)
             tour.setTotalSeats(numberOfSeats.intValue());
+          if (minNumberOfSeats != null)
             tour.setMinumumSeats(minNumberOfSeats.intValue());
+          if (numberOfDays != null)
             tour.setNumberOfDays(numberOfDays.intValue());
+          if (kilometers != null)
+            tour.setLength(kilometers.floatValue());
 
           if (arrivalAddressIds.length > 0)
           for (int i = 0; i < arrivalAddressIds.length; i++) {
@@ -274,6 +272,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       if (from == null) from = new idegaTimestamp(frame.getFrom());
       if (to == null)   to   = new idegaTimestamp(frame.getTo());
+        to.addDays(1);
 
       idegaTimestamp stamp = new idegaTimestamp(from);
       idegaTimestamp temp;
@@ -314,5 +313,28 @@ public class TourBusiness extends TravelStockroomBusiness {
       return null;
     }
   }
+
+  public static Address getArrivalAddress(Service service) throws SQLException{
+    Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueArrivalAddressType))));
+    if (tempAddresses.length > 0) {
+      return new Address(tempAddresses[tempAddresses.length -1].getID());
+    }else {
+      return null;
+    }
+  }
+
+  public static Address getDepartureAddress(Service service) throws SQLException{
+      Address[] tempAddresses = (Address[]) (service.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(AddressType.getId(TravelStockroomBusiness.uniqueDepartureAddressType))));
+      if (tempAddresses.length > 0) {
+        return new Address(tempAddresses[tempAddresses.length -1].getID());
+      }else {
+        return null;
+      }
+
+
+  }
+
+
+
 
 }
