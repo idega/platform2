@@ -133,8 +133,7 @@ public Banner(String attribute){
           bannerLink.setTarget(Link.TARGET_NEW_WINDOW);
         }
 
-        if ( BannerBusiness.notSeenBefore(iwc,ad.getID()) )
-          BannerBusiness.updateImpressions(iwc,ad);
+        BannerBusiness.updateImpressions(iwc,ad);
 
         bannerLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLICKED);
         bannerLink.addParameter(BannerBusiness.PARAMETER_AD_ID,ad.getID());
