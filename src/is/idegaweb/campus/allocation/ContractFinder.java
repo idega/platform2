@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.6 2001/08/18 21:43:44 aron Exp $
+ * $Id: ContractFinder.java,v 1.7 2001/08/19 16:39:02 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,8 @@ import java.util.Hashtable;
  * @version 1.0
  */
 public abstract class ContractFinder {
+  public final  static int NAME = 0,SSN=1,APARTMENT = 2,FLOOR=3,BUILDING=4,
+      COMPLEX=5,CATEGORY=6,TYPE=7;
 
   public static List listOfContracts(){
     try {
@@ -96,10 +98,27 @@ public abstract class ContractFinder {
     }
   }
 
-  public static List listOfContracts(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,String status){
+  private static String getOrderString(int type){
+    String order = null;
+    switch (type) {
+      case NAME :  order = " p.first_name,p.middle_name,p.last_name "; break;
+      case SSN:  order = " p.ssn "; break;
+      case BUILDING : order = " b.name " ; break;
+      case COMPLEX: order =  " c.name " ; break;
+      case FLOOR:  order =  " f.name " ; break;
+      case APARTMENT: order =" a.name " ; break;
+      case CATEGORY:  order =  " y.name " ; break;
+      case TYPE: order =" t.name " ; break;
+      default: order = " con.bu_apartment_id ";
+
+    }
+    return order;
+  }
+
+  public static List listOfContracts(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,String status,int iOrder){
 
     StringBuffer sql = new StringBuffer("select con.* ");
-    sql.append(" from bu_apartment a,bu_floor f,bu_building b");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
     sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
     sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
     sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
@@ -107,6 +126,7 @@ public abstract class ContractFinder {
     sql.append(" and f.bu_building_id = b.bu_building_id ");
     sql.append(" and b.bu_complex_id = c.bu_complex_id ");
     sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and con.app_applicant_id = p.app_applicant_id");
     if(status !=null && !"".equals(status)){
       sql.append(" and con.status = '");
       sql.append(status);
@@ -132,7 +152,11 @@ public abstract class ContractFinder {
       sql.append(" and bu_aprt_cat_id = ");
       sql.append(sCategory);
     }
-    sql.append(" order by con.bu_apartment_id");
+    String order = getOrderString(iOrder);
+    if(order != null){
+      sql.append(" order by ");
+      sql.append(order);
+    }
     String sSQL = sql.toString();
     System.err.println(sSQL);
     try{

@@ -45,16 +45,16 @@ public class CampusContracts extends KeyEditor{
   private String redColor = "#942829";
   private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
-  private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1";
+  private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private String bottomThickness = "8";
   private String conPrm = "contract_status";
-  private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmTp="cl_tp",prmCt="cl_ct";
-  private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessTp="s_tp",sessCt="s_ct";
-  private String[] prmArray = { prmCx ,prmBu ,prmFl,prmTp,prmCt};
-  private String[] sessArray = {sessCx ,sessBu ,sessFl ,sessTp,sessCt};
-  private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLTP,sCLCT};
+  private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmCt="cl_ct",prmTp="cl_tp",prmOrder="ct_or";
+  private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
+  private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
+  private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
+  private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLCT,sCLTP,sORDER};
 
   private String sessConPrm = "sess_con_status";
 
@@ -133,17 +133,19 @@ public class CampusContracts extends KeyEditor{
   private Form statusForm(){
     Form myForm = new Form();
     DropdownMenu status = statusDrop(conPrm,sGlobalStatus);
-    DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],iwrb.getLocalizedString("complex","Complex"),sValues[0]);
-    DropdownMenu building = drpLodgings(new Building(),prmArray[1],iwrb.getLocalizedString("building","Building"),sValues[1]);
-    DropdownMenu floor = drpFloors(prmArray[2],iwrb.getLocalizedString("floor","Floor"),sValues[2],true);
-    DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],iwrb.getLocalizedString("category","Category"),sValues[3]);
-    DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],iwrb.getLocalizedString("type","Type"),sValues[4]);
+    DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],"--",sValues[0]);
+    DropdownMenu building = drpLodgings(new Building(),prmArray[1],"--",sValues[1]);
+    DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
+    DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
+    DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
+    DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
     setStyle(status);
     setStyle(complex);
     setStyle(building);
     setStyle(floor);
     setStyle(cat);
     setStyle(type);
+    setStyle(order);
     Table T = new Table();
       T.add(formatText(iwrb.getLocalizedString("status","Status")),1,1);
       T.add(formatText(iwrb.getLocalizedString("complex","Complex")),2,1);
@@ -151,15 +153,19 @@ public class CampusContracts extends KeyEditor{
       T.add(formatText(iwrb.getLocalizedString("floor","Floor")),4,1);
       T.add(formatText(iwrb.getLocalizedString("category","Category")),5,1);
       T.add(formatText(iwrb.getLocalizedString("type","Type")),6,1);
+      T.add(formatText(iwrb.getLocalizedString("order","Order")),7,1);
       T.add(status,1,2);
       T.add(complex,2,2);
       T.add(building,3,2);
       T.add(floor,4,2);
       T.add(cat,5,2);
       T.add(type,6,2);
+      T.add(order,7,2);
       SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
       setStyle(get);
-      T.add(get,7,2);
+      T.add(get,8,2);
+    T.setCellpadding(0);
+    T.setCellspacing(0);
 
     myForm.add(T);
     return myForm;
@@ -195,7 +201,6 @@ public class CampusContracts extends KeyEditor{
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
       drp.addDisabledMenuElement("-1",display);
-    drp.addDisabledMenuElement("0",display);
     for(int i = 0; i < lods.length ; i++){
       if(withBuildingName){
         try{
@@ -208,6 +213,24 @@ public class CampusContracts extends KeyEditor{
     if(!"".equalsIgnoreCase(selected)){
       drp.setSelectedElement(selected);
     }
+    return drp;
+  }
+
+  private DropdownMenu orderDrop(String name,String display ,String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    if(!"".equals(display)){
+      drp.addDisabledMenuElement("-1",display);
+    }
+    drp.addMenuElement(ContractFinder.NAME,iwrb.getLocalizedString("name","Name"));
+    drp.addMenuElement(ContractFinder.SSN,iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(ContractFinder.APARTMENT,iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(ContractFinder.FLOOR,iwrb.getLocalizedString("floor","Floor"));
+    drp.addMenuElement(ContractFinder.BUILDING,iwrb.getLocalizedString("building","Building"));
+    drp.addMenuElement(ContractFinder.COMPLEX,iwrb.getLocalizedString("complex","Complex"));
+    drp.addMenuElement(ContractFinder.CATEGORY,iwrb.getLocalizedString("category","Category"));
+    drp.addMenuElement(ContractFinder.TYPE,iwrb.getLocalizedString("type","Type"));
+    if(!"".equals(selected))
+      drp.setSelectedElement(selected);
     return drp;
   }
 
@@ -234,7 +257,8 @@ public class CampusContracts extends KeyEditor{
   }
 
   private ModuleObject getContractTable(ModuleInfo modinfo){
-    List L = ContractFinder.listOfContracts(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],sGlobalStatus);
+    int order = Integer.parseInt(sValues[5]);
+    List L = ContractFinder.listOfContracts(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],sGlobalStatus,order);
     //List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
     Contract C = null;
     User U = null;

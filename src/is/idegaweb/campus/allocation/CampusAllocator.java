@@ -775,7 +775,7 @@ public class CampusAllocator extends ModuleObjectContainer{
   private Text boldText(String text){
     Text T = new Text(text);
     T.setBold();
-    T.setFontColor(WhiteColor);
+    T.setFontColor(TextFontColor);
     T.setFontSize(this.fontSize);
     return T;
   }
