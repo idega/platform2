@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.117 2003/07/01 14:07:20 gummi Exp $
+ * $Id: NewsReader.java,v 1.118 2003/07/02 18:19:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -662,7 +662,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
         //////////// IMAGE PART ///////////
         if( showImages ){
         	if(!showAll && showImagesInOverview)
-        	T.add(getNewsImage(newsHelper, sHeadline),1,row);
+        		T.add(getNewsImage(newsHelper, sHeadline),1,row);
+        	else if (showAll)
+						T.add(getNewsImage(newsHelper, sHeadline),1,row);
           //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
 	      }
 
