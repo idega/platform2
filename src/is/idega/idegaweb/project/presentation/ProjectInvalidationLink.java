@@ -1,11 +1,11 @@
 package is.idega.idegaweb.project.presentation;
 
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
-
-import com.idega.presentation.text.Link;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Page;
+import com.idega.presentation.text.Link;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 
 /**
@@ -41,10 +41,41 @@ public class ProjectInvalidationLink extends Block {
     pageId = id;
   }
 
+
+  public synchronized Object _clone(IWContext iwc, boolean askForPermission){
+    if(askForPermission){
+      if(iwc.hasViewPermission(this) || this.isOwnerOfProject(iwc)){
+        return this.clone();
+      } else {
+        return NULL_CLONE_OBJECT;
+      }
+    } else {
+      return this.clone();
+    }
+  }
+
+  /**
+   * @todo reimplement
+   */
+  public boolean isOwnerOfProject(IWContext iwc){
+    Page p = this.getParentPage();
+    if(p != null){
+      try {
+        return iwc.getAccessController().isOwner(p,iwc);
+      }
+      catch (Exception ex) {
+        System.err.println(ex.getMessage());
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+
   public void main(IWContext iwc) throws Exception {
     //IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     this.empty();
-
 
     if(optionalImage != null){
       invalidateProjectLink = new Link(optionalImage);

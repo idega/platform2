@@ -1,11 +1,11 @@
 package is.idega.idegaweb.project.presentation;
 
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
-
-import com.idega.presentation.text.Link;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Page;
+import com.idega.presentation.text.Link;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 
 /**
@@ -34,6 +34,37 @@ public class ProjectModificationLink extends Block {
 
   public void setImage(Image image){
     optionalImage = image;
+  }
+
+
+  public synchronized Object _clone(IWContext iwc, boolean askForPermission){
+    if(askForPermission){
+      if(iwc.hasViewPermission(this) || this.isOwnerOfProject(iwc)){
+        return this.clone();
+      } else {
+        return NULL_CLONE_OBJECT;
+      }
+    } else {
+      return this.clone();
+    }
+  }
+
+  /**
+   * @todo reimplement
+   */
+  public boolean isOwnerOfProject(IWContext iwc){
+    Page p = this.getParentPage();
+    if(p != null){
+      try {
+        return iwc.getAccessController().isOwner(p,iwc);
+      }
+      catch (Exception ex) {
+        System.err.println(ex.getMessage());
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
 

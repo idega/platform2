@@ -352,74 +352,76 @@ public class ProjectBusiness {
 
     PageLink pageLink = business.createPageLink(iwc,info,Integer.toString(projectId),name,null,null,null,null);
 
-    project.addTo(PageLink.class, pageLink.getID());
+    if(pageLink != null){
+      project.addTo(PageLink.class, pageLink.getID());
 
 
-    // temp - only necessary to add newly created pages into this map
-    iwc.removeApplicationAttribute(_APPADDRESS_PROJECTPAGES);
+      // temp - only necessary to add newly created pages into this map
+      iwc.removeApplicationAttribute(_APPADDRESS_PROJECTPAGES);
 
-    // replicate permissions
+      // replicate permissions
 
-    List participantGroups = DPTTriggerBusiness.getDPTPermissionGroups(info);
+      List participantGroups = DPTTriggerBusiness.getDPTPermissionGroups(info);
 
-    if(participantGroups != null && participantGroups.size() > 0 ){
+      if(participantGroups != null && participantGroups.size() > 0 ){
 
-      BuilderLogic logic = BuilderLogic.getInstance();
+        BuilderLogic logic = BuilderLogic.getInstance();
 
-      PageTreeNode rootPage = new PageTreeNode(pageLink.getPageId(),iwc);
-      Vector v = new Vector();
-      //System.out.println("collecting subpages");
-      this.collectSubpages(v,rootPage);
+        PageTreeNode rootPage = new PageTreeNode(pageLink.getPageId(),iwc);
+        Vector v = new Vector();
+        //System.out.println("collecting subpages");
+        this.collectSubpages(v,rootPage);
 
-      Set s = new HashSet();
-      Set pages = new HashSet();
-      Iterator setIter = v.iterator();
-      while (setIter.hasNext()) {
-        PageTreeNode item = (PageTreeNode)setIter.next();
-        pages.add(Integer.toString(item.getNodeID()));
-        //System.out.println("----------------------------------");
-        //System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
-        //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
-        Set set = logic.getInstanceIdsOnPage(item.getNodeID());
+        Set s = new HashSet();
+        Set pages = new HashSet();
+        Iterator setIter = v.iterator();
+        while (setIter.hasNext()) {
+          PageTreeNode item = (PageTreeNode)setIter.next();
+          pages.add(Integer.toString(item.getNodeID()));
+          //System.out.println("----------------------------------");
+          //System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
+          //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
+          Set set = logic.getInstanceIdsOnPage(item.getNodeID());
 
-        if(set != null){
-          s.addAll(set);
-        }
-      }
-
-      Iterator iter = participantGroups.iterator();
-      while (iter.hasNext()) {
-        GenericGroup oldGroup = (GenericGroup)iter.next();
-        GenericGroup newGroup = this.getReplicatedParticipantGroup(oldGroup, project, null);
-
-        //Pages
-        List pagePermissions = AccessControl.getGroupsPermissionsForPages(oldGroup,pages);
-        //System.err.println("pagePermissions: "+pagePermissions);
-        if(pagePermissions != null){
-          Iterator permissionIter = pagePermissions.iterator();
-          while (permissionIter.hasNext()) {
-            ICPermission item = (ICPermission)permissionIter.next();
-            AccessControl.replicatePermissionForNewGroup(item, newGroup);
+          if(set != null){
+            s.addAll(set);
           }
         }
 
-        //Instances
-        List permissions = AccessControl.getGroupsPermissionsForInstances(oldGroup,s);
-        if(permissions != null){
-          Iterator permissionIter = permissions.iterator();
-          while (permissionIter.hasNext()) {
-            ICPermission item = (ICPermission)permissionIter.next();
-            AccessControl.replicatePermissionForNewGroup(item, newGroup);
+        Iterator iter = participantGroups.iterator();
+        while (iter.hasNext()) {
+          GenericGroup oldGroup = (GenericGroup)iter.next();
+          GenericGroup newGroup = this.getReplicatedParticipantGroup(oldGroup, project, null);
+
+          //Pages
+          List pagePermissions = AccessControl.getGroupsPermissionsForPages(oldGroup,pages);
+          //System.err.println("pagePermissions: "+pagePermissions);
+          if(pagePermissions != null){
+            Iterator permissionIter = pagePermissions.iterator();
+            while (permissionIter.hasNext()) {
+              ICPermission item = (ICPermission)permissionIter.next();
+              AccessControl.replicatePermissionForNewGroup(item, newGroup);
+            }
           }
+
+          //Instances
+          List permissions = AccessControl.getGroupsPermissionsForInstances(oldGroup,s);
+          if(permissions != null){
+            Iterator permissionIter = permissions.iterator();
+            while (permissionIter.hasNext()) {
+              ICPermission item = (ICPermission)permissionIter.next();
+              AccessControl.replicatePermissionForNewGroup(item, newGroup);
+            }
+          }
+
         }
 
       }
 
+      // replicate permissions ends
+    } else {
+      // throw Exception;
     }
-
-    // replicate permissions ends
-
-
   }
 
 

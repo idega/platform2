@@ -96,13 +96,14 @@ public class NewsTable extends PresentationObjectContainer {
 
   // Stilla töflu vegna óákveðinnar stærðar
   private void finite(){
-
-    for (int i = 1; i <= table.getColumns(); i++) {
-      int percent = 100/iDividedColumnCount ;
-      table.setWidth(i,percent+"%");
-      table.setColumnVerticalAlignment(i,"top");
-			int mod = i%2;
-		}
+    if(table != null){
+      for (int i = 1; i <= table.getColumns(); i++) {
+        int percent = 100/iDividedColumnCount ;
+        table.setWidth(i,percent+"%");
+        table.setColumnVerticalAlignment(i,"top");
+        int mod = i%2;
+      }
+    }
   }
 
   public void add(PresentationObject Mo,boolean useSetDivison,String sAlign){
