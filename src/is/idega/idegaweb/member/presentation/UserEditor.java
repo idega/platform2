@@ -35,6 +35,7 @@ import com.idega.core.data.PhoneTypeHome;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -314,7 +315,7 @@ public class UserEditor extends Block {
 							relationsTable.add(getRelatedUserLink(relatedUser), 3, row);
 							Link disconnectLink =
 								getDisConnectorLink(
-									type,
+									type,null,
 									(Integer) user.getPrimaryKey(),
 									(Integer) relatedUser.getPrimaryKey(),
 									iwb.getImageButton(
@@ -363,7 +364,7 @@ public class UserEditor extends Block {
 				Link registerLink =
 					getConnectorLink(
 						(Integer) user.getPrimaryKey(),
-						type,
+						type,null,
 						iwb.getImageButton(iwrb.getLocalizedString("mbe.register_as_" + type, "Register as " + type)));
 				buttonTable.add(registerLink, col++, row);
 			}
@@ -371,27 +372,33 @@ public class UserEditor extends Block {
 		add(buttonTable);
 	}
 
-	protected Link getConnectorLink(Integer roleUserID, String type, PresentationObject object) {
+	protected Link getConnectorLink(Integer roleUserID, String type,String reverseType, PresentationObject object) {
 		Link registerLink = new Link(object);
 
 		registerLink.setWindowToOpen(connectorWindowClass);
 		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, roleUserID.toString());
-		registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
+		if(type!=null)
+			registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
+		if(reverseType!=null)
+			registerLink.addParameter(UserRelationConnector.PARAM_REVERSE_TYPE,reverseType);
 		return registerLink;
 	}
 	
-	protected SubmitButton getConnectorButton(IWContext iwc,String display,Integer roleUserID, String type){
+	protected SubmitButton getConnectorButton(IWContext iwc,String display,Integer roleUserID, String type,String reverseType){
 		SubmitButton button = new SubmitButton(display);
 		String URL = Window.getWindowURL(connectorWindowClass, iwc) ;
 		URL+="&"+UserRelationConnector.PARAM_USER_ID+"="+roleUserID.toString();
-		URL+="&"+UserRelationConnector.PARAM_TYPE+"="+type;
+		if(type!=null)
+			URL+="&"+UserRelationConnector.PARAM_TYPE+"="+type;
+		if(reverseType!=null)
+			URL+="&"+UserRelationConnector.PARAM_REVERSE_TYPE+"="+reverseType;
 		button.setOnClick("javascript:" + Window.getCallingScriptString(connectorWindowClass, URL, true, iwc)+";return false;");
 		button.setStyleClass(buttonStyleName);
 		return button;		
 	}
 
 	protected Link getDisConnectorLink(
-		String type,
+		String type,String reverseType,
 		Integer roleUserID,
 		Integer victimUserID,
 		PresentationObject object) {
@@ -400,7 +407,10 @@ public class UserEditor extends Block {
 		registerLink.setWindowToOpen(connectorWindowClass);
 		registerLink.addParameter(UserRelationConnector.PARAM_USER_ID, roleUserID.toString());
 		registerLink.addParameter(UserRelationConnector.getRelatedUserParameterName(), victimUserID.toString());
-		registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
+		if(type!=null)
+			registerLink.addParameter(UserRelationConnector.PARAM_TYPE, type);
+		if(reverseType!=null)
+			registerLink.addParameter(UserRelationConnector.PARAM_REVERSE_TYPE,reverseType);
 		//registerLink.addParameter(GroupRelationConnector.PARAM_ACTION,GroupRelationConnector.ACTION_DETACH);
 		return registerLink;
 	}
@@ -431,9 +441,11 @@ public class UserEditor extends Block {
 			addressTable.add(tDeceasedDate, 2, row);
 		}
 		else {
-			DateInput deceasedInput = new DateInput(prm_deceased_date, true);
+			DateInput deceasedInput = new DateInput(prm_deceased_date);
 			deceasedInput.setToDisplayDayLast(true);
-			deceasedInput.setLatestPossibleDate(IWTimestamp.RightNow().getDate(),iwrb.getLocalizedString("mbe.deceased_date_warning","Please do not register deceased date in the future"));
+			IWTimestamp today = IWTimestamp.RightNow();
+			deceasedInput.setLatestPossibleDate(today.getDate(),iwrb.getLocalizedString("mbe.deceased_date_warning","Please do not register deceased date in the future"));
+			deceasedInput.setYearRange(today.getYear()-5,today.getYear());
 			deceasedInput.setStyleClass(interfaceStyleName);
 			addressTable.add(deceasedInput, 2, row);
 		}
@@ -550,7 +562,7 @@ public class UserEditor extends Block {
 						Country country = postalCode.getCountry();
 						if(country!=null){
 							primaryCountryInput.setSelectedCountry(country);
-							addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
+							addressTable.add(getOldParameter(prm_mainaddress_country, country.getPrimaryKey().toString()));
 						}
 					
 				}
@@ -581,7 +593,7 @@ public class UserEditor extends Block {
 						Country country = postalCode.getCountry();
 						if(country!=null){
 							coCountryInput.setSelectedCountry(country);
-							addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
+							addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
 						}
 					}
 					catch (Exception e3) {
@@ -648,6 +660,22 @@ public class UserEditor extends Block {
 		user = userService.getUser(userID);
 		try {
 			// main address part
+			if(isRemovedValue(iwc,prm_mainaddress_street)){
+				Address address = null;
+				try {
+					address = userService.getUsersMainAddress(user);
+					if(address!=null){
+						user.removeAddress(address);
+					}
+				}
+				catch (IDORemoveRelationshipException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+			}
+			else
 			if (isNewValue(iwc, prm_mainaddress_street) 
 				|| isNewValue(iwc, prm_mainaddress_postal_code)
 				|| isNewValue(iwc,prm_mainaddress_postal_name)
@@ -668,10 +696,7 @@ public class UserEditor extends Block {
 							e1.printStackTrace();
 						}
 					}
-					if(iwc.isParameterSet(prm_primaddress_postal_id)){
-						postalID = Integer.valueOf(iwc.getParameter(prm_primaddress_postal_id));
-					}
-					else if(country!=null){
+					 if(country!=null && (isNewValue(iwc,prm_mainaddress_postal_code)|| isNewValue(iwc,prm_mainaddress_postal_name))){
 						String code = iwc.getParameter(prm_mainaddress_postal_code);
 						String name = iwc.getParameter(prm_mainaddress_postal_name);
 						try {
@@ -682,6 +707,10 @@ public class UserEditor extends Block {
 							e1.printStackTrace();
 						}
 					}
+					else if (iwc.isParameterSet(prm_primaddress_postal_id)){
+						postalID = Integer.valueOf(iwc.getParameter(prm_primaddress_postal_id));
+					}
+					
 					userService.updateUsersMainAddressOrCreateIfDoesNotExist(
 						userID,
 						street,
@@ -694,6 +723,19 @@ public class UserEditor extends Block {
 			}
 
 			// co address part
+			if(isRemovedValue(iwc,prm_coaddress_street)){
+				Address address = null;
+				try {
+					address = userService.getUsersCoAddress(user);
+					if(address!=null){
+						user.removeAddress(address);
+					}
+				}
+				catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+			else
 			if (isNewValue(iwc, prm_coaddress_street) 
 				|| isNewValue(iwc,prm_coaddress_postal_code) 
 				|| isNewValue(iwc,prm_coaddress_postal_name)
@@ -714,10 +756,7 @@ public class UserEditor extends Block {
 								e1.printStackTrace();
 							}
 						}
-						if(iwc.isParameterSet(prm_coaddress_postal_id)){
-							postalID = Integer.valueOf(iwc.getParameter(prm_coaddress_postal_id));
-						}
-						else if(country!=null){
+						if(country!=null && (isNewValue(iwc,prm_coaddress_postal_code) || isNewValue(iwc,prm_coaddress_postal_name))){
 							String code = iwc.getParameter(prm_coaddress_postal_code);
 							String name = iwc.getParameter(prm_coaddress_postal_name);
 							try {
@@ -728,7 +767,11 @@ public class UserEditor extends Block {
 								e1.printStackTrace();
 							}
 						}
-						userService.updateUsersMainAddressOrCreateIfDoesNotExist(
+						else if(iwc.isParameterSet(prm_coaddress_postal_id)){
+							postalID = Integer.valueOf(iwc.getParameter(prm_coaddress_postal_id));
+						}
+												
+						userService.updateUsersCoAddressOrCreateIfDoesNotExist(
 							userID,
 							street,
 							postalID,
@@ -744,11 +787,35 @@ public class UserEditor extends Block {
 				String number = iwc.getParameter(prm_main_phone);
 				userService.updateUserPhone(userID.intValue(), PhoneTypeBMPBean.HOME_PHONE_ID, number);
 			}
+			else if(isRemovedValue(iwc,prm_main_phone)){
+				Phone phone = null;
+				try {
+					phone = userService.getUsersHomePhone(user);
+					if(phone!=null){
+						user.removePhone(phone);
+					}
+				}
+				catch (Exception e1) {
+					
+				}
+			}
 
 			// email part
 			if (isNewValue(iwc, prm_email_address)) {
 				String email = iwc.getParameter(prm_email_address);
 				userService.updateUserMail(userID.intValue(), email);
+			}
+			else if(isRemovedValue(iwc,prm_email_address)){
+				Email email = null;
+				try {
+					email = userService.getUserMail(user);
+					if(email!=null){
+						user.removeEmail(email);
+					}
+				}
+				catch (Exception e1) {
+					
+				}
 			}
 
 			// deceased part
@@ -845,6 +912,17 @@ public class UserEditor extends Block {
 			return !iwc.getParameter(pName + prm_old_value_suffix).equals(iwc.getParameter(pName));
 		}
 		return iwc.isParameterSet(pName);
+	}
+	
+	private boolean isRemovedValue(IWContext iwc,String pName){
+		String value = iwc.getParameter(pName);
+		if(iwc.isParameterSet(pName+prm_old_value_suffix) && value!=null && value.length()==0)
+			return true;
+		return false;
+	}
+	
+	private String getOldValue(IWContext iwc,String pName){
+		return iwc.getParameter(pName+prm_old_value_suffix);
 	}
 
 	/**

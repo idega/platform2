@@ -53,10 +53,12 @@ public class UserRelationConnector extends Window {
 	protected Integer userID = null;
 	protected User user = null;
 	protected User relatedUser = null;
-	protected String type = null,rtype = null;
+	protected String type = null, rtype = null;
 	private static String searchIdentifer = "fmrels";
-	protected String buttonStyle = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
-	protected String interfaceStyle = "color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+	protected String buttonStyle =
+		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
+	protected String interfaceStyle =
+		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 
 	protected User getUser(IWContext iwc) throws RemoteException {
 		userID = Integer.valueOf(iwc.getParameter(PARAM_USER_ID));
@@ -102,19 +104,22 @@ public class UserRelationConnector extends Window {
 		iwrb = getResourceBundle(iwc);
 		//iwc.getApplication().getLog().info("Who is your daddy ?");
 		process(iwc);
-		System.err.println("user is null ? " + (user == null));
+		//System.err.println("user is null ? " + (user == null));
 		presentate(iwc);
 
 	}
 
-	private void presentate(IWContext iwc) throws RemoteException{
+	private void presentate(IWContext iwc) throws RemoteException {
 		Table mainTable = new Table();
 		int row = 1;
 
 		UserSearcher searcher = new UserSearcher();
 		searcher.setShowMiddleNameInSearch(false);
 		searcher.maintainParameter(new Parameter(PARAM_USER_ID, userID.toString()));
-		searcher.maintainParameter(new Parameter(PARAM_TYPE, type));
+		if (type != null)
+			searcher.maintainParameter(new Parameter(PARAM_TYPE, type));
+		if (rtype != null)
+			searcher.maintainParameter(new Parameter(PARAM_REVERSE_TYPE, rtype));
 		searcher.setUniqueIdentifier(searchIdentifer);
 		searcher.setOwnFormContainer(false);
 
@@ -137,7 +142,7 @@ public class UserRelationConnector extends Window {
 		mainTable.add((searcher), 1, row++);
 		mainTable.add(Text.getBreak(), 1, row++);
 
-		Text tCurrentUser = new Text(iwrb.getLocalizedString("current_user", "Current user") );
+		Text tCurrentUser = new Text(iwrb.getLocalizedString("current_user", "Current user"));
 		tCurrentUser.setBold();
 		mainTable.add(tCurrentUser, 1, row++);
 		Text tCurrentUserName = new Text(user.getName());
@@ -149,7 +154,7 @@ public class UserRelationConnector extends Window {
 
 		row++;
 
-		Text tRelatedUser = new Text(iwrb.getLocalizedString("relation_user", "Relation user") );
+		Text tRelatedUser = new Text(iwrb.getLocalizedString("relation_user", "Relation user"));
 		tRelatedUser.setBold();
 		mainTable.add(tRelatedUser, 1, row++);
 		if (relatedUser != null) {
@@ -160,19 +165,21 @@ public class UserRelationConnector extends Window {
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(tRelatedUserName, 1, row);
 			row++;
-			
-			Text tRelationtype = new Text(iwrb.getLocalizedString("relation_type","Relation type"));
+
+			Text tRelationtype = new Text(iwrb.getLocalizedString("relation_type", "Relation type"));
+			if (hasSelectedReverseType())
+				tRelationtype = new Text(iwrb.getLocalizedString("reverse_relation_type", "Reverse relation type"));
 			tRelationtype.setBold();
-			mainTable.add(tRelationtype,1,row++);
-			mainTable.add(Text.getNonBrakingSpace(),1,row);
-			mainTable.add(Text.getNonBrakingSpace(),1,row);
-			mainTable.add(getRelationMenu(iwc),1,row);
+			mainTable.add(tRelationtype, 1, row++);
+			mainTable.add(Text.getNonBrakingSpace(), 1, row);
+			mainTable.add(Text.getNonBrakingSpace(), 1, row);
+			mainTable.add(getRelationMenu(iwc), 1, row);
 			row++;
-			
-			mainTable.add(Text.getNonBrakingSpace(),1,row);
-			mainTable.add(getActionButton(relatedUser,user,type),1,row);
-			
-			mainTable.add(searcher.getUniqueUserParameter((Integer)relatedUser.getPrimaryKey()));
+
+			mainTable.add(Text.getNonBrakingSpace(), 1, row);
+			mainTable.add(getActionButton(relatedUser, user, type), 1, row);
+
+			mainTable.add(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
 		}
 
 		Form form = new Form();
@@ -180,168 +187,213 @@ public class UserRelationConnector extends Window {
 		//form.addParameter(PARAM_USER_ID, user.getPrimaryKey().toString());
 		form.maintainParameter(PARAM_USER_ID);
 		form.maintainParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer));
-		form.maintainParameter(PARAM_TYPE);
+		if (type != null)
+			form.maintainParameter(PARAM_TYPE);
+		if (rtype != null)
+			form.maintainParameter(PARAM_REVERSE_TYPE);
 		form.add(mainTable);
 		add(form);
 
 	}
 
-	private PresentationObject getActionButton(User roleUser,User victimUser,String type) {
+	private PresentationObject getActionButton(User roleUser, User victimUser, String type) {
 		// if we have a relation we offer a remove action
-		if(victimUser.hasRelationTo(  ( (Integer) roleUser.getUserGroup().getPrimaryKey()).intValue() ,type) ){
-			String detachWarning = iwrb.getLocalizedString("warning_detach_relation","Are you shure you want to remove this relation ?");
-			SubmitButton detach = getActionButton(iwrb.getLocalizedString("detach","Detach"),ACTION_DETACH,detachWarning);
+		if (hasSelectedType()
+			&& roleUser.hasRelationTo(((Integer) victimUser.getUserGroup().getPrimaryKey()).intValue(), type)) {
+			String detachWarning = 
+				iwrb.getLocalizedString("warning_detach_relation", "Are you shure you want to remove this relation ?");
+			SubmitButton detach =
+				getActionButton(iwrb.getLocalizedString("detach", "Detach"), ACTION_DETACH, detachWarning);
 			return detach;
-		}else{
-			String attachWarning = iwrb.getLocalizedString("warning_attach_relation","Are you shure you want to relate these two people ?");
-			SubmitButton attach = getActionButton(iwrb.getLocalizedString("attach","Attach"),ACTION_ATTACH,attachWarning);
-			return attach;
 		}
-	}
-	
-	protected SubmitButton getActionButton(String display,int action,String warningMsg){
-		SubmitButton btnAction = new SubmitButton(display,PARAM_ACTION,Integer.toString(action));
-		btnAction.setOnClickConfirm(warningMsg);
-		return btnAction;
-	}
-	
-	public static String getRelatedUserParameterName(){
-		return UserSearcher.getUniqueUserParameterName(searchIdentifer);
-	}
-
-	public void process(IWContext iwc) throws RemoteException {
-		user = getUser(iwc);
-		type = iwc.getParameter(PARAM_TYPE);
-		rtype = iwc.getParameter(PARAM_REVERSE_TYPE);
-		if(iwc.isParameterSet(PARAM_ACTION)){
-			int action = Integer.parseInt(iwc.getParameter(PARAM_ACTION));
-			Integer relatedUserID = Integer.valueOf(iwc.getParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer)));
-			switch (action) {
-				case ACTION_ATTACH :
-					System.out.println("createrelation: "+user.getPrimaryKey().toString()+","+relatedUserID.toString()+","+type);
-					createRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type,rtype);
-				break;
-
-				case ACTION_DETACH:
-					removeRelation(iwc,(Integer)user.getPrimaryKey(),relatedUserID,type,rtype);
-				break;
-			}
-			setParentToReload();
-			close();
-		}
-		
-	}
-
-	/**
-	 * Returns true if a specific relation type has been requested
-	 * @return
-	 */
-	public boolean hasSelectedType(){
-		return type!=null;
-	}
-	
-	/**
-	 * Displays the selected relationtype or the selectable menu with available relation types
-	 * 
-	 */
-	public PresentationObject getRelationMenu(IWContext iwc) throws RemoteException{
-		if (hasSelectedType()) {
-			Text tType = new Text(iwrb.getLocalizedString(type, type));
-			return tType;
+		else if(hasSelectedReverseType() && victimUser.hasRelationTo(((Integer) roleUser.getUserGroup().getPrimaryKey()).intValue(), type)) {
+			String detachWarning = 
+			iwrb.getLocalizedString("warning_detach_relation", "Are you shure you want to remove this relation ?");
+			SubmitButton detach =
+			getActionButton(iwrb.getLocalizedString("detach", "Detach"), ACTION_DETACH, detachWarning);
+			return detach;
 		}
 		else {
-			return getAllRelationTypesMenu(iwc);
+			String attachWarning =
+				iwrb.getLocalizedString(
+					"warning_attach_relation",
+					"Are you shure you want to relate these two people ?");
+			SubmitButton attach =
+				getActionButton(iwrb.getLocalizedString("attach", "Attach"), ACTION_ATTACH, attachWarning);
+			return attach;
 		}
-
-	}
-
-	private DropdownMenu getAllRelationTypesMenu(IWContext iwc) {
-		DropdownMenu menu = new DropdownMenu(PARAM_TYPE);
-		try {
-			Collection types = getRelationTypeHome().findAll();
-
-			for (Iterator iter = types.iterator(); iter.hasNext();) {
-				GroupRelationType relType = (GroupRelationType) iter.next();
-				menu.addMenuElement(relType.getType(), iwrb.getLocalizedString(relType.getType(), relType.getType()));
-			}
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		return menu;
-	}
 	
-	/**
-	 * Called when the detach action is requested
-	 * @param iwc
-	 * @param userID
-	 * @param relatedUserID
-	 * @param relationType
-	 * @throws RemoteException
-	 */
-	public void removeRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType,String reverseRelationType) throws RemoteException{
-		try {
-			UserHome userHome = getUserHome();
-			User currentUser = userHome.findByPrimaryKey(userID);
-			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
-			currentUser.removeRelation(relatedUser,relationType);
+
+}
+
+protected SubmitButton getActionButton(String display, int action, String warningMsg) {
+	SubmitButton btnAction = new SubmitButton(display, PARAM_ACTION, Integer.toString(action));
+	btnAction.setOnClickConfirm(warningMsg);
+	return btnAction;
+}
+
+public static String getRelatedUserParameterName() {
+	return UserSearcher.getUniqueUserParameterName(searchIdentifer);
+}
+
+public void process(IWContext iwc) throws RemoteException {
+	user = getUser(iwc);
+	type = iwc.getParameter(PARAM_TYPE);
+	rtype = iwc.getParameter(PARAM_REVERSE_TYPE);
+	if (iwc.isParameterSet(PARAM_ACTION)) {
+		int action = Integer.parseInt(iwc.getParameter(PARAM_ACTION));
+		Integer relatedUserID =
+			Integer.valueOf(iwc.getParameter(UserSearcher.getUniqueUserParameterName(searchIdentifer)));
+		switch (action) {
+			case ACTION_ATTACH :
+				System.out.println(
+					"createrelation: " + user.getPrimaryKey().toString() + "," + relatedUserID.toString() + "," + type);
+				createRelation(iwc, (Integer) user.getPrimaryKey(), relatedUserID, type, rtype);
+				break;
+
+			case ACTION_DETACH :
+				removeRelation(iwc, (Integer) user.getPrimaryKey(), relatedUserID, type, rtype);
+				break;
 		}
-		
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		catch (RemoveException e) {
-			e.printStackTrace();
-		}
+		setParentToReload();
+		close();
 	}
 
-	/**
-	 * Called when the attach action is requested
-	 * @param iwc
-	 * @param userID
-	 * @param relatedUserID
-	 * @param relationType
-	 * @throws RemoteException
-	 */
-	public void createRelation(IWContext iwc,Integer userID, Integer relatedUserID, String relationType,String reverseRelationType) throws RemoteException {
-		
-		try {
-			UserHome userHome = getUserHome();
-			User currentUser = userHome.findByPrimaryKey(userID);
-			User relatedUser = userHome.findByPrimaryKey(relatedUserID);
-			currentUser.addUniqueRelation(relatedUser,relationType);
-			
+}
+
+/**
+ * Returns true if a specific relation type has been requested
+ * @return
+ */
+public boolean hasSelectedType() {
+	return type != null;
+}
+
+/**
+ * Returns true if a specific relation type has been requested
+ * @return
+ */
+public boolean hasSelectedReverseType() {
+	return rtype != null;
+}
+
+/**
+ * Displays the selected relationtype or the selectable menu with available relation types
+ * 
+ */
+public PresentationObject getRelationMenu(IWContext iwc) throws RemoteException {
+	if (hasSelectedType()) {
+		Text tType = new Text(iwrb.getLocalizedString(type, type));
+		return tType;
+	}
+	else if (hasSelectedReverseType()) {
+		Text tReverseType = new Text(iwrb.getLocalizedString(rtype, rtype));
+		return tReverseType;
+	}
+	else {
+		return getAllRelationTypesMenu(iwc);
+	}
+
+}
+
+private DropdownMenu getAllRelationTypesMenu(IWContext iwc) {
+	DropdownMenu menu = new DropdownMenu(PARAM_TYPE);
+	try {
+		Collection types = getRelationTypeHome().findAll();
+
+		for (Iterator iter = types.iterator(); iter.hasNext();) {
+			GroupRelationType relType = (GroupRelationType) iter.next();
+			menu.addMenuElement(relType.getType(), iwrb.getLocalizedString(relType.getType(), relType.getType()));
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		catch (CreateException e) {
-			e.printStackTrace();
-		}
+	}
+	catch (RemoteException e) {
+		e.printStackTrace();
+	}
+	catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return menu;
+}
+
+/**
+ * Called when the detach action is requested
+ * @param iwc
+ * @param userID
+ * @param relatedUserID
+ * @param relationType
+ * @throws RemoteException
+ */
+public void removeRelation(
+	IWContext iwc,
+	Integer userID,
+	Integer relatedUserID,
+	String relationType,
+	String reverseRelationType)
+	throws RemoteException {
+	try {
+		UserHome userHome = getUserHome();
+		User currentUser = userHome.findByPrimaryKey(userID);
+		User relatedUser = userHome.findByPrimaryKey(relatedUserID);
+		currentUser.removeRelation(relatedUser, relationType);
 	}
 
-	public void addInputForm(IWContext iwc) {
-		
+	catch (FinderException e) {
+		e.printStackTrace();
 	}
+	catch (RemoveException e) {
+		e.printStackTrace();
+	}
+}
 
-	public void addConfirmationForm(IWContext iwc) {
+/**
+ * Called when the attach action is requested
+ * @param iwc
+ * @param userID
+ * @param relatedUserID
+ * @param relationType
+ * @throws RemoteException
+ */
+public void createRelation(
+	IWContext iwc,
+	Integer userID,
+	Integer relatedUserID,
+	String relationType,
+	String reverseRelationType)
+	throws RemoteException {
+
+	try {
+		UserHome userHome = getUserHome();
+		User currentUser = userHome.findByPrimaryKey(userID);
+		User relatedUser = userHome.findByPrimaryKey(relatedUserID);
+		currentUser.addUniqueRelation(relatedUser, relationType);
 
 	}
-	
-	public GroupRelationHome getRelationHome() throws RemoteException {
-		return (GroupRelationHome) IDOLookup.getHome(GroupRelation.class);
+	catch (FinderException e) {
+		e.printStackTrace();
 	}
+	catch (CreateException e) {
+		e.printStackTrace();
+	}
+}
 
-	public GroupRelationTypeHome getRelationTypeHome() throws RemoteException {
-		return (GroupRelationTypeHome) IDOLookup.getHome(GroupRelationType.class);
-	}
-	
-	public UserHome getUserHome() throws RemoteException {
-			return (UserHome) IDOLookup.getHome(User.class);
-	}
+public void addInputForm(IWContext iwc) {
 
+}
+
+public void addConfirmationForm(IWContext iwc) {
+
+}
+
+public GroupRelationHome getRelationHome() throws RemoteException {
+	return (GroupRelationHome) IDOLookup.getHome(GroupRelation.class);
+}
+
+public GroupRelationTypeHome getRelationTypeHome() throws RemoteException {
+	return (GroupRelationTypeHome) IDOLookup.getHome(GroupRelationType.class);
+}
+
+public UserHome getUserHome() throws RemoteException {
+	return (UserHome) IDOLookup.getHome(User.class);
+}
 
 }
