@@ -91,16 +91,17 @@ public class MessengerApplet extends Applet implements Runnable{
 
 
 
-      /*Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
+      Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
       msg.setRecipientName("TEST");
 
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
-      listener.addMessageDialog(dialog);*/
+      listener.addMessageDialog(dialog);
+      listener.start();
 
       SingleLineItem test = new SingleLineItem(this);
-      //test.setWindowToOpen(dialog);
+      test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
       test.setSize(16,100);
@@ -175,6 +176,7 @@ public class MessengerApplet extends Applet implements Runnable{
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
           messageDialog.setVisible(true);
           listener.addMessageDialog(messageDialog);
+          listener.start();
 
         }
         else {
@@ -492,7 +494,6 @@ public class MessengerApplet extends Applet implements Runnable{
       t = new Thread(this);
       t.start();
       runThread = true;
-     // listener.start();
     }
   }
   /**Stop the applet*/
