@@ -75,7 +75,8 @@ public class FileCreationCheckList extends AccountingBlock {
 		IFSCheckHeader header = null;
 		try {
 			header = getIFSBusiness(iwc).getIFSCheckHeaderBySchoolCategory(_currentOperation);
-			_headerId = ((Integer)header.getPrimaryKey()).intValue();
+			if (header != null)
+				_headerId = ((Integer)header.getPrimaryKey()).intValue();
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
