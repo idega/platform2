@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/14 12:12:10 $ by $Author: laddi $
- * @version $Revision: 1.113 $
+ *         Last modified: $Date: 2004/05/16 18:57:48 $ by $Author: laddi $
+ * @version $Revision: 1.114 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -846,7 +846,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return (Integer) idoFindOnePKBySQL(sql.toString());
 	}
 	
-	public int ejbCountByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID, int studyPathID) throws IDOException{
+	public int ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(int userID, int schoolID, int seasonID, int studyPathID) throws IDOException{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
 		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
@@ -856,6 +856,20 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().append(studyPathID);
+
+		return idoGetNumberOfRecords(sql.toString());
+	}
+	
+	public int ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(User user, School school, SchoolSeason season, SchoolStudyPath studyPath) throws IDOException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(user);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(season);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(school);
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().append(studyPath);
 
 		return idoGetNumberOfRecords(sql.toString());
 	}

@@ -403,6 +403,20 @@ public int getNumberOfPlacingsAtSchool(int p0,int p1)throws com.idega.data.IDOEx
 	return theReturn;
 }
 
+public int countByUserAndSchoolAndSeasonAndStudyPath(int p0, int p1, int p2, int p3)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int countByUserAndSchoolAndSeasonAndStudyPath(com.idega.user.data.User p0, School p1, SchoolSeason p2, SchoolStudyPath p3)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeCountByUserAndSchoolAndSeasonAndStudyPath(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getNumberOfUsersNotAssignedToClassOnGivenDate(com.idega.user.data.Group p0,java.sql.Date p1,java.util.Collection p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDate(p0,p1,p2,p3,p4);
