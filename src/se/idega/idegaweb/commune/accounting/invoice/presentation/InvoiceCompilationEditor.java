@@ -86,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/22 14:49:25 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/29 15:43:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.94 $
+ * @version $Revision: 1.95 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -888,7 +888,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         DATE_CREATED_DEFAULT, ":");
         addSmallText(table, getFormattedDate (header.getDateCreated ()), col++,
                      row);
-        addSmallText(table, header.getCreatedBy (), col++, row);
+				table.add (getSmallSignature (header.getCreatedBy ()), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
                         DATE_ADJUSTED_DEFAULT, ":");
@@ -1603,11 +1603,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
-			showInvoiceHeaderOnARow (table, row++, invoiceBusiness,
-                                     headers [i]);
+					showInvoiceHeaderOnARow (table, row++, invoiceBusiness,
+																	 headers [i]);
         }
         
-       return table;
+				return table;
     }
 
 	private void showInvoiceHeaderOnARow

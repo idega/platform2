@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -45,6 +44,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
@@ -57,6 +58,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldBMPBean;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -68,11 +70,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/23 13:05:15 $ by $Author: laddi $
+ * Last modified: $Date: 2003/12/29 15:43:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.46 $
+ * @version $Revision: 1.47 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -131,7 +133,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
 	private static final String PAYMENT_HEADER_DEFAULT = "Utbetalning";
 	private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
-	//private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
 	private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
 	private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
 	private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
@@ -838,21 +839,23 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									 (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
 										CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
 									 columnCount, 2);
-				//final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
-				//final PaymentHeader header = headerHome.findByPrimaryKey(new Integer (records [0].getPaymentHeader ()));
-				table.add (getPaymentRecordListTable (records), 1, row++);
+				table.add (getPaymentRecordListTable (context, records), 1, row++);
 				table.mergeCells (1, row, columnCount, row);
 				table.add (getPaymentSummaryTable (context, records, business),
 									 1, row++);
 				table.setHeight (row++, 12);
 				table.mergeCells (1, row, columnCount, row);
 				final ButtonPanel buttonPanel = new ButtonPanel (this);
-				buttonPanel.addLocalizedButton
-						("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
-						 providerAuthorizationPage);
-				buttonPanel.addLocalizedButton
-						("no_param", NEW_KEY, NEW_DEFAULT, createPaymentPage);
-				table.add (buttonPanel, 1, row);
+				if (null != providerAuthorizationPage) {
+					buttonPanel.addLocalizedButton
+							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
+							 providerAuthorizationPage);
+				}
+				if (null != createPaymentPage) {
+					buttonPanel.addLocalizedButton
+							("no_param", NEW_KEY, NEW_DEFAULT, createPaymentPage);
+					table.add (buttonPanel, 1, row);
+				}
 				//table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
 			} else {
 				addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
@@ -867,6 +870,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		add (createMainTable
 				 (localize (PAYMENT_HEADER_KEY, PAYMENT_HEADER_DEFAULT),
 					outerTable));
+	}
+
+	private boolean hasCurrentSchoolCategoryFlowInAndFlowOut
+		(final IWContext context) throws RemoteException, FinderException {
+		final String schoolCategory = getSession().getOperationalField ();
+		if (null == schoolCategory) return false;
+		final ExportDataMapping mapping
+				= getExportBusiness (context).getExportDataMapping (schoolCategory);
+		if (null == mapping) return false;
+		return mapping.getCashFlowIn () && mapping.getCashFlowOut ();
 	}
 
 	private Table getDetailedPaymentRecordListTable
@@ -1050,7 +1063,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return table;
 	}
 	
-	private Table getPaymentRecordListTable (final PaymentRecord [] records) {
+	private Table getPaymentRecordListTable
+		(final IWContext context, final PaymentRecord [] records)
+	throws FinderException, RemoteException {
 		// set up header row
 		final String [][] columnNames =
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
@@ -1071,7 +1086,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		
 		// show each payment record in a row
 		for (int i = 0; i < records.length; i++) {
-			showPaymentRecordOnARow (table, row++, records [i]);
+			showPaymentRecordOnARow (context, table, row++, records [i]);
 		}
 		
 		return table;
@@ -1097,12 +1112,17 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private void showPaymentRecordOnARow
-		(final Table table, final int row, final PaymentRecord record) {
+		(final IWContext context, final Table table, final int row,
+		 final PaymentRecord record) throws RemoteException, FinderException {
 		final String recordId = record.getPrimaryKey () + "";
 		final String [][] showDetailsLinkParameters
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
 					 { PAYMENT_RECORD_KEY, recordId }};
+		final String regSpecType = record.getRuleSpecType ();
 		final String [][] showRecordLinkParameters = isManualRecord (record)
+				&& (!hasCurrentSchoolCategoryFlowInAndFlowOut (context)
+						|| null == regSpecType
+						|| !regSpecType.equals ("cacc_reg_spec_type.check"))
 				? new String [][] {{ ACTION_KEY,
 														 ACTION_SHOW_EDIT_RECORD_FORM + "" },
 													 { PAYMENT_RECORD_KEY, recordId }}
@@ -1814,6 +1834,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		(final IWContext context) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance
 				(context, SchoolBusiness.class);	
+	}
+	
+	private ExportBusiness getExportBusiness
+		(final IWContext context) throws RemoteException {
+		return (ExportBusiness) IBOLookup.getServiceInstance
+				(context, ExportBusiness.class);	
 	}
 	
 	private PostingBusiness getPostingBusiness
