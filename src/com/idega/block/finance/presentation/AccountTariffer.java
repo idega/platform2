@@ -331,7 +331,7 @@ public class AccountTariffer extends Finance {
 					T.add(getText((String) map.get(tariff.getTariffAttribute())), col++, row);
 				T.add(getText(tariff.getName()), col++, row);
 				T.add(getAmountText(tariff.getPrice()), col++, row);
-				TextInput QtyInput = new TextInput(prmQuantity);
+				TextInput QtyInput = getTextInput(prmQuantity);
 				QtyInput.setLength(5);
 				T.add(QtyInput, col, row);
 				T.add(new HiddenInput(prmTariffIds, tariff.getPrimaryKey().toString()));
