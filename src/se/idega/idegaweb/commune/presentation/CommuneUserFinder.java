@@ -19,7 +19,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
-import com.idega.util.text.TextSoap;
 
 /**
  * @author laddi
@@ -40,24 +39,6 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 	private void parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_SEARCH))
 			searchString = iwc.getParameter(PARAMETER_SEARCH);
-		if (searchString != null && searchString.length() > 0) {
-			try {
-				String temp = searchString;
-				temp = TextSoap.findAndCut(temp, "-");
-				Long.parseLong(temp);
-				if (temp.length() == 10 ) {
-					int firstTwo = Integer.parseInt(temp.substring(0, 2));
-					if (firstTwo < 04) {
-						temp = "20"+temp;
-					}	else {
-						temp = "19"+temp;
-					}
-				}
-				searchString = temp;
-			}
-			catch (NumberFormatException nfe) {}
-		}
-			
 	}
 	
 	private void drawForm(IWContext iwc) {
@@ -108,7 +89,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		form.add(table);
 		
 		try {
-			Collection users = getUserBusiness(iwc).getUserHome().findUsersBySearchCondition(searchString, true);
+			Collection users = getUserBusiness(iwc).findUsersBySearchString(searchString);
 			if (!users.isEmpty()) {
 				User user;
 				RadioButton radio;
@@ -130,8 +111,12 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 						table.add(radio, 1, row);
 						table.add(Text.getNonBrakingSpace(), 1, row);
 						table.add(getSmallText(user.getNameLastFirst(true)), 1, row);
-						table.add(getSmallText(" ("), 1, row);
-						table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())+")"), 1, row++);
+						if (user.getPersonalID() != null) {
+							table.add(getSmallText(" ("), 1, row);
+							table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())+")"), 1, row++);
+						}
+						else
+							row++;
 					}
 				}
 				
@@ -143,8 +128,11 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 				else 
 					table.add(getSmallErrorText(getNoUserFoundString()));
 			}
+			else 
+				table.add(getSmallErrorText(getNoUserFoundString()));
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return form;
