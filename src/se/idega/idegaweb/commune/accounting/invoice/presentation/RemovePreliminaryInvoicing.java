@@ -19,8 +19,12 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
 
 /**
+ * Makes it possible to remove all preliminary billing and invoicing information 
+ * according the the timeperiod and School category selected.
+ * 
  * @author Joakim
- *
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  */
 public class RemovePreliminaryInvoicing  extends AccountingBlock{
 	

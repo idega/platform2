@@ -42,7 +42,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param month
 	 */
 	public void startPostingBatch(Date month, String schoolCategory, IWContext iwc) throws IDOLookupException, FinderException, SchoolCategoryNotFoundException{
-		//TODO (JJ) select correct thread to start
+		//Select correct thread to start
 		SchoolCategoryHome sch =(SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		if(sch.findChildcareCategory().getCategory().equals(schoolCategory)) {
 			new InvoiceChildcareThread(month, iwc).start();

@@ -1,8 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import is.idega.idegaweb.member.business.NoCohabitantFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.idegaweb.member.business.*;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -18,22 +16,14 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
-import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
+import se.idega.idegaweb.commune.accounting.invoice.data.*;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.*;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
@@ -55,11 +45,10 @@ import com.idega.util.Age;
  */
 public class InvoiceChildcareThread extends BillingThread{
 
-	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
+	private static final String HOURS_PER_WEEK = "hours/week";		//Localize this text in the user interface
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
 	private int childcare;
-	private int check = 0;//TODO (JJ) This must be set
 	private Map siblingOrders = new HashMap();
 	private String ownPosting, doublePosting;
 
@@ -172,7 +161,9 @@ public class InvoiceChildcareThread extends BillingThread{
 						contract);						//Sent in to be used for "Specialutrakning"
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
-					compilePostingStrings(childcare, check, provider);
+					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
+							findByRegulationSpecType(RegSpecConstant.CHECK);
+					compilePostingStrings(childcare, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, ownPosting, doublePosting);			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -183,7 +174,6 @@ public class InvoiceChildcareThread extends BillingThread{
 							new Integer(getSiblingOrder(contract))));
 
 					//Get all the rules for this contract
-					//TODO (JJ) This is a func that Thomas will provide.
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 					category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
 						PaymentFlowConstant.IN, 			//The payment flow is out
@@ -276,11 +266,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						invoiceHeader.store();
-					}
-					//TODO (JJ) I think something more needs to be inserted here...
-					if(regularInvoiceEntry.getRegSpecType().equals(RegSpecConstant.CHECK)){
-					
-					}else{
 					}
 				
 					calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
@@ -388,7 +373,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 				}
 			}
-			// (JJ) Here we need to set the order to the User objects if allowed to create an extra col
+			// Here we need to set the order to the User objects if allowed to create an extra col
 			sortedSiblings.headSet(sortableChild).size();
 		}
 	}

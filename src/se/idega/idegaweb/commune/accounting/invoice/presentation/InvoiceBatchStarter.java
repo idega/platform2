@@ -19,8 +19,13 @@ import com.idega.presentation.ui.InputContainer;
 import com.idega.util.IWTimestamp;
 
 /**
+ * Starts the batch run that will create billing and invoicing information
+ * according to the parameters set in the UI.
+ * 
  * @author Joakim
- *
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public class InvoiceBatchStarter extends AccountingBlock{
 	
@@ -54,7 +59,6 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		monthInput.setToShowDay(false);
 		
 		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
-		form.add(month);
 
 		readDateInput = new DateInput(PARAM_READ_DATE,true);	
 
@@ -63,6 +67,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 			if(invoiceBusiness.isHighShool(schoolCategory)){
 				form.add(readDate);
+			}else{
+				form.add(month);
 			}
 		} catch (IDOLookupException e) {
 			add(new ExceptionWrapper(e, this));

@@ -13,8 +13,10 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 
 /**
+ * UI to set the relationship between the SchoolClass and SchoolType tables if possible
+ * The ones that cant be set are listed on the page, so that they can be set manually
+ * 
  * @author Joakim
- *
  */
 public class SetSchoolClassSchoolTypeRelation extends AccountingBlock {
 	ArrayList list;
@@ -23,16 +25,14 @@ public class SetSchoolClassSchoolTypeRelation extends AccountingBlock {
 	
 		handleAction(iwc);
 		
-		add("Press Save to set relation");
+		add("Press Save to set the SchoolClass - SchoolType relation");
 
 		Form form = new Form();
 		add(form);
 		
 		
 		GenericButton saveButton = this.getSaveButton();
-		GenericButton cancelButton = this.getCancelButton();
 		form.add(saveButton);
-		form.add(cancelButton);
 
 		if(list!=null){
 			Iterator iter = list.iterator();

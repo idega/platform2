@@ -32,6 +32,8 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -46,12 +48,18 @@ import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
 /**
+ * Abstract class that all billing and invoicing threads will extend.
+ * A lot of logic is the same for all of the billing and invoicing logic,
+ * and that is located in this class
+ * 
  * @author Joakim
- *
+ * 
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceChildcareThread
  */
 public abstract class BillingThread extends Thread{
 	protected static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
-//	private static final String MANUALLY_TEXT = "invoice.manually";		//Localize this text in the user interface
 	protected int days;
 	protected float months;
 	protected int errorOrder;
@@ -155,7 +163,6 @@ public abstract class BillingThread extends Thread{
 						VATRegulation vatRegulation;
 						try {
 							vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
-							//TODO (JJ) this needs to be tested heavily. I have no idea what I am doing...
 							float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
 							paymentRecord.setTotalAmountVAT(-vat);
 						} catch (VATException e) {
@@ -237,6 +244,7 @@ public abstract class BillingThread extends Thread{
 
 	/**
 	 * Calculates the amount of the month that has passed at the given date.
+	 * 
 	 * @param date
 	 * @return the amount (%) of the month that has passed
 	 */
@@ -272,6 +280,14 @@ public abstract class BillingThread extends Thread{
 		}
 	}
 	
+	/**
+	 * The user needs to be able to see what went wrong or is possibly incorrect, so that 
+	 * is logged in the BatchRun and BatchRunError tables.
+	 * 
+	 * @param category
+	 * @throws IDOLookupException
+	 * @throws CreateException
+	 */
 	protected void createBatchRunLogger(SchoolCategory category) throws IDOLookupException, CreateException{
 		//First delete all old logging for this category
 		try {
@@ -335,4 +351,9 @@ public abstract class BillingThread extends Thread{
 	protected VATBusiness getVATBusiness() throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
+
+	protected RegulationSpecTypeHome getRegulationSpecTypeHome() throws RemoteException {
+		return (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+	}
+
 }

@@ -18,6 +18,8 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 
 /**
+ * Sets the relation between the SchoolClass and SchoolType tables if possible
+ * loggs all other realtionships so that they can be set manually
  * @author Joakim
  *
  */
@@ -25,7 +27,10 @@ public class SchoolClassSchoolTypeBusinessBean extends IBOServiceBean
 implements SchoolClassSchoolTypeBusiness {
 	ArrayList ret;
 	
-	//TODO (JJ) make this return a collection to be displayed on the screen
+	/**
+	 * Sets the relation between the SchoolClass and SchoolType tables if possible
+	 * loggs all other realtionships so that they can be set manually
+	 */
 	public ArrayList setClassTypeRelation(){
 		ret = new ArrayList();
 		try {
@@ -47,6 +52,7 @@ implements SchoolClassSchoolTypeBusiness {
 						} else {
 							//Set the relation
 							schoolClass.setSchoolTypeId(((Integer)((SchoolType)schoolType.get(0)).getPrimaryKey()).intValue());
+							schoolClass.store();
 						}
 					} catch (IDORelationshipException e1) {
 						addMessage("Erro getting schooltype from school "+provider.getName()+"  PK="+provider.getPrimaryKey());
@@ -66,7 +72,11 @@ implements SchoolClassSchoolTypeBusiness {
 		}
 		return ret;
 	}
-	
+
+	/**
+	 * Dumps message to console and adds it to the ret list
+	 * @param s
+	 */	
 	private void addMessage(String s){
 		ret.add(s);
 		System.out.println(s);

@@ -1,5 +1,5 @@
 /*
- * $Id: Report.java,v 1.3 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: Report.java,v 1.4 2003/10/22 13:33:59 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -91,7 +91,7 @@ public class Report
 			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 			reportFile.setFileValue(bais);
 			reportFile.setMimeType("text/plain");
-			//Todo (jj) Have to find the name of the importfile, and add that here.
+			//Have to find the name of the importfile, and add that here.
 //			String filename = file.getFile().getName();
 			int i = filename.indexOf('_');
 			if(i>0)
