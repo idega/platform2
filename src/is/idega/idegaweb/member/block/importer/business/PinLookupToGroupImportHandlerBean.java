@@ -8,12 +8,14 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.location.business.AddressBusiness;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
@@ -215,5 +217,111 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	*/
 	public List getFailedRecords() {
 		return failedRecords;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
+	 */
+	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
+	 */
+	public void afterUserCreate(User user) throws CreateException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
+	 */
+	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
+	 */
+	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
+	 */
+	public Class getPresentationObjectClass() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateEditor(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateViewer(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
+	 */
+	public List getUserPropertiesTabs(User user) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
+	 */
+	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		List list = new ArrayList(1);
+		list.add(new PinLookupToGroupImportHandlerPlugin());
+		return list;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
+	 */
+	public Collection getListViewerFields() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
+	 */
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
+	 */
+	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -4,6 +4,7 @@
  */
 package is.idega.idegaweb.marathon.business;
 
+import is.idega.idegaweb.marathon.presentation.CreateYearWindowPlugin;
 import is.idega.idegaweb.marathon.presentation.UserRunTab;
 
 import java.rmi.RemoteException;
@@ -102,6 +103,23 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		if ("iwma_run".equals(group.getGroupType())) {
+			List list = new ArrayList(1);
+			list.add(new CreateYearWindowPlugin());
+			return list;
+		}
 		return null;
 	}
 }

@@ -125,4 +125,18 @@ public class UserHistoryPluginBusinessBean extends IBOServiceBean implements Use
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
 		return null;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		return null;
+	}
 }
