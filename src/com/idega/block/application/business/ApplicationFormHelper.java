@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.6 2002/04/04 23:30:33 aron Exp $
+ * $Id: ApplicationFormHelper.java,v 1.7 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ public class ApplicationFormHelper {
     String mobilePhone = iwc.getParameter(ApplicationForm.APP_MOBILE);
     String po = iwc.getParameter(ApplicationForm.APP_PO);
 
-    Applicant applicant = new Applicant();
+    Applicant applicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
     applicant.setFirstName(firstName);
     applicant.setMiddleName(middleName);
     applicant.setLastName(lastName);
@@ -74,7 +74,7 @@ public class ApplicationFormHelper {
 
   public static void saveSubject(IWContext iwc) {
     String subject = (String)iwc.getParameter("subject");
-    Application application = new Application();
+    Application application = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
     application.setSubjectId(Integer.parseInt(subject));
     application.setSubmitted(idegaTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();

@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 import com.idega.data.EntityFinder;
 
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 
 import java.util.*;
 
@@ -60,7 +60,7 @@ public class AccountManager {
 
     try{
 
-       A = (Account[])new Account().findAllByColumn("ic_user_id",iUserId);
+       A = (Account[])((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy().findAllByColumn("ic_user_id",iUserId);
 
     }
 
@@ -78,7 +78,7 @@ public class AccountManager {
 
     try{
 
-       A = EntityFinder.findAllByColumn(new Account(),"ic_user_id",iUserId);
+       A = EntityFinder.findAllByColumn(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy(),"ic_user_id",iUserId);
 
     }
 
@@ -96,9 +96,9 @@ public class AccountManager {
 
     try{
 
-      Account a = new Account();
+      Account a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
 
-       A = EntityFinder.findAllByColumn(a,Account.getUserIdColumnName(),String.valueOf(iUserId),Account.getTypeColumnName(),sType);
+       A = EntityFinder.findAllByColumn(a,com.idega.block.finance.data.AccountBMPBean.getUserIdColumnName(),String.valueOf(iUserId),com.idega.block.finance.data.AccountBMPBean.getTypeColumnName(),sType);
 
     }
 
@@ -116,7 +116,7 @@ public class AccountManager {
 
     try{
 
-       A = EntityFinder.findAll(new Account());
+       A = EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy());
 
     }
 
@@ -132,7 +132,7 @@ public class AccountManager {
 
     try {
 
-      return EntityFinder.findAllByColumnOrdered(new AccountEntry(),AccountEntry.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,AccountEntry.getAccountIdColumnName());
+      return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
 
     }
 
@@ -150,7 +150,7 @@ public class AccountManager {
 
   public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
 
-    return listOfAccEntries(iAccountId,new AccountEntry(), from,to,null);
+    return listOfAccEntries(iAccountId,((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(), from,to,null);
 
   }
 
@@ -230,11 +230,11 @@ public class AccountManager {
 
       if(entry.getType().equals(entry.typeFinancial))
 
-        A = EntityFinder.findAll(new AccountEntry(),sql.toString());
+        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),sql.toString());
 
       else if(entry.getType().equals(entry.typePhone)){
 
-        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
+        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
 
       }
 
@@ -252,11 +252,11 @@ public class AccountManager {
 
     StringBuffer sql = new StringBuffer("select * from ");
 
-    sql.append(AccountPhoneEntry.getEntityTableName());
+    sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
 
     sql.append(" where ");
 
-    sql.append(AccountPhoneEntry.getColumnNameAccountId());
+    sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameAccountId());
 
     sql.append(" = ");
 
@@ -266,7 +266,7 @@ public class AccountManager {
 
       sql.append(" and ");
 
-      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
 
       sql.append(" >= '");
 
@@ -280,7 +280,7 @@ public class AccountManager {
 
       sql.append(" and ");
 
-      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
 
       sql.append(" <= '");
 
@@ -294,7 +294,7 @@ public class AccountManager {
 
       sql.append(" and ");
 
-      sql.append(AccountPhoneEntry.getColumnNameStatus());
+      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameStatus());
 
       sql.append(" = '");
 
@@ -310,7 +310,7 @@ public class AccountManager {
 
     try{
 
-        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
+        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
 
     }
 
@@ -436,7 +436,7 @@ public class AccountManager {
 
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException{
 
-    Account A = new Account();
+    Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
 
     A.setBalance(0);
 
@@ -476,7 +476,7 @@ public class AccountManager {
 
   public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws SQLException{
 
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typeFinancial,iCategoryId);
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typeFinancial,iCategoryId);
 
   }
 
@@ -484,7 +484,7 @@ public class AccountManager {
 
   public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws SQLException{
 
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typePhone,iCategoryId);
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typePhone,iCategoryId);
 
   }
 

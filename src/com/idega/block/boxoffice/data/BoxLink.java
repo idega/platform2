@@ -1,122 +1,25 @@
-//idega 2000 - Laddi
-
 package com.idega.block.boxoffice.data;
 
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.block.boxoffice.data.*;
-import com.idega.block.text.data.LocalizedText;
-import com.idega.core.user.data.User;
-import com.idega.core.data.ICFile;
+import javax.ejb.*;
 
-public class BoxLink extends GenericEntity{
-
-	public BoxLink(){
-		super();
-	}
-
-	public BoxLink(int id)throws SQLException{
-		super(id);
-	}
-
-	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-		addAttribute(BoxEntity.getColumnNameBoxID(), "BoxEntity", true, true, Integer.class, "many-to-one", BoxEntity.class);
-		addAttribute(BoxCategory.getColumnNameBoxCategoryID(), "BoxCategory", true, true, Integer.class, "many-to-one", BoxCategory.class);
-		addAttribute(getColumnNameURL(), "URL", true, true, String.class);
-		addAttribute(getColumnNameTarget(), "Target", true, true, String.class);
-		addAttribute(getColumnNameFileID(), "File", true, true, Integer.class, "one-to-one", ICFile.class);
-		addAttribute(getColumnNamePageID(), "Page", true, true, Integer.class);
-		addAttribute(getColumnNameCreationDate(), "Creation Date", true, true, Timestamp.class);
-    addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
-    addManyToManyRelationShip(LocalizedText.class,"BX_LINK_LOCALIZED_TEXT");
-	}
-
-	public static String getColumnNameBoxLinkID() { return "BX_LINK_ID"; }
-	public static String getColumnNameBoxID() { return BoxEntity.getColumnNameBoxID(); }
-	public static String getColumnNameBoxCategoryID() { return BoxCategory.getColumnNameBoxCategoryID(); }
-	public static String getColumnNameURL() { return "URL"; }
-	public static String getColumnNameTarget() { return "TARGET"; }
-	public static String getColumnNameFileID() { return "IC_FILE_ID"; }
-	public static String getColumnNamePageID() { return "IB_PAGE_ID"; }
-	public static String getColumnNameCreationDate() { return "CREATION_DATE"; }
-  public static String getColumnNameUserID(){ return User.getColumnNameUserID();}
-	public static String getEntityTableName() { return "BX_LINK"; }
-
-	public String getIDColumnName(){
-		return getColumnNameBoxLinkID();
-	}
-
-	public String getEntityName(){
-		return getEntityTableName();
-	}
-
-  public int getBoxID() {
-    return getIntColumnValue(getColumnNameBoxID());
-  }
-
-  public int getBoxCategoryID() {
-    return getIntColumnValue(getColumnNameBoxCategoryID());
-  }
-
-  public String getURL() {
-    return (String) getColumnValue(getColumnNameURL());
-  }
-
-  public String getTarget() {
-    return (String) getColumnValue(getColumnNameTarget());
-  }
-
-  public int getFileID() {
-    return getIntColumnValue(getColumnNameFileID());
-  }
-
-  public int getPageID() {
-    return getIntColumnValue(getColumnNamePageID());
-  }
-
-  public Timestamp getCreationDate() {
-    return (Timestamp) getColumnValue(getColumnNameCreationDate());
-  }
-
-  public int getUserID() {
-    return getIntColumnValue(getColumnNameUserID());
-  }
-
-  public void setBoxID(int boxID) {
-    setColumn(getColumnNameBoxID(),boxID);
-  }
-
-  public void setBoxCategoryID(int boxCategoryID) {
-    setColumn(getColumnNameBoxCategoryID(),boxCategoryID);
-  }
-
-  public void setURL(String URL) {
-    setColumn(getColumnNameURL(),URL);
-  }
-
-  public void setTarget(String target) {
-    setColumn(getColumnNameTarget(),target);
-  }
-
-  public void setFileID(int ICFileID) {
-    setColumn(getColumnNameFileID(),ICFileID);
-  }
-
-  public void setPageID(int IBPageID) {
-    setColumn(getColumnNamePageID(),IBPageID);
-  }
-
-  public void setCreationDate(Timestamp date) {
-    setColumn(getColumnNameCreationDate(),date);
-  }
-
-  public void setUserID(int ICUserID) {
-    setColumn(getColumnNameUserID(),ICUserID);
-  }
-
-	public void delete() throws SQLException{
-    removeFrom(LocalizedText.getStaticInstance(LocalizedText.class));
-		super.delete();
-	}
+public interface BoxLink extends com.idega.data.IDOLegacyEntity
+{
+ public void delete()throws java.sql.SQLException;
+ public int getBoxCategoryID();
+ public int getBoxID();
+ public java.sql.Timestamp getCreationDate();
+ public int getFileID();
+ public java.lang.String getIDColumnName();
+ public int getPageID();
+ public java.lang.String getTarget();
+ public java.lang.String getURL();
+ public int getUserID();
+ public void setBoxCategoryID(int p0);
+ public void setBoxID(int p0);
+ public void setCreationDate(java.sql.Timestamp p0);
+ public void setFileID(int p0);
+ public void setPageID(int p0);
+ public void setTarget(java.lang.String p0);
+ public void setURL(java.lang.String p0);
+ public void setUserID(int p0);
 }

@@ -88,7 +88,7 @@ public void setSpecialAttributes(String name,Map attributes){
 
     private void getApartmentType(IWContext iwc) throws SQLException {
 
-      ApartmentType room = new ApartmentType(apartmenttypeid);
+      ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(apartmenttypeid);
 
       Table roomTable = new Table(1,6);
         roomTable.setWidth("400");

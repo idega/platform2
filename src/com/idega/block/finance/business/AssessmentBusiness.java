@@ -86,7 +86,7 @@ public class AssessmentBusiness  {
 
       ///////////////////////////
 
-      AccountEntry ae = (AccountEntry)AccountEntry.getStaticInstance(AccountEntry.class);
+      AccountEntry ae = (AccountEntry)com.idega.block.finance.data.AccountEntryBMPBean.getStaticInstance(AccountEntry.class);
 
       EntryGroup EG = null;
 
@@ -94,7 +94,7 @@ public class AssessmentBusiness  {
 
       try {
 
-        EG = new EntryGroup();
+        EG = ((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy();
 
         EG.setGroupDate(idegaTimestamp.RightNow().getSQLDate());
 
@@ -116,15 +116,15 @@ public class AssessmentBusiness  {
 
       if(EG !=null){
 
-        String dateColummn = AccountEntry.getPaymentDateColumnName();
+        String dateColummn = com.idega.block.finance.data.AccountEntryBMPBean.getPaymentDateColumnName();
 
         StringBuffer sql = new StringBuffer("update ");
 
-        sql.append(AccountEntry.getEntityTableName());
+        sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
 
         sql.append(" set ");
 
-        sql.append(AccountEntry.getEntryGroupIdColumnName());
+        sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
 
         sql.append(" = ");
 
@@ -132,7 +132,7 @@ public class AssessmentBusiness  {
 
         sql.append(" where ");
 
-        sql.append(AccountEntry.getEntryGroupIdColumnName());
+        sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
 
         sql.append(" is null ");
 
@@ -156,11 +156,11 @@ public class AssessmentBusiness  {
 
 
 
-        String where = " where "+AccountEntry.getEntryGroupIdColumnName()+" = "+gid;
+        String where = " where "+com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName()+" = "+gid;
 
-        String sMinSql = "select min("+ae.getIDColumnName()+") from "+AccountEntry.getEntityTableName()+where;
+        String sMinSql = "select min("+ae.getIDColumnName()+") from "+com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()+where;
 
-        String sMaxSql = "select max("+ae.getIDColumnName()+") from "+AccountEntry.getEntityTableName()+where;
+        String sMaxSql = "select max("+ae.getIDColumnName()+") from "+com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()+where;
 
         //System.err.println(sql.toString());
 
@@ -244,7 +244,7 @@ public class AssessmentBusiness  {
 
       try {
 
-        EG = new EntryGroup();
+        EG = ((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy();
 
         EG.setGroupDate(idegaTimestamp.RightNow().getSQLDate());
 
@@ -400,11 +400,11 @@ public class AssessmentBusiness  {
 
       StringBuffer sql = new StringBuffer("select count(*) from ");
 
-      sql.append(AccountEntry.getEntityTableName());
+      sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
 
       sql.append(" where ");
 
-      sql.append(AccountEntry.getEntryGroupIdColumnName());
+      sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
 
       sql.append(" = ");
 

@@ -1,5 +1,5 @@
 /*
- * $Id: DocLayoutHandler.java,v 1.1 2002/03/15 12:09:32 gummi Exp $
+ * $Id: DocLayoutHandler.java,v 1.2 2002/04/06 18:52:27 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

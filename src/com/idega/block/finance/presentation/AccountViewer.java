@@ -237,7 +237,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         T.add(tf.format(eUser.getName()),col++,row);
         T.add(tf.format(getDateString(new idegaTimestamp(account.getLastUpdated()))),col++,row);
         float b = eAccount.getBalance();
-        if(account.getAccountType().equals(Account.typePhone))
+        if(account.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone))
           b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId())*tax;
 
         boolean debet = b > 0 ? true:false;
@@ -295,7 +295,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private PresentationObject getEntryTable(int iAccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys,boolean clean){
     PresentationObject mo = null;
     try{
-      Account a = new Account(iAccountId);
+      Account a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(iAccountId);
       mo =  getEntryTable(a, from, to, showallkeys,clean);
     }
     catch(SQLException ex){
@@ -307,7 +307,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
   private PresentationObject getEntryTable(FinanceAccount eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys,boolean clean){
     List listEntries = null;
-    if(eAccount.getAccountType().equals(Account.typeFinancial)){
+    if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typeFinancial)){
       if(showallkeys)
         listEntries = AccountManager.listOfAccountEntries(eAccount.getAccountId(),from,to);
       else
@@ -317,7 +317,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       else
         return getFinanceEntryTable(eAccount,listEntries,from,to);
     }
-    else if(eAccount.getAccountType().equals(Account.typePhone)){
+    else if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone)){
       listEntries = AccountManager.listOfPhoneEntries(eAccount.getAccountId(),from,to);
       if(specialview)
         return getPhoneEntryReportTable(eAccount,listEntries,from,to);

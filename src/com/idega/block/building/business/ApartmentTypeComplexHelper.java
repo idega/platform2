@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.4 2001/08/18 12:41:12 aron Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.5 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -16,11 +16,11 @@ import java.sql.SQLException;
 public class BuildingBusiness {
 
   public static boolean saveComplex(int id,String sName,String sInfo,int imageid){
-   Complex eComplex = new Complex();
+   Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy();
     boolean update = false;
     try{
       if(id > 0){
-        eComplex = new Complex(id);
+        eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       eComplex.setName(sName);
@@ -40,12 +40,12 @@ public class BuildingBusiness {
 
   public static boolean saveBuilding(int id,String sName,String sAddress,
     String sInfo,int imageid,int complexid,String sSerie){
-   Building ebuilding = new Building();
+   Building ebuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy();
     boolean update = false;
     try{
       if(complexid > 0){
         if(id > 0 ){
-          ebuilding = new Building(id);
+          ebuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(id);
           update = true;
         }
         ebuilding.setName(sName);
@@ -66,11 +66,11 @@ public class BuildingBusiness {
     return false;
   }
   public static boolean saveFloor(int id,String sName,int buildingid,String sInfo,int imageid){
-      Floor efloor = new Floor();
+      Floor efloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy();
       boolean update = false;
       try{
       if(id > 0){
-        efloor = new Floor(id);
+        efloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       efloor.setName(sName);
@@ -93,9 +93,9 @@ public class BuildingBusiness {
   public static boolean saveApartmentCategory(int id,String sName,String sInfo,int imageid){
     try{
       boolean update = false;
-      ApartmentCategory eACategory = new ApartmentCategory();
+      ApartmentCategory eACategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy();
       if(id >0){
-        eACategory = new ApartmentCategory(id);
+        eACategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       eACategory.setName(sName);
@@ -118,10 +118,10 @@ public class BuildingBusiness {
     boolean storage,boolean study,boolean furniture,boolean loft){
      try{
         if(categoryid > 0){
-          ApartmentType etype = new ApartmentType();
+          ApartmentType etype = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy();
           boolean update = false;
           if(id > 0){
-            etype = new ApartmentType(id);
+            etype = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(id);
             update = true;
           }
           etype.setName(sName);
@@ -165,9 +165,9 @@ public class BuildingBusiness {
     int floorid,int typeid,boolean rentable,int imageid,String sSerie){
     try{
       boolean update = false;
-      Apartment apartment = new Apartment();
+      Apartment apartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
       if(id >0){
-        apartment = new Apartment(id);
+        apartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       apartment.setName(sName);
@@ -190,14 +190,14 @@ public class BuildingBusiness {
 
   public static  void deleteComplex(int id){
     try{
-      new Complex(id).delete();
+      ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch(SQLException sql){}
   }
   public static void deleteBuilding(int id){
     try {
-      new Building(id).delete();
+      ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch (SQLException ex) {
@@ -205,7 +205,7 @@ public class BuildingBusiness {
   }
   public static void deleteFloor(int id){
     try {
-      new Floor(id).delete();
+      ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch (SQLException ex) {
@@ -214,7 +214,7 @@ public class BuildingBusiness {
   }
   public static void deleteApartment(int id){
     try {
-      new Apartment(id).delete();
+      ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch (SQLException ex) {
@@ -222,7 +222,7 @@ public class BuildingBusiness {
   }
   public  static void deleteApartmentCategory(int id){
     try {
-      new ApartmentCategory(id).delete();
+      ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch (SQLException ex) {
@@ -230,7 +230,7 @@ public class BuildingBusiness {
   }
   public  static void deleteApartmentType(int id){
     try {
-      new ApartmentType(id).delete();
+      ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(id).delete();
       BuildingCacher.reload();
     }
     catch (SQLException ex) {

@@ -19,10 +19,10 @@ public class ApplicationBusiness {
 
   public static ApplicationSubject saveApplicationSubject(int id,String sName, Date expires){
     try {
-      ApplicationSubject subject = new ApplicationSubject();
+      ApplicationSubject subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       boolean update = false;
       if(id > 0){
-        subject = new ApplicationSubject(id);
+        subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id);
         update = true;
       }
       subject.setExpires(expires);
@@ -42,7 +42,7 @@ public class ApplicationBusiness {
 
   public static boolean deleteApplicationSubject(int id){
   try {
-      new ApplicationSubject(id).delete();
+      ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id).delete();
       return true;
     }
     catch (Exception ex) {

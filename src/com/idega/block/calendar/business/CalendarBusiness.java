@@ -104,7 +104,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     List list = null;
     try {
-      list = EntityFinder.findAll(CalendarEntryType.getStaticInstance(CalendarEntryType.class));
+      list = EntityFinder.findAll(com.idega.block.calendar.data.CalendarEntryTypeBMPBean.getStaticInstance(CalendarEntryType.class));
     }
     catch (SQLException e) {
       list = null;
@@ -135,12 +135,12 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( update ) {
       entry = CalendarFinder.getInstance().getEntry(entryID);
       if ( entry == null ) {
-        entry = new CalendarEntry();
+        entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
         update = false;
       }
     }
     else {
-      entry = new CalendarEntry();
+      entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
     }
 
     entry.setCategoryId(categoryId);
@@ -171,7 +171,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     boolean newLocText = false;
     LocalizedText locText = TextFinder.getLocalizedText(entry,localeID);
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -204,7 +204,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     CalendarEntry cal = CalendarFinder.getInstance().getEntry(entryID);
     if ( cal != null ) {
       try {
-        cal.removeFrom(LocalizedText.getStaticInstance(LocalizedText.class));
+        cal.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
         cal.delete();
       }
       catch (Exception e) {
@@ -224,12 +224,12 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( update ) {
       type = CalendarFinder.getInstance().getEntryType(typeID);
       if ( type == null ) {
-        type = new CalendarEntryType();
+        type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
         update = false;
       }
     }
     else {
-      type = new CalendarEntryType();
+      type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
     }
 
     int imageID = -1;
@@ -265,7 +265,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     boolean newLocText = false;
     LocalizedText locText = TextFinder.getLocalizedText(type,localeID);
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -297,13 +297,13 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     CalendarEntryType type = CalendarFinder.getInstance().getEntryType(typeID);
     if ( type != null ) {
       try {
-        CalendarEntry[] entries = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumn(CalendarEntry.getColumnNameEntryTypeID(),typeID);
+        CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(),typeID);
         if ( entries != null )
           for ( int a = 0; a < entries.length; a++ ) {
-            entries[a].removeFrom(LocalizedText.getStaticInstance(LocalizedText.class));
+            entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
             entries[a].delete();
           }
-        type.removeFrom(LocalizedText.getStaticInstance(LocalizedText.class));
+        type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
         type.delete();
       }
       catch (Exception e) {
@@ -314,15 +314,15 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
   public static void initializeCalendarEntry() throws SQLException{
    EntityBulkUpdater bulk = new EntityBulkUpdater();
-    CalendarEntry entry = new CalendarEntry();
+    CalendarEntry entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
       entry.setDate(new com.idega.util.idegaTimestamp(1,1,2000).getTimestamp());
       entry.setEntryTypeID(3);
 
-    LocalizedText text = new LocalizedText();
+    LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
       text.setHeadline("idega hf. stofnað");
 
-    LocalizedText text2 = new LocalizedText();
+    LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
       text2.setHeadline("idega co. founded");
 

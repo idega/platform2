@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicantHome.java,v 1.1 2002/03/18 15:51:22 palli Exp $
+ * $Id: ApplicantHome.java,v 1.2 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -98,14 +98,14 @@ public class ApplicantHome {
    *
    */
   public List listOfNewApplicants() {
-    return(listOfApplicants(null,Application.STATUS_SUBMITTED));
+    return(listOfApplicants(null,com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED));
   }
 
   /**
    *
    */
   public List listOfNewApplicantsOrdered(String order) {
-    return(listOfApplicants(null,Application.STATUS_SUBMITTED));
+    return(listOfApplicants(null,com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED));
   }
 
   /**
@@ -123,17 +123,17 @@ public class ApplicantHome {
       StringBuffer sql = new StringBuffer("select distinct a.* from ");
 /*      sql.append(ApplicantBean.getEntityTableName());
       sql.append("a, ");
-      sql.append(Application.getEntityTableName());
+      sql.append(com.idega.block.application.data.ApplicationBMPBean.getEntityTableName());
       sql.append("b where ");
       sql.append("a.");
 //      sql.append(ApplicantBean.getIDColumnName());
       sql.append(" = ");
       sql.append("b.");
-      sql.append(Application.getApplicantIdColumnName());
+      sql.append(com.idega.block.application.data.ApplicationBMPBean.getApplicantIdColumnName());
       sql.append(" and ");
       if (status != null) {
         sql.append("b.");
-        sql.append(Application.getStatusColumnName());
+        sql.append(com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName());
         sql.append(" = '");
         sql.append(status);
         sql.append("' ");

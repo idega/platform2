@@ -461,7 +461,7 @@ public abstract class ForumPresentation extends Block {
       String tempForumID = iwc.getParameter("forum_id");
       if (currentForumID != tempForumID && tempForumID != null){
         currentForumID = tempForumID;
-        currentForum = new Forum(Integer.parseInt(currentForumID)).getForumName();
+        currentForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(Forum.class)).findByPrimaryKeyLegacy(Integer.parseInt(currentForumID)).getForumName();
       }
     }
   }
@@ -565,7 +565,7 @@ public abstract class ForumPresentation extends Block {
   private void findeCurrentForumName()throws SQLException{
     String tempID = iwc.getParameter("forum_id");
     if (tempID != null)
-      currentForum = new Forum(Integer.parseInt(tempID)).getForumName();
+      currentForum = ((com.idega.block.forum.data.ForumHome)com.idega.data.IDOLookup.getHomeLegacy(Forum.class)).findByPrimaryKeyLegacy(Integer.parseInt(tempID)).getForumName();
   }
 
   private void checkSettings()throws SQLException{

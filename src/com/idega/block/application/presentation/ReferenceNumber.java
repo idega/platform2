@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.15 2002/03/18 15:51:23 palli Exp $
+ * $Id: ReferenceNumber.java,v 1.16 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -62,7 +62,7 @@ public class ApplicationSubjectMaker extends Block{
         ApplicationSubject subject = null;
         if(iwc.isParameterSet("app_subject_id")){
           try {
-            subject = new ApplicationSubject(Integer.parseInt(iwc.getParameter("app_subject_id")));
+            subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter("app_subject_id")));
           }
           catch (Exception ex) {
 

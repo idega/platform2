@@ -84,7 +84,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
   private void getAllBuildings(IWContext iwc) throws SQLException {
 
-    Complex[] complex = (Complex[]) (new Complex()).findAllOrdered(Complex.getNameColumnName());
+    Complex[] complex = (Complex[]) (((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAllOrdered(com.idega.block.building.data.ComplexBMPBean.getNameColumnName());
     Table campusTable = new Table(1,complex.length);
 
     for ( int a = 0; a < complex.length; a++ ) {
@@ -110,7 +110,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
       //List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
       List L = BuildingFinder.listOfBuildingImageFiles(iComplexId);
       if(L!=null){
-       //ICFile file = new ICFile(((Building)L.get(0)).getImageId());
+       //ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(((Building)L.get(0)).getImageId());
         ImageSlideShow slide = new ImageSlideShow();
         //slide.setFileFolder(file);
         slide.setWidth(imageMaxSize);
@@ -126,7 +126,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       if ( types != null ) {
         for ( int b = 0; b < types.length; b++ ) {
-          ApartmentCategory cat = new ApartmentCategory(Integer.parseInt(types[b]));
+          ApartmentCategory cat = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(types[b]));
           Image image = new Image(cat.getImageId());
             image.setName("");
             image.setHorizontalSpacing(4);
@@ -192,7 +192,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
   private void getSingleBuilding(IWContext iwc) throws SQLException {
 
-    Complex complex = new Complex(building_id);
+    Complex complex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(building_id);
     ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);
 
     Table complexTable = new Table(1,types.length+1);

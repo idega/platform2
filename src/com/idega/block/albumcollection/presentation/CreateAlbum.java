@@ -77,7 +77,7 @@ public class CreateAlbum extends IWAdminWindow {
       if(str != null && !str.equals("")){
         _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId,str);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
-          album = new Album(Integer.parseInt(str));
+          album = ((com.idega.block.albumcollection.data.AlbumHome)com.idega.data.IDOLookup.getHomeLegacy(Album.class)).findByPrimaryKeyLegacy(Integer.parseInt(str));
         }
       }
       _fieldAlbumId.keepStatusOnAction();
@@ -153,7 +153,7 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     if(album != null){
-      int[] IDs = album.findRelatedIDs(Author.getStaticInstance(Author.class));
+      int[] IDs = album.findRelatedIDs(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
       for (int i = 0; i < IDs.length; i++) {
         _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }
@@ -171,7 +171,7 @@ public class CreateAlbum extends IWAdminWindow {
       }
     }
     if(album != null){
-      int[] IDs = album.findRelatedIDs(Performer.getStaticInstance(Performer.class));
+      int[] IDs = album.findRelatedIDs(com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
       for (int i = 0; i < IDs.length; i++) {
         _fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
       }

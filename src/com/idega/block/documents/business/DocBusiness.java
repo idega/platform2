@@ -7,7 +7,7 @@ import com.idega.core.data.ICInformationCategory;
 import com.idega.core.data.ICInformationFolder;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.user.data.User;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 
@@ -88,10 +88,10 @@ public static final int PAGE = 3;
         if ( boxLinkURL != null ) {
           if ( update ) {
             try {
-              //link.setColumnAsNull(DocLink.getColumnNamePageID());
-              //link.setColumnAsNull(DocLink.getColumnNameFileID());
-              link.removeFromColumn(DocLink.getColumnNamePageID());
-              link.removeFromColumn(DocLink.getColumnNameFileID());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNamePageID());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFileID());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNamePageID());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFileID());
               link.update();
             }
             catch (SQLException e) {
@@ -102,10 +102,10 @@ public static final int PAGE = 3;
         else if ( fileID != -1 ) {
           if ( update ) {
             try {
-              //link.setColumnAsNull(DocLink.getColumnNamePageID());
-              //link.setColumnAsNull(DocLink.getColumnNameURL());
-              link.removeFromColumn(DocLink.getColumnNamePageID());
-              link.removeFromColumn(DocLink.getColumnNameURL());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNamePageID());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameURL());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNamePageID());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameURL());
               link.update();
             }
             catch (SQLException e) {
@@ -116,10 +116,10 @@ public static final int PAGE = 3;
         else if ( pageID != -1 ) {
           if ( update ) {
             try {
-              //link.setColumnAsNull(DocLink.getColumnNameFileID());
-              //link.setColumnAsNull(DocLink.getColumnNameURL());
-              link.removeFromColumn(DocLink.getColumnNameFileID());
-              link.removeFromColumn(DocLink.getColumnNameURL());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFileID());
+              //link.setColumnAsNull(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameURL());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFileID());
+              link.removeFromColumn(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameURL());
               link.update();
             }
             catch (SQLException e) {
@@ -129,13 +129,13 @@ public static final int PAGE = 3;
         }
       }
     } else {
-      link = new DocLink();
+      link = ((com.idega.block.documents.data.DocLinkHome)com.idega.data.IDOLookup.getHomeLegacy(DocLink.class)).createLegacy();
     }
 
     if ( update ) {
       link = DocFinder.getLink(linkID);
       if ( link == null ) {
-        link = new DocLink();
+        link = ((com.idega.block.documents.data.DocLinkHome)com.idega.data.IDOLookup.getHomeLegacy(DocLink.class)).createLegacy();
         update = false;
       }
     }
@@ -173,7 +173,7 @@ public static final int PAGE = 3;
           link.setFolderID(folderId);
         }
         if(userID != -1){
-          link.setUser(new User(userID));
+          link.setUser(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userID));
         }
         link.insert();
         _linkID = link.getID();
@@ -194,7 +194,7 @@ public static final int PAGE = 3;
 /*
     LocalizedText locText = TextFinder.getLocalizedText(link,iLocaleID);
     if ( locText == null ) {
-      locText = new LocalizedText();
+      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       newLocText = true;
     }
 
@@ -251,11 +251,11 @@ public static final int PAGE = 3;
 //      update = true;
 //    }
 //
-//    ICInformationCategory category = new ICInformationCategory();
+//    ICInformationCategory category = ((com.idega.core.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationCategory.class)).createLegacy();
 //    if ( update ) {
 //      category = DocFinder.getCategory(boxCategoryID);
 //      if ( category == null ) {
-//        category = new ICInformationCategory();
+//        category = ((com.idega.core.data.ICInformationCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationCategory.class)).createLegacy();
 //        update = false;
 //      }
 //
@@ -264,9 +264,9 @@ public static final int PAGE = 3;
 //    if ( !update ) {
 //      try {
 //        /**
-//         * @todo check if ok to comment out category.setUser(new User(userID));
+//         * @todo check if ok to comment out category.setUser(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userID));
 //         */
-//        //category.setUser(new User(userID));
+//        //category.setUser(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userID));
 //        category.insert();
 //        _boxCategoryID = category.getID();
 //      }
@@ -286,7 +286,7 @@ public static final int PAGE = 3;
 //
 //    LocalizedText locText = TextFinder.getLocalizedText(category,iLocaleID);
 //    if ( locText == null ) {
-//      locText = new LocalizedText();
+//      locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
 //      newLocText = true;
 //    }
 //
@@ -374,7 +374,7 @@ public static final int PAGE = 3;
 //    }
 //  }
 
-//  public static String getLocalizedString(GenericEntity entity, int iLocaleID) {
+//  public static String getLocalizedString(IDOLegacyEntity entity, int iLocaleID) {
 //    String locString = null;
 //
 //    if ( entity != null ) {
@@ -394,12 +394,12 @@ public static final int PAGE = 3;
 //    try {
 //      boolean update = false;
 //
-//      ICInformationFolder folder = new ICInformationFolder();
+//      ICInformationFolder folder = ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).createLegacy();
 //      if ( boxID != -1 ) {
 //        update = true;
 //        folder = DocFinder.getFolder(boxID);
 //        if ( folder == null ) {
-//          folder = new ICInformationFolder();
+//          folder = ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).createLegacy();
 //          update = false;
 //        }
 //      }
@@ -424,7 +424,7 @@ public static final int PAGE = 3;
 //      else {
 //        folder.insert();
 //        if(InstanceId > 0){
-//          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+//          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
 //          folder.addTo(objIns);
 //        }
 //      }
@@ -472,7 +472,7 @@ public static final int PAGE = 3;
 //
 //  public static boolean deleteDoc(int iDocId,int iObjectInstanceId) {
 //          try{
-//      ICInformationFolder folder= new ICInformationFolder(iDocId);
+//      ICInformationFolder folder= ((com.idega.core.data.ICInformationFolderHome)com.idega.data.IDOLookup.getHomeLegacy(ICInformationFolder.class)).findByPrimaryKeyLegacy(iDocId);
 //                  if(folder !=null){
 //                          return deleteDoc(folder,iObjectInstanceId);
 //                  }
@@ -512,7 +512,7 @@ public static final int PAGE = 3;
 //  public static boolean disconnectDoc(ICInformationFolder folder,int iObjectInstanceId){
 //    try {
 //      if(iObjectInstanceId > 0  ){
-//        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+//        ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 //        folder.removeFrom(obj);
 //      }
 //      return true;

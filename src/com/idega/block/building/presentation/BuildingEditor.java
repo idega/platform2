@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.io.IOException;
 import java.util.StringTokenizer;
 import com.oreilly.servlet.*;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.Editor;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.IWResourceBundle;
@@ -167,7 +167,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
       iwc.removeSessionAttribute("tplanid2");
     }
     try{
-      ApartmentType eApartmentType = eId > 0 ? new ApartmentType(eId) : null;
+      ApartmentType eApartmentType = eId > 0 ? ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(eId) : null;
       outerTable.add(makeTypeFields(eApartmentType,iPhotoId,iPlanId),1,2);
     }
     catch(SQLException sql){sql.printStackTrace();}
@@ -175,7 +175,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
   }
   private void doCategory(IWContext iwc){
     try{
-      ApartmentCategory eApartmentCategory = eId > 0 ? new ApartmentCategory(eId) : null;
+      ApartmentCategory eApartmentCategory = eId > 0 ? ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(eId) : null;
       outerTable.add(makeCategoryFields(eApartmentCategory),1,2);
     }
     catch(SQLException sql){}
@@ -564,7 +564,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     Frame.add(T2,2,1);
 
     TextInput name = new TextInput("bm_name",sName);
-    DropdownMenu categories = drpLodgings(new Complex(),"dr_id","Complex",sId);
+    DropdownMenu categories = drpLodgings(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy(),"dr_id","Complex",sId);
     HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(COMPLEX));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(COMPLEX));
     setStyle(name);
@@ -628,8 +628,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
     TextInput serie = new TextInput("bm_serie",sSerie);
     HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(BUILDING));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(BUILDING));
-    DropdownMenu complex = drpLodgings(new Complex(),"dr_complex","Complex",sComplexId);
-    DropdownMenu houses = drpLodgings(new Building(),"dr_id","Building",sId);
+    DropdownMenu complex = drpLodgings(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy(),"dr_complex","Complex",sComplexId);
+    DropdownMenu houses = drpLodgings(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy(),"dr_id","Building",sId);
     houses.setToSubmit();
     setStyle(houses);
     setStyle(complex);
@@ -698,7 +698,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu floors = this.drpFloors("dr_id","Floor",sId,true);
     floors.setToSubmit();
-    DropdownMenu buildings = this.drpLodgings(new Building(),"dr_building","Building",sHouse);
+    DropdownMenu buildings = this.drpLodgings(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy(),"dr_building","Building",sHouse);
     HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(FLOOR));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(FLOOR));
     setStyle(name);
@@ -759,7 +759,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
 
     String s;
     TextInput name = new TextInput("bm_name",sName);
-    DropdownMenu categories = drpLodgings(new ApartmentCategory(),"dr_id","Category",sId);
+    DropdownMenu categories = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),"dr_id","Category",sId);
     categories.setToSubmit();
     HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(CATEGORY));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(CATEGORY));
@@ -851,9 +851,9 @@ public class BuildingEditor extends com.idega.presentation.Block{
     if(bLoft) loft.setChecked(true);
     CheckBox furni = new CheckBox("bm_furni","true");
     if(bFurniture) furni.setChecked(true);
-    DropdownMenu apartmenttypes = drpLodgings(new ApartmentType(),"dr_id","Type",sId);
+    DropdownMenu apartmenttypes = drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),"dr_id","Type",sId);
     apartmenttypes.setToSubmit();
-    DropdownMenu categories = drpLodgings(new ApartmentCategory(),"bm_category","Category",sCategory);
+    DropdownMenu categories = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),"bm_category","Category",sCategory);
      HiddenInput HI = new HiddenInput("bm_choice",String.valueOf(TYPE));
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(TYPE));
     name.setLength(30);
@@ -958,9 +958,9 @@ public class BuildingEditor extends com.idega.presentation.Block{
 
     TextInput name = new TextInput("bm_name",sName);
     TextInput serie = new TextInput("bm_serie",sSerie);
-    DropdownMenu apartments = drpLodgings(new Apartment(),"dr_id","Apartment",sId);
+    DropdownMenu apartments = drpLodgings(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),"dr_id","Apartment",sId);
     apartments.setToSubmit();
-    DropdownMenu types = this.drpLodgings(new ApartmentType(),"bm_type","Type",sType);
+    DropdownMenu types = this.drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),"bm_type","Type",sType);
     DropdownMenu floors = this.drpFloors("bm_floor","Floor",sFloor,true);
     CheckBox rentable = new CheckBox("bm_rentable","true");
     if(bRentable) rentable.setChecked(true);
@@ -1022,7 +1022,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
 
   try{
 
-    Complex[] C = (Complex[])(new Complex()).findAll();
+    Complex[] C = (Complex[])(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAll();
     int clen = C.length;
     int c = 1, b = 1, f = 1, a = 1;
 
@@ -1034,7 +1034,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     T.setBorder(border);
     for (int i = 0; i < clen; i++) {
       T.add(getHeaderText( C[i].getName()),i+1,1);
-      Building[] B = (Building[])(new Building()).findAllByColumnOrdered(Building.getComplexIdColumnName(),String.valueOf(C[i].getID()),Building.getNameColumnName());
+      Building[] B = (Building[])(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.BuildingBMPBean.getComplexIdColumnName(),String.valueOf(C[i].getID()),com.idega.block.building.data.BuildingBMPBean.getNameColumnName());
       int blen = B.length;
       Table BuildingTable = new Table();
       BuildingTable.setCellpadding(padding);
@@ -1044,7 +1044,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
       b = 1;
       for (int j = 0; j < blen; j++) {
         BuildingTable.add(getHeaderText( B[j].getName()),1,b++);
-        Floor[] F = (Floor[])(new Floor()).findAllByColumnOrdered(Floor.getBuildingIdColumnName(),String.valueOf(B[j].getID()),Floor.getNameColumnName());
+        Floor[] F = (Floor[])(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.FloorBMPBean.getBuildingIdColumnName(),String.valueOf(B[j].getID()),com.idega.block.building.data.FloorBMPBean.getNameColumnName());
         int flen = F.length;
         Table FloorTable = new Table();
         FloorTable.setCellpadding(padding);
@@ -1054,7 +1054,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
         f = 1;
         for (int k = 0; k < flen; k++) {
           FloorTable.add(getHeaderText(F[k].getName()),1,f++);
-          Apartment[] A = (Apartment[])(new Apartment()).findAllByColumnOrdered(Apartment.getFloorIdColumnName(),String.valueOf(F[k].getID()),Apartment.getNameColumnName());
+          Apartment[] A = (Apartment[])(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName(),String.valueOf(F[k].getID()),com.idega.block.building.data.ApartmentBMPBean.getNameColumnName());
           int alen = A.length;
           if(alen > 0){
             Table ApartmentTable = new Table();
@@ -1084,7 +1084,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
 
   private PresentationObject getTypes(){
     try {
-      ApartmentType[] AT = (ApartmentType[])(new ApartmentType()).findAllOrdered(ApartmentType.getNameColumnName());
+      ApartmentType[] AT = (ApartmentType[])(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy()).findAllOrdered(com.idega.block.building.data.ApartmentTypeBMPBean.getNameColumnName());
       int len = AT.length;
       Table T = new Table();
       if(len > 0){
@@ -1201,7 +1201,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
   private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
     Floor[] lods = new Floor[1];
     try{
-      lods =  (Floor[])(new Floor()).findAll();
+      lods =  (Floor[])(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAll();
     }
     catch(SQLException e){}
     DropdownMenu drp = new DropdownMenu(name);
@@ -1209,7 +1209,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     for(int i = 0; i < lods.length ; i++){
       if(withBuildingName){
         try{
-        drp.addMenuElement(lods[i].getID() ,lods[i].getName()+" "+(new Building(lods[i].getBuildingId()).getName()));
+        drp.addMenuElement(lods[i].getID() ,lods[i].getName()+" "+(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(lods[i].getBuildingId()).getName()));
         }
         catch(SQLException e){}}
       else
@@ -1233,8 +1233,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
     return drp;
   }
 
-  private DropdownMenu drpLodgings(GenericEntity lodgings,String name,String display,String selected) {
-    GenericEntity[] lods = new GenericEntity[0];
+  private DropdownMenu drpLodgings(IDOLegacyEntity lodgings,String name,String display,String selected) {
+    IDOLegacyEntity[] lods = new IDOLegacyEntity[0];
     try{
       lods =  (lodgings).findAll();
     }

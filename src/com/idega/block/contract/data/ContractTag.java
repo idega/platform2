@@ -1,84 +1,18 @@
-/*
- * $Id: ContractTag.java,v 1.1 2001/11/17 14:50:05 aron Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package com.idega.block.contract.data;
 
-import java.sql.*;
-import com.idega.data.GenericEntity;
+import javax.ejb.*;
 
-/**
- *
- * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
- * @version 1.0
- */
-public class ContractTag extends GenericEntity{
-
-  public ContractTag(){
-          super();
-  }
-
-  public ContractTag(int id)throws SQLException{
-          super(id);
-  }
-
-  public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-		addAttribute(getColumnNameCategoryId(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.contract.data.ContractCategory.class);
-    addAttribute(getColumnNameName(), "Name", true, true, java.lang.String.class);
-    addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
-		addAttribute(getColumnNameInUse(), "In use", true, true, java.lang.Boolean.class);
-		addAttribute(getColumnNameInList(), "In list", true, true, java.lang.Boolean.class);
-  }
-
-  public static String getEntityTableName(){ return "CON_TAG"; }
-	public static String getColumnNameCategoryId(){return "CON_CATEGORY_ID";}
-  public static String getColumnNameName(){return "NAME";}
-  public static String getColumnNameInfo(){return "INFO";}
-	public static String getColumnNameInUse(){return "IN_USE";}
-	public static String getColumnNameInList(){return "IN_LIST";}
-
-  public String getEntityName(){
-    return getEntityTableName();
-  }
-
-  public String getName(){
-    return getStringColumnValue(getColumnNameName());
-  }
-  public void setName(String name){
-    setColumn(getColumnNameName(), name);
-  }
-  public String getInfo(){
-    return getStringColumnValue(getColumnNameInfo());
-  }
-  public void setInfo(String info){
-    setColumn(getColumnNameInfo(), info);
-  }
-	public void setInUse(boolean inUse){
-	  setColumn(getColumnNameInUse(),inUse);
-	}
-	public boolean getInUse(){
-		return  getBooleanColumnValue(getColumnNameInUse());
-	}
-	public void setInList(boolean inUse){
-	  setColumn(getColumnNameInList(),inUse);
-	}
-	public boolean getInList(){
-		return  getBooleanColumnValue(getColumnNameInList());
-	}
-	public void setCategoryId(int id){
-	  setColumn(getColumnNameCategoryId(),id);
-	}
-	public void setCategoryId(Integer id){
-	  setColumn(getColumnNameCategoryId(),id);
-	}
-	public Integer getCategoryId(){
-	  return getIntegerColumnValue(getColumnNameCategoryId());
-	}
-
+public interface ContractTag extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.Integer getCategoryId();
+ public boolean getInList();
+ public boolean getInUse();
+ public java.lang.String getInfo();
+ public java.lang.String getName();
+ public void setCategoryId(int p0);
+ public void setCategoryId(java.lang.Integer p0);
+ public void setInList(boolean p0);
+ public void setInUse(boolean p0);
+ public void setInfo(java.lang.String p0);
+ public void setName(java.lang.String p0);
 }

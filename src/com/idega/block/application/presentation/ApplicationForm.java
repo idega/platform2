@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.18 2002/04/04 23:30:33 aron Exp $
+ * $Id: ApplicationForm.java,v 1.19 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

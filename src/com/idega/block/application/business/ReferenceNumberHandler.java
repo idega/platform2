@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.6 2002/01/08 15:27:27 palli Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.7 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

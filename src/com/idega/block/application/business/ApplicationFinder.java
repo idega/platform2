@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.16 2002/04/04 19:08:24 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.17 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,8 +34,8 @@ public class ApplicationFinder {
 
   public static List listOfNewApplicationInSubject(int subjectId){
     try {
-      Application A = new Application();
-      String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+A.STATUS_SUBMITTED+"'";
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
+      String sql = "select * from "+A.getEntityName()+" where "+com.idega.block.application.data.ApplicationBMPBean.getSubjectIdColumnName()+" = "+subjectId +" and "+com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+"='"+com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED+"'";
       //System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
@@ -46,8 +46,8 @@ public class ApplicationFinder {
   }
   public static List listOfApplicationInSubject(int subjectId,String status){
     try {
-      Application A = new Application();
-      String sql = "select * from "+A.getEntityName()+" where "+A.getSubjectIdColumnName()+" = "+subjectId +" and "+A.getStatusColumnName()+"='"+status+"'";
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
+      String sql = "select * from "+A.getEntityName()+" where "+com.idega.block.application.data.ApplicationBMPBean.getSubjectIdColumnName()+" = "+subjectId +" and "+com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+"='"+status+"'";
       //System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
@@ -58,8 +58,8 @@ public class ApplicationFinder {
   }
   public static List listOfNewApplications(){
     try {
-     Application A = new Application();
-     String sql = "select * from "+A.getEntityName()+" where "+A.getStatusColumnName()+" = '"+A.STATUS_SUBMITTED+"'";
+     Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
+     String sql = "select * from "+A.getEntityName()+" where "+com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+" = '"+com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED+"'";
 
       return(EntityFinder.findAll(A,sql));
     }
@@ -69,11 +69,11 @@ public class ApplicationFinder {
   }
 
   public static List listOfNewApplicants(){
-    return listOfApplicants(null,Application.STATUS_SUBMITTED);
+    return listOfApplicants(null,com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED);
   }
 
   public static List listOfNewApplicantsOrdered(String order){
-    return listOfApplicants(null,Application.STATUS_SUBMITTED);
+    return listOfApplicants(null,com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED);
   }
 
   public static List listOfApplicantsWithStatus(String status){
@@ -82,8 +82,8 @@ public class ApplicationFinder {
 
   public static List listOfApplicants(String order,String status){
     try {
-      Applicant a = new Applicant();
-      Application A = new Application();
+      Applicant a = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select distinct ");
       sql.append(a.getEntityName());
       sql.append(".* from ");
@@ -97,12 +97,12 @@ public class ApplicationFinder {
       sql.append(" = ");
       sql.append(A.getEntityName());
       sql.append(".");
-      sql.append(A.getApplicantIdColumnName());
+      sql.append(com.idega.block.application.data.ApplicationBMPBean.getApplicantIdColumnName());
       sql.append(" and ");
       if(status != null){
         sql.append(A.getEntityName());
         sql.append(".");
-        sql.append(A.getStatusColumnName());
+        sql.append(com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName());
         sql.append(" = '");
         sql.append(status);
         sql.append("' ");
@@ -212,7 +212,7 @@ public class ApplicationFinder {
 
   public static List listOfSubject() {
     try {
-      ApplicationSubject AS = new ApplicationSubject();
+      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       return EntityFinder.findAllDescendingOrdered(AS,AS.getExpiresColumnName());
     }
     catch(SQLException e) {
@@ -223,7 +223,7 @@ public class ApplicationFinder {
 
   public static List listOfSubjectInfo(){
     try {
-      return EntityFinder.findAll(new ApplicationSubjectInfo());
+      return EntityFinder.findAll(((com.idega.block.application.data.ApplicationSubjectInfoHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubjectInfo.class)).createLegacy());
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -233,7 +233,7 @@ public class ApplicationFinder {
 
   public static List listOfNonExpiredSubjects() {
     try {
-      ApplicationSubject subject = new ApplicationSubject();
+      ApplicationSubject subject = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select ");
       sql.append("* from ");
       sql.append(subject.getEntityName());
@@ -253,7 +253,7 @@ public class ApplicationFinder {
 
   public List lookupSSN(String ssn){
     try {
-      return EntityFinder.getInstance().findAllByColumn(Applicant.class,Applicant.getSSNColumnName(),ssn);
+      return EntityFinder.getInstance().findAllByColumn(Applicant.class,com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),ssn);
     }
     catch (IDOFinderException ex) {
       ex.printStackTrace();

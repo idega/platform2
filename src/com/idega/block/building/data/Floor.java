@@ -1,73 +1,17 @@
 package com.idega.block.building.data;
 
-import com.idega.data.GenericEntity;
-import java.sql.SQLException;
+import javax.ejb.*;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
- * @version 1.0
- */
-
-public class Floor extends GenericEntity {
-
-  public Floor() {
-    super();
-  }
-  public Floor(int id)throws SQLException{
-    super(id);
-  }
-
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
-    addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class,4000);
-    addAttribute(getBuildingIdColumnName(),"Building",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.building.data.Building.class);
-    addAttribute(getImageIdColumnName(),"Plan",true,true,java.lang.Integer.class);
-
-  }
-
-  public String getEntityName() {
-    return getNameTableName();
-  }
-  public static String getNameTableName(){return "bu_floor";}
-  public static String getNameColumnName(){return "name";}
-  public static String getInfoColumnName(){return "info";}
-  public static String getBuildingIdColumnName(){return "bu_building_id";}
-  public static String getImageIdColumnName(){return "ic_image_id";}
-
-  public String getName(){
-    return getStringColumnValue(getNameColumnName());
-  }
-  public void setName(String name){
-    setColumn(getNameColumnName(),name);
-  }
-  public String getInfo(){
-    return getStringColumnValue(getInfoColumnName());
-  }
-  public void setInfo(String info){
-    setColumn(getInfoColumnName(),info);
-  }
-  public int getBuildingId(){
-    return getIntColumnValue(getBuildingIdColumnName());
-  }
-  public void setBuildingId(int building_id){
-    setColumn(getBuildingIdColumnName(),building_id);
-  }
-  public void setBuildingId(Integer building_id){
-    setColumn(getBuildingIdColumnName(),building_id);
-  }
-  public int getImageId(){
-    return getIntColumnValue(getImageIdColumnName());
-  }
-  public void setImageId(int image_id){
-    setColumn(getImageIdColumnName(),image_id);
-  }
-  public void setImageId(Integer image_id){
-    setColumn(getImageIdColumnName(),image_id);
-  }
-
+public interface Floor extends com.idega.data.IDOLegacyEntity
+{
+ public int getBuildingId();
+ public int getImageId();
+ public java.lang.String getInfo();
+ public java.lang.String getName();
+ public void setBuildingId(java.lang.Integer p0);
+ public void setBuildingId(int p0);
+ public void setImageId(java.lang.Integer p0);
+ public void setImageId(int p0);
+ public void setInfo(java.lang.String p0);
+ public void setName(java.lang.String p0);
 }

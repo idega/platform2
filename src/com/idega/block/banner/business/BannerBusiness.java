@@ -11,7 +11,7 @@ import com.idega.core.data.ICFile;
 import java.util.List;
 import java.util.Iterator;
 import com.idega.util.idegaTimestamp;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.Image;
 
@@ -55,12 +55,12 @@ public static final String COOKIE_NAME = "idegaAD_";
     try {
       boolean update = false;
 
-      BannerEntity banner = new BannerEntity();
+      BannerEntity banner = ((com.idega.block.banner.data.BannerEntityHome)com.idega.data.IDOLookup.getHomeLegacy(BannerEntity.class)).createLegacy();
       if ( bannerID != -1 ) {
         update = true;
         banner = BannerFinder.getBanner(bannerID);
         if ( banner == null ) {
-          banner = new BannerEntity();
+          banner = ((com.idega.block.banner.data.BannerEntityHome)com.idega.data.IDOLookup.getHomeLegacy(BannerEntity.class)).createLegacy();
           update = false;
         }
       }
@@ -85,7 +85,7 @@ public static final String COOKIE_NAME = "idegaAD_";
       else {
         banner.insert();
         if(InstanceId > 0){
-          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          ICObjectInstance objIns = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(InstanceId);
           banner.addTo(objIns);
         }
       }
@@ -136,12 +136,12 @@ public static final String COOKIE_NAME = "idegaAD_";
     boolean update = false;
     BannerEntity banner = BannerFinder.getBanner(bannerID);
 
-    AdEntity ad = new AdEntity();
+    AdEntity ad = ((com.idega.block.banner.data.AdEntityHome)com.idega.data.IDOLookup.getHomeLegacy(AdEntity.class)).createLegacy();
     if ( adID != -1 ) {
       update = true;
       ad = BannerFinder.getAd(adID);
       if ( ad == null ) {
-        ad = new AdEntity();
+        ad = ((com.idega.block.banner.data.AdEntityHome)com.idega.data.IDOLookup.getHomeLegacy(AdEntity.class)).createLegacy();
         update = false;
       }
     }

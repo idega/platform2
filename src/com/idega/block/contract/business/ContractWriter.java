@@ -204,9 +204,9 @@ public class ContractWriter{
 
               try {
 
-                Contract eContract = new Contract(ids[j]);
+                Contract eContract = ((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(ids[j]);
 
-                if(eContract.getStatus().equalsIgnoreCase(Contract.statusCreated)){
+                if(eContract.getStatus().equalsIgnoreCase(com.idega.block.contract.data.ContractBMPBean.statusCreated)){
 
                   eContract.setStatusPrinted();
 
@@ -238,9 +238,9 @@ public class ContractWriter{
 
 				if(ids.length == 1 && ids[0] > 0){
 
-				  Contract C = new Contract(ids[0]);
+				  Contract C = ((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(ids[0]);
 
-					ICFile file = new ICFile();
+					ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
 
 					file.setFileValue(mis);
 

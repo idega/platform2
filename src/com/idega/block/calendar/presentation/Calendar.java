@@ -73,7 +73,7 @@ public Calendar(idegaTimestamp timestamp){
   }
 
   public String getCategoryType(){
-    return new CalendarCategory().getCategoryType();
+    return ((com.idega.block.calendar.data.CalendarCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarCategory.class)).createLegacy().getCategoryType();
   }
 
   public boolean getMultible(){
@@ -385,7 +385,7 @@ public Calendar(idegaTimestamp timestamp){
 
   private Link getCategoryIcon() {
     Image image = _iwb.getImage("shared/edit.gif","Categories");
-    Link link = getCategoryLink(new CalendarCategory().getCategoryType());
+    Link link = getCategoryLink(((com.idega.block.calendar.data.CalendarCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarCategory.class)).createLegacy().getCategoryType());
     link.setImage(image);
      // link.setWindowToOpen(CalendarTypeEditor.class);
     return link;

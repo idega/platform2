@@ -22,7 +22,7 @@ public class BannerFinder {
 
   public static BannerEntity getBanner(String attribute){
     try {
-      List L = EntityFinder.findAllByColumn(BannerEntity.getStaticInstance(BannerEntity.class),BannerEntity.getColumnNameAttribute(),attribute);
+      List L = EntityFinder.findAllByColumn(com.idega.block.banner.data.BannerEntityBMPBean.getStaticInstance(BannerEntity.class),com.idega.block.banner.data.BannerEntityBMPBean.getColumnNameAttribute(),attribute);
       if(L!= null) {
         return (BannerEntity) L.get(0);
       }
@@ -36,7 +36,7 @@ public class BannerFinder {
 
   public static BannerEntity getBanner(int bannerID){
     try {
-      return new BannerEntity(bannerID);
+      return ((com.idega.block.banner.data.BannerEntityHome)com.idega.data.IDOLookup.getHomeLegacy(BannerEntity.class)).findByPrimaryKeyLegacy(bannerID);
     }
     catch (SQLException ex) {
       return null;
@@ -45,7 +45,7 @@ public class BannerFinder {
 
   public static AdEntity getAd(int adID) {
     try {
-      AdEntity ad = new AdEntity(adID);
+      AdEntity ad = ((com.idega.block.banner.data.AdEntityHome)com.idega.data.IDOLookup.getHomeLegacy(AdEntity.class)).findByPrimaryKeyLegacy(adID);
       return ad;
     }
     catch (SQLException e) {
@@ -58,8 +58,8 @@ public class BannerFinder {
     try {
       List list = null;
       if ( banner != null )
-        list = EntityFinder.findRelated(banner,AdEntity.getStaticInstance(AdEntity.class));
-      List userList = EntityFinder.findAllByColumn(AdEntity.getStaticInstance(AdEntity.class),AdEntity.getColumnNameUserID(),userID);
+        list = EntityFinder.findRelated(banner,com.idega.block.banner.data.AdEntityBMPBean.getStaticInstance(AdEntity.class));
+      List userList = EntityFinder.findAllByColumn(com.idega.block.banner.data.AdEntityBMPBean.getStaticInstance(AdEntity.class),com.idega.block.banner.data.AdEntityBMPBean.getColumnNameUserID(),userID);
       if ( userList != null ) {
         if ( list != null ) {
           for ( int a = 0; a < list.size(); a++ ) {
@@ -84,7 +84,7 @@ public class BannerFinder {
 
   public static AdEntity[] getAdsInBanner(BannerEntity banner) {
     try {
-      AdEntity[] ads = (AdEntity[]) banner.findRelated(AdEntity.getStaticInstance(AdEntity.class));
+      AdEntity[] ads = (AdEntity[]) banner.findRelated(com.idega.block.banner.data.AdEntityBMPBean.getStaticInstance(AdEntity.class));
       if ( ads != null ) {
         return ads;
       }
@@ -97,7 +97,7 @@ public class BannerFinder {
 
   public static List getAds(BannerEntity banner) {
     try {
-      return EntityFinder.findRelated(banner,AdEntity.getStaticInstance(AdEntity.class));
+      return EntityFinder.findRelated(banner,com.idega.block.banner.data.AdEntityBMPBean.getStaticInstance(AdEntity.class));
     }
     catch (Exception e) {
       return null;
@@ -106,7 +106,7 @@ public class BannerFinder {
 
   public static ICFile getFile(int ICFileID) {
     try {
-      return new ICFile(ICFileID);
+      return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(ICFileID);
     }
     catch (SQLException e) {
       return null;
@@ -115,7 +115,7 @@ public class BannerFinder {
 
   public static ICFile[] getFilesInAd(AdEntity ad) {
     try {
-      ICFile[] files = (ICFile[]) ad.findRelated(ICFile.getStaticInstance(ICFile.class));
+      ICFile[] files = (ICFile[]) ad.findRelated(com.idega.core.data.ICFileBMPBean.getStaticInstance(ICFile.class));
       if ( files != null ) {
         return files;
       }
@@ -148,8 +148,8 @@ public class BannerFinder {
 
   public static int getObjectInstanceIdFromID(int bannerID){
     try {
-      BannerEntity banner = new BannerEntity(bannerID);
-      List L = EntityFinder.findRelated(banner,new ICObjectInstance());
+      BannerEntity banner = ((com.idega.block.banner.data.BannerEntityHome)com.idega.data.IDOLookup.getHomeLegacy(BannerEntity.class)).findByPrimaryKeyLegacy(bannerID);
+      List L = EntityFinder.findRelated(banner,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
       if(L!= null){
         return ((ICObjectInstance) L.get(0)).getID();
       }

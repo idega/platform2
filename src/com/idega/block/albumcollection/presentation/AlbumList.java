@@ -86,7 +86,7 @@ public class AlbumList extends Block {
         if(item.getFrontCoverFileId() > 0){
           myLayout.setAlbumImage(new Image(item.getFrontCoverFileId()));
         }
-        List performers = EntityFinder.findRelated(item,Performer.getStaticInstance(Performer.class));
+        List performers = EntityFinder.findRelated(item,com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
         if(performers != null){
           Iterator iter2 = performers.iterator();
           boolean f = false;

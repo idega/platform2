@@ -47,7 +47,7 @@ public class ApartmentChooser extends BuildingEditor{
 
   try{
 
-    Complex[] C = (Complex[])(new Complex()).findAll();
+    Complex[] C = (Complex[])(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAll();
     int clen = C.length;
     int c = 1, b = 1, f = 1, a = 1;
 
@@ -59,7 +59,7 @@ public class ApartmentChooser extends BuildingEditor{
     T.setBorder(border);
     for (int i = 0; i < clen; i++) {
       T.add(getHeaderText( C[i].getName()),i+1,1);
-      Building[] B = (Building[])(new Building()).findAllByColumnOrdered(Building.getComplexIdColumnName(),String.valueOf(C[i].getID()),Building.getNameColumnName());
+      Building[] B = (Building[])(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.BuildingBMPBean.getComplexIdColumnName(),String.valueOf(C[i].getID()),com.idega.block.building.data.BuildingBMPBean.getNameColumnName());
       int blen = B.length;
       Table BuildingTable = new Table();
       BuildingTable.setCellpadding(padding);
@@ -69,7 +69,7 @@ public class ApartmentChooser extends BuildingEditor{
       b = 1;
       for (int j = 0; j < blen; j++) {
         BuildingTable.add(getHeaderText( B[j].getName()),1,b++);
-        Floor[] F = (Floor[])(new Floor()).findAllByColumnOrdered(Floor.getBuildingIdColumnName(),String.valueOf(B[j].getID()),Floor.getNameColumnName());
+        Floor[] F = (Floor[])(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.FloorBMPBean.getBuildingIdColumnName(),String.valueOf(B[j].getID()),com.idega.block.building.data.FloorBMPBean.getNameColumnName());
         int flen = F.length;
         Table FloorTable = new Table();
         FloorTable.setCellpadding(padding);
@@ -79,7 +79,7 @@ public class ApartmentChooser extends BuildingEditor{
         f = 1;
         for (int k = 0; k < flen; k++) {
           FloorTable.add(getHeaderText(F[k].getName()),1,f++);
-          Apartment[] A = (Apartment[])(new Apartment()).findAllByColumnOrdered(Apartment.getFloorIdColumnName(),String.valueOf(F[k].getID()),Apartment.getNameColumnName());
+          Apartment[] A = (Apartment[])(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy()).findAllByColumnOrdered(com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName(),String.valueOf(F[k].getID()),com.idega.block.building.data.ApartmentBMPBean.getNameColumnName());
           int alen = A.length;
           if(alen > 0){
             Table ApartmentTable = new Table();

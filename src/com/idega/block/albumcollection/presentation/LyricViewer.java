@@ -82,7 +82,7 @@ public class LyricViewer extends Block {
         //contentTable.add(Text.getBreak());
         contentTable.add(text,1,3);
 
-        List T_authors = EntityFinder.findRelated(lyric,Author.getStaticInstance(Author.class));
+        List T_authors = EntityFinder.findRelated(lyric,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
         if(T_authors != null){
           Iterator iter2 = T_authors.iterator();
           boolean f = false;

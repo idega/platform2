@@ -139,7 +139,7 @@ public class LyricList extends Block {
 
 
 /*
-        List authors = EntityFinder.findRelated(item,Author.getStaticInstance(Author.class));
+        List authors = EntityFinder.findRelated(item,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
         if(authors != null){
           Iterator iter2 = authors.iterator();
           boolean f = false;

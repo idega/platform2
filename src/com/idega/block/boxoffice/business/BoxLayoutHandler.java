@@ -1,5 +1,5 @@
 /*
- * $Id: BoxLayoutHandler.java,v 1.3 2001/12/12 21:04:55 palli Exp $
+ * $Id: BoxLayoutHandler.java,v 1.4 2002/04/06 18:52:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

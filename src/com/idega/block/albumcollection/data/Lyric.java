@@ -1,70 +1,13 @@
 package com.idega.block.albumcollection.data;
 
-import com.idega.data.*;
-import java.sql.SQLException;
+import javax.ejb.*;
 
-
-/**
- * Title:        AlbumCollection
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega.is
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
- * @version 1.0
- */
-
-public class Lyric extends GenericEntity {
-
-  public static final String _COLUMNNAME_NAME = "name";
-  public static final String _COLUMNNAME_LYRIC = "lyric";
-  public static final String _COLUMNNAME_DESCRIPTION = "description";
-
- public Lyric() {
-    super();
-  }
-
-  public Lyric(int id) throws SQLException {
-    super(id);
-  }
-
-  public void initializeAttributes() {
-    this.addAttribute(this.getIDColumnName());
-    this.addAttribute(_COLUMNNAME_NAME,"Nafn",true,true,String.class,255);
-    this.addAttribute(_COLUMNNAME_LYRIC,"Söngtexti",true,true,String.class,4000);
-    this.addAttribute(_COLUMNNAME_DESCRIPTION,"Um plötuna",true,true,String.class,1000);
-
-    this.addManyToManyRelationShip(Author.class,"ac_lyric_author");
-  }
-
-  public String getEntityName() {
-    return "ac_lyric";
-  }
-
-
-  public String getName(){
-    return getStringColumnValue(_COLUMNNAME_NAME);
-  }
-
-  public void setName(String name){
-    setColumn(_COLUMNNAME_NAME, name);
-  }
-
-  public String getLyric(){
-    return getStringColumnValue(_COLUMNNAME_LYRIC);
-  }
-
-  public void setLyric(String lyric){
-    setColumn(_COLUMNNAME_LYRIC, lyric);
-  }
-
-  public String getDescription(){
-    return (String) getColumnValue(_COLUMNNAME_DESCRIPTION);
-  }
-
-  public void setDescription(String description){
-    setColumn(_COLUMNNAME_DESCRIPTION,description);
-  }
-
-
-
+public interface Lyric extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.String getDescription();
+ public java.lang.String getLyric();
+ public java.lang.String getName();
+ public void setDescription(java.lang.String p0);
+ public void setLyric(java.lang.String p0);
+ public void setName(java.lang.String p0);
 }

@@ -1,50 +1,13 @@
 package com.idega.block.finance.data;
 
-import java.sql.*;
-import com.idega.data.*;
+import javax.ejb.*;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
- * @version 1.0
- */
-
-public class EntryKey extends GenericEntity {
-
-  public EntryKey() {
-    super();
-  }
-  public EntryKey(int id) throws SQLException {
-    super(id);
-  }
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("positive","Færslugerð",true,true,"java.lang.Boolean");
-    addAttribute("extra_info","Lýsing",true,true,"java.lang.String");
-  }
-  public String getEntityName() {
-    return "fin_entry_key";
-  }
-  public String getName(){
-    return getStringColumnValue("name");
-  }
-  public void setName(String name){
-    setColumn("name", name);
-  }
-  public boolean getPositive(){
-    return getBooleanColumnValue("positive");
-  }
-  public void setPositive(boolean positive){
-    setColumn("positive",positive);
-  }
-  public String getExtraInfo(){
-    return getStringColumnValue("extra_info");
-  }
-  public void setExtraInfo(String extra_info){
-    setColumn("extra_info", extra_info);
-  }
+public interface EntryKey extends com.idega.data.IDOLegacyEntity
+{
+ public java.lang.String getExtraInfo();
+ public java.lang.String getName();
+ public boolean getPositive();
+ public void setExtraInfo(java.lang.String p0);
+ public void setName(java.lang.String p0);
+ public void setPositive(boolean p0);
 }

@@ -1,94 +1,20 @@
 package com.idega.block.finance.data;
 
-import java.sql.*;
-import com.idega.data.*;
+import javax.ejb.*;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
- * @version 1.0
- */
-
-public class EntryGroup extends GenericEntity {
-
-  public EntryGroup() {
-    super();
-  }
-  public EntryGroup(int id) throws SQLException {
-    super(id);
-  }
-  public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(getColumnNameGroupTypeId(),"Group type",true,true,Integer.class);
-    addAttribute(getColumnNameGroupDate(),"Group date",true,true,java.sql.Date.class);
-    addAttribute(getColumnNameEntryIdFrom(),"Entry from",true,true,Integer.class);
-    addAttribute(getColumnNameEntryIdTo(),"Entry to",true,true,Integer.class);
-    addAttribute(getColumnNameFileName(),"File name",true,true,String.class);
-    addAttribute(getColumnNameInfo(),"Info",true,true,String.class);
-  }
-
-  public String getEntityName(){
-    return getEntityTableName();
-  }
-  /*
-  "FIN_ENTRY_TYPE_ID"	INTEGER NOT NULL,
-  "FIN_GROUP_TYPE_ID"	INTEGER NOT NULL,
-  "GROUP_DATE"	TIMESTAMP,
-  "ENTRY_ID_FROM"	INTEGER,
-  "ENTRY_ID_TO"	INTEGER,
-  "FILENAME"	VARCHAR(4000),
-  "INFO"	VARCHAR(4000)
-  */
-  public static String getEntityTableName(){return  "FIN_ENTRY_GROUP";}
-  public static String getColumnNameGroupTypeId(){return "FIN_GROUP_TYPE_ID";}
-  public static String getColumnNameGroupDate(){return "GROUP_DATE";}
-  public static String getColumnNameEntryIdFrom(){return "ENTRY_ID_FROM";}
-  public static String getColumnNameEntryIdTo(){return "ENTRY_ID_TO";}
-  public static String getColumnNameFileName(){return "FILENAME";}
-  public static String getColumnNameInfo(){return "INFO";}
-
-  public String getName(){
-    return String.valueOf(getID());
-  }
-
-  public int getGroupTypeId(){
-    return getIntColumnValue( getColumnNameGroupTypeId() );
-  }
-  public void setGroupTypeId(int id){
-    setColumn(getColumnNameGroupTypeId(),id);
-  }
-  public int getEntryIdFrom(){
-    return getIntColumnValue(getColumnNameEntryIdFrom() );
-  }
-  public void setEntryIdFrom(int id){
-    setColumn(getColumnNameEntryIdFrom(),id);
-  }
-  public int getEntryIdTo(){
-    return getIntColumnValue(getColumnNameEntryIdTo() );
-  }
-  public void setEntryIdTo(int id){
-    setColumn(getColumnNameEntryIdTo(),id);
-  }
-  public String getFileName(){
-    return getStringColumnValue( getColumnNameFileName());
-  }
-  public void setFileName(String fileName){
-    setColumn(getColumnNameFileName(),fileName);
-  }
-  public String getInfo(){
-    return getStringColumnValue( getColumnNameInfo() );
-  }
-  public void setInfo(String info){
-    setColumn(getColumnNameInfo(),info);
-  }
-  public java.sql.Date getGroupDate(){
-    return (java.sql.Date) getColumnValue(getColumnNameGroupDate());
-  }
-  public void setGroupDate(java.sql.Date date){
-    setColumn(getColumnNameGroupDate(),date);
-  }
-
+public interface EntryGroup extends com.idega.data.IDOLegacyEntity
+{
+ public int getEntryIdFrom();
+ public int getEntryIdTo();
+ public java.lang.String getFileName();
+ public java.sql.Date getGroupDate();
+ public int getGroupTypeId();
+ public java.lang.String getInfo();
+ public java.lang.String getName();
+ public void setEntryIdFrom(int p0);
+ public void setEntryIdTo(int p0);
+ public void setFileName(java.lang.String p0);
+ public void setGroupDate(java.sql.Date p0);
+ public void setGroupTypeId(int p0);
+ public void setInfo(java.lang.String p0);
 }

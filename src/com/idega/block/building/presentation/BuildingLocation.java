@@ -59,7 +59,7 @@ private int complexID;
     Image closeImage = iwrb_.getImage("/room/close.gif");
 
     try {
-      imageID = new Complex(complexID).getImageId();
+      imageID = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(complexID).getImageId();
       if ( imageID != -1 )
         location = new Image(imageID);
     }

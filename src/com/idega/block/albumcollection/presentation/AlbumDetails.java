@@ -143,7 +143,7 @@ public class AlbumDetails extends Block {
 
         albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(album.getName()),2,1);
 
-        List performers = EntityFinder.findRelated(album,Performer.getStaticInstance(Performer.class));
+        List performers = EntityFinder.findRelated(album,com.idega.block.albumcollection.data.PerformerBMPBean.getStaticInstance(Performer.class));
         if(performers != null){
           Iterator iter2 = performers.iterator();
           boolean f = false;
@@ -166,7 +166,7 @@ public class AlbumDetails extends Block {
           String type = null;
           try {
             if(album.getAlbumTypeId() > 0){
-              type = new AlbumType(album.getAlbumTypeId()).getName();
+              type = ((com.idega.block.albumcollection.data.AlbumTypeHome)com.idega.data.IDOLookup.getHomeLegacy(AlbumType.class)).findByPrimaryKeyLegacy(album.getAlbumTypeId()).getName();
             }
           }
           catch (Exception ex) {
@@ -289,7 +289,7 @@ public class AlbumDetails extends Block {
 
 
 
-          List authors = EntityFinder.findRelated(item,Author.getStaticInstance(Author.class));
+          List authors = EntityFinder.findRelated(item,com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
           if(authors != null){
             Iterator iter2 = authors.iterator();
             boolean f = false;
@@ -338,7 +338,7 @@ public class AlbumDetails extends Block {
             info.add(setLyric,8,1);
 
 
-            List T_authors = EntityFinder.findRelated(new Lyric(item.getLyricId()),Author.getStaticInstance(Author.class));
+            List T_authors = EntityFinder.findRelated(((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(item.getLyricId()),com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
             if(T_authors != null){
               Iterator iter2 = T_authors.iterator();
               boolean f = false;

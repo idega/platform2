@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractFinder.java,v 1.4 2002/03/28 19:01:46 tryggvil Exp $
+ * $Id: ContractFinder.java,v 1.5 2002/04/06 18:52:27 tryggvil Exp $
 
  *
 
@@ -72,7 +72,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return EntityFinder.findRelated(new Contract(iContractId),new com.idega.core.data.ICFile());
+			return EntityFinder.findRelated(((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId),((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.data.ICFile.class)).createLegacy());
 
 		}
 
@@ -94,7 +94,7 @@ public abstract class ContractFinder {
 
       try {
 
-        return new Contract(id);
+        return ((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
 
       }
 
@@ -114,9 +114,9 @@ public abstract class ContractFinder {
 
 		try {
 
-			Contract eContract = (Contract)Contract.getStaticInstance(Contract.class);
+			Contract eContract = (Contract)com.idega.block.contract.data.ContractBMPBean.getStaticInstance(Contract.class);
 
-			return eContract.getNumberOfRecords(Contract.getColumnNameCategoryId(),String.valueOf(iCategoryId));
+			return eContract.getNumberOfRecords(com.idega.block.contract.data.ContractBMPBean.getColumnNameCategoryId(),String.valueOf(iCategoryId));
 
 		}
 
@@ -140,7 +140,7 @@ public abstract class ContractFinder {
 
     try {
 
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
       id = getObjectInstanceCategoryId(obj);
 
@@ -168,7 +168,7 @@ public abstract class ContractFinder {
 
     try {
 
-      List L = EntityFinder.findRelated(eObjectInstance ,new ContractCategory());
+      List L = EntityFinder.findRelated(eObjectInstance ,((com.idega.block.contract.data.ContractCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class)).createLegacy());
 
       if(L!= null){
 
@@ -198,7 +198,7 @@ public abstract class ContractFinder {
 
     try {
 
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
 
       return getObjectInstanceCategoryId(obj);
 
@@ -220,9 +220,9 @@ public abstract class ContractFinder {
 
     try {
 
-      ContractCategory nw = new ContractCategory(iCategoryId);
+      ContractCategory nw = ((com.idega.block.contract.data.ContractCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class)).findByPrimaryKeyLegacy(iCategoryId);
 
-      List L = EntityFinder.findRelated( nw,new ICObjectInstance());
+      List L = EntityFinder.findRelated( nw,((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy());
 
       if(L!= null){
 
@@ -256,7 +256,7 @@ public abstract class ContractFinder {
 
 		  try {
 
-        return new ContractCategory(iCategoryId );
+        return ((com.idega.block.contract.data.ContractCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class)).findByPrimaryKeyLegacy(iCategoryId );
 
       }
 
@@ -280,7 +280,7 @@ public abstract class ContractFinder {
 
     try {
 
-      return(EntityFinder.findAllByColumn(new Contract(),ContractCategory.getEntityTableName(),iCategoryId));
+      return(EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),com.idega.block.contract.data.ContractCategoryBMPBean.getEntityTableName(),iCategoryId));
 
     }
 
@@ -302,7 +302,7 @@ public abstract class ContractFinder {
 
     try {
 
-      return(EntityFinder.findAllByColumn(new Contract(),Contract.getColumnNameStatus(),S));
+      return(EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),com.idega.block.contract.data.ContractBMPBean.getColumnNameStatus(),S));
 
     }
 
@@ -320,7 +320,7 @@ public abstract class ContractFinder {
 
     try {
 
-      return(EntityFinder.findAllByColumn(new Contract(),Contract.getColumnNameStatus(),S,Contract.getColumnNameCategoryId(),String.valueOf(iCategoryId)));
+      return(EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),com.idega.block.contract.data.ContractBMPBean.getColumnNameStatus(),S,com.idega.block.contract.data.ContractBMPBean.getColumnNameCategoryId(),String.valueOf(iCategoryId)));
 
     }
 
@@ -338,7 +338,7 @@ public abstract class ContractFinder {
 
     try {
 
-      return(EntityFinder.findAllByColumn(new Contract(),Contract.getColumnNameStatus(),S));
+      return(EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),com.idega.block.contract.data.ContractBMPBean.getColumnNameStatus(),S));
 
     }
 
@@ -356,7 +356,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return EntityFinder.findAllByColumn(new ContractTag(),ContractTag.getColumnNameCategoryId(),iCategoryId);
+			return EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractTagHome)com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class)).createLegacy(),com.idega.block.contract.data.ContractTagBMPBean.getColumnNameCategoryId(),iCategoryId);
 
 		}
 
@@ -378,7 +378,7 @@ public abstract class ContractFinder {
 
 			EntityFinder.debug = true;
 
-			List L =  EntityFinder.findAllByColumn(new ContractTag(),ContractTag.getColumnNameCategoryId(),String.valueOf(iCategoryId),ContractTag.getColumnNameInUse(),"Y");
+			List L =  EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractTagHome)com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class)).createLegacy(),com.idega.block.contract.data.ContractTagBMPBean.getColumnNameCategoryId(),String.valueOf(iCategoryId),com.idega.block.contract.data.ContractTagBMPBean.getColumnNameInUse(),"Y");
 
 			EntityFinder.debug = false;
 
@@ -402,7 +402,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return EntityFinder.findAllByColumn(new ContractTag(),ContractTag.getColumnNameCategoryId(),String.valueOf(iCategoryId),ContractTag.getColumnNameInList(),"Y");
+			return EntityFinder.findAllByColumn(((com.idega.block.contract.data.ContractTagHome)com.idega.data.IDOLookup.getHomeLegacy(ContractTag.class)).createLegacy(),com.idega.block.contract.data.ContractTagBMPBean.getColumnNameCategoryId(),String.valueOf(iCategoryId),com.idega.block.contract.data.ContractTagBMPBean.getColumnNameInList(),"Y");
 
 		}
 
@@ -422,7 +422,7 @@ public abstract class ContractFinder {
 
     try {
 
-      ICObjectInstance obj = new ICObjectInstance(instanceid );
+      ICObjectInstance obj = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(instanceid );
 
       return listOfEntityForObjectInstanceId(obj);
 
@@ -442,7 +442,7 @@ public abstract class ContractFinder {
 
     try {
 
-      List L = EntityFinder.findRelated(obj,new ContractCategory());
+      List L = EntityFinder.findRelated(obj,((com.idega.block.contract.data.ContractCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class)).createLegacy());
 
       return L;
 
@@ -462,7 +462,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return EntityFinder.findAll(new ContractCategory());
+			return EntityFinder.findAll(((com.idega.block.contract.data.ContractCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class)).createLegacy());
 
 		}
 
@@ -540,7 +540,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return new ContractText(id);
+			return ((com.idega.block.contract.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(id);
 
 		}
 
@@ -564,7 +564,7 @@ public abstract class ContractFinder {
 
 			try {
 
-				return EntityFinder.findRelated(eContract,new ICFile());
+				return EntityFinder.findRelated(eContract,((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy());
 
 			}
 
@@ -586,7 +586,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return new ContractText().getMaxColumnValue(ContractText.getOrdinalColumnName());
+			return ((com.idega.block.contract.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy().getMaxColumnValue(com.idega.block.contract.data.ContractTextBMPBean.getOrdinalColumnName());
 
 		}
 
@@ -608,7 +608,7 @@ public abstract class ContractFinder {
 
 			EntityFinder.debug = true;
 
-			List L = EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),iCategoryId,ContractText.getOrdinalColumnName());
+			List L = EntityFinder.findAllByColumnOrdered(((com.idega.block.contract.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy(),com.idega.block.contract.data.ContractTextBMPBean.getColumnNameCategoryId(),iCategoryId,com.idega.block.contract.data.ContractTextBMPBean.getOrdinalColumnName());
 
 			EntityFinder.debug = false;
 
@@ -632,7 +632,7 @@ public abstract class ContractFinder {
 
 	  try {
 
-			return EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),iCategoryId,ContractText.getOrdinalColumnName());
+			return EntityFinder.findAllByColumnOrdered(((com.idega.block.contract.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy(),com.idega.block.contract.data.ContractTextBMPBean.getColumnNameCategoryId(),iCategoryId,com.idega.block.contract.data.ContractTextBMPBean.getOrdinalColumnName());
 
 		}
 

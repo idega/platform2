@@ -353,7 +353,7 @@ private IWResourceBundle iwrb;
 		if(sValFrom !=null && sValTo !=null && !sValFrom.equals(sValTo)){
 			if(sStatus == null){
 				Map M = mapOfTagsInResponse(iwc,iCategoryId);
-				sStatus = Contract.statusCreated;
+				sStatus = com.idega.block.contract.data.ContractBMPBean.statusCreated;
 				idegaTimestamp today = idegaTimestamp.RightNow();
 				idegaTimestamp ValFrom = sValFrom!=null ? new idegaTimestamp(sValFrom):today;
 				idegaTimestamp ValTo = sValTo!=null ?new idegaTimestamp(sValTo):today;

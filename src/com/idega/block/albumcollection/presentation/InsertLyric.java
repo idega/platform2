@@ -72,7 +72,7 @@ public class InsertLyric extends IWAdminWindow {
       if(lyrId != null && !lyrId.equals("")){
         _fieldLyricId = new HiddenInput(_fieldNameLyricId,lyrId);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
-          lyric = new Lyric(Integer.parseInt(lyrId));
+          lyric = ((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(Integer.parseInt(lyrId));
         }
       }
       myForm.add(_fieldLyricId);
@@ -94,7 +94,7 @@ public class InsertLyric extends IWAdminWindow {
       _fieldLyricName.setContent(lyric.getName());
     } else if(iwc.getParameter(_fieldNameLyricName)==null){
       try {
-        _fieldLyricName.setContent(new Track(Integer.parseInt(iwc.getParameter(_fieldNameTrackId))).getName());
+        _fieldLyricName.setContent(((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(_fieldNameTrackId))).getName());
       }
       catch (Exception ex) {
         // do nothing, can be normal if lyric does not link to any track
@@ -131,7 +131,7 @@ public class InsertLyric extends IWAdminWindow {
       }
     }
     if(lyric != null){
-      int[] IDs = lyric.findRelatedIDs(Author.getStaticInstance(Author.class));
+      int[] IDs = lyric.findRelatedIDs(com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
       for (int i = 0; i < IDs.length; i++) {
         _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }

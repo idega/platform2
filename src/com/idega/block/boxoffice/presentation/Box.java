@@ -120,7 +120,7 @@ public Box(String attribute){
     }
 
     if ( _newObjInst ) {
-      _boxID = BoxFinder.getRelatedEntityId(new ICObjectInstance(getICObjectInstanceID()));
+      _boxID = BoxFinder.getRelatedEntityId(((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
     }
 
     if(_boxID > 0) {
