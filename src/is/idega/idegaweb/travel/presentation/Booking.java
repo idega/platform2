@@ -300,7 +300,7 @@ public class Booking extends TravelManager {
       }
 
 
-      System.err.println("isDayVisible : "+isDayVisible);
+      //System.err.println("isDayVisible : "+isDayVisible);
       boolean yearly = timeframe.getIfYearly();
       List depDays = null;
 
@@ -320,7 +320,7 @@ public class Booking extends TravelManager {
           }
         }
       }
-      System.err.println("isDayVisible 2 : "+isDayVisible);
+      //System.err.println("isDayVisible 2 : "+isDayVisible);
 
 
       if (isDayVisible) {

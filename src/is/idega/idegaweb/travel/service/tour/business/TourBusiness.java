@@ -281,7 +281,6 @@ public class TourBusiness extends TravelStockroomBusiness {
           int numberOfDays = tour.getNumberOfDays();
             if (numberOfDays < 1) numberOfDays = 1;
 
-
           if (from == null) {
             from = new idegaTimestamp(tFrom);
           }
@@ -292,14 +291,13 @@ public class TourBusiness extends TravelStockroomBusiness {
           int toMonth = tTo.getMonth();
           int toM = to.getMonth();
           int fromM = from.getMonth();
+          int yearsBetween = 0;
 
           to.addDays(1);
-
 
             if (yearly) {
               int fromYear = tFrom.getYear();
               int toYear   = tTo.getYear();
-
               int fromY = from.getYear();
               int toY = to.getYear();
 
@@ -320,6 +318,7 @@ public class TourBusiness extends TravelStockroomBusiness {
               to = new idegaTimestamp(from);
                 to.addDays(daysBetween);
 
+              yearsBetween = to.getYear() - toY;
             }
 
 
@@ -327,15 +326,20 @@ public class TourBusiness extends TravelStockroomBusiness {
           idegaTimestamp stamp = new idegaTimestamp(from);
           idegaTimestamp temp;
 
-//          System.err.println("from : "+from);
-//          System.err.println("to   : "+to);
 
           while (to.isLaterThan(stamp)) {
             temp = getNextAvailableDay(iwc, service, stamp);
             if (temp != null) {
-              returner.add(temp);
-              stamp = new idegaTimestamp(temp);
-            }else {
+              if (isBetweenTimestamps(tFrom, tTo, temp, yearly)) {
+                if (yearly) {
+                  temp.addYears(-yearsBetween);
+                }
+                returner.add(temp);
+                stamp = new idegaTimestamp(temp);
+                if (yearly) {
+                  stamp.addYears(yearsBetween);
+                }
+              }
             }
             stamp.addDays(numberOfDays);
           }
@@ -365,9 +369,6 @@ public class TourBusiness extends TravelStockroomBusiness {
       return null;
     }
   }
-
-
-
 
 
 }

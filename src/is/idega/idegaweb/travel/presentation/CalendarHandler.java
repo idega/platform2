@@ -329,14 +329,14 @@ public class CalendarHandler extends TravelManager {
         }
         else if (_supplier != null) {
           for (int i = 0; i < depDays.size(); i++) {
-            System.err.println("trying");
+            //System.err.println("trying");
             temp = (idegaTimestamp) depDays.get(i);
             if (seats > 0 && seats <= Booker.getNumberOfBookings(_productId, temp) ) {
-            System.err.println("bookings...");
+            //System.err.println("bookings...");
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
             }else {
-            System.err.println("not..");
+            //System.err.println("not..");
               sm.setDayColor(temp, colorForAvailableDay);
               sm.setDayFontColor(temp,colorForAvailableDayText);
             }

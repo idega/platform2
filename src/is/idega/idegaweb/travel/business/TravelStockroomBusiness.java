@@ -596,7 +596,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           if (result != null) {
             if (result.length > 0)
             if (!result[0].equals("0")) {
-              System.err.println("Result.length = "+result.length);
+              //System.err.println("Result.length = "+result.length);
               returner = true;
             }
           }
@@ -789,6 +789,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       int toMonth = tTo.getMonth();
       int toM = to.getMonth();
       int fromM = from.getMonth();
+      int yearsBetween = 0;
 
       to.addDays(1);
 
@@ -816,6 +817,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         to = new idegaTimestamp(from);
           to.addDays(daysBetween);
 
+        yearsBetween = to.getYear() - toY;
       }
 
       idegaTimestamp stamp = new idegaTimestamp(from);
@@ -836,8 +838,10 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       while (to.isLaterThan(stamp)) {
         for (int i = 0; i < weekDays.length; i++) {
           if (stamp.getDayOfWeek() == weekDays[i]) {
+            if (yearly) stamp.addYears(-yearsBetween);
             returner.add(stamp);
             stamp = new idegaTimestamp(stamp);
+            if (yearly) stamp.addYears(yearsBetween);
           }
         }
         stamp.addDays(1);
@@ -850,5 +854,40 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
+  public static boolean isWithinTimeframe(Timeframe timeframe, idegaTimestamp stamp) {
+    boolean yearly = timeframe.getIfYearly();
+    idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
+    idegaTimestamp to   = new idegaTimestamp(timeframe.getTo());
+    return isBetweenTimestamps(from, to, stamp,yearly);
+  }
+
+  public static boolean isBetweenTimestamps(idegaTimestamp fromStamp, idegaTimestamp toStamp, idegaTimestamp stampToCheck, boolean yearly) {
+    idegaTimestamp from = new idegaTimestamp(fromStamp);
+    idegaTimestamp to = new idegaTimestamp(toStamp);
+    //from.addDays(-1);
+    from.setHour(0);
+    from.setMinute(0);
+    from.setSecond(0);
+    to.addDays(1);
+
+    if (yearly) {
+      idegaTimestamp temp = new idegaTimestamp(stampToCheck);
+      if (from.getYear() == to.getYear()) {
+        temp.setYear(from.getYear());
+        return (temp.isLaterThan(from) && to.isLaterThan(temp));
+      }else {
+        if (temp.getYear() >= to.getYear()) {
+          if (temp.getMonth() > to.getMonth()) {
+            temp.setYear(from.getYear());
+          }else {
+            temp.setYear(to.getYear() );
+          }
+        }
+        return isBetweenTimestamps(from, to, temp, false);
+      }
+    }else {
+      return (stampToCheck.isLaterThan(from) && to.isLaterThan(stampToCheck));
+    }
+  }
 
 }
