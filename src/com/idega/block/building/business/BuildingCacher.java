@@ -219,21 +219,33 @@ public class BuildingCacher {
     return (Apartment)hApartments.get(new Integer(id));
   }
 
-	public static int getNumberOfComplexes(){
-		return getComplexes().size();
-	}
+  public static int getNumberOfComplexes(){
+    return getComplexes().size();
+  }
 
-	public static int getNumberOfBuildings(){
-		return getBuildings().size();
-	}
+  public static int getNumberOfBuildings(){
+    return getBuildings().size();
+  }
 
-	public static int getNumberOfApartments(){
-		return getApartments().size();
-	}
+  public static int getNumberOfApartments(){
+    return getApartments().size();
+  }
 
-	public static int getNumberOfFloors(){
-		return getFloors().size();
-	}
+  public static int getNumberOfFloors(){
+    return getFloors().size();
+  }
+
+  public static String getApartmentString(int iApartmentId){
+    Apartment A = getApartment(iApartmentId);
+    StringBuffer string = new StringBuffer(A.getName());
+    string.append(" ");
+    Floor F = getFloor(A.getFloorId());
+    string.append(F.getName());
+    string.append(" ");
+    Building B = getBuilding(F.getBuildingId());
+    string.append(B.getName());
+    return string.toString();
+  }
 
 
 } // Class end
