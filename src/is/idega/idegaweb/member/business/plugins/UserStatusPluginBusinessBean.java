@@ -22,7 +22,7 @@ import com.idega.user.data.User;
 
 /**
  * @author palli
- * 
+ * THIS CLASS WAS COPIED TO com.idega.user.business.plugin
  * To change this generated comment go to Window>Preferences>Java>Code
  * Generation>Code and Comments
  */
