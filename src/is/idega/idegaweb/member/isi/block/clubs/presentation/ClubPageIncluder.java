@@ -21,6 +21,7 @@ public class ClubPageIncluder extends PageIncluder {
 	public static String BUNDLE_PROPERTY_ROOT_CLUB_ID = "ROOT_CLUB_ID";
 	public static String PARAM_ROOT_CLUB_ID = "RO_CL_ID";
 	public static String PARAM_CALLING_PAGE_ID = "CL_PA_ID";
+	public static String PARAM_DIVISION_INFO_PAGE_ID = "DI_INF_PA_ID";
 	public static String PARAM_CALLING_DOMAIN = "CL_DM";
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -29,6 +30,7 @@ public class ClubPageIncluder extends PageIncluder {
 	private ICPage page;
 	private String rootClubParamName = null; // id of club is sent with this parametere (if not null)
 	private String _callingDomain = null;
+	public static String _divisionInfoPageId = null;
 	
 	public ClubPageIncluder() {
 		super();
@@ -81,6 +83,10 @@ public class ClubPageIncluder extends PageIncluder {
 			if(_callingDomain!=null) {
 				finalUrl.append("&").append(PARAM_CALLING_DOMAIN).append("=").append( _callingDomain );
 			}
+			
+			if(_divisionInfoPageId!=null) {
+				finalUrl.append("&").append(PARAM_DIVISION_INFO_PAGE_ID).append("=").append( _divisionInfoPageId );
+			}
 			/*else {
 			 //the page the includer is currently on
 			  IWApplicationContext iwac = iwc.getIWMainApplication().getIWApplicationContext();
@@ -112,5 +118,9 @@ public class ClubPageIncluder extends PageIncluder {
 	
 	public void setCallingDomain(String callingDomain) {
 		_callingDomain = callingDomain;
+	}
+	
+	public void setDivisionInfoPageId(ICPage page) {
+		_divisionInfoPageId = page.getPrimaryKey().toString();
 	}
 }

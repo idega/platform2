@@ -38,13 +38,14 @@ public class ClubInfoBar extends Block {
 	public static final String PARAM_NAME_SHOW_PLAYERS_CALENDAR_LINK = "show_pla_cal_links";
 	
 	private String pageId = null;
+	private String divisionInfoPageId = null;
 	
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
 	
 	private String _callingDomain = null;
 	
 	public void main(IWContext iwc) {
-	    
+	    divisionInfoPageId = iwc.getParameter(ClubPageIncluder.PARAM_DIVISION_INFO_PAGE_ID);
 		pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
 		_callingDomain = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_DOMAIN);
 		
@@ -106,8 +107,17 @@ public class ClubInfoBar extends Block {
 		});
 		
 		String divName = division.getName();
-		
-		CSSMenu topLevelMenu = menuBar.createCSSMenu(division.getName());
+		CSSMenu topLevelMenu;
+		if(divisionInfoPageId!=null) {
+			Link link = new Link(division.getName());
+			link.setPage(Integer.parseInt(divisionInfoPageId));
+			if(_callingDomain!=null && _callingDomain.length()>0) {
+				link.setHostname(_callingDomain);
+			}
+			topLevelMenu = menuBar.createCSSMenu(division.getName(), link);
+		} else {
+			topLevelMenu = menuBar.createCSSMenu(division.getName());
+		}
 		menuBar.add(topLevelMenu);
 		
 		Iterator playerGroupIter = playerGroups.iterator();
