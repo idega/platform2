@@ -576,6 +576,9 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 		return (UserBusiness)this.getServiceInstance(UserBusiness.class);	
 	}
 	
+	/**
+	 * @deprecated use registerAsDeceased(User user, Date deceasedDate, User performer)
+	 */
 	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException {
 		removeAllFamilyRelationsForUser(user);
 		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);

@@ -1,6 +1,6 @@
 /*
- * $Id: FamilyLogic.java,v 1.4 2004/09/04 23:37:31 gimmi Exp $
- * Created on 31.8.2004
+ * $Id: FamilyLogic.java,v 1.5 2004/09/06 10:54:11 joakim Exp $
+ * Created on 6.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -16,18 +16,19 @@ import java.util.Date;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.idega.business.IBOService;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/09/04 23:37:31 $ by $Author: gimmi $
+ *  Last modified: $Date: 2004/09/06 10:54:11 $ by $Author: joakim $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public interface FamilyLogic {
+public interface FamilyLogic extends IBOService {
 
 	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#getChildrenFor
@@ -200,6 +201,42 @@ public interface FamilyLogic {
 			java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsChildFor
+	 */
+	public void removeAsChildFor(User personToSet, User parent, User performer) throws RemoveException,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsParentFor
+	 */
+	public void removeAsParentFor(User parent, User child, User performer) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsCustodianFor
+	 */
+	public void removeAsCustodianFor(User custodian, User child, User performer) throws RemoveException,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsSpouseFor
+	 */
+	public void removeAsSpouseFor(User personToSet, User relatedPerson, User performer) throws RemoveException,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsCohabitantFor
+	 */
+	public void removeAsCohabitantFor(User personToSet, User relatedPerson, User performer) throws RemoveException,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAsSiblingFor
+	 */
+	public void removeAsSiblingFor(User personToSet, User relatedPerson, User performer) throws RemoveException,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#getChildRelationType
 	 */
 	public String getChildRelationType() throws java.rmi.RemoteException;
@@ -240,9 +277,21 @@ public interface FamilyLogic {
 	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException, java.rmi.RemoteException;
 
 	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#registerAsDeceased
+	 */
+	public void registerAsDeceased(User user, Date deceasedDate, User performer) throws RemoteException,
+			java.rmi.RemoteException;
+
+	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#removeAllFamilyRelationsForUser
 	 */
 	public void removeAllFamilyRelationsForUser(User user) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#removeAllFamilyRelationsForUser
+	 */
+	public void removeAllFamilyRelationsForUser(User user, User performer) throws RemoteException,
+			java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#setFamilyForUser
@@ -250,8 +299,12 @@ public interface FamilyLogic {
 	public void setFamilyForUser(String familyiNr, User user) throws RemoteException, CreateException,
 			java.rmi.RemoteException;
 
+	/**
+	 * @see is.idega.block.family.business.FamilyLogicBean#updateFamilyForUser
+	 */
+	public void updateFamilyForUser(String familyNr, User user) throws RemoteException, CreateException,
+			java.rmi.RemoteException;
 
-	public void updateFamilyForUser(String familyNr, User user) throws RemoteException, CreateException;
 	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#getFamily
 	 */
