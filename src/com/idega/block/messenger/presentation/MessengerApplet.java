@@ -40,6 +40,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
   private static String LOG_OUT = "log_out";
+  private boolean loggingOff = false;
 
 
   private String sessionId;
@@ -70,14 +71,12 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   /**Construct the applet*/
   public MessengerApplet() {
+    /**@todo make this a parameter*/
   }
 
 
   /**Initialize the applet*/
   public void init() {
-
-    //setBackground(Color.red);
-
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
       userId = this.getParameter(USER_ID, "-1");
@@ -91,6 +90,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       e.printStackTrace(System.err);
     }
 
+    setBackground(Color.white);
     alertSound = getAudioClip(getCodeBase(),"notify.au");
 
   }
@@ -226,19 +226,15 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     try{
 
-     // if( isfirstRun ){
         if( packetToServlet == null) packetToServlet = new Packet();
 
-        packetToServlet.addProperty(new Property(SESSION_ID,sessionId));
-        packetToServlet.addProperty(new Property(USER_ID,userId));
-        /**@todo: send the latest version*/
-        packetToServlet.addProperty(new Property(USER_LIST_VERSION,userListVersion));
+        if( !loggingOff ){
+          packetToServlet.addProperty(new Property(SESSION_ID,sessionId));
+          packetToServlet.addProperty(new Property(USER_ID,userId));
+          packetToServlet.addProperty(new Property(USER_LIST_VERSION,userListVersion));
+          packetToServlet.setSender(sessionId);
+        }
 
-        packetToServlet.setSender(sessionId);
-     //   isfirstRun = false;
-     // }
-
-     // if( packetToServlet != null ){
         System.out.println("sending packets");
         outputToServlet = new ObjectOutputStream(conn.getOutputStream());
         // serialize the object
@@ -248,7 +244,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         outputToServlet.close();
 
         System.out.println("Sending Complete.");
-     // }
 
     }
     catch (IOException e){
@@ -466,11 +461,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
   /**Stop the applet*/
   public void stop() {
-    packetToServlet = new Packet();
-    packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
-    sendPacket(this.getURLConnection());
-
-
     if ( t != null ){
       runThread = false;
     }
@@ -478,6 +468,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     if(cycler!=null){
      cycler.stop();
     }
+
+    packetToServlet = new Packet();
+    packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
+    loggingOff = true;
+    sendPacket(this.getURLConnection());
 
   }
 

@@ -36,9 +36,9 @@ public class ClientManager implements PacketManager{
   public void clientCheckIn(String sessionId, String userId){
     try{
       User user = new User(Integer.parseInt(userId));
-      clients.put(sessionId,user);
+      ClientManager.clients.put(sessionId,user);
       removeDoubleRegistry(sessionId,userId);
-      reverseClients.put(userId,sessionId);
+      ClientManager.reverseClients.put(userId,sessionId);
       version++;
     }
     catch(SQLException e){
@@ -49,14 +49,15 @@ public class ClientManager implements PacketManager{
 
   public void clientCheckOut(String sessionId){//debug here is the place if you want to store offline messages
     System.out.println("ClientManager:LOGGIN OFF USER : "+this.getClientName(sessionId)+" sessionid "+sessionId);
-    User user = (User) clients.get(sessionId);
-    reverseClients.remove(Integer.toString(user.getID()));
-    clients.remove(sessionId);
+    User user = (User) ClientManager.clients.get(sessionId);
+    ClientManager.reverseClients.remove(Integer.toString(user.getID()));
+    ClientManager.clients.remove(sessionId);
+    user = null;
     version++;
   }
 
   public synchronized static String getClientName(String sessionId){
-    User user = (User) clients.get(sessionId);
+    User user = (User) ClientManager.clients.get(sessionId);
     if( user!=null ){
       return user.getName();
     }
@@ -73,7 +74,7 @@ public class ClientManager implements PacketManager{
       Vector props = packet.getProperties();
       if( props!=null ){
         int length = props.size();
-        //System.out.println("ClientManager : PropSize is: "+length);
+        System.out.println("ClientManager : PropSize is: "+length);
 
         for (int i = 0; i < length; i++) {
           Property prop = (Property) props.elementAt(i);
@@ -141,13 +142,13 @@ public class ClientManager implements PacketManager{
     System.out.println("ClientManager: removeDoubleRegistry new sessionId : "+sessionId);
 
     boolean existed = false;
-    String fromId = (String) reverseClients.get(userId);
+    String fromId = (String) ClientManager.reverseClients.get(userId);
     if( fromId!=null){
       System.out.println("ClientManager: removeDoubleRegistry old sessionId : "+fromId);
       MessageManager.moveMessages(fromId,sessionId);
 
-      clients.remove(fromId);
-      reverseClients.remove(userId);//old reference
+      ClientManager.clients.remove(fromId);
+      ClientManager.reverseClients.remove(userId);//old reference
 
       existed = true;
     }
