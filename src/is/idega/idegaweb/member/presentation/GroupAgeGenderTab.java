@@ -1,16 +1,19 @@
 package is.idega.idegaweb.member.presentation;
 
+import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
+
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
 
-import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
-
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -29,6 +32,10 @@ public class GroupAgeGenderTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "age_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Age/Gender";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "group_age_gender_tab";
+	
   
   // field
   private CheckBox maleField;
@@ -218,7 +225,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-    Table table = new Table(2,9);
+    Table table = new Table(2,10);
     table.add(femaleText,1, 1);
     table.add(femaleField,2,1);
     table.add(maleText,1,2);
@@ -235,6 +242,8 @@ public class GroupAgeGenderTab extends UserGroupTab {
     table.add(lowerAgeTooSmallField,1,7);
     table.add(upperAgeTooLargeField,1,8);
     table.add(lowerAgeGreaterThanUpperAgeField,1,9);
+    Help help = getHelpButton();
+    table.add(help,1,10);
     add(table);
 	}
 	/**
@@ -426,6 +435,17 @@ public class GroupAgeGenderTab extends UserGroupTab {
     }
     return business;
   }
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
+	}
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;

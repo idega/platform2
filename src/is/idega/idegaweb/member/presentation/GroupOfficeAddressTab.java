@@ -2,10 +2,13 @@ package is.idega.idegaweb.member.presentation;
 
 import java.util.Hashtable;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -26,6 +29,9 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "grp_oaddr_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Address";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "group_office_address_tab";
 
 	private TextInput streetField;
 	private TextInput cityField;
@@ -129,22 +135,22 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		streetText = new Text(iwrb.getLocalizedString(streetFieldName,"Street"));
-		streetText.setFontSize(fontSize);
+//		streetText.setFontSize(fontSize);
 
 		cityText = new Text(iwrb.getLocalizedString(cityFieldName,"City"));
-		cityText.setFontSize(fontSize);
+//		cityText.setFontSize(fontSize);
 
 		provinceText = new Text(iwrb.getLocalizedString(provinceFieldName,"Province"));
-		provinceText.setFontSize(fontSize);
+//		provinceText.setFontSize(fontSize);
 
 		postalCodeText = new Text(iwrb.getLocalizedString(postalCodeFieldName,"Postal"));
-		postalCodeText.setFontSize(fontSize);
+//		postalCodeText.setFontSize(fontSize);
 
 		countryText = new Text(iwrb.getLocalizedString(countryFieldName,"Country"));
-		countryText.setFontSize(fontSize);
+//		countryText.setFontSize(fontSize);
 
 		poBoxText = new Text(iwrb.getLocalizedString(poBoxFieldName,"P.O.Box"));
-		poBoxText.setFontSize(fontSize);
+//		poBoxText.setFontSize(fontSize);
 
 	}
 
@@ -176,7 +182,7 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		add(addressTable);
 		//    fpane.add(addressTable);
 
-		Table addressTable2 = new Table(2, 2);
+		Table addressTable2 = new Table(2, 3);
 
 		addressTable2.setWidth("100%");
 		addressTable2.setCellpadding(0);
@@ -194,6 +200,11 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 				
 		addressTable2.add(poBoxText, 1, 2);
 		addressTable2.add(poBoxField, 2, 2);
+		
+		Help help = getHelpButton();
+		
+		addressTable2.add(help,1,3);
+		
 
 		add(addressTable2);
 		//    fpane.add(addressTable2);
@@ -309,6 +320,17 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 			e.printStackTrace();
 			System.err.println("AddressInfoTab error initFieldContents, groupId : " + getGroupId());
 		}
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 	
 	public String getBundleIdentifier() {

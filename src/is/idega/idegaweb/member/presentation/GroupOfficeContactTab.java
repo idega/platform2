@@ -2,11 +2,14 @@ package is.idega.idegaweb.member.presentation;
 
 import java.sql.SQLException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
@@ -24,6 +27,9 @@ public class GroupOfficeContactTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "grp_ocon_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Contact";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "group_office_contact_tab";
 
 	private TextInput homePhoneField;
 	private TextInput workPhoneField;
@@ -178,26 +184,26 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		homePhoneText = new Text(iwrb.getLocalizedString(homePhoneFieldName,"Phone 1") + ":");
-		homePhoneText.setFontSize(fontSize);
+//		homePhoneText.setFontSize(fontSize);
 
 		workPhoneText = new Text(iwrb.getLocalizedString(workPhoneFieldName,"Phone 2") + ":");
-		workPhoneText.setFontSize(fontSize);
+//		workPhoneText.setFontSize(fontSize);
 
 		mobilePhoneText = new Text(iwrb.getLocalizedString(mobilePhoneFieldName,"Phone 3") + ":");
-		mobilePhoneText.setFontSize(fontSize);
+//		mobilePhoneText.setFontSize(fontSize);
 
 		faxPhoneText = new Text(iwrb.getLocalizedString(faxPhoneFieldName,"Phone 4") + ":");
-		faxPhoneText.setFontSize(fontSize);
+//		faxPhoneText.setFontSize(fontSize);
 
 		emailText = new Text(iwrb.getLocalizedString(emailFieldName,"E-mail") + ":");
-		emailText.setFontSize(fontSize);
+//		emailText.setFontSize(fontSize);
 
 		homepageText = new Text(iwrb.getLocalizedString(homepageFieldName,"Homepage") + ":");
-		homepageText.setFontSize(fontSize);
+//		homepageText.setFontSize(fontSize);
 	}
 
 	public void lineUpFields() {
-		resize(1, 3);
+		resize(1, 4);
 
 		Table staffTable = new Table(3, 4);
 		staffTable.setWidth("100%");
@@ -233,6 +239,10 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		mailTable.add(homepageText, 1, 2);
 		mailTable.add(homepageField, 2, 2);
 		add(mailTable, 1, 3);
+		
+		Help help = getHelpButton();
+		add(help,1,4);
+		
 	}
 
 	public boolean collect(IWContext iwc) {
@@ -363,5 +373,16 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		catch (Exception e) {
 			System.err.println("GroupOfficeContactTab error initFieldContents, userId : " + getGroupId());
 		}
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 }

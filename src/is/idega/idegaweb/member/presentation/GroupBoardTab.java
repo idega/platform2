@@ -13,8 +13,11 @@ import java.util.Hashtable;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.user.data.Group;
@@ -35,6 +38,10 @@ public class GroupBoardTab extends UserGroupTab {
 	
 	private static final String TAB_NAME = "board_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Board";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "group_board_tab";
+
 	
 	private UserChooserBrowser _ssn1Field;
 	private UserChooserBrowser _ssn2Field;
@@ -141,13 +148,15 @@ public class GroupBoardTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2, 3);
+		Table t = new Table(2, 4);
 		t.add(_ssn1Text, 1, 1);
 		t.add(_ssn1Field, 2, 1);
 		t.add(_ssn2Text, 1, 2);
 		t.add(_ssn2Field, 2, 2);
 		t.add(_ssn3Text, 1, 3);
 		t.add(_ssn3Field, 2, 3);
+		Help help = getHelpButton();
+		t.add(help,1,4);
 
 		add(t);
 	}
@@ -236,5 +245,16 @@ public class GroupBoardTab extends UserGroupTab {
 		catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 }

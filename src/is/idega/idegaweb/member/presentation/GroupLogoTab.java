@@ -81,10 +81,12 @@ public class GroupLogoTab extends UserGroupTab {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		imageText = getTextObject();
+//		imageText = getTextObject();
+		imageText = new Text();
 		imageText.setText(iwrb.getLocalizedString(imageFieldName, "Image") + ":");
     
-		removeImageText = getTextObject();
+//		removeImageText = getTextObject();
+		removeImageText = new Text();
 		removeImageText.setText(iwrb.getLocalizedString(removeImageFieldName, "do not show an image"));
 	}
 
