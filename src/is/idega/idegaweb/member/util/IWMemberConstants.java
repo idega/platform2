@@ -94,6 +94,8 @@ public class IWMemberConstants {
 	public static final String MEMBER_STAND_IN = "stand_in";
 	public static final String MEMBER_CO_CHIEF = "co-chief";
 	public static final String MEMBER_CEO = "ceo";
+	public static final String MEMBER_PRESIDENT = "president";
+	public static final String MEMBER_VICE_PRESIDENT = "vice_president";
 	
 	public static final String STATUS_COACH = "STAT_COACH";
 	public static final String STATUS_ASSISTANT_COACH = "STAT_ASSCOACH";

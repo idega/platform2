@@ -47,6 +47,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.datastructures.SortedByValueMap;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -106,8 +107,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_STAND_IN);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CO_CHIEF);
     STATUS_OPTIONS.add(IWMemberConstants.MEMBER_CEO);
-
-    
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_PRESIDENT);
+    STATUS_OPTIONS.add(IWMemberConstants.MEMBER_VICE_PRESIDENT);
     FIELD_LIST = new ArrayList();
     FIELD_LIST.add(LEAGUE);
     FIELD_LIST.add(STATUS);
@@ -547,6 +548,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
             optionMap.put(status,display);
           }
         }
+        optionMap = new SortedByValueMap(optionMap);
         return optionMap;
       }
     };     
