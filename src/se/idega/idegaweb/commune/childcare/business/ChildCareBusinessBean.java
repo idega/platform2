@@ -458,7 +458,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
 		Collection users = getSchoolBusiness().getHeadmasters(application.getProvider());
-		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
+		User child = application.getChild();
+		Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID() };
 		
 		if (users != null) {
 			MessageBusiness messageBiz = getMessageBusiness();
@@ -1217,7 +1218,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
 			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			int contractID = ContractBusiness.createContract(2, validFrom, null, "C", null);
+			int contractID = ContractBusiness.createContract(application.getChildId(), 2, validFrom, null, "C", null);
 
 			application.setContractId(contractID);
 			application.setContractFileId(fileID);
