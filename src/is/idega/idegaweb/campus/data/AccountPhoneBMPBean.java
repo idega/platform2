@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.5 2004/06/05 07:34:26 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.6 2004/07/14 14:36:06 aron Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.5 2004/06/05 07:34:26 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.6 2004/07/14 14:36:06 aron Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.5 2004/06/05 07:34:26 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.6 2004/07/14 14:36:06 aron Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.5 2004/06/05 07:34:26 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.6 2004/07/14 14:36:06 aron Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -27,6 +27,9 @@ package is.idega.idegaweb.campus.data;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * 
@@ -172,6 +175,10 @@ public class AccountPhoneBMPBean
 	public String getViewName() {
 		// TODO Auto-generated method stub
 		return getEntityTableName();
+	}
+	
+	public Collection ejbFindByPhoneNumber(String number)throws FinderException{
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(getColumnNamePhoneNumber(),number));
 	}
 }
 

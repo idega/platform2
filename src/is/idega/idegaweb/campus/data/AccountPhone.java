@@ -1,12 +1,13 @@
 package is.idega.idegaweb.campus.data;
 
+import java.rmi.RemoteException;
 
-public interface AccountPhone extends com.idega.data.IDOLegacyEntity
+
+public interface AccountPhone extends com.idega.data.IDOEntity
 {
- public java.lang.Integer getAccountId();
- public java.lang.String getPhoneNumber();
- public java.sql.Date getValidFrom();
- public java.sql.Date getValidTo();
- public void setValidFrom(java.sql.Date p0);
- public void setValidTo(java.sql.Date p0);
+ public java.lang.Integer getAccountId()throws RemoteException;
+ public java.lang.String getPhoneNumber()throws RemoteException;
+ public java.sql.Date getValidFrom()throws RemoteException;
+ public java.sql.Date getValidTo()throws RemoteException;
+
 }

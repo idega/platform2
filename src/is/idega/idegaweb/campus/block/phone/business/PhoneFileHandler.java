@@ -2,6 +2,7 @@ package is.idega.idegaweb.campus.block.phone.business;
 
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
 import is.idega.idegaweb.campus.data.AccountPhone;
+import is.idega.idegaweb.campus.data.AccountPhoneHome;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -169,6 +170,7 @@ public class PhoneFileHandler {
 					AccountPhone ap;
 					Collection accountList;
 					AccountPhoneEntryHome apeHome = (AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class);
+					AccountPhoneHome accountPhoneHome = (AccountPhoneHome) IDOLookup.getHome(AccountPhone.class);
 					boolean foundAccount = false;
 					int listsize;
 					boolean cont = false;
@@ -219,7 +221,7 @@ public class PhoneFileHandler {
 									phoneNumbers.put(number, new Integer(1));
 									numberCount++;
 								}
-								accountList = apeHome.findByPhoneNumber(number);
+								accountList = accountPhoneHome.findByPhoneNumber(number); 
 								//if (M.containsKey(number)) {
 								if(!accountList.isEmpty()){
 									//accountList = (List) M.get(number);
