@@ -519,7 +519,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
         int row = 1;
         int numberOfMember = 0;
 
-        String headerColor = "#336661";
+        String headerColor = "#2C4E3B";
         String darkColor = "#DCEFDE";
         String lightColor = "#EAFAEC";
         String activeColor = darkColor;
