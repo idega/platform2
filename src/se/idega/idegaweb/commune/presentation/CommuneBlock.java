@@ -13,13 +13,17 @@ import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.InputContainer;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.InterfaceObjectContainer;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.ResetButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 
 /**
@@ -32,6 +36,25 @@ import com.idega.user.data.User;
  */
 
 public class CommuneBlock extends com.idega.presentation.Block {
+	
+	protected static String LOCALIZATION_SAVE_KEY="save";
+	protected static String PARAM_SAVE="cb_save";
+	protected static String LOCALIZATION_CANCEL_KEY="cancel";
+	protected static String PARAM_CANCEL="cb_cancel";
+	protected static String LOCALIZATION_EDIT_KEY="edit";
+	protected static String PARAM_EDIT="cb_edit";
+	protected static String LOCALIZATION_DELETE_KEY="delete";
+	protected static String PARAM_DELETE="cb_delete";
+	protected static String LOCALIZATION_COPY_KEY="copy";
+	protected static String PARAM_COPY="cb_copy";	
+	protected static String LOCALIZATION_CREATE_KEY="create";
+	protected static String PARAM_CREATE="cb_create";	
+	protected static String LOCALIZATION_CLOSE_KEY="close";
+	protected static String PARAM_CLOSE="cb_close";	
+	protected static String LOCALIZATION_SUBMIT_KEY="submit";
+	protected static String PARAM_SUBMIT="cb_submit";	
+	protected static String LOCALIZATION_RESET_KEY="reset";
+
 	public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
 	public final static String STYLENAME_TEXT = "Text";
@@ -349,6 +372,95 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		//temporary, will be moved to IWStyleManager for handling...
 		button.setHeight("20");
 		return (GenericButton) setStyle(button,STYLENAME_INTERFACE_BUTTON);
+	}
+	
+	protected GenericButton getSaveButton(){
+		return getSaveButton(PARAM_SAVE);
+	}	
+
+	protected GenericButton getSaveButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_SAVE_KEY,"Save")));
+		return button;
+	}
+	
+	protected GenericButton getCancelButton(){
+		return getCancelButton(PARAM_CANCEL);
+	}	
+
+	protected GenericButton getCancelButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_CANCEL_KEY,"Cancel")));
+		return button;
+	}
+	
+	protected GenericButton getEditButton(){
+		return getEditButton(PARAM_EDIT);
+	}	
+
+	protected GenericButton getEditButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_EDIT_KEY,"Edit")));
+		return button;
+	}
+	
+	protected GenericButton getDeleteButton(){
+		return getDeleteButton(PARAM_DELETE);
+	}	
+
+	protected GenericButton getDeleteButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_DELETE_KEY,"Delete")));
+		return button;
+	}
+
+	protected GenericButton getCopyButton(){
+		return getCopyButton(PARAM_COPY);
+	}	
+
+	protected GenericButton getCopyButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_COPY_KEY,"Copy")));
+		return button;
+	}
+	
+	protected GenericButton getCreateButton(){
+		return getCreateButton(PARAM_CREATE);
+	}	
+
+	protected GenericButton getCreateButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_CREATE_KEY,"Create")));
+		return button;
+	}
+	
+	protected GenericButton getSubmitButton(){
+		return getSubmitButton(PARAM_SUBMIT);
+	}	
+
+	protected GenericButton getSubmitButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_SUBMIT_KEY,"Submit")));
+		return button;
+	}
+	
+	protected GenericButton getResetButton(){
+		GenericButton button = getButton(new ResetButton(localize(LOCALIZATION_RESET_KEY,"Reset")));
+		return button;
+	}	
+
+	protected GenericButton getCloseButton(){
+		return getCloseButton(PARAM_CLOSE);
+	}	
+
+	protected GenericButton getCloseButton(String parameterName){
+		GenericButton button = getButton(new SubmitButton(parameterName,localize(LOCALIZATION_CLOSE_KEY,"Close")));
+		return button;
+	}
+		
+		
+	protected InputContainer getInputContainer(String textKey,PresentationObject inputObject){
+		return getInputContainer(textKey,textKey,inputObject);
+	}
+	
+	protected InputContainer getInputContainer(String textKey,String defaultTextValue,PresentationObject inputObject){
+		Text tText = this.getLocalizedSmallText(textKey,defaultTextValue);
+		InputContainer iCont = new InputContainer(tText,inputObject);
+		iCont.setCellWith(100);
+		return iCont;
 	}
 	
 	/**
