@@ -486,7 +486,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	}
 	
 	public void setShowAllCategories(boolean showAllCategories){
-		this.showAllCategories = !showAllCategories;
+		this.showAllCategories = showAllCategories;
 	}
 	public void setShowQuestionTitle (boolean showQuestionTitle){
 		this.showQuestionTitle = showQuestionTitle;
