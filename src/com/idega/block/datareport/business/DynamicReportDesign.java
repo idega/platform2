@@ -116,6 +116,7 @@ public class DynamicReportDesign {
 	private void initializeDocument(String name) {
 		_designDoc = new DesignDocument(name);
 	
+		// set A 4 paper size
 		_designDoc.setPageWidth(595);
 		_designDoc.setPageHeight(842);
 		_designDoc.setColumnWidth(540);
