@@ -52,6 +52,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	private static final String ACTION_REPORT_OVERVIEW ="iwme_wr_act_b10";
 	private static final String ACTION_CLOSE_REPORT ="iwme_wr_act_b11";
 	private static final String ACTION_STATISTICS ="iwme_wr_act_b12";
+	private static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
 	
 	private IWResourceBundle iwrb;
 	private List failedInserts;
@@ -73,14 +74,59 @@ public class WorkReportWindow extends IWAdminWindow {
 		memBiz = getMemberUserBusiness(iwc);
 		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
-
 		String action = iwc.getParameter(ACTION);
 			
+		Table table = new Table(2,1);
+		//table.mergeCells(1,2,3,1);
+		table.setWidthAndHeightToHundredPercent();
+		table.setColumnColor(1,this.MENU_COLOR);
+		table.setColumnWidth(1,"200");
+		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
+		
+		table.add(getMenuTable(iwc),1,1);
+			
+		add(table);
+		
 		if (action == null) {
-			addForm(iwc);
-		}else if (action.equals(ACTION_SAVE)) {
-			save(iwc);
+			
+		}else if(action.equals(ACTION_SAVE)) {
+			//save(iwc);
 		}
+		else if( action.equals(ACTION_WORK_ON_REPORT) ){
+			
+		}
+		else if( action.equals(ACTION_EDIT_MEMBER_LIST) ){
+			
+		}
+		else if( action.equals(ACTION_EDIT_ACCOUNT) ){
+			
+		}
+		else if( action.equals(ACTION_EDIT_BOARD) ){
+			
+		}
+		else if( action.equals(ACTION_UPLOAD_REPORT) ){
+			
+		}
+		else if( action.equals(ACTION_IMPORT_MEMBERS) ){
+			
+		}
+		else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
+			
+		}
+		else if( action.equals(ACTION_IMPORT_BOARD) ){
+			
+		}
+		else if( action.equals(ACTION_REPORT_OVERVIEW) ){
+			
+		}
+		else if( action.equals(ACTION_CLOSE_REPORT) ){
+			
+		}
+		else if( action.equals(ACTION_STATISTICS) ){
+			
+		}
+		
 
 	}
 	
@@ -108,36 +154,13 @@ public class WorkReportWindow extends IWAdminWindow {
 	}
 
 
-	private void addForm(IWContext iwc) {
-		Form form = new Form();
-		
-		Table table = new Table(2,1);
-		//table.mergeCells(1,2,3,1);
-		table.setWidthAndHeightToHundredPercent();
-		table.setColumnColor(1,this.MENU_COLOR);
-		table.setColumnWidth(1,"200");
-		
+	private Table getMenuTable(IWContext iwc) {
+	
 		Table menu = new Table(1,11);
 		menu.setWidth(Table.HUNDRED_PERCENT);
-		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
-		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
 		
 		Text operations = formatHeadline(iwrb.getLocalizedString("workreportwindow.operations","Operations"));
-		
-		LinkContainer createReports = new LinkContainer();
-		createReports.add(formatText(iwrb.getLocalizedString("workreportwindow.create_reports","Create reports"),true));
-		
-		//B.5		
-		LinkContainer uploadReport = new LinkContainer();
-		uploadReport.add(formatText(iwrb.getLocalizedString("workreportwindow.upload_report","Upload report"),true));
-		Lists uploadList = new Lists();
-		//B.7
-		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members","Import member list")));
-		//B.8
-		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_account","Import account info")));
-		//B.9
-		uploadList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_board","Import board info")));
-		
+				
 		//B.1
 		LinkContainer workOnReport = new LinkContainer();
 		workOnReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report","Select report"),true));
@@ -148,14 +171,37 @@ public class WorkReportWindow extends IWAdminWindow {
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
 		//B.4
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
-
+		
+		//B.5		
+		LinkContainer uploadReport = new LinkContainer();
+		uploadReport.add(formatText(iwrb.getLocalizedString("workreportwindow.upload_report","Upload report"),true));
+		uploadReport.addParameter(ACTION,ACTION_UPLOAD_REPORT);
+		Lists uploadList = new Lists();
+		//B.7
+		LinkContainer importMemberList = new LinkContainer();
+		importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members","Import member list")));
+		importMemberList.addParameter(ACTION,ACTION_IMPORT_MEMBERS);
+		uploadList.add(importMemberList);
+		//B.8
+		LinkContainer importAccount = new LinkContainer();
+		importAccount.add(formatText(iwrb.getLocalizedString("workreportwindow.import_account","Import account info")));
+		importAccount.addParameter(ACTION,ACTION_IMPORT_ACCOUNT);
+		uploadList.add(importAccount);
+		//B.9
+		LinkContainer importBoard = new LinkContainer();
+		importBoard.add(formatText(iwrb.getLocalizedString("workreportwindow.import_board","Import board info")));
+		importBoard.addParameter(ACTION,ACTION_IMPORT_BOARD);
+		uploadList.add(importBoard);
+		
 		//B.10
 		LinkContainer reportsOverview = new LinkContainer();
 		reportsOverview.add(formatText(iwrb.getLocalizedString("workreportwindow.report_overview","Reports overview"),true));
+		reportsOverview.addParameter(ACTION,ACTION_REPORT_OVERVIEW);
 		
 		//B.11
 		LinkContainer closeReport = new LinkContainer();
 		closeReport.add(formatText(iwrb.getLocalizedString("workreportwindow.close_report","Close report"),true));
+		reportsOverview.addParameter(ACTION,ACTION_CLOSE_REPORT);
 		
 		//B.12
 		Text statistics = formatHeadline(iwrb.getLocalizedString("workreportwindow.statistics","Statistics"));
@@ -168,7 +214,11 @@ public class WorkReportWindow extends IWAdminWindow {
 		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list","Reports list")));
 		statsList.add(formatText(iwrb.getLocalizedString("workreportwindow.misc","Misc")));		
 		
-
+		//B.13
+		LinkContainer createReports = new LinkContainer();
+		createReports.add(formatText(iwrb.getLocalizedString("workreportwindow.create_reports","Create reports"),true));
+		createReports.addParameter(ACTION,ACTION_CREATE_REPORTS);
+		
 		//add to window
 		menu.add(operations,1,1);
 		menu.add(createReports,1,2);
@@ -181,10 +231,8 @@ public class WorkReportWindow extends IWAdminWindow {
 		menu.add(statistics,1,10);
 		menu.add(statsList,1,11);
 		
-		form.add(table);
-		table.add(menu,1,1);
-				
-		add(form);
+		
+		return menu;
 		
 	
 		/*List groups = null;
