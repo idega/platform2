@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.6 2003/08/21 15:58:22 anders Exp $
+ * $Id: ButtonPanel.java,v 1.7 2003/08/23 21:02:38 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,15 +18,15 @@ import com.idega.builder.data.IBPage;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/21 15:58:22 $
+ * Last modified: $Date: 2003/08/23 21:02:38 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
 
-	private final static int COLUMN_WIDTH = 40;
+//	private final static int COLUMN_WIDTH = 40;
 	
 	private Table table = null;
 	private int buttonColumn = 1; 
@@ -89,6 +89,6 @@ public class ButtonPanel extends AccountingBlock {
 		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
-		table.setWidth(buttonColumn * COLUMN_WIDTH);
+//		table.setWidth(buttonColumn * COLUMN_WIDTH);
 	}
 }

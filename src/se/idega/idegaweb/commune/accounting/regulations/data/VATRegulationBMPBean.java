@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.4 2003/08/21 15:58:22 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.5 2003/08/23 21:02:38 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/23 21:02:38 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -34,7 +34,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	private static final String COLUMN_PERIOD_TO = "period_to";
 	private static final String COLUMN_DESCRIPTION = "description";
 	private static final String COLUMN_VAT_PERCENT = "vat_percent";
-	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "direction_id";
+	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "payment_flow_type_id";
 	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
 	
 	/**
@@ -56,15 +56,14 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_PERIOD_FROM, "From period YYMM", true, true, Date.class);
-		addAttribute(COLUMN_PERIOD_TO, "To period YYMM", true, true, Date.class);
+		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
+		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_DESCRIPTION, "Description of the VAT regulation", true, true, java.lang.String.class);
 		addAttribute(COLUMN_VAT_PERCENT, "VAT percent value", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Direction of payment flow (foreign key)", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, java.lang.Integer.class);		
-		
-		addManyToOneRelationship(COLUMN_PAYMENT_FLOW_TYPE_ID, PaymentFlowType.class);
-		addManyToOneRelationship(COLUMN_PROVIDER_TYPE_ID, ProviderType.class);
+		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Direction of payment flow (foreign key)", true, true, 
+				Integer.class, "many-to-one", PaymentFlowType.class);
+		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, 
+				Integer.class, "many-to-one", ProviderType.class);
 	}
 
 	public Date getPeriodFrom() {
@@ -88,7 +87,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	}
 	
 	public ProviderType getProviderType() {
-		return (ProviderType) getColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID);	
+		return (ProviderType) getColumnValue(COLUMN_PROVIDER_TYPE_ID);	
 	}
 
 	public void setPeriodFrom(Date from) { 
@@ -123,7 +122,6 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
@@ -135,18 +133,18 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	 * @throws FinderException
 	 */
 	public Collection ejbFindByPeriod(Date from, Date to) throws FinderException {
-//		IDOQuery sql = idoQuery();
-//		sql.appendSelectAllFrom(this);
-//		sql.appendWhere(COLUMN_PERIOD_FROM);
-//		sql.appendGreaterThanOrEqualsSign();
-//		sql.append("'" + from + "'");
-//		sql.appendAnd();
-//		sql.appendLessThanOrEqualsSign();		
-//		sql.append("'" + to + "'");
-//		sql.appendOrderBy();
-//		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
-//		sql.appendCommaDelimited(s);
-//		return idoFindPKsByQuery(sql);
-		return idoFindPKsBySQL("select * from " + ENTITY_NAME);
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_PERIOD_FROM);
+		sql.appendGreaterThanOrEqualsSign();
+		sql.append("'" + from + "'");
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_FROM);
+		sql.appendLessThanOrEqualsSign();		
+		sql.append("'" + to + "'");
+		sql.appendOrderBy();
+		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		sql.appendCommaDelimited(s);
+		return idoFindPKsByQuery(sql);
 	}		  
 }
