@@ -238,7 +238,7 @@ public class RunRegistration extends Block{
     
     telField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_TEL), STYLENAME_INTERFACE);
     telField.setAsIntegers(iwrb.getLocalizedString("run_reg.tel_err_msg","Phonenumber must be integers"));
-    mobileField.setWidth(Table.HUNDRED_PERCENT);
+    telField.setWidth(Table.HUNDRED_PERCENT);
     
     mobileField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_MOBILE), STYLENAME_INTERFACE);
     mobileField.setAsIntegers(iwrb.getLocalizedString("run_reg.mob_err_msg","Mobilephonenumber must be integers"));
@@ -298,6 +298,9 @@ public class RunRegistration extends Block{
     int row = 1;
     int column = 1;
     int formRow = -1;
+    
+    t.add(iwrb.getLocalizedString("step", "Step") + " " + "1" + iwrb.getLocalizedString("of", "of") + "2", column, row++);
+    t.setHeight(row++, 12);
     
     t.mergeCells(column, row, t.getColumns(), row);
     t.add(redStar, column, row);
@@ -412,91 +415,75 @@ public class RunRegistration extends Block{
   
   private void stepTwo(IWContext iwc) {
     Table t = new Table();
+    t.setColumns(3);
     t.setCellpadding(0);
     t.setCellspacing(0);
-    t.setWidth(400);
+    t.setWidth(Table.HUNDRED_PERCENT);
+    int column = 1;
+    int row = 1;
+    int formRow = -1;
     
-    Table infoTable = new Table();
-    infoTable.setCellpadding(0);
-    infoTable.setCellspacing(0);
+    t.add(iwrb.getLocalizedString("step", "Step") + " " + "1" + iwrb.getLocalizedString("of", "of") + "2", column, row++);
+    t.setHeight(row++, 12);
     
-    Table chipTable = new Table();
-    chipTable.setCellpadding(0);
-    chipTable.setCellspacing(0);
-    chipTable.add(chipText,1,1);
-    chipTable.add(chipLink,1,1);
-    chipTable.add(ownChipField,1,2);
-    chipTable.add(Text.NON_BREAKING_SPACE,1,2);
-    chipTable.add(ownChipText,1,2);
-    chipTable.add(buyChipField,1,3);
-    chipTable.add(Text.NON_BREAKING_SPACE,1,3);
-    chipTable.add(buyChipText,1,3);
-    chipTable.add(rentChipField,1,4);
-    chipTable.add(Text.NON_BREAKING_SPACE,1,4);
-    chipTable.add(rentChipText,1,4);
-    if(iwc.getCurrentLocale().getLanguage().equals("is_IS")) {
-      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getBuyPrice())),1,3);
-      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getRentPrice())),1,4);
-    }
-    else {
-      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getBuyPrice())),1,3);
-      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getRentPrice())),1,4);
-    }
+    formRow = row;
+    t.add(chipText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(ownChipField, column, row);
+    t.add(Text.getNonBrakingSpace(), column, row);
+    t.add(ownChipText, column, row++);
+    t.add(buyChipField, column, row);
+    t.add(Text.getNonBrakingSpace(), column, row);
+    t.add(buyChipText, column, row++);
+    t.add(rentChipField, column, row);
+    t.add(Text.getNonBrakingSpace(), column, row);
+    t.add(rentChipText, column, row++);
     
-    Table groupCompTable = new Table();
-    groupCompTable.setCellpadding(0);
-    groupCompTable.setCellspacing(0);
-    groupCompTable.add(groupCompetitionField,1,1);
-    groupCompTable.add(Text.NON_BREAKING_SPACE,1,1);
-    groupCompTable.add(groupCompetitionText,1,1);
+    row = formRow;
+    column = 3;
     
-    Table groupNameTable = new Table();
-    groupNameTable.setCellpadding(0);
-    groupNameTable.setCellspacing(0);
-    groupNameTable.add(groupNameText,1,1);
-    groupNameTable.add(groupNameField,1,2);
+    t.add(groupCompetitionField, column, row);
+    t.add(Text.getNonBrakingSpace(), column, row);
+    t.add(groupCompetitionText, column, row++);
     
-    Table bestTimeTable = new Table();
-    bestTimeTable.setCellpadding(0);
-    bestTimeTable.setCellspacing(0);
-    bestTimeTable.add(bestTimeText,1,1);
-    bestTimeTable.add(bestTimeField,1,2);
+    t.setHeight(row++, 6);
     
-    Table goalTimeTable = new Table();
-    goalTimeTable.setCellpadding(0);
-    goalTimeTable.setCellspacing(0);
-    goalTimeTable.add(goalTimeText,1,1);
-    goalTimeTable.add(goalTimeField,1,2);
+    t.add(groupNameText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(groupNameField, column, row++);
     
-    Table buttonTable = new Table(7, 1);
+    t.setHeight(row++, 6);
+    
+    t.add(bestTimeText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(bestTimeField, column, row++);
+    
+    t.setHeight(row++, 6);
+    
+    t.add(goalTimeText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(goalTimeField, column, row++);
+    
+    t.setHeight(row++, 12);
+    
+    Table buttonTable = new Table(3, 1);
     buttonTable.setCellpadding(0);
     buttonTable.setCellspacing(0);
-    buttonTable.setWidth(2, 1, 3);
-    buttonTable.setWidth(4, 1, 12);
-    buttonTable.setWidth(6, 1, 3);
-    buttonTable.setWidth(Table.HUNDRED_PERCENT);
-    buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+    buttonTable.setWidth(2, 1, 6);
     Link finishGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two","Next step")), STYLENAME_GREEN_TEXT);
     finishGreen.setToFormSubmit(f);
     Link finishBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
     finishBlue.setToFormSubmit(f);
     
     buttonTable.add(backGreen,1,1);
-    buttonTable.add(backBlue,3,1);
-    buttonTable.add(finishGreen,5,1);
-    buttonTable.add(finishBlue,7,1);
+    buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
+    buttonTable.add(backBlue,1,1);
+    buttonTable.add(finishGreen,3,1);
+    buttonTable.add(Text.getNonBrakingSpace(), 3, 1);
+    buttonTable.add(finishBlue,3,1);
     
-    t.mergeCells(1,1,2,1);
-    t.add(infoTable,1,1);
-    t.mergeCells(1,2,2,2);
-    t.add(chipTable,1,2);
-    t.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
-    t.add(groupCompTable,1,3);
-    t.add(groupNameTable,2,3);
-    t.add(bestTimeTable,1,4);
-    t.add(goalTimeTable,2,4);
-    t.mergeCells(1,5,2,5);
-    t.add(buttonTable,1,5);
+    t.add(buttonTable, 1, row);
+    t.setWidth(column, 16);
     
     f.addParameter(PARAMETER_ACTION,ACTION_SAVE);
     f.keepStatusOnAction();
