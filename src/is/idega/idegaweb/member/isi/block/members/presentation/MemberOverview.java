@@ -54,7 +54,7 @@ public class MemberOverview extends Block {
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
-		IWResourceBundle comUserBundle = iwc.getApplicationContext().getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
+		IWResourceBundle comUserBundle = iwc.getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
 		_collator = Collator.getInstance(iwc.getLocale());
 		
 		String status = iwc.getParameter(PARAM_NAME_SHOW_STATUS);
