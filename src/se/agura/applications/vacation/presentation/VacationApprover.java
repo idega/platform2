@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.6 2004/12/13 17:35:42 anna Exp $ Created on
+ * $Id: VacationApprover.java,v 1.7 2004/12/14 07:18:28 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,7 +35,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -107,17 +107,6 @@ public class VacationApprover extends VacationBlock {
 		else {
 			throw new IBORuntimeException("No vacation request found...");
 		}
-	}
-
-	private void showMessage(String message) {
-		add(getHeader(message));
-		add(new Break(2));
-
-		Link link = getLink(getResourceBundle().getLocalizedString("meeting.home_page", "Back to My Page"));
-		if (getPage() != null) {
-			link.setPage(getPage());
-		}
-		add(link);
 	}
 
 	private VacationRequest getVacation(IWContext iwc) {

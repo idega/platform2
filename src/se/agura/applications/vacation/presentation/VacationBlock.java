@@ -9,11 +9,13 @@ package se.agura.applications.vacation.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import se.agura.applications.vacation.business.VacationBusiness;
 import se.agura.applications.vacation.business.VacationConstants;
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationTime;
 import se.agura.applications.vacation.data.VacationType;
+
 import com.idega.block.process.data.CaseLog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -25,6 +27,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericButton;
@@ -92,6 +95,17 @@ public abstract class VacationBlock extends Block {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		present(iwc);
+	}
+
+	protected void showMessage(String message) {
+		add(getHeader(message));
+		add(new Break(2));
+
+		Link link = getLink(getResourceBundle().getLocalizedString("meeting.home_page", "Back to My Page"));
+		if (getPage() != null) {
+			link.setPage(getPage());
+		}
+		add(link);
 	}
 
 	protected Table getPersonInfo(IWContext iwc, User user) {

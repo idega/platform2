@@ -51,7 +51,7 @@ public class VacationApplication extends VacationBlock {
 			}
 			else if (action.equals(ACTION_SEND)) {
 				save(iwc);
-				add(showPageFour());
+				showPageFour();
 			}
 		}
 		catch (RemoteException re) {
@@ -174,11 +174,8 @@ public class VacationApplication extends VacationBlock {
 		return form;
 	}
 
-	private Table showPageFour() {
-		Table table = new Table();
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.application_sent", "Your application has been sent.")));
-		
-		return table;
+	private void showPageFour() {
+		showMessage(getResourceBundle().getLocalizedString("vacation.application_sent", "Your application has been sent."));
 	}
 	
 	private VacationType getVacationType(IWContext iwc) {
