@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.2 2003/04/22 11:42:35 laddi Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.3 2003/04/22 18:48:36 joakim Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -43,12 +43,17 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
+		System.out.println("Debug: Started the ChildCareQueueUpdateTable");
 		Form form = new Form();
 		Table layoutTbl = new Table();
 		switch (parseAction(iwc)) {
 			case CCConstants.ACTION_SUBMIT_1 :
 				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
-				createPagePhase2(layoutTbl);
+//<<<<<<< ChildCareQueueUpdateTable.java
+//				createPagePhase2(iwc, layoutTbl);
+//=======
+//				createPagePhase2(layoutTbl);
+//>>>>>>> 1.2
 				break;
 			case CCConstants.ACTION_SUBMIT_CONFIRM :
 				createPagePhase1(iwc, layoutTbl);
@@ -174,7 +179,8 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 			}
 		}
 	}
-	/**
+
+		/**
 	 * Method handleAcceptStatus.
 	 * @param iwc
 	 * @param l
@@ -217,6 +223,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 			}
 		}
 	}
+
 /*	
 	private String getAcceptedMessage(IWContext iwc, ChildCareApplication application) throws RemoteException {
 		return localize(CCConstants.TEXT_OFFER_ACCEPTED_MESSAGE)
@@ -375,7 +382,12 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 			layoutTbl.setStyle(1, 4, "padding-top", "15px");
 		}
 	}
+//<<<<<<< ChildCareQueueUpdateTable.java
+/*
+	private void createPagePhase2(IWContext iwc, Table layoutTbl) throws RemoteException {
+=======
 	private void createPagePhase2(Table layoutTbl) throws RemoteException {
+>>>>>>> 1.2
 //		Table appTable = new ChildCarePlaceOfferTable2(this, sortApplications(findApplications(iwc), true));
 		SubmitButton submitBtn =
 			new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_2).toString());
@@ -391,13 +403,17 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		layoutTbl.add(cancelBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, "right");
 	}
-	/**
+*/
+		/**
 	 * Method findApplications.
 	 * @param iwc
 	 * @return Collection
 	 */
 	private Collection findChoices(IWContext iwc) {
 		Collection choices = null;
+//		Hashtable ht = new Hashtable();
+//		ht.
+//		SortedSet sort = new TreeSet();
 		try {
 			int childId = Integer.parseInt(iwc.getParameter(prmChildId));
 			ChildCareQueueHomeImpl ccqHome = (ChildCareQueueHomeImpl)IDOLookup.getHome(ChildCareQueue.class);
@@ -411,23 +427,39 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+		
 		return choices;
 	}
+
+//<<<<<<< ChildCareQueueUpdateTable.java
+
+//=======
 	
+//>>>>>>> 1.2
 	/**
 	 * Method getChildCareBusiness.
 	 * @param iwc
 	 * @return ChildCareBusiness
+<<<<<<< ChildCareQueueUpdateTable.java
+	 */
+/*	private ChildCareQueue getChildCareQueue(IWContext iwc) {
+=======
 	private ChildCareQueue getChildCareQueue(IWContext iwc) {
+>>>>>>> 1.2
 		try {
 			return (ChildCareQueue) com.idega.business.IBOLookup.getServiceInstance(iwc, ChildCareQueue.class);
 		} catch (RemoteException e) {
 			return null;
 		}
 	}
+<<<<<<< ChildCareQueueUpdateTable.java
+*/
+		/**
+=======
 	 */
 
 	/**
+>>>>>>> 1.2
 	 * Method sortApplications.
 	 * @param apps
 	 * @param offerFirst true means that granted application is placed first
@@ -437,7 +469,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		SortedSet set = new TreeSet();
 		Iterator i = apps.iterator();
 		while (i.hasNext()) {
-			set.add(new ComparableApp(i.next(), grantedFirst));
+			set.add(new ComparableQueue(i.next(), grantedFirst));
 		}
 		return set;
 	}
