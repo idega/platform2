@@ -19,7 +19,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.HiddenInput;
+//import com.idega.presentation.ui.HiddenInput;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
@@ -407,8 +407,8 @@ public class CalendarView extends CategoryBlock{
 		if (iwc.getParameter(CalendarParameters.PARAMETER_VIEW) != null) {
 			view = Integer.parseInt(iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
 		}
-		Integer pmView = new Integer(view);
-		HiddenInput hi = new HiddenInput(CalendarParameters.PARAMETER_VIEW,pmView.toString());
+//		Integer pmView = new Integer(view);
+//		HiddenInput hi = new HiddenInput(CalendarParameters.PARAMETER_VIEW,pmView.toString());
 //		form.add(hi);
 		action = iwc.getParameter(ACTION);
 	
