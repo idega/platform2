@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.39 2001/09/04 22:51:53 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.40 2001/09/20 12:01:38 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -542,7 +542,7 @@ public class GolfMainJSPModulePage extends MainPage {
        * you want to get).  Bjarni.
        * */
 
-      Link golferLink = new Link("Björgvin Sigurbergsson","/golfers/");
+      Link golferLink = new Link("Björgvin Sigurbergsson","/golfers/index.jsp");
       golferLink.addParameter("member_union_id", "3152");  //Björgvins ID!!!!!!!
       golferLink.setFontSize(1);
 
