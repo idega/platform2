@@ -34,6 +34,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
@@ -245,19 +246,21 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valueNewPasswordRepeated = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) : "";
 		String valuePhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 		if (valuePhoneHome == null) {
-			Phone p = ub.getUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1);
-			if (p != null) {
+			try {
+				Phone p = ub.getUsersHomePhone(user);
 				valuePhoneHome = p.getNumber();
-			} else {
+			}
+			catch (NoPhoneFoundException npfe) {
 				valuePhoneHome = "";
 			}
 		}
 		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		if (valuePhoneWork == null) {
-			Phone p = ub.getUserPhone(((Integer)user.getPrimaryKey()).intValue(), 2);
-			if (p != null) {
+			try {
+				Phone p = ub.getUsersMobilePhone(user);
 				valuePhoneWork = p.getNumber();
-			} else {
+			}
+			catch (NoPhoneFoundException npfe) {
 				valuePhoneWork = "";
 			}
 		}
@@ -543,8 +546,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			if (updateEmail) {
 				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
 			}
-			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1, phoneHome);
-			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 3, phoneWork);
+			ub.updateUserHomePhone(user, phoneHome);
+			ub.updateUserWorkPhone(user, phoneHome);
+			ub.updateUserMobilePhone(user, phoneWork);
 			if (updateCOAddress) {
 				Address coAddress = getCOAddress(iwc);
 				coAddress.setStreetName(coStreetAddress);
