@@ -19,7 +19,9 @@ public com.idega.presentation.Image newsi = new com.idega.presentation.Image("/p
 public com.idega.presentation.Image contacti = new com.idega.presentation.Image("/pics/iceconsult/Contact-us.gif");
 public com.idega.presentation.Image customeri = new com.idega.presentation.Image("/pics/iceconsult/Customer-showcase.gif");
 
+//public com.idega.presentation.Image countryi = new com.idega.presentation.Image("/pics/iceconsult/english.gif","English");
 
+public Link lCountry;
 
 
 public Table table;
@@ -113,6 +115,7 @@ public int width = 798;
             com.idega.presentation.Image bogi1 = new com.idega.presentation.Image("/pics/iceconsult/bogi1.gif");
             com.idega.presentation.Image bogiv = new com.idega.presentation.Image("/pics/iceconsult/barvinstri.gif");
             com.idega.presentation.Image bogih = new com.idega.presentation.Image("/pics/iceconsult/barhaegri.gif");
+            com.idega.presentation.Image ekkertbil = new com.idega.presentation.Image("/pics/iceconsult/ekkertbil_24.gif");
 
 
             table.setBackgroundImage(1,1, logo);
@@ -120,13 +123,13 @@ public int width = 798;
             table.setWidth(1,1,"257");
 
             table.setBackgroundImage(2,1,himinn);
-           // table.mergeCells(2,1,3,1);
             table.setHeight(2,1,"43");
             table.setWidth(2,1,"541");
 
             table.setBackgroundImage(2,2,bar1);
 
             table.setVerticalAlignment(2,2,"top");
+
             maini.setAttribute("align","top") ;
             productsi.setAttribute("align","top") ;
             partnersi.setAttribute("align","top") ;
@@ -136,8 +139,6 @@ public int width = 798;
             contacti.setAttribute("align","top") ;
             customeri.setAttribute("align","top") ;
 
-            //table.mergeCells(2,2,3,2);
-//            table.setHeight(2,2,"20");
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
             table.add(main,2,2);
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
@@ -149,17 +150,37 @@ public int width = 798;
             table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);table.add(spacer,2,2);
             table.add(news,2,2);
 
+
+
             table.setBackgroundImage(1,3,bar2);
             table.mergeCells(1,3,2,3);
+
+            Table tempTable = new Table(2,1);
+              tempTable.setHeight(18);
+              tempTable.setCellpadding(0);
+              tempTable.setCellspacing(0);
+              tempTable.setBorder(0);
+              tempTable.setWidth("100%");
+
+
             table.setHeight(1,3,"18");
-            table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);
-            table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);
-            table.add(contact,1,3);
-            table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);
-            table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);table.add(bar2,1,3);
-            table.add(customer,1,3);
-            table.add(bogi1,1,3);
-            table.setBackgroundImage(1,3,bar3);
+            tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);
+            tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);
+            tempTable.add(contact,1,1);
+            tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);
+            tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);tempTable.add(bar2,1,1);
+            tempTable.add(customer,1,1);
+            tempTable.add(bogi1,1,1);
+            tempTable.setBackgroundImage(1,1,bar3);
+            tempTable.setBackgroundImage(2,1,bar3);
+
+            if (this.lCountry != null) {
+              tempTable.add(ekkertbil,2,1);
+              tempTable.add(lCountry,2,1);
+              tempTable.setAlignment(2,1,"right");
+            }
+
+            table.add(tempTable,1,3);
 
 
             table.setBackgroundImage(1,4,bar4);
@@ -188,23 +209,15 @@ public int width = 798;
                 extra.add(leftText,1,1);
               }
               extra.setVerticalAlignment(1,1,"top");
-//              extra.setVerticalAlignment(1,2,"top");
 
 
               if (width_leftside_percent != 100) {
-//                extra.mergeCells(1,2,2,2);
                 extra.setBackgroundImage(2,1,midjulinur_tiler);
                 extra.add(millibar,2,1);
                 extra.add(midjulinur,2,2);
                 extra.setVerticalAlignment(2,2,"top");
                 extra.setWidth(2,space+"");
-//                extra.setBackgroundImage(1,1,bar6);
-//                extra.setWidth(2,1,"30");
-//                extra.setWidth(4,1,"30");
-//                extra.setBackgroundImage(4,1,bar6);
                 extra.setBackgroundImage(3,1,bar5);
-//                extra.setHeight(1,"22");
-//                extra.setWidth(1,1,""+(width_leftside));
                 extra.setVerticalAlignment(2,1,"top");
                 extra.setVerticalAlignment(3,1,"top");
                 if (rightImage != null) {
@@ -215,8 +228,6 @@ public int width = 798;
                   extra.add(rightText,3,1);
                 }
                 extra.add(bogih,3,1);
-//                extra.mergeCells(3,1,5,1);
-//                extra.mergeCells(3,2,5,2);
                 extra.setVerticalAlignment(3,2,"top");
                extra.add(right,3,2);
 
@@ -238,8 +249,14 @@ public int width = 798;
               right.setCellpadding(0);
               right.setCellspacing(0);
 
+              Image topLine = new Image("/pics/iceconsult/800x1top.gif");
+
               Table everything = new Table(3,2);
                 everything.setBorder(0);
+                everything.mergeCells(1,1,3,1);
+                everything.add(topLine,1,1);
+                everything.setAlignment(1,1,"center");
+                everything.setVerticalAlignment(1,1,"bottom");
                 everything.setAlignment("center");
                 everything.setHeight(1,"10");
                 everything.setVerticalAlignment(1,2,"top");
@@ -279,6 +296,9 @@ public int width = 798;
         	rightText = text;
         }
 
+        public void setCountryLink(Link link) {
+            this.lCountry = link;
+        }
 
 
 	public void add(PresentationObject objectToAdd){

@@ -88,6 +88,14 @@ public String language = "EN";
             ((IceConsultPage)getPage()).setLocation(loc);
         }
 
+        public void showEnglishLink() {
+          ((IceConsultPage)getPage()).setCountryLink(new Link(new Image("/pics/iceconsult/english.gif","Engelsk"),"http://iceconsult.sidan.is/"));
+        }
+
+        public void showDanishLink() {
+          ((IceConsultPage)getPage()).setCountryLink(new Link(new Image("/pics/iceconsult/dansk.gif","Danish"),"http://iceconsultdk.sidan.is/"));
+        }
+
 
 
   }
