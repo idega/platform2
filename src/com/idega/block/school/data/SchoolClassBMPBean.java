@@ -24,7 +24,8 @@ import com.idega.user.data.User;
 
 public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
-  public final static String SCHOOLCLASS = "sch_school_class";
+  public final static String SCHOOLCLASS = "SCH_SCHOOL_CLASS";
+  public final static String SCHOOLCLASSID = "SCH_SCHOOL_CLASS_ID";
   public final static String SCHOOLTYPE = "sch_school_type_id";
   public final static String SEASON = "sch_school_season_id";
   public final static String NAME = "class_name";
