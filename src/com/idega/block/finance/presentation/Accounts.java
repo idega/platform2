@@ -68,7 +68,6 @@ public class Accounts extends Finance {
 	}
 
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
-		debugParameters(iwc);
 		if (isAdmin) {
 			 df = getDateTimeFormat(iwc.getCurrentLocale());
 			if (iwc.isParameterSet(prmNewAccount)) {
