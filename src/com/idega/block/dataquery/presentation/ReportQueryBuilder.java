@@ -1296,7 +1296,7 @@ public class ReportQueryBuilder extends Block {
 		row++;
 		table.mergeCells(3, row, 6, row);
 		table.add(textInput, 3 , row); 
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),7 ,row);
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),3 ,row);
 		row++;
 		table.mergeCells(3, row, 6, row);
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
