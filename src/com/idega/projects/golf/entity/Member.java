@@ -379,21 +379,23 @@ public class Member extends com.idega.data.genericentity.Member {
 	}
 
         public void setMainUnion(Union union) throws SQLException {
+          setMainUnion(union.getID());
+	}
+
+        public void setMainUnion(int iUnionId) throws SQLException {
 
           UnionMemberInfo[] unies = (UnionMemberInfo[]) (new UnionMemberInfo()).findAllByColumn("member_id",this.getID());
 
           for (int i = 0; i < unies.length; i++) {
-            if( unies[i].getID()!= union.getID() ) unies[i].setMembershipType("sub");
+            if( unies[i].getID()!= iUnionId )
+              unies[i].setMembershipType("sub");
             else {
               unies[i].setMembershipType("main");
               unies[i].setMemberStatus("A");
-
             }
             unies[i].update();
           }
 	}
-
-
 
 
 	public Union getMainUnion()throws SQLException{
