@@ -92,6 +92,10 @@ public class SupplierManager {
     return supp;
   }
 
+  public static void deleteThisFunction() {
+
+  }
+
   public static void invalidateSupplier(Supplier supplier) throws SQLException {
     supplier.setIsValid(false);
     supplier.update();
