@@ -6,6 +6,7 @@ import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import javax.ejb.*;
 import se.cubecon.bun24.viewpoint.data.*;
+import se.idega.idegaweb.commune.block.pointOfView.business.PointOfViewBusiness;
 
 /**
  * ViewpointBusiness is a session ejb interface for creating, managing and
@@ -14,17 +15,17 @@ import se.cubecon.bun24.viewpoint.data.*;
  * in order to help the system to chose what handler group should be responsible
  * for answering the entered viewpoint.
  * <p>
- * Last modified: $Date: 2004/02/23 14:36:06 $ by $Author: staffan $
+ * Last modified: $Date: 2004/09/29 11:34:06 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see com.idega.block.process.business
  * @see com.idega.business
  * @see com.idega.user.data
  * @see javax.ejb
  * @see se.cubecon.bun24.viewpoint.data
  */
-public interface ViewpointBusiness extends IBOService, CaseBusiness {
+public interface ViewpointBusiness extends IBOService, CaseBusiness, PointOfViewBusiness {
 	String CONFIRMENTERVIEWPOINT_KEY = "viewpoint.confirmEnterViewpoint";
 	String CONFIRMENTERVIEWPOINT_DEFAULT
         = "Tack för din synpunkt. Den är nu registrerad som ett ärende."

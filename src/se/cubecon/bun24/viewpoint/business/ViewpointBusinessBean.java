@@ -4,22 +4,25 @@ import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
 import com.idega.business.IBOLookup;
 import com.idega.data.*;
+import com.idega.presentation.text.Link;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
 import se.cubecon.bun24.viewpoint.data.*;
+import se.cubecon.bun24.viewpoint.presentation.ViewpointForm;
+import se.idega.idegaweb.commune.block.pointOfView.business.PointOfViewBusiness;
+import se.idega.idegaweb.commune.block.pointOfView.data.PointOfView;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
+ * Last modified: $Date: 2004/09/29 11:34:06 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
-public class ViewpointBusinessBean extends CaseBusinessBean
-    implements ViewpointBusiness {
+public class ViewpointBusinessBean extends CaseBusinessBean  implements ViewpointBusiness, PointOfViewBusiness {
 
     public final static String ANSWER_KEY = "viewpoint.answer";
     public final static String ANSWER_DEFAULT = "Svar till medborgare";
@@ -168,7 +171,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 		final CaseStatusHome caseStatusHome
                 = (CaseStatusHome) IDOLookup.getHome (CaseStatus.class);
         final CaseStatus statusAnswered = caseStatusHome.findByPrimaryKey
-                (Viewpoint.STATUSKEY_ANSWERED);
+                (ViewpointBMPBean.STATUSKEY_ANSWERED);
         viewpoint.setCaseStatus (statusAnswered);
         viewpoint.store ();
     }
@@ -247,5 +250,29 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 		} catch (final IDOLookupException e) {
 			throw new FinderException (e.getMessage ());
 		}
+    }
+    
+    public Collection findUnhandledPointOfViewsInGroups(Collection groups) throws RemoteException, FinderException {
+    	Group[] groupArray = (Group[]) groups.toArray(new Group[0]);
+    	PointOfView[] resultArray = findUnhandledViewpointsInGroups(groupArray);
+    	return Arrays.asList(resultArray);    	
+    }
+    
+    
+    public PointOfView findPointOfView(int primarykey) throws RemoteException, FinderException {
+    	return findViewpoint(primarykey);
+    }
+    
+    public Link getLinkToPageForPointOfView(int pageID, PointOfView pointOfView) {
+    	String primaryKey = pointOfView.getPrimaryKey().toString();
+    	Link viewpointLink = new Link(primaryKey);
+		viewpointLink.setPage(pageID);
+		viewpointLink.addParameter(ViewpointForm.PARAM_ACTION, ViewpointForm.SHOWVIEWPOINT_ACTION + "");
+		viewpointLink.addParameter(ViewpointForm.PARAM_VIEWPOINT_ID, primaryKey);
+		return viewpointLink;    	
+    }
+    
+    public String getCaseCodeKeyForPointOfView() throws RemoteException {
+    	return ViewpointBMPBean.CASE_CODE_KEY;
     }
 }
