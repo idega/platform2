@@ -690,6 +690,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				entry.setInfo(info);
 			else
 				entry.setInfo(tariff.getText());
+			entry.setTariffID(((Integer)tariff.getPrimaryKey()).intValue());
+			entry.setTariffTypeID(tariff.getTariffTypeId());
 			entry.setStatusCreated();
 			entry.setTypeManual();
 			entry.setEntryOpen(true);
