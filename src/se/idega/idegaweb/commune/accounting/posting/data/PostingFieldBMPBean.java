@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.8 2003/11/28 17:35:24 sigtryggur Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.9 2003/12/02 09:40:26 sigtryggur Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import com.idega.data.IDOQuery;
 
 public class PostingFieldBMPBean extends GenericEntity implements PostingField
 {
-	private static final String ENTITY_NAME = "CACC_POSTING_FIELD";
+	private static final String ENTITY_NAME = "cacc_posting_field";
 
 	private static final String COLUMN_CP_POSTING_STRING_ID = "CP_POSTING_STRING_ID";
 	private static final String COLUMN_ORDER_NR = "ORDER_NR";
