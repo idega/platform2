@@ -25,7 +25,7 @@ import com.idega.user.data.GroupType;
  */
 public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportGroup {
 	protected final static String ENTITY_NAME = "ISI_WR_GROUP";
-	protected final static String COLUMN_NAME_GROUP_YEAR = "YEAR";
+	protected final static String COLUMN_NAME_GROUP_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_GROUP_NAME = "NAME";
 	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "SHORT_NAME";
 	protected final static String COLUMN_NAME_GROUP_ID = "IC_GROUP_ID";
