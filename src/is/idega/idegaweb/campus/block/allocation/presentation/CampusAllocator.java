@@ -882,13 +882,15 @@ public class CampusAllocator extends Block implements Campus{
     String sMustFrom = iwc.getParameter("from");
     /** @todo  contract overlap */
     idegaTimestamp mustBeFrom = sMustFrom !=null ? new idegaTimestamp(sMustFrom):null;
-    mustBeFrom.addDays(1);
 
     if( sDateFrom!=null && sDateTo!=null){
       idegaTimestamp from = new idegaTimestamp(sDateFrom);
       idegaTimestamp to = new idegaTimestamp(sDateTo);
-      if(mustBeFrom!=null && mustBeFrom.isLaterThanOrEquals(from)){
+      System.err.println("Saving new contract : Applicant : "+sApplicantId);
+      System.err.println("Must be from : "+mustBeFrom.toString()+" , is from "+from.toString());
+      if(mustBeFrom!=null && mustBeFrom.isLaterThan(from)){
         returner = iwrb.getLocalizedString("alloc_contract_overlap","Contracts overlap !!");
+        System.err.println("Sorry contracts overlap");
         return returner;
       }
       if(sApplicantId !=null && sApartmentId!=null ){
