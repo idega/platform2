@@ -198,6 +198,7 @@ public class ContractReSignWindow extends Window{
   }
 
   private void doReSignContract(IWContext iwc){
+    System.out.println("saving shit!!!!!!");
 
     int id = Integer.parseInt(iwc.getParameter("contract_id"));
     int usid = Integer.parseInt(iwc.getParameter("us_id"));
@@ -209,11 +210,14 @@ public class ContractReSignWindow extends Window{
     if(sMovDate !=null && sMovDate.length() == 10 )
       movDate = new idegaTimestamp(sMovDate);
     boolean datesync = iwc.getParameter(prmDateSync)!=null;
+    System.out.println("saving shit");
     if(isAdmin){
+    System.out.println("is admin");
       ContractBusiness.endContract(id,movDate,sInfo,datesync);
 
     }
     else if(eUser !=null && usid == eUser.getID()){
+    System.out.println("is other user");
       ContractBusiness.resignContract(id,movDate,sInfo,datesync);
 
     }
@@ -253,7 +257,10 @@ public class ContractReSignWindow extends Window{
   public void main(IWContext iwc) throws Exception {
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.isParameterSet(prmAdmin );
+/*    isAdmin = iwc.isParameterSet(prmAdmin );
+    System.out.println("gummi = " + iwc.getAccessController().isAdmin(iwc));
+    System.out.println("Is admin in main thingie = " + isAdmin);*/
+    isAdmin = iwc.getAccessController().isAdmin(iwc);
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
