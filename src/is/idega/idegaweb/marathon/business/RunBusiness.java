@@ -1,5 +1,6 @@
 package is.idega.idegaweb.marathon.business;
 
+import is.idega.idegaweb.marathon.data.Run;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
@@ -22,4 +23,5 @@ public interface RunBusiness extends com.idega.business.IBOService{
     public Collection getCountries() throws RemoteException;
   	public boolean isRegisteredInRun(int runID, String personalID) throws RemoteException;
   	public int getAgeFromPersonalID(String personalID) throws RemoteException;
+  	public void setParticipantNumber(Run participant);
 }
