@@ -6,9 +6,16 @@
  */
 package com.idega.block.survey.data;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.util.ListUtil;
 
 /**
  * Title:		SurveyParticipant
@@ -66,5 +73,55 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 		
 		return idoGetNumberOfRecords(query);
 	}
+	
+	public Collection ejbHomeGetRandomParticipants(SurveyEntity survey,int maxNumberOfReturnedParticipants, boolean evenChance) throws FinderException{
+		Collection toReturn = new Vector();
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(COLUMNNAME_SURVEY,survey);
+		query.appendAndIsNotNull(COLUMNNAME_NAME);
+		query.appendAnd();
+		query.append(COLUMNNAME_NAME);
+		query.appendNOTLike();
+		query.appendWithinSingleQuotes("");
+		
+//		if(evenChance){
+//			query.appendGroupBy(COLUMNNAME_NAME);
+//		}
+		
+		List pks = ListUtil.convertCollectionToList(idoFindPKsByQuery(query));
+		
+		if(pks.size() <= maxNumberOfReturnedParticipants){
+			return pks;
+		} else {
+			int index=0;
+			int endlessLoopBreaker = 0;
+			int[] choice = new int[maxNumberOfReturnedParticipants]; 
+			for(int i=0; i<maxNumberOfReturnedParticipants;i++){
+				index = (int)(maxNumberOfReturnedParticipants*Math.random());
+				for(int j = 0; i < j; j++){
+					if(choice[j]==index){
+						index++;
+						j=0;
+					}
+					endlessLoopBreaker++;
+					if(endlessLoopBreaker >= Integer.MAX_VALUE){
+						System.out.println("[ERROR]: ("+this.getClass().getName()+"): endless loop in random choice");
+						break;
+					} else if(endlessLoopBreaker >= Integer.MAX_VALUE/3){
+						System.out.println("[WARNING]: ("+this.getClass().getName()+"): long loop in random choice");
+					}
+				}
+				endlessLoopBreaker=0;
+				choice[i]=index;
+			}
+			for (int i = 0; i < choice.length; i++) {
+				toReturn.add(pks.get(choice[i]));
+			}
+		}
+		return toReturn;		
+	}
+	
+	
+	
 
 }

@@ -280,7 +280,7 @@ public class SurveyEditor extends FolderBlock {
 		
 		try {
 			SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
-			Collection surveys = business.getSurveyHome().findAllSurveys(this.getWorkingFolder().getEntity());
+			Collection surveys = business.getSurveyHome().findAllSurveys(this.getWorkFolder().getEntity());
 			
 			table.add(getMessageTextObject(_iwrb.getLocalizedString("name", "Name"), true), 1, row);
 			table.add(getMessageTextObject(_iwrb.getLocalizedString("description", "Description"), true), 2, row);
@@ -404,7 +404,7 @@ public class SurveyEditor extends FolderBlock {
 			}
 			survey.store();
 		} else {
-			survey = business.createSurvey(this.getWorkingFolder(),sName,sDesc,fromStamp, toStamp);
+			survey = business.createSurvey(this.getWorkFolder(),sName,sDesc,fromStamp, toStamp);
 		}
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
@@ -507,7 +507,7 @@ public class SurveyEditor extends FolderBlock {
 		if (sDesc == null) {
 			sDesc = "";
 		}
-		SurveyEntity survey = business.createSurvey(this.getWorkingFolder(),sName,sDesc,fromStamp,toStamp);
+		SurveyEntity survey = business.createSurvey(this.getWorkFolder(),sName,sDesc,fromStamp,toStamp);
 		
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
 		String[] answerType = (String[])_prmValues.get(PRM_ANSWERTYPE);

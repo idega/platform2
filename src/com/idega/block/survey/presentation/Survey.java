@@ -166,7 +166,7 @@ public class Survey extends FolderBlock {
 	}
 	
 	private void initializeSurvey(IWContext iwc) throws IDOLookupException, RemoteException, FinderException{
-		Collection surveys = _sBusiness.getSurveyHome().findActiveSurveys(this.getWorkingFolder().getEntity(),IWTimestamp.RightNow().getTimestamp());	
+		Collection surveys = _sBusiness.getSurveyHome().findActiveSurveys(this.getWorkFolder().getEntity(),IWTimestamp.RightNow().getTimestamp());	
 		Iterator surveysIter = surveys.iterator();
 		// TODO change
 		while(surveysIter.hasNext()) {

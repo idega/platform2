@@ -12,6 +12,7 @@ import com.idega.block.survey.business.SurveyBusiness;
 import com.idega.block.survey.business.SurveyBusinessBean;
 import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyEntity;
+import com.idega.block.survey.data.SurveyParticipant;
 import com.idega.block.survey.data.SurveyQuestion;
 import com.idega.block.survey.data.SurveyReply;
 import com.idega.block.survey.data.SurveyReplyHome;
@@ -27,12 +28,16 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.FieldSet;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.Legend;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 import com.idega.util.poi.POIUtility;
 
@@ -65,6 +70,8 @@ public class SurveyResultEditor extends Block {
 	
 	private String messageTextStyle;// = "font-weight: bold;";
 	private String messageTextHighlightStyle ;//= "font-weight: bold;color: #FF0000;";
+	
+	private String style_submitbutton = "font-family:arial; font-size:8pt; color:#000000; text-align: center; border: 1 solid #000000;";
 	
 	public SurveyResultEditor() {
 		super();
@@ -117,6 +124,16 @@ public class SurveyResultEditor extends Block {
 				fs.add(displayStatuses());
 			}
 			add(fs);
+			
+			Form myForm = new Form();
+			Legend legend2 = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("random_participants", "Randam participants"));
+			FieldSet fs2 = new FieldSet(legend2);
+			fs2.setWidth("450");
+			fs2.add(displayParticipants(iwc));
+			myForm.add(fs2);
+			add(myForm);
+			
+			
 		} else {
 			add(getText(_iwrb.getLocalizedString("no_survey_defined","No survey defined")));
 		}
@@ -125,6 +142,55 @@ public class SurveyResultEditor extends Block {
 		add(link);
 	}
 	
+	/**
+	 * @return
+	 */
+	private PresentationObjectContainer displayParticipants(IWContext iwc) {
+		Table table = new Table();
+		
+		String prmNumberOfParticipants = "su_num_of_p";
+		String prmSubmit = "su_subm";
+		
+		IntegerInput numberOfParticipantsInput = new IntegerInput(prmNumberOfParticipants);
+		numberOfParticipantsInput.setValue(1);
+		
+		SubmitButton submit = new SubmitButton(prmSubmit,_iwrb.getLocalizedString("submit","  Submit  "));
+		submit.setStyleAttribute(style_submitbutton);
+		
+		add(getText(_iwrb.getLocalizedString("number_of_participants","Number of participants")));
+		table.add(numberOfParticipantsInput,1,1);
+		table.add(submit,1,1);
+		
+		try {
+			String  prm = iwc.getParameter(prmNumberOfParticipants);
+			if(prm != null){
+				Table pTable = new Table();
+				int numberOfParticipants = Integer.parseInt(prm);
+				Collection participants = _sBusiness.getSurveyParticipantHome().getRandomParticipants(_survey,numberOfParticipants,true);
+				
+				int row = 1;
+				for (Iterator iter = participants.iterator();iter.hasNext();row++) {
+					SurveyParticipant participant = (SurveyParticipant) iter.next();
+					pTable.add(participant.getParticipantName(),1,row);
+				}
+												
+				table.add(pTable,1,2);
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return table;
+	}
+
 	private void newStatus(IWContext iwc) throws RemoteException{
 		try {
 			SurveyStatus status = _sBusiness.getSurveyStatusHome().create();

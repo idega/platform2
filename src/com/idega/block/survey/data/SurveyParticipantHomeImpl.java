@@ -25,5 +25,12 @@ public int getNumberOfParticipations(com.idega.block.survey.data.SurveyEntity p0
 	return theReturn;
 }
 
+public java.util.Collection getRandomParticipants(com.idega.block.survey.data.SurveyEntity p0,int p1,boolean p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection theReturn = ((SurveyParticipantBMPBean)entity).ejbHomeGetRandomParticipants(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }
