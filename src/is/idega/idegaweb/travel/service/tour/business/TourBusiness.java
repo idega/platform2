@@ -262,22 +262,47 @@ public class TourBusiness extends TravelStockroomBusiness {
     return getDepartureDays(iwc, tour, null, null);
   }
 
-  public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp from, idegaTimestamp to) {
+  public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     List returner = new Vector();
     try {
       Service service = new Service(tour.getID());
       Timeframe frame = service.getTimeframe();
+      boolean yearly = frame.getIfYearly();
+      idegaTimestamp from = null;
+      if (fromStamp != null) from = new idegaTimestamp(fromStamp);
+      idegaTimestamp to = null;
+      if (toStamp != null) to = new idegaTimestamp(toStamp);
+      System.err.println("from : "+from);
+      System.err.println("to   : "+to);
+
+
       int numberOfDays = tour.getNumberOfDays();
         if (numberOfDays < 1) numberOfDays = 1;
 
-      if (from == null) from = new idegaTimestamp(frame.getFrom());
-      if (to == null)   to   = new idegaTimestamp(frame.getTo());
-        to.addDays(1);
+      if (from == null) {
+        from = new idegaTimestamp(frame.getFrom());
+      }
+      if (to == null) {
+        to   = new idegaTimestamp(frame.getTo());
+      }
+      to.addDays(1);
+
+        if (yearly) {
+          int fromYear = new idegaTimestamp(frame.getFrom()).getYear();
+          int toYear   = new idegaTimestamp(frame.getTo()).getYear();
+
+          System.err.println("Year : "+fromYear);
+          from.setYear(fromYear);
+
+          System.err.println("Year : "+toYear);
+          to.setYear(toYear);
+        }
 
       idegaTimestamp stamp = new idegaTimestamp(from);
       idegaTimestamp temp;
 
-
+      System.err.println("from : "+from);
+      System.err.println("to   : "+to);
 
       while (to.isLaterThan(stamp)) {
         temp = getNextAvailableDay(iwc, service, stamp);

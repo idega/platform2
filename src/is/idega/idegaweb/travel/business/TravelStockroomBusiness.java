@@ -237,6 +237,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       try {
           /**
            * @todo Oracle support...
+           * @todo laga containing drasl
            */
           Product[] tempProducts = this.getProducts(supplierId);
 
@@ -293,7 +294,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
               timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
               timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
 
-            System.err.println(timeframeSQL.toString());
+//            System.err.println(timeframeSQL.toString());
             products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
 
           }
@@ -590,7 +591,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           }
 
           String[] result = SimpleQuerier.executeStringQuery(sb.toString());
-          System.err.println(sb.toString());
+//          System.err.println(sb.toString());
 
           if (result != null) {
             if (result.length > 0)
@@ -767,10 +768,25 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     try {
       Service service = new Service(product.getID());
       Timeframe frame = service.getTimeframe();
+      boolean yearly = frame.getIfYearly();
 
-      if (from == null) from = new idegaTimestamp(frame.getFrom());
-      if (to == null)   to   = new idegaTimestamp(frame.getTo());
+      if (from == null) {
+        from = new idegaTimestamp(frame.getFrom());
+      }else {
+      }
+      if (to == null) {
+        to   = new idegaTimestamp(frame.getTo());
+      }else {
+      }
         to.addDays(1);
+/** @todo fix
+        if (yearly) {
+          from.setYear(new idegaTimestamp(frame.getFrom()).getYear());
+        }
+        if (yearly) {
+          to.setYear(new idegaTimestamp(frame.getTo()).getYear());
+        }
+  */
 
       idegaTimestamp stamp = new idegaTimestamp(from);
       idegaTimestamp temp;

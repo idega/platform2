@@ -109,6 +109,7 @@ public class CalendarHandler extends TravelManager {
         if (_toStamp.isLaterThan(new idegaTimestamp(_timeframe.getTo()))) {
           _toStamp = new idegaTimestamp(_timeframe.getTo());
         }
+
       }catch (SQLException s) {
         s.printStackTrace(System.err);
       }
@@ -537,7 +538,11 @@ public class CalendarHandler extends TravelManager {
     List depDays = new Vector();
       if (_tour != null) {
         if (_tour.getNumberOfDays() > 1) {
-          depDays = TourBusiness.getDepartureDays(iwc, _tour);
+          if (_timeframe.getIfYearly()) {
+            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
+          }else {
+            depDays = TourBusiness.getDepartureDays(iwc, _tour);
+          }
         }else {
           depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
         }
