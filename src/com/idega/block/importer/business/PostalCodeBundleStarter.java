@@ -16,12 +16,12 @@ package com.idega.block.importer.business;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-
 import com.idega.block.importer.data.ColumnSeparatedImportFile;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.AddressBusiness;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -35,36 +35,30 @@ private IWApplicationContext iwac;
   public PostalCodeBundleStarter() {
   }
 
-  public void start(IWBundle bundle){
-  	iwac = bundle.getApplication().getIWApplicationContext();
-  	
-  	File postalCodeFolder = new File(bundle.getResourcesRealPath()+FileUtil.getFileSeparator()+"postalcode");
-  	
-  	if( postalCodeFolder.isDirectory() ){
-   		File[] files = postalCodeFolder.listFiles();
-   			
-  		if(files!=null && files.length>0){
-  			for (int i = 0; i < files.length; i++) {
-				ColumnSeparatedImportFile postals = new ColumnSeparatedImportFile(files[i]);
-				
-				try {
-					String record;
-      
-      			while ( !(record=(String)postals.getNextRecord()).equals("") ){
-      				ArrayList values = postals.getValuesFromRecordString(record);
-      				createPostalIfDoesNotExist((String)values.get(0),(String)values.get(1),(String)values.get(2));			      				
-      			}
-				} catch (Exception e) {
-					System.err.println("PostalCodeBundleStarter : Cant use file = "+files[i].getName()+" (error = "+e.getMessage()+")");
+  public void start(IWBundle bundle) {
+		iwac = bundle.getApplication().getIWApplicationContext();
+		File postalCodeFolder = new File(bundle.getResourcesRealPath() + FileUtil.getFileSeparator() + "postalcode");
+		if (postalCodeFolder.isDirectory()) {
+			File[] files = postalCodeFolder.listFiles();
+			if (files != null && files.length > 0) {
+				for (int i = 0; i < files.length; i++) {
+					ColumnSeparatedImportFile postals = new ColumnSeparatedImportFile(files[i]);
+					try {
+						String record;
+						while (!(record = (String) postals.getNextRecord()).equals("")) {
+							ArrayList values = postals.getValuesFromRecordString(record);
+							createPostalIfDoesNotExist((String) values.get(0), (String) values.get(1),
+									(String) values.get(2));
+						}
+					}
+					catch (Exception e) {
+						System.err.println("PostalCodeBundleStarter : Cant use file = " + files[i].getName()
+								+ " (error = " + e.getMessage() + ")");
+					}
 				}
-      			
 			}
-  				
-  		}
-  		
-  	}
-
-  }
+		}
+	}
 
 
 	private void createPostalIfDoesNotExist(String code, String area, String countryName){
@@ -73,7 +67,10 @@ private IWApplicationContext iwac;
 			AddressBusiness biz = getAddressBusiness();
 			Country country = ((CountryHome)IDOLookup.getHome(Country.class)).findByCountryName(countryName);
 			
-			biz.getPostalCodeAndCreateIfDoesNotExist(code,area,country);
+			PostalCode postalCode = biz.getPostalCodeAndCreateIfDoesNotExist(code,area,country);
+			if(null == postalCode.getCommuneID() || postalCode.getCommuneID().length() == 0) {
+				biz.connectPostalCodeToCommune(postalCode, area);
+			}
 			
 		} catch (Exception e) {
 			System.out.println("PostalCodeBundleStarter: import failed for : "+code+ ", "+area+", "+countryName );
@@ -81,6 +78,32 @@ private IWApplicationContext iwac;
 		}
 	}
 
+	private void importCommune(IWBundle bundle) {
+		File communeCodeFolder = new File(bundle.getResourcesRealPath() + FileUtil.getFileSeparator() + "postalcode");
+		if (communeCodeFolder.isDirectory()) {
+			File[] files = communeCodeFolder.listFiles();
+			if (files != null && files.length > 0) {
+				for (int i = 0; i < files.length; i++) {
+					ColumnSeparatedImportFile communes = new ColumnSeparatedImportFile(files[i]);
+					try {
+						String record;
+						while (!(record = (String) communes.getNextRecord()).equals("")) {
+							ArrayList values = communes.getValuesFromRecordString(record);
+							connectPostal((String) values.get(0), (String) values.get(1));
+						}
+					}
+					catch (Exception e) {
+						System.err.println("PostalCodeBundleStarter : Cant use file = " + files[i].getName()
+								+ " (error = " + e.getMessage() + ")");
+					}
+				}
+			}
+		}
+	}
+	
+	private void connectPostal(String postalCode, String cityCode) {
+		//TODO (JJ) implement
+	}
 	
 	private AddressBusiness getAddressBusiness() throws RemoteException{
 		return (AddressBusiness) IBOLookup.getServiceInstance(iwac,AddressBusiness.class);
