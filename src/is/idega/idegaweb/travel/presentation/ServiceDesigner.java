@@ -87,7 +87,6 @@ public class ServiceDesigner extends TravelManager {
 				}
 			} catch (IDORelationshipException e) {
 				PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     }
