@@ -283,19 +283,6 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		setColumn (COLUMN_CHILDCARE_CONTRACT_ID, contract);
 	}
 
-	public Collection ejbFindByMonth(Date month) throws FinderException {
-		IWTimestamp start = new IWTimestamp(month);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-		return idoFindPKsBySQL(sql.toString());
-	}
-
 	public Collection ejbFindByInvoiceHeader(InvoiceHeader invoiceHeader)
 		throws FinderException {
         final String R_ = "r."; // sql alias for invoice record

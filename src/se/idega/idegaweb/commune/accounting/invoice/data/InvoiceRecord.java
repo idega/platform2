@@ -6,12 +6,13 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public float getAmount();
  public float getAmountVAT();
  public java.lang.String getChangedBy();
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContract getChildCareContract();
  public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
  public int getDays();
  public java.lang.String getDoublePosting();
- public InvoiceHeader getInvoiceHeader();
+ public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader getInvoiceHeader();
  public int getInvoiceHeaderId();
  public java.lang.String getInvoiceText();
  public java.lang.String getInvoiceText2();
@@ -34,23 +35,23 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
  public int getVATType();
-	public se.idega.idegaweb.commune.childcare.data.ChildCareContract getChildCareContract ();
  public void setAmount(float p0);
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
+ public void setChildCareContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);
  public void setDays(int p0);
  public void setDoublePosting(java.lang.String p0);
+ public void setInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0);
  public void setInvoiceHeaderId(int p0);
- public void setInvoiceHeader(InvoiceHeader p0);
  public void setInvoiceText(java.lang.String p0);
  public void setInvoiceText2(java.lang.String p0);
  public void setNotes(java.lang.String p0);
  public void setOrderId(int p0);
  public void setOwnPosting(java.lang.String p0);
- public void setPaymentRecord(PaymentRecord p0);
+ public void setPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord p0);
  public void setPaymentRecordId(int p0);
  public void setPeriodEndCheck(java.sql.Date p0);
  public void setPeriodEndPlacement(java.sql.Date p0);
@@ -66,5 +67,4 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setSchoolType(com.idega.block.school.data.SchoolType p0);
  public void setSchoolTypeId(int p0);
  public void setVATType(int p0);
-	public void setChildCareContract (se.idega.idegaweb.commune.childcare.data.ChildCareContract contract);
 }
