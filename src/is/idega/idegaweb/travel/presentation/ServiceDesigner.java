@@ -331,10 +331,11 @@ private void finalize(IWContext iwc) throws Exception {
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
           ++row;
-          table.add(creditCardHandler,1,row);
-          table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,3,row);
-          ++row;
+//          NOT FULLY TESTED
+//          table.add(creditCardHandler,1,row);
+//          table.setRowColor(row, super.GRAY);
+//          table.mergeCells(1,row,3,row);
+//          ++row;
 
         ProductPriceDesigner ppd = new ProductPriceDesigner(iwc);
         form.add(table);
