@@ -39,7 +39,7 @@ private String infoStyle =  "font-family:verdana,arial,sans-serif; font-size:10p
 protected IWResourceBundle iwrb_;
 protected IWBundle iwb_;
 private String specialAttributesName = null;
-private PropertyList specialAttributes = null;
+private List specialAttributes = null;
 
 public ApartmentTypeViewer(){
 }
@@ -48,7 +48,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
     this.apartmenttypeid=apartmenttypeid;
 }
 
-public void setSpecialAttributes(String name,PropertyList attributes){
+public void setSpecialAttributes(String name,List attributes){
   specialAttributesName  = name;
   specialAttributes = attributes;
 }

@@ -5,12 +5,14 @@ import com.idega.block.finance.data.Tariff;
 import com.idega.block.building.presentation.*;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.ui.Window;
+import com.idega.util.Property;
 import com.idega.util.PropertyList;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.IWResourceBundle;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 
 /**
@@ -44,20 +46,20 @@ public class CampusTypeWindow extends Window {
     if(typeTariffs !=null){
       NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());
       //  String rentString = format.format((long)room.getRent());
-     PropertyList list = new PropertyList();
+    	ArrayList list = new ArrayList();
    
       java.util.Iterator iter= typeTariffs.iterator();
       float total = 0;
       while(iter.hasNext()){
         Tariff tariff = (Tariff) iter.next();
-        list.add(tariff.getName(),format.format(tariff.getPrice()));
+        list.add(new Property(tariff.getName(),format.format(tariff.getPrice())));
         total += tariff.getPrice();
       }
       if(total > 0){
-      	list.add("-----------","------------");
+      	list.add(new Property("-----------","------------"));
         String sTotalName = iwrb.getLocalizedString("total","Total");
         String sTotalValue = format.format(total);
-        list.add(sTotalName,sTotalValue);
+        list.add(new Property(sTotalName,sTotalValue));
         BE.setSpecialAttributes(attributeName+"  "+today,list);
       }
     }
