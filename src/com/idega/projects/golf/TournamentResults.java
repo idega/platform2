@@ -167,7 +167,7 @@ public class TournamentResults extends JModuleObject {
         String hole = collector.getHole();
 
         Text memberText = new Text(collector.getName());
-          memberText.setFontSize(1);
+          memberText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
         Image linkImage = new Image("/pics/handicap/pad.gif","Skoða skorkort",11,13);
           linkImage.setHorizontalSpacing(4);
@@ -177,23 +177,23 @@ public class TournamentResults extends JModuleObject {
                 seeScores.addParameter("tournament_group_id",collector.getTournamentGroupId());
 
         Text positionText = new Text(Integer.toString(a+1));
-          positionText.setFontSize(1);
+          positionText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text clubText = new Text(collector.getAbbrevation());
-          clubText.setFontSize(1);
+          clubText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text handicapText = new Text(Integer.toString(handicap));
-          handicapText.setFontSize(1);
+          handicapText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text holeText = new Text(hole);
-          holeText.setFontSize(1);
+          holeText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text firstNineText = new Text();
-          firstNineText.setFontSize(1);
+          firstNineText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text lastNineText = new Text();
-          lastNineText.setFontSize(1);
+          lastNineText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text totalRoundScore = new Text();
-          totalRoundScore.setFontSize(1);
+          totalRoundScore.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text diffText = new Text();
-          diffText.setFontSize(1);
+          diffText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         Text bruttoText = new Text();
-          bruttoText.setFontSize(1);
+          bruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
 
         int totalScore = 0;
         int totalDifference = 0;
@@ -224,18 +224,18 @@ public class TournamentResults extends JModuleObject {
             for ( int b = 1; b <= numberOfRounds; b++ ) {
               int roundScore2 = collector.getRoundScore(b);
               Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(1);
+                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreText,roundScoreColumn,a+3);
                 roundScoreColumn++;
               }
             }
             Text finalScoreText = new Text(Integer.toString(finalScore));
-              finalScoreText.setFontSize(1);
+              finalScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               finalScoreText.setBold();
               finalScoreText.setFontFace("Verdana,Arial,sans-serif");
             Text finalDifferenceText = new Text(Integer.toString(difference));
-              finalDifferenceText.setFontSize(1);
+              finalDifferenceText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               finalDifferenceText.setBold();
               finalDifferenceText.setFontFace("Verdana,Arial,sans-serif");
             if ( finalScore > 0 ) {
@@ -258,9 +258,9 @@ public class TournamentResults extends JModuleObject {
               int roundScore2 = collector.getRoundScore(b);
               int roundScoreBrutto = roundScore2 + handicap;
               Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(1);
+                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
-                roundScoreBruttoText.setFontSize(1);
+                roundScoreBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreBruttoText,roundScoreColumn2,a+3);
                 myTable.add(roundScoreText,roundScoreColumn2+1,a+3);
@@ -268,11 +268,11 @@ public class TournamentResults extends JModuleObject {
               }
             }
             Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
-              finalBruttoText.setFontSize(1);
+              finalBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               finalBruttoText.setBold();
               finalBruttoText.setFontFace("Verdana,Arial,sans-serif");
             Text finalScoreText2 = new Text(Integer.toString(finalScore));
-              finalScoreText2.setFontSize(1);
+              finalScoreText2.setFontSize(Text.FONT_SIZE_7_HTML_1);
               finalScoreText2.setBold();
               finalScoreText2.setFontFace("Verdana,Arial,sans-serif");
             if ( finalScore > 0 ) {
@@ -288,14 +288,14 @@ public class TournamentResults extends JModuleObject {
             for ( int b = 1; b <= numberOfRounds; b++ ) {
               int roundScore2 = collector.getRoundScore(b);
               Text roundScoreText = new Text(Integer.toString(roundScore2));
-                roundScoreText.setFontSize(1);
+                roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
               if ( roundScore2 > 0 ) {
                 myTable.add(roundScoreText,roundScoreColumn3,a+3);
                 roundScoreColumn3++;
               }
             }
             Text finalScoreText3 = new Text(Integer.toString(finalScore));
-              finalScoreText3.setFontSize(1);
+              finalScoreText3.setFontSize(Text.FONT_SIZE_7_HTML_1);
               finalScoreText3.setBold();
               finalScoreText3.setFontFace("Verdana,Arial,sans-serif");
             if ( finalScore > 0 )
@@ -335,9 +335,9 @@ public class TournamentResults extends JModuleObject {
   private void addHeaders(String header, int column, int row) {
     try {
       Text headerText = new Text(header);
-        headerText.setFontSize(1);
+        headerText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         headerText.setBold();
-        headerText.setFontFace("Verdana,Arial,sans-serif");
+        headerText.setFontFace(Text.FONT_FACE_VERDANA);
         headerText.setFontColor("#FFFFFF");
 
       myTable.add(headerText,column,row);
