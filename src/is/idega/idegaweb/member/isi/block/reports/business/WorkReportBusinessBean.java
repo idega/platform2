@@ -638,11 +638,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportDivisionBoard createWorkReportDivisionBoard(int reportId, Group clubDivision, WorkReportGroup league) throws CreateException {
+		
+		WorkReportDivisionBoard divisionBoard = null;
+		
 		// does the division board already exist?
 		try {
 			WorkReportDivisionBoardHome workReportDivisionBoardHome = getWorkReportDivisionBoardHome();
 			int workReportGroupId = ((Integer)league.getPrimaryKey()).intValue();
-			WorkReportDivisionBoard divisionBoard = workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
+			divisionBoard = workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
 			if (divisionBoard != null) {
 				// division board exist be sure that the league was added to the work report
 				WorkReport workReport = getWorkReportById(reportId);
@@ -660,6 +663,31 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		catch (FinderException ex) {
 			// work report division does not exist, go further, create it!
+			divisionBoard = getWorkReportDivisionBoardHome().create();
+			divisionBoard.setReportId(reportId);
+			Integer id = (Integer)clubDivision.getPrimaryKey();
+			divisionBoard.setGroupId(id.intValue());
+			
+//			league
+			 if (league != null) {
+				 int pk = ((Integer)league.getPrimaryKey()).intValue();
+				divisionBoard.setWorkReportGroupID(pk);
+			 }
+			 // +++++++++++++++++++++++++++++++
+			 // add league to work report group
+			 // +++++++++++++++++++++++++++++++
+			 WorkReport workReport = getWorkReportById(reportId);
+			 try {
+				 workReport.addLeague(league);
+				 workReport.store();
+			 }
+			 catch (IDORelationshipException error) {
+				 String message = "[WorkReportBusiness]: Can't define realtion ship.";
+				 System.err.println(message + " Message is: " + error.getMessage());
+				 //ex.printStackTrace(System.err);
+				 // do nothing
+			 }
+			
 		}
 
 		// get group business
@@ -672,22 +700,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			ex.printStackTrace(System.err);
 			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness or an address.");
 		}
-		WorkReportDivisionBoard workReportDivisionBoard = getWorkReportDivisionBoardHome().create();
-		workReportDivisionBoard.setReportId(reportId);
-		// corresponding division board group
-        // club division is null if the league is the ada group
+		
+		
+		// Update stuff
         if (clubDivision != null)  {
-    		Integer id = (Integer)clubDivision.getPrimaryKey();
-    		workReportDivisionBoard.setGroupId(id.intValue());
+    		
     		// home page 
     		String homePageURL = clubDivision.getHomePageURL();
     		if (homePageURL != null) {
-    			workReportDivisionBoard.setHomePage(homePageURL);
+				divisionBoard.setHomePage(homePageURL);
     		}
     		// personal id 
     		String ssn = clubDivision.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
     		if (ssn != null) {
-    			workReportDivisionBoard.setPersonalId(ssn);
+				divisionBoard.setPersonalId(ssn);
     		}
     		// address
     		try {
@@ -696,12 +722,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     				// street and number
     				String streetAndNumber = address.getStreetAddress();
     				if (streetAndNumber != null) {
-    					workReportDivisionBoard.setStreetName(streetAndNumber);
+						divisionBoard.setStreetName(streetAndNumber);
     				}
     				// postal code id
     				PostalCode postalCode = address.getPostalCode();
     				if (postalCode != null) {
-    					workReportDivisionBoard.setPostalCode(postalCode);
+						divisionBoard.setPostalCode(postalCode);
     				}
     			}
     		}
@@ -717,7 +743,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     			if (homePhone != null) {
     				String number = homePhone.getNumber();
     				if (number != null) {
-    					workReportDivisionBoard.setFirstPhone(number);
+						divisionBoard.setFirstPhone(number);
     				}
     			}
     		}
@@ -732,7 +758,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     			if (workPhone != null) {
     				String number = workPhone.getNumber();
     				if (number != null) {
-    					workReportDivisionBoard.setSecondPhone(number);
+						divisionBoard.setSecondPhone(number);
     				}
     			}
     		}
@@ -747,7 +773,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     			if (fax != null) {
     				String number = fax.getNumber();
     				if (number != null) {
-    					workReportDivisionBoard.setFax(number);
+						divisionBoard.setFax(number);
     				}
     			}
     		}
@@ -762,35 +788,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
               if (eMail != null)  {
                 String eMailAddress = eMail.getEmailAddress();
     		    if (eMailAddress != null) {
-    			 workReportDivisionBoard.setEmail(eMailAddress);
+					divisionBoard.setEmail(eMailAddress);
                 }
               }
             }
             catch (NoEmailFoundException ex)  {
     		}
         }
+        
+        
+        //store it!
+		divisionBoard.store();
+	
+		return divisionBoard;
 
-		// league
-		if (league != null) {
-			int pk = ((Integer)league.getPrimaryKey()).intValue();
-			workReportDivisionBoard.setWorkReportGroupID(pk);
-		}
-		// +++++++++++++++++++++++++++++++
-		// add league to work report group
-		// +++++++++++++++++++++++++++++++
-		WorkReport workReport = getWorkReportById(reportId);
-		try {
-			workReport.addLeague(league);
-			workReport.store();
-		}
-		catch (IDORelationshipException ex) {
-			String message = "[WorkReportBusiness]: Can't define realtion ship.";
-			System.err.println(message + " Message is: " + ex.getMessage());
-			//ex.printStackTrace(System.err);
-			// do nothing
-		}
-		workReportDivisionBoard.store();
-		return workReportDivisionBoard;
 	}
 
 	public WorkReport getWorkReportById(int id) {
