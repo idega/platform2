@@ -51,12 +51,12 @@ public class KKMainTemplate extends TemplatePage {
     initializeTopHeader();
 
     this.add(frameTable);
-/*
+
     frameTable.setBorder(1);
     mainTable.setBorder(1);
     contentTable.setBorder(1);
     headerTable.setBorder(1);
-*/
+
   }
 
   public void initializeFrameTable(){
@@ -95,6 +95,7 @@ public class KKMainTemplate extends TemplatePage {
 
   public void initializeTopHeader(){
     topHeader = new Table(1,1);
+    topHeader.setBorder(1);
     topHeader.setCellpadding(0);
     topHeader.setCellspacing(0);
     topHeader.add(new Image("/images/template/kktemplate_03.gif",""),1,1);
@@ -104,6 +105,7 @@ public class KKMainTemplate extends TemplatePage {
     contentFrameTable = new Table(1,2);
     contentFrameTable.setCellpadding(0);
     contentFrameTable.setCellspacing(0);
+    contentFrameTable.setBorder(1);
     contentFrameTable.setWidth(1,1,"100%");
     contentFrameTable.setHeight(1,1,"100%");
     contentFrameTable.setHeight(1,2,"12");
