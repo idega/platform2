@@ -6,7 +6,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public SchoolClassMember create() throws javax.ejb.CreateException;
  public SchoolClassMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
- public java.util.Collection findAllBySeasonAndInvoiceInterval(int p0,java.lang.String p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findAllBySeasonAndInvoiceCompensation(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,int p1)throws javax.ejb.FinderException;

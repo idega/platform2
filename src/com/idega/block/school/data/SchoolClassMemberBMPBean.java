@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
@@ -26,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/14 17:28:09 $ by $Author: staffan $
- * @version $Revision: 1.44 $
+ * Last modified: $Date: 2003/10/15 13:36:33 $ by $Author: staffan $
+ * @version $Revision: 1.45 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -315,17 +316,39 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindAllBySeasonAndInvoiceInterval(int seasonID, String invoiceInterval) throws FinderException, RemoteException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
-		sql.appendWhere().append(" mb." + INVOICE_INTERVAL).appendEqualSign().appendWithinSingleQuotes(invoiceInterval);
-		sql.appendAnd();
-		sql.append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
-		sql.appendAnd();
-		sql.append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y");
-		sql.appendOr();
-		sql.append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
-		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+	public Collection ejbFindAllBySeasonAndInvoiceCompensation
+        (final int seasonId) throws FinderException {
+		final IDOQuery sql = idoQuery ();
+        sql.appendSelectAllFrom (getTableName() + " m")
+                .append (',' + SchoolClassBMPBean.SCHOOLCLASS + " c")
+                .append (',' + SchoolBMPBean.SCHOOL + " s")
+                .appendWhere ()
+                .append ("m." + SCHOOLCLASS)
+                .appendEqualSign ()
+                .append ("c." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+                .appendAnd ()
+                .append ("c." + SchoolClassBMPBean.SCHOOL)
+                .appendEqualSign ()
+                .append ("s." + SchoolBMPBean.SCHOOL + "_id")
+                .appendAnd ()
+                .append ("s." + SchoolBMPBean.COMPENSATION_BY_INVOICE)
+                .appendEqualSign ()
+                .append (true)
+                .appendAnd ()
+                .appendLeftParenthesis ();
+        
+        for (Iterator i = ejbHomeGetInvoiceIntervalTypes ().iterator ();
+             i.hasNext ();) {
+            sql.append ("m." + INVOICE_INTERVAL)
+                    .appendEqualSign ()
+                    .append (i.next ().toString ());
+            if (i.hasNext ()) {
+                sql.appendOr ();
+            }
+        }
+        sql.appendRightParenthesis ();
+        System.err.println ("SQL: " + sql);
+
 		return idoFindPKsBySQL(sql.toString());		
 	}
 
