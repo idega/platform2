@@ -17,6 +17,7 @@ import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.ApplicationSubjectHome;
 import com.idega.block.application.data.ApplicationSubjectInfo;
 import com.idega.block.application.data.ApplicationSubjectInfoHome;
+import com.idega.block.application.data.Status;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOStoreException;
 
@@ -43,6 +44,11 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 		return (ApplicationSubjectInfoHome) getIDOHome(ApplicationSubjectInfo.class);
 	}
 	
+	
+	public String[] getApplicationStatuses(){
+	    String[] statuses = {Status.SUBMITTED.toString(),Status.APPROVED.toString(),Status.REJECTED.toString(),Status.SIGNED.toString(),Status.GARBAGE.toString()};
+	    return statuses;
+	}
 	
 
 	public ApplicationSubject storeApplicationSubject(Integer ID, String sName, java.sql.Date expires,String extra)
@@ -74,7 +80,7 @@ public class ApplicationServiceBean extends IBOServiceBean implements Applicatio
 		return null;
 	}
 
-	public boolean removeApplicationSubject(Integer id) {
+	public boolean removeApplicationSubject(Integer id) throws RemoteException{
 		try {
 			getSubjectHome().findByPrimaryKey(id).remove();
 			return true;
