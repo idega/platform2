@@ -109,6 +109,7 @@ public class SchoolUserEditor extends Block {
 	private int mobilePhoneType = PhoneType.MOBILE_PHONE_ID;
 	private int workPhoneType = PhoneType.WORK_PHONE_ID;
 	private boolean _highSchoolCategory = false;
+	private boolean _hideLogin = false;
 	
 
 	public String getBundleIdentifier() {
@@ -117,6 +118,14 @@ public class SchoolUserEditor extends Block {
 
 	public SchoolUserEditor() {
 
+	}
+	
+	public boolean getHideLogin() {
+		return _hideLogin;
+	}
+	
+	public void setHideLogin(boolean b) {
+		_hideLogin = b;
 	}
 
 	private Table schoolList(IWContext iwc) throws RemoteException {
@@ -886,8 +895,12 @@ public class SchoolUserEditor extends Block {
 
 		table.add(tName, 1, row);
 		table.add(edit, 7, row);
-		table.add(login, 9, row);
-		table.add(delete, 11, row);
+		if (_hideLogin) {
+			table.add(delete, 9, row);
+		} else {
+			table.add(login, 9, row);
+			table.add(delete, 11, row);
+		}
 
 		if (emails != null) {
 			Email email;
