@@ -38,9 +38,7 @@ public class MessageBMPBean extends AbstractCaseBMPBean implements Message,Case{
 
   public void initializeAttributes(){
 //    this.addAttribute(this.getIDColumnName());
-    this.addManyToOneRelationship(getIDColumnName(),"Case ID",Case.class);
-    this.getAttribute(getIDColumnName()).setAsPrimaryKey(true);
-
+    addGeneralCaseRelation();
     this.addAttribute(COLUMN_SUBJECT,"Message subject",String.class);
     this.addAttribute(COLUMN_BODY,"Message body",String.class,1000);
     this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp

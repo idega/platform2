@@ -55,8 +55,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check,Case{
 
   public void initializeAttributes(){
     //this.addAttribute(this.getIDColumnName());
-    this.addManyToOneRelationship(getIDColumnName(),"Case ID",Case.class);
-    this.getAttribute(getIDColumnName()).setAsPrimaryKey(true);
+    addGeneralCaseRelation();
 
 //    this.addAttribute(COLUMN_CHILD_CARE_TYPE,"Type of child care",Integer.class,MANY_TO_ONE,com.idega.block.school.data.SchoolType.class);
     this.addAttribute(COLUMN_CHILD_CARE_TYPE,"Type of child care",Integer.class);
