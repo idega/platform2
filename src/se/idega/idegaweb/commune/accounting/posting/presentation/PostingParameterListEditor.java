@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.34 2003/10/24 15:01:17 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.35 2003/10/27 10:22:18 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.34 2003/10/24 15:01:17 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.35 2003/10/27 10:22:18 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -521,7 +521,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 
 
-	private void addTempFieldParameters(IWContext iwc, Date defaultDate) {
+	protected void addTempFieldParameters(IWContext iwc, Date defaultDate) {
 		
 		try {
 			int index = 1;
@@ -542,7 +542,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		
 	}
 
-	private void setDefaultParameters() {
+	protected void setDefaultParameters() {
 		//String ds = formatDate(new Date(System.currentTimeMillis()), 4);
 		if(_pMap == null) {
 			_pMap = new HashMap();
