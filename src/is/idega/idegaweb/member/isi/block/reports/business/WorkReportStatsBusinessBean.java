@@ -923,8 +923,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(bothGendersEqualOverAge);
 		
 		ReportableField bothGendersAllAge = new ReportableField("bothGendersAllAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
-		reportCollection.addField(bothGendersEqualOverAge);
+		bothGendersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersAllAge);
 
 		//Real data stuff
 		//Gathering data
