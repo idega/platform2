@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 3.1.2005 laddi Exp $
- * Created on 3.1.2005
+ * $Id: ChildCareBusiness.java 1.1 10.1.2005 laddi Exp $
+ * Created on 10.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -361,12 +361,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#moveToGroup
 	 */
-	public void moveToGroup(int placementID, int schoolClassID) throws RemoteException;
+	public void moveToGroup(int placementID, int schoolClassID, User performer) throws RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#removeFromProvider
 	 */
-	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message) throws java.rmi.RemoteException;
+	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message, User performer) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getLatestPlacement

@@ -2091,7 +2091,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
-		getBusiness().moveToGroup(_placementID, groupID);
+		getBusiness().moveToGroup(_placementID, groupID, iwc.getCurrentUser());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();

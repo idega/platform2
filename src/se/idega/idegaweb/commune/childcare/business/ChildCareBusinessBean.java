@@ -1286,7 +1286,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
 					if (lastContract.getTerminatedDate() != null) {
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
-						getSchoolBusiness().addToSchoolClassMemberLog(placement.getStudent(), placement.getSchoolClass(), lastContract.getTerminatedDate());
+						getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
 					}
 					else {
 						placement.setRemovedDate(null);
@@ -1306,10 +1306,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (lastContract.getTerminatedDate() != null) {
 						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
 						placement.store();
-						getSchoolBusiness().addToSchoolClassMemberLog(placement.getStudent(), placement.getSchoolClass(), lastContract.getTerminatedDate());
+						getSchoolBusiness().addToSchoolClassMemberLog(placement, placement.getSchoolClass(), lastContract.getTerminatedDate(), performer);
 					}
 					lastContract.store();
-					getSchoolBusiness().addToSchoolClassMemberLog(newPlacement.getStudent(), newPlacement.getSchoolClass(), new IWTimestamp(newPlacement.getRegisterDate()).getDate(), null);
+					getSchoolBusiness().addToSchoolClassMemberLog(newPlacement, newPlacement.getSchoolClass(), new IWTimestamp(newPlacement.getRegisterDate()).getDate(), null, performer);
 				}
 			}
 
@@ -1340,11 +1340,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void moveToGroup(int placementID, int schoolClassID) throws RemoteException {
+	public void moveToGroup(int placementID, int schoolClassID, User performer) throws RemoteException {
 		try {
 			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(placementID));
 			SchoolClass oldSchoolClass = classMember.getSchoolClass();
-			User student = classMember.getStudent();
 
 			classMember.setSchoolClassId(schoolClassID);
 			classMember.store();
@@ -1355,8 +1354,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			try {
 				SchoolClass newSchoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
-				getSchoolBusiness().addToSchoolClassMemberLog(student, oldSchoolClass, endDate.getDate());
-				getSchoolBusiness().addToSchoolClassMemberLog(student, newSchoolClass, startDate.getDate(), null);
+				getSchoolBusiness().addToSchoolClassMemberLog(classMember, oldSchoolClass, endDate.getDate(), performer);
+				getSchoolBusiness().addToSchoolClassMemberLog(classMember, newSchoolClass, startDate.getDate(), null, performer);
 			}
 			catch (FinderException fe) {
 				log(fe);
@@ -1370,7 +1369,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message) {
+	public void removeFromProvider(int placementID, Timestamp date, boolean parentalLeave, String message, User performer) {
 		try {
 			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(new Integer(placementID));
 			classMember.setRemovedDate(date);
@@ -1379,7 +1378,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			classMember.store();
 
 			IWTimestamp endDate = new IWTimestamp(date);
-			getSchoolBusiness().addToSchoolClassMemberLog(classMember.getStudent(), classMember.getSchoolClass(), endDate.getDate());
+			getSchoolBusiness().addToSchoolClassMemberLog(classMember, classMember.getSchoolClass(), endDate.getDate(), performer);
 		}
 		catch (IDOStoreException e) {
 			e.printStackTrace();
@@ -1630,7 +1629,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			caseBiz.changeCaseStatus(application, this.getCaseStatusCancelled().getStatus(), user);
 			int placementID = terminateContract(application.getContractFileId(), date.getDate(), true);
 
-			removeFromProvider(placementID, date.getTimestamp(), parentalLeave, message);
+			removeFromProvider(placementID, date.getTimestamp(), parentalLeave, message, user);
 			sendMessageToParents(application, subject, body);
 
 			t.commit();
@@ -2740,7 +2739,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						IWTimestamp endDate = new IWTimestamp(validFrom);
 						endDate.addDays(-1);
 						SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
-						getSchoolBusiness().addToSchoolClassMemberLog(oldStudent.getStudent(), oldSchoolClass, endDate.getDate());
+						getSchoolBusiness().addToSchoolClassMemberLog(oldStudent, oldSchoolClass, endDate.getDate(), user);
 					}
 					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId && oldStudent.getSchoolClassId() != schoolClassId) {
 						// end old placement with the chosen date -1 and create new
@@ -2757,7 +2756,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						archive.setSchoolClassMember(student);
 						try {
 							SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
-							getSchoolBusiness().addToSchoolClassMemberLog(student.getStudent(), schoolClass, validFrom, null);
+							getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
 						}
 						catch (FinderException fe) {
 							log(fe);
