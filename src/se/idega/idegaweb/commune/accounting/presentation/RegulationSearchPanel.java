@@ -51,7 +51,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	
 	private static String PAR_PROVIDER = KEY_PROVIDER; 
 	private static final String PAR_PLACING = KEY_PLACING;	
-	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 
+	public static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
 
 	
@@ -155,7 +155,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 						RegulationsBusiness regBiz = (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 						PostingBusiness postingBiz = (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 						_currentSchoolType = regBiz.getSchoolType(_currentRegulation);
-						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), _currentSchoolType, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);	
+						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), _currentSchoolType, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);
 					}catch (RemoteException ex){
 						ex.printStackTrace();
 					}catch (PostingException ex){
