@@ -1,5 +1,5 @@
 /*	
- * $Id: MainRuleBMPBean.java,v 1.4 2003/09/08 08:10:07 laddi Exp $
+ * $Id: MainRuleBMPBean.java,v 1.5 2003/10/03 08:07:51 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecTypeBMPBean# 
  * <p>
- * $Id: MainRuleBMPBean.java,v 1.4 2003/09/08 08:10:07 laddi Exp $
+ * $Id: MainRuleBMPBean.java,v 1.5 2003/10/03 08:07:51 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	
@@ -45,7 +45,7 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 
 		MainRuleHome home
 				= (MainRuleHome) IDOLookup.getHome(MainRule.class);
-		final String [] data = { "check", "resurs", "subvention" };
+		final String [] data = { "check", "resurs", "subvention", "checktaxa" };
 		for (int i = 0; i < data.length; i++) {
 			MainRule mainrule = home.create();
 			mainrule.setMainRule(ENTITY_NAME + "." + data[i]);
