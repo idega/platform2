@@ -45,6 +45,8 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
     }catch (RemoteException re) {
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
+    }catch (Exception re) {
+      System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
     }
   }
 
