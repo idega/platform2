@@ -1,14 +1,14 @@
 package is.idega.idegaweb.member.isi.block.reports.data;
 
 
-public interface WorkReportBoardMember extends com.idega.data.IDOEntity, WorkReportMember
+public interface WorkReportBoardMember extends com.idega.data.IDOEntity
 {
  public int getAge();
  public java.sql.Timestamp getDateOfBirth();
  public java.lang.String getEmail();
  public java.lang.String getFax();
  public java.lang.String getHomePhone();
- public java.util.Collection getLeaguesForMember()throws com.idega.data.IDOException;
+ public is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup getLeague()throws com.idega.data.IDOException;
  public java.lang.String getName();
  public java.lang.String getPersonalId();
  public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;

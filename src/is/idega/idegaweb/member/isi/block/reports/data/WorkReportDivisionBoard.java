@@ -8,7 +8,7 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public java.lang.String getFirstPhone();
  public int getGroupId();
  public java.lang.String getHomePage();
- public java.util.Collection getLeagues()throws com.idega.data.IDOException;
+ public is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup getLeague()throws com.idega.data.IDOException;
  public java.lang.String getPersonalId();
  public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();

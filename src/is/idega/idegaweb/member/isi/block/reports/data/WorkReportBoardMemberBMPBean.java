@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -169,9 +170,12 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		
 	}
 	
-	public Collection getLeaguesForMember() throws IDOException {
+	public WorkReportGroup getLeague() throws IDOException {
 		//could be optimized by only getting league workreportgroups
-		return idoGetRelatedEntities(WorkReportGroup.class);
+		Collection coll = idoGetRelatedEntities(WorkReportGroup.class);
+    Iterator iterator = coll.iterator();
+    WorkReportGroup group = (iterator.hasNext()) ? (WorkReportGroup) iterator.next() : null;
+    return group;
 	}
 	
 	public void setAsBoardMember(boolean boardMember){

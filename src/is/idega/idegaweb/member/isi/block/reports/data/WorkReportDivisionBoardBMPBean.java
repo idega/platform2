@@ -2,6 +2,7 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -98,9 +99,12 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     setColumn(COLUMN_NAME_GROUP_ID, groupId);
   }
   
-  public Collection getLeagues() throws IDOException {
+  public WorkReportGroup getLeague() throws IDOException {
     //could be optimized by only getting league workreportgroups
-    return idoGetRelatedEntities(WorkReportGroup.class);
+    Collection coll = idoGetRelatedEntities(WorkReportGroup.class);
+    Iterator iterator = coll.iterator();
+    WorkReportGroup group = (iterator.hasNext()) ? (WorkReportGroup) iterator.next() : null;
+    return group;
   }
   
   public String getStreetName() {
