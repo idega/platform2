@@ -165,7 +165,7 @@ public class ContractSignWindow extends Window{
       row++;
       boolean canSign = true;
       int con_id = -1;
-      if(listOfContracts != null){
+      if(listOfContracts != null && !listOfContracts.isEmpty()){
         Contract C = (Contract) listOfContracts.get(0);
         con_id = C.getID();
         if(con_id != eContract.getID())
