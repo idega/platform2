@@ -175,6 +175,65 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		return idoGetNumberOfRecords(query);
 	}
 
+	public int ejbHomeGetNumberOfInvoicesForCurrentMonth() throws IDOException {
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom(this);
+		query.appendWhereEquals(COLUMN_STATUS, "'P'");
+		return idoGetNumberOfRecords(query);
+	}
+
+	public int ejbHomeGetNumberOfInvoicesForMonth(CalendarMonth month) throws IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom(this);
+		query.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		return idoGetNumberOfRecords(query);
+	}
+	
+	public int ejbHomeGetNumberOfChildrenForCurrentMonth() throws IDOException {
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom();
+		query.append("(select distinct a.child_id from cacc_invoice_header h, cacc_invoice_record r, comm_childcare_archive a where h.status='P' and a.comm_childcare_archive_id=r.comm_childcare_archive_id and r.invoice_header = h.cacc_invoice_header_id) a");
+		//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
+		return idoGetNumberOfRecords(query);
+	}
+
+	public int ejbHomeGetNumberOfChildrenForMonth(CalendarMonth month) throws IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom();
+		query.append("(select distinct a.child_id from cacc_invoice_header h, cacc_invoice_record r, comm_childcare_archive a where h.status='P'"); 
+		query.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		query.append("and a.comm_childcare_archive_id=r.comm_childcare_archive_id and r.invoice_header = h.cacc_invoice_header_id) a");		
+	//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
+		return idoGetNumberOfRecords(query);
+	}
+	
+	public int ejbHomeGetTotalInvoiceRecordAmountForCurrentMonth() throws IDOException {
+		IDOQuery query = idoQuery();
+		//query.appendSelectCountFrom();
+		query.append("select  round(sum(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where h.status='P' and r.invoice_header = h.cacc_invoice_header_id"); 	
+		//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
+		return idoGetNumberOfRecords(query);
+	}
+
+	public int ejbHomeGetTotalInvoiceRecordAmountForMonth(CalendarMonth month) throws IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		//query.appendSelectCountFrom();
+		query.append("select  round(sum(r.amount)) from cacc_invoice_header h, cacc_invoice_record r where r.invoice_header = h.cacc_invoice_header_id"); 
+		query.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);		
+		//query.appendWhereEquals(COLUMN_STATUS, "'P'");		
+		return idoGetNumberOfRecords(query);
+	}
+	
+
     /**
      * Retreives a collection of all InvoiceHeaders where the user given is
      * either custodian or the child and in the period. If any of the dates

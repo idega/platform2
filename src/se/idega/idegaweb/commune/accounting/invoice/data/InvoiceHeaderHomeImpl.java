@@ -67,9 +67,51 @@ public java.util.Collection findByStatusAndCategory(java.lang.String p0,java.lan
  }
 
 
+public int getNumberOfChildrenForCurrentMonth()throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfChildrenForCurrentMonth();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfChildrenForMonth(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfChildrenForMonth(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfInvoicesForCurrentMonth()throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfInvoicesForCurrentMonth();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfInvoicesForMonth(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfInvoicesForMonth(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getNumberOfInvoicesForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfInvoicesForSchoolCategoryAndMonth(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getTotalInvoiceRecordAmountForCurrentMonth()throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetTotalInvoiceRecordAmountForCurrentMonth();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getTotalInvoiceRecordAmountForMonth(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetTotalInvoiceRecordAmountForMonth(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
