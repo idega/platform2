@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/12 13:19:30 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/12 15:06:38 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -298,7 +298,22 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			log.info("Found "+resources.size()+" resources for "+schoolClassMember.getStudent().getName());
 			for (Iterator i = resources.iterator(); i.hasNext();) {
 				ResourceClassMember resource = (ResourceClassMember) i.next();
-				createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource, placementTimes);
+				try {
+					createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource, placementTimes);
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+					errorRelated = new StringBuffer ();
+					User user = null != schoolClassMember ? schoolClassMember.getStudent () : null;
+					String studentInfo = null != user ? user.getName () + " " + user.getPersonalID () : "";
+					errorRelated.append ("Student = " + studentInfo + "<br/>");
+					errorRelated.append ("Conditions = " + conditions + "<br/>");
+					errorRelated.append ("Resource = " + resource + "<br/>");
+					java.io.StringWriter sw = new java.io.StringWriter ();
+					e.printStackTrace (new java.io.PrintWriter (sw, true));
+					errorRelated.append (sw + "</br>");
+					if (errorRelated.length () > 900) errorRelated = new StringBuffer (errorRelated.substring (1, 900));
+					createNewErrorMessage(errorRelated.toString (),"invoice.createPaymentsForResourceError");
+				}
 			}
 		}
 	}

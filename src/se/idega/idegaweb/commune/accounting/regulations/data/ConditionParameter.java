@@ -34,4 +34,7 @@ public class ConditionParameter {
 		interval = object;
 	}
 
+	public String toString () {
+		return "{" + condition + ", " + interval + "}";
+	}
 }
