@@ -42,7 +42,9 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -287,7 +289,7 @@ public class UserEditor extends Block {
 		}
 
 		Form form = new Form();
-
+		form.setOnSubmit("return checkInfoForm()");
 		form.add(mainTable);
 		add(form);
 	}
@@ -491,6 +493,13 @@ public class UserEditor extends Block {
 	*/
 	protected void presentateUserInfo(IWContext iwc) throws RemoteException {
 		UserBusiness userService = getUserService(iwc);
+		
+		Page p = this.getParentPage();
+		if (p != null) {
+			Script S = p.getAssociatedScript();
+			S.addFunction("checkInfoForm", getInfoCheckScript());
+		}
+		
 		Table infoTable = new Table();
 		Table addressTable = new Table();
 		int row = 1;
@@ -570,6 +579,7 @@ public class UserEditor extends Block {
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
 		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
 		
+		
 		TextInput primaryPostalCodeInput = new TextInput(prm_mainaddress_postal_code);
 		primaryPostalCodeInput.setStyleClass(interfaceStyleName);
 		
@@ -623,10 +633,12 @@ public class UserEditor extends Block {
 			addressTable.add(getOldParameter(prm_mainaddress_street, primaryAddress.getStreetAddress()));
 			try {
 				PostalCode postalCode = primaryAddress.getPostalCode();
-				System.err.println("postal ID: "+postalCode.getPrimaryKey().toString());
+				//System.err.println("postal ID: "+postalCode.getPrimaryKey().toString());
 				if(postalCode!=null){
-					primaryPostalCodeInput.setContent(postalCode.getPostalCode());
-					primaryPostalNameInput.setContent(postalCode.getName());
+					if(postalCode.getPostalCode()!=null)
+						primaryPostalCodeInput.setContent(postalCode.getPostalCode());
+					if(postalCode.getName()!=null)
+						primaryPostalNameInput.setContent(postalCode.getName());
 					addressTable.add(new Parameter(prm_primaddress_postal_id,postalCode.getPrimaryKey().toString()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_code, postalCode.getPostalCode()));
 					addressTable.add(getOldParameter(prm_mainaddress_postal_name, postalCode.getName()));
@@ -658,25 +670,30 @@ public class UserEditor extends Block {
 			coStreetAddressInput.setContent(coAddress.getStreetAddress());
 			addressTable.add(getOldParameter(prm_coaddress_street, coAddress.getStreetAddress()));
 
-			PostalCode postalCode = coAddress.getPostalCode();
-			if(postalCode!=null){
-				coPostalCodeInput.setContent(postalCode.getPostalCode());
-				coPostalNameInput.setContent(postalCode.getName());
-				addressTable.add(new Parameter(prm_coaddress_postal_id,postalCode.getPrimaryKey().toString()));
-				addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
-				addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
-			  try {
-				  Country country = postalCode.getCountry();
-					if(country!=null){
-							coCountryInput.setSelectedCountry(country);
-							addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
-					}
-					/*else if(defaultCountry != null){
-							coCountryInput.setSelectedCountry(defaultCountry);
-					}*/
+			try {
+				PostalCode postalCode = coAddress.getPostalCode();
+				if(postalCode!=null){
+					if(postalCode.getPostalCode()!=null)
+						coPostalCodeInput.setContent(postalCode.getPostalCode());
+					if(postalCode.getName()!=null)
+						coPostalNameInput.setContent(postalCode.getName());
+					addressTable.add(new Parameter(prm_coaddress_postal_id,postalCode.getPrimaryKey().toString()));
+					addressTable.add(getOldParameter(prm_coaddress_postal_code, postalCode.getPostalCode()));
+					addressTable.add(getOldParameter(prm_coaddress_postal_name, postalCode.getName()));
+				
+					  Country country = postalCode.getCountry();
+						if(country!=null){
+								coCountryInput.setSelectedCountry(country);
+								addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
+						}
+						/*else if(defaultCountry != null){
+								coCountryInput.setSelectedCountry(defaultCountry);
+						}*/
+					
 				}
-				  catch (Exception e3) {
-				}
+			}
+			catch (Exception e2) {
+				
 			}
 		}
 		
@@ -773,6 +790,7 @@ public class UserEditor extends Block {
 					 if(country!=null && (isNewValue(iwc,prm_mainaddress_postal_code)|| isNewValue(iwc,prm_mainaddress_postal_name) || isNewValue(iwc,prm_mainaddress_country))){
 						String code = iwc.getParameter(prm_mainaddress_postal_code);
 						String name = iwc.getParameter(prm_mainaddress_postal_name);
+						if(!"".equals(code) && !"".equals(name)){
 						boolean postalExists = false;
 						try {
 							
@@ -808,7 +826,7 @@ public class UserEditor extends Block {
 						null,
 						null,
 						null);
-				}
+				}}
 			}
 
 			// co address part
@@ -848,6 +866,7 @@ public class UserEditor extends Block {
 						if(country!=null && (isNewValue(iwc,prm_coaddress_postal_code) || isNewValue(iwc,prm_coaddress_postal_name) || isNewValue(iwc,prm_coaddress_country))){
 							String code = iwc.getParameter(prm_coaddress_postal_code);
 							String name = iwc.getParameter(prm_coaddress_postal_name);
+							if(!"".equals(code) && !"".equals(name)){
 							boolean postalExists = false;
 							try {
 	
@@ -882,7 +901,7 @@ public class UserEditor extends Block {
 							null,
 							null,
 							null);
-					}
+					}}
 				}
 
 			// phone part
@@ -1342,6 +1361,60 @@ public class UserEditor extends Block {
 	 */
 	public void setShowCloseButton(boolean flag) {
 		showCloseButton = flag;
+	}
+	
+	public String getInfoCheckScript() {
+		StringBuffer s = new StringBuffer();
+		s.append("\nfunction checkInfoForm(){\n\t");	
+		s.append("\n\t var mainStreetAddress = ").append("findObj('").append(prm_mainaddress_street).append("'); ");
+		s.append("\n\t var mainPostalCode = ").append("findObj('").append(prm_mainaddress_postal_code).append("');");
+		s.append("\n\t var mainPostalName = ").append("findObj('").append(prm_mainaddress_postal_name).append("');");
+		s.append("\n\t if( mainStreetAddress.value != '' || mainPostalCode.value != '' || mainPostalName.value !='' ){ ");
+		s.append("\n\t\t var msg = '").append(iwrb.getLocalizedString("mbe.warning.main_address_item_missing","Please provide the following items for the address")).append("' ");
+		s.append("\n\t\t var isAlert = false;");
+		s.append("\n\t\t if(mainStreetAddress.value == '' ) {");
+		s.append("\n\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_main_streetaddress","Street address")).append("' ");
+		s.append("\n\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(mainPostalCode.value == '' ) {");
+		s.append("\n\t\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_main_postalcode","Zip code")).append(",' ");
+		s.append("\n\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(mainPostalName.value == '' ) {");
+		s.append("\n\t\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_main_postalname","City")).append(",' \n\t");
+		s.append("\n\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(isAlert){");
+		
+		s.append("\n\t\t\t alert(msg);");
+		s.append("\n\t\t\t  return false;");
+		s.append("\n\t\t }");
+		s.append("\n\t }");
+			
+		s.append("\n\t var coStreetAddress = ").append("findObj('").append(prm_coaddress_street).append("');");
+		s.append("\n\t var coPostalCode = ").append("findObj('").append(prm_coaddress_postal_code).append("');");
+		s.append("\n\t var coPostalName = ").append("findObj('").append(prm_coaddress_postal_name).append("');");
+		s.append("\n\t if( coStreetAddress.value !='' || coPostalCode.value !='' || coPostalName.value !='' ){ \n\t");
+		s.append("\n\t\t var msg = '").append(iwrb.getLocalizedString("mbe.warning.co_address_item_missing","Please provide the following items for the c/o address")).append("' ");
+		s.append("\n\t\t if(coStreetAddress.value == '' ) {");
+		s.append("\n\t\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_co_streetaddress","Street address")).append(",' ");
+		s.append("\n\t\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(coPostalCode.value == '' ) {");
+		s.append("\n\t\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_co_postalcode","Zip code")).append(",' ");
+		s.append("\n\t\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(coPostalName.value == '' ) {");
+		s.append("\n\t\t\t msg += ' ").append(iwrb.getLocalizedString("mbe.warning.missing_co_postalname","City")).append(",' ");
+		s.append("\n\t\t\t isAlert = true");
+		s.append("\n\t\t }");
+		s.append("\n\t\t if(isAlert) {");
+		s.append("\n\t\t\t alert(msg+' co');");
+		s.append("\n\t\t\t return false;");
+		s.append("\n\t\t }");
+		s.append("\n\t }");
+		s.append("\n\t return true ").append("\n }");
+		return s.toString();
 	}
 
 }
