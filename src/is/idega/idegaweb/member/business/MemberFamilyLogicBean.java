@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.business;
 
 import java.util.*;
+
 import javax.ejb.*;
 import java.rmi.RemoteException;
 
@@ -20,6 +21,7 @@ import com.idega.user.data.*;
 public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamilyLogic{
 
   private static final String RELATION_TYPE_GROUP_PARENT="FAM_PARENT";
+	private static final String RELATION_TYPE_GROUP_CUSTODIAN="FAM_CUSTODIAN";
   private static final String RELATION_TYPE_GROUP_CHILD="FAM_CHILD";
   private static final String RELATION_TYPE_GROUP_SPOUSE="FAM_SPOUSE";
   private static final String RELATION_TYPE_GROUP_SIBLING="FAM_SIBLING";
@@ -81,16 +83,19 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
 
   /**
-   * @return A Collection of User object who are children of a user. Returns an empty Collection if no children found.
+   * @return A Collection of User objects (children) who are children of this
+   * user. Returns an empty Collection if no children found.
    * @throws NoChildrenFound if no children are found
    */
   public Collection getChildrenFor(User user)throws NoChildrenFound,RemoteException{
     String userName = null;
     try{
       userName = user.getName();
+      
       Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_PARENT);
-      if(coll==null){
-	throw new NoChildrenFound(userName);
+			
+      if(coll==null || coll.isEmpty()){
+				throw new NoChildrenFound(userName);
       }
       return convertGroupCollectionToUserCollection(coll);
       //return coll;
@@ -99,6 +104,29 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       throw new NoChildrenFound(userName);
     }
   }
+  
+	/**
+		* @return A Collection of User objects (children) who in his custody. Returns
+		* an empty Collection if no children found.
+		* @throws NoChildrenFound if no children are found
+		*/
+	 public Collection getChildrenInCustodyOf(User user)throws NoChildrenFound,RemoteException{
+		 String userName = null;
+		 try{
+			 userName = user.getName();
+      
+			 Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_CUSTODIAN);
+			
+			 if(coll==null || coll.isEmpty()){
+				 throw new NoChildrenFound(userName);
+			 }
+			 return convertGroupCollectionToUserCollection(coll);
+			 //return coll;
+		 }
+		 catch(FinderException e){
+			 throw new NoChildrenFound(userName);
+		 }
+	 }
 
   /**
    * @return A Collection of User object who are siblings of a user. Returns an empty Collection if no siblings found.
@@ -109,8 +137,8 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     try{
       userName = user.getName();
       Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_SIBLING);
-      if(coll==null){
-	throw new NoSiblingFound(userName);
+      if(coll==null || coll.isEmpty()){
+				throw new NoSiblingFound(userName);
       }
       return convertGroupCollectionToUserCollection(coll);
       //return coll;
@@ -138,16 +166,24 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   /**
-   * @return A Collection of User object who are custodians of a user. Returns an empty Collection if no custodians are found.
+   * @return A Collection of User object who are custodians of a user. If
+   * no custodian is found it will return the parents of that user. Returns an
+   * empty Collection if no custodians or parents are found.
    * @throws NoCustodianFound if no custodians are found
    */
   public Collection getCustodiansFor(User user)throws NoCustodianFound,RemoteException{
     String userName = null;
     try{
       userName = user.getName();
-      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_CHILD);
-      if(coll==null){
-	throw new NoCustodianFound(userName);
+      Collection coll = user.getReverseRelatedBy(this.RELATION_TYPE_GROUP_CUSTODIAN);
+      if(coll==null || coll.isEmpty()){
+      	try{
+      		coll = this.getParentsFor(user);//todo remove this when database is fixed
+      		return coll;
+      	}
+      	catch(NoParentFound ex){
+					throw new NoCustodianFound(userName);
+      	}				
       }
       return convertGroupCollectionToUserCollection(coll);
     }
@@ -155,6 +191,26 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       throw new NoCustodianFound(userName);
     }
   }
+  
+	/**
+	 * @return A Collection of User object who are parents of a user. Returns an
+	 * empty Collection if no parents are found.
+	 * @throws NoCustodianFound if no custodians are found
+	 */
+	public Collection getParentsFor(User user)throws NoParentFound,RemoteException{
+		String userName = null;
+		try{
+			userName = user.getName();
+			Collection coll = user.getReverseRelatedBy(this.RELATION_TYPE_GROUP_PARENT);
+			if(coll==null || coll.isEmpty()){
+				throw new NoParentFound(userName);
+			}
+			return convertGroupCollectionToUserCollection(coll);
+		}
+		catch(Exception e){
+			throw new NoParentFound(userName);
+		}
+	}
 
   public boolean hasPersonGotChildren(User person){
     /**
@@ -199,29 +255,56 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
    * @returns True if the childToCheck is a child of parent else false
    */
   public boolean isChildOf(User childToCheck,User parent) throws RemoteException {
-    if ( this.hasPersonGotChildren(parent) ) {
-      try {
-	Collection coll = getChildrenFor(parent);
-	return coll.contains(childToCheck);
-      }
-      catch (NoChildrenFound ex) {
-      }
-    }
-    return false;
+   try {
+			Collection coll = getChildrenFor(parent);
+			return coll.contains(childToCheck);
+   }
+   catch (NoChildrenFound ex) {
+   }
+   return false;
   }
+  
+	/**
+	 * @returns True if the childToCheck is a child in custody of parent else
+	 * false
+	 */
+	public boolean isChildInCustodyOf(User childToCheck,User parent) throws RemoteException {
+	 try {
+			Collection coll = getChildrenInCustodyOf(parent);
+			return coll.contains(childToCheck);
+	 }
+	 catch (NoChildrenFound ex) {
+	 }
+	 return false;
+	}
+  
 
   /**
-   * @return True if the parent is the parent of childToCheck else false
+   * @return True if the parentToCheck is the parent of childToCheck else false
    */
   public boolean isParentOf(User parentToCheck,User child) throws RemoteException {
     try {
-      Collection coll = getCustodiansFor(child);
+      Collection coll = getParentsFor(child);
       return coll.contains(parentToCheck);
     }
-    catch (NoCustodianFound ex) {
+    catch (NoParentFound ex) {
       return false;
     }
   }
+  
+	/**
+	 * @return True if the custodianToCheck is the custodian of childToCheck else false
+	 */
+	public boolean isCustodianOf(User custodianToCheck,User child) throws RemoteException {
+		try {
+			Collection coll = getChildrenInCustodyOf(custodianToCheck);
+						
+			return coll.contains(child);
+		}
+		catch (NoChildrenFound ex) {
+			return false;
+		}
+	}
 
   /**
    * @return True if the personToCheck is a spouse of relatedPerson else false
@@ -266,6 +349,13 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       parent.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
     }
   }
+  
+	public void setAsCustodianFor(User custodian,User child)throws CreateException,RemoteException{
+		if(!this.isCustodianOf(custodian,child)){
+			child.addRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
+			custodian.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
+		}
+	}
 
   public void setAsSpouseFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSpouseOf(personToSet,relatedPerson)){
@@ -290,6 +380,11 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     child.removeRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
     parent.removeRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
   }
+  
+	public void removeAsCustodianFor(User custodian,User child)throws RemoveException,RemoteException{
+		child.removeRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
+		custodian.removeRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
+	}
 
   public void removeAsSpouseFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
     personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
@@ -317,6 +412,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 	public String getParentRelationType() {
 		return RELATION_TYPE_GROUP_PARENT;
 	}
+	
 
 	/**
 	 * Returns the RELATION_TYPE_GROUP_SIBLING.
@@ -333,9 +429,96 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 	public String getSpouseRelationType() {
 		return RELATION_TYPE_GROUP_SPOUSE;
 	}
+	
+	/**
+	 * Returns the RELATION_TYPE_GROUP_CUSTODIAN.
+	 * @return String
+	 */
+	public String getCustodianRelationType() {
+		return RELATION_TYPE_GROUP_CUSTODIAN;
+	}
 
 	public UserBusiness getUserBusiness()throws RemoteException{
 		return (UserBusiness)this.getServiceInstance(UserBusiness.class);	
+	}
+	
+	public void removeAllFamilyRelationsForUser(User user) throws RemoteException{
+		try {
+			Collection children = getChildrenFor(user);
+			if( children != null ){
+				Iterator kids = children.iterator();
+				while (kids.hasNext()) {
+					User child = (User) kids.next();
+					removeAsChildFor(child,user);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch (NoChildrenFound x){}
+		
+		try {
+			Collection children = getChildrenInCustodyOf(user);
+			if( children != null ){
+				Iterator kids = children.iterator();
+				while (kids.hasNext()) {
+					User child = (User) kids.next();
+					removeAsCustodianFor(user,child);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch (NoChildrenFound x){}
+
+		try {
+			User spouse = getSpouseFor(user);
+			if( spouse != null ){
+				removeAsSpouseFor(spouse,user);
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}
+		catch(NoSpouseFound x){}
+
+		try {
+			Collection parents = getParentsFor(user);
+			if( parents != null ){
+				Iterator ents = parents.iterator();
+				while (ents.hasNext()) {
+					User ent = (User) ents.next();
+					removeAsParentFor(ent,user);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoParentFound x){}	
+		
+		try {
+			Collection siblings = getSiblingsFor(user);
+			if( siblings != null ){
+				Iterator sibling = siblings.iterator();
+				while (sibling.hasNext()) {
+					User sibl = (User) sibling.next();
+					removeAsSiblingFor(sibl,user);
+				}
+			}
+	
+		}
+		catch (RemoveException ex) {
+			ex.printStackTrace();
+		}		
+		catch (NoSiblingFound x){}	
+		
 	}
 
 }
