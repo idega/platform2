@@ -100,8 +100,8 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 	
 	      applications = ListUtil.convertCollectionToList(applications);
 	
-	
-	      userTable = new Table(7, ((applications.size()>33)?applications.size():33)+1  );
+				int size =applications.size();
+	      userTable = new Table(7, ((size>33)?size:33)+1  );
 	      returnTable.add(userTable,1,1);
 	      userTable.setCellpaddingAndCellspacing(0);
 	      userTable.setLineAfterColumn(1);
@@ -125,9 +125,9 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 	      userTable.setWidth(1,"160");
 	      
 	      
-	      //columns start
+	    //columns start
 	
-	      Text name = new Text("&nbsp;"+iwrb.getLocalizedString("name","Name"));
+	    Text name = new Text("&nbsp;"+iwrb.getLocalizedString("name","Name"));
 	 	  name.setFontFace(Text.FONT_FACE_VERDANA);
 	 	  name.setFontSize(Text.FONT_SIZE_7_HTML_1);
 	 	  userTable.add(name,1,1);
@@ -189,7 +189,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 	          userTable.add("&nbsp;",1,line);
 	          userTable.add(aLink,1,line);
 	          
-			//pin
+						//pin
 	          userTable.add("&nbsp;"+tempUser.getPersonalID(),2,line);
 	          
 	          //email
@@ -198,9 +198,9 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 	          	Iterator iterator = emails.iterator();
 	          	
 	          	while (iterator.hasNext()) {
-					Email e_mail = (Email) iterator.next();
-					userTable.add("&nbsp;"+e_mail.getEmailAddress() ,3,line);
-				}
+								Email e_mail = (Email) iterator.next();
+								userTable.add("&nbsp;"+e_mail.getEmailAddress() ,3,line);
+							}
 	          	
 	          }
 
@@ -211,9 +211,9 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Use
 	          	Iterator iterator = phones.iterator();
 	          	
 	          	while (iterator.hasNext()) {
-					Phone _phone = (Phone) iterator.next();
-					userTable.add("&nbsp;"+_phone.getNumber() ,4,line);
-				}
+								Phone _phone = (Phone) iterator.next();
+								userTable.add("&nbsp;"+_phone.getNumber() ,4,line);
+						}
 	          	
 	          }
 	          
