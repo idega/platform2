@@ -64,10 +64,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/19 11:53:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/19 14:03:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -196,6 +196,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
+    private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
             ACTION_NEW_RECORD = 2,
@@ -221,11 +222,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	public void init (final IWContext context) {
 		try {
             int actionId = ACTION_SHOW_COMPILATION_LIST;
+
             try {
                 actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
             } catch (final Exception dummy) {
-                // do nothing, actionId is default
+                try {
+                    actionId = Integer.parseInt (context.getParameter
+                                                 (LAST_ACTION_KEY));
+                } catch (final Exception dummy2) {
+                    // do nothing, actionId is default
+                }
             }
+
 			switch (actionId) {
 				case ACTION_SHOW_COMPILATION:
 					showCompilation (context);
@@ -453,7 +461,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
                     (business.getAllVatRules ()));
         inputs.put (ACTION_KEY, getSubmitButton
-                    (ACTION_NEW_RECORD + "", CREATE_INVOICE_RECORD_KEY,
+                    (ACTION_NEW_RECORD, CREATE_INVOICE_RECORD_KEY,
                      CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
@@ -518,7 +526,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             vatRuleDropdown.setSelectedElement (vatRuleId + "");
         }
         inputs.put (ACTION_KEY, getSubmitButton
-                    (ACTION_SAVE_RECORD + "", EDIT_INVOICE_RECORD_KEY,
+                    (ACTION_SAVE_RECORD, EDIT_INVOICE_RECORD_KEY,
                      EDIT_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (EDIT_INVOICE_RECORD_KEY,
                                           EDIT_INVOICE_RECORD_DEFAULT));
@@ -589,13 +597,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
-        addOperationFieldDropdown (table, row++);
+        addOperationalFieldDropdown (context, table, row++);
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
         addPeriodForm (table, row, context);
         table.setAlignment (table.getColumns (), row,
                             Table.HORIZONTAL_ALIGN_RIGHT);
-        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
+        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST,
                                     SEARCH_KEY, SEARCH_DEFAULT),
                    table.getColumns (), row++);
 
@@ -628,7 +636,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
+        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM,
                                     NEW_KEY, NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -656,7 +664,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
-        addOperationFieldRow (table, context, header, row++);
+        addOperationalFieldRow (table, context, header, row++);
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText(table, (null != period ? periodFormatter.format (period)
@@ -697,7 +705,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    row++);
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM + "", NEW_KEY,
+        table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
                                     NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.maintainParameter (INVOICE_COMPILATION_KEY);
@@ -760,11 +768,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
-        addOperationFieldDropdown (table, row++);
+        addOperationalFieldDropdown (context, table, row++);
         addUserSearcherForm (table, row++, context, searcher);
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
+        table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM,
                                     SEARCH_INVOICE_RECEIVER_KEY,
                                     SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row++);
         if (null != searcher.getUser ()) {
@@ -799,11 +807,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                        row++);
             table.setHeight (row++, 12);
             table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
+            table.add (getSubmitButton (ACTION_NEW_COMPILATION,
                                         CREATE_INVOICE_COMPILATION_KEY,
                                         CREATE_INVOICE_COMPILATION_DEFAULT), 1,
                        row++);
         } else if (null != searcher.getUsersFound ()) {
+            // many users found
             table.mergeCells (1, row, table.getColumns (), row);
             table.add (getSearcherResultTable
                        (searcher.getUsersFound (),
@@ -856,7 +865,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         setColumnWidthsEqual (table);
         int row = 2;
         int col = 1;
-        addOperationFieldRow (table, context, header, row++);
+        addOperationalFieldRow (table, context, header, row++);
         col = 1;
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
         addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
@@ -1656,25 +1665,31 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
-    private SubmitButton getSubmitButton (final String action, final String key,
+    private SubmitButton getSubmitButton (final int action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
                                          (localize (key, defaultName),
-                                          ACTION_KEY, action));
+                                          ACTION_KEY, action + ""));
     }
 
-    private void addOperationFieldDropdown
-        (final Table table, final int row) throws RemoteException {
+    private void addOperationalFieldDropdown
+        (final IWContext context, final Table table, final int row)
+        throws RemoteException {
         int col = 1;
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
                         MAIN_ACTIVITY_DEFAULT, ":");
         String operationalField = getSession ().getOperationalField ();
         operationalField = operationalField == null ? "" : operationalField;
         table.mergeCells (col, row, table.getColumns (), row);
-        table.add (new OperationalFieldsMenu (), col++, row);
+        final OperationalFieldsMenu dropdown = new OperationalFieldsMenu ();
+        if (context.isParameterSet (ACTION_KEY)) {
+            dropdown.setParameter (LAST_ACTION_KEY,
+                                   context.getParameter (ACTION_KEY));
+        }
+        table.add (dropdown, col++, row);
     }
 
-    private void addOperationFieldRow
+    private void addOperationalFieldRow
         (final Table table, final IWContext context, final InvoiceHeader header,
          final int row) throws RemoteException {
         int col = 1;
