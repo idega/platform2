@@ -25,6 +25,7 @@ import com.idega.data.IDOTranslationEntity;
 
 public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements SurveyAnswer {
 
+	public static final String COLUMNNAME_TEXT_INPUT = "TEXT_INPUT";
 	public static final String COLUMNNAME_QUESTION_ID = "SU_SURVEY_QUESTION_ID";
 	private HashMap storeMap = new HashMap();
 
@@ -40,6 +41,7 @@ public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(COLUMNNAME_QUESTION_ID,SurveyQuestion.class);
 		setNullable(COLUMNNAME_QUESTION_ID, false);
+		addAttribute(COLUMNNAME_TEXT_INPUT,"Text input",true,true,Boolean.class);
 
 	}
 
@@ -83,6 +85,18 @@ public class SurveyAnswerBMPBean extends com.idega.data.GenericEntity implements
 		query.appendWhereEquals(COLUMNNAME_QUESTION_ID,question);
 
 		return idoFindPKsByQuery(query);
+	}
+	
+	public boolean useTextInput(){
+		return getBooleanColumnValue(COLUMNNAME_TEXT_INPUT);
+	}
+	
+	public void setToUseTextInput(boolean value){
+		setColumn(COLUMNNAME_TEXT_INPUT,value);
+	}
+	
+	public void setToUseTextInput(Boolean value){
+		setColumn(COLUMNNAME_TEXT_INPUT,value);
 	}
 	
 	public void store(){

@@ -17,6 +17,7 @@ import com.idega.block.survey.data.SurveyQuestionHome;
 import com.idega.block.survey.data.SurveyReply;
 import com.idega.block.survey.data.SurveyReplyHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
@@ -57,8 +58,10 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		surveyReplyHome = (SurveyReplyHome)IDOLookup.getHome(SurveyReply.class);		
 	}
 	
-	public SurveyEntity createSurvey(String name, String description, IWTimestamp startTime, IWTimestamp endTime) throws IDOLookupException, CreateException{
+	public SurveyEntity createSurvey(InformationFolder folder, String name, String description, IWTimestamp startTime, IWTimestamp endTime) throws IDOLookupException, CreateException{
 		SurveyEntity survey = getSurveyHome().create();
+		
+		survey.setFolder(folder.getEntity());
 		
 		survey.setName(name);
 		if(description != null){
@@ -125,6 +128,52 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	}
 	
 	
+	public SurveyReply createSurveyReply(SurveyEntity survey, SurveyQuestion question, String participantKey, SurveyAnswer answer, String answerText) throws IDOLookupException, CreateException{
+		SurveyReply reply = getSurveyReplyHome().create();
+		
+		reply.setSurvey(survey);
+		reply.setQuestion(question);
+		reply.setParticipantKey(participantKey);
+		
+		if(answer != null){
+			reply.setAnswer(answer);
+		}
+		
+		if(answerText != null){
+			if(answerText.length() > SurveyReply.SURVEY_ANSWER_MAX_LENGTH){
+				reply.setAnswer(answerText.substring(0,SurveyReply.SURVEY_ANSWER_MAX_LENGTH));
+				reply.store();
+				createSurveyReply(survey, question, participantKey, answer, answerText.substring(SurveyReply.SURVEY_ANSWER_MAX_LENGTH));
+			} else {
+				reply.setAnswer(answerText);
+			}
+		}
+		
+		reply.store();
+		
+		return reply;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.block.survey.business.SurveyBusiness#updateSurveyQuestion(com.idega.block.survey.data.SurveyEntity, com.idega.block.survey.data.SurveyQuestion, java.lang.String, com.idega.core.localisation.data.ICLocale, char)
+	 */
+	public SurveyQuestion updateSurveyQuestion(SurveyEntity survey, SurveyQuestion question, String questionText, ICLocale locale, char type) throws IDOLookupException, CreateException {
+		//??use surveyEntity to see if the question is related to more than this one and then create new Question
+		question.setQuestion(questionText,locale);
+		question.setAnswerType(type);
+		question.store();
+		return question;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.survey.business.SurveyBusiness#updateSurveyAnswer(com.idega.block.survey.data.SurveyAnswer, java.lang.String, com.idega.core.localisation.data.ICLocale)
+	 */
+	public SurveyAnswer updateSurveyAnswer(SurveyAnswer ans, String answerString, ICLocale locale) throws IDOLookupException, CreateException {
+		ans.setAnswer(answerString,locale);
+		ans.store();
+		return ans;
+	}
+	
 
 	/**
 	 * @return
@@ -165,5 +214,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		}
 		return surveyReplyHome;
 	}
+
+
 
 }

@@ -58,7 +58,7 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 		addManyToOneRelationship(COLUMNNAME_QUESTION_ID,SurveyQuestion.class);
 		
 		addManyToOneRelationship(COLUMNNAME_ANSWER_ID,SurveyAnswer.class);
-		addAttribute(COLUMNNAME_ANSWER,"Answer",true,true,String.class,500);
+		addAttribute(COLUMNNAME_ANSWER,"Answer",true,true,String.class,SURVEY_ANSWER_MAX_LENGTH); //length SURVEY_ANSWER_MAX_LENGTH = 500;
 
 	}
 	
@@ -70,6 +70,10 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 		setColumn(COLUMNNAME_ANSWER,answer);
 	}
 	
+	public void setAnswer(SurveyAnswer answer){
+		setColumn(COLUMNNAME_ANSWER_ID,answer);
+	}
+	
 	public void setSurvey(SurveyEntity survey){
 		setColumn(COLUMNNAME_SURVEY_ID,survey);
 	}
@@ -78,6 +82,19 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 		setColumn(COLUMNNAME_QUESTION_ID,question);
 	}
 	
+	public void setAnswerPK(Object answer){
+		setColumn(COLUMNNAME_ANSWER_ID,answer);
+	}
+	
+	public void setSurveyPK(Object survey){
+		setColumn(COLUMNNAME_SURVEY_ID,survey);
+	}
+	
+	public void setQuestionPK(Object question){
+		setColumn(COLUMNNAME_QUESTION_ID,question);
+	}
+
+
 	
 	public String getParticipantKey(){
 		return getStringColumnValue(COLUMNNAME_PARTICIPANT_KEY);

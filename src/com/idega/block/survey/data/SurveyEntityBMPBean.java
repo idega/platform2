@@ -167,6 +167,9 @@ public class SurveyEntityBMPBean extends com.idega.data.GenericEntity implements
 			querypart2.appendGreaterThanOrEqualsSign();
 			querypart2.append(time);
 		query.appendWithinParentheses(querypart2);
+		query.appendOrderBy(getColumnNameStartTime());
+		
+//		System.out.println(query);
 		
 		return idoFindPKsByQuery(query);		
 	}
