@@ -179,6 +179,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		IDOQuery query = idoQuery();
 		query.appendSelectCountFrom(this);
 		query.appendWhereEquals(COLUMN_STATUS, "'P'");
+		query.append(" and cacc_invoice_header_id in (select invoice_header from cacc_invoice_record)");
 		return idoGetNumberOfRecords(query);
 	}
 
