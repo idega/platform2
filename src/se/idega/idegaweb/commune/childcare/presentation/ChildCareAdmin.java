@@ -82,7 +82,7 @@ public class ChildCareAdmin extends ChildCareBlock {
     }
 
 	
-	private void parseAction(IWContext iwc) throws RemoteException {
+	private void parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
 			try {
 				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
