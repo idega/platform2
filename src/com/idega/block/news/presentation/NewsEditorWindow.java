@@ -615,7 +615,11 @@ private IWResourceBundle iwrb;
       }
       IWTimestamp today = IWTimestamp.RightNow();
       publishFrom.setTimestamp(today.getTimestamp());
-      today.addDays(defaultPublishDays);
+
+			if (addYears > 0)
+				today.addYears(addYears);
+			else
+      	today.addDays(defaultPublishDays);
       publishTo.setTimestamp(today.getTimestamp());
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(iCategoryId)));
     }
