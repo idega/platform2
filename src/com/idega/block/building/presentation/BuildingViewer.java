@@ -161,7 +161,12 @@ public BuildingViewer(int building_id){
       Table typesTable = new Table(2,3);
         typesTable.setVerticalAlignment(2,2,"top");
         typesTable.setVerticalAlignment(1,2,"top");
+        typesTable.setVerticalAlignment(1,1,"top");
+        typesTable.mergeCells(2,1,2,2);
+        typesTable.setAlignment(2,2,"right");
         typesTable.setWidth("100%");
+        typesTable.setHeight(2,"100%");
+        typesTable.setWidth(1,"100%");
 
       String typeName = formatText(types[a].getName()+" "+types[a].getArea()+"m2");
 
@@ -171,6 +176,8 @@ public BuildingViewer(int building_id){
       String divideText = ("<br>.........<br><br>");
 
       Image typeImage = new Image(types[a].getImageId());
+      if ( types[a].getImageId() == -1 )
+        typeImage = iwrb_.getImage("/building/default.jpg");
         typeImage.setHorizontalSpacing(6);
 
       Window typeWindow = new Window("Herbergi",ApartmentTypeViewer.class,Page.class);
@@ -188,8 +195,7 @@ public BuildingViewer(int building_id){
       typesTable.add(BB,1,3);
       typesTable.add("&nbsp;&nbsp;&nbsp;",1,3);
       typesTable.add(typeLink,1,3);
-      if ( types[a].getImageId() != -1 )
-        typesTable.add(typeImage,2,2);
+      typesTable.add(typeImage,2,1);
 
       complexTable.add(typesTable,1,a+2);
       if ( a+1 < types.length ) {
