@@ -73,7 +73,7 @@ private String getImageURL(int image_id){
             URIString += "&image_id="+image_id;
             return URIString;*/
             String URIString = "/servlet/imageModule";
-            URIString += "?image"+image_id;
+            URIString += "?image="+image_id;
             return URIString;
 }
 
