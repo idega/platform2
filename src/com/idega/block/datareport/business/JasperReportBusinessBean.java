@@ -20,7 +20,6 @@ import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.datareport.data.DesignBox;
-import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOServiceBean;
