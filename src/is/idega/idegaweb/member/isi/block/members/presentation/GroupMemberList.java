@@ -15,13 +15,18 @@ import java.util.Iterator;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneType;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserStatusBusiness;
@@ -115,6 +120,17 @@ public class GroupMemberList extends Block {
 					String groupNames = getGroupNamesForTrainer(iwc, user, division);
 					table.setCellpaddingLeft(column, row, 3);
 					table.add(groupNames, column++, row);
+					// adding mobile phone and email, 
+					String phone = getMobilePhone(user);
+					if(phone!=null) {
+						table.add(phone, column, row);
+					}
+					column++;
+					PresentationObject emails = getEmailLinkList(user);
+					if(emails!=null && emails.getChildCount()>0) {
+						table.add(emails, column, row);
+					}
+					column++;
 				}
 			} catch(Exception e) {
 				System.out.println("Exception lising user " + user.getName());
@@ -127,6 +143,59 @@ public class GroupMemberList extends Block {
 		table.setHorizontalZebraColored(_color1, _color2);
 		
 		return table;
+	}
+	
+	/**
+	 * Gets the phones for a user
+	 * @param user The user
+	 * @return an array of length three with workphone, homephone and mobilephone in that order
+	 */
+	public String getMobilePhone(User user) {
+		String strPhone = null;
+		Collection phoneCol = user.getPhones();
+		if(phoneCol!=null) {
+			Iterator phoneIter = phoneCol.iterator();
+			while(phoneIter.hasNext()) {
+				Phone phone = (Phone) phoneIter.next();
+				String p = phone.getNumber();
+				if(phone.getPhoneTypeId()==PhoneType.MOBILE_PHONE_ID) {
+					strPhone = p;
+					break;
+				}
+			}
+		}
+		return strPhone;
+	}
+	
+	/**
+	 * Gets a comma separate list of user's emails, as links
+	 * @param user The user
+	 * @return The user's emails in comma separated list of links
+	 */
+	private PresentationObject getEmailLinkList(User user) {
+		PresentationObjectContainer container = new PresentationObjectContainer();
+		//int row = 1;
+		try {
+			// @TODO use email list from business bean
+			Iterator emailIter = user.getEmails().iterator();
+			boolean isFirst = true;
+			while(emailIter.hasNext()) {
+				if(isFirst) {
+					isFirst = false;
+				} else {
+					container.add(", ");
+				}
+				Email email = (Email) emailIter.next();
+				String address = (String) email.getEmailAddress();
+				Link link = new Link(address);
+				link.setURL("mailto:" + address);
+				link.setSessionId(false);
+				container.add(link);
+			}
+		} catch(Exception e) {
+			System.out.println("Exception getting emails for user " + user.getName() + ", no emails shown");
+		}
+		return container;
 	}
 	
 	private String getGroupNamesForTrainer(IWContext iwc, User trainer, Group division) {
