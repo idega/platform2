@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/04 13:47:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/04 16:50:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -47,6 +47,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String AMOUNT_KEY = PREFIX + "amount";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
+    private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
+    private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
     private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
@@ -70,6 +72,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
+    private static final String INVOICE_RECORD_DEFAULT = "Fakturarad";
+    private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
+    private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
+    private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
     private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
     private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
@@ -106,11 +112,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
 
+
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
             ACTION_NEW_INVOICE_RECORD = 2,
-            ACTION_DELETE_COMPILATION = 3;
+            ACTION_DELETE_COMPILATION = 3,
+            ACTION_DELETE_RECORD = 4,
+            ACTION_SHOW_RECORD = 5;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -124,14 +133,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 */
 	public void init (final IWContext context) {
 		try {
-			final int action = parseAction (context);
-			switch (action) {
+            int actionId = ACTION_SHOW_COMPILATION_LIST;
+            try {
+                actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+            } catch (final Exception dummy) {
+                // do nothing, actionId is default
+            }
+			switch (actionId) {
 				case ACTION_SHOW_COMPILATION:
 					showCompilation (context);
 					break;
 
                 case ACTION_DELETE_COMPILATION:
                     deleteCompilation (context);
+                    break;
+
+                case ACTION_DELETE_RECORD:
+                    deleteRecord (context);
                     break;
 
                 default:
@@ -145,16 +163,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         displayRedText (null, "<p>Denna funktion är inte färdig. Bland annat så återstår:<ol><li>skapa manuell faktura ifrån 'visa underlagslista'<li>klicka på faktureringsrad och se detaljer<li>skapa justeringsrad till en faktura<li>se faktureringsunderlag i pdf<li>tillåt inte negativt taxbelopp mm<li>uppdatera totalbelopp och momsersättning vid justering</ol>\n\n");
 	}
 	
-	private int parseAction (final IWContext context) {
-        int actionId = ACTION_SHOW_COMPILATION_LIST;
-        try {
-            actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
-        } catch (final Exception dummy) {
-            // do nothing, actionId is deafault
-        }
-        return actionId;
-	}	
-
     private void deleteCompilation (final IWContext context)
         throws RemoteException {
         final int headerId = Integer.parseInt (context.getParameter
@@ -177,6 +185,31 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT);
             add (createMainTable (INVOICE_COMPILATION_KEY,
                                   INVOICE_COMPILATION_DEFAULT, table));
+        }
+    }
+    
+    private void deleteRecord (final IWContext context)
+        throws RemoteException {
+        final int recordId = Integer.parseInt (context.getParameter
+                                               (INVOICE_RECORD_KEY));
+        try {
+            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                    .getServiceInstance (context, InvoiceBusiness.class);
+            final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+            final InvoiceRecord record
+                    = home.findByPrimaryKey (new Integer (recordId));
+            business.removeInvoiceRecord (record);
+            final Table table = getConfirmTable
+                    (INVOICE_RECORD_REMOVED_KEY,
+                     INVOICE_RECORD_REMOVED_DEFAULT);
+            add (createMainTable (INVOICE_RECORD_KEY,
+                                  INVOICE_RECORD_DEFAULT, table));
+        } catch (Exception e) {
+            final Table table = getConfirmTable
+                    (COULD_NOT_REMOVE_INVOICE_RECORD_KEY,
+                     COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT);
+            add (createMainTable (INVOICE_RECORD_KEY,
+                                  INVOICE_RECORD_DEFAULT, table));
         }
     }
     
@@ -404,9 +437,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  { INVOICE_TEXT_KEY, INVOICE_TEXT_DEFAULT },
                  { NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT },
                  { AMOUNT_KEY, AMOUNT_DEFAULT },
-                 { REMARK_KEY, REMARK_DEFAULT }};
+                 { REMARK_KEY, REMARK_DEFAULT }, {"", ""}, {"", ""}};
         final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
+        setIconColumnWidth (table);
         int row = 1;
         table.setRowColor(row, getHeaderColor ());
         for (int i = 0; i < columnNames.length; i++) {
@@ -462,6 +496,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.add (record.getDays () + "", col++, row);
 		table.add (((long) record.getAmount ()) + "", col++, row);
 		table.add (record.getNotes (), col++, row);
+
+        final String recordId = record.getPrimaryKey ().toString ();
+        final String [][] editLinkParameters = getRecordLinkParameters
+                (ACTION_SHOW_RECORD, recordId);
+        final Link editLink = createIconLink (getEditIcon (),
+                                              editLinkParameters);
+        table.add (editLink, col++, row);
+        final String [][] deleteLinkParamaters = getRecordLinkParameters
+                (ACTION_DELETE_RECORD,  recordId);
+        final Link deleteLink = createIconLink (getDeleteIcon (),
+                                                deleteLinkParamaters);
+        table.add (deleteLink, col++, row);
 	}
 
 	/**
@@ -678,6 +724,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final int columnCount = table.getColumns ();
         table.setColumnWidth (columnCount - 1, getEditIcon ().getWidth ());
         table.setColumnWidth (columnCount, getDeleteIcon ().getWidth ());
+    }
+
+    private static String [][] getRecordLinkParameters
+        (final int actionId, final String recordId) {
+        return new String [][] {{ ACTION_KEY, actionId + "" },
+                                { INVOICE_RECORD_KEY, recordId }};
     }
 
     private static String [][] getHeaderLinkParameters
