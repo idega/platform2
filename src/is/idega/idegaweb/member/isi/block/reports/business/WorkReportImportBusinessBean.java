@@ -59,6 +59,7 @@ import com.idega.core.data.ICFileHome;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.user.data.User;
 import com.idega.util.caching.Cache;
 import com.idega.util.text.TextSoap;
@@ -96,10 +97,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	private static final short COLUMN_MEMBER_POSTAL_CODE = 3;
 
 	private static final short COLUMN_BOARD_MEMBER_LEAGUE = 0;
-	private static final short COLUMN_BOARD_MEMBER_NAME = 2;
+	private static final short COLUMN_BOARD_MEMBER_STATUS = 1;
 	private static final short COLUMN_BOARD_MEMBER_SSN = 3;
 	private static final short COLUMN_BOARD_MEMBER_STREET_NAME = 4;
 	private static final short COLUMN_BOARD_MEMBER_POSTAL_CODE = 5;
+	private static final short COLUMN_BOARD_MEMBER_PHONE_1 = 6;
+	private static final short COLUMN_BOARD_MEMBER_PHONE_2 = 7;
+	private static final short COLUMN_BOARD_MEMBER_FAX = 8;
+	private static final short COLUMN_BOARD_MEMBER_EMAIL = 9;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -576,10 +581,22 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 				}
 
+				try {
+					report.addLeague(group);
+				}
+				catch (IDORelationshipException e5) {
+					e5.printStackTrace();
+				}
+
+				String status = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STATUS);
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_SSN);
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
+				String phone1 = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_PHONE_1);
+				String phone2 = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_PHONE_2);
+				String fax = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_FAX);
+				String email = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_EMAIL);
 
 				WorkReportBoardMember member;
 
@@ -595,7 +612,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						member = getWorkReportBusiness().createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
 						member.setPersonalId(ssn);
 						member.setReportId(workReportId);
-						
+
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
 
@@ -609,6 +626,22 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							catch (RemoteException e) {
 								e.printStackTrace();
 							}
+						}
+
+						if (phone1 != null && !"".equals(phone1.trim())) {
+							member.setHomePhone(phone1);
+						}
+
+						if (phone2 != null && !"".equals(phone2.trim())) {
+							member.setWorkPhone(phone2);
+						}
+
+						if (fax != null && !"".equals(fax.trim())) {
+							member.setFax(fax);
+						}
+
+						if (email != null && !"".equals(email.trim())) {
+							member.setEmail(email);
 						}
 
 						member.store();
@@ -637,7 +670,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			WorkReportGroup group = null;
 			if (row != null) {
 				String league = getStringValueFromExcelNumberOrStringCell(row, (short)0);
-				if (league != null && !"".equals(league)) {
+				if (league != null && !"".equals(league.trim())) {
 					league = league.toUpperCase();
 					try {
 						group = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
@@ -658,6 +691,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					break;
 				}
 
+				try {
+					report.addLeague(group);
+				}
+				catch (IDORelationshipException e5) {
+					e5.printStackTrace();
+				}
+
 				String homePage = getStringValueFromExcelNumberOrStringCell(row, (short)2);
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, (short)3);
 				String address = getStringValueFromExcelNumberOrStringCell(row, (short)4);
@@ -665,7 +705,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				String tel1 = getStringValueFromExcelNumberOrStringCell(row, (short)6);
 				String tel2 = getStringValueFromExcelNumberOrStringCell(row, (short)7);
 				String fax = getStringValueFromExcelNumberOrStringCell(row, (short)8);
-				;
+
 				String email = getStringValueFromExcelNumberOrStringCell(row, (short)9);
 				String champ = getStringValueFromExcelNumberOrStringCell(row, (short)10);
 
@@ -972,16 +1012,17 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				cell = myCell.getStringCellValue();
 			}
 			else {
-				cell = Double.toString(myCell.getNumericCellValue());
-			}
+				double d = myCell.getNumericCellValue();
+				if (((int)d) != 0)
+					cell = Double.toString((int)d);
+				cell = TextSoap.findAndCut(cell, "-");
+				cell = TextSoap.findAndCut(cell, ".");
 
-			cell = TextSoap.findAndCut(cell, "-");
-			cell = TextSoap.findAndCut(cell, ".");
+				int index = cell.indexOf("E");
 
-			int index = cell.indexOf("E");
-
-			if (index != -1) {
-				cell = cell.substring(0, index);
+				if (index != -1) {
+					cell = cell.substring(0, index);
+				}
 			}
 		}
 

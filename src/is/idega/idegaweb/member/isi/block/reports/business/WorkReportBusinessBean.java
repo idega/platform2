@@ -726,6 +726,22 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					e1.printStackTrace();
 				}
 			}
+			
+			records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
+			iter = records.iterator();
+
+			while (iter.hasNext()) {
+				WorkReportDivisionBoard record = (WorkReportDivisionBoard)iter.next();
+				try {
+					record.remove();
+				}
+				catch (EJBException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoveException e1) {
+					e1.printStackTrace();
+				}
+			}
 
 		}
 		catch (FinderException e) {
