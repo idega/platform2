@@ -33,6 +33,9 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
+import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
@@ -254,7 +257,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			if (sMin.length() < 2)
 				sMin = "0" + sMin;
 
-			if (schoolCategory.equals((String) childCare.getPrimaryKey())) {
+			if (schoolCategory.equals(childCare.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
 				fileName1.append("N24IFS_BOM_HVD_");
 				StringBuffer fileName2 = new StringBuffer(folder);
@@ -283,7 +286,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, sLongYear, sMonth, sDay);
 				createInvoiceFiles(fileName3.toString(), schoolCategory);
 			}
-			else if (schoolCategory.equals((String) school.getPrimaryKey())) {
+			else if (schoolCategory.equals(school.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
 				fileName1.append("N24IFS_GSK_HVD_");
 				StringBuffer fileName2 = new StringBuffer(folder);
@@ -303,7 +306,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, sLongYear, sMonth, sDay);
 			}
-			else if (schoolCategory.equals((String) highSchool.getPrimaryKey())) {
+			else if (schoolCategory.equals(highSchool.getPrimaryKey())) {
 				StringBuffer fileName1 = new StringBuffer(folder);
 				fileName1.append("N24IFS_GYM_HVD_");
 				StringBuffer fileName2 = new StringBuffer(folder);
@@ -342,7 +345,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, String year, String month, String day) throws FinderException, IOException {
+	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, String year, String month, String day) throws FinderException, IOException, StudyPathException, RemoteException {
 		Collection phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');
 		Collection phOutsideCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(schoolCategory, 'P');
 
@@ -505,10 +508,149 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				head.store();
 			}
 		}
+		
+		if (phOutsideCommune != null && !phOutsideCommune.isEmpty()) {
+			FileWriter writer = new FileWriter(fileName2.toString());
+			BufferedWriter bWriter = new BufferedWriter(writer);
+
+			PostingBusiness pb = getPostingBusiness();
+			ProviderBusiness provBiz = getProviderBusiness();
+
+			Iterator phIt = phOutsideCommune.iterator();
+			while (phIt.hasNext()) {
+				PaymentHeader pHead = (PaymentHeader) phIt.next();
+				Provider prov = provBiz.getProvider(pHead.getSchoolID());
+				Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead);
+				Iterator prIt = rec.iterator();
+
+				String giro = prov.getAccountingProperties().getBankgiro();
+				if (giro ==null)
+					giro = prov.getAccountingProperties().getPostgiro();
+
+				bWriter.write("H");
+				bWriter.write(";");
+				bWriter.write(giro);
+				bWriter.write(";");
+				bWriter.write(((Integer)pHead.getPrimaryKey()).toString());
+				bWriter.write(";");
+				bWriter.write("2004-01-15");
+				bWriter.write(";");
+				bWriter.write("SUPPEXT");
+				bWriter.write(";");
+				bWriter.write("2004-01-15");
+				bWriter.write(";");
+				bWriter.write("2004-01-15");
+				bWriter.write(";");
+				bWriter.write("2004-01-22");
+				bWriter.write(";");
+//				bWriter.write(IWTimestamp.getDaysBetween());
+				bWriter.write("7");
+				bWriter.write(";");
+				bWriter.write("SEK");
+				bWriter.write(";");
+				//empty
+				bWriter.write(";");
+				bWriter.write("*");
+				bWriter.write(";");
+				for (int i = 13; i < 55; i++)
+					bWriter.write("-;");
+				bWriter.write("-");
+				bWriter.newLine();
+				
+				bWriter.write("I");
+				bWriter.write(";");
+				bWriter.write(giro);
+				bWriter.write(";");
+				bWriter.write(((Integer)pHead.getPrimaryKey()).toString());
+				bWriter.write(";");
+				bWriter.write("1");
+				bWriter.write(";");
+				bWriter.write("L6");
+				bWriter.write(";");
+//				bWriter.write(Float.toString(pHead.get));
+				bWriter.write(";");
+//			bWriter.write(Float.toString(pHead.get));
+				bWriter.write(";");
+				bWriter.write("0,00");
+				bWriter.write(";");
+				bWriter.write("0,00");
+				bWriter.write(";");
+				for (int i = 10; i < 23; i++)
+					bWriter.write("-;");
+				bWriter.write("-");
+				bWriter.newLine();
+
+				int row = 1;
+				while (prIt.hasNext()) {
+					PaymentRecord pRec = (PaymentRecord) prIt.next();
+//					IWTimestamp t = new IWTimestamp();
+					
+					if (pRec.getTotalAmount() != 0.0f) {
+						bWriter.write("P");
+						bWriter.write(";");
+						bWriter.write(giro);
+						bWriter.write(";");
+						bWriter.write(((Integer)pHead.getPrimaryKey()).toString());						
+						bWriter.write(";");
+						bWriter.write("1");
+						bWriter.write(";");
+						bWriter.write(Integer.toString(row));
+						row++;
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Konto"));						
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Ansvar"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Resurs"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Verksamhet"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Aktivitet"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Projekt"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Objekt"));
+						bWriter.write(";");
+						bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Motpart"));
+						bWriter.write(";");
+						//anlaggningsnummer
+						bWriter.write(";");
+						//internranta
+						bWriter.write(";");
+						//empty
+						bWriter.write(";");
+						bWriter.write(Float.toString(pRec.getTotalAmount()));
+						bWriter.write(";");
+						bWriter.write(Float.toString(pRec.getTotalAmount()));
+						bWriter.write(";");
+						//empty
+						bWriter.write(";");
+						//empty
+						bWriter.write(";");
+						bWriter.write(pRec.getPaymentText());
+						bWriter.write(";");
+						//empty
+						bWriter.write(";");
+						bWriter.write("-");						
+						bWriter.newLine();
+					}
+				
+					pRec.setStatus('L');
+					pRec.store();
+				}
+				
+				pHead.setStatus('L');
+				pHead.store();	
+			}
+						
+			bWriter.close();
+		}
+		
 	}
 
 	private void createInvoiceFiles(String fileName, String schoolCategory) {
-
+		System.out.println("fileName = " + fileName);
+		System.out.println("schoolCategory = " + schoolCategory);
 	}
 
 	/**
@@ -627,5 +769,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
-	}	
+	}
+	
+	public ProviderBusiness getProviderBusiness() {
+		try {
+			return (ProviderBusiness) getServiceInstance(ProviderBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}			
 }
