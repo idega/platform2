@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.11 2004/04/13 14:06:33 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.12 2004/05/11 08:58:29 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import com.idega.user.data.User;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2004/04/13 14:06:33 $ by $Author: anders $
+ * Last modified: $Date: 2004/05/11 08:58:29 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -61,6 +61,9 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 	public Collection sendNotice(String subject, String body, String[] operationalFields) throws NoticeException {
 		if (body.equals("")) {
 			throw new NoticeException(KEY_EMPTY_BODY, DEFAULT_EMPTY_BODY);
+		}
+		if (body.length() > 1000) {
+			body = body.substring(0, 1000);
 		}
 		if (operationalFields == null) {
 			throw new NoticeException(KEY_OPERATIONAL_FIELDS_EMPTY, DEFAULT_OPERATIONAL_FIELDS_EMPTY);

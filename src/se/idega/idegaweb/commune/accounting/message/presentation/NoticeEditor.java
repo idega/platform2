@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.10 2004/01/07 09:12:27 anders Exp $
+ * $Id: NoticeEditor.java,v 1.11 2004/05/11 08:58:29 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2004/01/07 09:12:27 $ by $Author: anders $
+ * Last modified: $Date: 2004/05/11 08:58:29 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -79,6 +79,7 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_RECIPIENT = KP + "recipient";
 	private final static String KEY_SUBJECT_LABEL = KP + "subject_label";
 	private final static String KEY_SUBJECT = KP + "subject";
+	private final static String KEY_MESSAGE_TOO_LONG = KP + "message_too_long";
 
 	/**
 	 * @see com.idega.presentation.Block#main()
@@ -201,6 +202,10 @@ public class NoticeEditor extends AccountingBlock {
 		row += 2;
 		
 		String body = getParameter(iwc, PARAMETER_BODY);
+		if (body.length() > 1000) {
+			body = body.substring(0, 1000);
+			table.add(getErrorText(localize(KEY_MESSAGE_TOO_LONG, "Message too long (max 1000 characters)")), 1, row++);
+		}
 		StringTokenizer st = new StringTokenizer(body, "\n");
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
@@ -253,7 +258,7 @@ public class NoticeEditor extends AccountingBlock {
 		app.setButtonPanel(bp);
 
 		app.addHiddenInput(PARAMETER_SUBJECT, subject);
-		app.addHiddenInput(PARAMETER_BODY, getParameter(iwc, PARAMETER_BODY));
+		app.addHiddenInput(PARAMETER_BODY, replaceCitation(getParameter(iwc, PARAMETER_BODY)));
 		
 		add(app);
 	}
@@ -267,7 +272,7 @@ public class NoticeEditor extends AccountingBlock {
 		try {
 			NoticeBusiness nb = getNoticeBusiness(iwc);
 			String subject = getParameter(iwc, PARAMETER_SUBJECT);
-			String body = getParameter(iwc, PARAMETER_BODY);
+			String body = restoreCitation(getParameter(iwc, PARAMETER_BODY));
 			String[] operationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
 			schools = nb.sendNotice(subject, body, operationalFields);
 		} 
@@ -334,5 +339,19 @@ public class NoticeEditor extends AccountingBlock {
 	 */
 	private NoticeBusiness getNoticeBusiness(IWContext iwc) throws RemoteException {
 		return (NoticeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, NoticeBusiness.class);
-	}	
+	}
+	
+	/*
+	 * Returns the specified string with citation replaced by ~ 
+	 */
+	private String replaceCitation(String s) {
+		return s.replace('\"', '~');
+	}
+	
+	/*
+	 * Returns the specified string with ~ replaced by citation 
+	 */
+	private String restoreCitation(String s) {
+		return s.replace('~', '\"');
+	}
 }
