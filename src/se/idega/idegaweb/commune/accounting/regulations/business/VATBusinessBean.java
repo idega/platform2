@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.11 2003/10/08 15:27:55 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.12 2003/10/09 07:39:17 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/08 15:27:55 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/09 07:39:17 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -42,6 +42,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_PERIOD_VALUES = KP + "period_values";
 	public final static String KEY_PERIOD_OVERLAP = KP + "period_overlap";
 	public final static String KEY_FROM_DATE_MISSING = KP + "from_date_missing";
+	public final static String KEY_FROM_TO_DATE_EQUAL = KP + "from_to_date_equal";
 	public final static String KEY_TO_DATE_MISSING = KP + "to_date_missing";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
 	public final static String KEY_VAT_PERCENT_MISSING = KP + "vat_percent_missing";
@@ -58,6 +59,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_PERIOD_VALUES = "Periodens startdatum mŒste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_PERIOD_OVERLAP = "Det finns redan en momssats inom denna period.";
 	public final static String DEFAULT_FROM_DATE_MISSING = "Periodens startdatum mŒste fyllas i.";
+	public final static String DEFAULT_FROM_TO_DATE_EQUAL = "Perioden f?r inte ha samma start- och slutdatum.";
 	public final static String DEFAULT_TO_DATE_MISSING = "Periodens slutdatum mŒste fyllas i.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "BenŠmning av momssatsen mŒste fyllas i.";
 	public final static String DEFAULT_VAT_PERCENT_MISSING = "Procentsats mŒste fyllas i.";
@@ -215,6 +217,10 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		
 		if (periodFrom.getTime() > periodTo.getTime()) {
 			throw new VATException(KEY_PERIOD_VALUES, DEFAULT_PERIOD_VALUES);
+		}
+		
+		if (periodFrom.getTime() == periodTo.getTime()) {
+			throw new VATException(KEY_FROM_TO_DATE_EQUAL, DEFAULT_FROM_TO_DATE_EQUAL);
 		}
 		
 		// Description
