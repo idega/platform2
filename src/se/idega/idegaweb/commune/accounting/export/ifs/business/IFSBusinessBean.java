@@ -391,13 +391,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write((int)pRec.getTotalAmount());
+					bWriter.write(Math.round(pRec.getTotalAmount()));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write((int)pRec.getTotalAmount());					
+					bWriter.write(Math.round(pRec.getTotalAmount()));					
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -458,13 +458,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write((int)pRec.getTotalAmount());
+					bWriter.write(Math.round(pRec.getTotalAmount()));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write((int)pRec.getTotalAmount());					
+					bWriter.write(Math.round(pRec.getTotalAmount()));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -505,7 +505,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			
 			Iterator itor = phInCommune.iterator();
 			while (itor.hasNext()) {
-				PaymentHeader head = (PaymentHeader)it.next();
+				PaymentHeader head = (PaymentHeader)itor.next();
 				head.setStatus('L');
 				head.store();
 			}
@@ -524,6 +524,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				Provider prov = provBiz.getProvider(pHead.getSchoolID());
 				Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead);
 				Iterator prIt = rec.iterator();
+				Iterator sumIt = rec.iterator();
+				
+				float sum = 0;
+				while (sumIt.hasNext()) {
+					PaymentRecord r = (PaymentRecord)sumIt.next();
+					sum += r.getTotalAmount();
+				}
 
 				String giro = prov.getAccountingProperties().getBankgiro();
 				if (giro ==null)
@@ -569,9 +576,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				bWriter.write(";");
 				bWriter.write("L6");
 				bWriter.write(";");
-//				bWriter.write(Float.toString(pHead.get));
+				bWriter.write(Float.toString(sum));
 				bWriter.write(";");
-//			bWriter.write(Float.toString(pHead.get));
+				bWriter.write(Float.toString(sum));
 				bWriter.write(";");
 				bWriter.write("0,00");
 				bWriter.write(";");
