@@ -203,7 +203,6 @@ Table imageTable = null;
     String height = image.getHeight();
 
     if(limitImageWidth){
-        System.out.println("ImageViewer : LIMITIMAGEWIDTH XXXXXXXXXXXXXXXXXXXXXXXXXXX");
       theImage.setMaxImageWidth(maxImageWidth);
     }
     else{
