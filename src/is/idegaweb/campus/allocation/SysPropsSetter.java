@@ -43,6 +43,10 @@ public class SysPropsSetter extends ModuleObjectContainer{
 
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   protected void control(ModuleInfo modinfo){
     SystemProperties SysProps = null;
     if(modinfo.getParameter("save")!=null){

@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.16 2001/09/25 01:58:43 aron Exp $
+ * $Id: Tabber.java,v 1.17 2001/09/26 23:41:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,8 +71,8 @@ public class Tabber extends JModuleObject {
       eUser = LoginBusiness.getUser(modinfo);
 
      if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getServletContext().getAttribute(strAction);
+        if ( modinfo.getSessionAttribute(strAction) != null ) {
+          sAct = (String) modinfo.getSessionAttribute(strAction);
           iAct = Integer.parseInt(sAct);
         }
         else {
@@ -82,8 +82,8 @@ public class Tabber extends JModuleObject {
     if(modinfo.getParameter(strAction) != null){
         sAct = modinfo.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
-        if ( ((String) modinfo.getServletContext().getAttribute(strAction)) != (sAct) ) {
-          modinfo.getServletContext().setAttribute(strAction,sAct);
+        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
+          modinfo.setSessionAttribute(strAction,sAct);
         }
       }
       if(eUser !=null && getPermissionHash(modinfo)){

@@ -1,6 +1,7 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
+import is.idegaweb.campus.allocation.business.ContractBusiness;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.Table;
@@ -14,6 +15,8 @@ import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 import is.idegaweb.campus.entity.Contract;
 import is.idegaweb.campus.entity.SystemProperties;
+import is.idegaweb.campus.entity.WaitingList;
+import is.idegaweb.campus.allocation.business.WaitingListFinder;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
@@ -26,6 +29,7 @@ import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
+import java.util.Iterator;
 import com.idega.jmodule.server.mail.SendMail;
 /**
  * Title:
@@ -225,67 +229,21 @@ public class ContractSigner extends ModuleObjectContainer{
     String sCreateLogin = modinfo.getParameter("new_login");
     String sUserGroup = modinfo.getParameter("user_group");
     String sSigned =  modinfo.getParameter("sign");
-    Contract eContract = null;
-
-      try {
-        eContract = new Contract(id);
-      }
-      catch (SQLException ex) {
-        ex.printStackTrace();
-      }
-
-    if(eContract != null && sSigned != null){
-      int iUserId = eContract.getUserId().intValue();
-      if(sEmail !=null && sEmail.trim().length() >0){
-        UserBusiness.addNewUserEmail(iUserId,sEmail);
-      }
-      if(sFinAccount != null){
-        String prefix = iwrb.getLocalizedString("finance","Finance");
-        AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",1);
-      }
-      if(sPhoneAccount != null){
-        String prefix = iwrb.getLocalizedString("phone","Phone");
-        AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",1);
-      }
-      if(sCreateLogin != null && sUserGroup!= null){
-        try {
-          User eUser = new User(iUserId);
-          int gid = Integer.parseInt(sUserGroup);
-          GenericGroup gg = new GenericGroup(gid);
-          gg.addTo(eUser);
-          login = LoginCreator.createLogin(eUser.getName());
-          passwd = LoginCreator.createPasswd(8);
-
-          idegaTimestamp today = idegaTimestamp.RightNow();
-          int validDays = today.getDaysBetween(today,new idegaTimestamp(eContract.getValidTo()));
-          try{
-            LoginDBHandler.createLogin(iUserId,login,passwd);
-            //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
-            print = true;
-          }
-          catch(Exception ex){
-            ex.printStackTrace();
-            login = null;
-            passwd = null;
-            print = false;
-          }
-          eContract.setStatusSigned();
-          eContract.update();
-        }
-        catch (SQLException ex) {
-          ex.printStackTrace();
-        }
-      }
-
-      if(sSendMail != null){
-        List lEmails = UserBusiness.listOfUserEmails(iUserId);
-        if(lEmails != null){
-          String address = ((Email)lEmails.get(0)).getEmailAddress();
-          //SendMail mailer = new SendMail();
-        }
-      }
-    }
+    int iGroupId = sUserGroup != null ? Integer.parseInt(sUserGroup):-1;
+    boolean sendMail =  sSendMail != null ? true:false;
+    sendMail = true;
+    boolean newAccount =  sFinAccount != null ? true:false;
+    boolean newPhoneAccount =   sPhoneAccount != null ? true:false;
+    boolean createLogin =   sCreateLogin != null ? true:false;
+    ContractBusiness.signContract(id,iGroupId ,1,sEmail,sendMail,
+      newAccount ,newPhoneAccount ,createLogin ,iwrb,login,passwd );
+    if(login !=null && passwd !=null)
+      print = true;
+    else
+      print = false;
   }
+
+
 
   private void doAddEmail( int iUserId ,ModuleInfo modinfo){
     String sEmail = modinfo.getParameter("new_email");

@@ -32,7 +32,7 @@ public class ApartmentFreezer extends ModuleObjectContainer {
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 

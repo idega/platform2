@@ -26,7 +26,7 @@ import java.sql.SQLException;
 
 public class ApartmentSerie extends ModuleObjectContainer {
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   public ApartmentSerie() {

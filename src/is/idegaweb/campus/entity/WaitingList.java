@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.6 2001/07/12 21:44:59 aron Exp $
+ * $Id: WaitingList.java,v 1.7 2001/09/26 23:42:20 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,23 +47,27 @@ public class WaitingList extends GenericEntity {
     return(name_);
   }
 
-  public String getComplexIdColumnName() {
+  public static String getEntityTableName(){
+    return name_;
+  }
+
+  public static String getComplexIdColumnName() {
     return(complexId_);
   }
 
-  public String getApartmentTypeIdColumnName() {
+  public static String getApartmentTypeIdColumnName() {
     return(apartmentTypeId_);
   }
 
-  public String getApplicantIdColumnName() {
+  public static String getApplicantIdColumnName() {
     return(applicantId_);
   }
 
-  public String getTypeColumnName() {
+  public static String getTypeColumnName() {
     return(type_);
   }
 
-  public String getOrderColumnName() {
+  public static String getOrderColumnName() {
     return(order_);
   }
 

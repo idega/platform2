@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.10 2001/09/24 12:49:43 aron Exp $
+ * $Id: ContractFinder.java,v 1.11 2001/09/26 23:42:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -217,12 +217,13 @@ public abstract class ContractFinder {
 
   public static int countContracts(String status){
 
-    StringBuffer sql = new StringBuffer("select * from cam_contract ");
+    StringBuffer sql = new StringBuffer("select count(*) from cam_contract ");
     if(!"".equalsIgnoreCase(status)){
       sql.append(" where status = '");
       sql.append(status);
       sql.append("'");
     }
+    //System.err.println(sql.toString());
     int count = 0;
     try{
       count = new Contract().getNumberOfRecords(sql.toString());

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuildingMenu.java,v 1.2 2001/09/11 00:00:04 aron Exp $
+ * $Id: CampusBuildingMenu.java,v 1.3 2001/09/26 23:42:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ public class CampusBuildingMenu extends FrameList{
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6,ACT7 = 7;
   private final String strAction = "fin_action";
   private String DarkColor = "#27334B";
-  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
@@ -62,7 +62,9 @@ public class CampusBuildingMenu extends FrameList{
       addToList(ApartmentSerie.class,iwrb.getLocalizedString("apartment_serie","Apartment serie"),CampusBuilding.FRAME_NAME);
       addToList(CampusPhones.class,iwrb.getLocalizedString("apartment_phones","Phones"),CampusBuilding.FRAME_NAME);
 
+  }
 
-
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 }

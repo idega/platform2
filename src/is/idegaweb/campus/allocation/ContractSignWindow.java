@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+import is.idegaweb.campus.allocation.business.ContractBusiness;
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.ModuleObject;
@@ -220,6 +221,7 @@ public class ContractSignWindow extends Window{
    *  Signing contracts included creation of financial account,email and login
    *  returns id of login
    */
+   /*
   private void doSignContract(ModuleInfo modinfo){
 
     int id = Integer.parseInt(modinfo.getParameter("signed_id"));
@@ -293,6 +295,31 @@ public class ContractSignWindow extends Window{
         }
       }
     }
+  }
+
+  */
+  private void doSignContract(ModuleInfo modinfo){
+
+    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
+    String sEmail = modinfo.getParameter("new_email");
+    String sSendMail = modinfo.getParameter("send_mail");
+    String sFinAccount = modinfo.getParameter("new_fin_account");
+    String sPhoneAccount = modinfo.getParameter("new_phone_account");
+    String sCreateLogin = modinfo.getParameter("new_login");
+    String sUserGroup = modinfo.getParameter("user_group");
+    String sSigned =  modinfo.getParameter("sign");
+    int iGroupId = sUserGroup != null ? Integer.parseInt(sUserGroup):-1;
+    boolean sendMail =  sSendMail != null ? true:false;
+    sendMail = true;
+    boolean newAccount =  sFinAccount != null ? true:false;
+    boolean newPhoneAccount =   sPhoneAccount != null ? true:false;
+    boolean createLogin =   sCreateLogin != null ? true:false;
+    ContractBusiness.signContract(id,iGroupId ,1,sEmail,sendMail,
+      newAccount ,newPhoneAccount ,createLogin ,iwrb,login,passwd );
+    if(login !=null && passwd !=null)
+      print = true;
+    else
+      print = false;
   }
 
   private void doAddEmail( int iUserId ,ModuleInfo modinfo){
