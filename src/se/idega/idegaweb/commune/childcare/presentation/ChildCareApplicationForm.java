@@ -32,9 +32,11 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import java.rmi.RemoteException;
@@ -209,23 +211,23 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		T.add(getSmallText(localize(SELECT_CHILD,"Select the appropriate child") + ":"),1,row++);
 		T.setHeight(row++,12);
 						
-		Collection checks = null;
-
+		Collection children = null;
+		
 		try {
-			checks = getCheckBusiness(iwc).findAllApprovedChecksByUser(_user);
+			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenInCustodyOf(_user);
 		}
 		catch (RemoteException e) {
 		}
 		catch (Exception e) {
 		}
 
-		if (checks != null && !checks.isEmpty()) {
-			Iterator it = checks.iterator();
+		if (children != null && !children.isEmpty()) {
+			Iterator it = children.iterator();
 			while (it.hasNext()) {
-				Check check = (Check) it.next();
-				User child = null;
+				User child = (User) it.next();
+				GrantedCheck check = null;
 				try {
-					child = getCheckBusiness(iwc).getUserById(check.getChildId());
+					check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
 				}
 				catch (RemoteException e) {
 				}
@@ -233,7 +235,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				}
 
 				Link link = null;
-				if (child != null) {
+				if (check != null) {
 					link = getLink(child.getName());
 					link.addParameter(PARAM_CHECK_ID, ((Integer) check.getPrimaryKey()).toString());
 				}
@@ -264,9 +266,9 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		
 		String checkId = iwc.getParameter(PARAM_CHECK_ID);
 		form.addParameter(PARAM_CHECK_ID, checkId);
-		Check check = null;
+		GrantedCheck check = null;
 		try {
-			check = getCheckBusiness(iwc).getCheck(new Integer(checkId).intValue());
+			check = getCheckBusiness(iwc).getGrantedCheck(new Integer(checkId).intValue());
 		}
 		catch (RemoteException e) {
 		}
@@ -381,10 +383,19 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		boolean done = false;
 		if (business != null) {
 			try {
+				int checkID = Integer.parseInt(checkId);
+				/*Check check = null;
+				try {
+					check = getCheckBusiness(iwc).getGrantedCheck(Integer.parseInt(checkId)).getCheck();
+					checkID = ((Integer)check.getPrimaryKey()).intValue();
+				}
+				catch (Exception e) {
+					checkID = -1;
+				}*/
 				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-				done = business.insertApplications(_user, _valProvider, _valDate, new Integer(checkId).intValue(), new Integer(childId).intValue(), subject, message, false);
+				done = business.insertApplications(_user, _valProvider, _valDate, checkID, new Integer(childId).intValue(), subject, message, false);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -467,6 +478,10 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		catch (RemoteException e) {
 			return null;
 		}
+	}
+
+	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws Exception {
+		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 
 	private boolean checkParameters(IWContext iwc) {

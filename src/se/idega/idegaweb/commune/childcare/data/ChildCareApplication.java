@@ -16,7 +16,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0) throws java.rmi.RemoteException;
  public java.lang.String getCaseCodeKey() throws java.rmi.RemoteException;
  public java.sql.Date getFromDate() throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.childcare.check.data.Check getCheck() throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.check.data.GrantedCheck getCheck() throws java.rmi.RemoteException;
  public void setContractId(int p0) throws java.rmi.RemoteException;
  public java.lang.String getPresentation() throws java.rmi.RemoteException;
  public void setContractFileId(int p0) throws java.rmi.RemoteException;

@@ -124,13 +124,17 @@ public class GrantedCheckBMPBean extends GenericEntity implements GrantedCheck {
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindChecksByUser(User user) throws FinderException {
+	public Integer ejbFindChecksByUser(User user) throws FinderException {
+		return ejbFindChecksByUser(((Integer)user.getPrimaryKey()).intValue());
+	}
+	
+	public Integer ejbFindChecksByUser(int userID) throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
 		sql.append(" where ");
 		sql.append(COLUMN_CHILD_ID);
 		sql.append(" = ");
-		sql.append(user.getPrimaryKey().toString());
-		return idoFindPKsBySQL(sql.toString());
+		sql.append(userID);
+		return (Integer) idoFindOnePKBySQL(sql.toString());
 	}	
 }

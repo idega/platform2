@@ -66,7 +66,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setQueueDate(now.getDate());
 				appl.setMethod(1);
 				appl.setChoiceNumber(i+1);
-				appl.setCheckId(checkId);
+				if (checkId != -1)
+					appl.setCheckId(checkId);
 				if (i == 0) {
 					if (freetimeApplication)
 						caseBiz.changeCaseStatus(appl,getCaseStatusInactive().getStatus(),user);
@@ -528,9 +529,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator it = appl.iterator();
 			while (it.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication)it.next();
-				Check check = application.getCheck();
-				if (check.getStatus().equals(statusRedeem))
-					it.remove();
+				try {
+					Check check = application.getCheck().getCheck();
+					if (check.getStatus().equals(statusRedeem))
+						it.remove();
+				}
+				catch (Exception e) {
+				}
 			}
 			
 			return appl;

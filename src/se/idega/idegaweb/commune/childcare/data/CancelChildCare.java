@@ -12,7 +12,7 @@ public interface CancelChildCare extends com.idega.data.IDOEntity,com.idega.bloc
  public java.sql.Date getCancellationDate();
  public void initializeAttributes();
  public void setCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0);
- public se.idega.idegaweb.commune.childcare.check.data.Check getCheck();
+ public se.idega.idegaweb.commune.childcare.check.data.GrantedCheck getCheck();
  public void setCancellationDate(java.sql.Date p0);
  public java.lang.String getCaseCodeKey();
 }

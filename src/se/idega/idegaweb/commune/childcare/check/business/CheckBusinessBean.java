@@ -54,6 +54,10 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
 	}
 
+	private GrantedCheckHome getGrantedCheckHome() throws RemoteException {
+		return (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
+	}
+
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) com.idega.data.IDOLookup.getHome(ChildCareApplication.class);
 	}
@@ -347,8 +351,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return null;
 	}
 	
-	public int hasChildApprovedCheck(User user, int childID) throws RemoteException {
-		Collection checks = findAllApprovedChecksByUser(user);
+	public int hasChildApprovedCheck(int childID) throws RemoteException {
+		/*Collection checks = findAllApprovedChecksByUser(user);
 		if (checks != null && !checks.isEmpty()) {
 			Iterator iter = checks.iterator();
 			while (iter.hasNext()) {
@@ -357,7 +361,32 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 					return ((Integer)element.getPrimaryKey()).intValue();
 			}	
 		}
-		return -1;
+		return -1;*/
+		try {
+			GrantedCheck check = getGrantedCheckHome().findChecksByUser(childID);
+			return ((Integer)check.getPrimaryKey()).intValue();
+		}
+		catch (FinderException fe) {
+			return -1;
+		}
+	}
+	
+	public GrantedCheck getGrantedCheckByChild(User child) throws RemoteException {
+		try {
+			return getGrantedCheckHome().findChecksByUser(child);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	public GrantedCheck getGrantedCheck(int checkID) throws RemoteException {
+		try {
+			return getGrantedCheckHome().findByPrimaryKey(new Integer(checkID));
+		}
+		catch (FinderException fe) {
+			return null;
+		}
 	}
 	
 	public int createGrantedCheck(User child) throws CreateException,RemoteException {
@@ -388,8 +417,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public boolean hasGrantedCheck(User child) throws RemoteException {
 		try {
 			GrantedCheckHome home = (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
-			Collection checks = home.findChecksByUser(child);
-			if (checks.size() > 0)
+			GrantedCheck check = home.findChecksByUser(child);
+			if (check != null)
 				return true;
 			return false;
 		}

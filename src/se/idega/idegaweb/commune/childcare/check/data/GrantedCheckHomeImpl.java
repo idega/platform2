@@ -20,11 +20,18 @@ public java.util.Collection findChecks()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findChecksByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+public GrantedCheck findChecksByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((GrantedCheckBMPBean)entity).ejbFindChecksByUser(p0);
+	Integer id = ((GrantedCheckBMPBean)entity).ejbFindChecksByUser(p0);
 	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
+	return this.findByPrimaryKey(id);
+}
+
+public GrantedCheck findChecksByUser(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Integer id = ((GrantedCheckBMPBean)entity).ejbFindChecksByUser(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(id);
 }
 
  public GrantedCheck findByPrimaryKey(Object pk) throws javax.ejb.FinderException{

@@ -26,6 +26,7 @@ import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -125,7 +126,7 @@ public class RedeemCheck extends CommuneBlock {
 			add(form);	
 			Iterator it = applications.iterator();
 			ChildCareApplication appl = null;
-			Check check = null;
+			GrantedCheck check = null;
 			int row = 1;
 			while (it.hasNext()) {
 				appl = (ChildCareApplication)it.next();				

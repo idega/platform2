@@ -13,6 +13,7 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 
 import java.sql.Date;
 
@@ -60,7 +61,7 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 		addAttribute(REASON,"",true,true,java.lang.String.class,1000);
 		addAttribute(CANCELLATION_DATE,"",true,true,java.sql.Date.class);
 		
-		addManyToOneRelationship(CHECK_ID,Check.class);		
+		addManyToOneRelationship(CHECK_ID,GrantedCheck.class);		
 	}
 
 	/**
@@ -78,8 +79,8 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 		return getIntColumnValue(CHECK_ID);	
 	}
 	
-	public Check getCheck() {
-		return (Check)getColumnValue(CHECK_ID);	
+	public GrantedCheck getCheck() {
+		return (GrantedCheck)getColumnValue(CHECK_ID);	
 	}
 
 	public void setReason(String reason) {

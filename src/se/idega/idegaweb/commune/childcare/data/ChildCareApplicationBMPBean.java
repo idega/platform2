@@ -18,6 +18,7 @@ import com.idega.core.data.ICFile;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -88,7 +89,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
-		addManyToOneRelationship(CHECK_ID,Check.class);
+		addManyToOneRelationship(CHECK_ID,GrantedCheck.class);
 		addManyToOneRelationship(CONTRACT_ID,Contract.class);
 		addManyToOneRelationship(CONTRACT_FILE_ID,ICFile.class);
 	}
@@ -133,8 +134,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getIntColumnValue(CHECK_ID);	
 	}
 	
-	public Check getCheck() {
-		return (Check)getColumnValue(CHECK_ID);	
+	public GrantedCheck getCheck() {
+		return (GrantedCheck)getColumnValue(CHECK_ID);	
 	}
 		
 	public Date getRejectionDate() {
