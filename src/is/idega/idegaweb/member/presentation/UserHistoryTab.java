@@ -153,6 +153,14 @@ public class UserHistoryTab extends UserTab {
 		
 	}
 	
+	/**
+	 * Filters Statuses by users persmission to see groups. Only statuses pertaining to a groups that are descendants of one of users top group
+	 * nodes are returned
+	 * @param iwc IWContext
+	 * @param statuses The Statuses to filter
+	 * @param user The user whos top groups nodes are used for the filtering
+	 * @return All the Statuses in <code>statuses</code> that are for a group that is a descendant of one of <code>user</code> top groups
+	 */
 	private Collection getFilteredStatuses(IWContext iwc, Collection statuses, User user) {
 		Collection result = new ArrayList();
 		UserBusiness userBusiness = this.getUserBusiness(iwc);
@@ -176,6 +184,14 @@ public class UserHistoryTab extends UserTab {
 		return result;
 	}
 	
+	/**
+	 * Filters GroupRelations by users persmission to see groups. Only GroupRelations pertaining to groups that are descendants of
+	 * one of users top group nodes are returned
+	 * @param iwc IWContext
+	 * @param groupRelations The GroupRelations to filter
+	 * @param user The user whos top groups nodes are used for the filtering
+	 * @return All the GroupRelations in <code>groupRelations</code> that are for groups that are both descendants of one of <code>user</code> top groups
+	 */
 	private Collection getFilteredGroupRelations(IWContext iwc, Collection groupRelations, User user) {
 		Collection result = new ArrayList();
 		UserBusiness userBusiness = this.getUserBusiness(iwc);
