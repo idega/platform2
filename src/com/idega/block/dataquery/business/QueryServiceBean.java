@@ -469,6 +469,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			groupTypes.add("general");
 			group = userBusiness.getUsersHighestTopGroupNode(currentUser, groupTypes, iwuc);
 		}
+		if (group == null) {
+			group = currentUser.getPrimaryGroup();
+		}
 		return group;
 	}
 
