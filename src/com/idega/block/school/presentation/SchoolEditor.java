@@ -218,7 +218,7 @@ public class SchoolEditor extends Block {
       inputKeyCode.setContent(ent.getSchoolKeyCode());
       inputLON.setContent(ent.getSchoolLongitude());
       inputLAT.setContent(ent.getSchoolLatitude());
-      drpType.setSelectedElement(String.valueOf(ent.getSchoolTypeId()));
+      //drpType.setSelectedElement(String.valueOf(ent.getSchoolTypeId()));//NO FIELD IN DATABASE!!
       drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
 
      
