@@ -9,6 +9,7 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
  * @author palli
@@ -16,6 +17,7 @@ import com.idega.user.data.Group;
 public class CashierSubWindowTemplate extends Block {
 	protected Group _club = null;
 	protected Group _division = null;
+	protected User _user = null;
 	
 	/**
 	 * 
@@ -32,11 +34,19 @@ public class CashierSubWindowTemplate extends Block {
 		_division = division;
 	}
 	
+	public void setUser(User user) {
+		_user = user;
+	}
+	
 	public Group getClub() {
 		return _club;
 	}
 	
 	public Group getDivision() {
 		return _division;
+	}
+	
+	public User getUser() {
+		return _user;
 	}
 }

@@ -22,7 +22,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
@@ -143,15 +143,18 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		row += 6;
 
 		GroupChooser groupInput = new GroupChooser(LABEL_GROUP);
+		groupInput.setInputLength(10);
 		DropdownMenu typeInput = new DropdownMenu(LABEL_TARIFF_TYPE);
 		SelectorUtility util = new SelectorUtility();
 		if (types != null && !types.isEmpty()) {
 			typeInput = (DropdownMenu) util.getSelectorFromIDOEntities(typeInput, types, "getName");
 		}
 		TextInput textInput = new TextInput(LABEL_TEXT);
+		textInput.setLength(10);
 		FloatInput amountInput = new FloatInput(LABEL_AMOUNT);
-		DateInput fromInput = new DateInput(LABEL_FROM);
-		DateInput toInput = new DateInput(LABEL_TO);
+		amountInput.setLength(10);
+		DatePicker fromInput = new DatePicker(LABEL_FROM);
+		DatePicker toInput = new DatePicker(LABEL_TO);
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
 		t.add(groupInput, 2, row);
@@ -164,7 +167,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		
 		f.add(t);
 		add(f);
 	}

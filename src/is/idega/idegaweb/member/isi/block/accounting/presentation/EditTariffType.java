@@ -112,7 +112,8 @@ public class EditTariffType extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		
 		f.add(t);
 		add(f);
 	}
@@ -127,5 +128,4 @@ public class EditTariffType extends CashierSubWindowTemplate {
 
 		return null;
 	}
-
 }

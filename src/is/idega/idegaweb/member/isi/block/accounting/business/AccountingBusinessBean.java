@@ -7,6 +7,8 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.business;
 
+import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
+import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRoundHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
@@ -17,6 +19,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.CreateException;
@@ -27,16 +30,34 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
  */
 public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
-	public boolean doAssessment(Group club, Group division, Group group, IWTimestamp date) {
-//		Thread assRoundThread = new AssessmentRoundThread();
-//		
-//		assRoundThread.start();
+	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean useParent, boolean includeChildren) {
+		Group group = null;
+		if (groupId != null) {
+			try {
+				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
+				group = gHome.findByPrimaryKey(new Integer(groupId));
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Thread assRoundThread = new AssessmentRoundThread(name, club, division, group, null, user, useParent, includeChildren, getIWApplicationContext());
+		
+		assRoundThread.start();
 		
 		return true;
 	}
@@ -218,6 +239,44 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		
 		return false;
 	}
+
+	public Collection findAllAssessmentRoundByClubAndDivision(Group club, Group division) {
+		try {
+			return getAssessmentRoundHome().findAllByClubAndDivision(club, division);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public boolean insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean useParent, boolean includeChildren) {
+		try {
+			AssessmentRound round = getAssessmentRoundHome().create();
+			round.setName(name);
+			round.setClub(club);
+			if (division != null)
+				round.setDivision(division);
+			if (group != null) 
+				round.setGroup(group);
+			round.setExecutedBy(user);
+			round.setStartTime(start);
+			if (end != null)
+				round.setEndTime(end);
+			round.setUseParentTariff(useParent);
+			round.setIncludeChildren(includeChildren);
+			
+			round.store();
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+			
+			return false;
+		}
+		
+		return true;
+	}
 	
 	private ClubTariffTypeHome getClubTariffTypeHome() {
 		try {
@@ -255,6 +314,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	private CreditCardTypeHome getCreditCardTypeHome() {
 		try {
 			return (CreditCardTypeHome) IDOLookup.getHome(CreditCardType.class);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private AssessmentRoundHome getAssessmentRoundHome() {
+		try {
+			return (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
 		}
 		catch (IDOLookupException e) {
 			e.printStackTrace();

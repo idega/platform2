@@ -136,7 +136,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		
 		f.add(t);
 		add(f);
 	}

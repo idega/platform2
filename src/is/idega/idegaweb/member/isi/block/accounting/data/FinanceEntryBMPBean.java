@@ -22,6 +22,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_USER_ID = "user_id";
 	protected final static String COLUMN_ASSESSMENT_ROUND_ID = "assessment_id";
 	protected final static String COLUMN_CLUB_ID = "club_id";
+	protected final static String COLUMN_DIVISION_ID = "division_id";
 	protected final static String COLUMN_GROUP_ID = "group_id";
 	protected final static String COLUMN_AMOUNT = "amount";
 	protected final static String COLUMN_STATUS = "status";
@@ -52,6 +53,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_ASSESSMENT_ROUND_ID, AssessmentRound.class);
 		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
+		addManyToOneRelationship(COLUMN_DIVISION_ID, Group.class);
 		addManyToOneRelationship(COLUMN_GROUP_ID, Group.class);
 		addAttribute(COLUMN_AMOUNT, "Amount", true, true, Double.class);
 		addAttribute(COLUMN_STATUS, "Status", true, true, String.class, 1);
@@ -104,6 +106,22 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		setColumn(COLUMN_CLUB_ID, club);
 	}
 
+	public int getDivisionID() {
+		return getIntColumnValue(COLUMN_DIVISION_ID);
+	}
+
+	public void setDivisionID(int id) {
+		setColumn(COLUMN_DIVISION_ID, id);
+	}
+	
+	public Group getDivision() {
+		return (Group) getColumnValue(COLUMN_DIVISION_ID);
+	}
+	
+	public void setDivision(Group club) {
+		setColumn(COLUMN_DIVISION_ID, club);
+	}
+	
 	public Timestamp getDateOfEntry() {
 		return (Timestamp) getColumnValue(COLUMN_DATE_OF_ENTRY);
 	}

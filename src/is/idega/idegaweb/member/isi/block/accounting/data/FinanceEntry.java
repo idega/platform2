@@ -9,6 +9,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public com.idega.user.data.Group getClub();
  public int getClubID();
  public java.sql.Timestamp getDateOfEntry();
+ public com.idega.user.data.Group getDivision();
+ public int getDivisionID();
  public com.idega.user.data.Group getGroup();
  public int getGroupID();
  public com.idega.user.data.User getUser();
@@ -19,6 +21,8 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public void setClub(com.idega.user.data.Group p0);
  public void setClubID(int p0);
  public void setDateOfEntry(java.sql.Timestamp p0);
+ public void setDivision(com.idega.user.data.Group p0);
+ public void setDivisionID(int p0);
  public void setGroup(com.idega.user.data.Group p0);
  public void setGroupID(int p0);
  public void setUser(com.idega.user.data.User p0);

@@ -14,25 +14,19 @@ import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.event.IWStateMachine;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
-import com.idega.user.app.UserApplicationMenuAreaPS;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
-import com.idega.user.presentation.BasicUserOverview;
-import com.idega.user.presentation.BasicUserOverviewPS;
+import com.idega.user.data.User;
 import com.idega.user.presentation.GroupPropertyWindow;
 import com.idega.user.presentation.StyledIWAdminWindow;
 
@@ -42,6 +36,7 @@ import com.idega.user.presentation.StyledIWAdminWindow;
 public class CashierWindow extends StyledIWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
+	public static final String PARAMETER_USER_ID = "cashier_user_id";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	
 //	public static final String SELECTED_GROUP_PROVIDER_PRESENTATION_STATE_ID_KEY = "selected_group_mm_id_key";
@@ -66,6 +61,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private static final String HELP_TEXT_KEY = "cashier_window";
 
 	private Group _group;
+	private User _user;
 	private IWResourceBundle _iwrb;
 	private IWBundle _iwb;
 	private MemberUserBusiness _membBiz;
@@ -87,19 +83,32 @@ public class CashierWindow extends StyledIWAdminWindow {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
 		if (sGroupId != null) {
 			try {
-				GroupHome gHome = (GroupHome) IDOLookup.getHome(Group.class);
-				_group = gHome.findByPrimaryKey(new Integer(sGroupId));
+				_group = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sGroupId).intValue());
 			}
-			catch (IDOLookupException e) {
-				e.printStackTrace();
+			catch (NumberFormatException e1) {
+				e1.printStackTrace();
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		String sUserId = iwc.getParameter(PARAMETER_USER_ID);
+		if (sUserId != null) {
+			try {
+				_user = getUserBusiness(iwc).getUser(new Integer(sUserId));
 			}
 			catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
-			catch (FinderException e) {
+			catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
+		
 		_iwrb = getResourceBundle(iwc);
 		_iwb = getBundle(iwc);
 	}
@@ -115,27 +124,23 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 		Text memberOperations = formatText(_iwrb.getLocalizedString("cashierwindow.member_operations", "Member operations"), true);
 		Lists memberOpList = new Lists();
-
-		LinkContainer editTariff = new LinkContainer();
-		editTariff.setStyleClass(styledLink);
-		editTariff.add(formatText(_iwrb.getLocalizedString("cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
-		editTariff.addParameter(ACTION, ACTION_TARIFF);
-		editTariff.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-		clubOpList.add(editTariff);
-
+		
+		Text reports = formatText(_iwrb.getLocalizedString("cashierwindow.reports", "Reports"), true);
+		Lists reportsList = new Lists();
+		
 		LinkContainer editTariffType = new LinkContainer();
 		editTariffType.setStyleClass(styledLink);
 		editTariffType.add(formatText(_iwrb.getLocalizedString("cashierwindow.edit_tariff_type", "Edit club tariff type (A.12)")));
 		editTariffType.addParameter(ACTION, ACTION_TARIFF_TYPE);
 		editTariffType.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		clubOpList.add(editTariffType);
-
-		LinkContainer manAss = new LinkContainer();
-		manAss.setStyleClass(styledLink);
-		manAss.add(formatText(_iwrb.getLocalizedString("cashierwindow.manual_assessment", "Manual assessment (A.14)")));
-		manAss.addParameter(ACTION, ACTION_MANUAL_ASSESSMENT);
-		manAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-		clubOpList.add(manAss);
+		
+		LinkContainer editTariff = new LinkContainer();
+		editTariff.setStyleClass(styledLink);
+		editTariff.add(formatText(_iwrb.getLocalizedString("cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
+		editTariff.addParameter(ACTION, ACTION_TARIFF);
+		editTariff.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
+		clubOpList.add(editTariff);
 
 		LinkContainer autoAss = new LinkContainer();
 		autoAss.setStyleClass(styledLink);
@@ -158,6 +163,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 		selectUser.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
 		memberOpList.add(selectUser);
 
+		LinkContainer manAss = new LinkContainer();
+		manAss.setStyleClass(styledLink);
+		manAss.add(formatText(_iwrb.getLocalizedString("cashierwindow.manual_assessment", "Manual assessment (A.14)")));
+		manAss.addParameter(ACTION, ACTION_MANUAL_ASSESSMENT);
+		manAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
+		memberOpList.add(manAss);
+		
 		LinkContainer insertContract = new LinkContainer();
 		insertContract.setStyleClass(styledLink);
 		insertContract.add(formatText(_iwrb.getLocalizedString("cashierwindow.insert_contract", "Insert/edit member contract (new/A.10)")));
@@ -195,6 +207,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		menu.setRowColor(4, COLOR_MIDDLE);
 		menu.add(memberOpList, 1, 5);
 
+		menu.add(reports, 1, 6);
+		menu.setRowColor(6, COLOR_MIDDLE);
+		menu.add(reportsList, 1, 7);
+		
 		return menu;
 	}
 
@@ -300,6 +316,16 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private GroupBusiness getGroupBusiness(IWContext iwc) {
 		try {
 			return (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+		}
+		catch (RemoteException ex) {
+			throw new RuntimeException(ex.getMessage());
+		}
+	}
+	
+	// service method
+	private UserBusiness getUserBusiness(IWContext iwc) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 		}
 		catch (RemoteException ex) {
 			throw new RuntimeException(ex.getMessage());
