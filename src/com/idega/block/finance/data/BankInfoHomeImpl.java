@@ -1,5 +1,8 @@
 package com.idega.block.finance.data;
 
+import java.util.Collection;
+import com.idega.user.data.Group;
+
 
 public class BankInfoHomeImpl extends com.idega.data.IDOFactory implements BankInfoHome
 {
@@ -24,6 +27,15 @@ public class BankInfoHomeImpl extends com.idega.data.IDOFactory implements BankI
 	return this.findByPrimaryKey(pk);
  
  }
+ 
+ public Collection findAllByClub(Group club) throws javax.ejb.FinderException {
+  com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+  java.util.Collection ids = ((BankInfoBMPBean) entity).ejbFindAllByClub(club);
+  this.idoCheckInPooledEntity(entity);
+  return this.getEntityCollectionForPrimaryKeys(ids);
+
+ }
+
 
 
 

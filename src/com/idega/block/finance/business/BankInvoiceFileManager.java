@@ -28,6 +28,7 @@ import com.idega.user.data.UserHome;
  */
 public class BankInvoiceFileManager implements BankFileManager{
 	
+	
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getAccountBook(int)
 	 */
@@ -36,7 +37,7 @@ public class BankInvoiceFileManager implements BankFileManager{
 		if(ae != null) {
 			return ae.getAccountBook();
 		}else {
-			return 0;
+			return 66;
 		}
 	}
 	/* (non-Javadoc)
@@ -54,12 +55,12 @@ public class BankInvoiceFileManager implements BankFileManager{
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getBankId(int)
 	 */
-	public int getBankBranchNumber(int groupId) {
+	public String getBankBranchNumber(int groupId) {
 		BankInfo bi = getBankInfo(groupId);
 		if(bi != null) {
 			return bi.getClaimantsBankBranchNumber();
 		}else {
-			return 0;
+			return "";
 		}
 	}
 	public String getBookkeepingType(int invoiceNumber) {
@@ -77,9 +78,6 @@ public class BankInvoiceFileManager implements BankFileManager{
 			return "";
 		}
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.block.finance.business.BankFileManager#getClaimantSSN(int)
-	 */
 	public String getClaimantSSN(int groupId) {
 		BankInfo bi = getBankInfo(groupId);
 		if(bi != null) {
@@ -276,23 +274,28 @@ public class BankInvoiceFileManager implements BankFileManager{
 			Date date = ae.getFinalDueDate();
 			cal.setTime(date);
 			return cal; 
-		}else {
-			return null;
 		}
+		return null;
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getLoginName()
 	 */
-	public String getLoginName() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getUsername(int groupId) {
+		BankInfo bi = getBankInfo(groupId);
+		if(bi != null) {
+			return bi.getUsername();
+		}
+		return "";
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getLoginPsw()
 	 */
-	public String getLoginPsw() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPassword(int groupId) {
+		BankInfo bi = getBankInfo(groupId);
+		if(bi != null) {
+			return bi.getPassword();
+		}
+		return "";
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getNoteNumber(int)

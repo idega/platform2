@@ -19,9 +19,9 @@ public interface BankFileManager {
 	int[] getInvoiceNumbers(String claimantsSSN, Timestamp dueDate);
 	
 	//<notandanafn>
-	String getLoginName();
+	String getUsername(int groupId);
 	//<lykilord>
-	String getLoginPsw();
+	String getPassword(int groupId);
 	//<session_id>
 	String getSessionId();
 	
@@ -31,7 +31,7 @@ public interface BankFileManager {
 	//<faerslugerd>
 	String getBookkeepingType(int invoiceNumber);
 	//<banki>
-	int getBankBranchNumber(int groupId);
+	String getBankBranchNumber(int groupId);
 	//<hofudbok>
 	int getAccountBook(int groupId);
 	//<numer>
