@@ -729,7 +729,10 @@ public class CalendarView extends Block{
 		table.setVerticalAlignment(3,3,"top");
 		table.setVerticalAlignment(3,5,"top");
 		
-		User user = iwc.getCurrentUser();
+		User user = null;
+		if(iwc.isLoggedOn()) {
+			user = iwc.getCurrentUser();
+		}
 		Table viewTable = new Table();
 
 		switch (view) {
@@ -766,10 +769,12 @@ public class CalendarView extends Block{
 				ledgerLink.setStyleClass(styledLink);
 				ledgerLink.addParameter("ledger",ledger.getPrimaryKey().toString());
 				ledgerLink.setWindowToOpen(LedgerWindow.class);
-				if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID()) {
-					table.add(ledgerLink,3,1);
-					table.add("<br>",3,1);
-				}			
+				if(user != null) {
+					if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID()) {
+						table.add(ledgerLink,3,1);
+						table.add("<br>",3,1);
+					}			
+				}
 				
 			}
 			Text linkText = new Text(iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger"));
