@@ -139,7 +139,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				}
 
 				item = null;
-			}			
+			}
+			_file.close();
 			System.out.println("NationalRegisterHandler processed RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 			clock.stop();
 			long msTime = clock.getTime();
@@ -372,7 +373,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (postalCodeFix || relationOnly) {
 			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			try {
-				User user = uBiz.getUser(ssn);
+//				User user = uBiz.getUser(ssn);
 				if (postalCodeFix) {
 					natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
 				}
