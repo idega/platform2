@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.4 2004/10/19 10:33:42 thomas Exp $
+ * $Id: CareBusinessBean.java,v 1.5 2004/10/21 10:57:27 thomas Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,9 +11,12 @@ package se.idega.idegaweb.commune.care.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
 import se.idega.idegaweb.commune.care.data.CurrentSchoolSeason;
@@ -21,6 +24,7 @@ import se.idega.idegaweb.commune.care.data.CurrentSchoolSeasonHome;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOLookup;
@@ -32,10 +36,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/19 10:33:42 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/21 10:57:27 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
@@ -113,6 +117,44 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		}
 		return schoolBusiness;
 	}
+
+
+	public Map getStudentList(Collection students) throws RemoteException {
+		HashMap coll = new HashMap();
+
+		if (!students.isEmpty()) {
+			Collection users = getCommuneUserBusiness().getUsers(this.getUserIDsFromClassMembers(students));
+			User user;
+
+			Iterator iter = users.iterator();
+			while (iter.hasNext()) {
+				user = (User) iter.next();
+				coll.put(user.getPrimaryKey(), user);
+			}
+		}
+
+		return coll;
+	}
 	
+	private String[] getUserIDsFromClassMembers(Collection classMembers) {
+		if (classMembers != null) {
+			String[] userIDs = new String[classMembers.size()];
+			SchoolClassMember classMember;
+
+			int a = 0;
+			Iterator iter = classMembers.iterator();
+			while (iter.hasNext()) {
+				classMember = (SchoolClassMember) iter.next();
+				userIDs[a] = String.valueOf(classMember.getClassMemberId());
+				a++;
+			}
+			return userIDs;
+		}
+		return null;
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) getServiceInstance( CommuneUserBusiness.class);
+	}
 
 }
