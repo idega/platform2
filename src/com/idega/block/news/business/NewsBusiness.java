@@ -50,8 +50,8 @@ public class NewsBusiness{
 
   public static boolean disconnectNewsCategory(NewsCategory newsCat,int iObjectInstanceId){
     try {
-      newsCat.setValid(false);
-      newsCat.update();
+      //newsCat.setValid(false);
+      //newsCat.update();
       if(iObjectInstanceId > 0  ){
         ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
         newsCat.removeFrom(obj);
