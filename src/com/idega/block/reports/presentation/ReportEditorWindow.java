@@ -86,7 +86,7 @@ public class ReportEditorWindow extends IWAdminWindow {
 		System.err.println();
 
 
-    if(isAdmin){
+    if(true){
 			int saveInfo = getSaveInfo(iwc);
 			if(iwc.isParameterSet(prmObjInstId)){
         iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
