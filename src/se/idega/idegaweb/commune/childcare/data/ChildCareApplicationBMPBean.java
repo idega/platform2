@@ -342,7 +342,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append("c , proc_case p");
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
