@@ -336,10 +336,11 @@ public class ClubInformationTab extends UserGroupTab {
 			if (memberUMFI != null) {
 				group.setMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI, memberUMFI.toString());
 			}
+			String oldMake = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_MAKE, make);
 			if (make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB)) {
 				String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
-				if (oldConnection == null && connection != null) {
+				if (oldConnection == null && connection != null && (oldMake == null || oldMake != IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB)) {
 					group.setMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, connection);
 					group.store();
 					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), group.getName(), iwc);
