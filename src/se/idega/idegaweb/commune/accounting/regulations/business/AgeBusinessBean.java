@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.4 2003/09/02 13:57:32 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.5 2003/09/03 22:19:31 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/02 13:57:32 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/03 22:19:31 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -230,13 +230,18 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 		Iterator iter = c.iterator();
 		while (iter.hasNext()) {
 			AgeRegulation ar = (AgeRegulation) iter.next();
+			
+			int arId = ((Integer) ar.getPrimaryKey()).intValue();
+			if (id == arId) {
+				continue;
+			}
+			
 			if (((ageFrom > ar.getAgeFrom()) && (ageFrom < ar.getAgeTo())) ||
 					((ageTo > ar.getAgeFrom()) && (ageTo < ar.getAgeTo())) ||
 					((ageFrom <= ar.getAgeFrom()) && (ageTo >= ar.getAgeTo()))) {
 				throw new AgeException(KEY_AGE_OVERLAP, DEFAULT_AGE_OVERLAP);
 			}
 		}
-		
 
 		// Description
 		s = description.trim();
