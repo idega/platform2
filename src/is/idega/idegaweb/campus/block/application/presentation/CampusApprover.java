@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.39 2002/07/05 10:15:19 palli Exp $
+ * $Id: CampusApprover.java,v 1.40 2002/07/05 11:54:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -934,10 +934,14 @@ public class CampusApprover extends Block {
       int iBY = sBY!=null?Integer.parseInt(sBY):0;
       int iEY = sEY!=null? Integer.parseInt(sEY):0;
       eCampusApplication.setIncome(iIncome);
-      eCampusApplication.setStudyBeginMonth(iBM);
-      eCampusApplication.setStudyBeginYear(iBY);
-      eCampusApplication.setStudyEndMonth(iEM);
-      eCampusApplication.setStudyEndYear(iEY);
+      if (iBM != 0)
+        eCampusApplication.setStudyBeginMonth(iBM);
+      if (iBY != 0)
+        eCampusApplication.setStudyBeginYear(iBY);
+      if (iEM != 0)
+        eCampusApplication.setStudyEndMonth(iEM);
+      if (iEY != 0)
+        eCampusApplication.setStudyEndYear(iEY);
     }
     catch(Exception ex){
       ex.printStackTrace();
@@ -998,8 +1002,8 @@ public class CampusApprover extends Block {
 	T.add(Edit.formatText(eCampusApplication.getSpouseStudyTrack()),col,row++);
 	String beginMonth = (eCampusApplication.getSpouseStudyBeginMonth().toString());
 	String endMonth = (eCampusApplication.getSpouseStudyEndMonth().toString());
-	T.add(Edit.formatText(beginMonth+" "+eCampusApplication.getStudyBeginYear().intValue()),col,row++);
-	T.add(Edit.formatText(endMonth+" "+eCampusApplication.getStudyEndYear().intValue()),col,row++);
+	T.add(Edit.formatText(beginMonth+" "+eCampusApplication.getSpouseStudyBeginYear().intValue()),col,row++);
+	T.add(Edit.formatText(endMonth+" "+eCampusApplication.getSpouseStudyEndYear().intValue()),col,row++);
 	//T.add(Edit.formatText(eCampusApplication.getSpouseIncome().intValue()),col,row);
 
       }
@@ -1036,7 +1040,7 @@ public class CampusApprover extends Block {
       String endMonth = String.valueOf(today.getMonth());
       String endYear = String.valueOf(today.getYear());
       if(eCampusApplication !=null && spouse!=null){
-	System.err.println("spouse "+spouse.getID());
+//	System.err.println("spouse "+spouse.getID());
 	tiSpName.setContent(spouse.getName());
 	tiSpSsn.setContent(spouse.getSSN());
 	tiSpSchl.setContent(eCampusApplication.getSpouseSchool());
@@ -1098,10 +1102,14 @@ public class CampusApprover extends Block {
       int iBY = Integer.parseInt(sBY);
       int iEY = Integer.parseInt(sEY);
       //eCampusApplication.setSpouseIncome(iIncome);
-      eCampusApplication.setSpouseStudyBeginMonth(iBM);
-      eCampusApplication.setSpouseStudyBeginYear(iBY);
-      eCampusApplication.setSpouseStudyEndMonth(iEM);
-      eCampusApplication.setSpouseStudyEndYear(iEY);
+      if (iBM != 0)
+        eCampusApplication.setSpouseStudyBeginMonth(iBM);
+      if (iBY != 0)
+        eCampusApplication.setSpouseStudyBeginYear(iBY);
+      if (iEM != 0)
+        eCampusApplication.setSpouseStudyEndMonth(iEM);
+      if (iEY != 0)
+        eCampusApplication.setSpouseStudyEndYear(iEY);
     }
     catch(Exception ex){
       //ex.printStackTrace();
@@ -1413,7 +1421,6 @@ public class CampusApprover extends Block {
     if (comment != null)
       eCampusApplication.setOtherInfo(comment);
 
-System.out.println("iwc = " + iwc);
     String key1 = iwc.getParameter("drp_one");
     String key2 = iwc.getParameter("drp_two");
     String key3 = iwc.getParameter("drp_three");
@@ -1479,7 +1486,7 @@ System.out.println("iwc = " + iwc);
       }
       */
       if(applied1 !=null && "-1".equals(key1)){
-        System.err.println("deleting 1");
+//        System.err.println("deleting 1");
         try{
         applied1.delete();
         }
