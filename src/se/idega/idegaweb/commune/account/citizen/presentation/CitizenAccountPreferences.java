@@ -78,6 +78,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	//private final static String PARAMETER_EMAIL_ID = "cap_email_id";
 	private final static String PARAMETER_PHONE_HOME = "cap_phn_h";
 	private final static String PARAMETER_PHONE_WORK = "cap_phn_w";
+	private final static String PARAMETER_PHONE_MOBILE = "cap_phn_m";
 	private final static String PARAMETER_CO_ADDRESS_SELECT = "cap_co";
 	private final static String PARAMETER_CO_STREET_ADDRESS = "cap_co_sa";
 	private final static String PARAMETER_CO_POSTAL_CODE = "cap_co_pc";
@@ -98,6 +99,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String KEY_NAME = KEY_PREFIX + "name";
 	private final static String KEY_ADDRESS = KEY_PREFIX + "address";
 	private final static String KEY_PHONE_HOME = KEY_PREFIX + "phone_home";
+	private final static String KEY_PHONE_MOBILE = KEY_PREFIX + "phone_mobile";
 	private final static String KEY_PHONE_WORK = KEY_PREFIX + "phone_work";
 	private final static String KEY_CO_ADDRESS_SELECT = KEY_PREFIX + "co_address_select";
 	private final static String KEY_CO_STREET_ADDRESS = KEY_PREFIX + "co_street_address";
@@ -128,6 +130,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String DEFAULT_NAME = "Name";	
 	private final static String DEFAULT_ADDRESS = "Address";		
 	private final static String DEFAULT_PHONE_HOME = "Phone (home)";		
+	private final static String DEFAULT_PHONE_MOBILE = "Phone (mobile)";
 	private final static String DEFAULT_PHONE_WORK = "Phone (work)";
 	private final static String DEFAULT_CO_ADDRESS_SELECT = "Use c/o address";		
 	private final static String DEFAULT_CO_STREET_ADDRESS = "Street address c/o";		
@@ -254,6 +257,16 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				valuePhoneHome = "";
 			}
 		}
+		String valuePhoneMobile = iwc.getParameter(PARAMETER_PHONE_MOBILE);
+		if (valuePhoneMobile == null) {
+			try {
+				Phone p = ub.getUsersMobilePhone(user);
+				valuePhoneMobile = p.getNumber();
+			}
+			catch (NoPhoneFoundException npfe) {
+				valuePhoneMobile = "";
+			}
+		}
 		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		if (valuePhoneWork == null) {
 			try {
@@ -302,6 +315,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Text tNewPasswordRepeated = getSmallHeader(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
 		Text tPhoneHome = getSmallHeader(localize(KEY_PHONE_HOME, DEFAULT_PHONE_HOME));
 		Text tPhoneWork = getSmallHeader(localize(KEY_PHONE_WORK, DEFAULT_PHONE_WORK));
+		Text tPhoneMobile = getSmallHeader(localize(KEY_PHONE_MOBILE, DEFAULT_PHONE_MOBILE));
 		Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT));
 		Text tCOStreetAddress = getSmallHeader(localize(KEY_CO_STREET_ADDRESS, DEFAULT_CO_STREET_ADDRESS));
 		Text tCOPostalCode = getSmallHeader(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
@@ -315,6 +329,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));
 		if(valuePhoneHome!=null){
 			tiPhoneHome.setValue(valuePhoneHome);		
+		}
+		TextInput tiPhoneMobile = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_MOBILE));		
+		if(tiPhoneMobile!=null){
+			tiPhoneMobile.setValue(valuePhoneMobile);
 		}
 		TextInput tiPhoneWork = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_WORK));		
 		if(valuePhoneWork!=null){
@@ -400,6 +418,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(tiPhoneHome, 2, row);
 
 		row++;
+		table.add(tPhoneMobile, 1, row);
+		table.add(tiPhoneMobile, 2, row);
+		
+		row++;
 		table.add(tPhoneWork, 1, row);
 		table.add(tiPhoneWork, 2, row);
 		
@@ -463,6 +485,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
 		String sEmail = iwc.getParameter(PARAMETER_EMAIL);
 		String phoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
+		String phoneMobile = iwc.getParameter(PARAMETER_PHONE_MOBILE);
 		String phoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		String coStreetAddress = iwc.getParameter(PARAMETER_CO_STREET_ADDRESS);
 		String coPostalCode = iwc.getParameter(PARAMETER_CO_POSTAL_CODE);
@@ -547,8 +570,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
 			}
 			ub.updateUserHomePhone(user, phoneHome);
-			ub.updateUserWorkPhone(user, phoneHome);
-			ub.updateUserMobilePhone(user, phoneWork);
+			ub.updateUserWorkPhone(user, phoneWork);
+			ub.updateUserMobilePhone(user, phoneMobile);
 			if (updateCOAddress) {
 				Address coAddress = getCOAddress(iwc);
 				coAddress.setStreetName(coStreetAddress);
