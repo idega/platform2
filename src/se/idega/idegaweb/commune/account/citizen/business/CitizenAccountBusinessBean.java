@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.27 2002/11/15 12:11:16 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.28 2002/11/15 14:05:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -179,8 +179,55 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			return null;
 		}
         
-		return (Integer) (children == null ? null
-                          : children.getPrimaryKey());
+		return (Integer) (children == null ? null : children.getPrimaryKey());
+    }
+
+    public Integer insertMovingTo
+        (final Integer applicationId, final String address, final String date,
+         final String housingType, final String propertyType)
+        throws RemoteException, CreateException {
+		CitizenApplicantMovingTo movingTo = null;
+        try {
+            final CitizenApplicantMovingToHome citizenApplicantMovingToHome
+                    = (CitizenApplicantMovingToHome)
+                    IDOLookup.getHome(CitizenApplicantMovingTo.class);
+			movingTo = citizenApplicantMovingToHome.create ();
+            movingTo.setApplicationId (applicationId.intValue ());
+            movingTo.setAddress (address);
+            movingTo.setMovingInDate (date);
+            movingTo.setHousingType (housingType);
+            movingTo.setPropertyType (propertyType);
+			movingTo.store ();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+        
+		return (Integer) (movingTo == null ? null : movingTo.getPrimaryKey());
+    }
+
+    public Integer insertPutChildren (final Integer applicationId,
+                               final String currentKommun)
+        throws RemoteException, CreateException {
+		CitizenApplicantPutChildren putChildren = null;
+        try {
+            final CitizenApplicantPutChildrenHome
+                    citizenApplicantPutChildrenHome
+                    = (CitizenApplicantPutChildrenHome)
+                    IDOLookup.getHome(CitizenApplicantPutChildren.class);
+			putChildren = citizenApplicantPutChildrenHome.create ();
+            putChildren.setApplicationId (applicationId.intValue ());
+            putChildren.setCurrentKommun (currentKommun);
+			putChildren.store ();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+        
+		return (Integer) (putChildren == null ? null
+                          : putChildren.getPrimaryKey());
     }
 
     public Gender [] getGenders () throws RemoteException {

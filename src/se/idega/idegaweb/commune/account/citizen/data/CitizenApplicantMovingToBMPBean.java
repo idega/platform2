@@ -3,10 +3,10 @@ package se.idega.idegaweb.commune.account.citizen.data;
 import com.idega.data.GenericEntity;
 
 /**
- * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 14:05:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenApplicantMovingToBMPBean extends GenericEntity
     implements CitizenApplicantMovingTo {
@@ -26,9 +26,9 @@ public class CitizenApplicantMovingToBMPBean extends GenericEntity
 		addAttribute (COLUMN_MOVING_IN_DATE, "Moving in date", true, true,
                       String.class, 10);
 		addAttribute (COLUMN_HOUSING_TYPE, "Housing type", true, true,
-                      String.class, 20);
+                      String.class, 30);
 		addAttribute (COLUMN_PROPERTY_TYPE, "Property type", true, true,
-                      String.class, 20);
+                      String.class, 30);
 	}
 
 	public String getEntityName() {

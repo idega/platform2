@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.33 2002/11/15 12:11:16 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.34 2002/11/15 14:05:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 14:05:44 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -374,7 +374,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		ssnParameterNames.add(SSN_KEY);
 		final Collection integerParameters = new ArrayList();
 		integerParameters.addAll(Arrays.asList(new String[] { GENDER_KEY, CHILDREN_COUNT_KEY }));
-
 		try {
 			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
 		}
@@ -386,6 +385,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			viewUnknownCitizenApplicationForm1(iwc);
 			return;
 		}
+
 		final boolean hasCohabitant = getBooleanParameter(iwc, HAS_COHABITANT_KEY);
 		if (hasCohabitant) {
 			mandatoryParameterNames.addAll(Arrays.asList(new String[] { FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY, SSN_KEY + COHABITANT_KEY, CIVIL_STATUS_KEY + COHABITANT_KEY, PHONE_WORK_KEY + COHABITANT_KEY }));
@@ -404,8 +404,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (applicationReason.equals(MOVING_TO_NACKA_KEY)) {
 			mandatoryParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY }));
 			stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY }));
-		}
-		else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
+		} else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
 			mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		}
@@ -477,6 +476,24 @@ public class CitizenAccountApplication extends CommuneBlock {
                 }
             }
 
+            if (null != applicationId
+                && applicationReason.equals(MOVING_TO_NACKA_KEY)) {
+                final String movingInAddress
+                        = parameters.get (MOVING_IN_ADDRESS_KEY).toString ();
+                final String movingInDate
+                        = parameters.get (MOVING_IN_DATE_KEY).toString ();
+                final String housingType
+                        = parameters.get (HOUSING_TYPE_KEY).toString ();
+                final String propertyType
+                        = parameters.get (PROPERTY_TYPE_KEY).toString ();
+                business.insertMovingTo
+                        (applicationId, movingInAddress, movingInDate,
+                         housingType, propertyType);                    
+            } else if (null != applicationId
+                       && applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
+                business.insertPutChildren (applicationId, parameters.get
+                                            (CURRENT_KOMMUN_KEY).toString ());
+            }
 		} catch (final ParseException e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
 			text.setFontColor(COLOR_RED);
