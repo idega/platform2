@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.12 2003/09/30 09:17:53 anders Exp $
+ * $Id: ProviderEditor.java,v 1.13 2003/09/30 12:22:56 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CountryDropdownMenu;
 
 import com.idega.builder.data.IBPage;
 
@@ -59,10 +60,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/30 09:17:53 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/30 12:22:56 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -141,7 +142,6 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL_MANAGEMENT_TYPE_SELECTOR_HEADER = KP + "school_management_type_selector_header";
 	private final static String KEY_STATISTICS_TYPE_SELECTOR_HEADER = KP + "statistics_type_selector_header";
 	private final static String KEY_COMMUNE_SELECTOR_HEADER = KP + "commune_selector_header";
-	private final static String KEY_COUNTRY_SELECTOR_HEADER = KP + "country_selector_header";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
@@ -420,8 +420,8 @@ public class ProviderEditor extends AccountingBlock {
 		Collection providers = null;
 
 		try {
-			SchoolBusiness sb = getSchoolBusiness(iwc);
-			providers = sb.findAllSchools();
+			ProviderBusiness pb = getProviderBusiness(iwc);			
+			providers = pb.findAllSchools();
 		} catch (RemoteException e) {
 			Table t = new Table();
 			t.add(new ExceptionWrapper(e));
@@ -832,33 +832,14 @@ public class ProviderEditor extends AccountingBlock {
 	/*
 	 * Returns a DropdownMenu for countries. 
 	 */
-	private DropdownMenu getCountryDropdownMenu(String parameter, String countryId) {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		menu.addMenuElement(0, localize(KEY_COUNTRY_SELECTOR_HEADER, "Choose country"));
-		int selectedId = countryId.equals("") ? -1 : (new Integer(countryId)).intValue();
+	private CountryDropdownMenu getCountryDropdownMenu(String parameter, String countryId) {
+		CountryDropdownMenu menu = new CountryDropdownMenu(parameter);
 		try {
-			CountryHome home = (CountryHome) com.idega.data.IDOLookup.getHome(Country.class);			
-			Collection c = home.findAll();
-			if (c != null) {
-				Iterator iter = c.iterator();
-				while (iter.hasNext()) {
-					Country country = (Country) iter.next();
-					int id = ((Integer) country.getPrimaryKey()).intValue();
-					String name = country.getName();
-					if (name.length() > 2) {
-						menu.addMenuElement(id, country.getName());
-					}
-				}
-				if (selectedId > 0) {
-					menu.setSelectedElement(selectedId);
-				} else {
-					menu.setSelectedElement(187);					
-				}
-			}		
-		} catch (Exception e) {
-			add(new ExceptionWrapper(e));
-		}
-		return menu;	
+			CountryHome home = (CountryHome) com.idega.data.IDOLookup.getHome(Country.class);
+			Country country = home.findByPrimaryKey(new Integer(countryId));
+			menu.setSelectedCountry(country);						
+		} catch (Exception e) {}
+		return menu;
 	}
 	
 	/*
