@@ -32,17 +32,15 @@ import com.idega.util.IWTimestamp;
  */
 public class TournamentRegistrationMobile extends Block {
 	
-	public static final String PARAM_NAME_SEARCH_INTERVAL = "s_i";
-	public static final String SEARCH_INTERVAL_WEEK = "w";
-	public static final String SEARCH_INTERVAL_MONTH = "m";
+	public static final String PARAM_NAME_SEARCH_DAYS = "s_d";
 	
 	public static final String LOCALIZATION_KEY_SEARCH_TEXT = "mobile_search_text";
-	public static final String LOCALIZATION_KEY_WEEK = "mobile_oneweek";
-	public static final String LOCALIZATION_KEY_MONTH = "mobile_onemonth";
-	
 	public static final String LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT = "mobile_selection_text";
+	public static final String LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT_AFTER = "mobile_selection_text_after";
 	
 	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
+	
+	private static final int MAX_DAYS_FOR_SEARCH = 10;
 	
 	private ICPage _pageToSubmitTo = null;
 	
@@ -54,7 +52,7 @@ public class TournamentRegistrationMobile extends Block {
 		
 		PresentationObject po;
 		
-		if(iwc.getParameter(PARAM_NAME_SEARCH_INTERVAL) == null ) {
+		if(iwc.getParameter(PARAM_NAME_SEARCH_DAYS) == null ) {
 			po = getTimeIntervalForm(iwc);
 		} else {
 			po = getTournamentSelectionForm(iwc);
@@ -70,12 +68,12 @@ public class TournamentRegistrationMobile extends Block {
 			String selectionLabel = _iwrb.getLocalizedString(LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT, "Select tournament");
 			cont.add(selectionLabel);
 			
-			boolean week = SEARCH_INTERVAL_WEEK.equals(iwc.getParameter(PARAM_NAME_SEARCH_INTERVAL));
+			int days = Integer.parseInt(iwc.getParameter(PARAM_NAME_SEARCH_DAYS));
 			IWTimestamp begin = new IWTimestamp();
-			begin.setHour(8);
+			begin.setHour(6);
 			begin.setMinute(0);
 			IWTimestamp end = new IWTimestamp(begin);
-			end.addDays(week?7:31);
+			end.addDays(days);
 			end.setHour(23);
 			Tournament[] tournaments = getTournamentBusiness(iwc).getTournaments(begin, end);
 			for(int i=0; i<tournaments.length; i++) {
@@ -109,13 +107,18 @@ public class TournamentRegistrationMobile extends Block {
 			Form form = new Form();
 			
 			String menuLabel = _iwrb.getLocalizedString(LOCALIZATION_KEY_SEARCH_TEXT, "Find tournaments that start within");
-			DropdownMenu menu = new DropdownMenu(PARAM_NAME_SEARCH_INTERVAL);
-			menu.addMenuElement(SEARCH_INTERVAL_WEEK, _iwrb.getLocalizedString(LOCALIZATION_KEY_WEEK, "a week"));
-			menu.addMenuElement(SEARCH_INTERVAL_WEEK, _iwrb.getLocalizedString(LOCALIZATION_KEY_MONTH, "a month"));
+			String menuLabelAfter = _iwrb.getLocalizedString(LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT_AFTER, "days");
+			DropdownMenu menu = new DropdownMenu(PARAM_NAME_SEARCH_DAYS);
+			for(int i=1; i<=MAX_DAYS_FOR_SEARCH; i++) {
+				String val = Integer.toString(i);
+				menu.addMenuElement(val, val);
+			}
 			SubmitButton button = new SubmitButton();
 			
 			form.add(menuLabel);
 			form.add(menu);
+			form.add(menuLabelAfter);
+			form.add(button);
 			
 			return form;
 		} catch(Exception e) {
