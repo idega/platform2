@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.1 2003/08/19 19:10:42 anders Exp $
+ * $Id: VATEditor.java,v 1.2 2003/08/20 11:59:39 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,29 +9,35 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ExceptionWrapper;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
-/**
+/** 
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/19 19:10:42 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/20 11:59:39 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VATEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	
-	private final static String KEY_PREFIX = "vat_regulations."; 
+	private final static String PARAMETER_PREFIX = "cacc_vat_"; 
+
+	private final static String PARAMETER_PERIOD_FROM = PARAMETER_PREFIX + "period_from";
+	private final static String PARAMETER_PERIOD_TO = PARAMETER_PREFIX + "period_to";
+	private final static String PARAMETER_SEARCH = PARAMETER_PREFIX + "search";
+	
+	private final static String KEY_PREFIX = "vat_editor."; 
 	
 	private final static String KEY_TITLE = KEY_PREFIX + "title";
 	private final static String KEY_PERIOD = KEY_PREFIX + "period";
@@ -39,6 +45,9 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_VAT_PERCENT = KEY_PREFIX + "vat_percent";
 	private final static String KEY_DIRECTION = KEY_PREFIX + "direction";
 	private final static String KEY_PROVIDER_TYPE = KEY_PREFIX + "provider_type";
+	private final static String KEY_MAIN_ACTIVITY = KEY_PREFIX + "main_activity";
+	private final static String KEY_SCHOOL = KEY_PREFIX + "school";
+	private final static String KEY_SEARCH = KEY_PREFIX + "search";
 
 	/**
 	 * Handles all of the blocks presentation.
@@ -74,6 +83,7 @@ public class VATEditor extends AccountingBlock {
 	private void viewDefaultForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
 		app.setTitle(localize(KEY_TITLE, "Momssats"));
+		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getVATList());
 		app.setButtonPanel(getButtonPanel());
 		add(app);
@@ -110,12 +120,26 @@ public class VATEditor extends AccountingBlock {
 	}
 	
 	/*
-	 * Returns the button panel for this block
+	 * Returns the button panel for this block.
 	 */
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
 		bp.addButton("save", "Spara");
 		bp.addButton("delete", "Radera");
 		return bp;
+	}
+
+	/*
+	 * Returns the search panel for this block.
+	 */
+	private Table getSearchPanel() {
+		Table table = new Table();
+		table.add(getFormLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
+		table.add(getFormText(KEY_SCHOOL, "Skola"), 2, 1);
+		table.add(getFormLabel(KEY_PERIOD, "Period"), 1, 2);
+		table.add(getFormTextInput(PARAMETER_PERIOD_FROM, "", 60), 2, 2);
+		table.add(getFormTextInput(PARAMETER_PERIOD_TO, "", 80), 3, 2);
+		table.add(getFormButton(PARAMETER_SEARCH, KEY_SEARCH, "Sšk"), 5, 2);
+		return table;
 	}
 }
