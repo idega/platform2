@@ -7,7 +7,6 @@
 package is.idega.idegaweb.golf.block.login.business;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -15,7 +14,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.BaseFilter;
@@ -28,8 +26,6 @@ import com.idega.servlet.filter.BaseFilter;
  * @author eiki
  */
 public class GolfAuthenticatorFilter extends BaseFilter {
-
-	private static Logger log = Logger.getLogger(GolfAuthenticatorFilter.class.getName());
 
 	private GolfLoginBusiness loginBusiness = new GolfLoginBusiness();
 
