@@ -4,7 +4,6 @@ import is.idega.idegaweb.member.business.GroupApplicationBusiness;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import is.idega.idegaweb.member.data.GroupApplication;
 
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
