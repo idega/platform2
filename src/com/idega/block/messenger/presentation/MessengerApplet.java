@@ -96,7 +96,10 @@ public class MessengerApplet extends Applet implements Runnable{
       Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
       msg.setRecipientName("TEST");
 
-      test.setWindowToOpen(new MessageDialog(FRAME_NAME,msg));
+
+      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
+      dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+      test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
       test.setSize(16,100);
@@ -469,38 +472,6 @@ public class MessengerApplet extends Applet implements Runnable{
       }
   }
 
-
-/**Main method*/
-  public static void main(String[] args) {
-    if( args.length > 0 ) System.setProperty("resourceBase",args[0]);
-
-    MessengerApplet applet=null;
-    applet = new MessengerApplet();
-    applet.isStandalone = true;
-
-    Frame frame;
-    frame = new Frame() {
-      protected void processWindowEvent(WindowEvent e) {
-        super.processWindowEvent(e);
-        if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-          System.exit(0);
-        }
-      }
-      public synchronized void setTitle(String title) {
-        super.setTitle(title);
-        enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-      }
-    };
-    frame.setTitle(FRAME_NAME);
-    //frame.getContentPane().add(applet, BorderLayout.CENTER);
-    frame.add(applet, BorderLayout.CENTER);
-    applet.init();
-    applet.start();
-    frame.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    frame.setLocation((d.width - frame.getSize().width) / 2, (d.height - frame.getSize().height) / 2);
-    frame.setVisible(true);
-  }
 
   public void update(Graphics g){
     super.repaint();
