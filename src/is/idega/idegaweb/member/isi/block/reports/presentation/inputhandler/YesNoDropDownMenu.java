@@ -23,8 +23,8 @@ public class YesNoDropDownMenu extends DropdownMenu implements InputHandler {
 	private final static String LOCALIZED_YES = "YesNoDropDownMenu.yes";
 	private final static String LOCALIZED_NO = "YesNoDropDownMenu.no";
 	
-	private final static String YES = "yep";
-	private final static String NO = "nope";
+	public final static String YES = "y";
+	public final static String NO = "n";
 
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle rb = this.getResourceBundle(iwc);
