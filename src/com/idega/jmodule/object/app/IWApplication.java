@@ -106,14 +106,14 @@ public class IWApplication extends FrameSet{
         iconImage = bundle.getImage("IWApplicationIcon.gif");
       }
       else{
-        // bundle = obj.getBundle(modinfo.getApplication());
+        bundle = obj.getBundle(modinfo.getApplication());
         if(bundle==null){
           bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
           iconImage = bundle.getImage("IWApplicationIcon.gif");
         }
-        //else{
-        //  iconImage = bundle.getImage("IWApplicationIcon.gif");
-        //}
+        else{
+          iconImage = bundle.getImage("IWApplicationIcon.gif");
+        }
       }
 
       Link icon_image = new Link(iconImage);
