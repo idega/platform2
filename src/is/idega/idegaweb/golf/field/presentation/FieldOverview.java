@@ -43,6 +43,7 @@ public class FieldOverview extends GolfBlock {
   
   private ICPage gameHandicapPage;
   public final static String PRM_FIELD_ID = "field_id";
+  private int iMaxImageWidth = 0;
 
 	public void main(IWContext modinfo) throws Exception {
 		String union_id = modinfo.getParameter("union_id");
@@ -57,6 +58,8 @@ public class FieldOverview extends GolfBlock {
 
 		Table contentTable = new Table();
 		contentTable.setWidth("100%");
+		contentTable.setCellpadding(0);
+		contentTable.setCellspacing(0);
 
 		if (field_id != null && hole_number == null) {
 			Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(Integer.parseInt(field_id));
@@ -99,23 +102,23 @@ public class FieldOverview extends GolfBlock {
 				break;
 
 			case 2 :
-				litur = "EEEB86";
+				litur = "#FCFA44";
 				break;
 
 			case 3 :
-				litur = "8B86EE";
+				litur = "#2F78DC";
 				break;
 
 			case 4 :
-				litur = "EE8686";
+				litur = "#DC2F2F";
 				break;
 
 			case 5 :
-				litur = "8B86EE";
+				litur = "#2F78DC";
 				break;
 
 			case 6 :
-				litur = "EE8686";
+				litur = "#DC2F2F";
 				break;
 
 		}
@@ -125,17 +128,16 @@ public class FieldOverview extends GolfBlock {
 
 	public Table getFieldInfo(Field field, String field_id) throws IOException, SQLException, FinderException {
 
-		Table myTable = new Table();
-
 		Tee[] teeColor = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAll("select distinct tee_color_id from tee where field_id='" + field.getID() + "'");
 
+		Table myTable = new Table();
+		myTable.setRows(teeColor.length + 3);
+		
 		for (int a = 0; a < teeColor.length; a++) {
 
 			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumnOrdered("field_id", String.valueOf(field.getID()), "tee_color_id", String.valueOf(teeColor[a].getIntColumnValue("tee_color_id")), "hole_number");
 
-			Text teeColorName = new Text(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
-			teeColorName.setFontSize(1);
-
+			Text teeColorName = getSmallText(((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(teeColor[a].getIntColumnValue("tee_color_id")).getName() + "&nbsp;");
 			myTable.add(teeColorName, 1, a + 2);
 
 			int teeLength = 0;
@@ -145,71 +147,35 @@ public class FieldOverview extends GolfBlock {
 			for (int b = 0; b < tee.length; b++) {
 
 				int holeLength = tee[b].getIntColumnValue("tee_length");
-				Text lengthText = new Text(String.valueOf(holeLength));
-				lengthText.setFontSize(1);
-
+				Text lengthText = getSmallText(String.valueOf(holeLength));
 				myTable.add(lengthText, b + 2, a + 2);
+
 				teeLength += tee[b].getIntColumnValue("tee_length");
 
 				if (a == 0) {
-					Text holeNumber = new Text(tee[b].getStringColumnValue("hole_number"));
-					holeNumber.setFontSize(1);
-					holeNumber.setFontColor("FFFFFF");
-
-					Link holeView = new Link(holeNumber);
-					holeView.setFontColor("#FFFFFF");
-					holeView.addParameter("field_id", field_id);
-					holeView.addParameter("hole_number", tee[b].getStringColumnValue("hole_number"));
-
-					myTable.add(holeView, b + 2, 1);
+					Text holeNumber = getSmallHeader(tee[b].getStringColumnValue("hole_number"));
+					myTable.add(holeNumber, b + 2, 1);
 				}
 
 				if (a + 1 == teeColor.length) {
 					holePar = tee[b].getPar();
 					par += tee[b].getPar();
 
-					Text parText = new Text(String.valueOf(holePar));
-					parText.setFontSize(1);
-					parText.setFontColor("FFFFFF");
-
-					Text handicapText = new Text("" + ((int) tee[b].getFloatColumnValue("handicap")));
-					handicapText.setFontSize(1);
-					handicapText.setFontColor("FFFFFF");
-
+					Text parText = getSmallText(String.valueOf(holePar));
+					Text handicapText = getSmallText("" + ((int) tee[b].getFloatColumnValue("handicap")));
 					myTable.add(handicapText, b + 2, a + 3);
 					myTable.add(parText, b + 2, a + 4);
 				}
 
 				if (b + 1 == tee.length) {
-					Text holeText = new Text(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE);
-					holeText.setFontSize(1);
-					holeText.setFontColor("FFFFFF");
-
-					Text totalText = new Text(getResourceBundle().getLocalizedString("field.total", "Total"));
-					totalText.setFontSize(1);
-					totalText.setFontColor("FFFFFF");
-
-					Text rating = new Text(tee[b].getStringColumnValue("course_rating") + "/" + tee[b].getStringColumnValue("slope"));
-					rating.setFontSize(1);
-
-					Text teeLengthText = new Text(String.valueOf(teeLength));
-					teeLengthText.setFontSize(1);
-
-					Text totalPar = new Text(String.valueOf(par));
-					totalPar.setFontSize(1);
-					totalPar.setFontColor("FFFFFF");
-
-					Text ratingText = new Text(getResourceBundle().getLocalizedString("field.cr_slope", "CR/Slope"));
-					ratingText.setFontSize(1);
-					ratingText.setFontColor("FFFFFF");
-
-					Text parText2 = new Text(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
-					parText2.setFontSize(1);
-					parText2.setFontColor("FFFFFF");
-
-					Text handicap = new Text(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
-					handicap.setFontSize(1);
-					handicap.setFontColor("FFFFFF");
+					Text holeText = getSmallHeader(getResourceBundle().getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE);
+					Text totalText = getSmallHeader(getResourceBundle().getLocalizedString("field.total", "Total"));
+					Text rating = getSmallText(tee[b].getStringColumnValue("course_rating") + "/" + tee[b].getStringColumnValue("slope"));
+					Text teeLengthText = getSmallText(String.valueOf(teeLength));
+					Text totalPar = getSmallHeader(String.valueOf(par));
+					Text ratingText = getSmallHeader(getResourceBundle().getLocalizedString("field.cr_slope", "CR/Slope"));
+					Text parText2 = getSmallHeader(getResourceBundle().getLocalizedString("field.par", "Par") + Text.NON_BREAKING_SPACE);
+					Text handicap = getSmallHeader(getResourceBundle().getLocalizedString("field.handicap", "Handicap") + Text.NON_BREAKING_SPACE);
 
 					myTable.add(rating, b + 4, a + 2);
 					myTable.add(teeLengthText, b + 3, a + 2);
@@ -218,9 +184,6 @@ public class FieldOverview extends GolfBlock {
 						myTable.add(totalText, b + 3, 1);
 						myTable.add(totalPar, b + 3, a + 4);
 						myTable.add(ratingText, b + 4, 1);
-						myTable.addText("", b + 3, a + 3);
-						myTable.addText("", b + 4, a + 3);
-						myTable.addText("", b + 4, a + 4);
 						myTable.add(parText2, 1, a + 4);
 						myTable.add(handicap, 1, a + 3);
 					}
@@ -234,43 +197,70 @@ public class FieldOverview extends GolfBlock {
 			myTable.setRowVerticalAlignment(a, "middle");
 
 			if (a > 1 && a <= teeColor.length + 1) {
+				myTable.setRowStyleClass(a, getDarkRowClass());
 				String teeLitur = getTeeColor(teeColor[a - 2].getIntColumnValue("tee_color_id"));
 				myTable.setRowColor(a, teeLitur);
 			}
 
 			else if (a == 1) {
-				myTable.setRowColor(a, "65A86E");
+				myTable.setRowStyleClass(a, getHeaderRowClass());
 			}
 
 			else if (a > teeColor.length + 1) {
-				myTable.setRowColor(a, "8ab490");
+				if (a == myTable.getRows()) {
+					myTable.setRowStyleClass(a, getDarkRowClass());
+				}
+				else {
+					myTable.setRowStyleClass(a, getLightRowClass());
+				}
 			}
 		}
 
-		myTable.setColumnAlignment(1, "right");
-		myTable.setWidth("100%");
-		myTable.setCellpadding(2);
-		myTable.setCellspacing(1);
-		myTable.setColor("000000");
-		myTable.setWidth(1, "90");
+		myTable.setWidth(Table.HUNDRED_PERCENT);
+		myTable.setCellpadding(0);
+		myTable.setCellspacing(0);
 
 		return myTable;
 	}
 
 	public void fillContentTable(IWContext iwc,Field field, Table contentTable, Table myTable, String field_id) throws IOException, SQLException {
+		int row = 1;
 
-		Text fieldName = new Text(field.getName());
-		fieldName.setFontSize(4);
-		fieldName.setBold();
+		Table formTable = new Table(2, 1);
+		formTable.setAlignment(2, 1, "right");
+		formTable.setCellpaddingLeft(1, 1, 5);
+		formTable.setCellpaddingRight(2, 1, 5);
+		formTable.setWidth("100%");
+
+		formTable.add(getHoleChooser(field_id), 1, 1);
+
+		GenericButton handicapTables = new GenericButton("handicap_tables", getResourceBundle().getLocalizedString("field.handicap_tables", "Handicap tables"));
+		handicapTables.addParameterToPage("field_id", field_id);
+		handicapTables.setWindowToOpen(HandicapTable.class);
+		formTable.add(handicapTables, 2, 1);
+
+		if (gameHandicapPage != null) {
+		  GenericButton gameHandicaps = new GenericButton("game_handicap", getResourceBundle().getLocalizedString("field.game_handicap", "Game handicap"));
+			gameHandicaps.addParameterToPage("field_id", field_id);
+			gameHandicaps.setPageToOpen(gameHandicapPage);
+			formTable.add(Text.getNonBrakingSpace(), 2, 1);
+			formTable.add(gameHandicaps, 2, 1);
+		}
+		
+		contentTable.setHeight(row, 40);
+		contentTable.add(formTable, 1, row++);
+		contentTable.add(myTable, 1, row++);
 
 		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
-
 		if (fieldImage.length != 0) {
 			Image fieldMynd = new Image(fieldImage[0].getImageID());
-			fieldMynd.setVerticalSpacing(6);
 			fieldMynd.setHorizontalSpacing(6);
+			fieldMynd.setAlignment(Image.ALIGNMENT_LEFT);
+			if (iMaxImageWidth > 0) {
+				fieldMynd.setMaxImageWidth(iMaxImageWidth);
+			}
 
-			contentTable.add(fieldMynd, 1, 2);
+			contentTable.add(fieldMynd, 1, row);
 		}
 
 		TextReader fieldText = null;
@@ -288,48 +278,13 @@ public class FieldOverview extends GolfBlock {
 			fieldText.setCacheable(false);
 		}
 
-		contentTable.setCellpadding(0);
-		contentTable.setCellspacing(3);
-		contentTable.setAlignment(1, 2, "center");
-
-		int row = 3;
-		contentTable.add(fieldName, 1, 1);
-
 		if (fieldText != null) {
-			contentTable.add(fieldText, 1, 3);
-			contentTable.setCellpaddingLeft(1,3,"10%");
-			contentTable.setCellpaddingRight(1,3,"10%");
-			contentTable.setCellpaddingBottom(1,3,25);
-			contentTable.setCellpaddingTop(1,3,10);
-			row++;
+			contentTable.add(fieldText, 1, row);
 		}
-		contentTable.add(getHoleChooser(field_id), 1, row);
-		row++;
-		contentTable.add(myTable, 1, row);
-		row++;
-
-		GenericButton handicapTables = new GenericButton("handicap_tables", getResourceBundle().getLocalizedString("field.handicap_tables", "Handicap tables"));
-		handicapTables.addParameterToPage("field_id", field_id);
-		handicapTables.setWindowToOpen(HandicapTable.class);
-
-		Table formTable = new Table();
-		formTable.setAlignment(2, 1, "right");
-		formTable.setWidth("100%");
-
-		formTable.add(handicapTables, 1, 1);
-
-		if (gameHandicapPage != null) {
-		  GenericButton gameHandicaps = new GenericButton("game_handicap", getResourceBundle().getLocalizedString("field.game_handicap", "Game handicap"));
-			gameHandicaps.addParameterToPage("field_id", field_id);
-			gameHandicaps.setPageToOpen(gameHandicapPage);
-			formTable.add(gameHandicaps, 2, 1);
-		}
-		else {
-		  formTable.add("Game handicap page not set...");
-		}
-
-		contentTable.add(formTable, 1, row);
-
+		contentTable.setCellpaddingLeft(1,row,"10%");
+		contentTable.setCellpaddingRight(1,row,"10%");
+		contentTable.setCellpaddingBottom(1,3,25);
+		contentTable.setCellpaddingTop(1,3,10);
 	}
 
 	public Form getHoleChooser(String field_id) throws IOException {
@@ -517,4 +472,10 @@ public class FieldOverview extends GolfBlock {
   public void setGameHandicapPage(ICPage gameHandicapPage) {
     this.gameHandicapPage = gameHandicapPage;
   }
+	/**
+	 * @param maxImageWidth The iMaxImageWidth to set.
+	 */
+	public void setMaxImageWidth(int maxImageWidth) {
+		iMaxImageWidth = maxImageWidth;
+	}
 }
