@@ -54,15 +54,15 @@ public class QueryFieldPart implements QueryPart {
 	
 	
 	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String handlerClass , String handlerDescription, boolean hidden){
-		this.name = name;
-		this.entity = entity;
-		this.path = path;
-		this.columns = column;
-		this.function = function;
-		this.display = display;
-		this.typeClass = typeClass;
-		this.handlerClass = handlerClass;
-		this.handlerDescription = handlerDescription;
+		this.name = convertNullStringToRealNull(name);
+		this.entity = convertNullStringToRealNull(entity);
+		this.path = convertNullStringToRealNull(path);
+		this.columns = convertNullStringToRealNull(column);
+		this.function = convertNullStringToRealNull(function);
+		this.display = convertNullStringToRealNull(display);
+		this.typeClass = convertNullStringToRealNull(typeClass);
+		this.handlerClass = convertNullStringToRealNull(handlerClass);
+		this.handlerDescription = convertNullStringToRealNull(handlerDescription);
 		this.hidden = hidden;
 	}
 	
@@ -341,5 +341,9 @@ public class QueryFieldPart implements QueryPart {
 		return idoField;
 	}
 
-
+	private String convertNullStringToRealNull(String string)	{
+		return (string ==  null || string.equalsIgnoreCase("null")) ? null : string;
+	}
+		
+	
 }
