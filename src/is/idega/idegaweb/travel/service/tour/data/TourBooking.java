@@ -12,6 +12,7 @@ public interface TourBooking extends com.idega.data.IDOLegacyEntity,is.idega.ide
  public is.idega.idegaweb.travel.data.BookingEntry[] getBookingEntries()throws java.sql.SQLException;
  public int getBookingTypeID();
  public java.lang.String getCity();
+ public java.lang.String getComment();
  public java.lang.String getCountry();
  public java.sql.Timestamp getDateOfBooking();
  public java.lang.String getEmail();
@@ -34,6 +35,7 @@ public interface TourBooking extends com.idega.data.IDOLegacyEntity,is.idega.ide
  public void setBookingDate(java.sql.Timestamp p0);
  public void setBookingTypeID(int p0);
  public void setCity(java.lang.String p0);
+ public void setComment(java.lang.String p0);
  public void setCountry(java.lang.String p0);
  public void setDateOfBooking(java.sql.Timestamp p0);
  public void setEmail(java.lang.String p0);

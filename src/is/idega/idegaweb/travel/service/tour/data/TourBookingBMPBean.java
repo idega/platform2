@@ -25,8 +25,18 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
   }
 
   public TourBookingBMPBean(int id) throws SQLException {
+    /*
     super(id);
     _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(id);
+    System.err.println("==========================================");
+    System.err.println("id = "+id);
+    if (_booking == null) {
+      System.err.println("_booking == null");
+    }else {
+      System.err.println("_bookingId = "+_booking.getID());
+    }
+    System.err.println("==========================================");
+    */
   }
 
   public void initializeAttributes() {
@@ -36,6 +46,17 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
   }
   public String getEntityName() {
     return getTourBookingTableName();
+  }
+
+  public void ejbLoad(){
+    super.ejbLoad();
+    try{
+      GeneralBookingHome bookingHome = (GeneralBookingHome)IDOLookup.getHome(GeneralBooking.class);
+      _booking = bookingHome.findByPrimaryKey(this.getPrimaryKey());
+    }
+    catch(Exception e){
+      e.printStackTrace(System.err);
+    }
   }
 
   public Booking getBooking() throws SQLException{
@@ -227,4 +248,14 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
   public void setOwnerId(int ownerId) {
     _booking.setOwnerId(ownerId);
   }
+
+  public String getComment() {
+    return _booking.getComment();
+  }
+
+  public void setComment(String comment) {
+    _booking.setComment(comment);
+  }
+
+
 }
