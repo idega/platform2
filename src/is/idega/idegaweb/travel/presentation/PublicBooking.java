@@ -202,6 +202,7 @@ public class PublicBooking extends Block  {
       table.add(leftBottom(iwc),1,3);
       table.add(rightTop(iwc),2,2);
       table.add(rightBottom(iwc),2,3);
+      table.add(getTermsAndConditions(), 1, 4);
       Image image = bundle.getImage("verisignseals/verisign_logo.gif");
         image.setWidth(100);
         image.setHeight(42);
@@ -554,6 +555,34 @@ public class PublicBooking extends Block  {
 	}
 	return sendEmail;
 }
+  
+  
+  protected Table getTermsAndConditions() throws RemoteException {
+  	Link terms = new Link(getTextWhite(iwrb.getLocalizedString("travel.search.terms_and_conditions", "Terms and conditions")));
+  	terms.setWindowToOpen(TravelWindow.class, "700", "400", true, true);
+  	terms.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.terms_and_conditions");
+  	terms.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.terms_and_conditions_text");
+
+  	Link privacyStatement = new Link(getTextWhite(iwrb.getLocalizedString("travel.search.privacy_statement", "Privacy statement")));
+  	privacyStatement.setWindowToOpen(TravelWindow.class, "700", "400", true, true);
+  	privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY_FOR_HEADER, "travel.search.privacy_statement");
+  	privacyStatement.addParameter(TravelWindow.LOCALIZATION_KEY, "travel.search.privacy_statement_text");
+
+  	Table table = new Table(1, 1);
+  	table.setCellpaddingAndCellspacing(0);
+  	table.setWidth("100%");
+  	table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+  	table.add(terms, 1, 1);
+
+  	table.add(Text.NON_BREAKING_SPACE, 1, 1);
+  	table.add(getTextWhite("-"), 1, 1);
+  	table.add(Text.NON_BREAKING_SPACE, 1, 1);
+  	
+  	table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+  	table.add(privacyStatement, 1, 1);
+
+  	return table;
+  }  
 
 protected static String getLocaleDate(IWTimestamp stamp) {
     return  (new IWCalendar(stamp)).getLocaleDate();
