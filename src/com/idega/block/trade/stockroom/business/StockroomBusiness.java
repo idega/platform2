@@ -3,6 +3,11 @@ package com.idega.block.trade.stockroom.business;
 import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
+import com.idega.core.data.*;
+import com.idega.core.user.data.User;
+import com.idega.data.GenericEntity;
+import com.idega.block.login.business.LoginBusiness;
+import com.idega.jmodule.object.ModuleInfo;
 
 /**
  * Title:        IW Trade
@@ -50,6 +55,34 @@ public class StockroomBusiness implements SupplyManager {
     throw new java.lang.UnsupportedOperationException("Method createPriceCategory() not yet implemented.");
   }
 
+
+  public static int getUserSupplierId(User user) throws RuntimeException, SQLException{
+    com.idega.core.data.GenericGroup gGroup = new GenericGroup();
+    GenericGroup[] gr = gGroup.getAllGroupsContainingUser(user);
+    if(gr != null){
+      for (int i = 0; i < gr.length; i++) {
+        if(gr[i].getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
+          GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),gr[i].getID());
+          if(supp != null && supp.length > 0){
+            return supp[0].getID();
+          }
+        }
+      }
+    }
+    throw new RuntimeException("Does not belong to any supplier");
+  }
+
+  public static int getUserSupplierId(ModuleInfo modinfo) throws RuntimeException, SQLException {
+    String supplierLoginAttributeString = "sr_supplier_id";
+
+    Object obj = LoginBusiness.getLoginAttribute(supplierLoginAttributeString,modinfo);
+
+    if(obj != null){
+      return ((Integer)obj).intValue();
+    }else{
+      return getUserSupplierId(LoginBusiness.getUser(modinfo));
+    }
+  }
 
 
   public int createProduct(int supplierId, Integer fileId, String productName, String ProductDescription, boolean isValid) throws Exception{
