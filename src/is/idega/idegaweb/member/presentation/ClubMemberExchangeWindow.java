@@ -2,13 +2,13 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -47,6 +47,8 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	public static final String PARAMETER_TO_CLUB_DIVISION_ID = "iwme_club_ex_to_club_dv_id";
 	public static final String PARAMETER_INIT_DATE= "iwme_club_ex_init_date";
 	public static final String PARAMETER_TERM_DATE= "iwme_club_ex_term_date";
+	
+	private static final String HELP_TEXT_KEY = "club_member_exchange_window";
 	
 	
 	private String ACTION = "iwme_club_ex_act";
@@ -121,9 +123,9 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		Table table = new Table(3,5);
 		form.add(table);
 		table.mergeCells(1,1,3,1);
-		table.mergeCells(1,5,3,5);
+		table.mergeCells(2,5,3,5);
 		table.setWidthAndHeightToHundredPercent();
-		table.setAlignment(1,5,Table.HORIZONTAL_ALIGN_RIGHT);
+		table.setAlignment(2,5,Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		List groups = null;
 		try {
@@ -165,6 +167,8 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		termDate.setAsNotEmpty(iwrb.getLocalizedString("clubexchangewindow.must_set_term_date","You must select a termination date for the transfer."));
 		//termDate.setToCurrentDate();
 		
+		Help help = getHelp(HELP_TEXT_KEY,iwc);
+		
 		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("clubexchangewindow.close", "Close"));
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("clubexchangewindow.save", "Save"), ACTION, ACTION_SAVE);
 		save.setSubmitConfirm(iwrb.getLocalizedString("clubexchangewindow.confirm_message", "Are you sure you want to transfer the user at the given dates? An email message will be sent to all parties involved."));
@@ -182,8 +186,9 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		table.add(new Text(iwrb.getLocalizedString("clubexchangewindow.going_to","Going to : ")), 1,4 );
 		table.add(divisionTo,2,4);
 		table.add(initDate,3,4);
-		table.add(close,1,5);
-		table.add(save,1,5);
+		table.add(help,1,5);
+		table.add(close,2,5);
+		table.add(save,2,5);
 		
 		//changed from add(form) - birna
 		add(form, iwc);
