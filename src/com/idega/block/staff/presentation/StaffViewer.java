@@ -117,10 +117,14 @@ private List usersInNoGroup;
             Phone userPhone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
             Email userMail = UserBusiness.getUserMail(user.getID());
 
-            Link link = new Link(user.getName());
+            Text userText = new Text(user.getName());
+            Link link = new Link(userText);
             link.addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID,user.getID());
             link.setWindowToOpen(StaffPropertyWindow.class);
-            userTable.add(link,2,1);
+            if ( isAdmin )
+              userTable.add(link,2,1);
+            else
+              userTable.add(userText,2,1);
 
             Image userImage = iwb.getImage("/shared/default.jpg");
               userImage.setBorder(1);
@@ -248,14 +252,25 @@ private List usersInNoGroup;
   }
 
   private void getGroups() {
-    allGroups = UserGroupBusiness.getAllGroups();
-    if ( !isAdmin && allGroups != null ) {
-      allGroups.remove(AccessControl.getAdministratorGroup());
+    try {
+      allGroups = UserGroupBusiness.getAllGroups();
+      if ( !isAdmin && allGroups != null ) {
+        allGroups.remove(AccessControl.getAdministratorGroup());
+      }
+    }
+    catch (Exception e) {
+      System.out.println("AllGroups is null");
+      allGroups = null;
     }
   }
 
   private void getUsersInNoGroups() {
-    usersInNoGroup = UserBusiness.getUsersInNoGroup();
+    try {
+      usersInNoGroup = UserBusiness.getUsersInNoGroup();
+    }
+    catch (Exception e) {
+      allGroups = null;
+    }
   }
 
   private void deleteUser(ModuleInfo modinfo) throws SQLException {
@@ -275,4 +290,29 @@ private List usersInNoGroup;
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+  public Object clone() {
+    StaffViewer obj = null;
+    try {
+      obj = (StaffViewer)super.clone();
+
+      obj.row = this.row;
+      obj.groupRow = this.groupRow;
+
+      if (this.myTable != null) {
+        obj.myTable=(Table)this.myTable.clone();
+      }
+      if (this.staffTable != null) {
+        obj.staffTable=(Table)this.staffTable.clone();
+      }
+      if (this.groupsTable != null) {
+        obj.groupsTable=(Table)this.groupsTable.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
 }
