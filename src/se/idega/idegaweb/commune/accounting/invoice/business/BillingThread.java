@@ -132,10 +132,10 @@ public abstract class BillingThread extends Thread{
 		String paymentText = postingDetail.getTerm();
 		String ruleSpecType = postingDetail.getRuleSpecType();
 		float amount = postingDetail.getAmount();
-		float vatPercent = postingDetail.getVATPercent();
-		float vatPercentage = vatPercent/100;
+		//float vatPercent = postingDetail.getVATPercent();
+		//float vatPercentage = vatPercent/100;
 		float newTotalAmount = AccountingUtil.roundAmount(amount*months);
-		float newTotalVATAmount = AccountingUtil.roundAmount(amount*months*vatPercentage);
+		float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);
 		
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
@@ -191,11 +191,11 @@ public abstract class BillingThread extends Thread{
 				String ruleSpecType = RegSpecConstant.MOMS;
 				RegulationSpecType regSpecType;
 				String[] postingStrings=null;
-				float amount = postingDetail.getAmount();
-				float vatPercent = postingDetail.getVATPercent();
-				float vatPercentage = vatPercent/100;
+				//float amount = postingDetail.getAmount();
+				//float vatPercent = postingDetail.getVATPercent();
+				//float vatPercentage = vatPercent/100;
 				//float newTotalAmount = AccountingUtil.roundAmount(amount*months);
-				float newTotalVATAmount = AccountingUtil.roundAmount(amount*months*vatPercentage);				
+				float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);				
 				
 				try {
 					regSpecType = this.getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);

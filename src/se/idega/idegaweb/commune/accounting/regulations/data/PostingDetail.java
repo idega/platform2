@@ -16,6 +16,7 @@ public class PostingDetail {
 	private VATRegulation vatRegulation;
 	private String ruleSpecType;
 	private int orderID;
+	private float vatAmount=0;
 	
 	public PostingDetail(){
 	}
@@ -26,10 +27,12 @@ public class PostingDetail {
 			setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
 		}
 		setTerm(regularPaymentEntry.getPlacing());
-		setVATPercent(regularPaymentEntry.getVAT());
+		//setVATPercent(regularPaymentEntry.getVATAmount());
+		setVATAmount(regularPaymentEntry.getVATAmount());
 		int vatRuleRegulationId= regularPaymentEntry.getVatRuleRegulationId();
 		if(vatRuleRegulationId!=-1){
 			setVatRuleRegulationId(vatRuleRegulationId);
+			
 		}
 		setOrderID(999);
 	}
@@ -37,9 +40,10 @@ public class PostingDetail {
 	public PostingDetail(String t, float amount, float vatPercent, int vatRuleRegulationID, String rst){
 		term = t;
 		this.amount = amount;
-		vat = vatPercent;
+		setVATPercent(vatPercent);
 		this.vatRuleRegulationID = vatRuleRegulationID;
 		ruleSpecType = rst;
+		setVATAmount(getVATPercentage()*getAmount());
 	}
 	
 	public float getAmount() {
@@ -102,6 +106,18 @@ public class PostingDetail {
 	 */
 	public void setVATRegulation(VATRegulation vatRegulation) {
 		this.vatRegulation = vatRegulation;
+	}
+	
+	public float getVATPercentage(){
+		return getVATPercent()/100;
+	}
+	
+	public float getVATAmount(){
+		return vatAmount;
+	}
+	
+	public void setVATAmount(float VATAmount){
+		vatAmount=VATAmount;
 	}
 
 }

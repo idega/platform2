@@ -182,7 +182,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getVAT()
 	 */
-	public float getVAT() {
+	public float getVATAmount() {
 		return getFloatColumnValue(COLUMN_VAT);
 	}
 
@@ -333,7 +333,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setVAT(float)
 	 */
-	public void setVAT(float vat) {
+	public void setVATAmount(float vat) {
 		setColumn(COLUMN_VAT, vat);
 	}
 	

@@ -441,7 +441,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 			entry.setPlacing(iwc.getParameter(PAR_PLACING));
 			float vat = new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue();
-			entry.setVAT(vat);
+			entry.setVATAmount(vat);
 			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
 				entry.setSchoolId(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
 			}
@@ -863,7 +863,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 
-		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getVAT()), 1, row++);
+		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getVATAmount()), 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
@@ -1047,7 +1047,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				return _reg != null ? _reg.getAmount().floatValue() : getFloatValue(PAR_AMOUNT_PR_MONTH);
 			}
 		
-			public float getVAT() {
+			public float getVATAmount() {
 				if (_reg != null){
 					try{
 						VATBusiness vb = (VATBusiness) IBOLookup.getServiceInstance(_iwc, VATBusiness.class);
@@ -1166,7 +1166,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void setUser(User user) {}
 			public void setSchoolId(int schoolId) {}
 			public void setAmount(float amount) {}
-			public void setVAT(float vat) {}
+			public void setVATAmount(float vat) {}
 			public void setVatRuleRegulationId(int vatRuleId) {}
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
