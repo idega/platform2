@@ -2,7 +2,7 @@ package is.idega.idegaweb.travel.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.block.login.presentation.Login;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
@@ -42,6 +42,7 @@ public class LoginPage extends TravelManager {
   }
 
   protected static Login getLoginObject(IWContext iwc, IWResourceBundle iwrb) {
+
     Login login = new Login();
       login.setColor(GRAY);
       login.setLoginAlignment("center");
@@ -171,6 +172,10 @@ public class LoginPage extends TravelManager {
         innerTable.add(rightTextTable,3,2);
         innerTable.setColor(3,2,GRAY);
 
+    Link currCh = new Link("currencyChanger");
+      currCh.setWindowToOpen(TravelCurrencyCalculatorWindow.class);
+
+      bigTable.add(currCh);
     return bigTable;
   }
 
