@@ -3,16 +3,6 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
-
-import java.io.File;
-import java.io.FileInputStream;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import com.idega.presentation.IWContext;
 
 /**

@@ -9,6 +9,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -18,11 +19,11 @@ import com.idega.core.data.Address;
 import com.idega.data.IDOException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.Group;
 
 
 /**
@@ -63,15 +64,16 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			int row = 1;
 			int column = 1;
 			
-			table.add("Name", column++, row);
-			table.add("Personal ID", column++, row);
-			table.add("Address", column++, row);
-			table.add("Zip code", column++, row);
+			
+			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_name","Name"),true,false,false) , column++, row);
+			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_personal_id","Personal ID"),true,false,false), column++, row);
+			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_address","Address"),true,false,false), column++, row);
+			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_postal_code","Postal code"),true,false,false), column++, row);
 			
 			Iterator leagueIter = leagues.iterator();
 			while (leagueIter.hasNext()) {
 				WorkReportGroup group = (WorkReportGroup) leagueIter.next();
-				table.add(group.getName(), column++, row);
+				table.add(new Text(group.getName(),true,false,false), column++, row);
 			}
 			row++;
 			
@@ -83,20 +85,29 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 				table.add(user.getName(), column++, row);
 				table.add(user.getPersonalId(), column++, row);
 
-				Address address = getWorkReportBusiness(iwc).getUsersMainAddress(user.getUserId());
-				if (address != null) {
-					table.add(address.getStreetAddress(), column++, row);
-					table.add(address.getPostalAddress(), column++, row);
+				if(user.getStreetName()!=null ){
+					table.add(user.getStreetName(), column++, row);
+				
+					if(user.getPostalCodeID()!=-1){
+						try {
+							table.add(user.getPostalCode().getPostalCode(), column, row);
+						}
+						catch (SQLException e) {
+						//do nothing
+						}
+					}
+					column++;
 				}
-				else
+				else{
 					column = column + 2;
-					
+				}
+				
 				Collection memberLeagues = null;
 				try {
 					memberLeagues = user.getLeaguesForMember();
 				}
 				catch (IDOException ie) {
-					memberLeagues = null;
+					ie.printStackTrace();
 				}
 				
 				Iterator iterator = leagues.iterator();
@@ -113,9 +124,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			
 			column = 1;
 			TextInput ssn = new TextInput("ssn");
-			ssn.setAsIcelandicSSNumber("Stupid git, not a valid social security number!");
+			ssn.setAsIcelandicSSNumber(iwrb.getLocalizedString("WorkReportMemberEditor.ssn_not_valid","The personal id you entered is invalid"));
 			
-			table.add("Add new member", column++, row);
+			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.add_member","Enter personal id"),true,false,false), column++, row);
 			table.add(ssn, column++, row);
 			column += 2;
 			

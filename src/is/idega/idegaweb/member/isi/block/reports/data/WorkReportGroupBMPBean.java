@@ -4,10 +4,14 @@
 package is.idega.idegaweb.member.isi.block.reports.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupType;
 
@@ -165,6 +169,57 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	
 	public void addMember(WorkReportClubMember member) throws IDOAddRelationshipException{
 		this.idoAddTo(member);
+	}
+	
+	public Integer ejbFindWorkReportGroupByGroupIdAndYear(int groupId, int year) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.append(COLUMN_NAME_GROUP_ID).appendEqualSign().append(groupId)
+		.appendAndEquals(COLUMN_NAME_GROUP_YEAR,year);
+	
+		return (Integer) idoFindOnePKByQuery(sql);
+		
+	}
+	
+	public Integer ejbFindWorkReportGroupByShortNameAndYear(String shortName, int year) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.appendEqualsQuoted(COLUMN_NAME_GROUP_SHORT_NAME,shortName)
+		.appendAndEquals(COLUMN_NAME_GROUP_YEAR,year);
+	
+		return (Integer) idoFindOnePKByQuery(sql);
+		
+	}
+	
+	public Integer ejbFindWorkReportGroupByNameAndYear(String name, int year) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.appendEqualsQuoted(COLUMN_NAME_GROUP_NAME,name)
+		.appendAndEquals(COLUMN_NAME_GROUP_YEAR,year);
+	
+		return (Integer) idoFindOnePKByQuery(sql);
+		
+	}
+	
+	public Collection ejbFindAllWorkReportGroupsByYear(int year) throws FinderException{
+		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_GROUP_YEAR,year);
+	}
+	
+	public Collection ejbFindAllWorkReportGroupsByGroupTypeAndYear(String groupType, int year) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, groupType)
+		.appendAndEquals(COLUMN_NAME_GROUP_YEAR,year);
+	
+		return idoFindIDsBySQL(sql.toString());
 	}
 	
 }
