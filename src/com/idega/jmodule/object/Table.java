@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.17 2001/09/09 21:51:57 gummi Exp $
+ * $Id: Table.java,v 1.18 2001/09/10 10:52:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,8 @@ public class Table extends ModuleObjectContainer {
   private static final String IW_BUNDLE_IDENTIFIER="com.idega.core";
 
   private ModuleObjectContainer theObjects[][];
+  private Boolean _lockedRegions[][];
+
   private int cols = 0;
   private int rows = 0;
 
@@ -57,6 +59,7 @@ public class Table extends ModuleObjectContainer {
     super();
     isResizable = false;
     theObjects = new ModuleObjectContainer[cols][rows];
+    _lockedRegions = new Boolean[cols][rows];
     this.cols = cols;
     this.rows = rows;
     setBorder("0");
@@ -1215,5 +1218,20 @@ public boolean isEmpty(int x, int y){
       transparentcell = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getImage("transparentcell.gif");
     }
     return transparentcell;
+  }
+
+  public void lock(int xpos, int ypos) {
+    _lockedRegions[xpos-1][ypos-1] = new Boolean(true);
+  }
+
+  public void unlock(int xpos, int ypos) {
+    _lockedRegions[xpos-1][ypos-1] = new Boolean(false);
+  }
+
+  public boolean isLocked(int xpos, int ypos) {
+    if (_lockedRegions[xpos-1][ypos-1] == null)
+      return(false);
+    else
+      return(_lockedRegions[xpos-1][ypos-1].booleanValue());
   }
 }

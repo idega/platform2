@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.11 2001/09/09 21:51:57 gummi Exp $
+ * $Id: ModuleObjectContainer.java,v 1.12 2001/09/10 10:52:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import java.io.*;
 public class ModuleObjectContainer extends ModuleObject {
   protected Vector theObjects;
   protected boolean goneThroughMain = false;
+  protected boolean _locked = false;
 
   public ModuleObjectContainer() {
   }
@@ -486,5 +487,24 @@ public class ModuleObjectContainer extends ModuleObject {
     return theObjects.set(index,o);
   }
 
+  /**
+   *
+   */
+  public void lock() {
+    _locked = true;
+  }
 
+  /**
+   *
+   */
+  public void unlock() {
+    _locked = false;
+  }
+
+  /**
+   *
+   */
+  public boolean isLocked() {
+    return(_locked);
+  }
 }
