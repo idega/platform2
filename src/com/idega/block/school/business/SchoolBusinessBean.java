@@ -93,11 +93,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	private static SchoolCategory iSchoolCategoryMusicSchool;
 
 	public final static String PROPERTY_NAME_REJECT_STUDENT_MESSAGE = "reject_student_message";
-	public final static String PROPERTY_NAME_GROUP_OFFER_SUBJECT = "group_offer_headline";
-	public final static String PROPERTY_NAME_GROUP_OFFER_BODY = "group_offer_body";
-	public final static String PROPERTY_NAME_GROUP_CONFIRM_SUBJECT = "group_confirm_headline";
-	public final static String PROPERTY_NAME_GROUP_CONFIRM_BODY = "group_confirm_body";
-
+	public final static String PROPERTY_NAME_GROUP_OFFER_MESSAGE = "group_offer_body";
+	public final static String PROPERTY_NAME_GROUP_CONFIRM_MESSAGE = "group_confirm_body";
+	
 	public SchoolDepartmentHome getSchoolDepartmentHome() throws RemoteException {
 		return (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
 	}
