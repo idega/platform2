@@ -14,6 +14,12 @@ import com.idega.core.accesscontrol.business.AccessControl;
  */
 
 public class idegaForum extends JModuleObject{
+  private String MenuColor = "#4D6476";
+  private String ItemColor= "#C5C5C5";
+  private String MenuFontColor= "#FFFFFF";
+  private String ItemFontColor= "#000000";
+  private int fontSize = 2;
+  private int headerFontSize = 2;
 
 //  protected ModuleObject SomeThreads;
 //  protected Variables myVariables;
@@ -97,22 +103,58 @@ public class idegaForum extends JModuleObject{
 
   public void main(ModuleInfo modinfo) throws Exception {
     this.empty();
-    if (modinfo.getSessionAttribute("idegaForums") == null){
-      Forums theForums = new Forums();
-      theForums.setUseForums(true);
-      theForums.setUseUserRegistration(false);
-      theForums.setUseLogin(false);
-      theForums.setUseNameField(true);
-      modinfo.setSessionAttribute("idegaForums" , theForums );
-    }
 
     Forums myForums = (Forums)modinfo.getSessionAttribute("idegaForums");
 
+    if (myForums == null){
+      myForums = new Forums();
+      myForums.setUseForums(true);
+      myForums.setUseUserRegistration(false);
+      myForums.setUseLogin(false);
+      myForums.setUseNameField(true);
+
+      myForums.setMenuColor(MenuColor);
+      myForums.setItemColor(ItemColor);
+      myForums.setItemMenuColor(MenuFontColor);
+      myForums.setItemFontColor(ItemFontColor);
+      myForums.setMainFontSize(fontSize);
+      myForums.setHeaderFontSize(headerFontSize);
+
+      modinfo.setSessionAttribute("idegaForums" , myForums );
+    }
     //myForums.setAllowedToDeleteThread(this.hasPermission(AccessControl.getDeletePermissionString(),this,modinfo));
     //myForums.setConnectionAttributes("union_id", 1);
     add(myForums);
 
   }
+
+
+
+  public void setMenuColor(String MenuColor){
+    this.MenuColor = MenuColor;
+  }
+
+  public void setItemColor(String ItemColor){
+    this.ItemColor = ItemColor;
+  }
+  public void setItemMenuColor(String MenuFontColor){
+    this.MenuFontColor = MenuFontColor;
+  }
+
+  public void setItemFontColor (String ItemFontColor){
+    this.ItemFontColor = ItemFontColor;
+  }
+
+  public void setMainFontSize(int i){
+    this.fontSize = i;
+  }
+
+  public void setHeaderFontSize(int i){
+    this.headerFontSize = i;
+  }
+
+
+
 
 } // Class idegaForum
 
