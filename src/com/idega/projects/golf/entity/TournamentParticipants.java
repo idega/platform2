@@ -26,12 +26,13 @@ public class TournamentParticipants extends GolfEntity{
 		addAttribute("tournament_group_id","Mótahópur",true,true,"java.lang.Integer");
 		addAttribute("scorecard_id","Skorkort",true,true,"java.lang.Integer");
 		addAttribute("scorecard_date", "Dagsetning", true, true, "java.sql.Timestamp");
-		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
 		addAttribute("tournament_round_id","Mótahringur",true,true,"java.lang.Integer");
 		addAttribute("round_number","Númer hrings",true,true,"java.lang.Integer");
 		addAttribute("holes_played","Fjöldi hola",true,true,"java.lang.Integer");
-		addAttribute("strokes","Högg",true, true , "java.lang.Integer");
-		addAttribute("par","Par vallarins",true, true , "java.lang.Integer");
+		addAttribute("strokes_without_handicap","Högg án forgjafar",true, true , "java.lang.Integer");
+		addAttribute("strokes_with_handicap","Högg með forgjöf",true, true , "java.lang.Integer");
+		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
+		addAttribute("total_par","Par vallarins",true, true , "java.lang.Integer");
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 	}
 
@@ -94,10 +95,6 @@ public class TournamentParticipants extends GolfEntity{
 		return (java.sql.Timestamp) getColumnValue("scorecard_date");
 	}
 
-	public int getTotalPoints(){
-		return getIntColumnValue("total_points");
-	}
-
 	public int getTournamentRoundID(){
 		return getIntColumnValue("tournament_round_id");
 	}
@@ -110,12 +107,20 @@ public class TournamentParticipants extends GolfEntity{
 		return getIntColumnValue("holes_played");
 	}
 
-	public int getStrokes(){
-		return getIntColumnValue("strokes");
+	public int getStrokesWithoutHandicap(){
+		return getIntColumnValue("strokes_without_handicap");
 	}
 
-	public int getPar(){
-		return getIntColumnValue("par");
+	public int getStrokesWithHandicap(){
+		return getIntColumnValue("strokes_with_handicap");
+	}
+
+	public int getTotalPoints(){
+		return getIntColumnValue("total_points");
+	}
+
+	public int getTotalPar(){
+		return getIntColumnValue("total_par");
 	}
 
 	public int getDifference(){

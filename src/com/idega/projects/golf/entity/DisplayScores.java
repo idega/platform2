@@ -24,9 +24,10 @@ public class DisplayScores extends GolfEntity{
 		addAttribute("abbrevation", "Skammstöfun", true, true, "java.lang.String");
 		addAttribute("tournament_id","Mót",true,true,"java.lang.Integer");
 		addAttribute("tournament_group_id","Mótahópur",true,true,"java.lang.Integer");
-		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
 		addAttribute("holes_played","Spilaðar holur",true, true , "java.lang.Integer");
-		addAttribute("total_strokes","Heildar högg",true, true , "java.lang.Integer");
+		addAttribute("strokes_without_handicap","Heildar högg án forgjafar",true, true , "java.lang.Integer");
+		addAttribute("strokes_with_handicap","Heildar högg með forgjöf",true, true , "java.lang.Integer");
+		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
 		addAttribute("difference","par",true,true, "java.lang.Integer");
 	}
 
@@ -81,16 +82,20 @@ public class DisplayScores extends GolfEntity{
 		return getIntColumnValue("tournament_group_id");
 	}
 
-	public int getTotalPoints(){
-		return getIntColumnValue("total_points");
-	}
-
 	public int getHolesPlayed(){
 		return getIntColumnValue("holes_played");
 	}
 
-	public int getTotalStrokes(){
-		return getIntColumnValue("total_strokes");
+	public int getStrokesWithoutHandicap(){
+		return getIntColumnValue("strokes_without_handicap");
+	}
+
+	public int getStrokesWithHandicap(){
+		return getIntColumnValue("strokes_with_handicap");
+	}
+
+	public int getTotalPoints(){
+		return getIntColumnValue("total_points");
 	}
 
 	public int getDifference(){
