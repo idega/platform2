@@ -66,11 +66,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/21 10:47:17 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/21 16:05:55 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -114,7 +114,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			tagFont.setSize(12);
 			Font textFont = new Font(Font.HELVETICA);
 			textFont.setSize(9);
-			
+			com.idega.util.Timer timer = new com.idega.util.Timer();
+			timer.start();
 			School school;
 			if (schools != null && !schools.isEmpty()) {
 				MessageBusiness mBusiness = (MessageBusiness) IBOLookup.getServiceInstance(iwc, MessageBusiness.class); 
@@ -186,6 +187,10 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 						filesSentByEmail.put (school.getName (), new Integer (-1));					
 					}
 					file.delete();
+					log ("# Check amount lists: " + filesSentByEmail.size () + ", " +
+							 filesSentByPapermail.size () + ", "
+							 + noMailSentSinceNoPaymentRecords.size () + " ("
+							 + (timer.getTime () / 1000) + ")");
 				}
 			}
 			
