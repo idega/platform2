@@ -25,7 +25,6 @@ import com.idega.presentation.awt.SingleLineItem;
  */
 
 public class MessengerApplet extends Applet implements Runnable{
-  public boolean isStandalone = false;
   private boolean runThread = true;
   private boolean isfirstRun = true;
   private static String FRAME_NAME= "IdegaWeb Messenger";
@@ -62,8 +61,7 @@ public class MessengerApplet extends Applet implements Runnable{
 
   /**Get a parameter value*/
   public String getParameter(String key, String def) {
-    return isStandalone ? System.getProperty(key, def) :
-      (getParameter(key) != null ? getParameter(key) : def);
+    return (getParameter(key) != null ? getParameter(key) : def);
   }
 
   /**Construct the applet*/
@@ -81,7 +79,7 @@ public class MessengerApplet extends Applet implements Runnable{
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
 
-      ImageLabel lb = null;
+    ImageLabel lb = null;
     try {
       lb = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
     }
@@ -91,15 +89,15 @@ public class MessengerApplet extends Applet implements Runnable{
 
 
 
-      SingleLineItem test = new SingleLineItem(this);
       Message msg = new Message("RAAAAAAAAPPERS",sessionId,sessionId,"Eiki");
       msg.setRecipientName("TEST");
-
 
       MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       listener.addMessageDialog(dialog);
+
+      SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
@@ -252,14 +250,11 @@ public class MessengerApplet extends Applet implements Runnable{
         packetToServlet = new Packet();
         packetToServlet.addProperty(new Property(sessionId,userId));
         packetToServlet.setSender(sessionId);
-        Message msg = new Message("TEST FROM MYSELF!",sessionId,sessionId);
-        packetToServlet.addMessage(msg);
         isfirstRun = false;
       }
 
       if( packetToServlet != null ){
         outputToServlet = new ObjectOutputStream(conn.getOutputStream());
-
         // serialize the object
         outputToServlet.writeObject(packetToServlet);
 
