@@ -45,7 +45,7 @@ import javax.transaction.UserTransaction;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
-	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId, String subject, String message) {
+	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -55,7 +55,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
 			
 			IWTimestamp now = new IWTimestamp();
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < provider.length; i++) {
 				appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).create();
 				if (user != null)
 					appl.setOwner(user);
@@ -68,7 +68,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setChoiceNumber(i+1);
 				appl.setCheckId(checkId);
 				if (i == 0) {
-					caseBiz.changeCaseStatus(appl,getCaseStatusOpen().getStatus(),user);
+					if (freetimeApplication)
+						caseBiz.changeCaseStatus(appl,getCaseStatusInactive().getStatus(),user);
+					else
+						caseBiz.changeCaseStatus(appl,getCaseStatusOpen().getStatus(),user);
 				}
 				else {
 					appl.setParentCase(parent);					
@@ -82,12 +85,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			 * @todo Bæta við að breyta stöðu á tékkanum sem var notaður
 			 */
 			
-			CheckBusiness checkBiz = (CheckBusiness)getServiceInstance(CheckBusiness.class);
-			Check check = checkBiz.getCheck(checkId);
-//			check.setStatus(this.getcases)
-//			check.store();
-
-			sendMessageToProvider(new Integer(provider[0]),subject,message);
+			if (!freetimeApplication) {
+				CheckBusiness checkBiz = (CheckBusiness)getServiceInstance(CheckBusiness.class);
+				Check check = checkBiz.getCheck(checkId);
+	//			check.setStatus(this.getcases)
+	//			check.store();
+	
+				sendMessageToProvider(new Integer(provider[0]),subject,message);
+			}
 			
 			t.commit();
 		}
