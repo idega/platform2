@@ -33,6 +33,7 @@ public class PrintStatusWindow extends Window {
 		this.add(new PrintStatus());
 		this.setMenubar(true);
 	    this.setResizable(true);
+	    this.setScrollbar(true);
 	}
 
 }
