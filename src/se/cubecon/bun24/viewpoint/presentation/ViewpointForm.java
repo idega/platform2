@@ -189,17 +189,17 @@ public class ViewpointForm extends CommuneBlock {
 		table.setColor (getBackgroundColor());
         table.add (getLocalizedHeader (APPLIES_KEY, APPLIES_DEFAULT), 1,
                    row);
-		table.add(new Break(), 1, row);
+		table.add (new Break(), 1, row);
         table.add (new Text (viewpoint.getCategory ()), 1, row++);
         table.add (getLocalizedHeader (FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT),
                    1, row);
-		table.add(new Break(), 1, row);
+		table.add (new Break(), 1, row);
         table.add (new Text (user.getName ()), 1, row++);
         table.add (getLocalizedHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
+		table.add (new Break(), 1, row);
         table.add (new Text (viewpoint.getSubject ()), 1, row++);
         table.add (getLocalizedHeader (MESSAGE_KEY, MESSAGE_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
+		table.add (new Break(), 1, row);
         table.add (new Text (viewpoint.getMessage ()), 1, row++);
 		table.add (submit, 1, row++);
 		form.add (table);
