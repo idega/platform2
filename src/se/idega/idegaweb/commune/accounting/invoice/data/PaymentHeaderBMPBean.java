@@ -127,6 +127,14 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	}
 
 	public Integer ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus(School school, SchoolCategory schoolCategory, TimePeriod period, String status) throws FinderException {
+		return (Integer) idoFindOnePKByQuery(findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(school, schoolCategory, period, status));
+	}
+	
+	public Collection ejbFindAllBySchoolCategoryAndSchoolAndPeriodAndStatus(School school, SchoolCategory schoolCategory, TimePeriod period, String status) throws FinderException {
+		return idoFindPKsByQuery(findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(school, schoolCategory, period, status));
+	}	
+	
+	private IDOQuery findBySchoolCategoryAndSchoolAndPeriodAndStatusSQL(School school, SchoolCategory schoolCategory, TimePeriod period, String status) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom (this);
 		sql.appendWhereEquals (COLUMN_SCHOOL_ID, school);
@@ -136,7 +144,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendAnd ();
 		sql.appendWithinDates(COLUMN_PERIOD, period.getFirstTimestamp().getDate (),
 													period.getLastTimestamp ().getDate ());
-		return (Integer) idoFindOnePKByQuery(sql);
+		return sql;		
 	}
 
 	/**

@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
@@ -19,6 +21,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
@@ -77,6 +80,14 @@ public class TestPosts extends InvoiceBatchStarter {
 		if(isBatchAlreadyRun()){
 			add(getLocalizedText("se.idega.idegaweb.commune.accounting.invoice.presentation.testposts.already_run", "Batch already run"));	
 		}else{
+			try{
+				InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(getIWContext(), InvoiceBusiness.class);
+				invoiceBusiness.removeTestRecordsForProvider(new CalendarMonth(getParamMonth()), schoolCategory, getSelectedSchool());
+			}catch(IBOLookupException ex){
+				ex.printStackTrace();
+			}catch(RemoveException ex){
+				ex.printStackTrace();
+			}		
 			super.handleSave(iwc, schoolCategory); //This call will result addBatchRunToQueue( ) being called
 		}
 	}
@@ -103,7 +114,7 @@ public class TestPosts extends InvoiceBatchStarter {
 			try {
 				home.findBySchoolCategoryAndSchoolAndPeriodAndStatus(getSelectedSchool(), getCurrentSchoolCategory(iwc), new CalendarMonth (getParamMonth()), "U");
 			} catch (FinderException e2) {
-				batchRun = false;	
+				batchRun = false;	//no P or U statuses found
 			}
 		}		
 

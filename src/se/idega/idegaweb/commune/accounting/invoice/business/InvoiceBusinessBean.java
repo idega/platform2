@@ -82,11 +82,11 @@ import com.idega.util.IWTimestamp;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/30 17:14:08 $ by $Author: joakim $
+ * Last modified: $Date: 2004/04/07 16:54:48 $ by $Author: roar $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.126 $
+ * @version $Revision: 1.127 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -189,6 +189,43 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
+	/**
+	 * 
+	 * @param month
+	 * @param category
+	 */
+	public void removeTestRecordsForProvider(CalendarMonth month, String category, School school) throws RemoveException {
+		PaymentRecord paymentRecord;
+		Iterator headerIter;
+		PaymentHeader paymentHeader;	
+		
+		try {
+			SchoolCategory schoolCategory =
+				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
+			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month,category) == 0){ //should not be nessassary, but for the security reasons...
+				headerIter = getPaymentHeaderHome().findAllBySchoolCategoryAndSchoolAndPeriodAndStatus(school, schoolCategory, month, "" +  ConstantStatus.TEST).iterator();
+				while (headerIter.hasNext()) {
+					paymentHeader = (PaymentHeader) headerIter.next();
+					Iterator recordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
+					while(recordIter.hasNext()){
+						paymentRecord = (PaymentRecord) recordIter.next();
+						Iterator detailRecordIter = getInvoiceRecordHome().findByPaymentRecord(paymentRecord).iterator();
+						while (detailRecordIter.hasNext()){
+							((InvoiceRecord) detailRecordIter.next()).remove();
+						}
+						paymentRecord.remove();
+					}					
+					paymentHeader.remove();
+				}
+			}else{
+				throw new RemoveException("invoice.not_allowed_remove_locked_or_history_records");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RemoveException("invoice.Could not remove the records.");
+		}
+	}
+		
 	/**
 	 * removes all the invoice records and header and the related information in 
 	 * the payment records for the given month where the status was set to preliminary
