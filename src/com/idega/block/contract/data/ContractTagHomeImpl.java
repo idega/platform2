@@ -38,6 +38,14 @@ public class ContractTagHomeImpl extends com.idega.data.IDOFactory implements Co
 	}
 
  }
+ 
+ public java.util.Collection findAllByCategory(int p0) throws javax.ejb.FinderException{
+	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	 java.util.Collection ids = ((ContractTagBMPBean)entity).ejbFindAllByCategory(p0);
+	 this.idoCheckInPooledEntity(entity);
+	 return this.getEntityCollectionForPrimaryKeys(ids);
+ }
+ 
 
 
 }

@@ -8,5 +8,6 @@ public interface ContractTagHome extends com.idega.data.IDOHome
  public ContractTag findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public ContractTag findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public ContractTag findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+ public java.util.Collection findAllByCategory(int p0) throws javax.ejb.FinderException;
 
 }
