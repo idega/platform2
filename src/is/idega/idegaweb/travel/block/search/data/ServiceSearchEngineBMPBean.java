@@ -31,6 +31,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	private static String MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE = "sr_supplier_service_engine";
 	private static String MIDDLE_TABLE_COUNTRY_SEARCH_ENGINE = "tb_service_engine_country";
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
+	private static String COLUMN_PAGE_URL = "PAGE_URL";
 	
 	public String getEntityName() {
 		return TABLE_NAME;
@@ -41,16 +42,16 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		addAttribute(COLUMN_NAME, "name", String.class, 200);
 		addAttribute(COLUMN_BOOKING_CODE, "code", String.class, 200);
 		addAttribute(COLUMN_IS_VALID, "is valid", Boolean.class);
-//		addAttribute(COLUMN_GROUP_ID, "staff group Id");
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
 
+		addAttribute(COLUMN_PAGE_URL, "url", true, true, String.class, 100);
+		
 		this.setUnique(COLUMN_NAME, true);
 		this.setNullable(COLUMN_NAME, false);
 		this.setUnique(COLUMN_BOOKING_CODE, true);
 		this.setNullable(COLUMN_BOOKING_CODE, false);
 		this.addManyToManyRelationShip(Supplier.class, MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE);
-
 		this.addManyToManyRelationShip(Country.class, MIDDLE_TABLE_COUNTRY_SEARCH_ENGINE);
 	}
 	
@@ -114,6 +115,14 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		setColumn(COLUMN_SUPPLIER_MANAGER_ID, pk);
 	}
 	
+	public void setURL(String URL) {
+		setColumn(COLUMN_PAGE_URL, URL);
+	}
+	
+	public String getURL() {
+		return getStringColumnValue(COLUMN_PAGE_URL);
+	}
+	
 	public Object ejbFindByName(String name) throws FinderException {
 		return this.idoFindOnePKByColumnBySQL(COLUMN_NAME, name);
 	}
@@ -123,12 +132,12 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	}
 	
 	public Collection ejbFindAll() throws FinderException {
-		try {
-			throw new Exception("ERRRROR : ServiceSearchEngine : Using a wrong method : findAll()    !!!!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return this.idoFindAllIDsByColumnOrderedBySQL(COLUMN_IS_VALID, "'Y'", COLUMN_NAME);
+//		try {
+//			throw new Exception("ERRRROR : ServiceSearchEngine : Using a wrong method : findAll()    !!!!");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		return this.idoFindAllIDsByColumnOrderedBySQL(COLUMN_IS_VALID, "Y", COLUMN_NAME);
 	}
 		
 	public Collection ejbFindAll(Group supplierManager) throws FinderException {

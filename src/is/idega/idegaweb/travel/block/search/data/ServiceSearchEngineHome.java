@@ -1,9 +1,7 @@
 package is.idega.idegaweb.travel.block.search.data;
 
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOHome;
 import com.idega.user.data.Group;
 

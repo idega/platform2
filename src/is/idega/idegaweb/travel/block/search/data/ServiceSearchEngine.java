@@ -1,7 +1,6 @@
 package is.idega.idegaweb.travel.block.search.data;
 
 import java.util.Collection;
-
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
@@ -86,7 +85,17 @@ public interface ServiceSearchEngine extends IDOEntity {
 	public void setSupplierManagerPK(Object pk);
 
 	/**
-	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getCountry
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#setURL
+	 */
+	public void setURL(String URL);
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getURL
+	 */
+	public String getURL();
+
+	/**
+	 * @see is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineBMPBean#getCountries
 	 */
 	public Collection getCountries() throws IDORelationshipException;
 
