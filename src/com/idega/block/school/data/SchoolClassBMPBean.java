@@ -4,10 +4,13 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
 
@@ -95,11 +98,17 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public int getSchoolSeasonId(){
     return this.getIntColumnValue(SEASON);
   }
+	public SchoolSeason getSchoolSeason(){
+		return (SchoolSeason) this.getColumnValue(SEASON);
+	}
   public void setTeacherId(int id){
     this.setColumn(TEACHER,id);
   }
   public int getTeacherId(){
     return this.getIntColumnValue(TEACHER);
+  }
+  public User getTeacher() {
+  	return (User) this.getColumnValue(TEACHER);
   }
   public void setSchoolClassName(String name){
     this.setColumn(NAME,name);
@@ -185,7 +194,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public Collection ejbFindBySchoolAndInYear(int schoolID, int schoolYearID)throws FinderException ,RemoteException{
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + "sy");
+		query.appendSelect().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
 		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
 		query.appendAndEquals("y.sch_school_year_id", schoolYearID);
 		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
@@ -202,7 +211,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   
 	public Collection ejbFindBySchoolAndSeasonAndInYear(int schoolID, int schoolSeasonID, int schoolYearID)throws FinderException ,RemoteException{
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + "sy");
+		query.appendSelect().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
 		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
 		query.appendAndEquals("y.sch_school_year_id", schoolYearID).appendAndEquals(SEASON, schoolSeasonID);
 		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
@@ -276,4 +285,44 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 		return super.idoGetNumberOfRecords(sql.toString());
   }
+
+	public Collection findRelatedUsers() throws com.idega.data.IDORelationshipException {
+		return super.idoGetRelatedEntities(User.class);
+	}
+
+	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException {
+		return super.idoGetRelatedEntities(SchoolYear.class);
+	}
+	
+	public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException {
+		super.idoAddTo(year);
+	}
+	
+	public void removeSchoolYear(SchoolYear year) throws IDORemoveRelationshipException {
+		super.idoRemoveFrom(year);
+	}
+
+	public void addTeacher(User teacher) throws IDOAddRelationshipException {
+		super.idoAddTo(teacher);
+	}
+	
+	public void removeTeacher(User teacher) throws IDORemoveRelationshipException {
+		super.idoRemoveFrom(teacher);
+	}
+	
+	/* (non-Javadoc)
+	 * @see javax.ejb.EJBLocalObject#remove()
+	 */
+	public void remove() throws RemoveException {
+		setValid(false);
+		super.store();
+	}
+	
+	public void removeFromSchoolYear() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(SchoolYear.class);
+	}
+
+	public void removeFromUser() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(User.class);
+	}
 }

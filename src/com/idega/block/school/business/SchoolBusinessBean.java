@@ -1,10 +1,11 @@
 package com.idega.block.school.business;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -14,9 +15,6 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.UserTransaction;
 
-
-import com.idega.core.location.data.Commune;
-import com.idega.core.location.data.CommuneHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
@@ -26,13 +24,13 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
-import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
@@ -46,6 +44,9 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -88,8 +89,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
 	}
 
-	public SchoolClassHome getSchoolClassHome() throws RemoteException {
-		return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
+	public SchoolClassHome getSchoolClassHome() {
+		try {
+			return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
 	public SchoolAreaHome getSchoolAreaHome() throws RemoteException {
@@ -1000,8 +1006,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newYear.store();
 	}
 
-	public SchoolYearHome getSchoolYearHome() throws java.rmi.RemoteException {
-		return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+	public SchoolYearHome getSchoolYearHome() {
+		try {
+			return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
 	public SchoolType getSchoolType(Object primaryKey) {
@@ -1410,21 +1421,45 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public Collection findSchoolClassesBySchoolAndYear(int schoolID, int schoolYearID) throws RemoteException {
+		Collection classes = null;
+		Collection inYearClasses = null;
 		try {
-			return getSchoolClassHome().findBySchoolAndYear(schoolID, schoolYearID);
+			classes = new HashSet(getSchoolClassHome().findBySchoolAndYear(schoolID, schoolYearID));
 		}
 		catch (FinderException fe) {
-			return new Vector();
+			fe.printStackTrace();
+			classes = new HashSet();
 		}
+		try {
+			inYearClasses = new HashSet(getSchoolClassHome().findBySchoolAndInYear(schoolID, schoolYearID));
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			inYearClasses = new HashSet();
+		}
+		classes.addAll(inYearClasses);
+		return classes;
 	}
 
 	public Collection findSchoolClassesBySchoolAndSeasonAndYear(int schoolID, int schoolSeasonID, int schoolYearID) throws RemoteException {
+		Collection classes = null;
+		Collection inYearClasses = null;
 		try {
-			return getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID, schoolSeasonID, schoolYearID);
+			classes = new HashSet(getSchoolClassHome().findBySchoolAndSeasonAndYear(schoolID, schoolSeasonID, schoolYearID));
 		}
 		catch (FinderException fe) {
-			return new Vector();
+			fe.printStackTrace();
+			classes = new HashSet();
 		}
+		try {
+			inYearClasses = new HashSet(getSchoolClassHome().findBySchoolAndSeasonAndInYear(schoolID, schoolSeasonID, schoolYearID));
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			inYearClasses = new HashSet();
+		}
+		classes.addAll(inYearClasses);
+		return classes;
 	}
 
 	public Collection findSchoolClassesByTeacher(int teacherID) throws RemoteException {
@@ -1506,6 +1541,126 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		catch (FinderException fe) {
 			fe.printStackTrace(System.err);
 		}
+	}
+	
+	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs) {
+		SchoolClass schoolClass = null;
+		try {
+			schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
+		}
+		catch (FinderException e) {
+			try {
+				schoolClass = getSchoolClassHome().create();
+			}
+			catch (CreateException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+		}
+		
+		schoolClass.setSchoolClassName(className);
+		schoolClass.setSchoolId(schoolID);
+		if (schoolTypeID != -1)
+			schoolClass.setSchoolTypeId(schoolTypeID);
+		if (seasonID != -1)
+			schoolClass.setSchoolSeasonId(seasonID);
+		schoolClass.setValid(true);
+		schoolClass.store();
+		
+		if (schoolYearIDs != null) {
+			Collection years = null;
+			Collection newYears = null;
+			
+			try {
+				years = schoolClass.findRelatedSchoolYears();
+			}
+			catch (IDORelationshipException e1) {
+				years = new ArrayList();
+			}
+			try {
+				newYears = getSchoolYearHome().findAllByIDs(schoolYearIDs);
+			}
+			catch (FinderException e1) {
+				newYears = new ArrayList();
+			}
+			
+			Collection tempYears = new ArrayList(newYears);
+			newYears.removeAll(years);
+			years.removeAll(tempYears);
+			
+			Iterator iter = years.iterator();
+			while (iter.hasNext()) {
+				SchoolYear year = (SchoolYear) iter.next();
+				try {
+					schoolClass.removeSchoolYear(year);
+				}
+				catch (IDORemoveRelationshipException irre) {
+					irre.printStackTrace();
+				}
+			}
+			iter = newYears.iterator();
+			while (iter.hasNext()) {
+				SchoolYear year = (SchoolYear) iter.next();
+				try {
+					schoolClass.addSchoolYear(year);
+				}
+				catch (IDOAddRelationshipException iare) {
+					iare.printStackTrace();
+				}
+			}
+		}
+		else {
+			try {
+				schoolClass.removeFromSchoolYear();
+			}
+			catch (IDORemoveRelationshipException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		if (teacherIDs != null) {
+			Collection teachers = null;
+			Collection newTeachers = null;
+			
+			try {
+				teachers = schoolClass.findRelatedUsers();
+			}
+			catch (IDORelationshipException e1) {
+				teachers = new ArrayList();
+			}
+			try {
+				newTeachers = getUserBusiness().getUsers(teacherIDs);
+			}
+			catch (RemoteException e1) {
+				newTeachers = new ArrayList();
+			}
+			
+			newTeachers.removeAll(teachers);
+			teachers.removeAll(newTeachers);
+			
+			Iterator iter = newTeachers.iterator();
+			while (iter.hasNext()) {
+				User teacher = (User) iter.next();
+				try {
+					schoolClass.addTeacher(teacher);
+				}
+				catch (IDOAddRelationshipException iare) {
+					iare.printStackTrace();
+				}
+			}
+			iter = teachers.iterator();
+			while (iter.hasNext()) {
+				User teacher = (User) iter.next();
+				try {
+					schoolClass.removeTeacher(teacher);
+				}
+				catch (IDORemoveRelationshipException irre) {
+					irre.printStackTrace();
+				}
+			}
+		}
+
+		return schoolClass;
 	}
 
 	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolSeasonID, int schoolYearID, int teacherID) throws RemoteException {
