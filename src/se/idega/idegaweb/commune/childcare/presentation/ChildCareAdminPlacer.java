@@ -196,7 +196,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 				toDate = new IWTimestamp(iwc.getParameter(PARAM_TO_DATE));
 			
 			User parent = getBusiness().getUserBusiness().getCustodianForChild(child);
-			getBusiness().importChildToProvider(getSession().getChildID(), providerID, -1, careTime, fromDate, toDate, iwc.getCurrentLocale(), parent, iwc.getCurrentUser());
+			getBusiness().importChildToProvider(-1, getSession().getChildID(), providerID, -1, careTime, -1, -1, null, fromDate, toDate, iwc.getCurrentLocale(), parent, iwc.getCurrentUser());
 			done = true;
 		}
 		catch (RemoteException e) {

@@ -97,6 +97,9 @@ import com.lowagie.text.xml.XmlPeer;
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
+	
 	final int DBV_WITH_PLACE = 0;
 	final int DBV_WITHOUT_PLACE = 1;
 	final int FS_WITH_PLACE = 2;
@@ -2723,43 +2726,51 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) throws AlreadyCreatedException {
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) throws AlreadyCreatedException {
+		return importChildToProvider(applicationID, childID, providerID, groupID, careTime, employmentTypeID, schoolTypeID, comment, fromDate, toDate, locale, parent, admin, false);
+	}
+	
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple) throws AlreadyCreatedException {
 		UserTransaction t = getSessionContext().getUserTransaction();
-
-		ChildCareApplication application = null;
-		try {
-			String[] status = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady()) };
-			application = getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, status);
-			if (application != null) {
-				throw new AlreadyCreatedException();
+		
+		if (!canCreateMultiple) {
+			try {
+				String[] status = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady()) };
+				ChildCareApplication application = getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, status);
+				if (application != null) {
+					throw new AlreadyCreatedException();
+				}
 			}
-		}
-		catch (FinderException fe) {
-		}
-		catch (RemoteException re) {
+			catch (FinderException fe) {
+			}
+			catch (RemoteException re) {
+			}
 		}
 
 		try {
 			t.begin();
 
-			try {
-				application = getUnhandledApplicationsByChildAndProvider(childID, providerID);
-			}
-			catch (FinderException fe) {
+			ChildCareApplication application = getApplication(applicationID);
+			if (application != null)
 				application = getChildCareApplicationHome().create();
-			}
+			
+			User child = getUserBusiness().getUser(childID);
+
 			application.setChildId(childID);
 			application.setProviderId(providerID);
 			application.setFromDate(fromDate.getDate());
+			if (toDate != null)
+				application.setRejectionDate(toDate.getDate());
 			application.setCareTime(careTime);
 			application.setOwner(parent);
 			application.setChoiceNumber(1);
-			if (toDate != null) {
-				application.setRejectionDate(toDate.getDate());
-			}
+			application.setMessage(comment);
 			GrantedCheck check = getCheckBusiness().getGrantedCheckByChild(childID);
-			if (check != null)
-				application.setCheck(check);
+			if (check == null) {
+				int checkID = getCheckBusiness().createGrantedCheck(child);
+				check = getCheckBusiness().getGrantedCheck(checkID);
+			}
+			application.setCheck(check);
 	
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
 			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
@@ -2784,7 +2795,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
 				}
 				
-				addContractToArchive(-1, application, contractID, fromDate.getDate(), -1);
+				addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID);
 				Timestamp removedDate = null;
 				if (toDate != null)
 					removedDate = toDate.getTimestamp();
@@ -2804,8 +2815,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					else
 						return false;
 				}
-				int schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
+				if (schoolTypeID == -1)
+					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
+				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), comment);
 			}
 			t.commit();
 			return true;
@@ -2872,6 +2884,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (FinderException e) {
 			System.out.println("[ChildCareApplication]: No applications found with missing placements.");
+		}
+	}
+	
+	public Collection findUnhandledApplicationsNotInCommune() {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus()};
+			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA,"-1"));
+			
+			return home.findApplicationsInSchoolAreaByStatus(areaID, caseStatus);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}catch (FinderException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 	

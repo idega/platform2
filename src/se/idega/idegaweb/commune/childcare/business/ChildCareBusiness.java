@@ -119,7 +119,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasOutstandingOffers(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasTerminationInFutureNotWithProvider(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasUnansweredOffers(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean importChildToProvider(int p0,int p1,int p2,int p3,com.idega.util.IWTimestamp p4,com.idega.util.IWTimestamp p5,java.util.Locale p6,com.idega.user.data.User p7,com.idega.user.data.User p8)throws se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException, java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8,boolean p9,java.sql.Date[] p10,boolean[] p11) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,java.sql.Date[] p5,boolean[] p6) throws java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,java.lang.String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8) throws java.rmi.RemoteException;
@@ -152,4 +151,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void setChildCareQueueExported(se.idega.idegaweb.commune.childcare.data.ChildCareQueue p0) throws java.rmi.RemoteException;
  public void updateMissingPlacements() throws java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2,int p3,int p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
-}
+ public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin) throws java.rmi.RemoteException, se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
+ public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin, boolean canCreateMultiple) throws java.rmi.RemoteException, se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
+ public java.util.Collection findUnhandledApplicationsNotInCommune() throws java.rmi.RemoteException;
+ }

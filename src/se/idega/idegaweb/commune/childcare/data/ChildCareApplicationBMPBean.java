@@ -842,4 +842,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			contract.isSigned();
 	}
 	
+	public Collection ejbFindApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, sch_school s");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,"s.sch_school_id");
+		sql.appendAndEquals("s.sch_school_area_id", schoolAreaID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(statuses);
+		return idoFindPKsByQuery(sql);
+	}
+	
 }
