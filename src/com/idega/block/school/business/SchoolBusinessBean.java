@@ -1292,6 +1292,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public void storeSchoolType(int id, String name, String info, String category, String locKey, int maxAge, boolean isFreetimeType, boolean isFamilyFreetimeType, int order) throws java.rmi.RemoteException {
+		storeSchoolType(id, name, info, category, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order, null);
+	}
+	
+	public void storeSchoolType(int id, String name, String info, String category, String locKey, int maxAge, boolean isFreetimeType, boolean isFamilyFreetimeType, int order, String typeStringId) throws java.rmi.RemoteException {
 
 		SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 		SchoolType newType;
@@ -1319,6 +1323,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newType.setIsFreetimeType(isFreetimeType);
 		newType.setIsFamilyFreetimeType(isFamilyFreetimeType);
 		newType.setOrder(order);
+		if (typeStringId != null) {
+			newType.setTypeStringId(typeStringId);
+		}
 		newType.store();
 	}
 
@@ -2030,6 +2037,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 	
 	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs, String[] studyPathIDs) {
+		return storeSchoolClass(schoolClassID, className, schoolID, schoolTypeID, seasonID, schoolYearIDs, teacherIDs, studyPathIDs, null);		
+	}
+	
+	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs, String[] studyPathIDs, String groupStringId) {
 		SchoolClass schoolClass = null;
 		try {
 			schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
@@ -2051,6 +2062,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		if (seasonID != -1)
 			schoolClass.setSchoolSeasonId(seasonID);
 		schoolClass.setValid(true);
+		if (groupStringId != null)
+			schoolClass.setGroupStringId(groupStringId);
 		schoolClass.store();
 
 		if (schoolYearIDs != null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.90 2005/01/10 14:05:36 laddi Exp $
+ * $Id: SchoolBusiness.java,v 1.91 2005/01/10 15:06:05 anders Exp $
  * Created on 10.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/10 14:05:36 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/10 15:06:05 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.90 $
+ * @version $Revision: 1.91 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -515,6 +515,11 @@ public interface SchoolBusiness extends IBOService {
 	public void storeSchoolType(int id, String name, String info, String category, String locKey, int maxAge, boolean isFreetimeType, boolean isFamilyFreetimeType, int order) throws java.rmi.RemoteException;
 
 	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchoolType
+	 */
+	public void storeSchoolType(int id, String name, String info, String category, String locKey, int maxAge, boolean isFreetimeType, boolean isFamilyFreetimeType, int order, String typeStringId) throws java.rmi.RemoteException;
+
+	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#getSchoolSeason
 	 */
 	public SchoolSeason getSchoolSeason(Object primaryKey) throws java.rmi.RemoteException;
@@ -828,6 +833,11 @@ public interface SchoolBusiness extends IBOService {
 	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchoolClass
 	 */
 	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs, String[] studyPathIDs) throws java.rmi.RemoteException;
+
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchoolClass
+	 */
+	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs, String[] studyPathIDs, String groupStringId) throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#storeSchoolClass
