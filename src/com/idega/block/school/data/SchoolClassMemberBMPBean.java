@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/19 08:11:06 $ by $Author: anders $
- * @version $Revision: 1.128 $
+ *         Last modified: $Date: 2005/01/25 08:55:39 $ by $Author: anders $
+ * @version $Revision: 1.129 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -739,7 +739,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		Criteria a = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.GREATER, today);
 		Criteria b = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.IS, MatchCriteria.NULL);
 		query.addCriteria(new OR(a, b));
-		
+        query.addOrder(table, REGISTER_DATE, false);
+
 		return (Integer) this.idoFindOnePKByQuery(query);
 	}
 
