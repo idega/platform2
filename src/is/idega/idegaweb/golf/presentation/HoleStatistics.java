@@ -81,7 +81,6 @@ public class HoleStatistics extends GolfBlock {
 				darkBackground = !darkBackground;
 			}
 		}
-		table.setBorder(1);
 		table.mergeCells(1,row,4,row);
 		table.setCellpadding(1,row,4);
 		table.add(getSmallText(localize("hole.statistic_explained","Statistic explained")),1,row++);
