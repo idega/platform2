@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.4 2002/01/10 01:06:18 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.5 2002/02/22 17:22:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -281,7 +281,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
       System.out.println("Handling display of ssn lookup");
       java.util.List li = CampusReferenceNumberInfoHelper.getUserLogin(iwc);
       if (li == null || li.size() != 2) {
-        add(new Text("Það er enginn skráður á þessa kennitölu"));
+        add(new Text("Það er enginn skráður á þessa kennitölu eða búið að ná í lykilorð fyrir kennitölu"));
       }
       else {
         String userid = (String)li.get(0);
