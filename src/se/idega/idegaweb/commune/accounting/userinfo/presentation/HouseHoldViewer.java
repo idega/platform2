@@ -70,6 +70,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private ApplicationForm appForm = null;
 	private int nameInputLength = 25;
 	private int personalIdInputLength = 15;
+	private boolean constrainSearchToUniqueIdentifier = true;
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -180,6 +181,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setPersonalIDLength(personalIdInputLength);
 		searcherOne.setFirstNameLength(nameInputLength);
 		searcherOne.setLastNameLength(nameInputLength);
+		searcherOne.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		UserSearcher searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -190,6 +192,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setPersonalIDLength(personalIdInputLength);
 		searcherTwo.setFirstNameLength(nameInputLength);
 		searcherTwo.setLastNameLength(nameInputLength);
+		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
 		if (iwc.isParameterSet(prmTwo)) {
@@ -332,11 +335,12 @@ public class HouseHoldViewer extends AccountingBlock {
 					table.skip();
 				}
 				int age = getCalculatedAge(iwc, child);
-				if (age > 0) {
+				if (age >= 0) {
 					table.add(getText(String.valueOf(age)));
 				}
 				else {
-					table.skip();
+					table.add(getText(String.valueOf(0)));
+					//table.skip();
 				}
 				// TODO get lowIncome properly
 				Object lowIncome = getLowIncome(child);
