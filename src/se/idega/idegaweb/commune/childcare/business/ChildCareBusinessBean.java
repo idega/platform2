@@ -716,6 +716,33 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public int getNumberOfFirstHandChoicesByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
+	public int getNumberOfFirstHandNettoChoicesByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getNettoQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
+	public int getNumberOfFirstHandBruttoChoicesByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getBruttoQueueByProviderAndChoiceNumber(providerID, 1, ""+STATUS_SENT_IN, from, to);
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
+	}
+	
 	private Collection getApplicationsInQueueBeforeDate(int providerID, Date beforeDate) throws FinderException {
 		String[] caseStatus = { getCaseStatusOpen().getStatus() };
 		return getChildCareApplicationHome().findApplicationsByProviderAndBeforeDate(providerID, beforeDate, caseStatus);
@@ -2771,8 +2798,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueTotalByProvider(int providerID, Date from, Date to) {
 		try {
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus, from, to);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, applicationStatus, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2781,7 +2808,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getQueueByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2793,8 +2820,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, applicationStatus, null, toDate);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2803,8 +2830,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getBruttoQueueTotalByProvider(int providerID, Date from, Date to) {
 		try {
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getBruttoQueueSizeNotInStatus(providerID, caseStatus, from, to);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, applicationStatus, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2813,7 +2840,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getBruttoQueueByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2825,8 +2852,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getBruttoQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, applicationStatus, null, toDate);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2835,8 +2862,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNettoQueueTotalByProvider(int providerID, Date from, Date to) {
 		try {
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getNettoQueueSizeNotInStatus(providerID, caseStatus, from, to);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, applicationStatus, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2845,7 +2872,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public int getNettoQueueByProvider(int providerID, Date from, Date to) {
 		try {
-			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, ""+STATUS_SENT_IN, from, to);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -2857,8 +2884,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
-			return getChildCareApplicationHome().getNettoQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
+			String[] applicationStatus = {""+STATUS_SENT_IN, ""+STATUS_PRIORITY, ""+STATUS_ACCEPTED, ""+STATUS_PARENTS_ACCEPT, ""+STATUS_CONTRACT};
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, applicationStatus, null, toDate);
 		}
 		catch (IDOException e) {
 			return 0;

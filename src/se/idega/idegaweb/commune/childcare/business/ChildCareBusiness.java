@@ -95,6 +95,9 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getNumberOfApplicationsForChildNotInactive(int p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfContractsForApplication(int p0) throws java.rmi.RemoteException;
  public int getNumberOfFirstHandChoicesByProvider(int p0) throws java.rmi.RemoteException;
+ public int getNumberOfFirstHandChoicesByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getNumberOfFirstHandNettoChoicesByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
+ public int getNumberOfFirstHandBruttoChoicesByProvider(int p0, java.sql.Date p1, java.sql.Date p2) throws java.rmi.RemoteException;
  public int getNumberOfFutureContracts(int p0) throws java.rmi.RemoteException;
  public int getNumberOfUnhandledApplicationsByProvider(int p0) throws java.rmi.RemoteException;
  public int getOldQueueTotal(java.lang.String[] p0,boolean p1) throws java.rmi.RemoteException;
