@@ -595,16 +595,16 @@ public class SurveyEditor extends Block {
 				qt.add(getListAnswerTypeDropdownMenu(PRM_ANSWERTYPE,answerType),2,2);
 
 				String[] answers = (String[])_prmValues.get(PRM_ANSWER+no);
-				String[] useTextInput = (String[])_prmValues.get(PRM_ADD_TEXT_INPUT+no);
+				//String[] useTextInput = (String[])_prmValues.get(PRM_ADD_TEXT_INPUT+no);
 				for(int i = 0; i < numberOfAnswers; i++){
 					String ans = null;
-					String check = null;
+					//String check = null;
 					if(answers != null && answers.length > i){
 						ans = answers[i];
 					}
-					if(useTextInput != null && useTextInput.length > i){
-						check = answers[i];
-					}
+					//if(useTextInput != null && useTextInput.length > i){
+						//check = answers[i];
+					//}
 					
 					qt.add(getLabel(String.valueOf(i+1)),2,i+3);
 					qt.add(getAnswerTextInput(PRM_ANSWER+no,ans),2,i+3);

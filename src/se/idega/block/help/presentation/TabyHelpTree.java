@@ -1,5 +1,5 @@
 /*
- * $Id: TabyHelpTree.java,v 1.4 2004/01/10 13:08:05 malin Exp $
+ * $Id: TabyHelpTree.java,v 1.5 2004/01/11 15:46:58 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -112,17 +112,17 @@ public class TabyHelpTree extends Block {
 		HelpNode child11 = null;
 		HelpNode child12 = null;
 		HelpNode child13 = null;
-		HelpNode child14 = null;
-		HelpNode child15 = null;
+		//HelpNode child14 = null;
+		//HelpNode child15 = null;
 
 		/*HelpNode child16 = null;
 		HelpNode child17 = null;
 		HelpNode child18 = null;
 */
 
-		HelpNode citizen = null;
-		HelpNode schoolChoice = null;
-		HelpNode other = null;
+		//HelpNode citizen = null;
+		//HelpNode schoolChoice = null;
+		//HelpNode other = null;
 
 		if (iwc.getCurrentLocale().getLanguage().equals("en")) {
 			top = new HelpNode(1,"se.idega.idegaweb.commune","Help - Citizens");
