@@ -455,6 +455,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			format.setMaximumFractionDigits(2);
 			format.setMinimumFractionDigits(2);
 			format.setMinimumIntegerDigits(1);
+			format.setGroupingUsed(false);
 			//			format.
 			FileWriter writer = new FileWriter(fileName2.toString());
 			BufferedWriter bWriter = new BufferedWriter(writer);
