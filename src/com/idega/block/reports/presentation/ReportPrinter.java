@@ -112,7 +112,7 @@ public class ReportPrinter extends Block implements Reports{
 
           }
 
-          saveReportInfo(eReport.getID(),savedids);
+          saveReportInfo(new Integer(eReport.getPrimaryKey().toString()).intValue(),savedids);
 
       }
 
@@ -228,13 +228,13 @@ public class ReportPrinter extends Block implements Reports{
 
         T.add(Edit.formatText(info.getLandscape()?"Landscape":"Portrait"),col++,row);
 
-        box = new CheckBox("rep_save",String.valueOf(info.getID()));
+        box = new CheckBox("rep_save",info.getPrimaryKey().toString());
 
         box.setChecked(true);
 
         T.add(box,col++,row);
 
-        T.add(getPrintLink(iwac,pdfImage,report.getID(),info.getID()),col++,row);
+        T.add(getPrintLink(iwac,pdfImage,new Integer(report.getPrimaryKey().toString()).intValue(),new Integer(info.getPrimaryKey().toString()).intValue()),col++,row);
 
         row++;
 
@@ -274,11 +274,11 @@ public class ReportPrinter extends Block implements Reports{
 
         T.add(Edit.formatText(info.getLandscape()?"Landscape":"Portrait"),col++,row);
 
-        box = new CheckBox("rep_save",String.valueOf(info.getID()));
+        box = new CheckBox("rep_save",info.getPrimaryKey().toString());
 
         T.add(box,col++,row);
 
-        T.add(getPrintLink(iwac,pdfImage,report.getID(),info.getID()),col++,row);
+        T.add(getPrintLink(iwac,pdfImage,new Integer(report.getPrimaryKey().toString() ).intValue(),new Integer(info.getPrimaryKey().toString()).intValue()),col++,row);
 
         row++;
 
@@ -290,7 +290,7 @@ public class ReportPrinter extends Block implements Reports{
 
 
 
-    T.add(new HiddenInput(PRM_REPORTID,Integer.toString(report.getID())));
+    T.add(new HiddenInput(PRM_REPORTID,report.getPrimaryKey().toString()));
 
     Form F = new Form();
 
