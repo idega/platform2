@@ -176,12 +176,14 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	
 	  Category icCat;
 	  if (cats != null ) {
-	  	Iterator iter = cats.iterator();
+	  	catSel.addMenuElements(cats);
+	  	catSel.setAllSelected(true);
+	  	/*Iterator iter = cats.iterator();
 	  	while ( iter.hasNext() ) {
 	  	  icCat = (Category) iter.next();	
-		  catSel.addMenuElement(icCat.getID(),icCat.getName());
+		  catSel.add(icCat.getID(),icCat.getName());
 		  catSel.setSelectedElement(Integer.toString(icCat.getID()));
-	  	}
+	  	}*/
 	    /*for (int i = 0; i < rCats.size(); i++) {
 	      icCat = (Category) rCats.get(i);
 	      catSel.addMenuElement(icCat.getID(),icCat.getName());
