@@ -110,15 +110,15 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 		 
-		 ReportableField ssnField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
-		 ssnField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal id"),currentLocale);
-		 reportCollection.addField(ssnField);
+		 ReportableField personalIDField = new ReportableField(FIELD_NAME_PERSONAL_ID, String.class);
+		 personalIDField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal id"),currentLocale);
+		 reportCollection.addField(personalIDField);
 		 
 		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Double.class);
 		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
 		 
-		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Integer.class);
+		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
 		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
 		 
@@ -162,9 +162,9 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			 		data.addData(divisionField, divisionIdentifier );
 			 		data.addData(groupField, groupIdentifier );
 			 		data.addData(nameField, financeEntry.getUser().getName() );
-			 		data.addData(ssnField, financeEntry.getUser().getPersonalID() );
+			 		data.addData(personalIDField, financeEntry.getUser().getPersonalID().substring(0,6)+"-"+financeEntry.getUser().getPersonalID().substring(6,10) );
 			 		data.addData(amountField, new Double(financeEntry.getAmount()) );
-			 		data.addData(entryDateField, financeEntry.getDateOfEntry() );
+			 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale),"GMT") );
 			 		data.addData(amountEqualizedField, new Double(financeEntry.getAmountEqualized()) );
 			 		data.addData(infoField, financeEntry.getInfo() );
 			 		
