@@ -4555,8 +4555,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			// SchoolClassMember student = null;
 			if (!isUpdate || finalize) {
 				Timestamp removedDate = null;
-				if (toDate != null)
+				Date removed = null;
+				if (toDate != null) {
 					removedDate = toDate.getTimestamp();
+					removed = toDate.getDate();
+				}
 
 				if (groupID == -1) {
 					groupID = createDefaultGroup(providerID);
@@ -4565,7 +4568,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 				if (schoolTypeID == -1)
 					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
+				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
+				
+				try {
+					SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(groupID));
+					getSchoolBusiness().addToSchoolClassMemberLog(member, schoolClass, fromDate.getDate(), removed, admin);
+				}
+				catch (FinderException fe) {
+					//School class not found...
+				}
 			}
 
 			if (finalize) {
