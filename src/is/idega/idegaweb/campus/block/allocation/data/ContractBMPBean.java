@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.17 2004/06/30 01:13:42 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.18 2004/07/30 14:04:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -360,19 +360,25 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 	 }
 	 
 	 public Date ejbHomeGetLastValidToForApartment(Integer apartment )throws FinderException{
-	 	try {
-			return getDateTableValue("select max(c.valid_to) from cam_contract c where c.bu_apartment_id =  "+apartment);
-		} catch (SQLException e) {
-			throw new FinderException(e.getMessage());
-		}
+	 	if(apartment!=null){
+		 	try {
+				return getDateTableValue("select max(c.valid_to) from cam_contract c where c.bu_apartment_id =  "+apartment);
+			} catch (SQLException e) {
+				throw new FinderException(e.getMessage());
+			}
+	 	}
+	 	return null;
 	 }
 	 
 	 public Date ejbHomeGetLastValidFromForApartment(Integer apartment )throws FinderException{
-	 	try {
-			return getDateTableValue("select max(c.valid_from) from cam_contract c where c.bu_apartment_id =  "+apartment);
-		} catch (SQLException e) {
-			throw new FinderException(e.getMessage());
-		}
+	 	if(apartment!=null){
+		 	try {
+				return getDateTableValue("select max(c.valid_from) from cam_contract c where c.bu_apartment_id =  "+apartment);
+			} catch (SQLException e) {
+				throw new FinderException(e.getMessage());
+			}
+	 	}
+	 	return null;
 	 }
 	 
 	 public Collection ejbFindBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,int order,int returnResultSize,int startingIndex)throws FinderException{
