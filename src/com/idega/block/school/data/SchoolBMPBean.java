@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import java.sql.Date;
+
 import javax.ejb.FinderException;
 
 import com.idega.block.text.business.TextBusiness;
@@ -14,6 +16,7 @@ import com.idega.block.text.data.TxTextHome;
 import com.idega.core.data.Commune;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
+import com.idega.core.data.Country;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
@@ -65,6 +68,13 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	/** Laddi 3 Sep 2003 */
 	public final static String COMMUNE = "commune";
 
+	/** Anders 15 Sep 2003 */
+	public final static String ORGANIZATION_NUMBER = "organization_number";
+	public final static String EXTRA_PROVIDER_ID = "termination_date";
+	public final static String TERMINATION_DATE = "termination_date";
+	public final static String COUNTRY = "country"; // Not connected to commune
+	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";	
+
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
 		//this.addAttribute(SCHOOLTYPE,"Schooltype",true,true,Integer.class,this.MANY_TO_ONE,SchoolType.class);
@@ -103,6 +113,13 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addManyToManyRelationShip(TxText.class);
 		
 		addManyToOneRelationship(COMMUNE, Commune.class);
+		
+		// Anders 15 Sep 2003
+		this.addAttribute(ORGANIZATION_NUMBER, "organisationsnummer", true, true, String.class, 20);
+		this.addAttribute(EXTRA_PROVIDER_ID, "user supplied provider id", true, true, String.class, 20);
+		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
+		addManyToOneRelationship(COUNTRY, Country.class);
+		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);		
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -120,6 +137,24 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 	public void setSchoolAreaId(int id) {
 		this.setColumn(SCHOOLAREA, id);
+	}
+	public int getCommuneId() {
+		return this.getIntColumnValue(COMMUNE);
+	}
+	public Commune getCommune() {
+		return (Commune) getColumnValue(COMMUNE);
+	}
+	public void setCommuneId(int id) {
+		this.setColumn(COMMUNE, id);
+	}
+	public int getCountryId() {
+		return this.getIntColumnValue(COUNTRY);
+	}
+	public Country getCountry() {
+		return (Country) getColumnValue(COUNTRY);
+	}
+	public void setCountryId(int id) {
+		this.setColumn(COUNTRY, id);
 	}
 	public String getSchoolName() {
 		return this.getStringColumnValue(NAME);
@@ -190,6 +225,30 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 	public void setSchoolLongitude(String lon) {
 		this.setColumn(LONGITUDE, lon);
+	}
+	public String getOrganizationNumber() {
+		return this.getStringColumnValue(ORGANIZATION_NUMBER);
+	}
+	public void setOrganizationNumber(String orgNo) {
+		this.setColumn(ORGANIZATION_NUMBER, orgNo);
+	}
+	public String getExtraProviderId() {
+		return this.getStringColumnValue(EXTRA_PROVIDER_ID);
+	}
+	public void setExtraProviderId(String id) {
+		this.setColumn(EXTRA_PROVIDER_ID, id);
+	}
+	public Date getTerminationDate() {
+		return (Date) this.getColumnValue(TERMINATION_DATE);
+	}
+	public void setTerminationDate(Date date) {
+		this.setColumn(TERMINATION_DATE, date);
+	}
+	public boolean getCentralizedAdministration() {
+		return ((Boolean) this.getColumnValue(CENTRALIZED_ADMINISTRATION)).booleanValue();
+	}
+	public void setCentralizedAdministration(boolean b) {
+		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
 	}
 
 	public Collection ejbFindAllBySchoolType(Collection typeIds) throws javax.ejb.FinderException {
