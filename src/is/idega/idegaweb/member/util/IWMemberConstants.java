@@ -35,6 +35,7 @@ public final class IWMemberConstants {
 	public static final String GROUP_TYPE_CLUB = "iwme_club";
 	public static final String GROUP_TYPE_CLUB_MEMBER = "iwme_club_member";
 	public static final String GROUP_TYPE_CLUB_PLAYER = "iwme_club_player";
+	public static final String GROUP_TYPE_CLUB_PLAYER_TEMPLATE = "iwme_club_player_template";
 	public static final String GROUP_TYPE_CLUB_TRAINER = "iwme_club_trainer";
 	public static final String GROUP_TYPE_CLUB_STAFF = "iwme_club_staff";
 	public static final String GROUP_TYPE_CLUB_COMMITTEE = "iwme_club_committee";

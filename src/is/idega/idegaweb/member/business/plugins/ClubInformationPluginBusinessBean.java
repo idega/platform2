@@ -7,19 +7,24 @@
 package is.idega.idegaweb.member.business.plugins;
 
 import is.idega.idegaweb.member.presentation.ClubInformationTab;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
+import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 
 /**
@@ -34,7 +39,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -92,7 +97,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
 		List list = new ArrayList();
 		list.add(new ClubInformationTab(group));
-		
+
 		return list;
 	}
 
@@ -109,12 +114,161 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
 		return null;
 	}
-  
-  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
-    return null;
-  }
 
-  public String isUserSuitedForGroup(User user, Group targetGroup)  {
-    return null;
-  }
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+		return null;
+	}
+
+	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		return null;
+	}
+
+	public boolean createSpecialConnection(String connection, int parentGroupId, String clubName) {
+		if (connection == null || connection.equals(""))
+			return false;
+
+		try {
+			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(parentGroupId)));
+			Group specialGroup = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(connection)));
+
+			Group child = null;
+			boolean foundIt = false;
+			List children = specialGroup.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					foundIt = true;
+					break;
+				}
+			}
+
+			if (foundIt && child != null) {
+				Group newGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+				newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
+				newGroup.setName(child.getName());
+				newGroup.store();
+
+				group.addGroup(newGroup);
+
+				insertCopyOfChild(newGroup, child, specialGroup, clubName);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void insertCopyOfChild(Group parent, Group templateParent, Group special, String clubName) {
+		try {
+			List child = templateParent.getChildGroups();
+			Iterator it = child.iterator();
+			while (it.hasNext()) {
+				Group playerGroup = (Group) it.next();
+				if (playerGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE)) {
+					Group newGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+					newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+					newGroup.setName(playerGroup.getName());
+					newGroup.setAlias(playerGroup);
+					
+					java.util.Hashtable t = playerGroup.getMetaDataAttributes();
+					if (t != null)					
+						newGroup.setMetaDataAttributes(t);
+					
+					newGroup.store();
+
+					parent.addGroup(newGroup);
+
+					if (!updateSpecial(special, playerGroup, newGroup, clubName)) {
+						Group newSpecialPlayerGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+						newSpecialPlayerGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+						newSpecialPlayerGroup.setName(playerGroup.getName());
+						newSpecialPlayerGroup.setAlias(playerGroup);
+						newSpecialPlayerGroup.store();
+						
+						special.addGroup(newSpecialPlayerGroup);
+						
+						Group newSpecialPlayerAliasGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+						newSpecialPlayerAliasGroup.setGroupType(IWMemberConstants.GROUP_TYPE_ALIAS);
+						newSpecialPlayerAliasGroup.setAlias(newGroup);
+						String name = newGroup.getName();
+						if (clubName != null)
+							name += " (" + clubName +")";
+						newSpecialPlayerAliasGroup.setName(name);
+						newSpecialPlayerAliasGroup.store();
+						
+						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup); 
+					}
+
+					if (playerGroup.getChildCount() > 0)
+						insertCopyOfChild(newGroup, playerGroup, special, clubName);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private boolean updateSpecial(Group special, Group playerGroup, Group newGroup, String clubName) {
+		try {
+			List childs = special.getChildGroups();
+			Iterator it = childs.iterator();
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
+					if (child.getAliasID() == ((Integer) playerGroup.getPrimaryKey()).intValue()) {
+						Group newSpecialPlayerAliasGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
+						newSpecialPlayerAliasGroup.setGroupType(IWMemberConstants.GROUP_TYPE_ALIAS);
+						newSpecialPlayerAliasGroup.setAlias(newGroup);
+						String name = newGroup.getName();
+						if (clubName != null)
+							name += " (" + clubName +")";
+						newSpecialPlayerAliasGroup.setName(name);
+						newSpecialPlayerAliasGroup.store();
+						
+						child.addGroup(newSpecialPlayerAliasGroup); 
+						
+						return true;
+					}
+
+					if (child.getChildCount() > 0) {
+						if (updateSpecial(child, playerGroup, newGroup, clubName))
+							return true;
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	private void setCurrentUsersPrimaryGroupPermissionsForGroup(IWUserContext iwc, Group group){
+		User user = iwc.getCurrentUser();
+		AccessController access = iwc.getAccessController();
+		try {
+			Group primary = user.getPrimaryGroup();
+			String primaryGroupId = primary.getPrimaryKey().toString();
+			String newGroupId = group.getPrimaryKey().toString();
+			//TDOD create methods for this in accesscontrol
+			//create permission
+			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_CREATE,Boolean.TRUE);
+			//edit permission
+			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_EDIT,Boolean.TRUE);
+			//delete permission
+			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_DELETE,Boolean.TRUE);
+			//view permission
+			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_VIEW,Boolean.TRUE);
+					
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		
+		}
+	}
+	
 }
