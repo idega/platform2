@@ -64,4 +64,11 @@ public class CalendarWindowPlugin implements ToolbarElement {
 		return 11;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.user.app.ToolbarElement#isButton(com.idega.presentation.IWContext)
+	 */
+	public boolean isButton(IWContext iwc) {
+		return true;
+	}
+
 }

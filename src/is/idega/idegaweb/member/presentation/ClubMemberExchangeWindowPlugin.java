@@ -66,4 +66,11 @@ public class ClubMemberExchangeWindowPlugin implements ToolbarElement {
 	public int getPriority(IWContext iwc) {
 		return 7;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.app.ToolbarElement#isButton(com.idega.presentation.IWContext)
+	 */
+	public boolean isButton(IWContext iwc) {
+		return false;
+	}
 }
