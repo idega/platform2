@@ -114,4 +114,13 @@ public class WorkReportExportFileBMPBean extends GenericEntity implements WorkRe
 
 		return this.idoFindIDsBySQL(sql.toString());		
 	}	
+	
+	public Integer ejbFindWorkReportExportFileByClubIdAndYear(int clubId,int year) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getEntityName());
+		sql.appendWhereEquals(CLUB_ID,clubId);
+		sql.appendAndEquals(YEAR,year);
+
+		return (Integer) this.idoFindOnePKBySQL(sql.toString());	
+	}	
 }
