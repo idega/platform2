@@ -114,8 +114,7 @@ public class NewProductApplicationForm extends Block {
 	}
 
 	private void showForm(IWContext iwc) {
-		String type = iwc.getParameter(PARAM_FORM_TYPE);
-		int typeId = parseType(type);
+		int typeId = parseType(_type);
 
 		Form form = new Form();
 //		DropdownMenu types = (DropdownMenu) getTypeDropdown(iwc, typeId);
