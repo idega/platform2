@@ -1,5 +1,5 @@
 /*
- * $Id: Edit.java,v 1.6 2002/02/25 16:22:49 tryggvil Exp $
+ * $Id: Edit.java,v 1.7 2002/04/04 23:28:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,6 @@ public class Edit {
    *
    */
   public static Text formatText(String text, boolean bold) {
-    System.out.println("Calling formatText with bold = " + bold);
     Text t = getText(text,bold,colorTextFont,textFontSize);
 
     return(t);

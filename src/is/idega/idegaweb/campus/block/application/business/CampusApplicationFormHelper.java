@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.7 2002/04/04 19:05:09 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.8 2002/04/04 23:27:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -219,7 +219,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     String furniture = iwc.getParameter("furniture");
     String contact = iwc.getParameter("contact");
     String email = iwc.getParameter("email");
-    String info = iwc.getParameter("info");
+    String info = iwc.getParameter("extra_info");
 
     CampusApplication application = new CampusApplication();
     Applicant spouse = new Applicant();
@@ -288,7 +288,6 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setFaculty(faculty);
     application.setStudyTrack(studyTrack);
     application.setSpouseName(spouseName);
-    //application.setSpouseIncome(spouseIncome);
     application.setSpouseSSN(spouseSSN);
     application.setSpouseSchool(spouseSchool);
     application.setSpouseStudyTrack(spouseStudyTrack);
@@ -296,8 +295,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setSpouseStudyBeginYear(spouseStudyBeginYr);
     application.setSpouseStudyEndMonth(spouseStudyEndMo);
     application.setSpouseStudyEndYear(spouseStudyEndYr);
-    application.setChildren(children);
-    //application.setIncome(income);
+
     idegaTimestamp t = new idegaTimestamp(wantHousingFrom);
     application.setHousingFrom(t.getSQLDate());
     if (waitingList == null)

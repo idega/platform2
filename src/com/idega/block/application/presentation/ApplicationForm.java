@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.17 2002/03/18 19:59:37 aron Exp $
+ * $Id: ApplicationForm.java,v 1.18 2002/04/04 23:30:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ public class ApplicationForm extends PresentationObjectContainer {
   public static final String APP_LEGAL_RESIDENCE = "app_legalResidence";
   public static final String APP_RESIDENCE = "app_residence";
   public static final String APP_PHONE = "app_residencePhone";
+  public static final String APP_MOBILE = "app_mobilePhone";
   public static final String APP_PO = "app_po";
 
   public static final String APP_STATUS = "app_status";

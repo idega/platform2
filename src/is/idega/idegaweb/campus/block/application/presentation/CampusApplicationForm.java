@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.9 2002/04/04 15:17:10 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.10 2002/04/04 23:27:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import is.idega.idegaweb.campus.presentation.*;
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * modified by <a href="mailto:aron@idega.is">
  * @version 1.0
  */
 public class CampusApplicationForm extends ApplicationForm {
@@ -341,95 +342,77 @@ public class CampusApplicationForm extends ApplicationForm {
 
     int currentYear = idegaTimestamp.RightNow().getYear();
 
-/*    DropdownMenu studyBeginYr = new DropdownMenu("studyBeginYr");
-    studyBeginYr.setStyle("formstyle");
-    for (int i = 9; i >= 0; i--)
-      studyBeginYr.addMenuElement(currentYear - i,Integer.toString(currentYear-i));
-    studyBeginYr.setSelectedElement(Integer.toString(currentYear));
-    DropdownMenu spouseStudyBeginYr = (DropdownMenu)studyBeginYr.clone();
-    spouseStudyBeginYr.setName("spouseStudyBeginYr");
-    DropdownMenu studyEndYr = new DropdownMenu("studyEndYr");
-    studyEndYr.setStyle("formstyle");
-    for (int i = 0; i < 10; i++)
-      studyEndYr.addMenuElement(currentYear + i,Integer.toString(currentYear+i));
-    studyEndYr.setSelectedElement(Integer.toString(currentYear));
-    DropdownMenu spouseStudyEndYr = (DropdownMenu)studyEndYr.clone();
-    spouseStudyEndYr.setName("spouseStudyEndYr");*/
-
-    String text1_1 = _iwrb.getLocalizedString("studyBegin","Nám hafið við HÍ (mán./ár)");
-    String text2_1 = _iwrb.getLocalizedString("studyEnd","Áætluð námslok (mán./ár)");
-    String text3 = _iwrb.getLocalizedString("faculty","Deild");
-    String text4 = _iwrb.getLocalizedString("studyTrack","Námsbraut");
-    String text5 = _iwrb.getLocalizedString("currentRes","Núverandi húsnæði");
-    String text6 = _iwrb.getLocalizedString("spouseName","Nafn umsækjanda/maka");
-    String text7 = _iwrb.getLocalizedString("spouseSSN","Kennitala");
-    String text8 = _iwrb.getLocalizedString("spouseSchool","Skóli");
-    String text9 = _iwrb.getLocalizedString("spouseStudyTrack","Námsbraut");
-    String text10 = _iwrb.getLocalizedString("spouseStudyBegin","Nám hafið (mán./ár)");
-    String text11 = _iwrb.getLocalizedString("spouseStudyEnd","Áætluð námslok (mán./ár)");
-    String text12 = _iwrb.getLocalizedString("spouseOccupation","Maki er");
-    String text13 = _iwrb.getLocalizedString("children","Nöfn og fæðingardagur barna sem búa hjá umsækjanda");
-    String text14 = _iwrb.getLocalizedString("income","Tekjur, styrkir og námslán umsækjanda 1.1 - 1.6 í ár");
-    String text15 = _iwrb.getLocalizedString("spouseIncome","Tekjur, styrkir og námslán umsækjanda/maka 1.1 - 1.6 í ár");
-    String text16 = _iwrb.getLocalizedString("wantHousingFrom","Húsnæði óskast frá og með");
-    String text17 = _iwrb.getLocalizedString("waitingList","Óska eftir að vera á biðlista ef ég fæ ekki úthlutað húsnæði");
-    String text18 = _iwrb.getLocalizedString("furniture","Óska eftir að leigja húsgögn ef mögulegt er");
-    String text19 = _iwrb.getLocalizedString("contact","Ef ekki næst í mig í síma á dvalarstað má ná í mig eða skilja eftir skilaboð í sima");
-    String text20 = _iwrb.getLocalizedString("email","Tölvupóstur");
-    String text21 = _iwrb.getLocalizedString("info","Aðrar upplýsingar");
+    String labelStudyBegin = _iwrb.getLocalizedString("studyBegin","Nám hafið við HÍ (mán./ár)");
+    String labelStudyEnd = _iwrb.getLocalizedString("studyEnd","Áætluð námslok (mán./ár)");
+    String labelFaculty = _iwrb.getLocalizedString("faculty","Deild");
+    String labelStudyTrack = _iwrb.getLocalizedString("studyTrack","Námsbraut");
+    String labelCurrentRes = _iwrb.getLocalizedString("currentRes","Núverandi húsnæði");
+    String labelSpouseName = _iwrb.getLocalizedString("spouseName","Nafn umsækjanda/maka");
+    String labelSpouseSSN = _iwrb.getLocalizedString("spouseSSN","Kennitala");
+    String labelSpouseSchool = _iwrb.getLocalizedString("spouseSchool","Skóli");
+    String labelSpouseTrack = _iwrb.getLocalizedString("spouseStudyTrack","Námsbraut");
+    String labelSpouseBegin = _iwrb.getLocalizedString("spouseStudyBegin","Nám hafið (mán./ár)");
+    String labelSpouseEnd = _iwrb.getLocalizedString("spouseStudyEnd","Áætluð námslok (mán./ár)");
+    String labelSpouseOcc = _iwrb.getLocalizedString("spouseOccupation","Maki er");
+    String labelChildren = _iwrb.getLocalizedString("children","Nöfn og fæðingardagur barna sem búa hjá umsækjanda");
+    String labelHousingFrom = _iwrb.getLocalizedString("wantHousingFrom","Húsnæði óskast frá og með");
+    String labelContact = _iwrb.getLocalizedString("contact","Ef ekki næst í mig í síma á dvalarstað má ná í mig eða skilja eftir skilaboð í sima");
+    String labelEmail = _iwrb.getLocalizedString("email","Tölvupóstur");
+    String labelInfo = _iwrb.getLocalizedString("info","Aðrar upplýsingar");
 
     TextInput textInputTemplate = new TextInput();
     Edit.setStyle(textInputTemplate);
-    TextInput input1 = (TextInput)textInputTemplate.clone();
-    input1.setName("faculty");
+
+    TextInput inputFaculty = (TextInput)textInputTemplate.clone();
+    inputFaculty.setName("faculty");
     if(iwc.isParameterSet("faculty"))
-      input1.setContent(iwc.getParameter("faculty"));
-    TextInput input2 = (TextInput)textInputTemplate.clone();
-    input2.setName("studyTrack");
+      inputFaculty.setContent(iwc.getParameter("faculty"));
+
+    TextInput inputTrack = (TextInput)textInputTemplate.clone();
+    inputTrack.setName("studyTrack");
     if(iwc.isParameterSet("studyTrack"))
-      input2.setContent(iwc.getParameter("studyTrack"));
-    TextInput input3 = (TextInput)textInputTemplate.clone();
-    input3.setName("resInfo");
-    input3.setLength(10);
+      inputTrack.setContent(iwc.getParameter("studyTrack"));
+
+    TextInput inputResInfo = (TextInput)textInputTemplate.clone();
+    inputResInfo.setName("resInfo");
+    inputResInfo.setLength(10);
     if(iwc.isParameterSet("resInfo"))
-      input3.setContent(iwc.getParameter("resInfo"));
-    TextInput input4 = (TextInput)textInputTemplate.clone();
-    input4.setName("spouseName");
+      inputResInfo.setContent(iwc.getParameter("resInfo"));
+
+    TextInput inputSpouseName = (TextInput)textInputTemplate.clone();
+    inputSpouseName.setName("spouseName");
     if(iwc.isParameterSet("spouseName"))
-      input4.setContent(iwc.getParameter("spouseName"));
-    TextInput input5 = (TextInput)textInputTemplate.clone();
-    input5.setName("spouseSSN");
-    input5.setLength(12);
+      inputSpouseName.setContent(iwc.getParameter("spouseName"));
+
+    TextInput inputSpouseSSN = (TextInput)textInputTemplate.clone();
+    inputSpouseSSN.setName("spouseSSN");
+    inputSpouseSSN.setLength(12);
     if(iwc.isParameterSet("spouseSSN"))
-      input5.setContent(iwc.getParameter("spouseSSN"));
-    TextInput input6 = (TextInput)textInputTemplate.clone();
-    input6.setName("spouseSchool");
+      inputSpouseSSN.setContent(iwc.getParameter("spouseSSN"));
+
+    TextInput inputSpouseSchool = (TextInput)textInputTemplate.clone();
+    inputSpouseSchool.setName("spouseSchool");
     if(iwc.isParameterSet("spouseSchool"))
-      input6.setContent(iwc.getParameter("spouseSchool"));
-    TextInput input7 = (TextInput)textInputTemplate.clone();
-    input7.setName("spouseStudyTrack");
+      inputSpouseSchool.setContent(iwc.getParameter("spouseSchool"));
+
+    TextInput inputSpouseTrack = (TextInput)textInputTemplate.clone();
+    inputSpouseTrack.setName("spouseStudyTrack");
     if(iwc.isParameterSet("spouseStudyTrack"))
-      input7.setContent(iwc.getParameter("spouseStudyTrack"));
-    /*
-    TextInput input8 = (TextInput)textInputTemplate.clone();
-    input8.setName("income");
-    input8.setLength(10);
-    TextInput input9 = (TextInput)textInputTemplate.clone();
-    input9.setName("spouseIncome");
-    input9.setLength(10);
-    */
-    TextInput input10 = (TextInput)textInputTemplate.clone();
-    input10.setName("contact");
-    input10.setLength(10);
+      inputSpouseTrack.setContent(iwc.getParameter("spouseStudyTrack"));
+
+    TextInput inputContact = (TextInput)textInputTemplate.clone();
+    inputContact.setName("contact");
+    inputContact.setLength(10);
     if(iwc.isParameterSet("contact"))
-      input10.setContent(iwc.getParameter("contact"));
-    TextInput input11 = (TextInput)textInputTemplate.clone();
-    input11.setName("email");
+      inputContact.setContent(iwc.getParameter("contact"));
+
+    TextInput inputEmail = (TextInput)textInputTemplate.clone();
+    inputEmail.setName("email");
     if(iwc.isParameterSet("email"))
-      input11.setContent(iwc.getParameter("email"));
+      inputEmail.setContent(iwc.getParameter("email"));
 
 
-    int children = 2;
+    int children = 4;
     Table childrenTable = new Table(2,children);
     for (int i = 0; i < children; i++) {
       TextInput childName = new TextInput("childname"+i);
@@ -440,26 +423,19 @@ public class CampusApplicationForm extends ApplicationForm {
         childBirth.setContent(iwc.getParameter("childbirth"+i));
       Edit.setStyle(childName);
       Edit.setStyle(childBirth);
-      childName.setLength(10);
+      childName.setLength(40);
       childBirth.setLength(10);
+      childBirth.setMaxlength(10);
       childrenTable.add(childName,1,i+1);
       childrenTable.add(childBirth,2,i+1);
     }
     childrenTable.add(new HiddenInput("children_count",String.valueOf(children)));
 
+    TextArea inputExtraInfo = new TextArea("extra_info");
+    Edit.setStyle(inputExtraInfo);
+    inputExtraInfo.setHeight(4);
+    inputExtraInfo.setWidth(30);
 
-    TextArea input13 = new TextArea("children");
-    Edit.setStyle(input13);
-    input13.setHeight(4);
-    input13.setWidth(30);
-
-    /*
-    CheckBox input14 = new CheckBox("waitingList");
-    Edit.setStyle(input14);
-
-    CheckBox input15 = (CheckBox)input14.clone();
-    input15.setName("furniture");
-*/
     DateInput input16 = new DateInput("wantHousingFrom");
     if(iwc.isParameterSet("wantHousingFrom"))
       input16.setDate(new idegaTimestamp(iwc.getParameter("wantHousingFrom")).getSQLDate());
@@ -467,103 +443,101 @@ public class CampusApplicationForm extends ApplicationForm {
 
     DataTable t2 = new DataTable();
     Edit.setStyle(t2);
-
     form.add(t2);
+
     t2.addTitle(_iwrb.getLocalizedString("otherInfo","Aðrar upplýsingar um umsækjanda"));
     int row = 1;
-    Text label = Edit.formatText(text1_1,true);
+    Text label = Edit.formatText(labelStudyBegin,true);
     if(wrongParameters.contains("studyBegin"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(Edit.formatText(_required,true),1,row);
     t2.add(studyBegin,2,row);
     row++;
-    label = Edit.formatText(text2_1,true);
+
+    label = Edit.formatText(labelStudyEnd,true);
     if(wrongParameters.contains("studyEnd"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(studyEnd,2,row);
     row++;
-    label = Edit.formatText(text3,true);
+
+    label = Edit.formatText(labelFaculty,true);
     if(wrongParameters.contains("faculty"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(_required,1,row);
-    t2.add(input1,2,row);
+    t2.add(inputFaculty,2,row);
     row++;
-    label = Edit.formatText(text4,true);
+
+    label = Edit.formatText(labelStudyTrack,true);
     if(wrongParameters.contains("studyTrack"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(_required,1,row);
-    t2.add(input2,2,row);
+    t2.add(inputTrack,2,row);
     row++;
-    t2.add(Edit.formatText(text5,true),1,row);
+
+    t2.add(Edit.formatText(labelCurrentRes,true),1,row);
     t2.add(_required,1,row);
     t2.add(resSelect,2,row);
-    t2.add(input3,2,row);
+    t2.add(inputResInfo,2,row);
     row++;
-    t2.add(Edit.formatText(text6),1,row);
-    t2.add(input4,2,row);
+
+    t2.add(Edit.formatText(labelSpouseName),1,row);
+    t2.add(inputSpouseName,2,row);
     row++;
-    t2.add(Edit.formatText(text7),1,row);
-    t2.add(input5,2,row);
+
+    t2.add(Edit.formatText(labelSpouseSSN),1,row);
+    t2.add(inputSpouseSSN,2,row);
     row++;
-    t2.add(Edit.formatText(text8),1,row);
-    t2.add(input6,2,row);
+
+    t2.add(Edit.formatText(labelSpouseSchool),1,row);
+    t2.add(inputSpouseSchool,2,row);
     row++;
-    t2.add(Edit.formatText(text9),1,row);
-    t2.add(input7,2,row);
+
+    t2.add(Edit.formatText(labelSpouseTrack),1,row);
+    t2.add(inputSpouseTrack,2,row);
     row++;
-    t2.add(Edit.formatText(text10),1,row);
+
+    t2.add(Edit.formatText(labelSpouseBegin),1,row);
     t2.add(spouseStudyBegin,2,row);
     row++;
-    t2.add(Edit.formatText(text11),1,row);
+
+    t2.add(Edit.formatText(labelSpouseEnd),1,row);
     t2.add(spouseStudyEnd,2,row);
     row++;
-    t2.add(Edit.formatText(text12),1,row);
+
+    t2.add(Edit.formatText(labelSpouseOcc),1,row);
     t2.add(occSelect,2,row);
     row++;
-    t2.add(Edit.formatText(text13),1,row);
+    t2.add(Edit.formatText(labelChildren),1,row);
     t2.add(childrenTable,2,row);
     row++;
-    /*
-    t2.add(Edit.formatText(text14,true),1,row);
-    t2.add(_required,1,row);
-    t2.add(input8,2,row);
-    row++;
-    t2.add(Edit.formatText(text15),1,row);
-    t2.add(input9,2,row);
-    row++;
-    */
-    label = Edit.formatText(text16,true);
+
+    label = Edit.formatText(labelHousingFrom,true);
     if(wrongParameters.contains("wantHousingFrom"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(input16,2,row);
     row++;
-    /*
-    t2.add(Edit.formatText(text17),1,row);
-    t2.add(input14,2,row);
+
+    t2.add(Edit.formatText(labelContact),1,row);
+    t2.add(inputContact,2,row);
     row++;
-    t2.add(Edit.formatText(text18),1,row);
-    t2.add(input15,2,row);
-    row++;
-    */
-    t2.add(Edit.formatText(text19),1,row);
-    t2.add(input10,2,row);
-    row++;
-    label = Edit.formatText(text20,true);
+
+    label = Edit.formatText(labelEmail,true);
     if(wrongParameters.contains("email"))
       label.setFontColor("#ff0000");
     t2.add(label,1,row);
     t2.add(_required,1,row);
-    t2.add(input11,2,row);
+    t2.add(inputEmail,2,row);
     row++;
-    t2.add(Edit.formatText(text21),1,row);
-    t2.add(input13,2,row);
+
+    t2.add(Edit.formatText(labelInfo),1,row);
+    t2.add(inputExtraInfo,2,row);
     row++;
 
     t2.addButton(back);
@@ -638,6 +612,7 @@ public class CampusApplicationForm extends ApplicationForm {
     String legalResidenceLabel = _iwrb.getLocalizedString(APP_LEGAL_RESIDENCE,"Legal residence");
     String residenceLabel = _iwrb.getLocalizedString(APP_RESIDENCE,"Residence");
     String phoneLabel = _iwrb.getLocalizedString(APP_PHONE,"Residence phone");
+    String mobileLabel = _iwrb.getLocalizedString(APP_MOBILE,"Mobile phone");
     String poLabel = _iwrb.getLocalizedString(APP_PO,"PO");
 
     TextInput firstName = (TextInput)textInputTemplate.clone();
@@ -691,6 +666,12 @@ public class CampusApplicationForm extends ApplicationForm {
       po.setContent(iwc.getParameter(APP_PO));
     po.setLength(3);
     Edit.setStyle(po);
+    TextInput mobile = (TextInput)textInputTemplate.clone();
+    mobile.setName(APP_PHONE);
+    if(iwc.isParameterSet(APP_PHONE))
+      mobile.setContent(iwc.getParameter(APP_PHONE));
+    mobile.setLength(8);
+    Edit.setStyle(mobile);
 
     int row = 1;
     t.addTitle(heading);
@@ -746,6 +727,11 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add(label,1,row);
     t.add(_required,1,row);
     t.add(po,2,row);
+    row++;
+    label = Edit.formatText(mobileLabel);
+    t.add(label,1,row);
+    //t.add(_required,1,row);
+    t.add(mobile,2,row);
     row++;
     t.addButton(ok);
 

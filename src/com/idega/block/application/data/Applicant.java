@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.14 2002/03/20 10:04:39 aron Exp $
+ * $Id: Applicant.java,v 1.15 2002/04/04 23:30:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -294,18 +294,19 @@ public class Applicant extends TreeableEntity {
     if(tok.hasMoreTokens()){
       temp = tok.nextToken();
       setFirstName(temp);
-    }
-    if(tok.hasMoreTokens()){
-      temp = tok.nextToken();
-      setMiddleName(temp);
-    }
-    if(tok.hasMoreTokens()){
-      temp = tok.nextToken();
-      setLastName(temp);
-    }
-    else{
-      setMiddleName("");
-      setLastName(temp);
+      temp = "";
+      if(tok.hasMoreTokens()){
+        temp = tok.nextToken();
+        setMiddleName(temp);
+      }
+      if(tok.hasMoreTokens()){
+        temp = tok.nextToken();
+        setLastName(temp);
+      }
+      else{
+        setMiddleName("");
+        setLastName(temp);
+      }
     }
   }
 

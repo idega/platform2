@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.5 2002/03/20 10:04:39 aron Exp $
+ * $Id: ApplicationFormHelper.java,v 1.6 2002/04/04 23:30:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ public class ApplicationFormHelper {
     String legalResidence = iwc.getParameter(ApplicationForm.APP_LEGAL_RESIDENCE);
     String residence = iwc.getParameter(ApplicationForm.APP_RESIDENCE);
     String residencePhone = iwc.getParameter(ApplicationForm.APP_PHONE);
+    String mobilePhone = iwc.getParameter(ApplicationForm.APP_MOBILE);
     String po = iwc.getParameter(ApplicationForm.APP_PO);
 
     Applicant applicant = new Applicant();
@@ -40,6 +41,7 @@ public class ApplicationFormHelper {
     applicant.setLegalResidence(legalResidence);
     applicant.setResidence(residence);
     applicant.setResidencePhone(residencePhone);
+    applicant.setMobilePhone(mobilePhone);
     applicant.setPO(po);
     applicant.setStatus("S");
 

@@ -918,11 +918,9 @@ public class CampusApprover extends Block{
         Applicant child;
         for (int i = 0; i < children.size(); i++) {
           child = (Applicant) children.get(i);
-          T.add(Edit.formatText(child.getName()),col,row);
-          T.add(Edit.formatText(child.getSSN()),col,row++);
+          T.add(Edit.formatText(child.getName()),1,row);
+          T.add(Edit.formatText(child.getSSN()),2,row++);
         }
-
-
       }
       return T;
   }
@@ -940,6 +938,9 @@ public class CampusApprover extends Block{
       for (int i = 0; i < count; i++) {
         TextInput childName = new TextInput("child_name"+i);
         TextInput childBirth = new TextInput("child_birth"+i);
+        childName.setLength(30);
+        childBirth.setLength(10);
+        childBirth.setMaxlength(10);
         Edit.setStyle(childName);
         Edit.setStyle(childBirth);
         T.add(childName,1,i+1);
