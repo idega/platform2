@@ -8,19 +8,24 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.data.GenericEntity;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -33,6 +38,8 @@ import com.idega.user.data.User;
  */
 public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeGenderPluginBusiness, UserGroupPlugInBusiness {
   
+  public static final String AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.business.plugins";
+
   private static final String NULL = "null";
   
   private static final int LOWER_AGE_LIMIT_DEFAULT = 0;
@@ -273,17 +280,53 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 	public PresentationObject instanciateViewer(Group group) throws RemoteException {
 		return null;
 	}
-
-  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+  
+  /** Checks if the user is assignable from the specified source to the specified target.
+   * 
+   * @param user the user that should be moved.
+   * @param sourceGroup source, the user should belong to the source
+   * @param targetGroup target, where the user should be moved to.
+   * @return a message that says what is wrong else null.
+   */
+  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+    // get my resource bundle for all the messages
+    IWResourceBundle iwrb = getResourceBundle();
+    // check if the source and the target are the same
+    int parentGroupId = ((Integer) sourceGroup.getPrimaryKey()).intValue();
+    int targetGroupId = ((Integer) targetGroup.getPrimaryKey()).intValue();
+    // target and source are the same do nothing
+    if (parentGroupId == targetGroupId) {
+      return iwrb.getLocalizedString("age_gender_source_and_target_are_the_same", "Source group and target group are the same");
+    }   
+    // is the user already a member of the target group?
+    UserBusiness userBusiness = getUserBusiness();
+    Collection coll = null;
+    try {
+      coll = userBusiness.getUserGroups(user);
+    }
+    catch (RemoteException ex)  {
+      throw new RuntimeException(ex.getMessage());
+    }
+    Iterator iteratorUserGroups = coll.iterator();
+    while (iteratorUserGroups.hasNext())  {
+      Group group = (Group) iteratorUserGroups.next();
+      int id = ((Integer) group.getPrimaryKey()).intValue();
+      if (id == targetGroupId)  {
+        return iwrb.getLocalizedString("age_gender_user_already_member_of_the_target_group", "The user is already a member of the target group");
+      }
+    }
     // get date of birth
     Date date = user.getDateOfBirth();
     if (date == null) {
-      return false;
+      return iwrb.getLocalizedString("age_gender_date_of_birth_of_user_not_set", "The date of birth is not set");
     }
     GregorianCalendar dateOfBirth = new GregorianCalendar();
     dateOfBirth.setTime(date);
     // get gender of user
     int genderId = user.getGenderID();
+    if (genderId < 0) {
+      return iwrb.getLocalizedString("age_gender_gender_unknown", "The gender is unknown");
+    }
     int myGenderId = -1;
     boolean genderOkay = false;
     try {
@@ -300,37 +343,36 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     catch (FinderException fex) {
       throw new EJBException(fex.getMessage());
     }
-    // do we have to check the age at all?
-    if (! isAgeLimitStringentCondition(targetGroup))  {
-      return genderOkay;
-    }
     // is gender okay?
     if (! genderOkay) {
-      return false;
+      return iwrb.getLocalizedString("age_gender_wrong_gender_of_user", "The user's gender is not allowed for the group");
     }
-    
     // gender is okay.....
     
-    // test age of target group
-    GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
-    int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
-    keyDate.set(Calendar.YEAR, yearOfBirth);
-    boolean after = keyDate.after(dateOfBirth);
-    // get age
-    Calendar rightNow = GregorianCalendar.getInstance();
-    int currentYear = rightNow.get(Calendar.YEAR);
-    int userAge = currentYear - yearOfBirth;
-    int lowerAgeLimit = getLowerAgeLimit(targetGroup);
-    int upperAgeLimit = getUpperAgeLimit(targetGroup);
-    // test lower age
-    if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && ! after) ) {
-      return false;
+    // do we have to check the age at all?
+    if (isAgeLimitStringentCondition(targetGroup))  {
+      // test age of target group
+      GregorianCalendar keyDate = getKeyDateForYearZero(targetGroup);
+      int yearOfBirth = dateOfBirth.get(Calendar.YEAR);
+      keyDate.set(Calendar.YEAR, yearOfBirth);
+      boolean after = keyDate.after(dateOfBirth);
+      // get age
+      Calendar rightNow = GregorianCalendar.getInstance();
+      int currentYear = rightNow.get(Calendar.YEAR);
+      int userAge = currentYear - yearOfBirth;
+      int lowerAgeLimit = getLowerAgeLimit(targetGroup);
+      int upperAgeLimit = getUpperAgeLimit(targetGroup);
+      // test lower age
+      if (userAge < lowerAgeLimit || (userAge == lowerAgeLimit && ! after) ) {
+        return iwrb.getLocalizedString("age_gender_user_too_young", "The user is too young");
+      }
+      // test upper age
+      if (userAge > upperAgeLimit || (userAge == upperAgeLimit && after) ) {
+        return iwrb.getLocalizedString("age_gender_user_too_old", "The user is too old");
+      }
     }
-    // test upper age
-    if (userAge > upperAgeLimit || (userAge == upperAgeLimit && after) ) {
-      return false;
-    }
-    return true;
+    // everything is fine
+    return null;
   }
   
   public GregorianCalendar getKeyDateForYearZero(Group group) {
@@ -358,4 +400,25 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return calendar;
   }   
 
+  private IWResourceBundle getResourceBundle() {
+    IWMainApplication mainApp = getIWApplicationContext().getApplication();
+    Locale locale = mainApp.getSettings().getDefaultLocale();
+    IWBundle bundle = mainApp.getBundle(getBundleIdentifier());
+    return bundle.getResourceBundle(locale);
+  }
+    
+  private String getBundleIdentifier() {
+    return AGE_GENDER_PLUGIN_BUSINESS_BUNDLE_IDENTIFIER;
+  } 
+
+  private UserBusiness getUserBusiness() {
+    IWApplicationContext context = getIWApplicationContext();
+    try {
+      return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(context, UserBusiness.class);
+    }
+    catch (java.rmi.RemoteException rme) {
+      throw new RuntimeException(rme.getMessage());
+    }
+  } 
+  
 }

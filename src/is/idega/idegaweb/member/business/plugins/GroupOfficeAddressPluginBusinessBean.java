@@ -95,8 +95,8 @@ public class GroupOfficeAddressPluginBusinessBean extends IBOServiceBean impleme
 	public PresentationObject instanciateViewer(Group group) throws RemoteException {
 		return null;
 	}
-  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
-    return true;
+  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+    return null;
   }
 
 }

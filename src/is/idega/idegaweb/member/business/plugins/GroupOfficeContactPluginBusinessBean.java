@@ -6,18 +6,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.EJBLocalHome;
-import javax.ejb.EJBLocalObject;
+
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.ICObject;
-import com.idega.data.IDOEntityDefinition;
-import com.idega.data.IDOStoreException;
+
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
@@ -105,8 +100,8 @@ public class GroupOfficeContactPluginBusinessBean extends IBOServiceBean impleme
 		return null;
 	}
 
-  public boolean isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
-    return true;
+  public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+    return null;
   }
 
 }
