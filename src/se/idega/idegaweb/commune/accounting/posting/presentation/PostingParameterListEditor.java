@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.33 2003/10/24 11:28:28 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.34 2003/10/24 15:01:17 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.33 2003/10/24 11:28:28 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.34 2003/10/24 15:01:17 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -233,6 +233,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 			while (iter.hasNext()) {
 				PostingField field = (PostingField) iter.next();
 				int len = iwc.getParameter(PARAM_OWN_STRING + "_" + index).length();
+				if(len != field.getLen() && len > 0) {
+					throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
+				}
+				len = iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index).length();
 				if(len != field.getLen() && len > 0) {
 					throw new PostingParametersException(KEY_ERROR_LENGTH, field.getFieldTitle());			
 				}
