@@ -316,7 +316,7 @@ import com.idega.data.*;
 
               if(member.getFamilyId() == -1 && modinfo.getSession().getAttribute("family_id") == null) {
                   Family family = new Family();
-                  family.setUnionId(Integer.parseInt(strUnionId));
+                  //family.setUnionId(Integer.parseInt(strUnionId));
                   family.insert();
                   unionMemberInsert.getUnionMemberInfo().setFamily(family);
               }
