@@ -78,6 +78,7 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     table.add(getHeaderText(iwrb.getLocalizedString("travel.price","Price")), 3, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.card_type","Card type")), 4, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.oroginal_payment","Original payment")), 5, row);
+    table.add(getHeaderText(iwrb.getLocalizedString("travel.search_engine","Search Engine")), 6, row);
     table.setRowColor(row, super.backgroundColor);
     
     CreditCardAuthorizationEntry entry;
@@ -111,6 +112,7 @@ public class RefundReport extends TravelManager implements AdministratorReport {
 	  	    table.add(getText(booking.getService().getProduct().getSupplier().getName()), 2, row);
 	  	    table.add(getText(parent.getBrandName()), 4, row);
 	  	    table.add(getText(TextSoap.decimalFormat(parentAmount, 2)+" "+entry.getCurrency()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+parentStamp.getLocaleDate(iwc)), 5, row);
+	  	    table.add(getText(booking.getCode()), 6, row);
 	  		}
 
     }
