@@ -190,7 +190,7 @@ public class ContractSignWindow extends Window{
         if(con_id != eContract.getID())
           canSign = false;
       }
-      if(canSign ){
+
         T.add(Edit.formatText(iwrb.getLocalizedString("email","Email")),1,row);
         if(lEmails !=null){
           //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
@@ -265,8 +265,8 @@ public class ContractSignWindow extends Window{
         T.add(Edit.formatText(iwrb.getLocalizedString("sys_props_error","System property error")),2,row++);
         T.add(Edit.formatText(iwrb.getLocalizedString("no_default_group","No default group")),2,row++);
         }
-      }
-      else{
+
+			if(!canSign ){
         row++;
         Text msg = Edit.formatText(iwrb.getLocalizedString("contract_conflict","Apartment is still in rent"));
         msg.setFontColor("#FF0000");
