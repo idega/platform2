@@ -225,7 +225,7 @@ public class AccountManager {
             // have to add amounts
             if(hash.containsKey(AKid)){
               AccountEntry a = (AccountEntry)hash.get(AKid);
-              a.setPrice(a.getPrice()+AE.getPrice());
+              a.setTotal(a.getTotal()+AE.getTotal());
             }
             else{
               AE.setName(TK.getName());
@@ -243,7 +243,7 @@ public class AccountManager {
     else
       return null;
   }
-  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type)throws SQLException{
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException{
     Account A = new Account();
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
@@ -251,9 +251,11 @@ public class AccountManager {
     A.setUserId(iUserId);
     A.setName(sName) ;
     A.setExtraInfo(sExtra);
+    //if(iCashierId > 0)
     A.setCashierId(iCashierId);
     A.setValid(true);
     A.setType(type);
+    A.setCashierId(iCategoryId);
 
     A.insert();
     //System.err.println("account id "+A.getID());
@@ -261,15 +263,15 @@ public class AccountManager {
     return A;
   }
 
-  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typeFinancial);
+  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws SQLException{
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typeFinancial,iCategoryId);
   }
 
-  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typePhone);
+  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws SQLException{
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typePhone,iCategoryId);
   }
 
-  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId)throws SQLException{
-   return makeNewAccount(iUserId,sName,sExtra,iCashierId,"");
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws SQLException{
+   return makeNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
   }
 }

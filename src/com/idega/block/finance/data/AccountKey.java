@@ -23,12 +23,14 @@ public class AccountKey extends GenericEntity implements Key{
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
+    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
     addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
     addAttribute(getInfoColumnName(),"Lýsing",true,true,"java.lang.String",4000);
     addAttribute(getTariffKeyIdColumnName(),"Lykill",true,true,"java.lang.Integer");
   }
 
   public static String getAccountKeyEntityName(){return "FIN_ACC_KEY"; }
+  public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
   public static String getTariffKeyIdColumnName(){return "FIN_TARIFF_KEY_ID";}
   public static String getNameColumnName(){ return "NAME"; }
   public static String getInfoColumnName(){return "INFO";}
@@ -54,5 +56,11 @@ public class AccountKey extends GenericEntity implements Key{
   }
   public void setInfo(String extra_info){
     setColumn(getInfoColumnName(), extra_info);
+  }
+   public int getCategoryId(){
+    return getIntColumnValue( getColumnCategoryId() );
+  }
+  public void setCategoryId(int categoryId){
+    setColumn(getColumnCategoryId(),categoryId);
   }
 }

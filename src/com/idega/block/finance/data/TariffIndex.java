@@ -1,22 +1,17 @@
-/*
- * $Id: TariffIndex.java,v 1.1 2001/09/11 00:18:33 aron Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package com.idega.block.finance.data;
 
 import java.sql.*;
 import com.idega.data.GenericEntity;
 
 /**
- *
- * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public class TariffIndex extends GenericEntity{
 
   public static final String A ="A",B="B",C="C",D="D",E="E";
@@ -32,6 +27,7 @@ public class TariffIndex extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
+    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
     addAttribute(getColumnNameNewValue(), "New Value", true, true, java.lang.Float.class);
     addAttribute(getColumnNameOldValue(), "Old alue", true, true, java.lang.Float.class);
     addAttribute(getColumnNameDate(), "LastUpdated", true, true, java.sql.Timestamp.class);
@@ -41,6 +37,7 @@ public class TariffIndex extends GenericEntity{
   }
 
   public static String getTariffIndexEntityName(){ return "FIN_TARIFF_INDEX"; }
+  public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
   public static String getColumnNameNewValue(){ return "NEW_VALUE";}
   public static String getColumnNameOldValue(){ return "OLD_VALUE";}
   public static String getColumnNameName(){return "NAME";}
@@ -101,5 +98,11 @@ public class TariffIndex extends GenericEntity{
   }
   public void setDate(java.sql.Timestamp use_date){
     setColumn(getColumnNameDate(),use_date);
+  }
+  public int getCategoryId(){
+    return getIntColumnValue( getColumnCategoryId() );
+  }
+  public void setCategoryId(int categoryId){
+    setColumn(getColumnCategoryId(),categoryId);
   }
 }

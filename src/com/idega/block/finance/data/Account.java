@@ -33,7 +33,9 @@ public class Account extends GenericEntity {
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
+    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
     addAttribute(getUserIdColumnName(), "User", true, true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
+    addAttribute(getColumnTypeId(), "Account type", true, true, java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AccountType.class);
     addAttribute(getCashierIdColumnName(),"Gjaldkeri",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getLastUpdatedColumnName(),"Changed",true,true,java.sql.Timestamp.class);
@@ -50,6 +52,7 @@ public class Account extends GenericEntity {
   }
 
   public static String getEntityTableName(){ return "FIN_ACCOUNT";}
+  public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
   public static String getUserIdColumnName(){ return "IC_USER_ID";}
   public static String getCashierIdColumnName(){ return "FIN_CASHIER_ID";}
   public static String getNameColumnName(){ return "NAME";}
@@ -58,13 +61,14 @@ public class Account extends GenericEntity {
   public static String getCreationDateColumnName(){ return "CREATION_DATE";}
   public static String getInfoColumnName(){ return "EXTRA_INFO";}
   public static String getValidColumnName(){ return "VALID";}
+  public static String getColumnTypeId(){return "FIN_ACCT_TYPE_ID";}
   public static String getTypeColumnName(){return "ACCOUNT_TYPE";}
 
   public static String typeFinancial = "FINANCE";
   public static String typePhone = "PHONE";
 
   public int getUserId(){
-          return getIntColumnValue(getUserIdColumnName());
+    return getIntColumnValue(getUserIdColumnName());
   }
   public void setUserId(Integer user_id){
     setColumn(getUserIdColumnName(), user_id);
@@ -149,5 +153,17 @@ public class Account extends GenericEntity {
   }
   public void setTypePhone(){
     setType(typePhone);
+  }
+  public int getCategoryId(){
+    return getIntColumnValue( getColumnCategoryId() );
+  }
+  public void setCategoryId(int categoryId){
+    setColumn(getColumnCategoryId(),categoryId);
+  }
+  public int getAccountTypeId(){
+    return getIntColumnValue( getColumnTypeId() );
+  }
+  public void setAccountTypeId(int typeId){
+    setColumn(getColumnTypeId(),typeId);
   }
 }

@@ -38,30 +38,28 @@ public class Finder  {
   public static Tariff[] findTariffs(){
    Tariff[] tariffs = new Tariff[0];
     try{
-
-      tariffs = (Tariff[]) new Tariff().findAllOrdered(Tariff.getAttributeColumnName());
+      tariffs = (Tariff[]) new Tariff().findAllOrdered(Tariff.getColumnAttribute());
     }
     catch(SQLException e){}
     return tariffs;
   }
 
-  public static List listOfTariffs(){
-
-    try{
-      return EntityFinder.findAll(new Tariff());
-
-    }
-    catch(SQLException e){return null;}
-  }
-
   public static TariffKey[] findTariffKeys(){
    TariffKey[] keys = new TariffKey[0];
     try{
-    keys = (TariffKey[]) (new TariffKey()).findAllOrdered(TariffKey.getNameColumnName());
+      keys = (TariffKey[]) new TariffKey().findAll();
     }
     catch(SQLException e){}
     return keys;
   }
+
+  public static List listOfTariffs(){
+    try{
+      return EntityFinder.findAll(new Tariff());
+    }
+    catch(SQLException e){return null;}
+  }
+
 
   public static List getAccountKeys(){
     List  L = null;

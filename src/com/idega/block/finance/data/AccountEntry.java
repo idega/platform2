@@ -31,7 +31,9 @@ public class AccountEntry extends GenericEntity implements Entry {
     addAttribute(getAccountKeyIdColumnName(),"Account key",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AccountKey.class);
     addAttribute(getEntryGroupIdColumnName(),"Entry group",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.EntryGroup.class);
     addAttribute(getEntryTypeColumnName(),"Entry type",true,true,java.lang.String.class);
-    addAttribute(getPriceColumnName(), "Amount", true, true, java.lang.Float.class);
+    addAttribute(getColumnNetto(), "Netto", true, true, java.lang.Float.class);
+    addAttribute(getColumnVAT(), "VAT", true, true, java.lang.Float.class);
+    addAttribute(getColumnTotal(), "Total", true, true, java.lang.Float.class);
     addAttribute(getPaymentDateColumnName(),"Payment date",true,true,java.sql.Timestamp.class);
     addAttribute(getLastUpdatedColumnName(),"Last updated",true,true,java.sql.Timestamp.class);
     addAttribute(getCashierIdColumnName(),"Cashier",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
@@ -48,7 +50,9 @@ public class AccountEntry extends GenericEntity implements Entry {
   public static String getEntryTypeColumnName(){ return "ENTRY_TYPE"; }
   public static String getNameColumnName(){ return "NAME"; }
   public static String getInfoColumnName(){ return "INFO"; }
-  public static String getPriceColumnName(){ return "PRICE"; }
+  public static String getColumnTotal(){ return "TOTAL"; }
+  public static String getColumnVAT(){return "VAT";}
+  public static String getColumnNetto() {return "NETTO";}
   public static String getPaymentDateColumnName(){ return "PAYMENT_DATE"; }
   public static String getLastUpdatedColumnName(){ return "LAST_UPDATED"; }
   public static String getColumnNameStatus(){ return "STATUS"; }
@@ -120,14 +124,32 @@ public class AccountEntry extends GenericEntity implements Entry {
   public void setInfo(String info){
     setColumn(getInfoColumnName(), info);
   }
-  public float getPrice(){
-    return getFloatColumnValue(getPriceColumnName());
+  public float getNetto(){
+    return getFloatColumnValue(getColumnNetto());
   }
-  public void setPrice(Float price){
-    setColumn(getPriceColumnName(), price);
+  public void setPrice(Float netto){
+    setColumn(getColumnNetto(), netto);
   }
-  public void setPrice(float price){
-    setColumn(getPriceColumnName(), price);
+  public void setPrice(float netto){
+    setColumn(getColumnNetto(), netto);
+  }
+  public float getVAT(){
+    return getFloatColumnValue(getColumnVAT());
+  }
+  public void setVAT(Float vat){
+    setColumn(getColumnVAT(), vat);
+  }
+  public void setVAT(float vat){
+    setColumn(getColumnVAT(), vat);
+  }
+  public float getTotal(){
+    return getFloatColumnValue(getColumnTotal());
+  }
+  public void setTotal(Float total){
+    setColumn(getColumnTotal(), total);
+  }
+  public void setTotal(float total){
+    setColumn(getColumnTotal(), total);
   }
   public int getRoundId(){
     return getIntColumnValue(getRoundIdColumnName());

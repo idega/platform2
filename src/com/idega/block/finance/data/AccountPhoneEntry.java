@@ -28,6 +28,7 @@ public class AccountPhoneEntry extends GenericEntity implements Entry{
     addAttribute(getColumnNameAccountId(),"Account", true, true, Integer.class,"many-to-one",com.idega.block.finance.data.Account.class);
     addAttribute(getColumnNameAccountEntryId(),"Account_entry",true,true,Integer.class,"many-to-one",com.idega.block.finance.data.AccountEntry.class);
     addAttribute(getColumnNameCashierId(),"Cashier",true,true,Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
+    addAttribute(getRoundIdColumnName(),"Round",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AssessmentRound.class);
     addAttribute(getColumnNameMainNumber(),"main number",true,true,String.class);
     addAttribute(getColumnNameSubNumber(),"sub number",true,true,String.class);
     addAttribute(getColumnNamePhonedNumber(),"main number",true,true,String.class);
@@ -41,6 +42,7 @@ public class AccountPhoneEntry extends GenericEntity implements Entry{
   }
 
   public static String getEntityTableName(){ return "FIN_PHONE_ENTRY"; }
+  public static String getRoundIdColumnName(){ return "FIN_ASSESSMENT_ROUND_ID"; }
   public static String getColumnNameAccountId(){ return "FIN_ACCOUNT_ID"; }
   public static String getColumnNameAccountEntryId(){ return "FIN_ACC_ENTRY_ID"; }
   public static String getColumnNameCashierId(){ return "FIN_CASHIER_ID"; }
@@ -156,6 +158,16 @@ public class AccountPhoneEntry extends GenericEntity implements Entry{
   }
   public int getNightDuration(){
     return getIntColumnValue(getColumnNameNightDuration());
+  }
+
+  public int getRoundId(){
+    return getIntColumnValue(getRoundIdColumnName());
+  }
+  public void setRoundId(Integer round){
+    setColumn(getRoundIdColumnName(), round);
+  }
+  public void setRoundId(int round){
+    setColumn(getRoundIdColumnName(), round);
   }
 
   public String getStatus(){

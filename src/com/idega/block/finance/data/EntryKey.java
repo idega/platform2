@@ -27,7 +27,7 @@ public class EntryKey extends GenericEntity {
     addAttribute("extra_info","Lýsing",true,true,"java.lang.String");
   }
   public String getEntityName() {
-    return "entry_key";
+    return "fin_entry_key";
   }
   public String getName(){
     return getStringColumnValue("name");

@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class TariffKeyEditor extends PresentationObjectContainer {
+public class PaymentTypeEditor extends PresentationObjectContainer {
 
 
   public String strAction = "tke_action";
@@ -38,7 +38,7 @@ public class TariffKeyEditor extends PresentationObjectContainer {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public TariffKeyEditor(){
+  public PaymentTypeEditor(){
 
   }
 
@@ -63,7 +63,7 @@ public class TariffKeyEditor extends PresentationObjectContainer {
           }
         }
         Table T = new Table(1,3);
-        T.add(Edit.headerText(iwrb.getLocalizedString("tariff_key_editor","Tariff key editor"),3),1,1);
+        T.add(Edit.headerText(iwrb.getLocalizedString("payment_type_editor","Payment type editor"),3),1,1);
         T.add(makeLinkTable(1,iCategoryId));
         T.add(MO);
         T.setWidth("100%");
@@ -108,11 +108,11 @@ public class TariffKeyEditor extends PresentationObjectContainer {
 
   protected PresentationObject getMain(IWContext iwc,int iCategoryId){
     Table keyTable = new Table();
-    List keys = FinanceFinder.listOfTariffKeys(iCategoryId);
+    List types = FinanceFinder.listOfPaymentTypes(iCategoryId);
     int count = 0;
-    if(keys !=null)
-      count = keys.size();
-    keyTable = new Table(3,count+1);
+    if(types !=null)
+      count = types.size();
+    keyTable = new Table(6,count+1);
     keyTable.setWidth("100%");
     keyTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
     keyTable.setRowColor(1,Edit.colorMiddle);
@@ -122,14 +122,20 @@ public class TariffKeyEditor extends PresentationObjectContainer {
     keyTable.add(Edit.formatText("Nr"),1,1);
     keyTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
     keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("payments","Payments")),4,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("amount_cost","Amount cost")),5,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("percent_cost","Percent cost")),6,1);
     if(isAdmin){
       if(count > 0){
-        TariffKey key;
+        PaymentType type;
         for (int i = 0;i < count;i++){
-         key = (TariffKey) keys.get(i);
+          type = (PaymentType) types.get(i);
           keyTable.add(Edit.formatText( String.valueOf(i+1)),1,i+2);
-          keyTable.add(Edit.formatText(key.getName()),2,i+2);
-          keyTable.add(Edit.formatText(key.getInfo()),3,i+2);
+          keyTable.add(Edit.formatText(type.getName()),2,i+2);
+          keyTable.add(Edit.formatText(type.getInfo()),3,i+2);
+          keyTable.add(Edit.formatText(type.getPayments()),4,i+2);
+          keyTable.add(Edit.formatText(Float.toString(type.getAmountCost())),5,i+2);
+          keyTable.add(Edit.formatText(Float.toString(type.getPercentCost())),6,i+2);
         }
       }
     }
@@ -140,12 +146,12 @@ public class TariffKeyEditor extends PresentationObjectContainer {
     Form myForm = new Form();
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     //myForm.maintainAllParameters();
-    List keys = FinanceFinder.listOfTariffKeys(iCategoryId);
+    List keys = FinanceFinder.listOfPaymentTypes(iCategoryId);
     int count = 0;
     if(keys !=null)
       count = keys.size();
       int inputcount = count+5;
-      Table inputTable =  new Table(4,inputcount+1);
+      Table inputTable =  new Table(7,inputcount+1);
       inputTable.setWidth("100%");
       inputTable.setCellpadding(2);
       inputTable.setCellspacing(1);
@@ -155,32 +161,43 @@ public class TariffKeyEditor extends PresentationObjectContainer {
       inputTable.add(Edit.formatText("Nr"),1,1);
       inputTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
       inputTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
-      inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),4,1);
+      inputTable.add(Edit.formatText(iwrb.getLocalizedString("payments","Payments")),4,1);
+      inputTable.add(Edit.formatText(iwrb.getLocalizedString("amount_cost","Amount cost")),5,1);
+      inputTable.add(Edit.formatText(iwrb.getLocalizedString("percent_cost","Percent cost")),6,1);
+      inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),7,1);
 
-      TariffKey key ;
+      PaymentType key ;
+      TextInput nameInput, infoInput, cost;
+      HiddenInput idInput;
+      CheckBox delCheck;
+      DropdownMenu payments,percent;
       for (int i = 1; i <= inputcount ;i++){
-
         String rownum = String.valueOf(i);
         String s = "";
-        TextInput nameInput, infoInput;
-        HiddenInput idInput;
-        CheckBox delCheck;
         int pos;
+
+        nameInput  = new TextInput("tke_nameinput"+i);
+        infoInput = new TextInput("tke_infoinput"+i);
+        payments = getIntDrop("tke_paym"+i,1,12,"");
+        cost = new TextInput("tke_cost"+i);
+        percent = getIntDrop("tke_percent"+i,0,100,"");
+        int id = -1;
         if(i <= count ){
           pos = i-1;
-          key = (TariffKey) keys.get(pos);
-          nameInput  = new TextInput("tke_nameinput"+i,key.getName());
-          infoInput = new TextInput("tke_infoinput"+i,key.getInfo());
+          key = (PaymentType) keys.get(pos);
+          nameInput.setContent(key.getName());
+          infoInput.setContent(key.getInfo());
+          payments.setSelectedElement(Integer.toString(key.getPayments()));
+          cost.setContent(Float.toString(key.getAmountCost()));
+          percent.setSelectedElement(Float.toString(key.getPercentCost()));
           idInput = new HiddenInput("tke_idinput"+i,String.valueOf(key.getID()));
           delCheck = new CheckBox("tke_delcheck"+i,"true");
           Edit.setStyle(delCheck);
-          inputTable.add(delCheck,4,i+1);
+          inputTable.add(delCheck,7,i+1);
         }
-        else{
-          nameInput  = new TextInput("tke_nameinput"+i);
-          infoInput = new TextInput("tke_infoinput"+i);
-          idInput = new HiddenInput("tke_idinput"+i,"-1");
-        }
+
+        idInput = new HiddenInput("tke_idinput"+i,String.valueOf(id));
+
         nameInput.setSize(20);
         infoInput.setSize(40);
 
@@ -190,6 +207,9 @@ public class TariffKeyEditor extends PresentationObjectContainer {
         inputTable.add(Edit.formatText(rownum),1,i+1);
         inputTable.add(nameInput,2,i+1);
         inputTable.add(infoInput,3,i+1);
+        inputTable.add(payments,4,i+1);
+        inputTable.add(cost,5,i+1);
+        inputTable.add(percent,6,i+1);
         inputTable.add(idInput);
       }
       myForm.add(new HiddenInput("tke_count", String.valueOf(inputcount) ));
@@ -205,7 +225,10 @@ public class TariffKeyEditor extends PresentationObjectContainer {
 
   protected PresentationObject doUpdate(IWContext iwc, int iCategoryId){
     int count = Integer.parseInt(iwc.getParameter("tke_count"));
-    String sName,sInfo,sDel;
+    String sName,sInfo,sDel,sCost,sPercent,sPayments;
+    Float cost = null,percent = null;
+    Integer payments = null;
+
     int ID;
     TariffKey[] keys = new TariffKey[count];
     TariffKey key = null;
@@ -214,15 +237,35 @@ public class TariffKeyEditor extends PresentationObjectContainer {
       sName = iwc.getParameter("tke_nameinput"+i );
       sInfo = iwc.getParameter("tke_infoinput"+i);
       sDel = iwc.getParameter("tke_delcheck"+i);
+      sPayments = iwc.getParameter("tke_paym"+i);
+      sCost = iwc.getParameter("tke_cost"+i);
+      sPercent = iwc.getParameter("tke_percent"+i);
       ID = Integer.parseInt(iwc.getParameter("tke_idinput"+i));
       if(sDel != null && sDel.equalsIgnoreCase("true")){
         FinanceBusiness.deleteTariffKey(ID);
       }
       else if (!"".equals(sName)){
-        FinanceBusiness.saveTariffKey(ID,sName,sInfo,iCategoryId);
+        if(!"".equals(sPayments))
+          payments = Integer.valueOf(sPayments);
+        if(!"".equals(sCost))
+          cost = Float.valueOf(sCost);
+        if(!"".equals(sPercent)){
+          int p = Integer.parseInt(sPercent);
+          percent = new Float((float) p/100);
+        }
+        FinanceBusiness.savePaymentType(ID,sName,sInfo,iCategoryId,payments,cost,percent);
       }
     }// for loop
     return getMain(iwc,iCategoryId);
+  }
+
+  private DropdownMenu getIntDrop(String name, int from ,int to , String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    for (int i = from; i <= to; i++) {
+      drp.addMenuElement(String.valueOf(i));
+    }
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
   public String getBundleIdentifier(){
