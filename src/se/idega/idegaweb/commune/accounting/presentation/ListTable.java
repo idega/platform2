@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.4 2003/08/21 15:58:22 anders Exp $
+ * $Id: ListTable.java,v 1.5 2003/08/23 19:14:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,10 +17,10 @@ import com.idega.presentation.text.Text;
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/21 15:58:22 $
+ * Last modified: $Date: 2003/08/23 19:14:27 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ListTable extends AccountingBlock {
 
@@ -76,6 +76,17 @@ public class ListTable extends AccountingBlock {
 	}
 
 	/**
+	 * Adds a text object at the current row and column with default font style.
+	 * The column position is automatically increased and rows
+	 * are automatically wrapped when the current column is full.
+	 * @param text the string to add as a text object
+	 */
+	public void add(String text) {
+		Text t = getSmallText(text);
+		add(t);
+	}
+
+	/**
 	 * Adds a localized text object at the current row and column with default font style.
 	 * The column position is automatically increased and rows
 	 * are automatically wrapped when the current column is full.
@@ -83,7 +94,17 @@ public class ListTable extends AccountingBlock {
 	 * @param defaultKey the default localized text for the text object to add
 	 */
 	public void add(String textKey, String defaultText) {
-		Text t = getSmallText(localize(textKey, defaultText));
+		add(localize(textKey, defaultText));
+	}
+
+	/**
+	 * Adds an integer text object current row and column with default font style.
+	 * The column position is automatically increased and rows
+	 * are automatically wrapped when the current column is full.
+	 * @param intValue the integer to add as a text object
+	 */
+	public void add(int intValue) {
+		Text t = getSmallText("" + intValue);
 		add(t);
 	}
 
@@ -96,12 +117,12 @@ public class ListTable extends AccountingBlock {
 		col++;
 		if (col > cols) {
 			col = 1;
-			row++;
 			if(row%2==0){
 				table.setRowColor(row, getZebraColor1());
 			} else {
 				table.setRowColor(row, getZebraColor2());
 			}
+			row++;
 		}
 	}
 
