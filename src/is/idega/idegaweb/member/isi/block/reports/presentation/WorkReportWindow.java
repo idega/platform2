@@ -242,7 +242,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		Text workOnReport = formatText(iwrb.getLocalizedString("workreportwindow.edit_report", "Edit report"), true);
 		Lists editList = new Lists();
 
-		if (!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type)) {
+		if ((!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type))  || iwc.isSuperAdmin()) {
 			LinkContainer editMemberList = new LinkContainer();
 			editMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members", "Edit member list")));
 			editMemberList.addParameter(ACTION, ACTION_EDIT_MEMBER_LIST);
@@ -343,13 +343,13 @@ public class WorkReportWindow extends IWAdminWindow {
 				menu.add(closeReport, 1, 10);
 			}
 
-			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)) {
+			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(statistics, 1, 11);
 				menu.setRowColor(11, COLOR_MIDDLE);
 				menu.add(statsList, 1, 12);
 			}
 			
-			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
+			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(createReports, 1, 13);
 			}
 			
