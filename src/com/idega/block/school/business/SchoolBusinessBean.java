@@ -1710,8 +1710,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) {
-		return storeNewSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes, String languageID) {
+		return storeNewSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes, languageID);
 	}
 
 	/**
@@ -1728,7 +1728,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 * @return @throws
 	 *         RemoteException
 	 */
-	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes, String sLanguage) {
 		try {
 			SchoolClassMember member = getSchoolClassMemberHome().create();
 
@@ -1747,6 +1747,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 					member.setRegistratorId(registrator);
 				if (notes != null)
 					member.setNotes(notes);
+				if (sLanguage != null)
+					member.setLanguage(sLanguage);
 				member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 
 				member.store();
