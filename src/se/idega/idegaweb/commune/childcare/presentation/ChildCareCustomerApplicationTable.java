@@ -13,6 +13,7 @@ import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.builder.data.IBPage;
@@ -28,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.14 2003/04/10 14:34:22 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.15 2003/04/15 12:12:52 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -40,6 +41,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	public final static int PAGE_2 = 2;
 	
 	public final static String STATUS_UBEH = "UBEH";
+	
+	private String prmChildId = CitizenChildren.getChildIDParameterName();	
 	
 
 
@@ -85,7 +88,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			case CCConstants.ACTION_REQUEST_INFO: 
 				/**@todo: How do i 'connect' to the message editor block? */ 
 			    ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
-			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner());
+			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner()); //TODO: find a better text 
 			    createRequestInfoConfirmPage(layoutTbl); 
 
 				
@@ -439,10 +442,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Collection applications = null;
 
 		try {
-			applications = getChildCareBusiness(iwc).getApplicationsByUser(iwc.getCurrentUser());
+			int childId = Integer.parseInt(iwc.getParameter(prmChildId));
+			applications = getChildCareBusiness(iwc).getApplicationsForChild(childId);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
+		} catch (NumberFormatException e) { //parameter not a number
+		    return new ArrayList(); //empty collection
+		} catch (NullPointerException e) { //no parameter set
+		    return new ArrayList(); //empty collection
+	    }		
 
 		return applications;
 	}
