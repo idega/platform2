@@ -249,11 +249,15 @@ public class ServiceViewer extends Block {
   public Table getServiceInfoTable(IWContext iwc){
     Table content = new Table(1,3);
     try {
+      int i = 1;
       Product product = new Product(service.getID());
-      content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,1);
-      content.add(new TextReader(TextFinder.getLocalizedText(product,product.getID(),ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getID()),1,2);//insert a textreader
-      //ProductBusiness.getProductDescription(product),1,2);//insert a textreader
-      content.add("META DATA",1,3);
+      content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,i);
+      //content.add(new TextReader(TextFinder.getLocalizedText(product,product.getID(),ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getBody()),1,2);//insert a textreader
+      content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
+      content.add("META DATA",1,++i);
+
+
+
       Link buy = LinkGenerator.getLink(iwc,service.getID());
       buy.setAsImageButton(true);
       content.add(buy,1,3);
