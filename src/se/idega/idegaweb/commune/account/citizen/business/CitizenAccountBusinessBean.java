@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.47 2003/01/14 14:19:37 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.48 2003/01/15 12:46:12 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/15 12:46:12 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -572,6 +572,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 throw new CreateException(e.getMessage());
             }
         }		
+	}
+
+	public void removeApplication(final int applicationId, final User performer)
+        throws RemoteException, FinderException {
+        final CitizenAccount application = getAccount (applicationId);
+		changeCaseStatus (application,
+                          getCaseStatusDenied ().getStatus (), performer);
 	}
 
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {

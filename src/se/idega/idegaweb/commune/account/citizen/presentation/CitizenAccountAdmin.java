@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.16 2003/01/14 14:19:37 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.17 2003/01/15 12:46:12 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,17 +32,18 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/15 12:46:12 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
 	private final static int ACTION_VIEW_DETAILS = 1;
 	private final static int ACTION_APPROVE = 2;
 	private final static int ACTION_REJECT = 3;
+	private final static int ACTION_REMOVE = 4;
 
 	private final static String ADDRESS_DEFAULT = "Address";
 	private final static String ADDRESS_KEY = "caa_adm_address";
@@ -54,6 +55,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private final static String PARAM_FORM_APPROVE = "caa_adm_approve";
 	private final static String PARAM_FORM_REJECT = "caa_adm_reject";
 	private final static String PARAM_FORM_DETAILS = "caa_adm_details";
+	private final static String PARAM_FORM_REMOVE = "caa_adm_remove";
 	private final static String PARAM_FORM_CANCEL = "caa_adm_cancel";
 	private final static String PARAM_FORM_LIST = "caa_adm_list";
 
@@ -78,6 +80,9 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				case ACTION_REJECT :
 					reject(iwc);
 					break;
+				case ACTION_REMOVE :
+					remove(iwc);
+					break;
 			}
 		}
 		catch (Exception e) {
@@ -96,6 +101,12 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			String value = iwc.getParameter(PARAM_FORM_REJECT);
 			if (value != null && !value.equals(""))
 				return ACTION_REJECT;
+		}
+
+		if (iwc.isParameterSet(PARAM_FORM_REMOVE)) {
+			String value = iwc.getParameter(PARAM_FORM_REMOVE);
+			if (value != null && !value.equals(""))
+				return ACTION_REMOVE;
 		}
 
 		if (iwc.isParameterSet(PARAM_FORM_DETAILS)) {
@@ -256,6 +267,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 			SubmitButton approve = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_APPROVE, "Godkänn"), PARAM_FORM_APPROVE, idAsString));
 			SubmitButton reject = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_REJECT, "Avslå"), PARAM_FORM_REJECT, idAsString));
+			SubmitButton remove = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_REMOVE, "Ta bort"), PARAM_FORM_REMOVE, idAsString));
 			SubmitButton cancel = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_CANCEL, "Avbryt"), PARAM_FORM_CANCEL, idAsString));
 
 			table.setHeight(row++, 12);
@@ -264,6 +276,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(approve, 1, row);
 			table.add(Text.NON_BREAKING_SPACE, 1, row);
 			table.add(reject, 1, row);
+			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(remove, 1, row);
 			table.add(Text.NON_BREAKING_SPACE, 1, row);
 			table.add(cancel, 1, row);
 		}
@@ -307,15 +321,36 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			if (iwc.isParameterSet(MESSAGE_KEY)) {
 				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), iwc.getParameter(MESSAGE_KEY));
-			}
 			form.add(getText(localize("caa_rej_application", "Rejected application number : ") + id));
-		}
-		catch (Exception e) {
+			} else {
+                form.add (getText(localize("caa_rej_no_message", "Du måste fylla i fältet 'Meddelande/Orsak'")));
+            }
+		} catch (Exception e) {
 			e.printStackTrace();
 			form.add(getText(localize("caa_rej_application_failed", "There was an error rejecting application number : ") + id));
 		}
 
-		SubmitButton list = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_LIST, "List"), PARAM_FORM_LIST, ""));
+		SubmitButton list = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_LIST, "Lista"), PARAM_FORM_LIST, ""));
+		form.add(Text.BREAK);
+		form.add(Text.BREAK);
+		form.add(list);
+		add(form);
+	}
+
+	private void remove(IWContext iwc) {
+		Form form = new Form();
+		String id = iwc.getParameter(PARAM_FORM_REMOVE);
+
+		try {
+			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+            business.removeApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()));
+			form.add(getText(localize("caa_rem_application", "Tog bort ansökan nummer: ") + id));
+		} catch (Exception e) {
+			e.printStackTrace();
+			form.add(getText(localize("caa_rem_application_failed", "Ett fel inträffade vid borttagning av ansökan nummer: ") + id));
+		}
+
+		SubmitButton list = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_LIST, "Lista"), PARAM_FORM_LIST, ""));
 		form.add(Text.BREAK);
 		form.add(Text.BREAK);
 		form.add(list);

@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
+import com.idega.user.data.User;
+import java.rmi.RemoteException;
 import javax.ejb.*;
 
 public interface CitizenAccountBusiness extends com.idega.business.IBOService
@@ -25,4 +27,6 @@ public interface CitizenAccountBusiness extends com.idega.business.IBOService
  public java.lang.Integer insertMovingTo(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public java.lang.Integer insertPutChildren(java.lang.Integer p0,java.lang.String p1)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public void rejectApplication(int p0,com.idega.user.data.User p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
+    void removeApplication (int applicationId, User user)
+        throws RemoteException, FinderException;
 }
