@@ -1,8 +1,10 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
@@ -362,6 +364,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		form.add(table);
 		
 		String dateWarning = null;
+		List logicMessages = new ArrayList();
 		
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
 		back.setPageToOpen(getResponsePage());
@@ -393,6 +396,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					else{
 						offer.setDisabled(true);
 						offer.setToolTip(localize("child_care.tooltip.button.offerplacing.date_not_yet_set","Date has not been set"));
+						logicMessages.add(localize("child_care.contracting.offer_button_disabled_no_date_has_been_set","Offer button is disabled, application has no date set"));
 					}
 					table.add(offer, column++, 1);
 				}
@@ -461,6 +465,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 							
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					disabledCreateContract.setDisabled(true);
+					
 				}
 				else {
 					createContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
@@ -501,6 +506,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 								table.add(changeDate, 3, 1);
 								disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.startdate_is_before_latest_termination","Start date is before latest termination date"));
 								table.add(disabledCreateContract, 5, 1);
+								logicMessages.add(localize("child_care.contracting.creation_button_disabled_startdate_is_before_latest_termination","Contract creation button is disabled, start date is before latest termination"));
 							}
 							else {
 								table.add(changeDate, 3, 1);
@@ -541,6 +547,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						placeInGroup.setDisabled(true);
 						placeInGroup.setToolTip(localize("child_care.tooltip.button.place_in_group.contract_unsigned","Contract is unsigned"));
 						table.add(placeInGroup, column, 1);
+						logicMessages.add(localize("child_care.contracting.group_placing_button_disabled_unsigned_contract","Place in group button is disabled, contract still not signed by parents"));
 					}
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
@@ -558,6 +565,16 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			table.setHeight(2, 6);
 			table.mergeCells(1, 3, table.getColumns(), 3);
 			table.add(getSmallErrorText(dateWarning), 1, 3);
+		}
+		if(!logicMessages.isEmpty()){
+		    table.setHeight(5,6);
+		    int row = 6;
+		    for (Iterator iter = logicMessages.iterator(); iter.hasNext();) {
+                String msg = (String) iter.next();
+                table.add(getSmallText(msg),1,row);
+                table.mergeCells(1,row,table.getColumns(),row);
+                row++;
+            }
 		}
 		
 		return form;
