@@ -43,7 +43,7 @@ public class Messenger extends Block {
         messenger = new Applet();
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
         messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-        messenger.setCodebase(".");
+        messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
         messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
         messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
