@@ -1218,6 +1218,9 @@ public abstract class BookingForm extends TravelManager{
     return getFormMaintainingAllParameters(true);
  }
  public Form getFormMaintainingAllParameters(boolean withBookingAction) {
+		return getFormMaintainingAllParameters(withBookingAction, false);
+ }
+ public Form getFormMaintainingAllParameters(boolean withBookingAction, boolean withSAction) {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -1242,8 +1245,10 @@ public abstract class BookingForm extends TravelManager{
       form.maintainParameter(this.parameterInquiry);
       form.maintainParameter(parameterFromDate);
       form.maintainParameter(this.parameterOnlineBooking);
-      if (withBookingAction) {
+			if (withSAction) {
 	      form.maintainParameter(this.sAction);
+			}
+      if (withBookingAction) {
         form.maintainParameter(this.BookingAction);
       }
 
@@ -1861,7 +1866,7 @@ public abstract class BookingForm extends TravelManager{
      * @todo gera fínna (þeas meira fínt)
      */
 
-    Form form = getFormMaintainingAllParameters(false);
+    Form form = getFormMaintainingAllParameters(false, true);
       Table table = new Table();
         form.add(table);
       int row = 1;
