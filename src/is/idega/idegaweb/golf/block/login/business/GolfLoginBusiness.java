@@ -371,6 +371,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
 		if (member != null) {
 			iwc.setSessionAttribute(UserAttributeParameter, member);
 			setGolfUserType(iwc);
+			internalSetState(iwc, "loggedon");
 		}
 		return super.logInByUUID(iwc, uuid);
 	}
