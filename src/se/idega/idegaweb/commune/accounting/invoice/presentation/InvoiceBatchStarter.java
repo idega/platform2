@@ -68,7 +68,6 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		try {
 			ExportBusiness exportBusiness = getBusiness().getExportBusiness();
 			ExportDataMapping exportDataMapping = exportBusiness.getExportDataMapping(schoolCategory);
-			System.out.println(""+exportDataMapping.getAccountSettlementType());
 			if(exportDataMapping.getAccountSettlementType() ==
 				exportBusiness.getAccountSettlementTypeSpecificDate())
 			{
