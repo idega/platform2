@@ -37,7 +37,6 @@ import com.idega.core.data.IWTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -69,9 +68,9 @@ import com.idega.user.data.User;
  */
 public class ReportQueryBuilder extends Block {
 	private static final String PARAM_ASTEMPLATE = "astemplate";
-	private IWBundle iwb = null;
+	//private IWBundle iwb = null;
 	private IWResourceBundle iwrb = null;
-	private static final String IWBUNDLE_IDENTIFIER = "com.idega.block.dataquery";
+	//private static final String IWBUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	private QueryHelper helper = null;
 	private boolean hasEditPermission = false, hasTemplatePermission = false, hasCreatePermission = false;
 	
@@ -102,7 +101,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_CONDITION = "field_pattern";
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
-	private static final String PARAM_COND_ENTITY = "entity";
+	//private static final String PARAM_COND_ENTITY = "entity";
 	private static final String PARAM_COND_DESCRIPTION = "description";
 	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
 	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
@@ -113,7 +112,7 @@ public class ReportQueryBuilder extends Block {
 	private static final String PERM_CREATE = "create";
 	private static final String PARAM_LOCK = "lock";
 	private static final String PARAM_FUNCTION = "mkfunction";
-	private static final String PARAM_FUNC_TYPE = "mkfunctype";
+	//private static final String PARAM_FUNC_TYPE = "mkfunctype";
 	
 	private static final String FORM_NAME = "reportQueryBuilderForm";
 	
@@ -126,8 +125,8 @@ public class ReportQueryBuilder extends Block {
 	//private int relationDepth = 4;
 	private int investigationLevel = 6;
 	private int tableBorder = 0;
-	private String zebraColor1 = "#CCCC99";
-	private String zebraColor2 = "#FFFFFF";
+	//private String zebraColor1 = "#CCCC99";
+	//private String zebraColor2 = "#FFFFFF";
 	private String stepTableColor = "#ffffff";
 	private String stepTableStyle = "main";
 	private String stepFontStyle = "headingFont";
@@ -135,7 +134,7 @@ public class ReportQueryBuilder extends Block {
 	private boolean allowEmptyConditions = true;
 	private boolean showSourceEntityInSelectBox = true;
 	private boolean showQueries = true;
-	private boolean closeParentWindow = false;
+	//private boolean closeParentWindow = false;
 	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
 	private String defaultDynamicPattern = "";
@@ -456,9 +455,6 @@ public class ReportQueryBuilder extends Block {
 		}
 		return setOrderConditions(orderConditions);	
 	}
-
-	
-	
 	
 	private boolean processStep2(IWContext iwc) {
 		helper.clearRelatedEntities();
@@ -511,18 +507,6 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	
-	private boolean processStep6(IWContext iwc) throws IOException	{
-		helper.setTemplate(true);
-		String name = iwc.getParameter(PARAM_QUERY_NAME);
-		if (name == null) {
-			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-		}
-		ICFile q = sessionBean.storeQuery(name, queryFolderID);
-		if (q != null) {
-			queryID = ((Integer) q.getPrimaryKey()).intValue();
-		}
-		return true;
-	}		
 
 	
 	private boolean processFunction(IWContext iwc){
@@ -699,7 +683,7 @@ public class ReportQueryBuilder extends Block {
 			case 5 :
 				return getStep5(iwc);
 			case 6:
-				return getStep6(iwc);
+				return getStep6();
 			default :
 				return getStep1(iwc);
 		}
@@ -853,7 +837,7 @@ public class ReportQueryBuilder extends Block {
 		Table table = getStepTable();
 		//table.add(getRelatedChoice(iwc),1,2);
 		IWTreeNode root = getQueryService(iwc).getEntityTree(helper, investigationLevel);
-		EntityChooserTree tree = new EntityChooserTree(root, iwc);
+		EntityChooserTree tree = new EntityChooserTree(root);
 
 		tree.setUI(AbstractTreeViewer._UI_WIN);
 		Link treeLink = new Link();
@@ -930,7 +914,7 @@ public class ReportQueryBuilder extends Block {
 					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
 				resultFields.add(newFieldPart);
 			}
-			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
+			fillFieldSelectionBox(resultFields, fieldMap,box);
 		}
 		
 		while (iterator.hasNext()) {
@@ -1006,7 +990,7 @@ public class ReportQueryBuilder extends Block {
 					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
 				resultFields.add(newFieldPart);
 			}
-			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
+			fillFieldSelectionBox(resultFields, fieldMap,box);
 		}
 
 		// box is filled with values from the related entities
@@ -1130,7 +1114,6 @@ public class ReportQueryBuilder extends Block {
 	// fills the right and the left list of the specified box depending on values set in fieldMap
 	// values are retrieved from the specified choiceFields
 	private void fillFieldSelectionBox(
-		String entityName,
 		List choiceFields,
 		Map fieldMap,
 		SelectionDoubleBox box) {
@@ -1350,7 +1333,7 @@ public class ReportQueryBuilder extends Block {
 		return table;
 	}
 
-	public PresentationObject getStep6(IWContext iwc) throws RemoteException {
+	public PresentationObject getStep6() throws RemoteException {
 		Table table = getStepTable();
 		int row = 1;
 		// thomas changed: do not use the FileChooser 
@@ -1430,7 +1413,7 @@ public class ReportQueryBuilder extends Block {
 	
 	public void main(IWContext iwc) throws Exception {
 		debugParameters(iwc);
-		iwb = getBundle(iwc);
+		//iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		//TODO thi think about that, ask Aron
 		hasEditPermission = true;
@@ -1548,17 +1531,6 @@ public class ReportQueryBuilder extends Block {
 		return drp;
 	}
 
-	private DropdownMenu getFieldDropdown() {
-		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
-		if (helper.hasFields()) {
-			List fields = helper.getListOfVisibleFields();
-			for (Iterator iter = fields.iterator(); iter.hasNext();) {
-				QueryFieldPart element = (QueryFieldPart) iter.next();
-				drp.addMenuElement(element.getName(), element.getDisplay());
-			}
-		}
-		return drp;
-	}
 	
 	private DropdownMenu getAvailableFieldsDropdown(IWContext iwc)throws RemoteException {
 		QueryService service = getQueryService(iwc);
@@ -1674,7 +1646,7 @@ public class ReportQueryBuilder extends Block {
 			setExtraColumnHorizontalAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
 			entityMap = getEntityMap(helper.getListOfRelatedEntities());
 		}
-		public EntityChooserTree(ICTreeNode node, IWContext iwc) {
+		public EntityChooserTree(ICTreeNode node) {
 			this();
 			setRootNode(node);
 		}
@@ -1737,22 +1709,12 @@ public class ReportQueryBuilder extends Block {
 	}
 
 
-  private ICFile getFile(int fileId) throws FinderException {
-    try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByPrimaryKey(new Integer(fileId));
-      return file;
-    }
-    catch(RemoteException ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
-    }
-  }     
-  
+ 
   
   private ICFile getFile(String name)	{
   	try {
       ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByFileName(name);
+      ICFile file = home.findByFileName(name);
       return file;
     }
     catch(RemoteException ex){
@@ -1820,7 +1782,44 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	
-		
+	/* start of unused method
+	
+  private ICFile getFile(int fileId) throws FinderException {
+    try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByPrimaryKey(new Integer(fileId));
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+  }     
 
+	private DropdownMenu getFieldDropdown() {
+		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
+		if (helper.hasFields()) {
+			List fields = helper.getListOfVisibleFields();
+			for (Iterator iter = fields.iterator(); iter.hasNext();) {
+				QueryFieldPart element = (QueryFieldPart) iter.next();
+				drp.addMenuElement(element.getName(), element.getDisplay());
+			}
+		}
+		return drp;
+	}
+
+	private boolean processStep6(IWContext iwc) throws IOException	{
+		helper.setTemplate(true);
+		String name = iwc.getParameter(PARAM_QUERY_NAME);
+		if (name == null) {
+			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
+		}
+		ICFile q = sessionBean.storeQuery(name, queryFolderID);
+		if (q != null) {
+			queryID = ((Integer) q.getPrimaryKey()).intValue();
+		}
+		return true;
+	}		
+
+	*/
 
 }
