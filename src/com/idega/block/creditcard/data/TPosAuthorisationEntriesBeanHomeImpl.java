@@ -1,5 +1,7 @@
 package com.idega.block.creditcard.data;
 
+import com.idega.util.IWTimestamp;
+
 
 public class TPosAuthorisationEntriesBeanHomeImpl extends com.idega.data.IDOFactory implements TPosAuthorisationEntriesBeanHome
 {
@@ -13,9 +15,9 @@ public class TPosAuthorisationEntriesBeanHomeImpl extends com.idega.data.IDOFact
  }
 
 
-public TPosAuthorisationEntriesBean findByAuthorisationIdRsp(java.lang.String p0)throws javax.ejb.FinderException{
+public TPosAuthorisationEntriesBean findByAuthorisationIdRsp(java.lang.String p0, IWTimestamp stamp)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((TPosAuthorisationEntriesBeanBMPBean)entity).ejbFindByAuthorisationIdRsp(p0);
+	Object pk = ((TPosAuthorisationEntriesBeanBMPBean)entity).ejbFindByAuthorisationIdRsp(p0, stamp);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

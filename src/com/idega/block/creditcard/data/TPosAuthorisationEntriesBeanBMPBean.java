@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.1 2004/04/22 21:40:27 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.2 2004/08/11 00:36:05 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,13 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -1122,8 +1129,18 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
 		return getAuthorisationIdRsp();
 	}
 
-	public Object ejbFindByAuthorisationIdRsp(String authIdRsp) throws FinderException {
-		return this.idoFindOnePKByColumnBySQL(AUTHORISATION_ID_RSP, authIdRsp);
+	public Object ejbFindByAuthorisationIdRsp(String authIdRsp, IWTimestamp stamp) throws FinderException {
+		String dateString = stamp.getDateString("yyyyMMdd");
+		Table table = new Table(this);
+		Column auth = new Column(table, AUTHORISATION_ID_RSP);
+		Column date = new Column(table, ENTRY_DATE);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(auth, MatchCriteria.EQUALS, authIdRsp));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.EQUALS, dateString));
+
+		return this.idoFindOnePKBySQL(query.toString());
+		//return this.idoFindOnePKByColumnBySQL(AUTHORISATION_ID_RSP, authIdRsp);
 	}
 
 	/**
@@ -1157,6 +1174,21 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
 
 	public String getErrorNumber() {
 		return getErrorNo();
+	}
+	
+	public CreditCardAuthorizationEntry getChild() throws FinderException {
+		Object obj = this.idoFindOnePKByColumnBySQL(PARENT_ID, this.getPrimaryKey().toString());
+		if (obj != null) {
+			TPosAuthorisationEntriesBeanHome home;
+			try {
+				home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+				return home.findByPrimaryKey(obj);
+			}
+			catch (IDOLookupException e) {
+				throw new FinderException(e.getMessage());
+			}
+		}
+		return null;
 	}
 	
 	public String getExtraField() {

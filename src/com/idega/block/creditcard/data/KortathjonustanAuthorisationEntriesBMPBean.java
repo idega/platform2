@@ -5,6 +5,14 @@ import java.sql.Date;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author gimmi
@@ -125,8 +133,17 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 		setColumn(COLUMN_PARENT_ID, id);
 	}
 
-	public Object ejbFindByAuthorizationCode(String code) throws FinderException {
-		return this.idoFindOnePKByColumnBySQL(COLUMN_AUTHORIZATION_CODE, code);
+	public Object ejbFindByAuthorizationCode(String code, IWTimestamp stamp) throws FinderException {
+		Table table = new Table(this);
+		Column auth = new Column(table, COLUMN_AUTHORIZATION_CODE);
+		Column date = new Column(table, COLUMN_DATE);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(auth, MatchCriteria.EQUALS, code));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.EQUALS, stamp.getDate().toString()));
+		return this.idoFindOnePKBySQL(query.toString());
+		
+		//return this.idoFindOnePKByColumnBySQL(COLUMN_AUTHORIZATION_CODE, code);
 	}
 
 	
@@ -156,5 +173,20 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 	
 	public String getExtraField() {
 		return getServerResponse();
+	}
+	
+	public CreditCardAuthorizationEntry getChild() throws FinderException {
+		Object obj = this.idoFindOnePKByColumnBySQL(COLUMN_PARENT_ID, this.getPrimaryKey().toString());
+		if (obj != null) {
+			KortathjonustanAuthorisationEntriesHome home;
+			try {
+				home = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
+				return home.findByPrimaryKey(obj);
+			}
+			catch (IDOLookupException e) {
+				throw new FinderException(e.getMessage());
+			}
+		}
+		return null;
 	}
 }

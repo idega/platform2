@@ -1,5 +1,7 @@
 package com.idega.block.creditcard.data;
 
+import com.idega.util.IWTimestamp;
+
 
 public class KortathjonustanAuthorisationEntriesHomeImpl extends com.idega.data.IDOFactory implements KortathjonustanAuthorisationEntriesHome
 {
@@ -13,9 +15,9 @@ public class KortathjonustanAuthorisationEntriesHomeImpl extends com.idega.data.
  }
 
 
-public KortathjonustanAuthorisationEntries findByAuthorizationCode(java.lang.String p0)throws javax.ejb.FinderException{
+public KortathjonustanAuthorisationEntries findByAuthorizationCode(java.lang.String p0, IWTimestamp stamp)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((KortathjonustanAuthorisationEntriesBMPBean)entity).ejbFindByAuthorizationCode(p0);
+	Object pk = ((KortathjonustanAuthorisationEntriesBMPBean)entity).ejbFindByAuthorizationCode(p0, stamp);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

@@ -5,6 +5,8 @@ package com.idega.block.creditcard.data;
 
 import java.sql.Date;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.IDOEntity;
 
 /**
@@ -36,5 +38,7 @@ public interface CreditCardAuthorizationEntry extends  IDOEntity {
 
 	public int getParentID();
 	public CreditCardAuthorizationEntry getParent();
+	
+	public CreditCardAuthorizationEntry getChild() throws FinderException;
 	
 }
