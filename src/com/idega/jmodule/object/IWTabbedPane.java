@@ -59,7 +59,8 @@ public class IWTabbedPane extends Table implements SwingConstants {
         pages = new Vector(1);
         setModel(new DefaultSingleSelectionModel());
         getModel().addChangeListener(this.createChangeListener());
-        updateUI();
+        //updateUI();
+        setUI((IWTabbedPaneUI) new BasicTabbedPaneUI());
         this.currentPage = (GenericTabbedPaneUI.GenericTabPagePresentation)this.getUI().getTabPagePresentation();
         this.addTabePage(this.currentPage);
         justConstructed = true;
@@ -115,11 +116,11 @@ public class IWTabbedPane extends Table implements SwingConstants {
 
     public void setUI(IWTabbedPaneUI ui) {
         this.ui = ui;
+        updateUI();
     }
 
     public void updateUI() {
-        //setUI((IWTabbedPaneUI)UIManager.getUI(this));
-        setUI((IWTabbedPaneUI) new BasicTabbedPaneUI());
+      this.currentPage = (GenericTabbedPaneUI.GenericTabPagePresentation)this.getUI().getTabPagePresentation();
     }
 
 

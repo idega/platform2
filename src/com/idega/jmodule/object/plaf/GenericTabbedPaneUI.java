@@ -25,7 +25,6 @@ import com.idega.jmodule.object.interfaceobject.Form;
 public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
 
-  private TabbedPaneFrame frame;
   private TabPresentation tab;
   private TabPagePresentation tabpage;
   private IWColor MainColor;
@@ -231,49 +230,5 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
     public void fireContentChange(){}
 
   } // InnerClass GenericTabPagePresentation
-
-
-
-
-
-//  public abstract class GenericTabbedPaneFrame extends Table implements TabbedPaneFrame {
-//
-//    public SubmitButton OK;
-//    public SubmitButton Cancel;
-//    public SubmitButton Apply;
-//
-//    public GenericTabbedPaneFrame(){
-//      super();
-//      initTabbedPaneFrame();
-//    }
-//
-//    public abstract void initTabbedPaneFrame();
-//    public abstract void initOKButton();
-//    public abstract void initCancelButton();
-//    public abstract void initApplyButton();
-//
-//    public void addOKButton(){
-//      initOKButton();
-//      this.add(OK);
-//    }
-//
-//    public void addCancelButton(){
-//      initCancelButton();
-//      this.add(Cancel);
-//    }
-//
-//    public void addApplyButton(){
-//      initApplyButton();
-//      this.add(Apply);
-//    }
-//
-//    public void main(ModuleInfo modinfo) throws Exception {
-//
-//    }
-//
-//  } // InnerClass GenericTabbedPaneFrame
-
-
-
 
 } // Class GenericTabbedPaneUI
