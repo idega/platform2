@@ -1,5 +1,8 @@
 package com.idega.block.finance.data;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 
 public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.finance.data.Entry
 {
@@ -44,4 +47,34 @@ public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.f
  public void setTotal(float p0);
  public void setVAT(java.lang.Float p0);
  public void setVAT(float p0);
+ 
+ /*added 6/12/2004 - birna*/
+ public int getAccountBook();
+ public void setAccountBook(int accountBook);
+ public Integer getInvoiceNumber();
+ public void setInvoiceNumber(Integer invoiceNumber);
+ public Date getFinalDueDate();
+ public void setFinalDueDate(Timestamp finalDueDate);
+ public int getUserId();
+ public void setUserId(int userId);
+ public Timestamp getDisallowanceDate();
+ public void setDisallowanceDate(Timestamp disallowanceDate);
+ public int getBatchNumber();
+ public void setBatchNumber(int batchNr);
+ public Date getDueDate();
+ public void setDueDate(Date dueDate);
+ public String getPenalIntrestCode();
+ public void setPenalIntrestCode(String penalIntrestCode);
+ public String getPenalIntrestRule();
+ public void setPenalIntrestRule(String penalIntrestRule);
+ public double getPenalIntrestProsent();
+ public void setPenalIntrestProsent(double penalIntrestProsent);
+ public String getPaymentCode();
+ public void setPaymentCode(String paymentCode);
+ public double getNotificationAndPaymentFee1();
+ public void setNotificationAndPaymentFee1(double fee);
+ public double getNotificationAndPaymentFee2();
+ public void setNotificationAndPaymentFee2(double fee);
+ public double getOtherCost();
+ public void setOtherCost(double otherCost);
 }

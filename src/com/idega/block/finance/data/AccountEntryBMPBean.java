@@ -4,9 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
@@ -15,6 +13,8 @@ import com.idega.data.query.SelectQuery;
 import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
+import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -53,6 +53,21 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getCashierIdColumnName(),"Cashier",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
     addAttribute(getRoundIdColumnName(),"Round",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AssessmentRound.class);
     addAttribute(getColumnNameStatus(),"status",true,true,String.class);
+    /*added 6/12/2004 - birna*/
+    addAttribute(getColumnNameAccountBook(), "account book", true, true, Integer.class);
+    addAttribute(getColumnNameInvoiceNumber(), "invoice number", true, true, Integer.class);
+    addAttribute(getColumnNameFinalDueDate(), "final due date", true, true, Timestamp.class);
+    addAttribute(getColumnNameUserId(), "userId", true, true, Integer.class, "many-to-one", User.class);
+    addAttribute(getColumnNameDisallowanceDate(), "disallowance date", true, true, Timestamp.class);
+    addAttribute(getColumnNameBatchNumber(), "batch number", true, true, Integer.class);
+    addAttribute(getColumnNameDueDate(), "due date", true, true, Date.class);
+    addAttribute(getColumnNamePenalIntrestCode(), "penal int code", true, true, String.class);
+    addAttribute(getColumnNamePenalIntrestProsent(), "penal int prosent", true, true, Double.class);
+    addAttribute(getColumnNamePenalIntrestRule(), "penal int rule", true, true, String.class);
+    addAttribute(getColumnNamePaymentCode(), "payment code", true, true, String.class);
+    addAttribute(getColumnNameNotificationAndPaymentFee1(), "not pay fee1", true, true, Double.class);
+    addAttribute(getColumnNameNotificationAndPaymentFee2(), "not pay fee2", true, true, Double.class);
+    addAttribute(getColumnNameOtherCost(), "other cost", true, true, Double.class);
   }
 
   public static String getEntityTableName(){ return "FIN_ACC_ENTRY"; }
@@ -70,8 +85,22 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getPaymentDateColumnName(){ return "PAYMENT_DATE"; }
   public static String getLastUpdatedColumnName(){ return "LAST_UPDATED"; }
   public static String getColumnNameStatus(){ return "STATUS"; }
-
-
+  /*added 6/12/2004 - birna */
+  public static String getColumnNameAccountBook() { return "ACCOUNT_BOOK"; }
+  public static String getColumnNameInvoiceNumber() { return "INVOICE_NUMBER"; }
+  public static String getColumnNameFinalDueDate() { return "FINAL_DUE_DATE"; }
+  public static String getColumnNameUserId() { return UserBMPBean.getColumnNameUserID(); }
+  public static String getColumnNameDisallowanceDate() { return "DISALLOWANCE_DATE"; }
+  public static String getColumnNameBatchNumber() { return "BATCH_NUMBER"; }
+  public static String getColumnNameDueDate() { return "DUE_DATE"; }
+  public static String getColumnNamePenalIntrestCode() { return "PENAL_INT_CODE"; }
+  public static String getColumnNamePenalIntrestProsent() { return "PENAL_INT_PROS"; }
+  public static String getColumnNamePenalIntrestRule() { return "PENAL_INT_RULE"; }
+  public static String getColumnNamePaymentCode() { return "PAYMENT_CODE"; }
+  public static String getColumnNameNotificationAndPaymentFee1() { return "NOT_PAY_FEE1"; }
+  public static String getColumnNameNotificationAndPaymentFee2() { return "NOT_PAY_FEE2"; }
+  public static String getColumnNameOtherCost() { return "OTHER_COST"; }
+  
   public String getEntityName() {
     return getEntityTableName();
   }
@@ -181,6 +210,92 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 
   public String getStatus(){
     return getStringColumnValue( getColumnNameStatus());
+  }
+  
+  /*added 6/12/2004 - birna*/
+  public int getAccountBook() {
+  		return getIntColumnValue(getColumnNameAccountBook());
+  }
+  public void setAccountBook(int accountBook) {
+		setColumn(getColumnNameAccountBook(), accountBook);
+  }
+  public Integer getInvoiceNumber() {
+		return getIntegerColumnValue(getColumnNameInvoiceNumber());
+  }
+  public void setInvoiceNumber(Integer invoiceNumber) {
+  		setColumn(getColumnNameInvoiceNumber(), invoiceNumber);
+  }
+  public Date getFinalDueDate() {
+		return getDateColumnValue(getColumnNameFinalDueDate());
+  }
+  public void setFinalDueDate(Timestamp finalDueDate) {
+  		setColumn(getColumnNameFinalDueDate(), finalDueDate);
+  }
+  public int getUserId() {
+  		return getIntColumnValue(getColumnNameUserId());
+  }
+  public void setUserId(int userId) {
+  		setColumn(getColumnNameUserId(), userId);
+  }
+  public Timestamp getDisallowanceDate() {
+  		return getTimestampColumnValue(getColumnNameDisallowanceDate());
+  }
+  public void setDisallowanceDate(Timestamp disallowanceDate) {
+  		setColumn(getColumnNameDisallowanceDate(), disallowanceDate);
+  }
+  public int getBatchNumber() {
+  		return getIntColumnValue(getColumnNameBatchNumber());
+  }
+  public void setBatchNumber(int batchNr) {
+  		setColumn(getColumnNameBatchNumber(), batchNr);
+  }
+  public Date getDueDate() {
+  		return getDateColumnValue(getColumnNameDueDate());
+  }
+  public void setDueDate(Date dueDate) {
+  		setColumn(getColumnNameDueDate(), dueDate);
+  }
+  public String getPenalIntrestCode() {
+  		return getStringColumnValue(getColumnNamePenalIntrestCode());
+  }
+  public void setPenalIntrestCode(String penalIntrestCode) {
+  		setColumn(getColumnNamePenalIntrestCode(), penalIntrestCode);
+  }
+  public String getPenalIntrestRule() {
+  		return getStringColumnValue(getColumnNamePenalIntrestRule());
+  }
+  public void setPenalIntrestRule(String penalIntrestRule) {
+  		setColumn(getColumnNamePenalIntrestRule(), penalIntrestRule);
+  }
+  public double getPenalIntrestProsent() {
+  		return getDoubleColumnValue(getColumnNamePenalIntrestProsent());
+  }
+  public void setPenalIntrestProsent(double penalIntrestProsent) {
+  		setColumn(getColumnNamePenalIntrestProsent(), penalIntrestProsent);
+  }
+  public String getPaymentCode() {
+  		return getStringColumnValue(getColumnNamePaymentCode());
+  }
+  public void setPaymentCode(String paymentCode) {
+  		setColumn(getColumnNamePaymentCode(), paymentCode);
+  }
+  public double getNotificationAndPaymentFee1() {
+  		return getDoubleColumnValue(getColumnNameNotificationAndPaymentFee1());
+  }
+  public void setNotificationAndPaymentFee1(double fee) {
+  		setColumn(getColumnNameNotificationAndPaymentFee1(), fee);
+  }
+  public double getNotificationAndPaymentFee2() {
+  		return getDoubleColumnValue(getColumnNameNotificationAndPaymentFee2());
+  }
+  public void setNotificationAndPaymentFee2(double fee) {
+  		setColumn(getColumnNameNotificationAndPaymentFee2(), fee);
+  }
+  public double getOtherCost() {
+  		return getDoubleColumnValue(getColumnNameOtherCost());
+  }
+  public void setOtherCost(double otherCost) {
+  		setColumn(getColumnNameOtherCost(), otherCost);
   }
 
   public void setStatus(String status) throws IllegalStateException {
@@ -318,6 +433,18 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 		} catch (SQLException e) {
 			throw new IDOException(e.getMessage());
 		}
+  }
+  
+  public Integer ejbFindByInvoiceNumber(int invoiceNumber) throws FinderException {
+	  	IDOQuery query = idoQueryGetSelect();
+	  	query.appendWhereEquals(getColumnNameInvoiceNumber(), invoiceNumber);
+	  	return (Integer)idoFindOnePKByQuery(query);
+  }
+  
+  public Collection ejbFindInvoicesByBatchNumber(int batchNumber) throws FinderException {
+  		IDOQuery query = idoQueryGetSelect();
+  		query.appendWhereEquals(getColumnNameBatchNumber(), batchNumber);
+  		return super.idoFindPKsByQuery(query);
   }
 
 }

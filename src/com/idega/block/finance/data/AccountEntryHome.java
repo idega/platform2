@@ -9,7 +9,9 @@ public interface AccountEntryHome extends com.idega.data.IDOHome
  public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3,String assessmentStatus)throws javax.ejb.FinderException;
  public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.util.Collection findByEntryGroup(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public AccountEntry findByInvoiceNumber(int invoiceNumber) throws javax.ejb.FinderException;
  public java.util.Collection findUnGrouped(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public java.util.Collection findByBatchNumber(int batchNumber)throws javax.ejb.FinderException;
  public int countByGroup(java.lang.Integer p0)throws com.idega.data.IDOException;
  public java.sql.Date getMaxDateByAccount(java.lang.Integer p0)throws com.idega.data.IDOException;
  public double getTotalSumByAccount(java.lang.Integer p0)throws java.sql.SQLException;

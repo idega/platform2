@@ -1,6 +1,9 @@
 package com.idega.block.finance.data;
 
 
+
+
+
 public class AccountEntryHomeImpl extends com.idega.data.IDOFactory implements AccountEntryHome
 {
  protected Class getEntityInterfaceClass(){
@@ -50,6 +53,20 @@ public java.util.Collection findUnGrouped(java.sql.Date p0,java.sql.Date p1)thro
 
  public AccountEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (AccountEntry) super.findByPrimaryKeyIDO(pk);
+ }
+ 
+ public AccountEntry findByInvoiceNumber(int invoiceNumber) throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((AccountEntryBMPBean)entity).ejbFindByInvoiceNumber(invoiceNumber);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+ }
+ 
+ public java.util.Collection findByBatchNumber(int batchNumber)throws javax.ejb.FinderException{
+ 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+ 	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindInvoicesByBatchNumber(batchNumber);
+ 	this.idoCheckInPooledEntity(entity);
+ 	return this.getEntityCollectionForPrimaryKeys(ids);
  }
 
 
