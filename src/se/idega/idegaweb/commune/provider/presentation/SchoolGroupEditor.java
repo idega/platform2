@@ -12,9 +12,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSessionBean;
+
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.business.SchoolUserBusinessBean;
@@ -491,7 +494,14 @@ public class SchoolGroupEditor extends ProviderBlock {
 			table.setHeight(row++, 15);
 		}
 		//study paths...
-		
+
+		Link link = new Link(localize("create_school_user", "Create school user"));
+		link.setAsImageButton(true);
+		link.setWindowToOpen(com.idega.block.school.presentation.SchoolUserWindow.class);
+		link.setParameter("sue_act", "sue_pvs");
+		link.setParameter("pr_schl_id", _provider.getPrimaryKey().toString());
+		table.add(link, 3, row++);
+
 		List groupTeachers = new ArrayList();
 		if (_group != null) {
 			try {
