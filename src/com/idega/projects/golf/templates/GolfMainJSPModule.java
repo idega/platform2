@@ -1,9 +1,9 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.16 2001/05/24 19:54:13 gummi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.17 2001/05/24 23:15:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
- * This software is the proprietary information of Strengur hf.
+ * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  *
  */
