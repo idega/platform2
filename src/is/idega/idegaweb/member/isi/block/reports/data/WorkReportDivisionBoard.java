@@ -9,6 +9,8 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public int getGroupId();
  public java.lang.String getHomePage();
  public is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup getLeague()throws com.idega.data.IDOException;
+ public int getNumberOfCompetitors();
+ public int getNumberOfPlayers();
  public java.lang.String getPersonalId();
  public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
@@ -23,6 +25,8 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public void setGroupId(int p0);
  public void setHomePage(java.lang.String p0);
  public void setLeague(int p0);
+ public void setNumberOfCompetitors(int p0);
+ public void setNumberOfPlayers(int p0);
  public void setPersonalId(java.lang.String p0);
  public void setPostalCode(com.idega.core.data.PostalCode p0);
  public void setPostalCodeID(int p0);

@@ -42,6 +42,9 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   protected final static String COLUMN_NAME_FAX = "FAX";
   protected final static String COLUMN_NAME_EMAIL = "EMAIL";
   
+	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS = "TOTAL_PLAYERS";
+	protected final static String COLUMN_NAME_NUMBER_OF_COMPETITORS = "TOTAL_COMPETITORS";
+  
   public WorkReportDivisionBoardBMPBean() {
     super();
   }
@@ -61,6 +64,9 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     addAttribute(COLUMN_NAME_SECOND_PHONE,"Second phone number",true,true,String.class);
     addAttribute(COLUMN_NAME_FAX,"Fax number",true,true,String.class);
     addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
+    
+		addAttribute(COLUMN_NAME_NUMBER_OF_PLAYERS,"Total sum of players",true,true,Integer.class);
+		addAttribute(COLUMN_NAME_NUMBER_OF_COMPETITORS,"Total sum of competitors",true,true,Integer.class);
     
     
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"many-to-one",WorkReportGroup.class);
@@ -94,6 +100,22 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
   public void setReportId(int reportId) {
     setColumn(COLUMN_NAME_REPORT_ID,reportId);
   }
+  
+	public int getNumberOfPlayers() {
+		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_PLAYERS);
+	}
+
+	public void setNumberOfPlayers(int totalPlayersCount) {
+		setColumn(COLUMN_NAME_NUMBER_OF_PLAYERS,totalPlayersCount);
+	}
+	
+	public int getNumberOfCompetitors() {
+		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_PLAYERS);
+	}
+
+	public void setNumberOfCompetitors(int totalCompetitorsCount) {
+		setColumn(COLUMN_NAME_NUMBER_OF_PLAYERS,totalCompetitorsCount);
+	}
 
   public int getGroupId() {
     return getIntColumnValue(COLUMN_NAME_GROUP_ID);
