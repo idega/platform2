@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeInfoBMPBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
+ * $Id: MeetingFeeInfoBMPBean.java,v 1.3 2004/12/29 15:47:09 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,7 +22,7 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 10:59:07 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MeetingFeeInfoBMPBean extends GenericEntity  implements MeetingFeeInfo{
 
@@ -74,7 +74,7 @@ public class MeetingFeeInfoBMPBean extends GenericEntity  implements MeetingFeeI
 	}
 
 	public int getAmount() {
-		return getIntColumnValue(COLUMN_MEETING_DURATION);
+		return getIntColumnValue(COLUMN_AMOUNT);
 	}
 
 	// setters
