@@ -19,6 +19,7 @@ import com.idega.user.presentation.UserClubMemberExchangeWindow;
 import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
 import com.idega.user.presentation.UserWorkReportWindow;
+import com.idega.user.util.ICUserConstants;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -34,6 +35,8 @@ public class IWBundleStarter implements IWBundleStartable {
 	public void start(IWBundle starterBundle) {
 		// changing constants, setting the right help bundle in the com.idega.user bundle
 		UserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
+		// changing constants, setting the right help bundle in the com.idega.core.bundle
+		ICUserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
 		// services registration
 		IBOLookup.registerImplementationForBean(FamilyLogic.class, MemberFamilyLogicBean.class);
 		// add implementors for the com.idega.user bundle
