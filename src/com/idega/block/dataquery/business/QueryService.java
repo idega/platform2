@@ -24,6 +24,6 @@ public interface QueryService extends com.idega.business.IBOService
  public java.util.Collection getSourceQueryEntityParts() throws java.rmi.RemoteException;
  public com.idega.user.business.UserBusiness getUserBusiness() throws java.rmi.RemoteException;
  public void removeUserQuery(java.lang.Integer p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
- public com.idega.block.dataquery.data.UserQuery storeOrUpdateQuery(java.lang.String p0,com.idega.block.dataquery.data.xml.QueryHelper p1,boolean p2,boolean p3,com.idega.idegaweb.IWUserContext p4)throws com.idega.data.IDOStoreException,java.io.IOException,javax.ejb.CreateException,java.sql.SQLException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.dataquery.data.UserQuery storeQuery(java.lang.String p0,com.idega.core.file.data.ICFile p1,boolean p2,com.idega.idegaweb.IWUserContext p3)throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.dataquery.data.UserQuery storeOrUpdateQuery(java.lang.String p0,com.idega.block.dataquery.data.xml.QueryHelper p1,boolean p2,boolean p3,com.idega.idegaweb.IWUserContext p4) throws java.rmi.RemoteException;
+ public com.idega.block.dataquery.data.UserQuery storeQuery(java.lang.String p0,com.idega.core.file.data.ICFile p1,boolean p2,java.lang.Object p3,com.idega.idegaweb.IWUserContext p4) throws java.rmi.RemoteException;
 }

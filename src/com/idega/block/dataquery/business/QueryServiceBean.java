@@ -293,19 +293,17 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 				iter = manyToManyEntities.iterator();
 				while (iter.hasNext()) {
 					IDOEntityDefinition entityDef = (IDOEntityDefinition) iter.next();
-					//GenericEntity relatedEntity = getEntity(entityClass);
           String queryEntityPartName = entityDef.getInterfaceClass().getName();
-					// thi comment QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
           QueryEntityPart child2 = new QueryEntityPart (queryEntityPartName, queryEntityPartName);
-          String path = node.getPath() + "#" + queryEntityPartName;
-          child2.setPath(path);
+          StringBuffer buffer = new StringBuffer(node.getPath());
+          buffer.append(QueryConstants.ENTITY_PATH_DELIMITER);
+          buffer.append(queryEntityPartName);
+          child2.setPath(buffer.toString());
 					resultList.add(child2);
 					if(level >0)
 						getRelatedEntities(resultList, child2,level-1);
-					//System.out.println(child2.getNodePath());
 				}
 			}
-			//QueryEntityPart part = (QueryEntityPart) node;
 			Collection attributes = getEntityAttributes(node);
 			iter = attributes.iterator();
 			//IWTreeNode child;
@@ -313,11 +311,11 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 				EntityAttribute attribute = (EntityAttribute) iter.next();
 				if(attribute.isPartOfManyToOneRelationship()){
 					QueryEntityPart child = new QueryEntityPart(attribute.getName(),attribute.getRelationShipClassName());
-					//child = getTreeNode(entityPart);
-					String path = node.getPath() + "#" + attribute.getName();
-					child.setPath(path);
+          StringBuffer buffer = new StringBuffer(node.getPath());
+          buffer.append(QueryConstants.ENTITY_PATH_DELIMITER);
+          buffer.append(attribute.getName());
+          child.setPath(buffer.toString());
 					resultList.add(child);
-					//entityPart.setPath(child.getNodePath());
 					if(level>0){
 						getRelatedEntities(resultList, child,level-1);
 					}	
@@ -375,10 +373,36 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return (QueryToSQLBridge)getServiceInstance(QueryToSQLBridge.class);
 	  }
 	
+	public UserQuery storeOrUpdateQuery(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) {
+		UserQuery userQuery = null;
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+  	try {
+			transaction.begin();
+	  	userQuery = storeOrUpdateQueryWithoutTransaction(name, queryHelper, isPrivate, overwriteQuery, iwuc);
+	  	transaction.commit();
+	  	
+  	}
+		catch (Exception e) {
+			logError("[QueryService] Could not store or update UserQuery");
+			log(e);
+			userQuery = null;
+			if (transaction != null) {
+				try {
+					transaction.rollback();
+				}
+				catch (SystemException se) {
+					logError("[QueryService] Could not rollback (store or update query)");
+					log(se);
+				}
+			}
+		}
+		return userQuery;
+	}
+	
 	/**
 	 *  queryFile might be null.
 	 */ 
-	public UserQuery storeOrUpdateQuery(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
+	private UserQuery storeOrUpdateQueryWithoutTransaction(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
 			throws IDOStoreException, IOException, CreateException, SQLException, FinderException {
 		Group group = getTopGroupForCurrentUser(iwuc);
 		// get user query, get xml data
@@ -426,13 +450,39 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return group;
 	}
 
+	 	
+	public UserQuery storeQuery(String name, ICFile file, boolean isPrivate, Object userQueryToBeReplacedId, IWUserContext iwuc) {
+		UserQuery userQuery = null;
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+  	try {
+			transaction.begin();
+	  	userQuery = storeQueryWithoutTransaction(name, file, isPrivate, userQueryToBeReplacedId, iwuc);
+	  	transaction.commit();
+	  	
+  	}
+		catch (Exception e) {
+			logError("[QueryService] Could not store UserQuery");
+			log(e);
+			userQuery = null;
+			if (transaction != null) {
+				try {
+					transaction.rollback();
+				}
+				catch (SystemException se) {
+					logError("[QueryService] Could not rollback (store query)");
+					log(se);
+				}
+			}
+		}
+		return userQuery;
+	}
 	
 	
-	
-	public UserQuery storeQuery(String name, ICFile file, boolean isPrivate, IWUserContext iwuc) throws CreateException, FinderException, RemoteException {
+	private UserQuery storeQueryWithoutTransaction(String name, ICFile file, boolean isPrivate, Object userQueryToBeReplacedId, IWUserContext iwuc) throws CreateException, FinderException, RemoteException {
 		Group group = getTopGroupForCurrentUser(iwuc);
 		name = modifyNameIfNameAlreadyExists(name, group);
-		UserQuery userQuery = getUserQueryHome().create();
+		UserQueryHome userQueryHome = getUserQueryHome();
+		UserQuery userQuery = userQueryHome.create();
 		userQuery.setName(name);
 		userQuery.setOwnership(group);
 		userQuery.setSource(file);
@@ -444,7 +494,8 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			userQuery.setPermission(QueryConstants.PERMISSION_PUBLIC_QUERY);
 		}
 		userQuery.store();
-		QuerySequence querySequence = getQuerySequenceHome().create();
+		QuerySequenceHome querySequenceHome = getQuerySequenceHome();
+		QuerySequence querySequence = querySequenceHome.create();
 		// be sure that user query was stored before ((otherwise there is a problem with non existing primary key)
 		querySequence.setRealQuery(userQuery);
 		querySequence.setName(name);
@@ -452,9 +503,29 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		querySequence.store();
 		userQuery.setRoot(querySequence);
 		userQuery.store();
+		// set new pointers
+		if (userQueryToBeReplacedId != null) {
+			//  create new sequence
+			UserQuery oldUserQuery = userQueryHome.findByPrimaryKey(userQueryToBeReplacedId);
+			Collection sequences = querySequenceHome.findAllByRealQuery(oldUserQuery);
+			Iterator iterator = sequences.iterator();
+			while (iterator.hasNext()) {
+				QuerySequence sequence = (QuerySequence) iterator.next();
+				sequence.setRealQuery(userQuery);
+				sequence.store();
+			}
+			// create new sequence for the existing old user query
+			QuerySequence sequence = querySequenceHome.create();
+			String oldUserQueryName = oldUserQuery.getName();
+			sequence.setName(oldUserQueryName);
+			sequence.setRealQuery(oldUserQuery);
+			sequence.store();
+			oldUserQuery.setRoot(sequence);
+			oldUserQuery.store();
+		}
 		return userQuery;
 	}
-
+	
 	private String modifyNameIfNameAlreadyExists(String name, Group group) throws FinderException {
 		return modifyNameIfNameAlreadyExistsIgnoreUserQuery(null, name, group );
 	}
@@ -469,18 +540,16 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			ignoredId = ignoredUserQuery.getPrimaryKey().toString();
 		}
 		Collection coll = getUserQueriesByGroup(group);
+		Collection existingStrings = new ArrayList(coll.size()); 
 		Iterator iterator = coll.iterator();
 		while (iterator.hasNext()) {
 			UserQuery userQuery = (UserQuery) iterator.next();
 			String id = userQuery.getPrimaryKey().toString();
 			if (! id.equals(ignoredId)) {
-				String alreadyExistingName = userQuery.getName();
-				if (alreadyExistingName.equals(name)) {
-					return StringHandler.addOrIncreaseCounter(name, COUNTER_TOKEN);
-				}
+				existingStrings.add(userQuery.getName());
 			}
 		}
-		return name;
+		return StringHandler.addOrIncreaseCounterIfNecessary(name,COUNTER_TOKEN,existingStrings);
 	}
 
 	

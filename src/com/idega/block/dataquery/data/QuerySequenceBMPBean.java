@@ -1,8 +1,11 @@
 package com.idega.block.dataquery.data;
 
+import java.util.Collection;
+
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOQuery;
+import com.idega.data.TreeableEntity;
 import com.idega.data.TreeableEntityBMPBean;
 
 /**
@@ -14,7 +17,7 @@ import com.idega.data.TreeableEntityBMPBean;
  * @version 1.0
  * Created on Feb 2, 2004
  */
-public class QuerySequenceBMPBean extends TreeableEntityBMPBean implements QuerySequence  {
+public class QuerySequenceBMPBean extends TreeableEntityBMPBean implements QuerySequence, TreeableEntity  {
 	
 	private static final String ENTITY_NAME = "QUERY_SEQUENCE";
 	private static final String COLUMN_NAME_NAME = "NAME";
@@ -63,4 +66,12 @@ public class QuerySequenceBMPBean extends TreeableEntityBMPBean implements Query
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 		
+	public Collection ejbFindAllByRealQuery(UserQuery userQuery) throws FinderException {
+    IDOQuery query = idoQueryGetSelect();
+    query.appendWhere();
+    query.appendEquals(COLUMN_NAME_REAL_QUERY, userQuery);
+    return idoFindPKsBySQL(query.toString());
+	}
+	
+	
 }

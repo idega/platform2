@@ -13,6 +13,13 @@ public class QuerySequenceHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
+public java.util.Collection findAllByRealQuery(com.idega.block.dataquery.data.UserQuery p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((QuerySequenceBMPBean)entity).ejbFindAllByRealQuery(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public QuerySequence findByName(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((QuerySequenceBMPBean)entity).ejbFindByName(p0);
