@@ -242,9 +242,9 @@ public class RunResultViewer extends Block {
 
 	private DropdownMenu getSortDropdown() throws RemoteException {
 		DropdownMenu sort = new DropdownMenu(IWMarathonConstants.PARAMETER_SORT_BY);
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_TOTAL, "Total result list"));
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS, "Groups"));
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, "Group competition"));
+		sort.addMenuElement(IWMarathonConstants.RYSDD_TOTAL, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_TOTAL, "Total result list"));
+		sort.addMenuElement(IWMarathonConstants.RYSDD_GROUPS, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS, "Groups"));
+		sort.addMenuElement(IWMarathonConstants.RYSDD_GROUPS_COMP, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, "Group competition"));
 		sort.setToSubmit();
 		sort.keepStatusOnAction();
 
@@ -390,6 +390,10 @@ public class RunResultViewer extends Block {
 			}
 		}
 		return _groupBiz;
+	}
+
+	public String getBundleIdentifier() {
+		return IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
 	}
 
 	/**
