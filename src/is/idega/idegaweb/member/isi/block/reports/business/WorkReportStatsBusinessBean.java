@@ -4134,6 +4134,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				rdClub.addData(clubName, cName);
 				rdClub.addData(memberCount, new Integer(members));
 				rdClub.addData(playerCount, new Integer(players));
+				rdClub.addData(memberCountTot, new Integer(0));
+				rdClub.addData(playerCountTot, new Integer(0));
 				reportCollection.add(rdClub);
 			}
 		}
