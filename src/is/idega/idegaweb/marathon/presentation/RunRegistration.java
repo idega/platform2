@@ -852,7 +852,7 @@ public class RunRegistration extends Block {
 				}
 				t.add(TextFormatter.formatText(message), 1, row++);
 				t.setHeight(row++, 8);
-				Link l = new Link(iwrb.getLocalizedString("",""));
+				Link l = new Link(iwrb.getLocalizedString("run_reg.printable","Printable"));
 				l.setWindowToOpen(RegistrationReceivedPrintable.class);
 				t.add(l,1,row++);
 		
