@@ -91,8 +91,14 @@ public class ProductItemImages extends ProductItem {
 	image = new Image(file.getID());
 	String att = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 
-	if(att != null)
+	if(att != null) {
 	  image.setAttributes(getAttributeMap(att));
+	  if (!getAttributeMap(att).containsKey("align"))
+	  	image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+	}
+	else
+		image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+	  
 
 	if ( _width > 0 ) {
 	  image.setWidth( _width );
