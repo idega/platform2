@@ -1156,14 +1156,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			    // deadline has passed
 			   
 			    if(helper.hasDeadlinePassed()){
-			        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+			    	if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())){ // && today.isEarlierThan(deadlinePeriod.getFirstTimestamp())){
+			    		placementDate.addDays(2);
+			    		dateInput.setEarliestPossibleDate(placementDate.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
+			    	}
+			    	else{
+			    		dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));	
+			    	}
+			        
 			        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
 			    }
 			    // still within deadline
 			    else{
 			    	if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())){ // && today.isEarlierThan(deadlinePeriod.getFirstTimestamp())){
-			    		today.addDays(2);
-			    		dateInput.setEarliestPossibleDate(today.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
+			    		//today.addDays(2);
+			    		placementDate.addDays(2);
+			    		dateInput.setEarliestPossibleDate(placementDate.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
 			    		dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			    	}else {
 			    		dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
