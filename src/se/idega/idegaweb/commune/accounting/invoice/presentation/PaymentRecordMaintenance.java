@@ -79,11 +79,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/19 08:14:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/19 08:40:30 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.78 $
+ * @version $Revision: 1.79 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -125,8 +125,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
 	private static final String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
 	private static final String END_PERIOD_KEY = PREFIX + "end_period";
-	private static final String GO_BACK_DEFAULT = "Tillbaka";
-	private static final String GO_BACK_KEY = PREFIX + "go_back";
 	private static final String HEADER_KEY = PREFIX + "end_period";
 	private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
 	private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
@@ -148,8 +146,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
 	private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
 	private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
-	private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
-	private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
 	private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
 	private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
 	private static final String PIECE_AMOUNT_2_KEY = PREFIX + "piece_amount_2";
@@ -589,16 +585,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		
 		// store updated record
 		record.store ();
-		
-		//render
-		final String [][] parameters =
-				{{ACTION_KEY, ACTION_SHOW_PAYMENT + "" },
-				 { PAYMENT_HEADER_KEY, record.getPaymentHeader () + ""}};
-		final Table table = getConfirmTable
-				(PAYMENT_RECORD_UPDATED_KEY,
-				 PAYMENT_RECORD_UPDATED_DEFAULT, parameters);
-		add (createMainTable (EDIT_PAYMENT_RECORD_KEY,
-													EDIT_PAYMENT_RECORD_DEFAULT, table));        
+	
+		// re-render
+		showPayment (context);
 	}
 	
 	private void showEditRecordForm (final IWContext context)
@@ -1374,19 +1363,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final String lastName = user.getLastName ();
 		return (firstName != null ? firstName + " " : "")
 				+ (lastName != null ? lastName : "");
-	}
-	
-	private Table getConfirmTable (final String key, final String defaultString,
-																 final String [][] parameters) {
-		final Table table = createTable (1);
-		int row = 1;
-		table.setHeight (row++, 24);
-		table.add (new Text (localize (key, defaultString)), 1, row++);
-		table.setHeight (row++, 12);
-		final String goBackText = localize (GO_BACK_KEY, GO_BACK_DEFAULT);
-		final Link link = createSmallLink (goBackText, parameters);
-		table.add (link, 1, row++);
-		return table;
 	}
 	
 	/**

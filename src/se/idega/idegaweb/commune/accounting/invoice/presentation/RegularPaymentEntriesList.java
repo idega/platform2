@@ -599,7 +599,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		form.add(maninTbl);
 
 		Table formTbl = new Table();
-		formTbl.add(form);
+		formTbl.add(form, 1, 1);
 
 		return formTbl;		
 	}
