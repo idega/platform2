@@ -8,7 +8,7 @@ public class PrintedLetterMessageHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
- public PrintedLetterMessage create() throws javax.ejb.CreateException{
+ public Message create() throws javax.ejb.CreateException{
   return (PrintedLetterMessage) super.createIDO();
  }
 
@@ -20,7 +20,7 @@ public java.util.Collection findMessages(int p0)throws javax.ejb.FinderException
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
- public PrintedLetterMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+ public Message findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PrintedLetterMessage) super.findByPrimaryKeyIDO(pk);
  }
 

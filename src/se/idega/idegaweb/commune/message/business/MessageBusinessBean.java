@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.6 2002/07/23 11:45:48 palli Exp $
+ * $Id: MessageBusinessBean.java,v 1.7 2002/07/29 23:29:22 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHome;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 
 import com.idega.data.IDOCreateException;
@@ -40,6 +41,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 //		System.out.println("Getting MessageHome for messageType = " + messageType);
 		if (messageType.equals(TYPE_USER_MESSAGE)) {
 			return (MessageHome) this.getIDOHome(UserMessage.class);
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+			return (MessageHome) this.getIDOHome(PrintedLetterMessage.class);
 		}
 		else {
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
@@ -154,8 +158,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		 * @todo: Implement better
 		 */
 		String mailServer = "mail.idega.is";
+		String fromAddress = "messagebox@idega.com";
 		try {
-			com.idega.util.SendMail.send("idegaWeb MessageBox", email, "", "", mailServer, subject, body);
+			com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
 		}
 		catch (javax.mail.MessagingException me) {
 			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
