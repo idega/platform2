@@ -122,7 +122,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return true;
 	}
 
-	public AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, java.sql.Timestamp choiceDate, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season) throws CreateException, RemoteException, FinderException {
+	private AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException, FinderException {
 		if (season == null) {
 			try {
 				season = getSchoolChoiceBusiness().getCurrentSeason();
@@ -166,6 +166,9 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		stamp.addSeconds((10 - (choiceNumber.intValue() * 10)));
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
+		
+		if (caseStatus.equals(getCaseStatusPreliminary()))
+			sendMessageToParents(choice, subject, body);
 
 		if (parentCase != null)
 			choice.setParentCase(parentCase);
@@ -179,7 +182,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return choice;
 	}
 	
-	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message, String[] placementDates, SchoolSeason season) throws IDOCreateException {
+	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message, String[] placementDates, SchoolSeason season, String subject, String body) throws IDOCreateException {
 		int caseCount = 3;
 		IWTimestamp stamp;
 		List returnList = new Vector(3);
@@ -193,7 +196,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			for (int i = 0; i < caseCount; i++) {
 				if (providerIDs[i] != null && providerIDs[i].intValue() > 0) {
 					stamp = new IWTimestamp(placementDates[i]);
-					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, stamp.getDate(), season);
+					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, i == 0 ? first : other, choice, stamp.getDate(), season, subject, body);
 					returnList.add(choice);
 				}
 			}
