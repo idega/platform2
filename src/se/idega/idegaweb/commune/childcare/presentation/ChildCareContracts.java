@@ -16,7 +16,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -30,7 +29,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private boolean allowAlter = true;
 	private boolean _requiresPrognosis;
 	private int allowedFutureContracts = 2;
-	private boolean showCreateGroupBtn = true;
+	//private boolean showCreateGroupBtn = true;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -89,15 +88,15 @@ public class ChildCareContracts extends ChildCareBlock {
 				boolean isNotYetActive;
 				boolean hasComment = false;
 				String name = null;
-				int provider = -1;
+				//int provider = -1;
 				Link delete;
-				Link childInfo;
-				IWTimestamp registered;
-				boolean showNotStartedComment = false;
-				boolean hasComments = false;
+				//Link childInfo;
+				//IWTimestamp registered;
+				//boolean showNotStartedComment = false;
+				//boolean hasComments = false;
 				IWTimestamp stamp = new IWTimestamp();
 				SchoolClassMember student;
-				Collection students;
+				//Collection students;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
@@ -105,7 +104,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					application = (ChildCareApplication) iter.next();
 					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
-					provider = application.getProviderId();
+					//provider = application.getProviderId();
 					
 					student = contract.getSchoolClassMember();
 					
@@ -173,8 +172,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						/////////
 						if (validFrom.isLaterThan(stamp)) {
 							showComment = true;
-							showNotStartedComment = true;
-							hasComments = true;
+							//showNotStartedComment = true;
+							//hasComments = true;
 							table.add(getSmallErrorText("*"), column, row);
 
 							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
@@ -304,12 +303,12 @@ public class ChildCareContracts extends ChildCareBlock {
 				}
 			}
 	
-			String localized = "";
+			/*String localized = "";
 			if (getSession().getGroupID() != -1)
 				localized = localize("child_care.change_group", "Change group");
 			else
 				localized = localize("child_care.create_group", "Create group");
-			/*if (showCreateGroupBtn){
+			if (showCreateGroupBtn){
 				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 				createGroup.setWindowToOpen(ChildCareWindow.class);
 				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
@@ -363,6 +362,9 @@ public class ChildCareContracts extends ChildCareBlock {
 	 * @param showCreateGroupBtn The showCreateGroupBtn to set.
 	 */
 	public void setShowCreateGroupBtn(boolean showCreateGroupBtn) {
-		this.showCreateGroupBtn = showCreateGroupBtn;
+		//this.showCreateGroupBtn = showCreateGroupBtn;
+		if (showCreateGroupBtn) {
+			//Nothing...
+		}
 	}
 }
