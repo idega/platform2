@@ -1,11 +1,13 @@
 package is.idega.idegaweb.member.util;
 
+import com.idega.user.util.ICUserConstants;
+
 /**
  * A collection of the static variables used in the member system like group type names.
  * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  *
  */
-public class IWMemberConstants {
+public class IWMemberConstants extends ICUserConstants{
 
 	public static final String APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL = "IW_MEMBER_ADMINISTRATOR_MAIN_EMAIL";
 	public static final String APPLICATION_PARAMETER_MAIL_SERVER = "IW_MEMBER_MAIL_SERVER_ADDRESS";
@@ -69,11 +71,8 @@ public class IWMemberConstants {
 	public static final String GROUP_TYPE_CLUB_DIVISION_COMMITTEE = "iwme_club_division_committee";
 	public static final String GROUP_TYPE_CLUB_DIVISION_TEMPLATE = "iwme_club_division_template";
 	public static final String GROUP_TYPE_TEMPORARY = "iwme_temporary";
-	public static final String GROUP_TYPE_ALIAS = "alias";
-	public static final String GROUP_TYPE_GENERAL = "general";
 	
 
-	
 	public static final String MEMBER_BOARD_CHAIR_MAN = "chairman";
 	public static final String MEMBER_BOARD_VICE_CHAIRMAN ="vice_chairman";
 	public static final String MEMBER_CASHIER = "cashier";
