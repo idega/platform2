@@ -321,8 +321,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		// show bulk list when printing to bulk files
 		isBulkManual = bulk;
 		boolean flag = !iwc.isParameterSet("prv_mark");
-		System.err.println("bulk is" + String.valueOf(bulk));
-		System.err.println("mark is" + String.valueOf(flag));
 		String[] ids = iwc.getParameterValues(PRM_U_CHK);
 		if (ids != null && ids.length > 0) {
 			getDocumentBusiness(iwc).writeBulkPDF(
