@@ -1,5 +1,5 @@
 /*
- * $Id: AgeRegulationBMPBean.java,v 1.3 2003/08/25 21:12:06 anders Exp $
+ * $Id: AgeRegulationBMPBean.java,v 1.4 2003/09/02 13:03:18 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for age regulation entries.
  * <p>
- * Last modified: $Date: 2003/08/25 21:12:06 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 13:03:18 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation {
 
@@ -122,7 +122,7 @@ public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendOrderBy();
-		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		String[] s = {COLUMN_PERIOD_FROM + " desc", COLUMN_PERIOD_TO + " desc", COLUMN_AGE_FROM};
 		sql.appendCommaDelimited(s);
 		return idoFindPKsBySQL(sql.toString());
 	}
@@ -153,7 +153,7 @@ public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation
 			sql.append("'" + to + "'");
 		}
 		sql.appendOrderBy();
-		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		String[] s = {COLUMN_PERIOD_FROM + " desc", COLUMN_PERIOD_TO + " desc", COLUMN_AGE_FROM};
 		sql.appendCommaDelimited(s);
 		return idoFindPKsByQuery(sql);
 	}		  
