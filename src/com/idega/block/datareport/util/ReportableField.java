@@ -6,6 +6,7 @@
  */
 package com.idega.block.datareport.util;
 
+import com.idega.data.IDOEntityField;
 import com.idega.data.IDOReportableField;
 
 import dori.jasper.engine.JRField;
@@ -20,13 +21,25 @@ import dori.jasper.engine.JRField;
  */
 public class ReportableField implements IDOReportableField, JRField {
 	
-	JRField _field = null;
+	private int _typeOfContainedField;
+	private static final int CONTAINED_FIELD_TYPE_IDOFIELD = 0;
+	private static final int CONTAINED_FIELD_TYPE_JRFIELD = 1;
+	
+	
+	private JRField _jrField = null;
+	private IDOEntityField _idoField = null;
 	
 	/**
 	 * @param field
 	 */
 	public ReportableField(JRField field) {
-		_field=field;
+		_jrField=field;
+		_typeOfContainedField = CONTAINED_FIELD_TYPE_JRFIELD;
+	}
+	
+	public ReportableField(IDOEntityField field){
+		_idoField = field;
+		_typeOfContainedField=CONTAINED_FIELD_TYPE_IDOFIELD;
 	}
 
 
@@ -34,21 +47,38 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getName()
 	 */
 	public String getName() {
-		return _field.getName();
+		switch (_typeOfContainedField) {
+			case CONTAINED_FIELD_TYPE_JRFIELD :
+				return _jrField.getName();
+			default :
+				return _idoField.getSQLFieldName();
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOReportableField#getDescription()
 	 */
 	public String getDescription() {
-		return _field.getDescription();
+		switch (_typeOfContainedField) {
+			case CONTAINED_FIELD_TYPE_JRFIELD :
+				return _jrField.getDescription();
+			default :
+				return "No description";
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOReportableField#setDescription(java.lang.String)
 	 */
 	public void setDescription(String description) {
-		_field.setDescription(description);
+		switch (_typeOfContainedField) {
+			case CONTAINED_FIELD_TYPE_JRFIELD :
+				_jrField.setDescription(description);
+				break;
+			default :
+				System.out.println("["+this.getClass().getName()+"]: Not able to set description for IDOEntityField");
+				break;
+		}
 
 	}
 
@@ -56,7 +86,12 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getValueClass()
 	 */
 	public Class getValueClass() {
-		return _field.getValueClass();
+		switch (_typeOfContainedField) {
+			case CONTAINED_FIELD_TYPE_JRFIELD :
+				return _jrField.getValueClass();
+			default :
+				return _idoField.getDataTypeClass();
+		}
 	}
 
 }
