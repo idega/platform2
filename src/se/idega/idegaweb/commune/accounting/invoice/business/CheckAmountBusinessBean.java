@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/05 13:16:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/06 14:56:55 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -376,6 +376,10 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			
 		// close document
 		document.close ();
+		writer.setPdfVersion(PdfWriter.VERSION_1_2);
+		writer.close ();
+		buffer.setMimeType("application/pdf");
+
 		return buffer;
 	}
 
