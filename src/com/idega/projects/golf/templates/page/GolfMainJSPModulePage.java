@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.1 2001/05/23 15:34:08 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.2 2001/05/23 16:21:30 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -682,7 +682,7 @@ public class GolfMainJSPModulePage extends MainPage {
             table.setRightHeader(false);
             table.setHeadlineAlign("left");
             table.setWidth(148);
-            table.setHeaderText("Samstarfsaðilar");
+            table.setHeaderText(iwb.getProperty("associates","Associates"));
 
                 Table innerTable = new Table(1,7);
                   innerTable.setWidth("100%");
@@ -807,18 +807,9 @@ public class GolfMainJSPModulePage extends MainPage {
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
 
-    String linkColor = iwb.getProperty("link_color");
-    if( linkColor == null ) linkColor = "black";
-
-    String vLinkColor = iwb.getProperty("vlink_color");
-    if( vLinkColor == null ) vLinkColor = "black";
-
-    String hoverLinkColor = iwb.getProperty("hover_link_color");
-    if( hoverLinkColor == null ) hoverLinkColor = "#8ab490";
-
-    setLinkColor(linkColor);
-    setVlinkColor(vLinkColor);
-    setHoverColor(hoverLinkColor);
+    setLinkColor(iwb.getProperty("link_color","black"));
+    setVlinkColor(iwb.getProperty("vlink_color","black"));
+    setHoverColor(iwb.getProperty("hover_link_color","#8ab490"));
 
     try {
      User(modinfo);
