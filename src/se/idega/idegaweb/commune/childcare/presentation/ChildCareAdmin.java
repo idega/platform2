@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.core.data.Address;
 import com.idega.presentation.CollectionNavigator;
@@ -83,11 +84,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 					applicationTable.setRowColor(row, getZebraColor2());
 
 				link = (Link) this.getSmallLink(child.getNameLastFirst(true));
-				link.setWindowToOpen(ChildCareWindow.class);
-				link.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_OVERVIEW));
-				link.setParameter(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(application.getChildId()));
-				link.setParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
-				link.setParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, String.valueOf(getParentPage().getPageID()));
+				link.setEventListener(ChildCareEventListener.class);
+				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
+				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
+				if (getResponsePage() != null)
+					link.setPage(getResponsePage());
 
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);

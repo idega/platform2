@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.childcare.business;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOStoreException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -91,16 +93,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setCreated(stamp.getTimestamp());
 				if (checkId != -1)
 					appl.setCheckId(checkId);
-				if (i == 0) {
-					if (freetimeApplication)
-						caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
-					else {
-						caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
-						sendMessageToParents(appl, subject, message);
-					}
-				} else {
+				if (i != 0)
 					appl.setParentCase(parent);
+				if (freetimeApplication)
 					caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
+				else {
+					caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
+					sendMessageToParents(appl, subject, message);
 				}
 
 				parent = appl;
@@ -131,6 +130,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return true;
+	}
+	
+	public void changePlacingDate(int applicationID, Date placingDate) throws RemoteException {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			application.setFromDate(placingDate);
+			application.store();
+		}
+		catch (IDOStoreException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void sendMessageToProvider(Integer providerId, String subject, String message) throws RemoteException, CreateException {
@@ -338,20 +351,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
-			//			application.setCaseStatus(getCaseStatusPreliminary());
-			//			application.store();
 			caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 
-			MessageBusiness messageBiz = (MessageBusiness) getServiceInstance(MessageBusiness.class);
-			messageBiz.createUserMessage(application.getOwner(), subject, message);
+			sendMessageToParents(application, subject, message);
 
 			t.commit();
 
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			try {
 				t.rollback();
-			} catch (SystemException ex) {
+			}
+			catch (SystemException ex) {
 				ex.printStackTrace();
 			}
 			e.printStackTrace();
@@ -366,9 +378,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
 
 			return acceptApplication(appl, subject, message, user);
-		} catch (RemoteException e) {
+		}
+		catch (RemoteException e) {
 			e.printStackTrace();
-		} catch (FinderException e) {
+		}
+		catch (FinderException e) {
 			e.printStackTrace();
 		}
 
@@ -623,6 +637,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return null;
+	}
+
+	public ChildCareApplication getApplication(int applicationID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+		}
+		catch (FinderException e) {
+			return null;
+		}
 	}
 
 	public boolean redeemApplication(String applicationId, User performer) {

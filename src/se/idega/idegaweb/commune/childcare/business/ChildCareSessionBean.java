@@ -17,9 +17,13 @@ import com.idega.user.data.User;
 public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSession {
 
 	protected static final String PARAMETER_CHILD_CARE_ID = "cc_c_c_id";
+	protected static final String PARAMETER_USER_ID = "cc_user_id";
+	protected static final String PARAMETER_APPLICATION_ID = "cc_application_id";
 
 	protected int _childcareID = -1;
 	protected int _userID = -1;
+	protected int _childID = -1;
+	protected int _applicationID = -1;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
@@ -96,6 +100,50 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public String getParameterChildCareID() {
 		return PARAMETER_CHILD_CARE_ID;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterUserID() {
+		return PARAMETER_USER_ID;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getParameterApplicationID() {
+		return PARAMETER_APPLICATION_ID;
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getApplicationID() {
+		return _applicationID;
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getChildID() {
+		return _childID;
+	}
+
+	/**
+	 * Sets the applicationID.
+	 * @param applicationID The applicationID to set
+	 */
+	public void setApplicationID(int applicationID) {
+		_applicationID = applicationID;
+	}
+
+	/**
+	 * Sets the childID.
+	 * @param childID The childID to set
+	 */
+	public void setChildID(int childID) {
+		_childID = childID;
 	}
 
 }

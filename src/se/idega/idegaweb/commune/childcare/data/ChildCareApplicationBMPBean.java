@@ -228,19 +228,29 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(PRESENTATION,presentation);	
 	}
 	
-	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException, RemoteException {
-		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
+		try {
+			return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
+		}
+		catch (RemoteException e) {
+			throw new FinderException(e.getMessage());
+		}
 	}
 
-	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException {
 		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus);
 	}
 	
-	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus) throws FinderException, RemoteException {
-		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus) throws FinderException {
+		try {
+			return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
+		}
+		catch (RemoteException e) {
+			throw new FinderException(e.getMessage());
+		}
 	}
 	
-	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append("c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
@@ -252,7 +262,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
 	
-	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
@@ -264,7 +274,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
-	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
@@ -276,7 +286,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}		
 	
-	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
