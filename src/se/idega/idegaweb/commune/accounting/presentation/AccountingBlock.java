@@ -419,6 +419,21 @@ public abstract class AccountingBlock extends CommuneBlock {
 		return (CheckBox) getStyledInterface(new CheckBox(parameter, value));
 	}
 	
+	protected boolean isOperationalFieldChildcareSelected(IWContext iwc){
+		//TODO: Implement
+		return true;
+	}
+	
+	protected boolean isOperationalFieldElementarySchoolSelected(IWContext iwc){
+		//TODO: Implement
+		return false;
+	}
+	
+	protected boolean isOperationalFieldHighSchoolSelected(IWContext iwc){
+		//TODO: Implement
+		return false;
+	}
+	
 	protected AccountingBusiness getAccountingBusiness(IWApplicationContext iwac) {
 		try {
 			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac, AccountingBusiness.class);
