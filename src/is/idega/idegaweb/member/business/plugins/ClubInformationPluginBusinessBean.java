@@ -12,14 +12,17 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
@@ -171,11 +174,11 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 					newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 					newGroup.setName(playerGroup.getName());
 					newGroup.setAlias(playerGroup);
-					
+
 					java.util.Hashtable t = playerGroup.getMetaDataAttributes();
-					if (t != null)					
+					if (t != null)
 						newGroup.setMetaDataAttributes(t);
-					
+
 					newGroup.store();
 
 					parent.addGroup(newGroup);
@@ -186,19 +189,19 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						newSpecialPlayerGroup.setName(playerGroup.getName());
 						newSpecialPlayerGroup.setAlias(playerGroup);
 						newSpecialPlayerGroup.store();
-						
+
 						special.addGroup(newSpecialPlayerGroup);
-						
+
 						Group newSpecialPlayerAliasGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 						newSpecialPlayerAliasGroup.setGroupType(IWMemberConstants.GROUP_TYPE_ALIAS);
 						newSpecialPlayerAliasGroup.setAlias(newGroup);
 						String name = newGroup.getName();
 						if (clubName != null)
-							name += " (" + clubName +")";
+							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-						
-						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup); 
+
+						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup);
 					}
 
 					if (playerGroup.getChildCount() > 0)
@@ -224,12 +227,12 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						newSpecialPlayerAliasGroup.setAlias(newGroup);
 						String name = newGroup.getName();
 						if (clubName != null)
-							name += " (" + clubName +")";
+							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-						
-						child.addGroup(newSpecialPlayerAliasGroup); 
-						
+
+						child.addGroup(newSpecialPlayerAliasGroup);
+
 						return true;
 					}
 
@@ -246,8 +249,8 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 
 		return false;
 	}
-	
-	private void setCurrentUsersPrimaryGroupPermissionsForGroup(IWUserContext iwc, Group group){
+
+	private void setCurrentUsersPrimaryGroupPermissionsForGroup(IWUserContext iwc, Group group) {
 		User user = iwc.getCurrentUser();
 		AccessController access = iwc.getAccessController();
 		try {
@@ -256,19 +259,83 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			String newGroupId = group.getPrimaryKey().toString();
 			//TDOD create methods for this in accesscontrol
 			//create permission
-			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_CREATE,Boolean.TRUE);
+			access.setPermission(AccessController.CATEGORY_GROUP_ID, iwc, primaryGroupId, newGroupId, access.PERMISSION_KEY_CREATE, Boolean.TRUE);
 			//edit permission
-			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_EDIT,Boolean.TRUE);
+			access.setPermission(AccessController.CATEGORY_GROUP_ID, iwc, primaryGroupId, newGroupId, access.PERMISSION_KEY_EDIT, Boolean.TRUE);
 			//delete permission
-			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_DELETE,Boolean.TRUE);
+			access.setPermission(AccessController.CATEGORY_GROUP_ID, iwc, primaryGroupId, newGroupId, access.PERMISSION_KEY_DELETE, Boolean.TRUE);
 			//view permission
-			access.setPermission(AccessController.CATEGORY_GROUP_ID,iwc,primaryGroupId,newGroupId,access.PERMISSION_KEY_VIEW,Boolean.TRUE);
-					
+			access.setPermission(AccessController.CATEGORY_GROUP_ID, iwc, primaryGroupId, newGroupId, access.PERMISSION_KEY_VIEW, Boolean.TRUE);
+
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-		
+
 		}
 	}
-	
+
+	public boolean updateConnectedToSpecial(Group special) {
+		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
+			Group child = null;
+			boolean foundIt = false;
+			List children = special.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+					foundIt = true;
+					break;
+				}
+			}
+
+			if (foundIt && child != null)
+				special = child;
+		}
+
+		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
+			List children = special.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE))
+					updatePlayerGroupsConnectedTo(child);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private void updatePlayerGroupsConnectedTo(Group parent) {
+		Collection connected = null;
+		try {
+			connected =((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+			if (connected != null) {
+				Hashtable metadata = parent.getMetaDataAttributes();
+				int parent_id = ((Integer)parent.getPrimaryKey()).intValue();
+				Iterator it = connected.iterator();
+				while (it.hasNext()) {
+					Group conn = (Group)it.next();
+					if (conn.getAliasID() == parent_id) {
+						conn.setMetaDataAttributes(metadata);
+						conn.store();
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (parent.getChildCount() > 0) {
+			List children = parent.getChildGroups();
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				Group child = (Group) it.next();
+				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE))
+					updatePlayerGroupsConnectedTo(child);
+			}
+		}
+	}
 }

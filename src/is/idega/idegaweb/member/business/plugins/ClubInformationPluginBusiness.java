@@ -17,4 +17,5 @@ public interface ClubInformationPluginBusiness extends com.idega.business.IBOSer
  public com.idega.presentation.PresentationObject instanciateViewer(com.idega.user.data.Group p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String isUserAssignableFromGroupToGroup(com.idega.user.data.User p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2);
  public java.lang.String isUserSuitedForGroup(com.idega.user.data.User p0,com.idega.user.data.Group p1);
+ public boolean updateConnectedToSpecial(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
 }
