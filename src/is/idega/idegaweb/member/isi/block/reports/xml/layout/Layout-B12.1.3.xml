@@ -253,7 +253,7 @@
 				<rectangle>
 					<reportElement
 						mode="Opaque"
-						x="1"
+						x="0"
 						y="0"
 						width="554"
 						height="18"
