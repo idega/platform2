@@ -165,6 +165,7 @@ public class NewsLetter extends CategoryBlock {
    */
   public PresentationObject getDropdownView(IWContext iwc) {
     Table T = new Table();
+    T.setColor(_bgColor);
 
     if(topics != null && topics.size() > 0){
       DropdownMenu drp = new DropdownMenu("nl_list");
@@ -193,6 +194,7 @@ public class NewsLetter extends CategoryBlock {
   private PresentationObject getMailInputTable(IWContext iwc){
     Table T = new Table();
       T.setCellpaddingAndCellspacing(0);
+      T.setColor(_bgColor);
       TextInput email = new TextInput("nl_email");
       email.setStyleAttribute(_inputStyle);
       email.setLength(_inputLength);
@@ -238,6 +240,7 @@ public class NewsLetter extends CategoryBlock {
    */
   public PresentationObject getCheckBoxView(IWContext iwc) {
     Table T = new Table();
+    T.setColor(_bgColor);
     if(topics != null && topics.size() > 0){
       CheckBox chk;
       Iterator iter = topics.iterator();
