@@ -58,8 +58,8 @@ public class CommuneForum extends Forum {
 		moderatorText.setFontStyle(_headingStyle);
 		Text filesText = new Text(_iwrb.getLocalizedString("files","Files"));
 		filesText.setFontStyle(_headingStyle);
-		Text openTill = new Text(_iwrb.getLocalizedString("open_till_date","Closes"));
-		openTill.setFontStyle(_headingStyle);
+		Text closesOn = new Text(_iwrb.getLocalizedString("closes_on_date","Closes"));
+		closesOn.setFontStyle(_headingStyle);
 
 		table.setWidth(2, "60");
 		table.setWidth(3, "90");
@@ -68,7 +68,7 @@ public class CommuneForum extends Forum {
 		table.add(threadsText, 2, 1);
 		table.add(updatedText, 3, 1);
 		table.add(moderatorText, 4, 1);
-		table.add(openTill, 5, 1 );
+		table.add(closesOn, 5, 1 );
 		table.add(filesText, 6, 1);
 
 		Vector list = new Vector();
