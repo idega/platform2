@@ -24,6 +24,8 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBORuntimeException;
@@ -267,6 +269,16 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, season, getSchoolBusiness().getCategoryElementarySchool());
 			} catch (RemoteException e) {}
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
+				if (!application.getHasDateSet()) {
+					SchoolClassMember placement = null;
+					try {
+						SchoolClassMemberHome home = getSchoolBusiness().getSchoolClassMemberHome();
+						placement = home.findNotTerminatedByStudentSeasonSchoolAndCategory(application.getChildId(), season, providerId, getSchoolBusiness().getCategoryElementarySchool());
+					} catch (Exception e) {}
+					if (placement != null) {
+						application.setFromDate(new Date(placement.getRegisterDate().getTime()));
+					}
+				}
 				users.add(application.getChild());
 				assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true);
 			}
