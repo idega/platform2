@@ -34,9 +34,9 @@ public SchoolManagementType findCompanyManagementType()throws javax.ejb.FinderEx
 	return this.findByPrimaryKey(pk);
 }
 
-public SchoolManagementType findCooperativeCommuneEmployerLiabilityManagementType()throws javax.ejb.FinderException{
+public SchoolManagementType findCooperativeCommuneLiabilityManagementType()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCooperativeCommuneEmployerLiabilityManagementType();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCooperativeCommuneLiabilityManagementType();
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

@@ -28,7 +28,7 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 	public static final String TYPE_GOVERNMENT = "GOVERNMENT";
 	public static final String TYPE_FOUNDATION = "FOUNDATION";
 	public static final String TYPE_COUNTY_COUNCIL = "COUNTY_COUNCIL";
-	public static final String TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY = "COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY";
+	public static final String TYPE_COOPERATIVE_COMMUNE_LIABILITY = "COOPERATIVE_COMMUNE_LIABILITY";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -63,7 +63,7 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 				TYPE_GOVERNMENT,
 				TYPE_FOUNDATION,
 				TYPE_COUNTY_COUNCIL,
-				TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY
+				TYPE_COOPERATIVE_COMMUNE_LIABILITY
 		};
 		
 		String[] names = {
@@ -187,9 +187,9 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindCooperativeCommuneEmployerLiabilityManagementType() throws FinderException {
+	public Integer ejbFindCooperativeCommuneLiabilityManagementType() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COOPERATIVE_COMMUNE_LIABILITY);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }
