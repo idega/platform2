@@ -74,9 +74,9 @@ public class WorkReportOverViewCloseView extends Block {
 	private static final String LEAGUE_NR = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+"GROUP_NUMBER";
 	private static final String LEAGUE_SHORT_NAME = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+"SHORT_NAME";
 
-	private static final String HAS_MEMBERS = "HAS_MEMBERS";
-	private static final String HAS_ACCOUNT = "HAS_ACCOUNT";
-	private static final String HAS_BOARD= "HAS_BOARD";
+	private static final String HAS_MEMBERS = "WorkReportOverViewCloseView.HAS_MEMBERS";
+	private static final String HAS_ACCOUNT = "WorkReportOverViewCloseView.HAS_ACCOUNT";
+	private static final String HAS_BOARD= "WorkReportOverViewCloseView.HAS_BOARD";
 	
 	private int year = (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 	
@@ -219,6 +219,9 @@ public class WorkReportOverViewCloseView extends Block {
 			COMPETITOR_COUNT,null,
 	//		LEAGUE_NR,null,
 			LEAGUE_SHORT_NAME,null,
+			HAS_MEMBERS, new HasSomeDataConverter(),
+			HAS_ACCOUNT, new HasSomeDataConverter(),
+			HAS_BOARD, new HasSomeDataConverter(),
 			"back",new BackButtonConverter(resourceBundle),
 		};
       
@@ -334,5 +337,66 @@ public class WorkReportOverViewCloseView extends Block {
 				return  division.hasNationalLeague();
 			}
 	}
+	
+	
+	class HasSomeDataConverter implements EntityToPresentationObjectConverter {
+		
+		public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc){
+			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+		}
+		
+		public PresentationObject getPresentationObject(Object value, EntityPath path, EntityBrowser browser, IWContext iwc){
+			
+			WorkReportDivisionBoard division = (WorkReportDivisionBoard)value;	
+			boolean hasData = false;
+			
+			Text text = (Text) browser.getDefaultTextProxy().clone();
+			text.setText("-");
+			
+			try {
+
+				
+				WorkReportGroup wrGroup = getWorkReportBusiness(iwc).getWorkReportGroupHome().findByPrimaryKey(new Integer(division.getWorkReportGroupID()));
+				int wrGroupId = division.getWorkReportGroupID();
+				int wrId = division.getReportId();
+
+				String shortKey = path.getShortKey();
+				if(HAS_MEMBERS.equals(shortKey) ) {		
+					Collection members = getWorkReportBusiness(iwc).getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(wrId, wrGroup);
+					hasData = (members!=null && !members.isEmpty());
+					
+					
+				}
+				else if(HAS_ACCOUNT.equals(shortKey) ) {
+					Collection records = getWorkReportBusiness(iwc).getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(wrId,wrGroupId);
+					hasData = (records!=null && !records.isEmpty());
+					
+				}
+			  else if(HAS_BOARD.equals(shortKey) ) {
+					Collection boardMembers = getWorkReportBusiness(iwc).getWorkReportBoardMemberHome().findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(wrId,wrGroupId);
+					hasData = (boardMembers!=null && !boardMembers.isEmpty());
+					
+			  }        
+			  
+
+				
+			}
+			catch (FinderException e) {
+				hasData = false;
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			
+			if(hasData) {
+				 text.setText("X");
+			}
+			
+			return text;
+		}
+		
+	}
+	
+	
 	
 }
