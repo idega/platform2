@@ -240,7 +240,7 @@ public class ReportItemizer extends Editor{
     entity      = iwc.getParameter(prefix+"entity");
     info        = iwc.getParameter(prefix+"info");
     if(id != 0){
-    boolean b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+    boolean b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,false);
     add(new Boolean(b).toString() );
     }
     add(name+field+table+joins+jointables+condtype+conddata+condop+entity+info);

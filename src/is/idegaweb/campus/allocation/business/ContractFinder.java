@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.4 2001/11/08 15:40:39 aron Exp $
+ * $Id: ContractFinder.java,v 1.5 2001/11/21 23:53:31 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -358,6 +358,7 @@ public abstract class ContractFinder {
   }
 
   public static Map mapOfAvailableApartmentContracts(int iApartmentTypeId, int iComplexId){
+
     List L = listOfAvailable(CONTRACT ,iApartmentTypeId ,iComplexId ) ;
     if(L!= null){
       Hashtable H = new Hashtable();

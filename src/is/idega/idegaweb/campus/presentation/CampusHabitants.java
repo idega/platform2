@@ -21,7 +21,7 @@ public class CampusHabitants extends PresentationObjectContainer {
 
   public void main(IWContext iwc){
     Reporter R = new Reporter();
-    R.setMainCategoryAttribute("tenants");
+    //R.setMainCategoryAttribute("tenants");
     R.setSQLEdit(true);
     add(R);
   }

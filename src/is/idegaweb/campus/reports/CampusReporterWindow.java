@@ -24,7 +24,7 @@ public class CampusReporterWindow extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception{
     boolean isAdmin = iwc.hasEditPermission(this);
     Reporter R = new Reporter();
-    R.setMainCategoryAttribute("tenants");
+    //R.setMainCategoryAttribute("tenants");
     R.setSQLEdit(isAdmin);
     setResizable( true);
     add(R);
