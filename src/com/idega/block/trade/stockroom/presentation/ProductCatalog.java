@@ -292,4 +292,8 @@ public class ProductCatalog extends CategoryBlock{
   public void setProductAsLink(boolean isLink) {
     this._productIsLink = true;
   }
+
+  public String getCategoryType(){
+    return "product";
+  }
 }
