@@ -1203,6 +1203,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public SchoolSeason findPreviousSchoolSeason(int schoolSeasonID) {
+		try {
+			SchoolSeason season = getSchoolSeasonHome().findByPrimaryKey(new Integer(schoolSeasonID));
+			return getSchoolSeasonHome().findPreviousSchoolSeason(season);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
 
 	public void storeSchoolSeason(int id, String name, Date start, Date end, Date due_date) throws java.rmi.RemoteException {
 

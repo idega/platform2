@@ -13,6 +13,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllCentralizedAdministratedByType(java.util.Collection p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllPreviousSchoolSeasons(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllPreviousSchoolSeasons(com.idega.block.school.data.SchoolSeason p0) throws java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolSeason findPreviousSchoolSeason(int schoolSeasonID) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchClMemberInvoiceIntervalTypes() throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreas() throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreasByType(int p0) throws java.rmi.RemoteException;
