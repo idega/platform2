@@ -26,7 +26,7 @@ public abstract class CategoryBlock extends Block{
   private int[] icCategoryIds  = new int[0];
   public final static String prmCategoryId = "catbl_catid";
   private boolean autocreate = true;
-  private boolean invalidateBlocCache = true;
+  private boolean invalidateBlockCache = false;
   private boolean orderManually = false;
 
   /**
@@ -72,6 +72,17 @@ public abstract class CategoryBlock extends Block{
   public void setOrderManually(boolean orderManually) {
     this.orderManually = orderManually;
   }
+
+  /**
+   * Turns Manual ordering fidus on/off
+   */
+  public void setInvalidateCache(boolean invalidateBlockCache) {
+    this.invalidateBlockCache = invalidateBlockCache;
+  }
+
+
+
+
 
   /**
    *  Returns a collection of ICCategory objects bound to this instance
@@ -135,7 +146,7 @@ public abstract class CategoryBlock extends Block{
     if (orderManually) {
       L.addParameter(CategoryWindow.prmOrder, "true");
     }
-    if(getInvalidateBlockCache() && getCacheKey().equals(IW_BLOCK_CACHE_KEY)){
+    if(invalidateBlockCache && getCacheKey().equals(IW_BLOCK_CACHE_KEY)){
       L.addParameter(CategoryWindow.prmCategoryId,getCacheKey());
     }
 
@@ -160,13 +171,6 @@ public abstract class CategoryBlock extends Block{
    *  Defines if multiple categories can bound to this instance
    */
   public abstract boolean getMultible();
-
-
-  /**
-   *  Defines if categorywindow should invalidate block cache
-   */
-  public abstract boolean getInvalidateBlockCache();
-
 
 
   /**
