@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.4 2001/09/11 00:00:57 aron Exp $
+ * $Id: CampusFinanceMenu.java,v 1.5 2001/09/11 09:55:10 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,10 @@ public class CampusFinanceMenu extends FrameList{
     setLinkStyle("font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 7pt; text-decoration: none;");
     makeLinkTable();
     setZebraColors("#FFFFFF","#ECECEC");
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   public void makeLinkTable(){
