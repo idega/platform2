@@ -22,26 +22,26 @@ import com.idega.event.IWLinkListener;
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
+*@modified by  <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
 */
 public class Link extends Text{
 
 private ModuleObject obj;
 private String ObjectType;
 private Window myWindow;
-private String parameterString;
+private StringBuffer parameterString;
 private boolean addSessionId = true;
 private static String sessionStorageName=IWMainApplication.windowOpenerParameter;
-private static String emptyString="";
 private Form formToSubmit;
 
 
 
 public Link(){
-	this(emptyString);
+  this("");
 }
 
 public Link(String text){
-	this( new Text(text) );
+  this( new Text(text) );
 }
 
 public Link(ModuleObject mo, Window myWindow){			//gummi@idega.is
@@ -233,22 +233,23 @@ public void addParameter(Parameter parameter){
 }
 
 public void addParameter(String ParameterName, String ParameterValue){
-        String encodedName=null;
-        String encodedValue=null;
-        if(ParameterName!=null){
-          encodedName = java.net.URLEncoder.encode(ParameterName);
-        }
-        if(ParameterValue!=null){
-          encodedValue = java.net.URLEncoder.encode(ParameterValue);
-        }
-        if( (encodedValue!=null) && (encodedName!=null)){
-          if (parameterString == null){
-                  parameterString = "&"+encodedName+"="+encodedValue;
-          }
-          else{
-                  parameterString=parameterString+"&"+encodedName+"="+encodedValue;
-          }
-        }
+  if(ParameterName!=null){
+    ParameterName = java.net.URLEncoder.encode(ParameterName);
+  }
+  if(ParameterValue!=null){
+    ParameterValue = java.net.URLEncoder.encode(ParameterValue);
+  }
+  if( (ParameterName!=null) && (ParameterValue!=null)){
+    if( parameterString==null ){
+      parameterString = new StringBuffer();
+      parameterString.append("?");
+    }
+    else parameterString.append("&");
+
+    parameterString.append(ParameterName);
+    parameterString.append("=");
+    parameterString.append(ParameterValue);
+  }
 }
 
 public void addParameter(String parameterName,int parameterValue){
@@ -433,48 +434,54 @@ public String getParameterString(ModuleInfo modinfo,String URL){
         if (URL == null){
           URL="";
         }
+
 	if (parameterString == null){
+          parameterString = new StringBuffer();
           if (addSessionId && (!modinfo.isSearchEngine()) ){
-		if(URL.indexOf("://") == -1){
-			if (URL.indexOf("?") != -1){
-
-				return "&idega_session_id="+modinfo.getSession().getId();
-
+		if(URL.indexOf("://") == -1){//does not include ://
+                  if (URL.indexOf("?") != -1){
+                    parameterString.append("&idega_session_id=");
+                    parameterString.append(modinfo.getSession().getId());
+                    return parameterString.toString();
+                  }
+                  else if ((URL.indexOf("//") != -1) && (URL.lastIndexOf("/") == URL.lastIndexOf("//") + 1 ) ){
+                  //the case where the URL is etc. http://www.idega.is
+                    parameterString.append("/?idega_session_id=");
+                    parameterString.append(modinfo.getSession().getId());
+                    return parameterString.toString();
+                  }
+                  else{
+                    if(URL.indexOf("/") != -1){
+                      //If the URL ends with a "/"
+                      if (URL.lastIndexOf("/") == (URL.length()-1) ){
+                        parameterString.append("?idega_session_id=");
+                        parameterString.append(modinfo.getSession().getId());
+                        return parameterString.toString();
+                      }
+                      else{
+                        //There is a dot after the last "/" interpreted as a file not a directory
+                        if(URL.lastIndexOf(".") > URL.lastIndexOf("/") ){
+                          parameterString.append("?idega_session_id=");
+                          parameterString.append(modinfo.getSession().getId());
+                          return parameterString.toString();
                         }
-			//the case where the URL is etc. http://www.idega.is
-			else if ((URL.indexOf("//") != -1) && (URL.lastIndexOf("/") == URL.lastIndexOf("//") + 1 ) ){
-
-                                  return "/?idega_session_id="+modinfo.getSession().getId();
-
+                        else{
+                          parameterString.append("/?idega_session_id=");
+                          parameterString.append(modinfo.getSession().getId());
+                          return parameterString.toString();
                         }
-			else{
-				if(URL.indexOf("/") != -1){
-					//If the URL ends with a "/"
-					if (URL.lastIndexOf("/") == URL.length()-1){
-
-                                              return "?idega_session_id="+modinfo.getSession().getId();
-
-                                        }
-					else{
-						//There is a dot after the last "/" interpreted as a file not a directory
-						if(URL.lastIndexOf(".") > URL.lastIndexOf("/") ){
-							return "?idega_session_id="+modinfo.getSession().getId();
-						}
-						else{
-							return "/?idega_session_id="+modinfo.getSession().getId();
-						}
-					}
-				}
-				else{
-					return "?&idega_session_id="+modinfo.getSession().getId();
-				}
-			}
+                      }
+                    }
+                    else{
+                      parameterString.append("?idega_session_id=");
+                      parameterString.append(modinfo.getSession().getId());
+                      return parameterString.toString();
+                    }
+                  }
 		}
-		/**
-		*Temporary solution??? :// in link then no idega_session_id
-		*/
 		else{
-			return "";
+                  //Temporary solution??? :// in link then no idega_session_id
+		  return "";
 		}
             }
             else{
@@ -483,29 +490,24 @@ public String getParameterString(ModuleInfo modinfo,String URL){
 	}
 
 	else{
-		String session_id;
+          /**
+          *Temporary solution??? :// in link then no idega_session_id
+          */
+          if (addSessionId && (!modinfo.isSearchEngine()) ){
+            if ( parameterString.toString().indexOf("?") == -1 ){
+              parameterString.append("?");
+            }
+            else{
+             parameterString.append("&");
+            }
 
-		/**
-		*Temporary solution??? :// in link then no idega_session_id
-		*/
-                if (addSessionId && (!modinfo.isSearchEngine()) ){
-                  if(URL.indexOf("://") == -1){
-                          session_id="&idega_session_id="+modinfo.getSession().getId();
-                  }
-                  else{
-                          session_id="";
-                  }
-                }
-                else{
-                  session_id="";
-                }
+            if(URL.indexOf("://") == -1){
+              parameterString.append("idega_session_id=");
+              parameterString.append(modinfo.getSession().getId());
+            }
+          }
 
-		if ( URL.indexOf("?") == -1 ){
-			return "?"+parameterString+"&idega_session_id="+session_id;
-		}
-		else{
-			return parameterString+"&idega_session_id="+session_id;
-		}
+          return parameterString.toString();
 	}
 }
 
