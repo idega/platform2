@@ -171,7 +171,7 @@ public ImageInserter(Class WindowToOpen) {
   }
 
   public String getImageChangeJSFunction(){
-    StringBuffer function = new StringBuffer("var imageName = \"rugl\"; \n");
+    StringBuffer function = new StringBuffer("");//var imageName = \"rugl\"; \n");
     function.append("function setImageId(imageId) { \n \t");
     function.append("if (document.images) { \n \t\t");
     function.append("document.rugl.src = \"/servlet/MediaServlet/\"+imageId+\"image?image_id=\"+imageId; \n\t ");
