@@ -2424,6 +2424,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setFromDate(fromDate.getDate());
 			application.setCareTime(careTime);
 			application.setOwner(parent);
+			application.setChoiceNumber(1);
 			if (toDate != null) {
 				application.setRejectionDate(toDate.getDate());
 			}

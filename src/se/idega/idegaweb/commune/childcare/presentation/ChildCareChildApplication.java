@@ -32,6 +32,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 /**
@@ -50,6 +51,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String PARAMETER_ACTION = "cca_action";
 	private final static String PARAM_FORM_SUBMIT = "cca_submit";
 	private final static String PARAM_DATE = "cca_date";
+	private final static String PARAM_QUEUE_DATE = "cca_queue_date";
 	private final static String PARAM_AREA = "cca_area";
 	private final static String PARAM_PROVIDER = "cca_provider";
 	private final static String PARAM_MESSAGE = "cca_message";
@@ -69,6 +71,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private Map providerMap;
 	
 	private boolean _noCheckError = false;
+	private boolean isAdmin = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -86,26 +89,50 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 	}
 	
+	protected boolean isAdmin(IWContext iwc) {
+		if (iwc.hasEditPermission(this))
+			return true;
+			
+		try {
+			return getBusiness().getUserBusiness().isRootCommuneAdministrator(iwc.getCurrentUser());
+		}
+		catch (RemoteException re) {
+			return false;
+		}
+	}
+	
 	private void parseAction(IWContext iwc) {
+		isAdmin = isAdmin(iwc);
+		
 		if (iwc.isParameterSet(PARAMETER_ACTION))
 			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		else
 			_action = ACTION_VIEW_FORM;
 
-		try {
-			check = getCheckBusiness(iwc).getGrantedCheck(getSession().getCheckID());
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-
-		if (check != null) {
-			child = check.getChild();
+		if (isAdmin) {
+			try {
+				child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+				check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
+			}
+			catch (RemoteException re) {
+				_noCheckError = true;
+			}
 		}
 		else {
-			_noCheckError = true;
-		}
+			try {
+				check = getCheckBusiness(iwc).getGrantedCheck(getSession().getCheckID());
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
 
+			if (check != null) {
+				child = check.getChild();
+			}
+			else {
+				_noCheckError = true;
+			}
+		}
 	}
 
 	private void viewForm(IWContext iwc) {
@@ -139,10 +166,26 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			showPrognosis.setWindowToOpen(ChildCarePrognosisWindow.class);
 			
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize(PARAM_FORM_SUBMIT, "Submit application"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));
+			if (isAdmin) {
+				try {
+					User parent = getBusiness().getUserBusiness().getCustodianForChild(child);
+					if (parent == null)
+						submit.setDisabled(true);
+				}
+				catch (RemoteException re) {
+					submit.setDisabled(true);
+				}
+			}
 
 			table.add(showPrognosis, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(submit, 1, row);
+			
+			if (submit.getDisabled()) {
+				row++;
+				table.setHeight(row++, 6);
+				table.add(getSmallErrorText(localize("child_care.no_parent_found", "No parent found")), 1, row);
+			}
 	
 			Page page = getParentPage();
 			if (page != null) {
@@ -172,17 +215,21 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			for (int i = 0; i < 5; i++) {
 				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
+				if (isAdmin)
+					queueDates[i] = iwc.isParameterSet(PARAM_QUEUE_DATE + "_" + (i + 1)) ? new IWTimestamp(iwc.getParameter(PARAM_QUEUE_DATE + "_" + (i + 1))).getDate() : null;
 			}
 				
-			Collection applications = getBusiness().getApplicationsForChild(child);
-			loop:
-			for (int i = 0; i < providers.length; i++){
-				Iterator apps = applications.iterator();
-				while(apps.hasNext()){
-					ChildCareApplication app = (ChildCareApplication) apps.next();
-					if (app.getProviderId() == providers[i]){
-						queueDates[i] = app.getQueueDate();
-						continue loop;
+			if (!isAdmin) {
+				Collection applications = getBusiness().getApplicationsForChild(child);
+				loop:
+				for (int i = 0; i < providers.length; i++){
+					Iterator apps = applications.iterator();
+					while(apps.hasNext()){
+						ChildCareApplication app = (ChildCareApplication) apps.next();
+						if (app.getProviderId() == providers[i]){
+							queueDates[i] = app.getQueueDate();
+							continue loop;
+						}
 					}
 				}
 			}
@@ -191,8 +238,18 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 			String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 			String body = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
+			User parent = null;
+			boolean sendMessages = true;
+			if (isAdmin) {
+				parent = getBusiness().getUserBusiness().getCustodianForChild(child);
+				System.out.println("Parent: "+parent.getPersonalID());
+				sendMessages = false;
+			}
+			else {
+				parent = iwc.getCurrentUser();
+			}
 
-			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, message, getSession().getCheckID(), getSession().getChildID(), subject, body, false, true, queueDates, null);
+			done = getBusiness().insertApplications(parent, providers, dates, message, ((Integer) check.getPrimaryKey()).intValue(), ((Integer) child.getPrimaryKey()).intValue(), subject, body, false, sendMessages, queueDates, null);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -224,6 +281,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		String message = null;
 		Text providerText = null;
 		Text fromText = getSmallHeader(from);
+		Text queueDateText = getSmallHeader(localize("child_care.queue_data", "Queue date") + ":");
+		IWTimestamp stamp = new IWTimestamp();
 
 		ChildCareApplication application = null;
 		int areaID = -1;
@@ -245,7 +304,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 			providerText = getSmallHeader(provider + Text.NON_BREAKING_SPACE + i + ":");
 			inputTable.add(providerText, 1, row);
-			inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+			//inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			inputTable.add(dropdown, 3, row++);
 
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
@@ -253,10 +312,24 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				date.setDate(application.getFromDate());
 			else
 				date.setToCurrentDate();
+			if (isAdmin)
+				date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
 			inputTable.add(fromText, 1, row);
 			inputTable.add(date, 3, row++);
+			
+			if (isAdmin) {
+				DateInput queueDate = (DateInput)getStyledInterface(new DateInput(PARAM_QUEUE_DATE + "_" + i));
+				if (application != null)
+					queueDate.setDate(application.getQueueDate());
+				else
+					queueDate.setToCurrentDate();
+				if (isAdmin)
+					queueDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
+				inputTable.add(queueDateText, 1, row);
+				inputTable.add(queueDate, 3, row++);
+			}
 
-			inputTable.setHeight(row++, 6);
+			inputTable.setHeight(row++, 12);
 		}
 		
 		TextArea messageArea = (TextArea) getStyledInterface(new TextArea(PARAM_MESSAGE));
