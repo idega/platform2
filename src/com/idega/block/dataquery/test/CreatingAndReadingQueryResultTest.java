@@ -1,8 +1,5 @@
 package com.idega.block.dataquery.test;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.presentation.Block;
@@ -30,16 +27,16 @@ public class CreatingAndReadingQueryResultTest extends Block {
   
   public void main(IWContext iwc) throws Exception {  
     // test 1 modifying existing data
-    XMLData data = XMLData.getInstanceForFile(18);
-    XMLDocument document = data.getDocument();
-    XMLElement element = document.getRootElement();
-    Collection coll = element.getChildren("field");
-    Iterator iterator = coll.iterator();
-    while (iterator.hasNext())  {
-      XMLElement childElement = (XMLElement) iterator.next();
-      childElement.setText("hello world");
-    }
-    data.store();
+//    XMLData data = XMLData.getInstanceForFile(18);
+//    XMLDocument document = data.getDocument();
+//    XMLElement element = document.getRootElement();
+//    Collection coll = element.getChildren("field");
+//    Iterator iterator = coll.iterator();
+//    while (iterator.hasNext())  {
+//      XMLElement childElement = (XMLElement) iterator.next();
+//      childElement.setText("hello world");
+//    }
+//    data.store();
     // test 2 creating new data
     XMLData newData = XMLData.getInstanceWithoutExistingFile();
     XMLElement rootElement = new XMLElement("reykjavik");
@@ -56,6 +53,10 @@ public class CreatingAndReadingQueryResultTest extends Block {
     XMLDocument sqldocument = new XMLDocument(sqlelement);
     sqldata.setDocument(sqldocument);
     sqldata.store();
+    // test 4 restoring a query result
+    XMLData data4 = XMLData.getInstanceForFile(55);
+    XMLDocument document4 = data4.getDocument();
+    result = QueryResult.getInstanceForDocument(document4);
     
   }
 }
