@@ -59,7 +59,7 @@ public class ChildCareEventListener implements IWPageEventListener {
 				session.setToTimestamp(null);
 			}
 
-			if (session.getStatus().equals(ChildCareBlock.STATUS_ALL)) {
+			if (session.getStatus() != null && session.getStatus().equals(ChildCareBlock.STATUS_ALL)) {
 				session.setStatus(null);
 			}
 			
