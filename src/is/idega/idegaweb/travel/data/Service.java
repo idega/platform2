@@ -24,12 +24,13 @@ public class Service extends GenericEntity{
           super(id);
   }
   public void initializeAttributes(){
-    addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Product.class);
+    addAttribute(getIDColumnName());
+//    addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Product.class);
     addAttribute(getArrivalTimeColumnName(), "Arrival time", true, true, Timestamp.class);
     addAttribute(getDepartureTimeColumnName(), "Departure time", true, true, Timestamp.class);
     addAttribute(getIsValidColumnName(), "is valid", true, true, Boolean.class);
 
-    this.setAsPrimaryKey(getIDColumnName(), true);
+//    this.setAsPrimaryKey(getIDColumnName(), true);
     this.addManyToManyRelationShip(HotelPickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
     this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
     this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
