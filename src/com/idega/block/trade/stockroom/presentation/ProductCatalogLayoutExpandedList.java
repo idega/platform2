@@ -69,8 +69,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       product = (Product) products.get(i);
       ++row;
       if (productCatalog._hasEditPermission) {
-        editLink = ProductEditorWindow.getEditorLink(product.getID());
-        editLink.setImage(productCatalog.iEdit);
+        editLink = productCatalog.getProductEditorLink(product);
         table.add(editLink, 1, row);
       }
       if (productCatalog._useAnchor) {
@@ -131,7 +130,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       table.add(productCatalog.getText(description), 2, row);
       table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
     }
-    if (productCatalog._showImage) {
+
+    if (productCatalog._showThumbnail) {
       if (!addedRow){
         ++row;
         addedRow = true;

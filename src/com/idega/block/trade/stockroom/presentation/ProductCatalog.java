@@ -51,16 +51,17 @@ public class ProductCatalog extends CategoryBlock{
   String _width = null;
   IBPage _productLinkPage = null;
   String _windowString = null;
+  boolean _expandSelectedOnly = false;
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
-  boolean _showImage = false;
-  boolean _showTeaser = false;
+  boolean _showCurrency = false;
   boolean _showDescription = false;
+//  boolean _showImage = false;
   boolean _showNumber = false;
   boolean _showPrice = false;
-  boolean _showCurrency = false;
+  boolean _showTeaser = false;
+  boolean _showThumbnail = false;
   boolean _useAnchor = false;
-  boolean _expandSelectedOnly = false;
   int _orderProductsBy = -1;
 
   Locale _currentLocale = null;
@@ -248,10 +249,10 @@ public class ProductCatalog extends CategoryBlock{
   public void setShowCategoryName(boolean showName) {
     this._showCategoryName = showName;
   }
-
+/*
   public void setShowImage(boolean showImage) {
-    this._showImage = showImage;
-  }
+    this._showImages = showImage;
+  }*/
 
   public void setShowTeaser(boolean showTeaser) {
     this._showTeaser = showTeaser;
@@ -283,6 +284,10 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setShowNumber(boolean showNumber) {
     this._showNumber = showNumber;
+  }
+
+  public void setShowThumbnail(boolean showThumbnail) {
+    this._showThumbnail = showThumbnail;
   }
 
   public boolean getMultible() {
@@ -390,9 +395,8 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   Link getProductEditorLink(Product product) {
-    Link link = new Link(this.iEdit);
-      link.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-      link.setWindowToOpen(ProductEditorWindow.class);
+    Link link =  ProductEditorWindow.getEditorLink(product.getID());
+      link.setImage(this.iEdit);
     return link;
   }
 

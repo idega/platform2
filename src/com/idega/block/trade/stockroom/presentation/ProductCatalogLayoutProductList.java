@@ -121,7 +121,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
       table.add(lPrice, 3,row);
       table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_BOTTOM);
     }
-    if (_productCatalog._showImage) {
+    if (_productCatalog._showThumbnail) {
       table.add(_productCatalog.getCategoryText(_iwrb.getLocalizedString("thumbnail","Thumbnail")), 4,row);
       table.setVerticalAlignment(4, row, Table.VERTICAL_ALIGN_BOTTOM);
     }
@@ -151,9 +151,8 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
         table.add(_productCatalog.getNamePresentationObject(product), 2, row);
 
         if (fileId != -1) {
-          if (_productCatalog._showImage) {
+          if (_productCatalog._showThumbnail) {
             image = new Image(fileId);
-            image.setMaxImageWidth(100);
             table.add(image, 4, row);
           }
         }

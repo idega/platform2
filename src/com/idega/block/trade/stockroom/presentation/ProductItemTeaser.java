@@ -1,8 +1,9 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import com.idega.presentation.text.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.presentation.*;
+import java.sql.SQLException;
+import com.idega.presentation.text.Text;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.presentation.IWContext;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.presentation.ProductItem;
 
@@ -20,6 +21,12 @@ public class ProductItemTeaser extends ProductItem {
   private String defaultText = "Product Teaser";
 
   public ProductItemTeaser() { }
+  public ProductItemTeaser(int productId) throws SQLException{
+    super(productId);
+  }
+  public ProductItemTeaser(Product product) {
+    super(product);
+  }
 
   public void main(IWContext iwc) {
     super.main(iwc);

@@ -1,5 +1,10 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.data.IDOFinderException;
+import com.idega.core.data.ICFile;
+import com.idega.data.EntityFinder;
+import java.util.Vector;
+import java.util.List;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
@@ -23,7 +28,8 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   private String _number = "Number";
   private String _teaser = "Teaser";
   private String _description = "Desription";
-  private Image _image = null;
+  private List _images = new Vector();
+  private Product _product = null;
 
   public ProductViewerLayoutIdega() { }
 
@@ -32,7 +38,8 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
    */
   public PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) {
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
-    _image = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
+    Image image = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
+    _images.add(image);
 
     _description = TextFormatter.getLoremIpsumString(iwc);
 
@@ -44,14 +51,11 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     _name = ProductBusiness.getProductName(product, productViewer._localeId);
     _description = ProductBusiness.getProductDescription(product, productViewer._localeId);
     _description = TextSoap.formatText(_description);
-
-    int fileId = product.getFileId();
-    if (fileId != -1) {
-      try {
-        _image = new Image(fileId);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
+    _product = product;
+    try {
+      _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
+    }catch (IDOFinderException ido) {
+      ido.printStackTrace(System.err);
     }
 
     return printViewer(productViewer, iwc);
@@ -77,8 +81,11 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
       }
     }
     table.add(description, 1, 3);
-    if (_image != null) {
-      table.add(_image, 2, 3);
+    if (_product != null) {
+      ProductItemImages pii = new ProductItemImages(_product);
+        pii.setVerticalView(true);
+        pii.setImageAlignment("right");
+      table.add(pii, 2, 3);
     }
 
     table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);

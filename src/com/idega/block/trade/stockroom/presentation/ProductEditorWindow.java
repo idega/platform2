@@ -35,8 +35,8 @@ import com.idega.presentation.text.*;
 public class ProductEditorWindow extends IWAdminWindow {
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   public static final  String imageAttributeKey = "productimage";
-//  public static final String PRODUCT_ID = "prod_edit_prod_id";
-  public static final String PRODUCT_ID = ProductBusiness.PRODUCT_ID;
+  public static final String PRODUCT_ID = "prod_edit_prod_id";
+//  public static final String PRODUCT_ID = ProductBusiness.PRODUCT_ID;
 
   private static final String ACTION = "prod_edit_action";
   private static final String PAR_ADD_FILE = "prod_edit_add_file";
@@ -244,20 +244,17 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (files != null) {
       int imageId = _product.getFileId();
       if (imageId != -1) {
-        //imageInserter.setImageId(imageId);
         try {
-          files.add(0, new ICFile(imageId));
+          if (!files.contains(new ICFile(imageId))) {
+            files.add(0, new ICFile(imageId));
+          }
         }catch (SQLException sql){
           sql.printStackTrace(System.err);
         }
       }
-    }else {
-      debug("files == null");
     }
 
     if(files != null && files.size() > 0){
-//      imageTable.mergeCells(1,imgRow,4,imgRow);
-//      imageTable.add( formatText(iwrb.getLocalizedString("product_images","Product images :")),1,imgRow++);
       ICFile file1;
       RadioButton radio;
       int imageId = _product.getFileId();
@@ -292,6 +289,15 @@ public class ProductEditorWindow extends IWAdminWindow {
 
         }
       }
+      radio = new RadioButton(PAR_IMAGE_THUMBNAIL, "-1");
+      if (imageId == -1) {
+        radio.setSelected();
+      }
+      imageTable.add(radio, 1,imgRow);
+      imageTable.add(formatText(iwrb.getLocalizedString("no_thumbnail","No thumbnail")), 2, imgRow);
+      imageTable.mergeCells(2, imgRow, 4, imgRow);
+      ++imgRow;
+
   //*/
     }
 
@@ -323,7 +329,6 @@ public class ProductEditorWindow extends IWAdminWindow {
     String description = iwc.getParameter(PAR_DESCRIPTION);
     String teaser = iwc.getParameter(PAR_TEASER);
     String price = iwc.getParameter(PAR_PRICE);
-    String image = iwc.getParameter(PAR_IMAGE);
     String currency = iwc.getParameter(PAR_CURRENCY);
 
     boolean returner = false;
@@ -346,8 +351,8 @@ public class ProductEditorWindow extends IWAdminWindow {
         }
       }else {
         try {
-
-          ProductBusiness.updateProduct(this._productId, null, name, number, description, true, iLocaleID);
+          _product = ProductBusiness.getProduct(ProductBusiness.updateProduct(this._productId, null, name, number, description, true, iLocaleID));
+          setThumbnail(iwc);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
           if (setPrice(price, currency)) {
             returner = true;
@@ -355,14 +360,13 @@ public class ProductEditorWindow extends IWAdminWindow {
             super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
             returner = true;
           }
+          return true;
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
       }
     }
 
-    // repps image;;;
-    setThumbnail(iwc);
 
     return returner;
   }
@@ -374,11 +378,13 @@ public class ProductEditorWindow extends IWAdminWindow {
       try {
         ProductPrice pPri = StockroomBusiness.getPrice(_product);
         int oldP = 0;
+        int pCurrId = -1;
         if (pPri != null) {
           oldP = (int) pPri.getPrice();
+          pCurrId = pPri.getID();
         }
         int newP = Integer.parseInt(price);
-        if (oldP != newP || Integer.parseInt(currencyId) != pPri.getCurrencyId()) {
+        if (oldP != newP || Integer.parseInt(currencyId) != pCurrId) {
           ProductPrice pPrice = new ProductPrice();
             pPrice.setIsValid(true);
             pPrice.setPrice(Float.parseFloat(price));
@@ -446,11 +452,9 @@ public class ProductEditorWindow extends IWAdminWindow {
     }else {
       try {
         List list = EntityFinder.getInstance().findRelated(this._product, ICFile.class);
-        debug("Getting files for product : "+_product.getID()+" ... size() : "+list.size());
         return new Vector(list);
       }catch (IDOFinderException ido) {
-        //ido.printStackTrace(System.err);
-        debug("getFiles() failed");
+        ido.printStackTrace(System.err);
         return null;
       }
     }
@@ -462,7 +466,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       try {
         _product.addTo(ICFile.class, Integer.parseInt(imageId));
       }catch (SQLException sql){
-        debug("File Adding failed");
+        debug("addImage failed");
         //sql.printStackTrace(System.err);
       }
     }
@@ -473,16 +477,13 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (imageId != null) {
       try {
         if (_product.getFileId() == Integer.parseInt(imageId)) {
-          debug("File is in Product");
           _product.setFileId(null);
           _product.update();
         }else {
-          debug("File is in middleTable");
           _product.removeFrom(ICFile.class, Integer.parseInt(imageId));
         }
       }catch (SQLException sql){
-        debug("File Removal failed");
-//        sql.printStackTrace(System.err);
+        sql.printStackTrace(System.err);
       }
     }
   }
@@ -496,28 +497,31 @@ public class ProductEditorWindow extends IWAdminWindow {
       boolean perform = true;
       if (thumbnailId != null) {
         int newThumbId = Integer.parseInt(thumbnailId);
+        int oldThumbId = _product.getFileId();
+
+
+
+
         if (newThumbId == _product.getFileId()) {
           perform = false;
+
         }
         if (perform) {
-          _product.setFileId(newThumbId);
-          _product.update();
-
-          _product.removeFrom(ICFile.class, newThumbId);
-          debug("removing image from middletable : "+newThumbId);
-        }else {
-          debug("Skipping thumbnail repps");
+          if (newThumbId == -1) {
+            _product.setFileId(null);
+            _product.update();
+          }else {
+            _product.setFileId(newThumbId);
+            _product.update();
+            _product.removeFrom(ICFile.class, newThumbId);
+          }
         }
-      }
 
-      if (perform) {
-        int oldThumbId = _product.getID();
-        if (oldThumbId != -1) {
-          _product.addTo(ICFile.class, oldThumbId);
-          debug("adding image from middletable : "+oldThumbId);
+        if (perform) {
+          if (oldThumbId != -1) {
+            _product.addTo(ICFile.class, oldThumbId);
+          }
         }
-      }else {
-        debug("Skipping thumbnail repps");
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

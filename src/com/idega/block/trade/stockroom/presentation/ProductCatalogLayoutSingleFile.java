@@ -57,9 +57,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
         }
 
         if (productCatalog._hasEditPermission) {
-          configCategory = new Link(productCatalog.iDetach);
-            configCategory.setWindowToOpen(ProductCategoryEditor.class);
-            configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
+          configCategory = productCatalog.getProductCategoryEditorLink(pCat);
           table.add(configCategory, 3,row);
           table.setAlignment(3, row, "right");
         }

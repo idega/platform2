@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.sql.SQLException;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.presentation.*;
@@ -22,6 +23,12 @@ public class ProductItemLink extends ProductItem {
   private int _height = 0;
 
   public ProductItemLink() { }
+  public ProductItemLink(int productId) throws SQLException{
+    super(productId);
+  }
+  public ProductItemLink(Product product) {
+    super(product);
+  }
 
   public void main(IWContext iwc) {
     super.main(iwc);

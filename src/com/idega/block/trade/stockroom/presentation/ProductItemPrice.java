@@ -22,6 +22,12 @@ public class ProductItemPrice extends ProductItem {
   private boolean showCurrency = false;
 
   public ProductItemPrice() { }
+  public ProductItemPrice(int productId) throws SQLException{
+    super(productId);
+  }
+  public ProductItemPrice(Product product) {
+    super(product);
+  }
 
   public void main(IWContext iwc) {
     super.main(iwc);

@@ -33,6 +33,14 @@ public class ProductItem extends Block {
   public ProductItem() {
   }
 
+  public ProductItem(int productId) throws SQLException {
+    setProduct(productId);
+  }
+
+  public ProductItem(Product product) {
+    setProduct(product);
+  }
+
   public void main(IWContext iwc) {
     initialize(iwc);
   }
@@ -74,6 +82,16 @@ public class ProductItem extends Block {
     }catch (SQLException sql) {
       return null;
     }
+  }
+
+  protected void setProduct(Product product) {
+    _product = product;
+    _productId = _product.getID();
+  }
+
+  protected void setProduct(int productId) throws SQLException {
+    _productId = productId;
+    _product = ProductBusiness.getProduct(_productId);
   }
 
   public void setFontStyle(String style) {

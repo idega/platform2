@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.sql.SQLException;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.presentation.*;
@@ -20,6 +21,12 @@ public class ProductItemName extends ProductItem {
   private String defaultText = "Product Name";
 
   public ProductItemName() { }
+  public ProductItemName(int productId) throws SQLException{
+    super(productId);
+  }
+  public ProductItemName(Product product) {
+    super(product);
+  }
 
   public void main(IWContext iwc) {
     super.main(iwc);
