@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/19 09:27:25 $ by $Author: laddi $
- * @version $Revision: 1.91 $
+ * Last modified: $Date: 2004/02/19 13:19:40 $ by $Author: laddi $
+ * @version $Revision: 1.92 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -805,8 +805,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolTypes != null) {
-			sql.appendAnd().append(this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+			sql.appendAnd().append("mb." + this.SCHOOL_TYPE).appendInCollection(schoolTypes);
 		}
+		System.out.println(sql.toString());
 		return (Integer)idoFindOnePKBySQL(sql.toString());
 	}
 
