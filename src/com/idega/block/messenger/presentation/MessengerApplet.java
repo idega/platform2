@@ -95,9 +95,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
 
     try {
-        faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_in.gif"));
-        logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_out.gif"));
-        alertSound = getAudioClip(new URL(hostURL+resourceURL),"notify.wav");
+        //faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
+        faceLabel = new ImageLabel(getImage(getCodeBase(),"face_in.gif"));
+        System.out.println("CODEBASE = "+getCodeBase());
+        //logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
+        alertSound = getAudioClip(getCodeBase(),"notify.wav");
 
       }
       catch (Exception ex) {
@@ -402,11 +404,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     conn = null;
   }
 
-  public Packet getPacketToServlet(){
+  private Packet getPacketToServlet(){
     return this.packetToServlet;
   }
 
-  public Packet getPacketFromServlet(){
+  private Packet getPacketFromServlet(){
     return this.packetFromServlet;
   }
 
