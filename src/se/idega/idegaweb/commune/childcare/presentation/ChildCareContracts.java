@@ -13,6 +13,8 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareGroupWriter;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.DownloadLink;
@@ -43,6 +45,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 	private int sort = -1;
 	private boolean showNotYetActive = false;
+	private boolean showParentalRadio = true;
 	
 	
 	/**
@@ -111,13 +114,34 @@ public class ChildCareContracts extends ChildCareBlock {
 			IWTimestamp stampNow = new IWTimestamp();
 			Collection contracts = null;
 			
-			//contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
-			contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID(), stampNow.getDate(), showNotYetActive, getSession().getGroupID(), sort);
+			SchoolClassMember student;
+			User child;
+			Address address;
+			Phone phone;
+			Link move;
+			Link delete;
+			Link childInfo;
+			IWTimestamp registered;
 			
-			if (contracts != null) {
-				ChildCareApplication application;
+			boolean showNotStartedComment = false;
+		
+			boolean hasComments = false;
+			String name = null;
+			
+			
+			//contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
+			
+			IWTimestamp stamp = new IWTimestamp();
+			
+			Collection students = null;
+			if (sort != -1)
+				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
+			else
+				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
+			
+			if (students != null){
 				ChildCareContract contract;
-				User child;
+				ChildCareApplication application;
 				IWTimestamp created;
 				IWTimestamp validFrom;
 				Link alterCareTime = null;
@@ -126,6 +150,251 @@ public class ChildCareContracts extends ChildCareBlock {
 				boolean isCancelled;
 				boolean isNotYetActive;
 				boolean hasComment = false;
+				
+				
+				Iterator iter = students.iterator();
+				while (iter.hasNext()) {
+					column = 1;
+					student = (SchoolClassMember) iter.next();
+					child = student.getStudent();
+					//address = getBusiness().getUserBusiness().getUsersMainAddress(child);
+					//phone = getBusiness().getUserBusiness().getChildHomePhone(child);
+					registered = new IWTimestamp(student.getRegisterDate());
+					
+					
+					contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
+					
+					
+					
+
+					if (useStyleNames()) {
+						if (row % 2 == 0) {
+							table.setRowStyleClass(row, getDarkRowClass());
+						}
+						else {
+							table.setRowStyleClass(row, getLightRowClass());
+						}
+						table.setCellpaddingLeft(1, row, 12);
+						table.setCellpaddingRight(table.getColumns(), row, 12);
+					}
+					else {
+						if (row % 2 == 0)
+							table.setRowColor(row, getZebraColor1());
+						else
+							table.setRowColor(row, getZebraColor2());
+					}
+					
+					if (contract != null) {
+						student = contract.getSchoolClassMember();
+						application = contract.getApplication();
+						hasComments = true;
+						
+						created = new IWTimestamp(contract.getCreatedDate());
+						student = contract.getSchoolClassMember();
+						if (contract.getValidFromDate() != null)
+							validFrom = new IWTimestamp(contract.getValidFromDate());
+						else
+							validFrom = null;
+						
+						if (application.getRejectionDate() != null) {
+							IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
+							isCancelled = cancelledDate.isEarlierThan(dateNow);
+						}
+						else
+							isCancelled = false;
+						
+						
+						if (validFrom != null) {
+							if (dateNow.isEarlierThan(validFrom))
+								isNotYetActive = true;
+							else
+								isNotYetActive = false;
+						}
+						else {
+							isNotYetActive = false;
+							isCancelled = true;
+						}
+						
+						//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
+						//viewContract.setFile(contract.getContractFileID());
+						//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+						viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
+						
+						if (isNotYetActive) {
+							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_placement_date_for_child","Alter the placement date for this child.")));
+							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_VALID_FROM_DATE);
+						}
+						else {
+							//alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_care_time_for_child","Alter the care time for this child.")));
+							alterCareTime = new Link(this.getEditIcon(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.")));
+							alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_ALTER_CARE_TIME);
+						}
+						
+						alterCareTime.setWindowToOpen(ChildCareWindow.class);
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
+						alterCareTime.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+						
+						
+						if (validFrom.isLaterThan(stamp)) {
+							showComment = true;
+							//showNotStartedComment = true;
+							//hasComments = true;
+							table.add(getSmallErrorText("*"), column, row);
+
+							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+							delete.setWindowToOpen(ChildCareWindow.class);
+							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(showParentalRadio));
+							
+						}
+						else {
+							delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+							delete.setWindowToOpen(ChildCareWindow.class);
+							delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(showParentalRadio));
+						}
+						
+						if (!isCancelled){						
+							
+							if (isNotYetActive) {
+								showComment = true;
+								hasComment = true;
+								showNotActiveComment = true;
+								//table.add(getSmallErrorText("*"), column, row);
+							}
+							if (application.getRejectionDate() != null) {
+								showComment = true;
+								hasComment = true;
+								showRemovedComment = true;
+								table.add(getSmallErrorText("+"), column, row);
+							}
+							
+							if (hasComment)
+								table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
+							if (getResponsePage() != null) {
+								name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
+								archive = getSmallLink(name);
+								archive.setEventListener(ChildCareEventListener.class);
+								archive.addParameter(getSession().getParameterUserID(), application.getChildId());
+								archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
+								archive.setPage(getResponsePage());
+								table.add(archive, column++, row);
+							}
+							else {
+								Name userName = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+								table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
+							}
+							table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
+							table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+							if (validFrom != null)
+								table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+							else
+								table.add(getSmallText("-"), column++, row);
+							if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
+								table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
+							else
+								table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
+							column++;
+							table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
+							
+							
+							if(isCommuneAdministrator(iwc)){
+								if(contract.getInvoiceReceiverID()>0){
+									table.add(getSmallText(contract.getInvoiceReceiver().getName()),column++,row);
+								}
+								else{
+									table.add(getSmallErrorText(localize("child_care.no_invoice_receiver","No receiver")),column++,row);
+								}
+							}
+							
+							table.setWidth(column, row, 12);
+							table.add(viewContract, column++, row);
+							
+							if (allowAlter) {
+								table.setWidth(column, row, 12);
+								int futureContractCount = getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue());
+								if ( futureContractCount < allowedFutureContracts)
+									table.add(alterCareTime, column++, row);
+								else
+									table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
+							}
+							
+							if (student.getRemovedDate() == null)
+								table.add(delete, column++, row);
+							
+							
+							row++;
+						}
+						
+					}
+					else {
+						Name userName = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+						table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
+						table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
+						row++;
+					}
+					
+					
+					
+				}
+				
+				table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+				table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+				table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+				table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+				table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			}
+			
+			if (showComment) {
+				table.setHeight(row++, 2);
+				if (showNotActiveComment) {
+					table.mergeCells(1, row, table.getColumns(), row);
+					if (useStyleNames()) {
+						table.setCellpaddingLeft(1, row, 12);
+					}
+					table.add(getSmallErrorText("*"), 1, row);
+					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+				}
+				if (showRemovedComment) {
+					table.mergeCells(1, row, table.getColumns(), row);
+					if (useStyleNames()) {
+						table.setCellpaddingLeft(1, row, 12);
+					}
+					table.add(getSmallErrorText("+"), 1, row);
+					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.contract_ended","Contract has termination date")), 1, row++);
+				}
+			}
+			
+			add(table);		
+		}
+		else {
+			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
+		}
+			
+				//}
+			//}
+
+			//
+			
+			
+			/*if (contracts != null) {
+				ChildCareApplication application;
+				ChildCareContract contract;
+				User child;
+				IWTimestamp created;
+				IWTimestamp validFrom;
+				IWTimestamp validTo;
+				Link alterCareTime = null;
+				Link viewContract;
+				Link archive;
+				boolean isCancelled;
+				boolean isNotYetActive;
+				boolean hasComment = false;
+				boolean dontShow=false;
 				String name = null;
 				//int provider = -1;
 				Link delete;
@@ -143,7 +412,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
 					//provider = application.getProviderId();
-
+					
 					hasComment = true;
 
 					if (useStyleNames()) {
@@ -172,6 +441,7 @@ public class ChildCareContracts extends ChildCareBlock {
 							validFrom = new IWTimestamp(contract.getValidFromDate());
 						else
 							validFrom = null;
+						
 						if (application.getRejectionDate() != null) {
 							IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
 							isCancelled = cancelledDate.isEarlierThan(dateNow);
@@ -179,6 +449,7 @@ public class ChildCareContracts extends ChildCareBlock {
 						else
 							isCancelled = false;
 							
+						
 						if (validFrom != null) {
 							if (dateNow.isEarlierThan(validFrom))
 								isNotYetActive = true;
@@ -315,6 +586,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					
 				
 			}
+			
 				table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 				table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
@@ -355,12 +627,15 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setHeight(1, row++, "10");
 				table.add(createGroup, 1, row++);
 			}
-			*/
+			
+
 			add(table);		
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
 		}
+		
+		*/
 	}
 	
 	protected Form getNavigationTable() throws RemoteException {
@@ -485,5 +760,9 @@ public class ChildCareContracts extends ChildCareBlock {
 		if (showCreateGroupBtn) {
 			//Nothing...
 		}
+	}
+	
+	private void setShowParentRadioButton(boolean show){
+		showParentalRadio = show;
 	}
 }
