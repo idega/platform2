@@ -40,11 +40,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/13 12:36:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/13 13:58:02 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -78,6 +78,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String NOTE_KEY = PREFIX + "note";
     private static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
     private static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
+    private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
+    private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
     private static final String PAYMENT_DEFAULT = "Utbetalning";
     private static final String PAYMENT_KEY = PREFIX + "payment";
     private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningsrad";
@@ -103,8 +105,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
     private static final String TOTAL_AMOUNT_PLACEMENTS_DEFAULT = "Totalt antal placeringar";
     private static final String TOTAL_AMOUNT_PLACEMENTS_KEY = PREFIX + "total_amount_placements";
+    private static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp, moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
+    private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
@@ -190,10 +194,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText (table, col++, row++,
                       getFormattedPeriod (record.getPeriod ()));
+        table.setHeight (row++, 6);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordListTable
                    (context, record, invoiceRecords), 1, row++);
-        table.setHeight (row++, 12);
+        table.setHeight (row++, 6);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordSummaryTable
                    (context, invoiceRecords), 1, row++);
@@ -331,7 +336,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, changedBy);
 	}
 
-    private void showPayment (final IWContext context) throws RemoteException {
+    private void showPayment (final IWContext context)
+        throws RemoteException, javax.ejb.FinderException {
         final Table table = createTable (3);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
@@ -347,8 +353,26 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final String providerId = context.getParameter (PROVIDER_KEY);
         if (null != schoolCategory && null != providerId
             && 0 < providerId.length ()) {
+            final Date startPeriod = getPeriodParameter (context,
+                                                         START_PERIOD_KEY);
+            final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                    .getServiceInstance(context, InvoiceBusiness.class);
+            final PaymentRecord [] records = business
+                    .getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+                    (schoolCategory, new Integer (providerId),
+                     new java.sql.Date (startPeriod.getTime ()),
+                     new java.sql.Date (endPeriod.getTime ()));
             table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getPaymentRecordListTable (context), 1, row++);
+            if (0 < records.length) {
+                table.add (getPaymentRecordListTable (records), 1, row++);
+                table.mergeCells (1, row, table.getColumns (), row);
+                table.add (getPaymentSummaryTable (context, records, business),
+                           1, row++);
+            } else {
+                addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
+                              NO_PAYMENT_RECORDS_FOUND_DEFAULT);
+            }
         }
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -359,7 +383,68 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                               outerTable));
     }
 
-    private Table getPaymentRecordListTable (final IWContext context)
+    private Table getPaymentSummaryTable
+        (final IWContext context, final PaymentRecord [] records,
+         final InvoiceBusiness business)
+        throws RemoteException, javax.ejb.FinderException {
+        // get home objects
+        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolClassMemberHome placementHome
+                = schoolBusiness.getSchoolClassMemberHome ();
+        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+
+        // initialize conters
+        int placementCount = 0;
+        final Set individuals = new HashSet ();
+        long totalAmountVatExcluded = 0;
+        long totalAmountVat = 0;
+
+        // count values for summary
+        for (int i = 0; i < records.length; i++) {
+            placementCount += records [i].getPlacements ();
+            totalAmountVatExcluded += records [i].getTotalAmount ();
+            totalAmountVat += records [i].getTotalAmountVAT ();
+            final Collection invoiceRecords
+                    = home.findByPaymentRecord (records [i]);
+            for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
+                final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
+                final Integer placementId
+                        = new Integer (invoiceRecord.getSchoolClassMemberId ());
+                final SchoolClassMember placement
+                        = placementHome.findByPrimaryKey (placementId);
+                final User user = placement.getStudent ();
+                individuals.add (user.getPrimaryKey ());
+            }
+        }
+
+        // render
+        final Table table = createTable (3);
+        table.setColumnWidth (3, "50%");
+        int row = 2; int col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_PLACEMENTS_KEY,
+                        TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, placementCount + "");
+        col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
+                        TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, individuals.size () + "");
+        col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
+                        TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, totalAmountVatExcluded + "");
+        col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_KEY,
+                        TOTAL_AMOUNT_VAT_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, totalAmountVat + "");
+        return table;
+    }
+
+    private Table getPaymentRecordListTable (final PaymentRecord [] records)
         throws RemoteException {
         // set up header row
         final String [][] columnNames =
@@ -378,20 +463,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                             columnNames [i][1]);
         }
         row++;
-
-        // get payment records
-        final String schoolCategory = getSession().getOperationalField ();
-        final Integer providerId
-                = new Integer (context.getParameter (PROVIDER_KEY));
-        final Date startPeriod = getPeriodParameter (context, START_PERIOD_KEY);
-        final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance(context, InvoiceBusiness.class);
-        final PaymentRecord [] records
-                = business.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-                (schoolCategory, providerId,
-                 new java.sql.Date (startPeriod.getTime ()),
-                 new java.sql.Date (endPeriod.getTime ()));
 
         // show each payment record in a row
         for (int i = 0; i < records.length; i++) {
