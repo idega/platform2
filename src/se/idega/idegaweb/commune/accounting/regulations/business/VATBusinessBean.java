@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.7 2003/08/28 08:50:42 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.8 2003/08/31 15:57:18 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/28 08:50:42 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/31 15:57:18 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -193,12 +193,12 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		
 		// VAT percent
 		s = vatPercentString.trim();
-		int vatPercent = 0;
+		float vatPercent = 0;
 		if (s.equals("")) { 
 			throw new VATException(KEY_VAT_PERCENT_MISSING, DEFAULT_VAT_PERCENT_MISSING);
 		}
 		try {
-			vatPercent = Integer.parseInt(s); 
+			vatPercent = Float.parseFloat(s); 
 		} catch (NumberFormatException e) {
 			throw new VATException(KEY_VAT_PERCENT_VALUE, DEFAULT_VAT_PERCENT_VALUE);
 		}
