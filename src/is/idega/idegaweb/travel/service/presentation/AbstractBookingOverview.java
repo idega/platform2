@@ -25,7 +25,7 @@ public class AbstractBookingOverview extends TravelManager implements BookingOve
 
   protected Supplier _supplier;
   protected Reseller _reseller;
-  protected Contract _contract;
+  //protected Contract _contract;
 
   private String PARAMETER_FROM_STAMP = "active_from";
   private String PARAMETER_TO_STAMP = "active_to";
