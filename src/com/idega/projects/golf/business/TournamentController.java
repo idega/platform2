@@ -536,251 +536,261 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
         }
 
         TournamentRound tournamentRound = new TournamentRound(tournamentRoundId);
-        int roundNumber = tournamentRound.getRoundNumber();
 
-        idegaTimestamp tourDay = null;
+        boolean display = false;
+        if (tournamentRound.getVisibleStartingtimes()) {
+            display = true;
+        }
+            int roundNumber = tournamentRound.getRoundNumber();
 
-        DropdownMenu rounds = new DropdownMenu("tournament_round");
-          rounds.setAttribute("style","font-size: 8pt");
-          if (!onlineRegistration) {
-            for (int i = 0; i < tourRounds.length; i++) {
-              tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
-                rounds.addMenuElement(tourRounds[i].getID() ,iwrb.getLocalizedString("tournament.round","Round")+" "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
-            }
+            idegaTimestamp tourDay = null;
 
-            if (tournamentRoundId != -1) {
-                rounds.setSelectedElement(""+tournamentRound.getID());
-            }
-            rounds.setToSubmit();
-          }
-          else {
-              tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
-                rounds.addMenuElement(tournamentRound.getID() ,iwrb.getLocalizedString("tournament.round","Round")+ " "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
-          }
-        table.add(rounds,1,row);
+            DropdownMenu rounds = new DropdownMenu("tournament_round");
+              rounds.setAttribute("style","font-size: 8pt");
+              if (!onlineRegistration) {
+                for (int i = 0; i < tourRounds.length; i++) {
+                  tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
+                    rounds.addMenuElement(tourRounds[i].getID() ,iwrb.getLocalizedString("tournament.round","Round")+" "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
+                }
 
-        table.mergeCells(1,row,6,row);
-        table.setAlignment(1,row,"right");
-        ++row;
+                if (tournamentRoundId != -1) {
+                    rounds.setSelectedElement(""+tournamentRound.getID());
+                }
+                rounds.setToSubmit();
+              }
+              else {
+                  tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
+                    rounds.addMenuElement(tournamentRound.getID() ,iwrb.getLocalizedString("tournament.round","Round")+ " "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
+              }
+            table.add(rounds,1,row);
 
-        Text textLook = new Text("");
-          textLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        Text headerLook = new Text("");
-          headerLook.setFontColor("#FFFFFF");
-          headerLook.setFontFace(Text.FONT_FACE_VERDANA);
-          headerLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
-          headerLook.setBold();
+            table.mergeCells(1,row,6,row);
+            table.setAlignment(1,row,"right");
+            ++row;
 
-        Text space = new Text(" ");
-          space.setFontSize(1);
+            Text textLook = new Text("");
+              textLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
+            Text headerLook = new Text("");
+              headerLook.setFontColor("#FFFFFF");
+              headerLook.setFontFace(Text.FONT_FACE_VERDANA);
+              headerLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
+              headerLook.setBold();
 
-        Text dMemberSsn;
-        Text dMemberName;
-        Text dMemberHand;
-        Text dMemberUnion;
+            Text space = new Text(" ");
+              space.setFontSize(1);
 
-
-            Text tim = (Text) headerLook.clone();
-              tim.setText(iwrb.getLocalizedString("tournament.time","Time"));
-            Text sc = (Text) headerLook.clone();
-              sc.setText(iwrb.getLocalizedString("tournament.social_security_number","Social security number") );
-            Text name = (Text) headerLook.clone();
-              name.setText(iwrb.getLocalizedString("tournament.name","Name"));
-            Text club = (Text) headerLook.clone();
-              club.setText(iwrb.getLocalizedString("tournament.club","Club"));
-            Text hc = (Text) headerLook.clone();
-              hc.setText(iwrb.getLocalizedString("tournament.handicap","Handicap"));
-
-            table.add(tim,1,row);
-            table.add(sc,2,row);
-            table.add(name,3,row);
-            table.add(club,4,row);
-            table.add(hc,5,row);
-
-            if (viewOnly || onlineRegistration){
-                table.mergeCells(5,row,6,row);
-            }
-            else{
-                Text del = (Text) headerLook.clone();
-                  del.setText(iwrb.getLocalizedString("tournament.remove","Remove"));
-                table.add(del,6,row);
-            }
-            table.setRowColor(row,headerColor);
+            Text dMemberSsn;
+            Text dMemberName;
+            Text dMemberHand;
+            Text dMemberUnion;
 
 
-        java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
-        java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
-        Field field = tournament.getField();
-        List members;
-        CheckBox delete;
+                Text tim = (Text) headerLook.clone();
+                  tim.setText(iwrb.getLocalizedString("tournament.time","Time"));
+                Text sc = (Text) headerLook.clone();
+                  sc.setText(iwrb.getLocalizedString("tournament.social_security_number","Social security number") );
+                Text name = (Text) headerLook.clone();
+                  name.setText(iwrb.getLocalizedString("tournament.name","Name"));
+                Text club = (Text) headerLook.clone();
+                  club.setText(iwrb.getLocalizedString("tournament.club","Club"));
+                Text hc = (Text) headerLook.clone();
+                  hc.setText(iwrb.getLocalizedString("tournament.handicap","Handicap"));
 
-        com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
-        com.idega.jmodule.object.Image time;
+                table.add(tim,1,row);
+                table.add(sc,2,row);
+                table.add(name,3,row);
+                table.add(club,4,row);
+                table.add(hc,5,row);
 
-        Link remove;
-        Text tooMany = new Text(iwrb.getLocalizedString("tournament.no_room","No room"));
-            tooMany.setFontColor("RED");
-
-
-        Union union;
-        int union_id;
-        String abbrevation = "'";
-
-                boolean displayTee = false;
-                if (tournamentRound.getStartingtees() > 1) {
-			displayTee = true;
-		}
-
-		int groupCounterNum = 0;
-
-
-		for (int y = 1 ; y <= tournamentRound.getStartingtees() ; y++) {
-			// HARÐKÓÐUN DAUÐANS
-			int tee_number = 1;
-			if (y == 2) tee_number = 10;
+                if (viewOnly || onlineRegistration){
+                    table.mergeCells(5,row,6,row);
+                }
+                else{
+                    Text del = (Text) headerLook.clone();
+                      del.setText(iwrb.getLocalizedString("tournament.remove","Remove"));
+                    table.add(del,6,row);
+                }
+                table.setRowColor(row,headerColor);
 
 
-			idegaTimestamp startHour = new idegaTimestamp(tournamentRound.getRoundDate());
-			idegaTimestamp endHour = new idegaTimestamp(tournamentRound.getRoundEndDate());
-				endHour.addMinutes(1);
+            java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
+            java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
+            Field field = tournament.getField();
+            List members;
+            CheckBox delete;
 
-			int minutesBetween = tournament.getInterval();
-			int numberInGroup = tournament.getNumberInGroup();
-			int groupCounter = 0;
+            com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
+            com.idega.jmodule.object.Image time;
 
-			if (displayTee) {
-				++row;
-				Text startTee = (Text) headerLook.clone();
-                                  startTee.setText(iwrb.getLocalizedString("tournament.starting_tee","Starting tee") +" : "+tee_number);
-				table.add(startTee,1,row);
-			    table.setRowColor(row,headerColor);
-			    table.mergeCells(1,row,6,row);
-			    table.setAlignment(1,row,"center");
-			}
-
-			int startInGroup = 0;
-			com.idega.projects.golf.entity.Member tempMember;
-			TextInput socialNumber;
+            Link remove;
+            Text tooMany = new Text(iwrb.getLocalizedString("tournament.no_room","No room"));
+                tooMany.setFontColor("RED");
 
 
-			StartingtimeView[] sView;
+            Union union;
+            int union_id;
+            String abbrevation = "'";
 
-			while (endHour.isLaterThan(startHour) ) {
-				++row;
-				++groupCounter;
-				++groupCounterNum;
-				startInGroup = 0;
+                    boolean displayTee = false;
+                    if (tournamentRound.getStartingtees() > 1) {
+                            displayTee = true;
+                    }
 
-                                if (activeColor.equals(darkColor)) {
-                                    activeColor = lightColor;
-                                }
-                                else {
-                                    activeColor = darkColor;
-                                }
+                    int groupCounterNum = 0;
 
-				time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
-				table.add(time,1,row);
+
+                    for (int y = 1 ; y <= tournamentRound.getStartingtees() ; y++) {
+                            // HARÐKÓÐUN DAUÐANS
+                            int tee_number = 1;
+                            if (y == 2) tee_number = 10;
+
+
+                            idegaTimestamp startHour = new idegaTimestamp(tournamentRound.getRoundDate());
+                            idegaTimestamp endHour = new idegaTimestamp(tournamentRound.getRoundEndDate());
+                                    endHour.addMinutes(1);
+
+                            int minutesBetween = tournament.getInterval();
+                            int numberInGroup = tournament.getNumberInGroup();
+                            int groupCounter = 0;
+
+                            if (displayTee) {
+                                    ++row;
+                                    Text startTee = (Text) headerLook.clone();
+                                      startTee.setText(iwrb.getLocalizedString("tournament.starting_tee","Starting tee") +" : "+tee_number);
+                                    table.add(startTee,1,row);
+                                table.setRowColor(row,headerColor);
+                                table.mergeCells(1,row,6,row);
                                 table.setAlignment(1,row,"center");
-                                table.setVerticalAlignment(1,row,"middle");
-//				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
-				table.mergeCells(1,row,1,row + (numberInGroup -1));
-//				table.setVerticalAlignment(1,row,"top");
+                            }
 
-				sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
-				//sView = (StartingtimeView[]) (new StartingtimeView()).findAll("Select sv.* from startingtime_view sv, tournament_round_startingtime trs where sv.startingtime_id = trs.startingtime_id AND trs.tournament_id = "+tournamentRound.getID()+" AND sv.startingtime_date = '" +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
-				startInGroup = sView.length;
+                            int startInGroup = 0;
+                            com.idega.projects.golf.entity.Member tempMember;
+                            TextInput socialNumber;
 
-				for (int i = 0; i < sView.length; i++) {
-                                        table.setHeight(row,"20");
-					table.setColor(1,row,activeColor);
-					table.setColor(2,row,activeColor);
-					table.setColor(3,row,activeColor);
-					table.setColor(4,row,activeColor);
-					table.setColor(5,row,activeColor);
-					table.setColor(6,row,activeColor);
-                                        ++numberOfMember;
-                                        if (i != 0) table.add(tooMany,1,row);
 
-                                        dMemberSsn = (Text) textLook.clone();
-                                        dMemberName = (Text) textLook.clone();
-                                        dMemberHand = (Text) textLook.clone();
-                                        dMemberUnion = (Text) textLook.clone();
-                                          dMemberSsn.setText(sView[i].getSocialSecurityNumber());
-                                          dMemberName.setText(sView[i].getName());
-                                          dMemberUnion.setText(sView[i].getAbbrevation());
-                                          dMemberHand.setText(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
+                            StartingtimeView[] sView;
 
-                                        table.add(dMemberSsn,2,row);
-                                        table.add(dMemberName,3,row);
-                                        table.add(dMemberUnion,4,row);
-                                        table.add(dMemberHand,5,row);
-                                        //table.add(sView[i].getSocialSecurityNumber(),2,row);
-                                        //abbrevation = sView[i].getAbbrevation();
-                                        //table.add(sView[i].getName() ,3,row);
-                                        //table.add(abbrevation,4,row);
-                                        //table.add(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()),5,row);
-                                        if (!viewOnly) {
-                                                if (!onlineRegistration) {
-                                                        delete = new CheckBox("deleteMember",Integer.toString(sView[i].getMemberId()));
-                                                        table.add(delete,6,row);
+                            while (endHour.isLaterThan(startHour) ) {
+                                    ++row;
+                                    ++groupCounter;
+                                    ++groupCounterNum;
+                                    startInGroup = 0;
+
+                                    if (activeColor.equals(darkColor)) {
+                                        activeColor = lightColor;
+                                    }
+                                    else {
+                                        activeColor = darkColor;
+                                    }
+
+                                    time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
+                                    table.add(time,1,row);
+                                    table.setAlignment(1,row,"center");
+                                    table.setVerticalAlignment(1,row,"middle");
+    //				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
+                                    table.mergeCells(1,row,1,row + (numberInGroup -1));
+    //				table.setVerticalAlignment(1,row,"top");
+
+                                    sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
+                                    //sView = (StartingtimeView[]) (new StartingtimeView()).findAll("Select sv.* from startingtime_view sv, tournament_round_startingtime trs where sv.startingtime_id = trs.startingtime_id AND trs.tournament_id = "+tournamentRound.getID()+" AND sv.startingtime_date = '" +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
+                                    startInGroup = sView.length;
+
+                                    for (int i = 0; i < sView.length; i++) {
+                                            table.setHeight(row,"20");
+                                            table.setColor(1,row,activeColor);
+                                            table.setColor(2,row,activeColor);
+                                            table.setColor(3,row,activeColor);
+                                            table.setColor(4,row,activeColor);
+                                            table.setColor(5,row,activeColor);
+                                            table.setColor(6,row,activeColor);
+                                            ++numberOfMember;
+                                            if (i != 0) table.add(tooMany,1,row);
+
+                                            if (display) {
+                                                dMemberSsn = (Text) textLook.clone();
+                                                dMemberName = (Text) textLook.clone();
+                                                dMemberHand = (Text) textLook.clone();
+                                                dMemberUnion = (Text) textLook.clone();
+                                                  dMemberSsn.setText(sView[i].getSocialSecurityNumber());
+                                                  dMemberName.setText(sView[i].getName());
+                                                  dMemberUnion.setText(sView[i].getAbbrevation());
+                                                  dMemberHand.setText(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
+
+                                                table.add(dMemberSsn,2,row);
+                                                table.add(dMemberName,3,row);
+                                                table.add(dMemberUnion,4,row);
+                                                table.add(dMemberHand,5,row);
+                                                //table.add(sView[i].getSocialSecurityNumber(),2,row);
+                                                //abbrevation = sView[i].getAbbrevation();
+                                                //table.add(sView[i].getName() ,3,row);
+                                                //table.add(abbrevation,4,row);
+                                                //table.add(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()),5,row);
+                                                if (!viewOnly) {
+                                                        if (!onlineRegistration) {
+                                                                delete = new CheckBox("deleteMember",Integer.toString(sView[i].getMemberId()));
+                                                                table.add(delete,6,row);
+                                                        }
+                                                        else {
+                                                            table.mergeCells(5,row,6,row);
+                                                        }
                                                 }
                                                 else {
                                                     table.mergeCells(5,row,6,row);
                                                 }
-                                        }
-                                        else {
-                                            table.mergeCells(5,row,6,row);
-                                        }
-                                        row++;
-				}
+                                            }else {
+                                                table.mergeCells(2,row,6,row);
+                                            }
+                                            row++;
+                                    }
 
 
-				for (int i = startInGroup; i < (numberInGroup); i++) {
-                                        table.setHeight(row,"20");
-                                        table.add(space,2,row);
-					table.setColor(1,row,activeColor);
-					table.setColor(2,row,activeColor);
-					table.setColor(3,row,activeColor);
-					table.setColor(4,row,activeColor);
-					table.setColor(5,row,activeColor);
-					table.setColor(6,row,activeColor);
-					if ((!viewOnly) && (roundNumber == 1)) {
-						socialNumber = new TextInput("social_security_number_for_group_"+groupCounter);
-						socialNumber.setAttribute("style","font-size: 8pt");
-						socialNumber.setLength(15);
-						socialNumber.setMaxlength(10);
-						table.add(socialNumber,2,row);
-					}
-					table.mergeCells(2,row,6,row);
+                                    for (int i = startInGroup; i < (numberInGroup); i++) {
+                                            table.setHeight(row,"20");
+                                            table.add(space,2,row);
+                                            table.setColor(1,row,activeColor);
+                                            table.setColor(2,row,activeColor);
+                                            table.setColor(3,row,activeColor);
+                                            table.setColor(4,row,activeColor);
+                                            table.setColor(5,row,activeColor);
+                                            table.setColor(6,row,activeColor);
+                                            if ((!viewOnly) && (roundNumber == 1)) {
+                                                    socialNumber = new TextInput("social_security_number_for_group_"+groupCounter);
+                                                    socialNumber.setAttribute("style","font-size: 8pt");
+                                                    socialNumber.setLength(15);
+                                                    socialNumber.setMaxlength(10);
+                                                    table.add(socialNumber,2,row);
+                                            }
+                                            table.mergeCells(2,row,6,row);
 
-					++row;
-				}
-				startHour.addMinutes(minutesBetween);
-				/*
-                                if (endHour.isLaterThan(startHour) ) {
-					table.mergeCells(1,row,6,row);
-				}
-                                */
-                                --row;
-			}
-		}
+                                            ++row;
+                                    }
+                                    startHour.addMinutes(minutesBetween);
+                                    /*
+                                    if (endHour.isLaterThan(startHour) ) {
+                                            table.mergeCells(1,row,6,row);
+                                    }
+                                    */
+                                    --row;
+                            }
+                    }
 
-            ++row;
-            table.setHeight(row,"20");
-            table.setRowColor(row,headerColor);
-            table.mergeCells(1,row,3,row);
-            Text many = (Text) headerLook.clone();
-                many.setText(iwrb.getLocalizedString("tournament.number_of_participants","Number of participants") +" : " +numberOfMember);
-            table.add(many,1,row);
+                ++row;
+                table.setHeight(row,"20");
+                table.setRowColor(row,headerColor);
+                table.mergeCells(1,row,3,row);
+                Text many = (Text) headerLook.clone();
+                    many.setText(iwrb.getLocalizedString("tournament.number_of_participants","Number of participants") +" : " +numberOfMember);
+                table.add(many,1,row);
 
-            table.mergeCells(4,row,6,row);
-            if (!viewOnly) {
-                SubmitButton submitButton = new SubmitButton(iwrb.getImage("buttons/save.gif"));
-                table.add(new HiddenInput("sub_action","saveDirectRegistration"),4,row);
-                table.add(submitButton,4,row);
-                table.add(new HiddenInput("number_of_groups",""+groupCounterNum),4,row);
-                table.setAlignment(4,row,"right");
-            }
+                table.mergeCells(4,row,6,row);
+                if (!viewOnly) {
+                    SubmitButton submitButton = new SubmitButton(iwrb.getImage("buttons/save.gif"));
+                    table.add(new HiddenInput("sub_action","saveDirectRegistration"),4,row);
+                    table.add(submitButton,4,row);
+                    table.add(new HiddenInput("number_of_groups",""+groupCounterNum),4,row);
+                    table.setAlignment(4,row,"right");
+                }
+
 
         return form;
     }

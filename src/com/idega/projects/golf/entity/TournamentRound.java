@@ -1,5 +1,5 @@
 /*
- * $Id: TournamentRound.java,v 1.7 2001/06/20 06:24:19 gimmi Exp $
+ * $Id: TournamentRound.java,v 1.8 2001/07/03 16:28:28 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.projects.golf.entity;
 
 import java.sql.*;
 import com.idega.data.*;
+import com.idega.idegaweb.IWResourceBundle;
 import java.util.List;
 
 /**
@@ -36,7 +37,9 @@ public class TournamentRound extends GolfEntity{
 		addAttribute("decrease_handicap","Spilað til lækkunar",true,true,"java.lang.Boolean");
 		addAttribute("round_end_date","Hring lýkur",true,true,"java.sql.Timestamp");
 		// added 19.06.2001
-		addAttribute("startingtees","Fjöldi teiga",true,true,"java.sql.Integer");
+		addAttribute("startingtees","Fjöldi teiga",true,true,"java.lang.Integer");
+		// added 28.06.2001
+		addAttribute("visible_startingtimes","Sýnilegir rástimar",true,true,"java.lang.Boolean");
 
 	}
 
@@ -48,11 +51,16 @@ public class TournamentRound extends GolfEntity{
 		setIncreaseHandicap(false);
 		setDecreaseHandicap(false);
 		setStartingtees(1);
+                setVisibleStartingtimes(true);
 	}
 
 
 	public String getName(){
 		return "Hringur "+getRoundNumber();
+	}
+
+	public String getName(IWResourceBundle iwrb){
+		return iwrb.getLocalizedString("tournament.round","Round")+" "+getRoundNumber();
 	}
 
 	public void setTournament(Tournament tournament){
@@ -150,12 +158,25 @@ public class TournamentRound extends GolfEntity{
   }
 
 
-	public void setStartingtees(int numberOfStartingtees) {
-		setColumn("startingtees",numberOfStartingtees);
-	}
+    public void setStartingtees(int numberOfStartingtees) {
+        setColumn("startingtees",numberOfStartingtees);
+    }
 
-	public int getStartingtees() {
-		return getIntColumnValue("startingtees");
-	}
+    public int getStartingtees() {
+        return getIntColumnValue("startingtees");
+    }
+
+    public void setVisibleStartingtimes(boolean visibleStartingtimes) {
+        setColumn("visible_startingtimes",visibleStartingtimes);
+    }
+
+    public boolean getVisibleStartingtimes() {
+        return getBooleanColumnValue("visible_startingtimes");
+    }
+
+
 
 }
+
+
+
