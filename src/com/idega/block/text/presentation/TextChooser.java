@@ -1,7 +1,6 @@
 package com.idega.block.text.presentation;
 
 import com.idega.block.text.data.TxText;
-import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -19,6 +18,7 @@ public class TextChooser extends AbstractChooser {
   private String style;
   private Image _chooseButtonImage;
   public static String RELOAD_PARENT_PARAMETER = "tx_no_reload";
+  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.text";
 
 
   public TextChooser(String chooserName) {
@@ -38,7 +38,7 @@ public class TextChooser extends AbstractChooser {
   }
 
   public void main(IWContext iwc){
-    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER);
+    IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     if (_chooseButtonImage != null) {
       setChooseButtonImage(_chooseButtonImage);
     }else {
