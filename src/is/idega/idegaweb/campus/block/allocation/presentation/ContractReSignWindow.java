@@ -78,7 +78,7 @@ public class ContractReSignWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if( isAdmin && isLoggedOn){
+    if( isAdmin || isLoggedOn){
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
         SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
