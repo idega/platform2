@@ -52,6 +52,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -89,10 +90,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/02/13 10:38:18 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/09 14:01:10 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.129 $
+ * @version $Revision: 1.130 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -470,8 +471,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																									CHECK_END_PERIOD_KEY);
 		final Date checkStartPeriod
 				= getDateParameter (context, CHECK_START_PERIOD_KEY);
-		final Integer numberOfDays
-				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
+		final int dayDiff = null != checkStartPeriod && null != checkEndPeriod
+				? 1 + AccountingUtil.getDayDiff (checkStartPeriod, checkEndPeriod) : 0;
+		final Integer numberOfDays = new Integer (0 > dayDiff ? 0 : dayDiff);
 		final String doublePosting = getPostingString (context,
 																									 DOUBLE_POSTING_KEY);
 		final InvoiceHeader header = getInvoiceHeader (context);
@@ -1177,7 +1179,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				firstCheckDate.setAsDate ();
 				lastCheckDate.setAsDate ();
 				final int days = lastCheckDate.isEarlierThan (firstCheckDate) ? 0
-						: 1 + IWTimestamp.getDaysBetween (firstCheckDate, lastCheckDate);
+						: 1 + AccountingUtil.getDayDiff (firstCheckDate, lastCheckDate);
 				invoiceText1.append ("Check ");
 				invoiceText1.append (provider.getSchool ().getName ());
 				invoiceText2.append (studentName);
@@ -1571,15 +1573,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		addPhrase (table, record.getNotes ());
 	}
 	
-	private int dayDiff (final Date date1, final Date date2) {
-		if (null == date1 || null == date2) return 0;
-		long millis1 = date1.getTime ();
-		long millis2 = date2.getTime ();
-		long millisDiff = millis2 - millis1;
-		return 0 <= millisDiff
-				? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
-	}
-	
 	private static float mmToPoints (final float mm) {
 		return mm*72/25.4f;
 	}
@@ -1624,7 +1617,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 	
 	private long roundAmount (final float f) {
-		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
+		return AccountingUtil.roundAmount (f);
 	}
 	
 	private String getFormattedAmount (final float f) {
