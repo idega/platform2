@@ -64,7 +64,7 @@ import com.idega.util.datastructures.HashMatrix;
  */
 public class WorkReportAccountEditor extends WorkReportSelector {
 
-  private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardmembereditor.step_name";
+  private static final String STEP_NAME_LOCALIZATION_KEY = "workreportaccounteditor.step_name";
   
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_entry_key";
@@ -547,7 +547,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     browser.setMandatoryColumn(i++, OKAY_BUTTON);
     browser.setEntityToPresentationConverter(OKAY_BUTTON, okayConverter);
-    browser.setCellpadding(4);
+    browser.setCellpadding(6);
     browser.setCellspacing(0);
     browser.setBorder(2);
     browser.setColorForEvenRows("#EFEFEF");
