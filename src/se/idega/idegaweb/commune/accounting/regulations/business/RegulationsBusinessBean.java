@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.62 2003/11/12 12:29:03 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.63 2003/11/13 12:36:26 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1044,13 +1044,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[] { new Integer(1), "1-25" });
-		arr.add(new Object[] { new Integer(2), "26-35" });
-		arr.add(new Object[] { new Integer(3), ">=36" });
-		arr.add(new Object[] { new Integer(4), "<=24" });
-		arr.add(new Object[] { new Integer(5), ">=25" });
-		arr.add(new Object[] { new Integer(6), "<=13" });
-		arr.add(new Object[] { new Integer(7), ">=14" });
+		arr.add(new Object[] { new Integer(1), "1-15" });
+		arr.add(new Object[] { new Integer(2), "16-25" });
+		arr.add(new Object[] { new Integer(3), "26-35" });
+		arr.add(new Object[] { new Integer(4), ">=36" });
+		arr.add(new Object[] { new Integer(5), "<=13" });
+		arr.add(new Object[] { new Integer(6), ">=14" });
 
 		return arr;
 	}
@@ -1087,23 +1086,24 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllSchoolYearIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[] { new Integer(1), "1-2" });
-		arr.add(new Object[] { new Integer(2), "3-5" });
-		arr.add(new Object[] { new Integer(3), "4-5" });
-		arr.add(new Object[] { new Integer(4), "6" });
-		arr.add(new Object[] { new Integer(5), ">=7" });
-		arr.add(new Object[] { new Integer(6), "1-3" });
-		arr.add(new Object[] { new Integer(7), "1-5" });
-		arr.add(new Object[] { new Integer(8), "1-6" });
-		arr.add(new Object[] { new Integer(9), "4-6" });
-		arr.add(new Object[] { new Integer(10), "6-9" });
-		arr.add(new Object[] { new Integer(11), "7-9" });
-		arr.add(new Object[] { new Integer(12), "G1" });
-		arr.add(new Object[] { new Integer(13), "G1-G3" });
-		arr.add(new Object[] { new Integer(14), "G2" });
-		arr.add(new Object[] { new Integer(15), "G3" });
-		arr.add(new Object[] { new Integer(16), "G4" });
-		arr.add(new Object[] { new Integer(17), "G1-G4" });
+		arr.add(new Object[] { new Integer(1), "1-3" });
+		arr.add(new Object[] { new Integer(2), "1-6" });
+		arr.add(new Object[] { new Integer(3), "4-6" });
+		arr.add(new Object[] { new Integer(4), "7-9" });
+		arr.add(new Object[] { new Integer(5), "S1-S3" });
+		arr.add(new Object[] { new Integer(6), "S4-S6" });
+		arr.add(new Object[] { new Integer(7), "S7-S10" });
+		arr.add(new Object[] { new Integer(8), "G1-G3" });
+		arr.add(new Object[] { new Integer(9), "G1" });
+		arr.add(new Object[] { new Integer(10), "G2" });
+		arr.add(new Object[] { new Integer(11), "G3" });
+		arr.add(new Object[] { new Integer(12), "G4" });
+		arr.add(new Object[] { new Integer(13), "G1-G4" });
+		arr.add(new Object[] { new Integer(14), "GS1-GS4" });
+		arr.add(new Object[] { new Integer(15), "GS1" });
+		arr.add(new Object[] { new Integer(16), "GS2" });
+		arr.add(new Object[] { new Integer(17), "GS3" });
+		arr.add(new Object[] { new Integer(18), "GS4" });
 
 		return arr;
 	}
