@@ -24,31 +24,67 @@ public class Booker {
   public Booker() {
   }
 
-  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(serviceId, hotelPickupPlaceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
+  public static int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(-1, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
   }
 
-  public static int Book(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    Booking booking = new Booking();
-      booking.setServiceID(serviceId);
-      booking.setAddress(address);
-      booking.setBookingDate(date.getTimestamp());
-      booking.setBookingTypeID(bookingType);
-      booking.setCity(city);
-      booking.setCountry(country);
-      booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
-      booking.setEmail(email);
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-      }
-      booking.setName(name);
-      booking.setPostalCode(postalCode);
-      booking.setTelephoneNumber(telephoneNumber);
-//      booking.setProductPriceId(productPriceId);
-      booking.setTotalCount(totalCount);
-    booking.insert();
+  public static int Book(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+    return Book(serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode);
+  }
 
-    return booking.getID();
+  public static int updateBooking(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
+    return Book(bookingId, serviceId, hotelPickupPlaceId, roomNumber, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode);
+  }
+
+  private static int Book(int bookingId, int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
+    if (bookingId == -1) {
+      Booking booking = new Booking();
+        booking.setServiceID(serviceId);
+        booking.setAddress(address);
+        booking.setBookingDate(date.getTimestamp());
+        booking.setBookingTypeID(bookingType);
+        booking.setCity(city);
+        booking.setCountry(country);
+        booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
+        booking.setEmail(email);
+        if (hotelPickupPlaceId != -1) {
+          booking.setHotelPickupPlaceID(hotelPickupPlaceId);
+          if (roomNumber != null) {
+            booking.setRoomNumber(roomNumber);
+          }
+        }
+        booking.setName(name);
+        booking.setPostalCode(postalCode);
+
+        booking.setTelephoneNumber(telephoneNumber);
+  //      booking.setProductPriceId(productPriceId);
+        booking.setTotalCount(totalCount);
+      booking.insert();
+
+      return booking.getID();
+    }else {
+      Booking booking = new Booking(bookingId);
+        booking.setServiceID(serviceId);
+        booking.setAddress(address);
+        booking.setBookingDate(date.getTimestamp());
+        if (bookingType != -1)
+        booking.setBookingTypeID(bookingType);
+        booking.setCity(city);
+        booking.setCountry(country);
+        booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
+        booking.setEmail(email);
+        if (hotelPickupPlaceId != -1) {
+          booking.setHotelPickupPlaceID(hotelPickupPlaceId);
+        }
+        booking.setName(name);
+        booking.setPostalCode(postalCode);
+        booking.setTelephoneNumber(telephoneNumber);
+  //      booking.setProductPriceId(productPriceId);
+        booking.setTotalCount(totalCount);
+      booking.update();
+
+      return bookingId;
+    }
   }
 
 
@@ -216,6 +252,37 @@ public class Booker {
 
 
       return total;
+  }
+
+  public static BookingEntry[] getBookingEntries(Booking booking) {
+    try {
+      return booking.getBookingEntries();
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return null;
+    }
+  }
+
+  public static boolean deleteBooking(int bookingId) {
+    try {
+      Booking booking = new Booking(bookingId);
+      return deleteBooking(booking);
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
+  }
+
+  public static boolean deleteBooking(Booking booking) {
+    try {
+      booking.setIsValid(false);
+      booking.update();
+      return true;
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+      return false;
+    }
+
   }
 
 }

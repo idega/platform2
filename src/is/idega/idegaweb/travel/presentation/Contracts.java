@@ -169,7 +169,8 @@ public class Contracts extends TravelManager {
       int row = 0;
 
       Text newSupplierText = (Text) theBoldText.clone();
-          newSupplierText.setText(iwrb.getLocalizedString("travel.new_reseller","New Reseller"));
+        if (isUpdate) newSupplierText.setText(iwrb.getLocalizedString("travel.update_reseller_information","Update reseller information"));
+        else newSupplierText.setText(iwrb.getLocalizedString("travel.new_reseller","New Reseller"));
 
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name","Name"));
@@ -335,7 +336,7 @@ public class Contracts extends TravelManager {
 
       try {
           String name = iwc.getParameter("reseller_name");
-          String description = iwc.getParameter("reseller_description");
+          String description = iwc.getParameter("reseltler_description");
           String address = iwc.getParameter("reseller_address");
           String phone = iwc.getParameter("reseller_phone");
           String fax = iwc.getParameter("reseller_fax");
@@ -383,7 +384,7 @@ public class Contracts extends TravelManager {
                   }
                 }else {
                   ph = new Phone();
-                    ph.setNumber(phone);
+                    ph.setNumber(fax);
                     ph.setPhoneTypeId(Phone.getFaxNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
@@ -553,7 +554,7 @@ public class Contracts extends TravelManager {
         ++row;
         pName = (Text) theBoldText.clone();
           pName.setText(products[i].getName());
-          pName.setFontColor(super.DARKBLUE);
+          pName.setFontColor(super.textColor);
 
         table.add(pName,1,row);
         table.setRowColor(row, super.backgroundColor);
@@ -567,9 +568,8 @@ public class Contracts extends TravelManager {
             table.setAlignment(4,row,"right");
             temp = (Link) closerLook.clone();
               temp.setText("T-Loka");
-              temp.setFontColor(super.textColor);
+              temp.setFontColor(super.backgroundColor);
             table.add(temp,4,row);
-
 
             pAlot = new TextInput("alotment");
               pAlot.setSize(3);
@@ -688,7 +688,7 @@ public class Contracts extends TravelManager {
 
 
             pName.setFontColor(super.backgroundColor);
-            table.setRowColor(row, super.DARKBLUE);
+            table.setRowColor(row, super.textColor);
 
             ++row;
             table.add(tDiscount,1,row);
@@ -723,7 +723,7 @@ public class Contracts extends TravelManager {
             table.add(tDaysBefore,3,row);
 
             ++row;
-            table.setRowColor(row, super.DARKBLUE);
+            table.setRowColor(row, super.textColor);
             SubmitButton submit = new SubmitButton("T-SAVE",this.sAction,this.parameterSaveProductInfo);
             table.add(submit,4,row);
             table.setAlignment(4,row,"right");

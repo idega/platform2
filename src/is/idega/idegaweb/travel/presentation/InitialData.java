@@ -243,7 +243,9 @@ public class InitialData extends TravelManager {
       Supplier supplier = null;
 
       Text newSupplierText = (Text) theBoldText.clone();
-          newSupplierText.setText(iwrb.getLocalizedString("travel.new_supplier","New supplier"));
+        if (supplier_id == -1) newSupplierText.setText(iwrb.getLocalizedString("travel.new_supplier","New supplier"));
+        else newSupplierText.setText(iwrb.getLocalizedString("travel.update_supplier_information","Update supplier information"));
+
 
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name","Name"));
@@ -468,7 +470,7 @@ public class InitialData extends TravelManager {
                       }
                     }else {
                       ph = new Phone();
-                        ph.setNumber(phone);
+                        ph.setNumber(fax);
                         ph.setPhoneTypeId(Phone.getFaxNumberID());
                       ph.insert();
                       phoneIDS.add(new Integer(ph.getID()));

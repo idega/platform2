@@ -40,12 +40,14 @@ public class Booking extends TravelManager {
     private int resellerId;
   private Contract contract;
     private int contractId;
+  private is.idega.travel.data.Booking booking;
+    private int bookingId;
 
   private Product product;
     private int productId;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
-  private String BookingAction = "booking_action";
+  public static String BookingAction = "booking_action";
   private String BookingParameter = "booking";
 
   private Service service;
@@ -60,6 +62,9 @@ public class Booking extends TravelManager {
   private static String parameterRespondYes = "bookingYes";
   private static String parameterRespondNo = "bookingNo";
 
+  public static String parameterUpdateBooking = "bookinUpdateBooking";
+  public static String parameterBookingId = "bookingBookingId";
+
   private idegaTimestamp stamp;
 
   int available = -1234;
@@ -67,34 +72,31 @@ public class Booking extends TravelManager {
   public Booking() {
   }
 
-
-  public void add(PresentationObject mo) {
-    super.add(mo);
-  }
-
   public void main(IWContext iwc) throws Exception {
       super.main(iwc);
       initialize(iwc);
 
-//      if ( (supplier != null) || (reseller != null)) {
-        String action = iwc.getParameter(this.BookingAction);
-        if (action == null) {action = "";}
+      if (reseller != null && contract == null) {
+        product = null;
+      }
 
-        if (action.equals("")) {
-            displayForm(iwc);
-        }else if (action.equals(this.BookingParameter)) {
-            checkBooking(iwc);
-        }else if (action.equals(this.parameterBookAnyway)) {
-            saveBooking(iwc, true);
-        }else if (action.equals(this.parameterSendInquery)) {
-            sendInquery(iwc);
-        }else if (action.equals(this.parameterRespondInquery)) {
-            inqueryResponse(iwc);
-            displayForm(iwc);
-        }
-//      }else {
-//        add("TEMP _LOGIN");
-//      }
+      String action = iwc.getParameter(this.BookingAction);
+      if (action == null) {action = "";}
+
+      if (action.equals("")) {
+          displayForm(iwc);
+      }else if (action.equals(this.BookingParameter)) {
+          checkBooking(iwc);
+      }else if (action.equals(this.parameterBookAnyway)) {
+          saveBooking(iwc, true);
+      }else if (action.equals(this.parameterSendInquery)) {
+          sendInquery(iwc);
+      }else if (action.equals(this.parameterRespondInquery)) {
+          inqueryResponse(iwc);
+          displayForm(iwc);
+      }else if (action.equals(this.parameterUpdateBooking)) {
+          updateBooking(iwc);
+      }
 
       super.addBreak();
   }
@@ -850,6 +852,8 @@ public class Booking extends TravelManager {
           Text countryText = (Text) theText.clone();
               countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
 
+          DropdownMenu pickupMenu = null;
+          TextInput roomNumber = null;
           Text tReferenceNumber = (Text) theText.clone();
             tReferenceNumber.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
           TextInput tiReferenceNumber = new TextInput("reference_number");
@@ -912,11 +916,20 @@ public class Booking extends TravelManager {
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
               HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this.service);
-              DropdownMenu pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+              pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
+
+              Text roomNumberText = (Text) theText.clone();
+                roomNumberText.setText(iwrb.getLocalizedString("travel.room_number","room number"));
+              roomNumber = new TextInput("room_number");
+                roomNumber.setSize(textInputSizeSm);
 
               table.add(hotelText,1,row);
               table.add(pickupMenu,2,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumberText,2,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumber,2,row);
           }
 
           Text pPriceCatNameText;
@@ -932,6 +945,17 @@ public class Booking extends TravelManager {
             TotalTextInput.setSize(8);
 
           ++row;
+
+          BookingEntry[] entries = null;
+          ProductPrice pPri = null;
+          int totalCount = 0;
+          int totalSum = 0;
+          int currentSum = 0;
+          int currentCount = 0;
+          if (booking != null) {
+            entries = Booker.getBookingEntries(booking);
+          }
+
 
           for (int i = 0; i < pPrices.length; i++) {
               try {
@@ -950,6 +974,25 @@ public class Booking extends TravelManager {
                     pPriceMany.setAsNotEmpty("T - Ekki tómt");
                     pPriceMany.setAsIntegers("T - Bara tölur takk");
 
+                  if (booking != null) {
+                    if (entries != null) {
+                      for (int j = 0; j < entries.length; j++) {
+                        if (entries[j].getProductPriceId() == pPrices[i].getID()) {
+                          pPri = entries[j].getProductPrice();
+                          currentCount = entries[j].getCount();
+                          currentSum = (int) (currentCount * tsb.getPrice(productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),idegaTimestamp.getTimestampRightNow()));
+
+                          totalCount += currentCount;
+                          totalSum += currentSum;
+                          pPriceMany.setContent(Integer.toString(currentCount));
+                          pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                            pPriceText.setSize(8);
+                        }
+                      }
+                    }
+                  }
+
+
                   pPriceText.add(pPriceMany,"*"+price);
                   TotalPassTextInput.add(pPriceMany);
                   TotalTextInput.add(pPriceMany,"*"+price);
@@ -960,6 +1003,8 @@ public class Booking extends TravelManager {
                   table.add(pPriceText, 2,row);
 
                   table.add(Integer.toString(price),2,row);
+
+
               }catch (SQLException sql) {
                 sql.printStackTrace(System.err);
               }
@@ -968,6 +1013,10 @@ public class Booking extends TravelManager {
           ++row;
 
           table.add(totalText,1,row);
+          if (booking != null) {
+            TotalPassTextInput.setContent(Integer.toString(totalCount));
+            TotalTextInput.setContent(Integer.toString(totalSum));
+          }
           table.add(TotalPassTextInput,2,row);
           table.add(TotalTextInput,2,row);
           table.add(new HiddenInput("available",Integer.toString(available)),2,row);
@@ -1016,8 +1065,33 @@ public class Booking extends TravelManager {
 
           }
 
+          if (booking != null) {
+            form.addParameter(this.parameterBookingId,booking.getID());
+            surname.setContent(booking.getName());
+            address.setContent(booking.getAddress());
+            city.setContent(booking.getCity());
+            areaCode.setContent(booking.getPostalCode());
+            country.setContent(booking.getCountry());
+            email.setContent(booking.getEmail());
+            telNumber.setContent(booking.getTelephoneNumber());
+
+            if (pickupMenu != null) {
+              try {
+                pickupMenu.setSelectedElement(Integer.toString(booking.getHotelPickupPlaceID()));
+                roomNumber.setContent(booking.getRoomNumber());
+              }catch (NullPointerException n) {
+                n.printStackTrace(System.err);
+              }
+            }
+
+          }
+
           ++row;
-          table.add(new SubmitButton("TEMP BÓKA"),4,row);
+          if (booking != null) {
+            table.add(new SubmitButton("TEMP UPDATE"),4,row);
+          }else {
+            table.add(new SubmitButton("TEMP BÓKA"),4,row);
+          }
           table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
           table.setAlignment(4,row,"right");
       }else {
@@ -1075,10 +1149,12 @@ public class Booking extends TravelManager {
       form.maintainParameter("city");
       form.maintainParameter("country");
       form.maintainParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+      form.maintainParameter("room_number");
       form.maintainParameter("reference_number");
       form.maintainParameter("year");
       form.maintainParameter("month");
       form.maintainParameter("day");
+      form.maintainParameter(this.parameterBookingId);
 
     boolean tooMany = false;
     String available = iwc.getParameter("available");
@@ -1142,6 +1218,7 @@ public class Booking extends TravelManager {
       String city = iwc.getParameter("city");
       String country = iwc.getParameter("country");
       String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+      String roomNumber = iwc.getParameter("room_number");
 
       String referenceNumber = iwc.getParameter("reference_number");
 
@@ -1149,6 +1226,9 @@ public class Booking extends TravelManager {
       String ccMonth = iwc.getParameter("ccMonth");
       String ccYear = iwc.getParameter("ccYear");
 
+      String sBookingId = iwc.getParameter(this.parameterBookingId);
+      int iBookingId = -1;
+      if (sBookingId != null) iBookingId = Integer.parseInt(sBookingId);
 
       int returner = 0;
 
@@ -1157,7 +1237,7 @@ public class Booking extends TravelManager {
       int iHotelId;
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
-      int bookingId = -1;
+      int lbookingId = -1;
 
       boolean displayFormInternal = false;
 
@@ -1180,31 +1260,66 @@ public class Booking extends TravelManager {
         }
 
         if (supplier != null) {
-            bookingId = Booker.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+          if (iBookingId == -1) {
+            lbookingId = Booker.BookBySupplier(service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+          }else {
+            lbookingId = Booker.updateBooking(iBookingId, service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+          }
             displayFormInternal = true;
         }else if (reseller != null) {
             if (reseller.getReferenceNumber().equals(referenceNumber)) {
-              bookingId = Booker.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
+              if (iBookingId == -1) {
+                lbookingId = Booker.Book(service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
+              }else {
+                lbookingId = Booker.updateBooking(iBookingId, service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+              }
               reseller.addTo(is.idega.travel.data.Booking.class, bookingId);
               displayFormInternal= true;
             }
         }else if ((supplier == null) && (reseller == null) ) {
             // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
-            bookingId = Booker.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+            bookingId = Booker.Book(service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
         }
 
         returner = bookingId;
 
-        if (bookingId != -1) {
-          BookingEntry bEntry;
-          for (int i = 0; i < pPrices.length; i++) {
-            if (manys[i] != 0) {
-              bEntry = new BookingEntry();
-                bEntry.setProductPriceId(pPrices[i].getID());
-                bEntry.setBookingId(bookingId);
-                bEntry.setCount(manys[i]);
-              bEntry.insert();
+        if (lbookingId != -1) {
+          if (iBookingId == -1) {
+            BookingEntry bEntry;
+            for (int i = 0; i < pPrices.length; i++) {
+              if (manys[i] != 0) {
+                bEntry = new BookingEntry();
+                  bEntry.setProductPriceId(pPrices[i].getID());
+                  bEntry.setBookingId(lbookingId);
+                  bEntry.setCount(manys[i]);
+                bEntry.insert();
+              }
             }
+          }else {
+            BookingEntry bEntry;
+            ProductPrice price;
+            boolean done = false;
+            BookingEntry[] entries = Booker.getBookingEntries(new is.idega.travel.data.Booking(iBookingId));
+              if (entries == null) entries = new BookingEntry[]{};
+            for (int i = 0; i < pPrices.length; i++) {
+              done = false;
+              for (int j = 0; j < entries.length; j++) {
+                if (pPrices[i].getID() == entries[j].getProductPriceId()) {
+                  done = true;
+                  entries[j].setCount(manys[i]);
+                  entries[j].update();
+                  break;
+                }
+              }
+              if (!done) {
+                bEntry = new BookingEntry();
+                  bEntry.setProductPriceId(pPrices[i].getID());
+                  bEntry.setBookingId(lbookingId);
+                  bEntry.setCount(manys[i]);
+                bEntry.insert();
+              }
+            }
+            //System.err.println("Unimplemented + update priceCount and other s**t");
           }
         }
 
@@ -1260,7 +1375,7 @@ public class Booking extends TravelManager {
 
     String mailHost = "mail.idega.is";
 
-    String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquery","Inquery");
+    String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquiry","Inquiry");
     StringBuffer responseString = new StringBuffer();
 
     if (yesNo != null) {
@@ -1295,12 +1410,6 @@ public class Booking extends TravelManager {
 
         Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
         try {
-          System.err.println("Printed in is.idega.travel.presentation.Booking : inqueryResonse");
-          System.err.println("Supplier email = "+supplier.getEmail().getEmailAddress());
-          System.err.println("Inquiry email  = "+inquery.getEmail());
-          System.err.println("mailHost       = "+mailHost);
-          System.err.println("mailSubject    = "+mailSubject);
-          System.err.println("responseString = "+responseString.toString());
           sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
           if (reseller != null) {  // if this is not a reseller deleting his own inquiry
             if (resellers != null) { // if there was a reseller who send the inquiry
@@ -1330,6 +1439,16 @@ public class Booking extends TravelManager {
 
 
 
+  }
+
+  private void updateBooking(IWContext iwc) throws SQLException{
+    String sBookingId = iwc.getParameter(this.parameterBookingId);
+    if (sBookingId != null) {
+        this.bookingId = Integer.parseInt(sBookingId);
+        booking = new is.idega.travel.data.Booking(bookingId);
+        this.stamp = new idegaTimestamp(booking.getBookingDate());
+        displayForm(iwc);
+    }
   }
 
 }

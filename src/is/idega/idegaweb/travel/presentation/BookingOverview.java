@@ -53,6 +53,10 @@ public class BookingOverview extends TravelManager {
   private String closerLookDateParameter = "viewServiceDate";
   private String bookParameter = "bookService";
 
+  private String parameterDeleteBooking = "bookingOverviewDeleteBooking";
+  private String bookingOverviewAction = "bookingOverviewAction";
+  private String parameterBookingId = "bookingOverviewBookingId";
+
   public BookingOverview() {
   }
 
@@ -67,6 +71,9 @@ public class BookingOverview extends TravelManager {
       supplier = super.getSupplier();
 
       if ( (supplier != null) || (reseller != null) ) {
+        if (reseller != null && contract == null) {
+          product = null;
+        }
         displayForm(iwc);
         super.addBreak();
       }else {
@@ -128,18 +135,22 @@ public class BookingOverview extends TravelManager {
         form.add(topTable);
       Table table = new Table();
 
+      String action = iwc.getParameter(this.bookingOverviewAction);
+      if (action == null) action = "";
+
       String view = iwc.getParameter(closerLookDateParameter);
-      String edit = iwc.getParameter(bookParameter);
-      if (view == null) view = "";
-      if (edit == null) edit = "";
+      if (action.equals(""))
+      if (view != null) action = "view";
 
-      if ((view.equals("")) && (edit.equals(""))) {
+      if (action.equals("")) {
          table = getContentTable(iwc);
-      }else if ((!view.equals("")) && (edit.equals(""))){
+      }else if (action.equals("view")) {
          table = getViewService(iwc);
-      }else if ((view.equals("")) && (!edit.equals(""))){
-
+      }else if (action.equals(this.parameterDeleteBooking)) {
+         deleteBooking(iwc);
+         table = getViewService(iwc);
       }
+
 
       form.add(table);
       /*
@@ -703,7 +714,11 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ BOOKINGS ------------------------
-          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"));
+          Link changeLink = new Link(iwrb.getImage("buttons/change.gif"),Booking.class);
+          Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
+            deleteLink.addParameter(this.bookingOverviewAction,this.parameterDeleteBooking);
+            deleteLink.addParameter(this.closerLookDateParameter, view_date);
+            deleteLink.addParameter(this.closerLookIdParameter, view_id);
           Link link;
           is.idega.travel.data.Booking[] bookings = Booker.getBookings(this.service.getID(), currentStamp);
           for (int i = 0; i < bookings.length; i++) {
@@ -740,7 +755,14 @@ public class BookingOverview extends TravelManager {
               table.setColor(8, row, super.backgroundColor);
 
               link = (Link) changeLink.clone();
+                link.addParameter(Booking.BookingAction,Booking.parameterUpdateBooking);
+                link.addParameter(Booking.parameterBookingId,bookings[i].getID());
               table.add(link, 8, row);
+
+              link = (Link) deleteLink.clone();
+                link.addParameter(this.parameterBookingId,bookings[i].getID());
+              table.add(link, 8, row);
+
           }
 
         ++row;
@@ -776,5 +798,11 @@ public class BookingOverview extends TravelManager {
 
   }
 
+  public void deleteBooking(IWContext iwc) {
+    String lBookingId = iwc.getParameter(this.parameterBookingId);
+    if (lBookingId != null) {
+      Booker.deleteBooking(Integer.parseInt(lBookingId));
+    }
+  }
 
   }

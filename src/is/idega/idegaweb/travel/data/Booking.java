@@ -45,6 +45,7 @@ public class Booking extends GenericEntity{
     addAttribute(getDateOfBookingColumnName(), "Hvenær bókun á sér stað", true, true, java.sql.Timestamp.class);
     addAttribute(getPostalCodeColumnName(), "Póstnúmer", true, true, String.class);
     addAttribute(getAttendanceColumnName(), "Mæting", true, true, Integer.class);
+    addAttribute(getRoomNumberColumnName(), "Númer herbergis", true, true, String.class);
     addAttribute(getIsValidColumnName(), "valid", true, true, Boolean.class);
 
     this.addManyToManyRelationShip(Reseller.class);
@@ -169,6 +170,10 @@ public class Booking extends GenericEntity{
     setColumn(getPostalCodeColumnName(), code);
   }
 
+  public String getCountry() {
+    return getStringColumnValue(getCountryColumnName());
+  }
+
   public void setAttendance(int attendance) {
     setColumn(getAttendanceColumnName(), attendance);
   }
@@ -190,6 +195,14 @@ public class Booking extends GenericEntity{
     return (BookingEntry[]) (BookingEntry.getStaticInstance(BookingEntry.class).findAllByColumn(BookingEntry.getBookingIDColumnName(), this.getID()));
   }
 
+  public void setRoomNumber(String roomNumber) {
+    setColumn(getRoomNumberColumnName(), roomNumber);
+  }
+
+  public String getRoomNumber() {
+    return getStringColumnValue(getRoomNumberColumnName());
+  }
+
   public static String getBookingTableName(){return "TB_BOOKING";}
   public static String getNameColumnName() {return "NAME";}
   public static String getTelephoneNumberColumnName() {return "TELEPHONE_NUMBER";}
@@ -206,4 +219,5 @@ public class Booking extends GenericEntity{
   public static String getPostalCodeColumnName() {return "POSTAL_CODE";}
   public static String getAttendanceColumnName() {return "ATTENDANCE";}
   public static String getIsValidColumnName() {return "IS_VALID";}
+  public static String getRoomNumberColumnName() {return "ROOM_NUMBER";}
 }
