@@ -2,15 +2,14 @@ package se.cubecon.bun24.viewpoint.data;
 
 import com.idega.block.process.data.*;
 import com.idega.user.data.*;
-import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/07/05 17:20:57 $ by $Author: gummi $
+ * Last modified: $Date: 2003/11/10 18:57:57 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -97,7 +96,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         return getIntegerColumnValue (COLUMN_USER_ID);
     }
 
-    public boolean isAnswered () throws RemoteException {
+    public boolean isAnswered () {
         return getStatus ().equalsIgnoreCase (STATUSKEY_ANSWERED);
     }
 
@@ -117,7 +116,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         return (java.util.Date) getColumnValue (COLUMN_ANSWERDATE);
     }
 
-    public java.util.Date getQuestionDate () throws RemoteException {
+    public java.util.Date getQuestionDate () {
         return getCreated ();
     }
 
@@ -125,7 +124,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
         setHandler (handlerGroupId);
     }
 
-    public void setUser (final User user) throws RemoteException {
+    public void setUser (final User user) {
         setColumn (COLUMN_USER_ID, ((Integer) user.getPrimaryKey()).intValue());
     }
 
@@ -147,11 +146,11 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
                    new java.sql.Date (new java.util.Date ().getTime ()));
     }
 
-    public void setHandler (final User user) throws RemoteException {
+    public void setHandler (final User user) {
         setOwner (user);
     }
 
-    public void unsetHandler () throws RemoteException {
+    public void unsetHandler () {
         final CaseBMPBean entity = (CaseBMPBean) getGeneralCase ();
         entity.removeFromColumn ("USER_ID");
     }
@@ -169,7 +168,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     }
 
     public Collection ejbFindUnhandledViewpointsInGroups
-        (final Group [] groups) throws FinderException, RemoteException {
+        (final Group [] groups) throws FinderException {
         final StringBuffer sql = new StringBuffer ();
         if (groups.length == 0) return new ArrayList (); // return empty list
         sql.append ("select * from " + ENTITY_NAME + ", proc_case");

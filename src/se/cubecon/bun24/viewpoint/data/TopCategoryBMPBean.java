@@ -1,16 +1,17 @@
 package se.cubecon.bun24.viewpoint.data;
 
-import com.idega.data.GenericEntity;
 import java.util.Collection;
-import java.rmi.RemoteException;
+
 import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 
 /**
- * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/10 18:59:32 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
 
@@ -53,7 +54,7 @@ public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
 		setColumn (COLUMN_NAME, name);
     }
 
-    public Collection ejbFindAll () throws FinderException, RemoteException {
+    public Collection ejbFindAll () throws FinderException {
         return idoFindPKsBySQL ("select * from " + ENTITY_NAME);
     }
 }

@@ -1,16 +1,22 @@
 package se.cubecon.bun24.viewpoint.data;
 
-import com.idega.data.*;
-import java.util.*;
-import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ejb.FinderException;
-import com.idega.user.data.*;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 
 /**
- * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 19:02:07 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -138,14 +144,13 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
     }
 
     public Collection ejbFindSubCategories (final int topCategoryId)
-        throws FinderException, RemoteException {
+        throws FinderException {
         final String sql = "select * from " + ENTITY_NAME + " where "
                 + COLUMN_TOPCATEGORY_ID + " = '" + topCategoryId + "'";
         return idoFindPKsBySQL (sql);
     }
     
-    public Collection ejbFindAllSubCategories () throws FinderException,
-                                                        RemoteException {
+    public Collection ejbFindAllSubCategories () throws FinderException {
         final String sql = "select * from " + ENTITY_NAME;
         return idoFindPKsBySQL (sql);
     }

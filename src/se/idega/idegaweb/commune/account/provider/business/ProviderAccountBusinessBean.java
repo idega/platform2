@@ -53,7 +53,7 @@ public class ProviderAccountBusinessBean
 		}
 	}
 	public void acceptApplication(int applicationID, User performer)
-		throws RemoteException, CreateException, FinderException
+		throws CreateException
 	{
 		super.acceptApplication(applicationID, performer);
 	}
@@ -90,7 +90,7 @@ public class ProviderAccountBusinessBean
 			throw new EJBException(e.getMessage());
 		}
 	}
-	public ProviderApplication getProviderApplication(int applicationID) throws RemoteException, FinderException
+	public ProviderApplication getProviderApplication(int applicationID) throws FinderException
 	{
 		return this.getProviderApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
@@ -177,25 +177,25 @@ public class ProviderAccountBusinessBean
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean#getAllAcceptedApplications()
 	 */
-	public Collection getAllAcceptedApplications() throws RemoteException, FinderException
+	public Collection getAllAcceptedApplications() throws FinderException
 	{
 		return getProviderApplicationHome().findAllApprovedApplications();
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean#getAllPendingApplications()
 	 */
-	public Collection getAllPendingApplications() throws RemoteException, FinderException
+	public Collection getAllPendingApplications() throws FinderException
 	{
 		return getProviderApplicationHome().findAllPendingApplications();
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean#getAllRejectedApplications()
 	 */
-	public Collection getAllRejectedApplications() throws RemoteException, FinderException
+	public Collection getAllRejectedApplications() throws FinderException
 	{
 		return getProviderApplicationHome().findAllRejectedApplications();
 	}
-	public AccountApplication getApplication(int applicationID) throws RemoteException, FinderException
+	public AccountApplication getApplication(int applicationID) throws FinderException
 	{
 		return getProviderApplication(applicationID);
 	}
@@ -242,7 +242,7 @@ public class ProviderAccountBusinessBean
 		return user;
 	}
 
-	protected School createSchoolForApplication(AccountApplication theCase) throws CreateException, RemoteException
+	protected School createSchoolForApplication(AccountApplication theCase) throws RemoteException
 	{
 		ProviderApplication appl = ((ProviderApplication)theCase);
 		String providerName = appl.getName();

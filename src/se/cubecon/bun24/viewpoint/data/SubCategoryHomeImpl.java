@@ -1,15 +1,18 @@
 package se.cubecon.bun24.viewpoint.data;
 
-import com.idega.data.*;
-import java.util.*;
-import javax.ejb.*;
-import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOFactory;
 
 /**
- * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 19:02:07 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SubCategoryHomeImpl extends IDOFactory implements SubCategoryHome {
     public SubCategory create () throws CreateException{
@@ -22,7 +25,7 @@ public class SubCategoryHomeImpl extends IDOFactory implements SubCategoryHome {
     }
 
     public SubCategory [] findSubCategories (final int topCategoryId)
-        throws FinderException, RemoteException {
+        throws FinderException {
         final IDOEntity entity = idoCheckOutPooledEntity();
         final Collection ids = ((SubCategoryBMPBean)entity).ejbFindSubCategories
                 (topCategoryId);
@@ -38,8 +41,7 @@ public class SubCategoryHomeImpl extends IDOFactory implements SubCategoryHome {
 		return (SubCategory) findByPrimaryKeyIDO(id);
     }
 
-    public SubCategory [] findAllSubCategories () throws FinderException,
-                                                        RemoteException {
+    public SubCategory [] findAllSubCategories () throws FinderException {
         final IDOEntity entity = idoCheckOutPooledEntity();
         final Collection ids
                 = ((SubCategoryBMPBean)entity).ejbFindAllSubCategories ();

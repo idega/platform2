@@ -2,9 +2,9 @@ package se.idega.idegaweb.commune.account.business;
 
 
 public interface AccountBusiness extends com.idega.business.IBOService {
- public void acceptApplication(int p0,com.idega.user.data.User p1,boolean p2,boolean p3)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public void acceptApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
- public void acceptApplication(int p0,com.idega.user.data.User p1,boolean p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public void acceptApplication(int p0,com.idega.user.data.User p1,boolean p2,boolean p3)throws java.rmi.RemoteException,javax.ejb.CreateException;
+ public void acceptApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException;
+ public void acceptApplication(int p0,com.idega.user.data.User p1,boolean p2)throws java.rmi.RemoteException,javax.ejb.CreateException;
  public java.lang.String getAcceptMessageSubject() throws java.rmi.RemoteException;
  public java.util.Collection getAllAcceptedApplications()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Iterator getAllAcceptedApplicationsIterator()throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;

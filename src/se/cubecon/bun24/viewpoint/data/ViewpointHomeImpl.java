@@ -4,13 +4,12 @@ import com.idega.data.*;
 import com.idega.user.data.Group;
 import java.util.Collection;
 import javax.ejb.*;
-import java.rmi.RemoteException;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 18:57:57 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ViewpointHomeImpl extends IDOFactory implements ViewpointHome {
     public Viewpoint create () throws CreateException{
@@ -27,7 +26,7 @@ public class ViewpointHomeImpl extends IDOFactory implements ViewpointHome {
     }
 
     public Viewpoint [] findUnhandledViewpointsInGroups (final Group [] groups)
-        throws FinderException, RemoteException {
+        throws FinderException {
         final IDOEntity entity = idoCheckOutPooledEntity();
         final Collection ids
                 = ((ViewpointBMPBean)entity).ejbFindUnhandledViewpointsInGroups
