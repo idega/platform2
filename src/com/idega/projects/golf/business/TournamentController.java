@@ -529,8 +529,11 @@ public class TournamentController{
             com.idega.projects.golf.entity.Member tempMember;
             TextInput socialNumber;
 
-            Connection conn = GenericEntity.getStaticInstance("com.idega.data.genericentity.Member").getConnection();
 
+            StartingtimeView[] sView;
+
+
+            Connection conn = GenericEntity.getStaticInstance("com.idega.data.genericentity.Member").getConnection();
             while (endHour.isLaterThan(startHour) ) {
                 ++row;
                 ++groupCounter;
@@ -539,6 +542,32 @@ public class TournamentController{
                 table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
                 table.mergeCells(1,row,1,row + (numberInGroup -1));
                 table.setVerticalAlignment(1,row,"top");
+
+                sView = (StartingtimeView[]) (new StartingtimeView()).findAll("Select sv.* from startingtime_view sv, tournament_startingtime ts where sv.startingtime_id = ts.startingtime_id AND ts.tournament_id = "+tournament.getID()+" AND sv.startingtime_date = '" +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
+                startInGroup = sView.length;
+
+                for (int i = 0; i < sView.length; i++) {
+                        ++numberOfMember;
+                        if (i != 0) table.add(tooMany,1,row);
+                        table.add(sView[i].getSocialSecurityNumber(),2,row);
+
+
+                          abbrevation = sView[i].getAbbrevation();
+
+                        table.add(abbrevation,4,row);
+
+                        table.add(sView[i].getName() ,3,row);
+                        table.add(handicapFormat.format(sView[i].getHandicap()),5,row);
+                        if (!viewOnly) {
+                            if (!onlineRegistration) {
+                                delete = new CheckBox("deleteMember",Integer.toString(sView[i].getMemberId()));
+                                table.add(delete,6,row);
+                            }
+                        }
+                        row++;
+                }
+
+                /*
                 members = TournamentController.getMembersInStartingGroup(tournament,tournamentRound,groupCounter);
                 if (members != null) {
                     startInGroup =  members.size();
@@ -576,6 +605,7 @@ public class TournamentController{
                     }
 
                 }
+                */
                 for (int i = startInGroup; i < (numberInGroup); i++) {
                     if (!viewOnly) {
                         socialNumber = new TextInput("social_security_number_for_group_"+groupCounter);
@@ -612,33 +642,66 @@ public class TournamentController{
         return form;
     }
 
-    public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound) {
+    public static boolean hasMemberStartingtime(Tournament tournament, TournamentRound tourRound, com.idega.projects.golf.entity.Member member) {
+        boolean returner = false;
+
+        try {
+            com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
+            Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND member_id ="+member.getID()+" AND field_id="+tournament.getFieldId());
+
+            if (startingtimes.length > 0) {
+                returner = false;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+
+
+        return returner;
+    }
+
+    public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound, boolean useEmptyStartingGroup, int minimumGroupNumber) {
         int counter = -1;
         try {
-            counter = 1;
+            counter = minimumGroupNumber;
             boolean done = false;
             Startingtime[] startingtimes;
             com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
-            com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundEndDate());
 
             while (!done) {
-                startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE >= '"+startStamp.toSQLString()+"' AND STARTINGTIME_DATE <= '"+endStamp.toSQLString()+"' AND field_id="+tournament.getFieldId()+" AND grup_num="+counter);
 
-                if (startingtimes.length < tournament.getNumberInGroup()) {
-                    done = true;
+                startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"'  AND field_id="+tournament.getFieldId()+" AND grup_num="+counter);
+
+                if (useEmptyStartingGroup)  {
+                    if (startingtimes.length == 0) {
+                        done = true;
+                    }
                 }
                 else {
-                    ++counter;
+                    if (startingtimes.length < tournament.getNumberInGroup()) {
+                        done = true;
+                    }
                 }
 
+                if (!done) {
+                    ++counter;
+                }
             }
-
         }
         catch (Exception e) {
             e.printStackTrace(System.err);
         }
 
         return counter;
+    }
+
+    public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound) {
+        return getNextAvailableStartingGroup(tournament,tourRound, false);
+    }
+
+    public static int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound, boolean useEmptyStartingGroup) {
+        return getNextAvailableStartingGroup(tournament,tourRound, useEmptyStartingGroup, 1);
     }
 
 
