@@ -27,7 +27,6 @@ import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
@@ -47,6 +46,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
 /*
@@ -337,11 +337,10 @@ public class HouseHoldViewer extends AccountingBlock {
 					else {
 						table.skip();
 					}
-					Integer siblingOrder = getSiblingOrder(child, children);
-					if (siblingOrder != null) {
-						table.add(getText(siblingOrder.toString()));
-					}
-					else {
+					try {
+						int siblingOrder = getUserInfoService (iwc).getSiblingOrder (child, new CalendarMonth (new IWTimestamp (System.currentTimeMillis())));
+						table.add(getText(siblingOrder + ""));
+ 				} catch (Exception e) {
 						table.skip();
 					}
 					int age = getCalculatedAge(iwc, child);
