@@ -3829,8 +3829,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Iterator iter = leagues.iterator();
 		while (iter.hasNext()) {
 			WorkReportGroup league = (WorkReportGroup)iter.next();
-			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId, league);
-			if (members.isEmpty()) {
+			int count = getCountOfPlayersByWorkReportAndWorkReportGroup(report,league);
+			if (count < 1) {
 				emptyLeagues.add(league.getPrimaryKey());
 			}
 		}
@@ -3853,8 +3853,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Iterator iter = leagues.iterator();
 		while (iter.hasNext()) {
 			WorkReportGroup league = (WorkReportGroup)iter.next();
-			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId, league);
-			if (!members.isEmpty()) {
+			int count = getCountOfPlayersByWorkReportAndWorkReportGroup(report,league);
+			if (count>0) {
 				nonEmptyLeagues.add(league.getPrimaryKey());
 			}
 		}
