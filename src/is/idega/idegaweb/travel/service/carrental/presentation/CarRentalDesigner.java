@@ -82,7 +82,9 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
     	CarRentalHome cHome = (CarRentalHome) IDOLookup.getHome(CarRental.class);
       ServiceHome sHome = (ServiceHome) IDOLookup.getHome(Service.class);
       ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
-      _carRental = cHome.findByPrimaryKey(new Integer(serviceId));
+      try {
+      	_carRental = cHome.findByPrimaryKey(new Integer(serviceId));
+      }catch (Exception e) {}
       _service = sHome.findByPrimaryKey(new Integer(serviceId));
       _product = pHome.findByPrimaryKey(new Integer(serviceId));
       _timeframe = _product.getTimeframe();
@@ -490,7 +492,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
       table.setColumnAlignment( 1, "right" );
       table.setColumnAlignment( 2, "left" );
 
-      if ( _carRental != null ) {
+      if ( _product != null ) {
         Parameter par1 = new Parameter( PARAMETER_IS_UPDATE, Integer.toString( serviceId ) );
         par1.keepStatusOnAction();
         table.add( par1 );
@@ -507,24 +509,26 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
         number.setContent( _product.getNumber() );
         description.setContent( _product.getProductDescription( super.getLocaleId() ) );
         try {
-					coll = _carRental.getPickupPlaces();
-	        if (coll != null && !coll.isEmpty() ) {
-	        	String[] temp = new String[coll.size()];
-	        	Iterator iter = coll.iterator();
-	        	for (int i = 0; i < temp.length ; i++ ) {
-	        		temp[i] = (iter.next()).toString();	
-	        	}
-						pickupPlaces.setSelectedElements(temp);
-	        }
-					coll = _carRental.getDropoffPlaces();
-					if (coll != null && !coll.isEmpty() ) {
-						String[] temp = new String[coll.size()];
-						Iterator iter = coll.iterator();
-						for (int i = 0; i < temp.length ; i++ ) {
-							temp[i] = (iter.next()).toString();	
+        	if (_carRental != null) {
+						coll = _carRental.getPickupPlaces();
+		        if (coll != null && !coll.isEmpty() ) {
+		        	String[] temp = new String[coll.size()];
+		        	Iterator iter = coll.iterator();
+		        	for (int i = 0; i < temp.length ; i++ ) {
+		        		temp[i] = (iter.next()).toString();	
+		        	}
+							pickupPlaces.setSelectedElements(temp);
+		        }
+						coll = _carRental.getDropoffPlaces();
+						if (coll != null && !coll.isEmpty() ) {
+							String[] temp = new String[coll.size()];
+							Iterator iter = coll.iterator();
+							for (int i = 0; i < temp.length ; i++ ) {
+								temp[i] = (iter.next()).toString();	
+							}
+							dropoffPlaces.setSelectedElements(temp);
 						}
-						dropoffPlaces.setSelectedElements(temp);
-					}
+        	}
 				} catch (IDORelationshipException e1) {
 					e1.printStackTrace(System.err);
 				}
