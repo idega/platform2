@@ -24,6 +24,8 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
   private String parameterVerify   = "ccrVerify";
   private String parameterComplete = "ccrSave";
+  private String parameterCACertificate = "ccrCACert";
+  private String parameterKeys = "ccrKeys";
 
   private String parameterNumber = "ccrNumber";
   private String parameterYear   = "ccrYear";
@@ -44,6 +46,10 @@ public class CreditcardRefunderWindow extends TravelWindow {
       verify(iwc);
     }else if (action.equals(this.parameterComplete)){
       complete(iwc);
+    }else if (action.equals(this.parameterKeys)){
+      keys(iwc);
+    }else if (action.equals(this.parameterCACertificate)){
+      cacCertificate(iwc);
     }
   }
 
@@ -54,6 +60,23 @@ public class CreditcardRefunderWindow extends TravelWindow {
     return text;
   }
 
+  private void keys(IWContext iwc) {
+    try {
+      com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        t.getKeys();
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  private void cacCertificate(IWContext iwc) {
+    try {
+      com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        t.getCACertifycate();
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
 
   private void getRefundForm() {
     Form form = new Form();
@@ -114,6 +137,17 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
     add(Text.BREAK);
     add(form);
+
+    Link keysLink = new Link("getKeys");
+      keysLink.addParameter(sAction, parameterKeys);
+
+    Link CACLink = new Link("getCACertificate");
+      CACLink.addParameter(sAction, parameterCACertificate);
+
+    add(keysLink);
+    add(Text.NON_BREAKING_SPACE);
+    add(CACLink);
+
   }
 
   private void verify(IWContext iwc) {
