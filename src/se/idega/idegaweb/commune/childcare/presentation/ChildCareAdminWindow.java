@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
@@ -22,6 +23,7 @@ import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
@@ -30,7 +32,10 @@ import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.user.business.UserBusiness;
@@ -89,6 +94,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_SCHOOL_TYPES = "cc_school_types";	
 	public static final String PARAMETER_EMPLOYMENT_TYPE = "cc_employment_type";
 	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
+	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
 	
 	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
@@ -302,7 +308,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_ALTER_CARE_TIME :
 				headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
-				contentTable.add(getAlterCareTimeForm());
+				contentTable.add(getAlterCareTimeForm(iwc));
 				break;
 			case METHOD_CANCEL_CONTRACT :
 				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract")));
@@ -685,7 +691,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getAlterCareTimeForm() throws RemoteException {
+	private Table getAlterCareTimeForm(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -741,6 +747,59 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
+		
+		/* New requirements: Add Schooltype and Group dropdowns */
+		
+		// Schooltype change :
+		DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
+		Collection types = null;
+		try {
+			types = application.getProvider().findRelatedSchoolTypes();
+			Iterator iter = types .iterator();
+			while (iter.hasNext()) {
+				SchoolType element = (SchoolType) iter.next();
+				schoolTypes.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());
+			}
+		} catch (IDORelationshipException e) {
+			e.printStackTrace();
+		} catch (EJBException e) {
+			e.printStackTrace();
+		}
+		int presentSchoolTypeId = archive.getSchoolClassMember().getSchoolTypeId();
+		if (presentSchoolTypeId != -1)
+			schoolTypes.setSelectedElement(presentSchoolTypeId);
+		
+		schoolTypes = (DropdownMenu) getStyledInterface(schoolTypes);	
+		
+		table.add(getSmallText(localize("child_care.school_type", "School type")),1,row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(schoolTypes, 1, row++);
+		
+		// Group change, (school class)
+		
+		SchoolClassDropdownDouble schoolClassess = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
+		schoolClassess = (SchoolClassDropdownDouble) getStyledInterface(schoolClassess);	
+		int classID = archive.getSchoolClassMember().getSchoolClassId();
+		
+		if (getChildcareID() != -1) {
+			
+			if (!types.isEmpty()) {
+				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false);
+				if (typeGroupMap != null) {
+					Iterator iter = typeGroupMap.keySet().iterator();
+					while (iter.hasNext()) {
+						SchoolYear year = (SchoolYear) iter.next();
+						schoolClassess.addMenuElement(year.getPrimaryKey().toString(), year.getSchoolYearName(), (Map) typeGroupMap.get(year));
+					}
+				}
+			}
+		}
+		
+		table.add(getSmallText(localize("child_care.school_class", "School class")),1,row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(schoolClassess, 1, row++);
+		
 
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
@@ -1426,6 +1485,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
+		int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
 
 		close();
