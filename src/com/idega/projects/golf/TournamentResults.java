@@ -139,9 +139,13 @@ public class TournamentResults extends JModuleObject {
 
       String[] headers = { "Sæti","Kylfingur","Klúbbur","Fgj." };
       for ( int a = 0; a < headers.length; a++ ) {
-        addHeaders(headers[a],a+1,1);
+        if ( a == 0 && ( this.sortBy == ResultComparator.NAME || this.sortBy == ResultComparator.ABBREVATION ) ) {
+          addHeaders("",a+1,1);
+        }
+        else {
+          addHeaders(headers[a],a+1,1);
+        }
         myTable.mergeCells(a+1,1,a+1,2);
-        //myTable.setVerticalAlignment(a+1,1,"bottom");
       }
 
       getTotalHeaders();
