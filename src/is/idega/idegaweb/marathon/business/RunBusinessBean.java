@@ -335,6 +335,8 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			e.printStackTrace();
 		}
 
+		cc = "";
+		
 		try {
 			com.idega.util.SendMail.send(fromAddress, email.trim(), cc, "", mailServer, subject, body);
 		}
