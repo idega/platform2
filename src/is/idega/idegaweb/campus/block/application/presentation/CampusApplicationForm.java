@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.29 2004/07/30 14:56:56 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.30 2005/02/08 15:58:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -762,9 +762,9 @@ public class CampusApplicationForm extends ApplicationForm {
 		po.setLength(3);
 		
 		TextInput mobile = (TextInput) textInputTemplate.clone();
-		mobile.setName(APP_PHONE);
-		if (iwc.isParameterSet(APP_PHONE))
-			mobile.setContent(iwc.getParameter(APP_PHONE));
+		mobile.setName(APP_MOBILE);
+		if (iwc.isParameterSet(APP_MOBILE))
+			mobile.setContent(iwc.getParameter(APP_MOBILE));
 		mobile.setLength(8);
 		
 
