@@ -18,7 +18,7 @@ public class UpdateHandicap {
             double grunn = (double) memberInfo.getFirstHandicap();
             int tee_id = 0;
 
-            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date is not null order by scorecard_date");
+            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" order by scorecard_date");
             for (int m=0; m < scorecard.length; m++) {
 
                 round = new TournamentRound(scorecard[m].getTournamentRoundId());
