@@ -235,7 +235,7 @@ public class JournalTexts extends EHealthBlock {
 			vcs.add("Gimo VC");
 			vcs.add("Gimo VC");
 			visitypes.add("Läk mott.besök");
-			visitypes.add("Läk mott.besök");
+			visitypes.add("Inskrivning");
 			visitypes.add("Läk mott.besök");
 			visitypes.add("Läk mott.besök");
 			visitypes.add("Läk mott.besök");
