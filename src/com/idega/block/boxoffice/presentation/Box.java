@@ -34,6 +34,7 @@ private Table _myTable;
 private boolean _newObjInst = false;
 private boolean _newWithAttribute = false;
 
+private boolean _styles = true;
 private int _numberOfColumns;
 private String _headerColor;
 private String _borderColor;
@@ -193,7 +194,12 @@ public Box(String attribute){
             String linkString = BoxBusiness.getLocalizedString(links[b],_iLocaleID);
             if ( linkString != null ) {
               Link link = new Link(linkString);
-                link.setStyle(_name);
+                if ( _styles ) {
+                  link.setStyle(_name);
+                }
+                else {
+                  link.setFontSize(1);
+                }
                 link.setOnMouseOver("window.status='"+linkString+"'; return true;");
                 link.setOnMouseOut("window.status=''; return true;");
               linksTable.add(link,1,linkRow);
@@ -299,10 +305,15 @@ public Box(String attribute){
         _name = "boxoffice_"+_attribute;
     }
 
-    getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
-    getParentPage().setStyleDefinition("A."+_name+":visited",_visitedStyle);
-    getParentPage().setStyleDefinition("A."+_name+":active",_activeStyle);
-    getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
+    if ( getParentPage() != null ) {
+      getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
+      getParentPage().setStyleDefinition("A."+_name+":visited",_visitedStyle);
+      getParentPage().setStyleDefinition("A."+_name+":active",_activeStyle);
+      getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
+    }
+    else {
+      _styles = false;
+    }
   }
 
   private void doMode(String mode, IWContext iwc) {

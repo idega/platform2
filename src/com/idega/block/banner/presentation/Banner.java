@@ -31,6 +31,8 @@ private Table _myTable;
 private boolean _newObjInst = false;
 private boolean _newWithAttribute = false;
 
+private String _target;
+
 public Banner(){
 }
 
@@ -104,11 +106,11 @@ public Banner(String attribute){
       row++;
     }
 
-    _myTable.add(getBanner(banner),1,row);
+    _myTable.add(getBanner(iwc,banner),1,row);
     add(_myTable);
 	}
 
-  private Link getBanner(BannerEntity banner) {
+  private Link getBanner(IWContext iwc,BannerEntity banner) {
     Link bannerLink = null;
     AdEntity ad = null;
     Image image = null;
@@ -116,7 +118,6 @@ public Banner(String attribute){
     if ( banner != null ) {
       ad = BannerBusiness.getCurrentAd(banner);
     }
-
     if ( ad != null ) {
       int imageID = BannerBusiness.getImageID(ad);
       if ( imageID != -1 ) {
@@ -125,7 +126,15 @@ public Banner(String attribute){
 
       if ( image != null ) {
         bannerLink = new Link(image);
-        BannerBusiness.updateImpressions(ad);
+        if ( _target != null ) {
+          bannerLink.setTarget(_target);
+        }
+        else {
+          bannerLink.setTarget(Link.TARGET_NEW_WINDOW);
+        }
+
+        if ( BannerBusiness.notSeenBefore(iwc,ad.getID()) )
+          BannerBusiness.updateImpressions(iwc,ad);
 
         bannerLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLICKED);
         bannerLink.addParameter(BannerBusiness.PARAMETER_AD_ID,ad.getID());
@@ -139,7 +148,10 @@ public Banner(String attribute){
   }
 
   private Link getAdminPart() {
-    Link adminLink = new Link(_iwrb.getImage("bannermanager.gif"));
+    Image adminImage = _iwrb.getImage("bannermanager.gif");
+      adminImage.setVerticalSpacing(2);
+
+    Link adminLink = new Link(adminImage);
       adminLink.setWindowToOpen(BannerEditorWindow.class);
       adminLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
 
@@ -165,6 +177,10 @@ public Banner(String attribute){
       return BannerBusiness.deleteBanner(banner);
     }
     return false;
+  }
+
+  public void setTarget(String target) {
+    _target = target;
   }
 
   public String getBundleIdentifier(){
