@@ -128,7 +128,7 @@ public class UserEditor extends Block {
 	/** the current layout table row */
 	private int mainRow = 1;
 	/** the button table */
-	private Table buttonTable = null;
+	private Table buttonTable = null,actionButtonTable=null;
 	/** flag for family relation types */
 	protected boolean showAllRelationTypes = true;
 	/** Class of relation connector window */
@@ -158,8 +158,13 @@ public class UserEditor extends Block {
 	protected String interfaceStyleName = null;
 	private UserSearcher searcher = null;
 	private boolean showMiddleNameInput = true;
-	private int nameInputLength = 14;
+	private int nameInputLength = 25;
 	private int personalIdInputLength = 14;
+	private int streetInputLength = 40;
+	private int emailInputLength = 40;
+	private int postalcodeInputLength = 10;
+	private int postalnameInputLength = 30;
+	private int phoneInputLength = 10;
 	private boolean allowPersonalIdEdit = true;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
@@ -359,6 +364,7 @@ public class UserEditor extends Block {
 	 */
 	protected void presentateButtons(IWContext iwc) {
 		buttonTable = new Table();
+		actionButtonTable = new Table();
 		presentateButtonSave(iwc);
 		if (showUserRelations && user != null) {
 			presentateButtonRegister(iwc);
@@ -370,6 +376,7 @@ public class UserEditor extends Block {
 			presentateButtonCancel(iwc);
 		}
 		addToMainPart(buttonTable);
+		addToMainPart(actionButtonTable);
 	}
 	/**
 	 * Presentates the save button
@@ -379,7 +386,7 @@ public class UserEditor extends Block {
 		String ID = user != null ? user.getPrimaryKey().toString() : "-1";
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("mbe.save", "Save"), PRM_SAVE, ID);
 		save.setStyleClass(buttonStyleName);
-		addButton(save);
+		addButton(save,true);
 	}
 	/**
 	 * Presentates the close button
@@ -389,17 +396,17 @@ public class UserEditor extends Block {
 		CloseButton close = new CloseButton(iwrb.getLocalizedString("mbe.close", "Close"));
 		close.setStyleClass(buttonStyleName);
 		getParentPage().setToReload();
-		addButton(close);
+		addButton(close,true);
 	}
 	
 	/**
-	 * Presentates the close button
+	 * Presentates the cancel button
 	 * @param iwc
 	 */
 		protected void presentateButtonCancel(IWContext iwc) {
-			SubmitButton close = new SubmitButton(iwrb.getLocalizedString("mbe.cancel", "Cancel"));
-			close.setStyleClass(buttonStyleName);
-			addButton(close);
+			SubmitButton cancel = new SubmitButton(iwrb.getLocalizedString("mbe.cancel", "Cancel"));
+			cancel.setStyleClass(buttonStyleName);
+			addButton(cancel,true);
 		}
 	/**
 	 * Presentates the user relation register buttons
@@ -423,10 +430,26 @@ public class UserEditor extends Block {
 	 * @param button
 	 */
 	protected void addButton(PresentationObject button) {
-		
-		
-		buttonTable.add(button, buttonTable.getColumns()+1, 1);
+		addButton(button,false);
 	}
+	
+	/**
+	 * Adds a object to the button area, in the specified row 
+	 * @param button
+     */
+    protected void addButton(PresentationObject button,boolean actionrow) {
+	   if(actionrow){
+		   int cols = actionButtonTable.getColumns();
+		   actionButtonTable.add(button,cols+1,1);
+	   }
+	   else{
+			int cols = buttonTable.getColumns();
+			buttonTable.add(button,cols+1,1);
+	   }
+	   
+	   
+	  
+    }
 	/**
 	 * Gets a relation connector link
 	 * @param roleUserID
@@ -698,18 +721,24 @@ public class UserEditor extends Block {
 		}
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
 		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
+		primaryStreetAddressInput.setLength(streetInputLength);
 		TextInput primaryPostalCodeInput = new TextInput(prm_mainaddress_postal_code);
 		primaryPostalCodeInput.setStyleClass(interfaceStyleName);
+		primaryPostalCodeInput.setLength(postalcodeInputLength);
 		TextInput primaryPostalNameInput = new TextInput(prm_mainaddress_postal_name);
 		primaryPostalNameInput.setStyleClass(interfaceStyleName);
+		primaryPostalNameInput.setLength(postalnameInputLength);
 		CountryDropdownMenu primaryCountryInput = new CountryDropdownMenu(prm_mainaddress_country);
 		primaryCountryInput.setStyleClass(interfaceStyleName);
 		TextInput coStreetAddressInput = new TextInput(prm_coaddress_street);
 		coStreetAddressInput.setStyleClass(interfaceStyleName);
+		coStreetAddressInput.setLength(streetInputLength);
 		TextInput coPostalCodeInput = new TextInput(prm_coaddress_postal_code);
 		coPostalCodeInput.setStyleClass(interfaceStyleName);
+		coPostalCodeInput.setLength(postalcodeInputLength);
 		TextInput coPostalNameInput = new TextInput(prm_coaddress_postal_name);
 		coPostalNameInput.setStyleClass(interfaceStyleName);
+		coPostalNameInput.setLength(postalnameInputLength);
 		CountryDropdownMenu coCountryInput = (CountryDropdownMenu) primaryCountryInput.clone();
 		coCountryInput.setName(prm_coaddress_country);
 		coCountryInput.setStyleClass(interfaceStyleName);
@@ -799,12 +828,13 @@ public class UserEditor extends Block {
 		Text tPhone = new Text(iwrb.getLocalizedString("mbe.phone", "Phone"));
 		tPhone.setStyleClass(headerFontStyleName);
 		TextInput phoneInput = new TextInput(prm_main_phone);
+		phoneInput.setLength(phoneInputLength);
 		phoneInput.setStyleClass(interfaceStyleName);
 		addressTable.add(tPhone, 1, row);
 		addressTable.add(phoneInput, 2, row++);
 		try {
 			Phone phone = userService.getUsersHomePhone(user);
-			if (phone != null) {
+			if (phone != null && phone.getNumber()!=null) {
 				phoneInput.setContent(phone.getNumber());
 				addressTable.add(getOldParameter(prm_main_phone, phone.getNumber()));
 			}
@@ -817,10 +847,11 @@ public class UserEditor extends Block {
 		tEmail.setStyleClass(headerFontStyleName);
 		TextInput emailInput = new TextInput(prm_email_address);
 		emailInput.setStyleClass(interfaceStyleName);
+		emailInput.setLength(emailInputLength);
 		emailInput.setAsEmail();
 		addressTable.add(tEmail, 1, row);
 		addressTable.add(emailInput, 2, row++);
-		if (email != null) {
+		if (email != null && email.getEmailAddress()!=null) {
 			emailInput.setContent(email.getEmailAddress());
 			addressTable.add(getOldParameter(prm_email_address, email.getEmailAddress()));
 		}
@@ -963,7 +994,8 @@ public class UserEditor extends Block {
 						}
 					}
 					if (country != null
-						&& (isNewValue(iwc, prm_mainaddress_postal_code)
+						&& ( isNewValue(iwc,prm_mainaddress_street)
+							|| isNewValue(iwc, prm_mainaddress_postal_code)
 							|| isNewValue(iwc, prm_mainaddress_postal_name)
 							|| isNewValue(iwc, prm_mainaddress_country))) {
 						String code = iwc.getParameter(prm_mainaddress_postal_code);
@@ -1051,7 +1083,8 @@ public class UserEditor extends Block {
 						}
 					}
 					if (country != null
-						&& (isNewValue(iwc, prm_coaddress_postal_code)
+						&& (isNewValue(iwc, prm_coaddress_street)
+							||isNewValue(iwc, prm_coaddress_postal_code)
 							|| isNewValue(iwc, prm_coaddress_postal_name)
 							|| isNewValue(iwc, prm_coaddress_country))) {
 						String code = iwc.getParameter(prm_coaddress_postal_code);
@@ -1660,4 +1693,74 @@ public class UserEditor extends Block {
 	public void setShowMiddleNameInput(boolean b) {
 		showMiddleNameInput = b;
 	}
+	/**
+	 * @return
+	 */
+	public int getEmailInputLength() {
+		return emailInputLength;
+	}
+
+	/**
+	 * @param emailInputLength
+	 */
+	public void setEmailInputLength(int emailInputLength) {
+		this.emailInputLength = emailInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getStreetInputLength() {
+		return streetInputLength;
+	}
+
+	/**
+	 * @param streetInputLength
+	 */
+	public void setStreetInputLength(int streetInputLength) {
+		this.streetInputLength = streetInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPostalcodeInputLength() {
+		return postalcodeInputLength;
+	}
+
+	/**
+	 * @param postalcodeInputLength
+	 */
+	public void setPostalcodeInputLength(int postalcodeInputLength) {
+		this.postalcodeInputLength = postalcodeInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPostalnameInputLength() {
+		return postalnameInputLength;
+	}
+
+	/**
+	 * @param postalnameInputLength
+	 */
+	public void setPostalnameInputLength(int postalnameInputLength) {
+		this.postalnameInputLength = postalnameInputLength;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getPhoneInputLength() {
+		return phoneInputLength;
+	}
+
+	/**
+	 * @param phoneInputLength
+	 */
+	public void setPhoneInputLength(int phoneInputLength) {
+		this.phoneInputLength = phoneInputLength;
+	}
+
 }
