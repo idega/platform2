@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.18 2003/10/08 08:53:52 anders Exp $
+ * $Id: ProviderEditor.java,v 1.19 2003/10/08 12:27:58 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -60,10 +60,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/08 08:53:52 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/08 12:27:58 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -795,7 +795,6 @@ public class ProviderEditor extends AccountingBlock {
 	private DropdownMenu getCommuneDropdownMenu(String parameter, String communeId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
 		menu.addMenuElement(0, localize(KEY_COMMUNE_SELECTOR_HEADER, "Choose commune"));
-		int selectedId = communeId.equals("") ? -1 : (new Integer(communeId)).intValue();
 		try {
 			CommuneHome home = (CommuneHome) com.idega.data.IDOLookup.getHome(Commune.class);
 			home.toString();			
@@ -807,8 +806,8 @@ public class ProviderEditor extends AccountingBlock {
 					int id = ((Integer) commune.getPrimaryKey()).intValue();
 					menu.addMenuElement("" + id, commune.getCommuneName());
 				}
-				if (selectedId > 0) {
-					menu.setSelectedElement(selectedId);
+				if (communeId != null) {
+					menu.setSelectedElement(communeId);
 				}
 			}		
 		} catch (Exception e) {
@@ -821,7 +820,7 @@ public class ProviderEditor extends AccountingBlock {
 	 * Returns a DropdownMenu for countries. 
 	 */
 	private CountryDropdownMenu getCountryDropdownMenu(String parameter, String countryId) {
-		CountryDropdownMenu menu = new CountryDropdownMenu(parameter);
+		CountryDropdownMenu menu = (CountryDropdownMenu) getStyledInterface(new CountryDropdownMenu(parameter));
 		try {
 			CountryHome home = (CountryHome) com.idega.data.IDOLookup.getHome(Country.class);
 			Country country = home.findByPrimaryKey(new Integer(countryId));
