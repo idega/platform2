@@ -18,7 +18,6 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstan
 import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
@@ -81,7 +80,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}
 	}
 
-	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions, Provider provider) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		PostingDetail detail = null;
 		
 		try {
@@ -104,7 +103,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 
 		if (detail == null) {
 			try {
-				Commune homeCommune = provider.getSchool().getCommune();
+				Commune homeCommune = currentProvider.getSchool().getCommune();
 				ArrayList cond = new ArrayList();
 				cond.addAll(conditions);
 				cond.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, homeCommune.getPrimaryKey()));
@@ -126,17 +125,17 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 			try {
 				Commune stateCommune = null;
 				stateCommune = getCommuneHome().findByCommuneName("Riksprislistan");
-			ArrayList cond = new ArrayList();
-			cond.addAll(conditions);
-			cond.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, stateCommune.getPrimaryKey()));
-			detail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), 
-				PaymentFlowConstant.OUT, //The payment flow is out
-				calculationDate, //Current date to select the correct date range
-				RuleTypeConstant.DERIVED, //The conditiontype
-				RegSpecConstant.CHECK, //The ruleSpecType shall be Check
-				cond, //The conditions that need to fulfilled
-				0, //Sent in to be used for "Specialutrakning"
-				null); //Sent in to be used for "Specialutrakning"
+				ArrayList cond = new ArrayList();
+				cond.addAll(conditions);
+				cond.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, stateCommune.getPrimaryKey()));
+				detail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), 
+					PaymentFlowConstant.OUT, //The payment flow is out
+					calculationDate, //Current date to select the correct date range
+					RuleTypeConstant.DERIVED, //The conditiontype
+					RegSpecConstant.CHECK, //The ruleSpecType shall be Check
+					cond, //The conditions that need to fulfilled
+					0, //Sent in to be used for "Specialutrakning"
+					null); //Sent in to be used for "Specialutrakning"
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -147,5 +146,4 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		
 		return detail;
 	}
-
 }

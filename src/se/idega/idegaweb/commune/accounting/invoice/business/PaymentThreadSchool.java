@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/07 07:36:06 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/07 10:32:29 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.89 $
+ * @version $Revision: 1.90 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -79,6 +79,7 @@ import com.idega.util.IWTimestamp;
 public abstract class PaymentThreadSchool extends BillingThread {
 	Logger log = Logger.getLogger(this.getClass().getName());
 	PaymentHeader paymentHeader;
+	protected Provider currentProvider = null;
 
 	//This is a horrible solution... This class should not have to know the
 	// localization keys!!!
@@ -300,6 +301,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
 			//Get the check
+			currentProvider = provider;
 			PostingDetail postingDetail = getCheck(regBus, conditions); 
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.109 2004/01/07 09:30:53 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.110 2004/01/07 10:32:29 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1829,7 +1829,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 		}
 		catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return ret;
