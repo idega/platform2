@@ -372,7 +372,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
 
-      item.setSize(18,150);
+      //item.setSize(18,150);
       if( faceLabel!= null ) item.add(faceLabel);
       item.add(new Label(name));
 
