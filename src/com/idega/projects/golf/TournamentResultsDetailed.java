@@ -419,7 +419,7 @@ public class TournamentResultsDetailed extends JModuleObject {
   }
 
   private void sortMemberVector() {
-    ResultComparator comparator = new ResultComparator(ResultComparator.TOTALSTROKES);
+    ResultComparator comparator = new ResultComparator(ResultComparator.TOTAL_STROKES_V_2);
     Collections.sort(result,comparator);
   }
 
