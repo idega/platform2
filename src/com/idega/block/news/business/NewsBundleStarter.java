@@ -168,7 +168,7 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   // true if news have categories
    public boolean testCategories(){
-    String sql = "select ic_category_id from nw_news where ic_category_id is null";
+    String sql = "select count (ic_category_id) from nw_news where ic_category_id is null";
     try {
       String[] s = SimpleQuerier.executeStringQuery(sql);
       return (s!=null && s.length > 0 );
