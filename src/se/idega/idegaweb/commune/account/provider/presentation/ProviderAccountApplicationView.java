@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.7 2003/10/05 20:03:03 laddi Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.8 2003/10/06 12:36:03 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,8 +8,6 @@
  *
  */
 package se.idega.idegaweb.commune.account.provider.presentation;
-import java.rmi.RemoteException;
-
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
 
 import com.idega.data.IDOUtil;

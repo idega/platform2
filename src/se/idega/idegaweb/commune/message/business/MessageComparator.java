@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.message.business;
 
-import java.rmi.RemoteException;
 import java.util.Comparator;
 
 import se.idega.idegaweb.commune.message.data.Message;

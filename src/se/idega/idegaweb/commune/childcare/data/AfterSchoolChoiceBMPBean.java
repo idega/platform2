@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.4 2003/10/05 20:07:06 laddi Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.5 2003/10/06 12:36:02 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,24 +9,14 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
-import java.rmi.RemoteException;
-import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-
-import com.idega.block.contract.data.Contract;
-import com.idega.block.process.data.AbstractCaseBMPBean;
-import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolSeason;
-import com.idega.core.file.data.ICFile;
-import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
-import com.idega.user.data.User;
 
 /**
  * This  does something very clever.....
