@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.36 2002/12/12 13:06:59 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.37 2002/12/12 16:20:34 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,11 +27,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/12 16:20:34 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
     implements CitizenAccountBusiness, AccountBusiness {
@@ -421,27 +421,32 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 final CitizenApplicantCohabitant cohabitant
                         = home.findByApplicationId (applicationID);
                 final String cohabitantSsn = cohabitant.getSsn ();
-                final Gender cohabitantGender = pidChecker.isFemale (ssn)
-                        ? genderHome.getFemaleGender ()
-                        : genderHome.getMaleGender ();
-                final Date cohabitantBirth
-                        = pidChecker.getDateFromPersonalID (ssn);
-                final IWTimestamp cohabitantTimestamp = cohabitantBirth != null
-                        ? new IWTimestamp (cohabitantBirth.getTime ()) : null;
-                final User cohabitantUser
-                        = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                        (cohabitant.getFirstName (), "",
-                         cohabitant.getLastName (), cohabitantSsn,
-                         cohabitantGender, cohabitantTimestamp);
-                familyLogic.setAsSpouseFor (user, cohabitantUser);
-                final Phone phone
-                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-                phone.setNumber (cohabitant.getPhoneWork());
-                phone.setPhoneTypeId (PhoneBMPBean.getWorkNumberID());
-                phone.store ();
-                cohabitantUser.addPhone (phone);
-                if (homePhone != null) {
-                    cohabitantUser.addPhone (homePhone);
+                if (cohabitantSsn != null
+                    && cohabitantSsn.trim ().length () > 0) {
+                    final Gender cohabitantGender = pidChecker.isFemale (ssn)
+                            ? genderHome.getFemaleGender ()
+                            : genderHome.getMaleGender ();
+                    final Date cohabitantBirth
+                            = pidChecker.getDateFromPersonalID (ssn);
+                    final IWTimestamp cohabitantTimestamp
+                            = cohabitantBirth != null
+                            ? new IWTimestamp (cohabitantBirth.getTime ())
+                            : null;
+                    final User cohabitantUser = userBusiness
+                            .createCitizenByPersonalIDIfDoesNotExist
+                            (cohabitant.getFirstName (), "",
+                             cohabitant.getLastName (), cohabitantSsn,
+                             cohabitantGender, cohabitantTimestamp);
+                    familyLogic.setAsSpouseFor (user, cohabitantUser);
+                    final Phone phone = ((PhoneHome) IDOLookup
+                                         .getHome(Phone.class)).create();
+                    phone.setNumber (cohabitant.getPhoneWork());
+                    phone.setPhoneTypeId (PhoneBMPBean.getWorkNumberID());
+                    phone.store ();
+                    cohabitantUser.addPhone (phone);
+                    if (homePhone != null) {
+                        cohabitantUser.addPhone (homePhone);
+                    }
                 }
             }
             if (applicant.getChildrenCount () > 0) {
@@ -452,21 +457,26 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                         = home.findByApplicationId (applicationID);
                 for (int i = 0; i < children.length; i++) {
                     final String childrenSsn = children [i].getSsn ();
-                    final Gender childrenGender = pidChecker.isFemale (ssn)
-                            ? genderHome.getFemaleGender ()
-                            : genderHome.getMaleGender ();
-                    final Date childrenBirth
-                            = pidChecker.getDateFromPersonalID (ssn);
-                    final IWTimestamp childrenTimestamp = childrenBirth != null
-                            ? new IWTimestamp (childrenBirth.getTime ()) : null;
-                    final User childrenUser = userBusiness
-                            .createCitizenByPersonalIDIfDoesNotExist
-                            (children [i].getFirstName (), "",
-                             children [i].getLastName (), childrenSsn,
-                             childrenGender, childrenTimestamp);
-                    familyLogic.setAsParentFor (user, childrenUser);
-                    if (homePhone != null) {
-                        childrenUser.addPhone (homePhone);
+                    if (childrenSsn != null
+                        && childrenSsn.trim (). length () > 0) {
+                        final Gender childrenGender = pidChecker.isFemale (ssn)
+                                ? genderHome.getFemaleGender ()
+                                : genderHome.getMaleGender ();
+                        final Date childrenBirth
+                                = pidChecker.getDateFromPersonalID (ssn);
+                        final IWTimestamp childrenTimestamp
+                                = childrenBirth != null
+                                ? new IWTimestamp (childrenBirth.getTime ())
+                                : null;
+                        final User childrenUser = userBusiness
+                                .createCitizenByPersonalIDIfDoesNotExist
+                                (children [i].getFirstName (), "",
+                                 children [i].getLastName (), childrenSsn,
+                                 childrenGender, childrenTimestamp);
+                        familyLogic.setAsParentFor (user, childrenUser);
+                        if (homePhone != null) {
+                            childrenUser.addPhone (homePhone);
+                        }
                     }
                 }
             }
