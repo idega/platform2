@@ -2,6 +2,7 @@ package com.idega.block.building.data;
 
 import com.idega.data.GenericEntity;
 import java.sql.SQLException;
+import java.sql.Date;
 
 
 /**
@@ -30,6 +31,7 @@ public class Apartment extends GenericEntity {
     addAttribute(getApartmentTypeColumnName(),"ApartmentType",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentType");
     addAttribute(getRentableColumnName(),"Leigjanleg",true,true,"java.lang.Boolean");
     addAttribute(getImageIdColumnName(),"Mynd",true,true,"java.lang.Integer");
+    addAttribute(getUnavailableUntilColumnName(),"Frosin",true,true,"java.sql.Date");
     super.setMaxLength("info",5000);
   }
   public String getEntityName() {
@@ -42,6 +44,7 @@ public class Apartment extends GenericEntity {
   public static String getFloorIdColumnName(){return "bu_floor_id";}
   public static String getApartmentTypeColumnName(){return "BU_APRT_TYPE_ID"; }
   public static String getRentableColumnName(){return "rentable"; }
+  public static String getUnavailableUntilColumnName(){return "unavailable_until"; }
 
 
   public String getName(){
@@ -86,10 +89,16 @@ public class Apartment extends GenericEntity {
   public boolean getRentable(){
     return getBooleanColumnValue(getRentableColumnName());
   }
+
+  public Date getUnavailableUntil() {
+    return((Date)getColumnValue(getUnavailableUntilColumnName()));
+  }
+
   public void setRentable(boolean rentable){
     setColumn(getRentableColumnName(),rentable);
   }
 
-
-
+  public void setUnavailableUntil(Date date) {
+    setColumn(getUnavailableUntilColumnName(),date);
+  }
 }
