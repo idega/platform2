@@ -117,7 +117,7 @@ public class GolferPage extends Page{
     Maintable.add(innerLeftTable,1,3);
     //Maintable.add(innerMainTable,3,3);
     Maintable.setAlignment(3,3,"top");
-    Table dummyTable = new Table(1,1);
+   /* Table dummyTable = new Table(1,1);
     dummyTable.setCellpadding(10);
     dummyTable.setCellspacing(0);
     tempSideMenuTable = new Table(1,2);
@@ -126,9 +126,7 @@ public class GolferPage extends Page{
     tempSideMenuTable.setAlignment(1,1,"bottom");
     tempSideMenuTable.setAlignment(1,2,"top");
     dummyTable.add(tempSideMenuTable,1,1);
-    innerLeftTable.add(dummyTable,1,1);
-//    LeftTable = new Table(1,5);
-//    RightTable = new Table(1,4);
+    innerLeftTable.add(dummyTable,1,1);*/
     super.add(Maintable);
   }
 
@@ -512,7 +510,7 @@ public class GolferPage extends Page{
   public void setInfoView(){
 
     Table dummyTable = new Table();
-    dummyTable.setCellpadding(10);
+    dummyTable.setCellpadding(24);
     setTopPicture(false);
     Image iWelcomeLogo = iwrb.getImage("/golferpage/upplysingar.gif");
     this.addLeftLogo(iWelcomeLogo);
