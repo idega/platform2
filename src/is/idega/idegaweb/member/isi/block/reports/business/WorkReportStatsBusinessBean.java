@@ -3044,8 +3044,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 			int done = ((Integer)regData.getFieldValue(clubCountDone)).intValue();
 			int notDone = ((Integer)regData.getFieldValue(clubCountNotDone)).intValue();
-			int change = ((done+notDone)==0)?-1:((100*done)/(done+notDone));
-			regData.addData(percentReportsDone, change==-1?"":Integer.toString(change));
+			//int change = ((done+notDone)==0)?-1:((100*done)/(done+notDone));
+			double change = (
+			                  ((double) done) /
+			                  ((double) (notDone>0?notDone:(done!=0?done:1)))
+			                ) * 100.0 
+			                  * (((done!=0 && notDone!=0) && (done>=notDone))?1.0:-1.0);
+			regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(change));
 			
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 			int mLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
@@ -3053,8 +3058,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(membersLastYear, regData, mLastYear);
 			int now = ((Integer)regData.getFieldValue(membersThisYear)).intValue();
 			int last = ((Integer)regData.getFieldValue(membersLastYear)).intValue();
-			change = (last==0)?-1:((100*now)/(last));
-			regData.addData(membersAnnualChangePercent, change==-1?"":Integer.toString(change));
+			//change = (last==0)?-1:((100*now)/(last));
+			change = (
+			          ((double) now) /
+			          ((double) (last>0?last:(now!=0?now:1)))
+			         ) * 100.0 
+			           * (((now!=0 && last!=0) && (now>=last))?1.0:-1.0);
+			regData.addData(membersAnnualChangePercent, (new DecimalFormat("##0.#")).format(change));
 						
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
@@ -3062,8 +3072,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(playersLastYear, regData, pLastYear);
 			now = ((Integer)regData.getFieldValue(playersThisYear)).intValue();
 			last = ((Integer)regData.getFieldValue(playersLastYear)).intValue();
-			change = (last==0)?-1:((100*now)/(last));
-			regData.addData(playersAnnualChangePercent, change==-1?"":Integer.toString(change));
+			//change = (last==0)?-1:((100*now)/(last));
+			change = (
+			          ((double) now) /
+			          ((double) (last>0?last:(now!=0?now:1)))
+			         ) * 100.0 
+			           * (((now!=0 && last!=0) && (now>=last))?1.0:-1.0);
+			regData.addData(playersAnnualChangePercent, (new DecimalFormat("##0.#")).format(change));
 		}
 
 		// iterate through the ordered map and ordered lists and add to the final collection
