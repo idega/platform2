@@ -256,10 +256,7 @@ public class ServiceViewer extends Window {
   }
 
   private Table getServiceInfoTable(IWContext iwc){
-    Table content = new Table(2,4);
-    content.mergeCells(1,1,2,1);
-    content.mergeCells(1,2,2,2);
-
+    Table content = new Table();
     content.setCellspacing(0);
     content.setCellpadding(2);
 
@@ -310,6 +307,9 @@ public class ServiceViewer extends Window {
     catch (Exception ex) {
       ex.printStackTrace(System.err);
     }
+
+        content.mergeCells(1,1,2,1);
+    content.mergeCells(1,2,2,2);
 
     return content;
   }
