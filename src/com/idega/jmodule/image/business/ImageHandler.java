@@ -104,9 +104,10 @@ private void getImageFromDatabase(int imageId) throws Exception{
   setImageName( imageInfo.getName() );
 
  //BlobWrapper wrapper = imageInfo.getImageValue();
- /*BlobWrapper wrapper = new BlobWrapper(imageInfo,"image_value");
+/* BlobWrapper wrapper = new BlobWrapper(imageInfo,"image_value");
    if( wrapper== null)   System.out.println("ImageHandler: BlobWrapper is NULL!");
-  BlobInputStream inputStream = wrapper.getBlobInputStream();*/
+  BlobInputStream inputStream = wrapper.getBlobInputStream();
+*/
 
   Connection Conn = null;
   Statement Stmt;
@@ -120,6 +121,7 @@ private void getImageFromDatabase(int imageId) throws Exception{
   while(RS.next()){
       inputStream = RS.getBinaryStream("image_value");
   }
+
 
   BufferedInputStream bufStream = getBufferedInputStream(inputStream);
   MemoryCacheSeekableStream memStream = getMemoryCacheSeekableStream(bufStream);
@@ -145,18 +147,13 @@ private void getImageFromDatabase(int imageId) throws Exception{
   inputStream.close();//closes the blobinputstream and closes misc stmt and connections
 
 
-  /*
-  System.out.println("ImageHandler: Before closing inputstream");
-  inputStream.close();//closes the blobinputstream and closes misc stmt and connections
-    System.out.println("ImageHandler: Before closing bufferstream");
-  bufStream.close();
-    System.out.println("ImageHandler: Before closing memStream");
-  memStream.close();
+
   if( Stmt!=null ) Stmt.close();
-*/
 
   if( RS!=null ) RS.close();
   if( Conn!=null ) imageInfo.freeConnection(Conn);
+
+
 
 
       System.out.println("ImageHandler: DONE!");
