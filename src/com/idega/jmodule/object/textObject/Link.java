@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.32 2001/09/14 14:28:59 palli Exp $
+ * $Id: Link.java,v 1.33 2001/09/14 14:40:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -220,7 +220,7 @@ public class Link extends Text {
   /**
    *
    */
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(ModuleInfo modinfo)throws Exception {
     if (_objectType.equals(OBJECT_TYPE_WINDOW)) {
       if (_myWindow != null) {
         if (_myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL) != -1) {
