@@ -120,7 +120,6 @@ public class HandicapNavigation extends GolfBlock {
 		if ("overView".equalsIgnoreCase(action)) {
 			myTable.add(mynd3, 1, 1);
 			HandicapOverview hOverview = new HandicapOverview(memberId);
-			hOverview.setHeaderColor("#CEDFD0");
 			myTable.add(hOverview, 1, 2);
 
 		}

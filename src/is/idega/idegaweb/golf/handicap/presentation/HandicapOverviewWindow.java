@@ -23,7 +23,6 @@ public class HandicapOverviewWindow extends Window{
 			HandicapOverview ch = new HandicapOverview(Integer.parseInt(memberId));
 			ch.setIsWindow(true);
 			ch.noIcons();
-			ch.setHeaderTextColor("#000000");
 			add(ch);
 		}	
 	}
