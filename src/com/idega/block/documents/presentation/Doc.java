@@ -439,7 +439,7 @@ public class Doc extends FolderBlock implements IWBlock {
 	    else
 	      documents = DocFinder.getNumberOfLinksInFolder(folder);
 
-	    Text documentText = new Text(Text.NON_BREAKING_SPACE+"("+String.valueOf(documents)+" "+_iwrb.getLocalizedString("documents","documents")+")");
+	    Text documentText = new Text(Text.NON_BREAKING_SPACE+"("+String.valueOf(documents)+Text.NON_BREAKING_SPACE+_iwrb.getLocalizedString("documents","documents")+")");
 	      documentText.setFontStyle(_informationStyle);
 	    categoryTable.add(documentText,3,a + 1);
 	}
@@ -497,7 +497,7 @@ public class Doc extends FolderBlock implements IWBlock {
 		row++;
 	    }
 	}
-	if (_hasAddPermission && _catID != -1) {
+	if (_hasAddPermission && _catID != -1 && _catID != 0) {
 	    boxTable.add(getAddLink(category.getID()), 1, row);
 	}
     }
@@ -719,12 +719,12 @@ public class Doc extends FolderBlock implements IWBlock {
 	_boxHeight = "120";
 	_boxSpacing = 3;
 	_numberOfDisplayed = 4;
-	_informationStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 9px; color: #999999;";
-	_categoryStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold";
-	_linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;";
-	_visitedStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;";
-	_activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;";
-	_hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;";
+	_informationStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 10px; color: #999999;";
+	_categoryStyle = "font-face: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold";
+	_linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000;";
+	_visitedStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000;";
+	_activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000;";
+	_hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000;";
 	_target = Link.TARGET_TOP_WINDOW;
     }
 
