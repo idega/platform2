@@ -49,9 +49,9 @@ public class HabitantsComparator implements Comparator {
       case FLOOR :
         result = floorCompare(o1,o2);
         if (result == 0)
-          result = apartmentCompare(o1,o2);
-        if (result == 0)
           result = nameCompare(o1,o2);
+        if (result == 0)
+          result = apartmentCompare(o1,o2);
       break;
 
     }
