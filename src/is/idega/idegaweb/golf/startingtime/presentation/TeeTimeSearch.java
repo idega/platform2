@@ -53,6 +53,10 @@ import com.idega.util.IWTimestamp;
 
 public class TeeTimeSearch extends GolfBlock {
 	
+	/**
+	 * Time interval between options when searching for teetime.
+	 */
+	private static final int TEE_TIME_SEARCH_INTERVALE = 60;
 
 	private TeeTimeBusinessBean service = new TeeTimeBusinessBean();
 
@@ -141,7 +145,6 @@ public class TeeTimeSearch extends GolfBlock {
 							} else {
 								this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
 							}
-														
 						} catch (Exception E) {
 							E.printStackTrace();
 							if (E.getMessage().equals("Error1")) {
@@ -242,8 +245,8 @@ public class TeeTimeSearch extends GolfBlock {
 		countOfPlayers.setSelectedElement(1);
 		
 		InterfaceObject playerCountInputBox = countOfPlayers;//insertEditBox("fjoldi", 2);
-		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
-		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
+		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
+		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), TEE_TIME_SEARCH_INTERVALE);
 		InterfaceObject dateDropdownMenu = insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo);
 		
 		Label vollur = new Label(getResourceBundle().getLocalizedString("start.search.course", "Course"),fieldDropdownMenu);
@@ -650,9 +653,9 @@ public class TeeTimeSearch extends GolfBlock {
 
 			k++;
 		}
-		group_num.add(k, "-1"); // sett inn þar sem group_num má ekki vera af
-		// lengd 0 er aldrei farið í seinni for-loopuna
-		// og ekki passað upp á að allir komist fyrir
+		group_num.add(k, "-1"); // sett inn ï¿½ar sem group_num mï¿½ ekki vera af
+		// lengd 0 er aldrei fariï¿½ ï¿½ seinni for-loopuna
+		// og ekki passaï¿½ upp ï¿½ aï¿½ allir komist fyrir
 		// lokun.
 
 		int count = 0;
@@ -1129,7 +1132,7 @@ public class TeeTimeSearch extends GolfBlock {
 		return service.getFieldUnion(field_id);
 	}
 
-	//	/#### Skilar Klukkustundinni úr streng á forminu 'klst:min:sec'
+	//	/#### Skilar Klukkustundinni ï¿½r streng ï¿½ forminu 'klst:min:sec'
 	// \(08:00:00)\
 	// ####///
 	public int getHours(String Hours) {
@@ -1137,7 +1140,7 @@ public class TeeTimeSearch extends GolfBlock {
 		return mySqlTime.get_hour();
 	}
 
-	//	/######## Skilar númeri á því holli sem er síðast fyrir lokun
+	//	/######## Skilar nï¿½meri ï¿½ ï¿½vï¿½ holli sem er sï¿½ï¿½ast fyrir lokun
 	// #####////////
 	public int getLastGroup(GolfField myGolfField) {
 
@@ -1149,7 +1152,7 @@ public class TeeTimeSearch extends GolfBlock {
 		return (Hours * 60 + Min) / interval;
 	}
 
-	//	/#### Skilar tíma m.v. völl og númer á holli ####///
+	//	/#### Skilar tï¿½ma m.v. vï¿½ll og nï¿½mer ï¿½ holli ####///
 	public String TimeVsGroupnum(int group, GolfField myGolfField) {
 
 		int interval = myGolfField.get_interval();
