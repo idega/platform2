@@ -136,6 +136,12 @@ public class BoxLinkBMPBean extends com.idega.data.GenericEntity implements com.
 
   }
 
+	public ICFile getFile() {
+
+		return (ICFile) getColumnValue(getColumnNameFileID());
+
+	}
+
 
 
   public int getPageID() {

@@ -1,5 +1,7 @@
 package com.idega.block.boxoffice.data;
 
+import com.idega.core.data.ICFile;
+
 
 public interface BoxLink extends com.idega.data.IDOLegacyEntity
 {
@@ -8,6 +10,7 @@ public interface BoxLink extends com.idega.data.IDOLegacyEntity
  public int getBoxID();
  public java.sql.Timestamp getCreationDate();
  public int getFileID();
+ public ICFile getFile();
  public java.lang.String getIDColumnName();
  public int getPageID();
  public java.lang.String getTarget();

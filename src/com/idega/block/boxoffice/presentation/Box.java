@@ -6,6 +6,7 @@ import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.boxoffice.data.BoxLink;
+import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
@@ -22,6 +23,7 @@ import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 
 public class Box extends Block implements Builderaware {
+	private boolean _showFileSize;
 	private int _boxID = -1;
 	private int _boxCategoryID = -1;
 	private boolean _isAdmin = false;
@@ -403,15 +405,25 @@ public class Box extends Block implements Builderaware {
 			else
 				links = BoxFinder.getLinksInBox(box, categories[a]);
 			if (links != null) {
+				int column = 1;
 				for (int b = 0; b < links.length; b++) {
+					column = 1;
 					Link link = getLink(links[b]);
 					if (link != null) {
-						table.add(link, 1, linkRow);
-						table.setWidth(1, linkRow, "100%");
+						table.add(link, column++, linkRow);
+						
+						if (_showFileSize) {
+							ICFile file = links[b].getFile();
+							Text fileSize = new Text(file.getFileSize().toString());
+							fileSize.setStyle(_name);
+							table.setWidth(column++, linkRow, 5);
+							table.add(fileSize, column++, linkRow);
+						}
 
 						if (_isAdmin) {
-							table.add(getEditLink(links[b].getID()), 2, linkRow);
-							table.add(getDeleteLink(links[b].getID()), 2, linkRow);
+							table.setWidth(column++, linkRow, 5);
+							table.add(getEditLink(links[b].getID()), column, linkRow);
+							table.add(getDeleteLink(links[b].getID()), column, linkRow);
 						}
 						linkRow++;
 					}
@@ -670,4 +682,11 @@ public class Box extends Block implements Builderaware {
 		}
 		return obj;
 	}
+	/**
+	 * @param b
+	 */
+	public void setShowFileSize(boolean b) {
+		_showFileSize = b;
+	}
+
 }
