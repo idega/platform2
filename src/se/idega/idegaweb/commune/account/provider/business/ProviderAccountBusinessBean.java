@@ -223,7 +223,7 @@ public class ProviderAccountBusinessBean
 				theCase.getApplicantName().length());
 		User user = null;
 		try{
-			user = getUserBusiness().createSchoolAdministrator(firstName, null, lastName, school);
+			user = getUserBusiness().createProviderAdministrator(firstName, null, lastName, school);
 		}
 		catch(FinderException fe){
 			throw new IDOCreateException(fe);	

@@ -115,15 +115,29 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
   /**
    * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
    */
+  public User createProviderAdministrator(String firstname, String middlename, String lastname,School school) throws javax.ejb.FinderException,CreateException,RemoteException{
+      User newUser;
+      SchoolBusiness schlBuiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
+      Group rootSchoolAdminGroup = getRootProviderAdministratorGroup();
+      Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
+      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,rootSchoolAdminGroup);
+      //rootSchoolAdminGroup.addGroup(newUser);
+      schoolGroup.addGroup(newUser);
+      return newUser;
+  }
+
+
+  /**
+   * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
+   */
   public User createSchoolAdministrator(String firstname, String middlename, String lastname,School school) throws javax.ejb.FinderException,CreateException,RemoteException{
       User newUser;
       SchoolBusiness schlBuiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
       Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
       Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
-      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname);
-      rootSchoolAdminGroup.addGroup(newUser);
+      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,rootSchoolAdminGroup);
+      //rootSchoolAdminGroup.addGroup(newUser);
       schoolGroup.addGroup(newUser);
-
       return newUser;
   }
 
@@ -173,11 +187,11 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
    * Creates (if not available) and returns the default usergroup all citizens, read from imports, are members of.
    * throws a CreateException if it failed to locate or create the group.
    */
-  public Group getRootSchoolAdministratorGroup()throws CreateException,FinderException,RemoteException{
+  public Group getRootProviderAdministratorGroup()throws CreateException,FinderException,RemoteException{
     Group rootGroup = null;
     //create the default group
-    String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "shcool_administrators_group_id";
-    IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+    String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "provider_administrators_group_id";
+    IWBundle bundle = getCommuneBundle();
     String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
     if( groupId!=null ){
       rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
@@ -193,9 +207,41 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
      bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP,rootGroup.getPrimaryKey().toString());
     }
-
     return rootGroup;
   }
 
 
+   /**
+   * Creates (if not available) and returns the default usergroup all citizens, read from imports, are members of.
+   * throws a CreateException if it failed to locate or create the group.
+   */
+  public Group getRootSchoolAdministratorGroup()throws CreateException,FinderException,RemoteException{
+    Group rootGroup = null;
+    //create the default group
+    String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
+    IWBundle bundle = getCommuneBundle();
+    String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
+    if( groupId!=null ){
+      rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+    }
+    else{
+      System.err.println("trying to store Commune Root school administrators group");
+      /**@todo this seems a wrong way to do things**/
+      GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+      GroupType type = typeHome.create();
+
+
+      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Administrators","The Commune Root School Administrators Group.",type.getGeneralGroupTypeString());
+
+     bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP,rootGroup.getPrimaryKey().toString());
+    }
+    return rootGroup;
+  }
+
+
+
+	protected IWBundle getCommuneBundle(){
+		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+
+	}
 }
