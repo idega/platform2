@@ -27,7 +27,7 @@ public class SupplierManager {
   public static String PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME = "default full price";
   public static String SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION = "Supplier administator group";
 
-  private static String permissionGroupNameExtention = " - admins";
+  public static String permissionGroupNameExtention = " - admins";
 
   public SupplierManager(){
   }
@@ -224,9 +224,13 @@ public class SupplierManager {
   public static List getUsersInPermissionGroup(Supplier supplier) {
     try {
       PermissionGroup pGroup = getPermissionGroup(supplier);
-      List users = UserBusiness.getUsersInGroup(pGroup);
-      java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
-      return users;
+      if (pGroup != null) {
+        List users = UserBusiness.getUsersInGroup(pGroup);
+        java.util.Collections.sort(users, new com.idega.util.GenericUserComparator(com.idega.util.GenericUserComparator.NAME));
+        return users;
+      }else {
+        return null;
+      }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
       return null;
