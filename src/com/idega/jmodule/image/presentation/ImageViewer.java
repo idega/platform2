@@ -20,6 +20,7 @@ import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.image.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
+import com.idega.jmodule.image.business.*;
 
 
 public class ImageViewer extends JModuleObject{
@@ -63,15 +64,20 @@ private String attributeName = "union_id";
 //private int attributeId = -1;
 private int attributeId = 3;
 
+//private ImageBusiness business;
+
 
 public ImageViewer(){
+//  business = new ImageBusiness();
 }
 
 public ImageViewer(int categoryId){
+  this();
   this.categoryId=categoryId;
 }
 
 public ImageViewer(ImageEntity[] entities){
+  this();
   this.entities=entities;
 }
 
@@ -504,4 +510,59 @@ public void refresh(boolean refresh){
   this.refresh = refresh;
 }
 
+
+private Form getEditForm(){
+  Form frameForm = new Form();
+  Table frameTable = new Table(1,2);
+  frameTable.setCellpadding(0);
+  frameTable.setCellspacing(0);
+  frameForm.add(frameTable);
+
+
+  List catagories = ImageBusiness.getAllImageCatagories();
+
+  Table contentTable = new Table(3,catagories.size()+2);
+  contentTable.setCellpadding(0);
+  contentTable.setCellspacing(0);
+
+  int textInputLenth = 20;
+  String catagoriTextInputName = "catagory";
+  String deleteTextInputName = "delete";
+
+  for (int i = 0; i < catagories.size(); i++) {
+    TextInput catagoryInput = new TextInput(catagoriTextInputName,((ImageCatagory)catagories.get(i)).getImageCatagoryName());
+    catagoryInput.setLength(textInputLenth);
+    contentTable.add(catagoryInput,1,i+2);
+    contentTable.add(new CheckBox(deleteTextInputName),3,i+2);
+  }
+
+  Text catagoryText = new Text("Flokkur");
+
+  Text deleteText = new Text("Eyða");
+
+  contentTable.add(catagoryText,1,1);
+  contentTable.add(deleteText,3,1);
+
+  TextInput catagoryInput = new TextInput(catagoriTextInputName);
+  catagoryInput.setLength(textInputLenth);
+  contentTable.add(catagoryInput,1,catagories.size()+2);
+
+  frameTable.add(contentTable,1,1);
+
+  //Buttons
+  Table buttonTable = new Table(3,1);
+  buttonTable.setCellpadding(0);
+  buttonTable.setCellspacing(0);
+  SubmitButton save = new SubmitButton("Vista","save");
+  buttonTable.add(save,3,1);
+  SubmitButton cancel = new SubmitButton("Hætta við", "cancel");
+  buttonTable.add(cancel,2,1);
+  frameTable.add(buttonTable,1,2);
+  //Buttons ends
+
+  return frameForm;
 }
+
+
+
+} // Class ImageVeiwer ends
