@@ -22,8 +22,8 @@ public class InnerJoinExpression implements Expression {
   public InnerJoinExpression(QueryEntityPart queryEntityPart, SQLQuery sqlQuery) {
     String entity = queryEntityPart.getBeanClassName();
     String path = queryEntityPart.getPath();
-    alias = sqlQuery.getUniqueNameForEntity(path);
-		tableName = sqlQuery.getTableName(entity);
+    alias = sqlQuery.getUniqueNameForEntity(entity,path);
+	tableName = sqlQuery.getTableName(entity, path);
   }
   
   public InnerJoinExpression(String tableName, String path, SQLQuery sqlQuery)	{

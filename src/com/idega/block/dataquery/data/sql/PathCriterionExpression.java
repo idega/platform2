@@ -48,19 +48,18 @@ public class PathCriterionExpression implements DynamicExpression {
   }
   
   protected void initialize() throws IDOCompositePrimaryKeyException, ExpressionException {
-  	// the very first name is always a class
   	List pathElements = queryEntityPart.getPathNames();
-  	// Note: class name can also be a query name
-    String className = (String) pathElements.get(0);
-
-    String tableName = sqlQuery.getTableName(className);
-    String targetPath = (String) pathElements.get(0);
-		innerJoins.add(new InnerJoinExpression(tableName, targetPath, sqlQuery));			      
+  	// Note: targetPath is either a class name or a query name
+    String targetPath= (String) pathElements.get(0);
+    String tableName = sqlQuery.getTableName(targetPath, targetPath);
+	innerJoins.add(new InnerJoinExpression(tableName, targetPath, sqlQuery));			      
 
     if (pathElements.size() > 1) {
+    	// at the moment path elements have only more than one element if the first element is not a query but an EJB
+    	// that why we can try to get an instance
     	criteriaList = new ArrayList();
     	// start with the first element
-    	IDOEntity entity = getInstance(className);
+    	IDOEntity entity = getInstance(targetPath);
     	IDOEntityDefinition definition = entity.getEntityDefinition();
 
 
@@ -68,7 +67,7 @@ public class PathCriterionExpression implements DynamicExpression {
     }
   }
     
-	private void getConditions(IDOEntityDefinition sourceDefinition, String targetPath, List pathElements, int listIndex, List criteriaList)	
+	private void getConditions(IDOEntityDefinition sourceDefinition, String targetPath, List pathElements, int listIndex, List criteria)	
 			throws ExpressionException, IDOCompositePrimaryKeyException {
 		String pathElement = (String) pathElements.get(listIndex);
 		String sourcePath = targetPath;
@@ -83,17 +82,17 @@ public class PathCriterionExpression implements DynamicExpression {
 				String message = "[" + this.getClass().getName() + "] Path element could not be resolved.";
 				throw new ExpressionException(message);
 			}
-			getConditionManyToOneRelation(sourceDefinition, sourcePath , targetDefinition, targetPath, pathElement, criteriaList);
+			getConditionManyToOneRelation(sourceDefinition, sourcePath , targetDefinition, targetPath, pathElement, criteria);
 		}
 		else {
-			getConditionManyToManyRelation(sourceDefinition, sourcePath, targetDefinition, targetPath, criteriaList);
+			getConditionManyToManyRelation(sourceDefinition, sourcePath, targetDefinition, targetPath, criteria);
 		}
 		if (pathElements.size() > ++listIndex)	{
-			getConditions(targetDefinition, targetPath, pathElements, listIndex, criteriaList);
+			getConditions(targetDefinition, targetPath, pathElements, listIndex, criteria);
 		}
 	}
 
-	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, List criteriaList) throws IDOCompositePrimaryKeyException {
+	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, List criteria) throws IDOCompositePrimaryKeyException {
 		// many to many relation
 		String sourcePrimaryKeyColumnName = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
 		String targetPrimaryKeyColumnName = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
@@ -132,10 +131,10 @@ public class PathCriterionExpression implements DynamicExpression {
 		// add the target table to the query
 		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));
 		
-		criteriaList.add(buffer.toString());
+		criteria.add(buffer.toString());
 	}
 
-	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
+	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteria) throws IDOCompositePrimaryKeyException {
 		String targetPrimaryKeyColumnName = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
 		String targetTableName = targetDefinition.getSQLTableName();
 		String sourceTableName = sourceDefinition.getSQLTableName();
@@ -154,7 +153,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		// add the target table to the query
 		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, sqlQuery));			
 		
-		criteriaList.add(buffer.toString());
+		criteria.add(buffer.toString());
 	}
 
 	private IDOEntityDefinition lookForTargetEntityAmongManyToManyRelations(IDOEntityDefinition definition, String pathElement)	{

@@ -85,7 +85,7 @@ public class SQLQuery implements DynamicExpression {
   private SQLQuery nextQuery = null;
   
   // caching of table names
-  private Map beanClassNameTableNameMap = new HashMap();
+  private Map entityPathTableNameMap = new HashMap();
   
   /** The specified query helper is the very last query in a sequence, that is the specified query can have one or more
    * queries as source. 
@@ -157,7 +157,7 @@ public class SQLQuery implements DynamicExpression {
   	 // add the table name for this instance to the map
   	 queryTablesNames.put(path, myTableName);
   	// add the new one AND all already existing table names
-  	beanClassNameTableNameMap.putAll(queryTablesNames);
+  	entityPathTableNameMap.putAll(queryTablesNames);
   	
   	// query entities...
   	QueryEntityPart queryEntity = new QueryEntityPart(path, path, path);
@@ -176,7 +176,7 @@ public class SQLQuery implements DynamicExpression {
 //    // go to the next query
 //    if (queryHelper.hasNextQuery())	{
 //    	QueryHelper nextQueryHelper = queryHelper.nextQuery();
-//    	SQLQuery sqlQuery = new SQLQuery(nextQueryHelper, uniqueIdentifier, this.counter , beanClassNameTableNameMap, entityQueryEntityMap ,this);
+//    	SQLQuery sqlQuery = new SQLQuery(nextQueryHelper, uniqueIdentifier, this.counter , entityPathTableNameMap, entityQueryEntityMap ,this);
 //    	// get the generated dynamic expression
 //    	nextQuery = sqlQuery;
 //    }	
@@ -274,8 +274,8 @@ public class SQLQuery implements DynamicExpression {
     if (queryEntity == null)  {
       return;
     }
-    String path = queryEntity.getPath();
-    entityQueryEntity.put(path, queryEntity);
+    String entityPath = queryEntity.getPath();
+    entityQueryEntity.put(entityPath, queryEntity);
   }
     
   private void setRelatedEntities(QueryHelper queryHelper)  {
@@ -286,21 +286,21 @@ public class SQLQuery implements DynamicExpression {
     Iterator iterator = entities.iterator();
     while (iterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) iterator.next();
-      String path = queryEntity.getPath();
-      entityQueryEntity.put(path, queryEntity);
+      String entityPath = queryEntity.getPath();
+      entityQueryEntity.put(entityPath, queryEntity);
       
     }
   }
   
   private void addSelectHiddenField(QueryFieldPart field) {
-  	String path = field.getPath();
-  	String name = field.getName();
+  	String entityPath = field.getPath();
+  	String fieldName = field.getName();
   	Iterator iterator = fieldOrder.iterator();
   	while (iterator.hasNext()) {
   		QueryFieldPart fieldPart = (QueryFieldPart) iterator.next();
   		String partPath = fieldPart.getPath();
   		String partName = fieldPart.getName();
-  		if (path.equals(partPath) && name.equals(partName)) {
+  		if (entityPath.equals(partPath) && fieldName.equals(partName)) {
   			// nothing to do
   			return;
   		}
@@ -385,8 +385,8 @@ public class SQLQuery implements DynamicExpression {
 	    	QueryFieldPart queryFieldPart = getField(fieldPath, fieldName);
 	    	addSelectHiddenField(queryFieldPart);
 	    	// microsoft sql server hack END -----------------------------------------------------------------------------------------------------------------------------
-    		String path = orderCriterion.getPath();
-    		entitiesUsedByCriterion.add(path);
+    		String entityPath = orderCriterion.getPath();
+    		entitiesUsedByCriterion.add(entityPath);
     		statement.addOrderByClause(orderCriterion); 
     	}
     }
@@ -398,16 +398,16 @@ public class SQLQuery implements DynamicExpression {
     Iterator fieldIterator = selectFields.iterator(); 
     while (fieldIterator.hasNext()) {
       QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
-      String path = queryField.getPath();
+      String entityPath = queryField.getPath();
       // test if entity is supported
-      if (! entityQueryEntity.containsKey(path))  {
+      if (! entityQueryEntity.containsKey(entityPath))  {
         throw new IOException("[SQLQuery] criteria could not be created, table is unknown");
       }
    		// create expression
    		FunctionExpression functionExpression = FunctionExpression.getInstance(queryField, this);
    		if (functionExpression.isValid()) {
    			// mark used entity
-   			entitiesUsedByField.add(path);
+   			entitiesUsedByField.add(entityPath);
     		statement.addSelectClause(functionExpression);
    		}
     }
@@ -423,8 +423,8 @@ public class SQLQuery implements DynamicExpression {
       CriterionExpression criterion = new CriterionExpression(condition, identifier, this, iwc);
       if (criterion.isValid()) {
       	// mark used entities
-      	String path = condition.getPath();
-      	entitiesUsedByCriterion.add(path);
+      	String entityPath = condition.getPath();
+      	entitiesUsedByCriterion.add(entityPath);
       	String patternPath = condition.getPatternPath();
       	if (patternPath != null) {
       		entitiesUsedByCriterion.add(patternPath);
@@ -446,9 +446,9 @@ public class SQLQuery implements DynamicExpression {
     List outerJoins = new ArrayList();
     while (entityIterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
-     	String path = queryEntity.getPath();
+     	String entityPath = queryEntity.getPath();
       // add only entities that are actually used
-      if (entitiesUsedByCriterion.contains(path))	{
+      if (entitiesUsedByCriterion.contains(entityPath))	{
       	// if an entity is used by a criterion use strong conditions, that is do not use left outer join
       	PathCriterionExpression pathCriterionExpression = new PathCriterionExpression(queryEntity, this);
        	if (pathCriterionExpression.isValid())	{
@@ -460,7 +460,7 @@ public class SQLQuery implements DynamicExpression {
       		}
         }
       }
-      else if (entitiesUsedByField.contains(path))	{
+      else if (entitiesUsedByField.contains(entityPath))	{
       	// if an entity is used by a select field use weak conditions, that is use left outer join
       	PathLeftOuterJoinExpression pathLeftOuterJoinExpression = new PathLeftOuterJoinExpression(queryEntity, this);
       	if (pathLeftOuterJoinExpression.isValid())	{
@@ -497,20 +497,25 @@ public class SQLQuery implements DynamicExpression {
       
 
 	public void addTableNamesForQueries(Map queryNameTableName)	{
-		beanClassNameTableNameMap.putAll(queryNameTableName);
+		entityPathTableNameMap.putAll(queryNameTableName);
 	}
 	
 	public String getMyTableName()	{
-		return (String) beanClassNameTableNameMap.get(path);
+		return (String) entityPathTableNameMap.get(path);
 	}
 	
-  protected String getTableName(String beanClassName) {
+  protected String getTableName(String entity, String entityPath) {
     // performance improvement
-    String tableName = (String) beanClassNameTableNameMap.get(beanClassName);
+    String tableName = (String) entityPathTableNameMap.get(entityPath);
     if (tableName == null)  {
-      tableName = 
-        ((IDOEntity) GenericEntity.getStaticInstance(beanClassName)).getEntityDefinition().getSQLTableName();
-      beanClassNameTableNameMap.put(beanClassName, tableName);
+    	// Important note:
+    	// if the table name was not found the entity should be a name of a bean class
+    	// if the entity is not a name of a bean class it should be a name of a query. In that case
+    	// the "table name" (actually the name of the corresponding view)  
+    	// should have been already added to the entityPathTableNameMap.
+      tableName = ((IDOEntity) GenericEntity.getStaticInstance(entity)).getEntityDefinition().getSQLTableName();
+      // important: store the tablename using the path as key NOT the entity!
+      entityPathTableNameMap.put(entityPath, tableName);
     }
     return tableName;
   }
@@ -520,25 +525,26 @@ public class SQLQuery implements DynamicExpression {
   		return null;
   	}
 		String entityPath = queryFieldPart.getPath();
-		String uniqueName = getUniqueNameForEntity(entityPath);
+		String entity = queryFieldPart.getEntity();
+		String uniqueName = getUniqueNameForEntity(entity, entityPath);
 		String fieldName = queryFieldPart.getName();
 		StringBuffer buffer = new StringBuffer(uniqueName);
 		buffer.append(DOT).append(fieldName);
 		return buffer.toString();
   }
 
-  protected String getUniqueNameForField(String path, String fieldName)  {
-    QueryFieldPart field = getField(path, fieldName);
+  protected String getUniqueNameForField(String entityPath, String fieldName)  {
+    QueryFieldPart field = getField(entityPath, fieldName);
     return getUniqueNameForField(field);
   }
   
-  protected String getInputHandlerForField(String path, String fieldName) {
-  	QueryFieldPart field = getField(path, fieldName);
+  protected String getInputHandlerForField(String entityPath, String fieldName) {
+  	QueryFieldPart field = getField(entityPath, fieldName);
   	return field.getHandlerClass();
   }
   
-  protected String getHandlerDescriptionForField(String path, String fieldName) {
-  	QueryFieldPart field = getField(path, fieldName);
+  protected String getHandlerDescriptionForField(String entityPath, String fieldName) {
+  	QueryFieldPart field = getField(entityPath, fieldName);
   	return field.getHandlerDescription();
   }
   
@@ -555,13 +561,13 @@ public class SQLQuery implements DynamicExpression {
   }
 
 
-	protected String getUniqueNameForEntity(String entityPath)	{
-		String tableName = getTableName(entityPath);
+	protected String getUniqueNameForEntity(String entity, String entityPath)	{
+		String tableName = getTableName(entity, entityPath);
 		return getUniqueNameForEntityByTableName(tableName, entityPath);
 	}		
 	
-	protected String getEntityForField(String path, String fieldName)	{
-		QueryFieldPart field = getField(path, fieldName);
+	protected String getEntityForField(String entityPath, String fieldName)	{
+		QueryFieldPart field = getField(entityPath, fieldName);
 		return field.getEntity();
 	}
 	
@@ -574,8 +580,8 @@ public class SQLQuery implements DynamicExpression {
 	}
 		 
 	
-	protected String getTypeClassForField(String path, String fieldName)	{
-		QueryFieldPart field = getField(path, fieldName);
+	protected String getTypeClassForField(String entityPath, String fieldName)	{
+		QueryFieldPart field = getField(entityPath, fieldName);
 		return field.getTypeClass();
 	}
 
