@@ -342,7 +342,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		return table;
 	}
 	
-	private Table getTable(int columns) {
+	/*private Table getTable(int columns) {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
@@ -350,7 +350,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.setRowColor(1, getHeaderColor());
 
 		return table;
-	}
+	}*/
 	
 	private Form getNavigationTable(IWContext iwc) {
 		Form form = new Form();
