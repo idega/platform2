@@ -32,7 +32,7 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.3 2003/03/21 18:37:12 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.4 2003/03/23 00:52:21 eiki Exp $
  * @since 12.2.2003 
  */
 
@@ -305,7 +305,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
 					c.set(Calendar.MONTH, Integer.parseInt(month) - 1);
 					c.set(Calendar.YEAR, Integer.parseInt(year));
-					_date = new java.sql.Date(c.getTimeInMillis());
+					//This method is protected in jdk 1.3 You should use the IWCalendar and IWTimestamp classes to get the desired functionality
+					//_date = new java.sql.Date(c.getTimeInMillis());
+					
+					
 					//new java.sql.Date(new java.util.Date(date).getTime());
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
