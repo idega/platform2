@@ -290,13 +290,13 @@ public class GolferPage extends Page{
     topTable.add(lInfo,1,1);
     topTable.add(lRecord,2,1);
     topTable.add(lInterviews,3,1);
-    //topTable.add(lStatistics,4,1);
+    topTable.add(lStatistics,4,1);
     //topTable.add(lPictures,5,1);
     topTable.add(lHome,6,1);
 
     //topTable.add(iRecord,2,1);
     //topTable.add(iInterviews,3,1);
-    topTable.add(iStatistics,4,1);
+    //topTable.add(iStatistics,4,1);
     topTable.add(iPictures,5,1);
 
     topTable.setWidth(1,1,"20");
@@ -498,7 +498,7 @@ public class GolferPage extends Page{
       hOverview.noIcons();
       hOverview.setTilPicture("/golferpage/til.gif");
       hOverview.setFraPicture("/golferpage/fra.gif");
-      hOverview.setGetOverviewButtonImageUrl("/golferpage/saekja.gif");
+      hOverview.setGetOverviewButton("/golferpage/saekja.gif", sTopMenuParameterName, homeResultsParameterValue);
       hOverview.setViewScoreIconUrlInBundle("/shared/iconSkoda.gif");
       Text headerText = new Text();
       headerText.setFontColor("#FF6000");
