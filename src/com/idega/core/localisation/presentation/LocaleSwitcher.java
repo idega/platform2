@@ -1,8 +1,10 @@
-package com.idega.development.presentation;
+package com.idega.core.localisation.presentation;
 
 import java.util.Enumeration;
 //import java.util.Locale;
 
+import com.idega.development.presentation.*;
+import com.idega.development.presentation.IWDeveloper;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -36,7 +38,7 @@ public class LocaleSwitcher extends com.idega.idegaweb.presentation.LocaleChange
 			getParentPage().setBackgroundColor("#FFFFFF");
 		IWMainApplication iwma = iwc.getApplication();
 
-		DropdownMenu localesDrop = Localizer.getAvailableLocalesDropdown(iwma, com.idega.core.localisation.business.LocaleSwitcher.languageParameterString);
+		DropdownMenu localesDrop = LocalePresentationUtil.getAvailableLocalesDropdown(iwma, com.idega.core.localisation.business.LocaleSwitcher.languageParameterString);
 		//localesDrop.keepStatusOnAction();
 		localesDrop.setToSubmit();
 		if (!iwc.isParameterSet(com.idega.core.localisation.business.LocaleSwitcher.languageParameterString))

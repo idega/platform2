@@ -2,7 +2,7 @@ package is.idega.idegaweb.campus.presentation;
 
 
 
-import com.idega.development.presentation.Localizer;
+import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -75,7 +75,7 @@ public class EmailSetter extends Block{
     Table T = new Table(1,10);
     T.setBorder(1);
     int row = 1;
-    DropdownMenu localeDrop = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),localesParameter);
+    DropdownMenu localeDrop = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),localesParameter);
     localeDrop.keepStatusOnAction();
     localeDrop.setToSubmit();
     SubmitButton save = new SubmitButton("save","Save");

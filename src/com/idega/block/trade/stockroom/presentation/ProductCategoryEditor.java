@@ -1,6 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.*;
+
 import java.rmi.*;
 import java.util.*;
 
@@ -157,7 +159,7 @@ public class ProductCategoryEditor extends CategoryWindow {
         filter.setSelectedElement(sFilter);
       }
 
-      DropdownMenu loc = Localizer.getAvailableLocalesDropdown(iwc.getApplication(), _parameterLocale);
+      DropdownMenu loc = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(), _parameterLocale);
       loc.addMenuElementFirst("-1", iwrb.getLocalizedString("all_locales","All locales"));
       if (sLocale != null) {
         loc.setSelectedElement(sLocale);

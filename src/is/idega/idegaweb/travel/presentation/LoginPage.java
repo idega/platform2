@@ -8,6 +8,7 @@ import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.development.presentation.Localizer;
 /**
  * Title:        idegaWeb TravelBooking
@@ -261,7 +262,7 @@ public class LoginPage extends TravelManager {
         table.setBorder(0);
 
         myForm.setEventListener(localeSwitcherName);
-      DropdownMenu dropdown = Localizer.getAvailableLocalesDropdown(iwc);
+      DropdownMenu dropdown = LocalePresentationUtil.getAvailableLocalesDropdown(iwc);
         dropdown.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
         dropdown.setSelectedElement(iwc.getCurrentLocale().toString());
         table.add(dropdown);
