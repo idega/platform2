@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.presentation;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.idega.idegaweb.commune.Constants;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 import com.idega.business.IBOLookup;
@@ -58,7 +59,8 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	protected static String PARAM_SUBMIT="cb_submit";	
 	protected static String LOCALIZATION_RESET_KEY="reset";
 
-	public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	//public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	public final static String IW_BUNDLE_IDENTIFIER = Constants.IW_BUNDLE_IDENTIFIER;
 
 	public final static String STYLENAME_HEADING_ROW = "HeadingRow";
 	public final static String STYLENAME_HEADER_ROW = "HeaderRow";
