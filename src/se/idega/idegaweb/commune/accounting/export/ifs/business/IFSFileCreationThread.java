@@ -228,7 +228,7 @@ public class IFSFileCreationThread extends Thread {
 				fileName3.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate, _currentLocale);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -249,7 +249,7 @@ public class IFSFileCreationThread extends Thread {
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate, _currentLocale);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -264,7 +264,7 @@ public class IFSFileCreationThread extends Thread {
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate, _currentLocale);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -277,7 +277,7 @@ public class IFSFileCreationThread extends Thread {
 		header.store();
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale) throws IOException {
+	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
 		String localizedSchoolCategoryName = _iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category."+_schoolCategory);
 		Collection phInCommune = null;
 		try {
@@ -576,7 +576,6 @@ public class IFSFileCreationThread extends Thread {
 					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					bWriter.write(Integer.toString(IWTimestamp.getDaysBetween(executionDate, paymentDate)));
-					//				bWriter.write("7");
 					bWriter.write(";");
 					bWriter.write("SEK");
 					bWriter.write(";");
