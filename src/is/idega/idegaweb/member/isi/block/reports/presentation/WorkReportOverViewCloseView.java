@@ -381,11 +381,10 @@ public class WorkReportOverViewCloseView extends Block {
 					hasData = (records!=null && !records.isEmpty());
 					
 				}
-			  else if(HAS_BOARD.equals(shortKey) ) {
-					Collection boardMembers = getWorkReportBusiness(iwc).getWorkReportBoardMemberHome().findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(wrId,wrGroupId);
-					hasData = (boardMembers!=null && !boardMembers.isEmpty());
-					
-			  }        
+				else if(HAS_BOARD.equals(shortKey) ) {
+					int count = getWorkReportBusiness(iwc).getWorkReportBoardMemberHome().getCountOfWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(wrId,wrGroupId);
+					hasData = (count>0);
+				}        
 			  
 
 				

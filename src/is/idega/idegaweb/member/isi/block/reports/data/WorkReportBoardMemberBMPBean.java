@@ -167,6 +167,25 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		return idoFindAllIDsByColumnsBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_WORK_REPORT_GROUP_ID,wrGroupId);
 	}
 	
+	public int ejbHomeGetCountOfWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(int reportId,int wrGroupId){
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom(getTableName());
+		query.appendWhere(COLUMN_NAME_REPORT_ID);
+		query.appendEqualSign();
+		query.append(reportId);
+		query.appendAnd();
+		query.append(COLUMN_NAME_WORK_REPORT_GROUP_ID);
+		query.appendEqualSign();
+		query.append(wrGroupId);
+		try {
+			return idoGetNumberOfRecords(query);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	public Integer ejbFindWorkReportBoardMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		

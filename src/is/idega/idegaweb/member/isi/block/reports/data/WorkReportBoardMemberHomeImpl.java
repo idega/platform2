@@ -46,6 +46,13 @@ public WorkReportBoardMember findWorkReportBoardMemberByUserIdAndWorkReportIdAnd
  }
 
 
+public int getCountOfWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(int p0,int p1){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((WorkReportBoardMemberBMPBean)entity).ejbHomeGetCountOfWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public java.lang.String getFemaleGenderString(){
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.lang.String theReturn = ((WorkReportBoardMemberBMPBean)entity).ejbHomeGetFemaleGenderString();
