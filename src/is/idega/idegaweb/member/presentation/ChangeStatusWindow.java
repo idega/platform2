@@ -113,7 +113,7 @@ import com.idega.user.business.UserBusiness;
       if(confirmThis != null){
         this.actionPerformed(iwc);
         this.setParentToReload();
-        this.close();
+      //  this.close();
       } else{
         this.empty();
         if(myTable == null){

@@ -248,7 +248,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	      
 	            Link deny = new Link(new Text("Deny"));
 	            deny.setWindowToOpen(ChangeStatusWindow.class);
-	            approve.addParameter(ChangeStatusWindow.GROUP_APPLICATION_ID_PARAM ,((Integer) app.getPrimaryKey()).intValue());
+	            deny.addParameter(ChangeStatusWindow.GROUP_APPLICATION_ID_PARAM ,((Integer) app.getPrimaryKey()).intValue());
 	            deny.addParameter(ChangeStatusWindow.CHANGE_STATUS_PARAM , denied);
 	            deny.setAsImageButton(true);
 	            userTable.add("&nbsp;",7,line);
