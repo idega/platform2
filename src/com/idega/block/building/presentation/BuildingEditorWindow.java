@@ -20,15 +20,10 @@ public class BuildingEditorWindow extends IWAdminWindow {
   }
 
   public void main(ModuleInfo modinfo) throws Exception{
-    super.main(modinfo);
     BuildingEditor BE = new BuildingEditor();
     add(BE);
     BE.setToIncludeLinks(false);
     setTitle("Building Editor");
     addHeaderObject(BE.getLinkTable(modinfo));
-
-
   }
-
-
 }
