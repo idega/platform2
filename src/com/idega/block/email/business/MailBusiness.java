@@ -8,6 +8,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.email.data.MailAccount;
 import com.idega.block.email.data.MailGroup;
+import com.idega.block.email.data.MailGroupHome;
 import com.idega.block.email.data.MailLetter;
 import com.idega.block.email.data.MailLetterHome;
 import com.idega.block.email.data.MailList;
@@ -55,10 +56,11 @@ public class MailBusiness {
    */
   public MailGroup saveLetterGroup(int id, String name, String info, int iCategoryId) {
     try {
-      MailGroup group = (MailGroup) com.idega.block.email.data.MailGroupBMPBean.getEntityInstance(MailGroup.class);
+      MailGroupHome mHome = (MailGroupHome) IDOLookup.getHome(MailGroup.class);
+      MailGroup group = mHome.create();
       boolean update = false;
       if (id > 0) {
-        group.findByPrimaryKey(id);
+        group = mHome.findByPrimaryKey(new Integer(id));
         update = true;
       }
 
@@ -67,10 +69,10 @@ public class MailBusiness {
       group.setCategoryId(iCategoryId);
 
       if (update) {
-        group.update();
+        group.store();
       } else {
         group.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
-        group.insert();
+        group.store();
       }
 
       return group;
@@ -305,7 +307,7 @@ public class MailBusiness {
   public void deleteTopic(int id) {
     try {
 
-      MailTopic topic = ((MailTopicHome)IDOLookup.getHomeLegacy(MailTopic.class)).findByPrimaryKey(new Integer(id));
+      MailTopic topic = ((MailTopicHome)IDOLookup.getHome(MailTopic.class)).findByPrimaryKey(new Integer(id));
 	 topic.removeFrom(MailLetter.class);
 	 topic.removeFrom(MailAccount.class);
 	 topic.remove();
@@ -317,7 +319,7 @@ public class MailBusiness {
   public void deleteLetter(int id) {
     try {
 
-      MailLetter l = ((MailLetterHome)IDOLookup.getHomeLegacy(MailLetter.class)).findByPrimaryKey(new Integer(id));
+      MailLetter l = ((MailLetterHome)IDOLookup.getHome(MailLetter.class)).findByPrimaryKey(new Integer(id));
       l.removeFrom(MailTopic.class);
       l.remove();
 
@@ -334,7 +336,7 @@ public class MailBusiness {
   public void deleteGroup(int id) {
     try {
 
-      ((com.idega.block.email.data.MailGroupHome)com.idega.data.IDOLookup.getHomeLegacy(MailGroup.class)).findByPrimaryKeyLegacy(id).delete();
+      ((MailGroupHome)IDOLookup.getHome(MailGroup.class)).findByPrimaryKey(new Integer(id)).remove();
 
     } catch (Exception ex) {
       ex.printStackTrace();
