@@ -17,6 +17,12 @@ private double grunn;
 
 	}
 
+	public Handicap(float grunn) {
+
+		this.grunn = (double) grunn;
+
+	}
+
 	public double getNewHandicap(double breyting) {
 
          if ( breyting > 0 ) {
@@ -101,6 +107,15 @@ private double grunn;
 
         }
 
+	public int getLeikHandicap (int slope,float course_rating,int field_par) {
+
+		int leik = getLeikHandicap((double)slope,(double)course_rating,(double)field_par);
+
+		return leik;
+
+
+	}
+
 	public int getLeikHandicap (double slope, double course_rating, double field_par) {
 
 		double leikhandicap = grunn * (slope/113) + (course_rating-field_par);
@@ -132,16 +147,16 @@ private double grunn;
 
 	}
 
-  public static void calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
+  public static int calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
     int leik = playHandicap;
     int leikpunktar = leik + 36;
     int punktar = leikpunktar/18;
     int afgangur = leikpunktar%18;
     int punktar2 = punktar + 1;
     int punktar3 = 0;
-    int heildarpunktar = 0;
     int hole_handicap = 0;
     int hole_par = 0;
+    int heildarpunktar = 0;
 
     try {
       for (int c = 0 ; c < strokes.size(); c++ ) {
@@ -189,6 +204,8 @@ private double grunn;
     catch(java.sql.SQLException e) {
       e.printStackTrace();
     }
+
+    return heildarpunktar;
   }
 
   public static int calculatePointsWithoutUpdate(Stroke[] strokes, int playHandicap) {

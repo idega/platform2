@@ -108,7 +108,7 @@ private Table myTable;
 
         Member memberInfo = new Member(Integer.parseInt(member_id));
         MemberInfo memberInfo2 = new MemberInfo(Integer.parseInt(member_id));
-        Union mainUnion = memberInfo.getMainUnion();
+        Union mainUnion = new Union(memberInfo.getMainUnionID());
         Union[] union = memberInfo.getUnions();
         int order = memberInfo2.getNumberOfRecords("handicap","<",""+memberInfo.getHandicap()) + 1;
         int clubOrder = 0;
