@@ -2,6 +2,7 @@ package com.idega.block.school.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -10,9 +11,12 @@ import javax.ejb.RemoveException;
 
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 
 /**
  * @author Laddi
@@ -120,6 +124,17 @@ public class SchoolClassBusinessBean extends IBOServiceBean implements SchoolCla
     }
 	}
 	
+	public void invalidateSchoolClass(int schoolClassID) throws RemoteException {
+    try {
+			SchoolClass schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
+			schoolClass.setValid(false);
+			schoolClass.store();
+    }
+    catch (FinderException fe) {
+    	fe.printStackTrace(System.err);
+    }
+	}
+	
 	public void storeSchoolClass(int schoolClassID,String className,int schoolID,int schoolSeasonID,int schoolYearID,int teacherID) throws RemoteException {
 		try {
 			SchoolClass schoolClass;
@@ -134,6 +149,7 @@ public class SchoolClassBusinessBean extends IBOServiceBean implements SchoolCla
 			schoolClass.setSchoolYearId(schoolYearID);
 			if ( teacherID != -1 )
 				schoolClass.setTeacherId(teacherID);
+			schoolClass.setValid(true);
 			
 			schoolClass.store();
 		}
