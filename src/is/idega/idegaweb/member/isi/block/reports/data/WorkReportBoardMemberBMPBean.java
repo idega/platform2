@@ -254,18 +254,4 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	public String getStatus(){
 		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
-	
-	/* (non-Javadoc)
-	 * @see javax.ejb.EJBLocalObject#remove()
-	 */
-	public void remove() throws RemoveException {
-		try {
-			idoRemoveFrom(WorkReportGroup.class);
-		}
-		catch (IDORemoveRelationshipException e) {
-			e.printStackTrace();
-		}
-		super.remove();
-	}
-
 }

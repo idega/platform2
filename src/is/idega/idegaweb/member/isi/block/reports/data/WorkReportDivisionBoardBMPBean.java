@@ -170,18 +170,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId);
   }
   
-  /* (non-Javadoc)
-   * @see javax.ejb.EJBLocalObject#remove()
-   */
-  public void remove() throws RemoveException {
-    try {
-      idoRemoveFrom(WorkReportGroup.class);
-    }
-    catch (IDORemoveRelationshipException e) {
-      e.printStackTrace();
-    }
-    super.remove();
-  }
+
 
 }
 
