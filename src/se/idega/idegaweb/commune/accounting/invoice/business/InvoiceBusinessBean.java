@@ -59,10 +59,10 @@ import com.lowagie.text.Element;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/26 10:51:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 12:09:47 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.50 $
+ * @version $Revision: 1.51 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -425,18 +425,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final Date period)
 		throws CreateException {
 		try {
-			final InvoiceHeader header = getInvoiceHeaderHome().create();
-			header.setSchoolCategoryID(schoolCategoryKey);
+			final InvoiceHeader header = getInvoiceHeaderHome ().create ();
+			if (null != schoolCategoryKey) header.setSchoolCategoryID
+                                                   (schoolCategoryKey);
 			if (null != createdBy) {
 				final String createdBySignature =
-					createdBy.getFirstName().charAt(0) + "" + createdBy.getLastName().charAt(0);
-				header.setCreatedBy(createdBySignature);
+					createdBy.getFirstName () + " " + createdBy.getLastName();
+				header.setCreatedBy (createdBySignature);
 			}
-			header.setCustodianId(custodianId);
-			header.setDateCreated(new Date(new java.util.Date().getTime()));
-			header.setDoublePosting(doublePosting);
-			header.setOwnPosting(ownPosting);
-			header.setPeriod(period);
+			header.setCustodianId (custodianId);
+			header.setDateCreated (new Date (new java.util.Date ().getTime ()));
+			if (null != doublePosting) header.setDoublePosting (doublePosting);
+			if (null != ownPosting) header.setOwnPosting (ownPosting);
+			if (null != period) header.setPeriod (period);
 			header.setStatus(ConstantStatus.PRELIMINARY);
 			header.store();
 			return header;
