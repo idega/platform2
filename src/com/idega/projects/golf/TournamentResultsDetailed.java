@@ -123,6 +123,9 @@ public class TournamentResultsDetailed extends JModuleObject {
             ResultsCollector rip = (ResultsCollector) v.get(0);
             if (rip != null) {
                 System.err.println("Rip != null.....DIFF = "+rip.getDifference());
+                System.err.println("Rip != null.....TotalStrokes = "+rip.getTotalStrokes());
+                System.err.println("Rip != null.....Holes = "+rip.getHoles());
+                System.err.println("Rip != null.....Calc diff = "+(rip.getTotalStrokes() - rip.getHoles()));
                 difference = rip.getDifference();
             }else {System.err.println("Rip == null");}
         }else {System.err.println("V.size = 0");}
