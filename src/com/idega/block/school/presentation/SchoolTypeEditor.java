@@ -172,7 +172,7 @@ public class SchoolTypeEditor extends Block {
     T.add(drpCategory,3,2);
     T.add(inputName,3,3);
     T.add(inputInfo,3,4);
-     T.add(inputInfo,3,5);
+     T.add(inputKey,3,5);
     T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,6);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
     T.add(cancel,3,6);
