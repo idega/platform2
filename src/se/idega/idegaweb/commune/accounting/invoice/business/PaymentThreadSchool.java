@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/06 14:03:15 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/06 16:09:16 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -421,12 +421,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegSpecConstant.RESOURCE, resourceConditions
 			);
 		int regSize = regulationForResourceArray.size();
-		if(regSize!=1){
-			errorRelated.append("# of Regulations "+regulationForResourceArray.size());
-			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForResourceNotCorrect");
-			return;
-		}
-		
+
+//		if(regSize!=1){
+			errorRelated.append("# of Regulations "+regSize);
+//			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForResourceNotCorrect");
+//			return;
+//		}
+
 		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
 				Regulation regulation = (Regulation) i.next();
