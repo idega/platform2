@@ -37,11 +37,16 @@ private Form formToSubmit;
 private Class windowClass;
 private boolean maintainAllGlobalParameters = false;
 
+private static final String HASH = "#";
+private static final String JAVASCRIPT = "javascript:";
 private static final String TARGET_ATTRIBUTE = "target";
+private static final String OBJECT_TYPE_WINDOW = "Window";
+
 public static final String TARGET_NEW_WINDOW = "_new";
 public static final String TARGET_BLANK_WINDOW = "_blank";
 public static final String TARGET_PARENT_WINDOW = "_parent";
 public static final String TARGET_TOP_WINDOW = "_top";
+
 
 
 public Link(){
@@ -58,7 +63,7 @@ public Link(ModuleObject mo, Window myWindow){			//gummi@idega.is
 
 	this.myWindow = myWindow;
 	myWindow.setParentObject(this);
-	ObjectType="Window";
+	ObjectType=OBJECT_TYPE_WINDOW;
 
 	obj = mo;
 	obj.setParentObject(this);
@@ -69,7 +74,7 @@ public Link(Window myWindow){
 	//super();
 	//this.myWindow = myWindow;
 	//myWindow.setParentObject(this);
-	//ObjectType="Window";
+	//ObjectType=OBJECT_TYPE_WINDOW;
         this(new Text(myWindow.getName()),myWindow);
 }
 
@@ -144,7 +149,7 @@ public Link(int file_id, Window myWindow){
 	//super();
 	this.myWindow = myWindow;
 	myWindow.setParentObject(this);
-	ObjectType="Window";
+	ObjectType=OBJECT_TYPE_WINDOW;
 }
 
 
@@ -177,13 +182,13 @@ public Link(String displayText,String classToInstanciate,String template){
 
 public void setWindow(Window window){
     myWindow=window;
-    ObjectType="Window";
+    ObjectType=OBJECT_TYPE_WINDOW;
     myWindow.setParentObject(this);
 }
 
 public void setModuleObject(ModuleObject object){
   this.obj=object;
-  ObjectType="ModuleObject";
+  ObjectType=OBJECT_TYPE_WINDOW;
   object.setParentObject(this);
 }
 
@@ -216,7 +221,7 @@ public String getAttributeString(ModuleInfo modinfo){
 }*/
 
 public void main(ModuleInfo modinfo)throws Exception{
-  if(ObjectType.equals("Window")){
+  if(ObjectType.equals(OBJECT_TYPE_WINDOW)){
 
     if(myWindow!=null){
       if(myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL)!=-1){
@@ -607,26 +612,37 @@ public void clearParameters(){
 public void print(ModuleInfo modinfo)throws Exception{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
+            boolean addParameters=true;
             String oldURL = getURL();
+
             if(oldURL==null){
                 oldURL=modinfo.getRequestURI();
                 setURL(oldURL);
             }
-            else if (oldURL.equals("")){
+            else if (oldURL.equals(com.idega.util.StringHandler.EMPTY_STRING)){
                 oldURL=modinfo.getRequestURI();
                 setURL(oldURL);
             }
 
+            if(oldURL.equals(HASH)){
+              addParameters=false;
+            }
+            else if(oldURL.startsWith(JAVASCRIPT)){
+              addParameters=false;
+            }
+
+
+
 
 		if (getLanguage().equals("HTML")){
-				if (ObjectType.equals("Window")){
+				if (ObjectType.equals(OBJECT_TYPE_WINDOW)){
                                         if(windowClass==null){
 					  setOnClick(myWindow.getCallingScriptString(modinfo,myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo))));
 			                }
                                         else{
                                           setOnClick(Window.getCallingScriptString(windowClass,getURL()+getParameterString(modinfo,getURL()),true));
                                         }
-                                        setURL("#");
+                                        setURL(HASH);
                                         print("<a "+getAttributeString()+" >");
                                         if (obj == null){
 					  Text myText = new Text(myWindow.getName());
@@ -638,18 +654,20 @@ public void print(ModuleInfo modinfo)throws Exception{
                                         print("</a>");
 				}
 				else{
-					setURL(oldURL+getParameterString(modinfo,oldURL));
+                                        if(addParameters){
+					  setURL(oldURL+getParameterString(modinfo,oldURL));
+                                        }
                                         print("<a "+getAttributeString()+" >");
 					obj.print(modinfo);
 					print("</a>");
 				}
 		}
 		else if (getLanguage().equals("WML")){
-				if (ObjectType.equals("Window")){
+				if (ObjectType.equals(OBJECT_TYPE_WINDOW)){
 
 					setURL(myWindow.getURL(modinfo)+getParameterString(modinfo,oldURL));
 					//println("<p>");
-                                        setURL("#");
+                                        setURL(HASH);
 					print("<a "+getAttributeString()+" >");
 					print(myWindow.getName());
 					print("</a>");
@@ -657,7 +675,9 @@ public void print(ModuleInfo modinfo)throws Exception{
 				}
 				else{
 					//println("<p>");
-                                        setURL(oldURL+getParameterString(modinfo,oldURL));
+                                        if(addParameters){
+					  setURL(oldURL+getParameterString(modinfo,oldURL));
+                                        }
                                         print("<a "+getAttributeString()+" >");
 					obj.print(modinfo);
 					print("</a>");
@@ -752,7 +772,7 @@ public void print(ModuleInfo modinfo)throws Exception{
   }
 
   public void setWindowToOpen(Class windowClass){
-    ObjectType="Window";
+    ObjectType=OBJECT_TYPE_WINDOW;
     this.windowClass=windowClass;
     setURL(IWMainApplication.windowOpenerURL);
     //this.setOnClick(Window.getCallingScriptString(windowClass,true));

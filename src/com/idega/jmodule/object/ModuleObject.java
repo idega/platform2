@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.21 2001/09/09 21:51:57 gummi Exp $
+ * $Id: ModuleObject.java,v 1.22 2001/09/13 19:26:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import com.idega.jmodule.object.interfaceobject.Form;
  */
 public class ModuleObject extends Object implements Cloneable {
   //private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb";
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.core";
+  public final static String IW_BUNDLE_IDENTIFIER="com.idega.core";
 
   protected static final String slash = "/";
 

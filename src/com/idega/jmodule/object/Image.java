@@ -191,6 +191,10 @@ public void setImageID(int imageID){
   this.imageId=imageID;
 }
 
+public int getImageID(){
+  return this.imageId;
+}
+
 public void setVerticalSpacing(int spacing){
   setAttribute("vspace",Integer.toString(spacing));
 }

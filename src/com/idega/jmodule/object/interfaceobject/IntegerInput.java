@@ -56,8 +56,8 @@ public void print(ModuleInfo modinfo)throws IOException{
 		if (getLanguage().equals("HTML")){
 
 		if (keepStatus){
-			if(this.getRequest().getParameter(this.getName()) != null){
-				setContent(getRequest().getParameter(getName()));
+			if(modinfo.getParameter(this.getName()) != null){
+				setContent(modinfo.getParameter(getName()));
 			}
 		}
 			//if (getInterfaceStyle().equals("default"))
