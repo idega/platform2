@@ -7,11 +7,14 @@ import com.idega.presentation.ui.*;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Collection;
 import javax.ejb.*;
+import javax.servlet.http.HttpSession;
 import se.cubecon.bun24.viewpoint.business.ViewpointBusiness;
 import se.cubecon.bun24.viewpoint.data.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.util.PIDChecker;
 
 /**
  * ViewpointForm is an IdegaWeb block that inputs and handles viewpoints from
@@ -24,10 +27,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/06 12:53:26 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -44,6 +47,7 @@ public class ViewpointForm extends CommuneBlock {
 	public final static String PARAM_SUBJECT = "vp_subject";
 	public final static String PARAM_MESSAGE = "vp_message";
 	public final static String PARAM_ANSWER = "vp_answer";
+    public final static String PARAM_SSN = "vp_ssn";
 	public final static String PARAM_VIEWPOINT_ID = "vp_viewpoint_id";
 
     private final static int UNKNOWN_ACTION = -1;
@@ -53,6 +57,7 @@ public class ViewpointForm extends CommuneBlock {
 	public final static int SHOWVIEWPOINT_ACTION = 3;
 	public final static int ACCEPTTOHANDLEVIEWPOINT_ACTION = 4;
 	public final static int ANSWERVIEWPOINT_ACTION = 5;
+    public final static int SHOWAUTHENTICATIONFORM_ACTION = 6;
 
 	private final static String ANSWER_KEY = "viewpoint.answer";
 	private final static String ANSWER_DEFAULT = "Svar till medborgare";
@@ -122,6 +127,7 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String SUBMITVIEWPOINT_KEY
         = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
+	private final static String USER_KEY = "viewpoint.user";
 	private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
 	private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
 	private final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
@@ -129,8 +135,6 @@ public class ViewpointForm extends CommuneBlock {
         = "Tillbaka till Min sida";
 
 	private final static String UNKNOWN_PAGE = "Unknown Page";
-
-	//private int userHomePageId = -1;
 
 	/**
 	 * main is the event handler of ViewpointForm. It can handle the following
@@ -147,13 +151,12 @@ public class ViewpointForm extends CommuneBlock {
 	public void main(final IWContext iwc) {
 		setResourceBundle (getResourceBundle(iwc));
 
-        if (!iwc.isLoggedOn()) {
-            add (getLocalizedHeader (NOTLOGGEDON_KEY, NOTLOGGEDON_DEFAULT));
-            return;
-        }
-
 		try {            
 			switch (getActionId (iwc)) {
+                case SHOWAUTHENTICATIONFORM_ACTION:
+                    showAuthenticationForm (iwc);
+                    break;
+
 				case SHOWTOPCATEGORIESFORM_ACTION :
 					showTopCategoriesForm (iwc);
 					break;
@@ -194,7 +197,9 @@ public class ViewpointForm extends CommuneBlock {
 	private int getActionId (final IWContext iwc) {
 		int result = UNKNOWN_ACTION;
 
-		if (iwc.isParameterSet(PARAM_ACTION)) {
+        if (!isAuthenticated (iwc)) {
+            result = SHOWAUTHENTICATIONFORM_ACTION;
+        } else if (iwc.isParameterSet(PARAM_ACTION)) {
             try {
                 result = Integer.parseInt (iwc.getParameter (PARAM_ACTION));
             } catch (final NumberFormatException e) {
@@ -212,6 +217,26 @@ public class ViewpointForm extends CommuneBlock {
         }
         
 		return result;
+	}
+
+	private void showAuthenticationForm (final IWContext context) {
+		final Form form = new Form();
+
+		final SubmitButton submit = getSubmitButton ("---", "---");
+		final Table table = new Table ();
+		table.setWidth (getWidth ());
+		table.setCellpadding (0);
+		table.setCellspacing (0);
+		int row = 1;
+
+		table.add ("För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka ange ditt personnummer", 1, row++);
+		final TextInput ssnInput = (TextInput) getStyledInterface
+                (new TextInput (PARAM_SSN));
+		ssnInput.setLength (10);
+        table.add (ssnInput, 1, row++);
+		table.add (submit, 1, row++);
+		form.add (table);
+		add (form);
 	}
 
 	private void showTopCategoriesForm (final IWContext iwc)
@@ -308,7 +333,7 @@ public class ViewpointForm extends CommuneBlock {
             return;
         }
 
-        final User currentUser = iwc.getCurrentUser();
+        final User currentUser = getCurrentUser (iwc);
         final int currentUserId
                 = ((Integer) currentUser.getPrimaryKey ()).intValue ();
 		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
@@ -375,7 +400,7 @@ public class ViewpointForm extends CommuneBlock {
 
 		// 2. registerhandler
 		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		viewpointBusiness.registerHandler(viewpointId, iwc.getCurrentUser());
+		viewpointBusiness.registerHandler(viewpointId, getCurrentUser (iwc));
 
 		// 3. print feedback
 		final Text text = new Text(getLocalizedString(CONFIRMSETHANDLER_KEY, CONFIRMSETHANDLER_DEFAULT));
@@ -453,7 +478,7 @@ public class ViewpointForm extends CommuneBlock {
 		final int handlerGroupId
                 = ((Integer) handlerGroup.getPrimaryKey()).intValue();
 		viewpointBusiness.createViewpoint
-                (iwc.getCurrentUser (), iwc.getParameter (PARAM_SUBJECT),
+                (getCurrentUser (iwc), iwc.getParameter (PARAM_SUBJECT),
                  iwc.getParameter (PARAM_MESSAGE), topCategory.getName ()
                  + "/" + subCategory.getName (), handlerGroupId);
 		final Text text1
@@ -516,11 +541,91 @@ public class ViewpointForm extends CommuneBlock {
     private Link getCancelLink (final IWContext iwc) throws RemoteException {
  		final UserBusiness userBusiness = (UserBusiness)
                 IBOLookup.getServiceInstance (iwc, UserBusiness.class);
-        final User user = iwc.getCurrentUser ();
+        final User user = getCurrentUser (iwc);
 		final Link cancel
                 = new Link (getLocalizedString (CANCEL_KEY, CANCEL_DEFAULT));
         cancel.setPage (userBusiness.getHomePageIDForUser (user));
         return cancel;
+    }
+
+	private boolean isAuthenticated (final IWContext context) {
+        boolean result = false;
+        final HttpSession session = context.getSession ();
+        if (context.isLoggedOn () || session.getAttribute (USER_KEY) != null) {
+            result = true;
+        } else {
+            final String ssn = getSsn (context, PARAM_SSN);
+            if (ssn != null) {
+                try {
+                    final UserBusiness userBusiness = (UserBusiness) IBOLookup
+                            .getServiceInstance (context, UserBusiness.class);
+                    final User user = userBusiness.getUser (ssn);
+                    if (user != null) {
+                        session.setAttribute (USER_KEY, user);
+                        result = true;
+                    }
+                } catch (final Exception e) {
+                    System.err.println ("ssn " + ssn + " not found: "
+                                        + e.getMessage ());
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private User getCurrentUser (final IWContext context) {
+        User result = null;
+        
+        if (isAuthenticated (context)) {
+            if (context.isLoggedOn ()) {
+                try {
+                    final UserBusiness userBusiness = (UserBusiness)
+                            IBOLookup.getServiceInstance (context,
+                                                          UserBusiness.class);
+                    result = context.getCurrentUser ();
+                } catch (RemoteException e) {
+                    result = null;
+                }
+            } else {
+                final HttpSession session = context.getSession ();
+                result = (User) session.getAttribute (USER_KEY);
+            }
+        }
+        return result;
+    }
+
+    private static String getSsn(final IWContext iwc, final String key) {
+        final String rawInput = iwc.getParameter(key);
+        if (rawInput == null) {
+            return null;
+        }
+        final StringBuffer digitOnlyInput = new StringBuffer();
+        for (int i = 0; i < rawInput.length(); i++) {
+            if (Character.isDigit(rawInput.charAt(i))) {
+                digitOnlyInput.append(rawInput.charAt(i));
+            }
+        }
+        final Calendar rightNow = Calendar.getInstance();
+        final int currentYear = rightNow.get(Calendar.YEAR);
+        if (digitOnlyInput.length() == 10) {
+            final int inputYear
+                    = new Integer(digitOnlyInput.substring(0, 2)).intValue();
+            final int century = inputYear + 2000 > currentYear ? 19 : 20;
+            digitOnlyInput.insert(0, century);
+        }
+        final PIDChecker pidChecker = PIDChecker.getInstance();
+        if (digitOnlyInput.length() != 12 || !pidChecker.isValid(digitOnlyInput.toString())) {
+            return null;
+        }
+        final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
+        final int month = new Integer(digitOnlyInput.substring(4, 6)).intValue();
+        final int day = new Integer(digitOnlyInput.substring(6, 8)).intValue();
+        if (year < 1880 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
+            return null;
+        }
+        return digitOnlyInput.toString();
     }
 
 	private Link getUserHomePageLink (final IWContext iwc)
@@ -530,7 +635,7 @@ public class ViewpointForm extends CommuneBlock {
                                                 GOBACKTOMYPAGE_DEFAULT));
  		final UserBusiness userBusiness = (UserBusiness)
                 IBOLookup.getServiceInstance (iwc, UserBusiness.class);
-        final User user = iwc.getCurrentUser ();
+        final User user = getCurrentUser (iwc);
 		final Link link = new Link (userHomePageText);
         link.setPage (userBusiness.getHomePageIDForUser (user));
 		return link;
