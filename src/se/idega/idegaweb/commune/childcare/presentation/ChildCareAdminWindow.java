@@ -565,7 +565,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
 		TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
 		preSchool.setLength(40);
-		preSchool.setContent(application.getPreSchool());
+		if (application.getPreSchool() != null)
+			preSchool.setContent(application.getPreSchool());
 		table.add(preSchool, 1, row++);
 		
 		SubmitButton changeDate = null;
