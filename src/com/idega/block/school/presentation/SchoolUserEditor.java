@@ -111,9 +111,8 @@ public class SchoolUserEditor extends Block {
 	private List parameterValues;
 	private Collection schoolTypeIds;
 	private int mobilePhoneType = PhoneType.MOBILE_PHONE_ID;
-	private String _schoolCategory = "";
-	private String _schoolTypeHighSchool = "";
-
+	private boolean _highSchoolCategory = false;
+	
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
@@ -906,7 +905,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 				this.setTextInputStyle(pPhone);
 				table.add(pPhone, 7, row);
 				
-			if (_schoolCategory == _schoolTypeHighSchool){
+			if (_highSchoolCategory){
 				TextInput pMobilePhone = new TextInput(smobilephone+"_"+hmId);
 				this.setTextInputStyle(pMobilePhone);
 				table.add(pMobilePhone, 9, mobRow);
@@ -1521,7 +1520,7 @@ private Table getDepartmentForm(IWContext iwc, School school) {
 				}
 				
 				SchoolUser schUsr;
-				if (_schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+				if (_highSchoolCategory) {
 					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType, showcontact, main_headmaster);
 				}else {
 					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
@@ -1750,7 +1749,10 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
 			
 				while (iterCollection.hasNext()) {									
 					SchoolType schoolType = (SchoolType) iterCollection.next();
-					_schoolCategory =  schoolType.getSchoolCategory();				
+					String schoolCategory =  schoolType.getSchoolCategory();
+					if (schoolCategory.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory())) {
+						_highSchoolCategory = true;
+					}			
 				}
 									
 				}
