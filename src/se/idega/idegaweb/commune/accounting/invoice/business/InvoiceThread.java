@@ -18,7 +18,6 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
@@ -48,7 +47,6 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
-import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.business.IBOLookup;
@@ -59,7 +57,6 @@ import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
-import com.idega.util.IWTimestamp;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
@@ -67,37 +64,19 @@ import com.idega.util.IWTimestamp;
  * 
  * @author Joakim
  */
-public class InvoiceThread extends Thread{
+public class InvoiceThread extends BillingThread{
 
-	private static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
-//	private static final String MANUALLY_TEXT = "invoice.manually";		//Localize this text in the user interface
 	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
-	private IWTimestamp startPeriod;
-	private IWTimestamp endPeriod;
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
-	private int days;
-	private Date currentDate = new Date( new java.util.Date().getTime());
-	private IWTimestamp time, startTime, endTime;
-	private ExportDataMapping categoryPosting;
 	private SchoolCategory childcareCategory;
 	private int childcare = 0;
 	private int check = 0;
-	private int errorOrder;
-	private School school;
-	private float months;
 	private Map siblingOrders = new HashMap();
 	private String ownPosting, doublePosting;
-	private IWContext iwc;
 
 	public InvoiceThread(Date month, IWContext iwc){
-		startPeriod = new IWTimestamp(month);
-		startPeriod.setAsDate();
-		startPeriod.setDay(1);
-		endPeriod = new IWTimestamp(startPeriod);
-		endPeriod.setAsDate();
-		endPeriod.addMonths(1);
-		this.iwc = iwc;
+		super(month,iwc);
 	}
 
 	/**
@@ -234,7 +213,7 @@ public class InvoiceThread extends Thread{
 		
 				try{
 					compilePostingStrings();
-					PaymentRecord paymentRecord = createPaymentRecord();			//MUST create payment record first, since it is used in invoice record
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, ownPosting, doublePosting);			//MUST create payment record first, since it is used in invoice record
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord);
@@ -292,34 +271,6 @@ public class InvoiceThread extends Thread{
 		}
 	}
 	
-	/**
-	 * calculatest the number of days andmonths between the start and end date 
-	 * and sets the local variables monts and days
-	 * 
-	 * @param start
-	 * @param end
-	 */
-	private void calculateTime(Date start, Date end){
-		startTime = new IWTimestamp(start);
-		startTime.setAsDate();
-		time = new IWTimestamp(startPeriod);
-		time.setAsDate();
-		startTime = startTime.isLater(startTime,time);
-		//Then get end date
-		endTime = new IWTimestamp(endPeriod);
-		endTime.setAsDate();
-		if(contract.getTerminatedDate()!=null){
-			time = new IWTimestamp(end);
-			endTime = endTime.isEarlier(endTime, time);
-		}
-		//calc the how many months are in the given time.
-		months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
-		months += 1.0;
-		months -= percentOfMonthDone(startTime);
-		months -= 1.0 - percentOfMonthDone(endTime);
-		days = IWTimestamp.getDaysBetween(startTime, endTime);
-	}
-
 	/**
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
@@ -388,69 +339,6 @@ public class InvoiceThread extends Thread{
 				createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
 			}
 		}
-	}
-
-	/**
-	 * Finds existing payment reacord or creates a new payment record if needed, 
-	 * and populates the values as needed. It also creates the payment header if needed
-	 *  
-	 * @return the created payment record
-	 * @throws CreateException
-	 * @throws IDOLookupException
-	 */
-	private PaymentRecord createPaymentRecord() throws CreateException, IDOLookupException {
-		PaymentHeader paymentHeader;
-		PaymentRecord paymentRecord;
-	
-		//Get the payment header
-		try {
-			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
-					findBySchoolCategorySchoolPeriod(school,childcareCategory,currentDate);
-		} catch (FinderException e) {
-			//If No header found, create it
-			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
-			paymentHeader.setSchoolID(school);
-			paymentHeader.setSchoolCategoryID(childcareCategory);
-			if(categoryPosting.getProviderAuthorization()){
-				paymentHeader.setStatus(ConstantStatus.BASE);
-			} else {
-				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
-			}
-		}
-
-		//Update or create the payment record
-		try {
-			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
-					findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
-			//If it already exists, just update the contents.
-			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
-			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
-			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
-		} catch (FinderException e1) {
-			//It didn't exist, so we create it
-			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
-			//Set all the values for the payment record
-			paymentRecord.setPaymentHeader(paymentHeader);
-			if(categoryPosting.getProviderAuthorization()){
-				paymentRecord.setStatus(ConstantStatus.BASE);
-			} else {
-				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
-			}
-			paymentRecord.setPeriod(startPeriod.getDate());
-			paymentRecord.setPaymentText(postingDetail.getTerm());
-			paymentRecord.setDateCreated(currentDate);
-			paymentRecord.setCreatedBy(BATCH_TEXT);
-			paymentRecord.setPlacements(1);
-			paymentRecord.setPieceAmount(postingDetail.getAmount());
-			paymentRecord.setTotalAmount(postingDetail.getAmount()*months);
-			paymentRecord.setTotalAmountVAT(postingDetail.getVat()*months);
-			paymentRecord.setRuleSpecType(postingDetail.getRuleSpecType());
-			paymentRecord.setOwnPosting(ownPosting);
-			paymentRecord.setDoublePosting(doublePosting);
-			paymentRecord.setVATType(postingDetail.getVatRegulationID());
-			paymentRecord.store();
-		}
-		return paymentRecord;
 	}
 
 	/**
@@ -615,25 +503,6 @@ public class InvoiceThread extends Thread{
 	}
 
 	/**
-	 * Creates a new error log message (to be used according to fonster 33 in C&P Req.Spec.)
-	 *  
-	 * @param related Description of related objects
-	 * @param desc Description possible errors
-	 */
-	private void createNewErrorMessage(String related, String desc){
-		try {
-			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
-			error.setRelated(related);
-			error.setDescription(desc);
-			error.setOrder(errorOrder);
-			errorOrder++;
-		} catch (Exception e) {
-			System.out.println("Exception so complicated that it wasn't even possible to create an error message in the log!");
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Creates an invoice record with the specific descriptive text for the check.
 	 * @param invoiceHeader
 	 * @param header
@@ -724,12 +593,20 @@ public class InvoiceThread extends Thread{
 		return invoiceRecord;
 	}
 
+	/**
+	 * Creates a pair of posting strings according to the settings of the provider and the categoryPosting
+	 * @throws CreateException
+	 * @throws PostingParametersException
+	 * @throws PostingException
+	 * @throws RemoteException
+	 * @throws MissingMandatoryFieldException
+	 */
 	private void compilePostingStrings() throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		//Set the posting strings
 		PostingBusiness postingBusiness = (PostingBusiness)IDOLookup.create(PostingBusiness.class);
 
 		PostingParameters parameters = postingBusiness.getPostingParameter(
-			new Date(new java.util.Date().getTime()), childcare, check, 0, 0);
+			currentDate, childcare, check, 0, 0);
 
 		ownPosting = parameters.getPostingString();
 		Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
@@ -741,23 +618,6 @@ public class InvoiceThread extends Thread{
 		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
 		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
 		postingBusiness.validateString(doublePosting,currentDate);
-	}
-
-	/**
-	 * Calculates the amount of the month that has passed at the given date.
-	 * @param date
-	 * @return the amount (%) of the month that has passed
-	 */
-	private float percentOfMonthDone(IWTimestamp date){
-		int daysInMonth;
-		IWTimestamp firstDay, lastDay;
-
-		firstDay = new IWTimestamp(date);
-		firstDay.setDay(1);
-		lastDay = new IWTimestamp(firstDay);
-		lastDay.addMonths(1);
-		daysInMonth = IWTimestamp.getDaysBetween(firstDay, lastDay);
-		return (float)(date.getDay()-1)/(float)daysInMonth;
 	}
 
 	//Getters to different commonly used objects
@@ -781,10 +641,6 @@ public class InvoiceThread extends Thread{
 		return (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 	}
 
-	private RegulationsBusiness getRegulationsBusiness() throws RemoteException {
-		return (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
-	}
-	
 	private RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {
 		return (RegularInvoiceBusiness) IBOLookup.getServiceInstance(iwc, RegularInvoiceBusiness.class);
 	}
