@@ -328,7 +328,7 @@ public class RunBMPBean extends GenericEntity implements Run {
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new MaxColumn(getColumnNameParticipantNumber()));
+		query.addColumn(new WildCardColumn(table));
 		query.addCriteria(new MatchCriteria(table, getColumnNameRunDistanceGroupID(), MatchCriteria.EQUALS, distance));
 		query.addCriteria(new MatchCriteria(table, getColumnNameRunGroupGroupID(), MatchCriteria.EQUALS, runGroup));
 		query.addOrder(table, getColumnNameRunTime(), true);
