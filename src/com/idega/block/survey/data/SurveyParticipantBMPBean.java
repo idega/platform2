@@ -7,7 +7,12 @@
 package com.idega.block.survey.data;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
@@ -93,30 +98,55 @@ public class SurveyParticipantBMPBean extends GenericEntity implements SurveyPar
 		if(pks.size() <= maxNumberOfReturnedParticipants){
 			return pks;
 		} else {
-			int index=0;
-			int endlessLoopBreaker = 0;
-			int[] choice = new int[maxNumberOfReturnedParticipants]; 
-			for(int i=0; i<maxNumberOfReturnedParticipants;i++){
-				index = (int)(maxNumberOfReturnedParticipants*Math.random());
-				for(int j = 0; i < j; j++){
-					if(choice[j]==index){
-						index++;
-						j=0;
-					}
-					endlessLoopBreaker++;
-					if(endlessLoopBreaker >= Integer.MAX_VALUE){
-						System.out.println("[ERROR]: ("+this.getClass().getName()+"): endless loop in random choice");
+			
+			Set set = new HashSet();
+			
+			while(set.size() < maxNumberOfReturnedParticipants){
+				Random rand = new Random();
+				int index = rand.nextInt(pks.size());
+				boolean success = set.add(pks.get(index));
+				int ring = index;
+				boolean coil = false;
+				while(success){
+					if(ring == ++index){
+						coil = true;
 						break;
-					} else if(endlessLoopBreaker >= Integer.MAX_VALUE/3){
-						System.out.println("[WARNING]: ("+this.getClass().getName()+"): long loop in random choice");
 					}
+					if(index == pks.size()){
+						index = 0;
+					}
+					success = set.add(pks.get(index));
 				}
-				endlessLoopBreaker=0;
-				choice[i]=index;
+				if(coil){
+					break;
+				}
 			}
-			for (int i = 0; i < choice.length; i++) {
-				toReturn.add(pks.get(choice[i]));
-			}
+			toReturn = set;
+						
+//			int index=0;
+//			int endlessLoopBreaker = 0;
+//			int[] choice = new int[maxNumberOfReturnedParticipants]; 
+//			for(int i=0; i<maxNumberOfReturnedParticipants;i++){
+//				index = (int)(maxNumberOfReturnedParticipants*Math.random());
+//				for(int j = 0; i < j; j++){
+//					if(choice[j]==index){
+//						index++;
+//						j=0;
+//					}
+//					endlessLoopBreaker++;
+//					if(endlessLoopBreaker >= Integer.MAX_VALUE){
+//						System.out.println("[ERROR]: ("+this.getClass().getName()+"): endless loop in random choice");
+//						break;
+//					} else if(endlessLoopBreaker >= Integer.MAX_VALUE/3){
+//						System.out.println("[WARNING]: ("+this.getClass().getName()+"): long loop in random choice");
+//					}
+//				}
+//				endlessLoopBreaker=0;
+//				choice[i]=index;
+//			}
+//			for (int i = 0; i < choice.length; i++) {
+//				toReturn.add(pks.get(choice[i]));
+//			}
 		}
 		return toReturn;		
 	}
