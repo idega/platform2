@@ -3134,7 +3134,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						}
 					}
 					if (student == null) {
-						student = oldStudent;//
+						student = oldStudent;
 					}
 					if (student == null) {
 						student = getLatestPlacement(application.getChildId(), application.getProviderId());
@@ -3144,7 +3144,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (schoolClassId != -1) {
 							student.setSchoolClassId(schoolClassId);
 							student.store();
-							if (oldSchoolClassID != -1 && schoolClassId != oldSchoolClassID) {
+							if (!createNewStudent && oldSchoolClassID != -1 && schoolClassId != oldSchoolClassID) {
 								try {
 									SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
 									getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);
