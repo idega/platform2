@@ -75,6 +75,7 @@ public class ServiceViewer extends Window {
 
   private String sService = null;
   private String sSupplier = null;
+  private int iLocaleID = -1;
 
   public ServiceViewer(){
     super.setWidth(windowWidth);
@@ -88,6 +89,15 @@ public class ServiceViewer extends Window {
 
     sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
     sSupplier = iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
+
+    String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
+    if(languageString!=null){
+      Locale locale = LocaleUtil.getLocale(languageString);
+      if(locale!=null){
+	iwc.setCurrentLocale(locale);
+        iLocaleID = ICLocaleBusiness.getLocaleId(locale);
+      }
+    }
 
     if( sService!=null ){
       if( iwc.getSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+sService)!=null ) showMoreButton = true;
@@ -115,15 +125,6 @@ public class ServiceViewer extends Window {
   }
 
   public void main(IWContext iwc) throws Exception{
-    // VERDUR AD GERAST FYRST I MAIN...
-    String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
-    if(languageString!=null){
-      Locale locale = LocaleUtil.getLocale(languageString);
-      if(locale!=null){
-	iwc.setCurrentLocale(locale);
-      }
-    }
-
     init(iwc);
     handleEvents(iwc);
   }
@@ -160,8 +161,8 @@ public class ServiceViewer extends Window {
     try {
       int[] dagur = ServiceDay.getDaysOfWeek(serv.getID());
 
-      if( (dagur.length == 7) && (listView) ){
-        depart.append(iwrb.getLocalizedString("every.day.at","Every day at")).append(Text.NON_BREAKING_SPACE);
+      if( (dagur.length == 7) ){
+        depart.append(iwrb.getLocalizedString("every.day","Every day")).append(Text.NON_BREAKING_SPACE);
       }
       else{
         for (int i = 0; i < dagur.length; i++) {
@@ -170,10 +171,12 @@ public class ServiceViewer extends Window {
         }
       }
 
+      /*
       idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
       depart.append(stamp.getHour());
       depart.append(":");
       depart.append(TextSoap.addZero(stamp.getMinute()));
+      */
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -259,7 +262,7 @@ public class ServiceViewer extends Window {
           content.add(number,x,y);
         //name
           Text desc = (Text) text.clone();
-          desc.setText(ProductBusiness.getProductName(prod));
+          desc.setText(ProductBusiness.getProductName(prod, iLocaleID));
           content.add(desc,++x,y);
 
         //active days
@@ -318,19 +321,20 @@ public class ServiceViewer extends Window {
     content.setWidth("100%");
     content.setCellspacing(0);
     content.setCellpadding(2);
+//    content.setBorder(1);
 
     try {
       int y = 1;
       Product product = ProductBusiness.getProduct(service.getID());
       //number
-      Text numberAndName = (Text) text.clone();
-      numberAndName.setText(product.getNumber()+" - "+ProductBusiness.getProductName(product));
-      numberAndName.setBold(true);
+      Text numberAndName = getBoldText(ProductBusiness.getProductNameWithNumber(product, true, iLocaleID));//.getNumber()+" - "+ProductBusiness.getProductName(product, iLocaleID));
       content.add(numberAndName,1,y);
+      content.mergeCells(1,y,2,y);
       //description
       TxText descriptionText = product.getText();
       if (descriptionText != null) {
         content.add(new TextReader(product.getText().getID()),1,++y);//insert a textreader
+        content.mergeCells(1,y,2,y);
       }
 
       //active days
@@ -373,9 +377,6 @@ public class ServiceViewer extends Window {
     catch (Exception ex) {
       ex.printStackTrace(System.err);
     }
-
-        content.mergeCells(1,1,2,1);
-    content.mergeCells(1,2,2,2);
 
     return content;
   }
@@ -539,6 +540,91 @@ public class ServiceViewer extends Window {
     pTable.setCellspacing(0);
     return pTable;
   }
+/*
+  private Table getServicePriceNew(IWContext iwc, Service service, boolean cutOff) {
+      Table pTable = new Table();
+        pTable.setCellspacing(0);
+
+    try {
+      Text departureFromTextBold = getBoldText("");
+      Text timeframeTextBold = getBoldText("");
+      Text priceText = getBoldText("");
+      Text currencyText = getBoldText("");
+
+      Text nameOfCategory = getText("");
+
+      Product product = ProductBusiness.getProduct(service.getID());
+      TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
+      Timeframe[] timeframes = product.getTimeframes();
+      ProductPrice[] prices = null;
+
+      if (cutOff) {
+        prices = ProductPrice.getProductPrices(product.getID(), timeframes[0].getID(), depAddresses[0].getID(), true);
+        if (prices.length > 0) {
+          pTable.add(prices[0].getPriceCategory().getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+df.format(TravelStockroomBusiness.getPrice(prices[0].getID(), service.getID(),prices[0].getPriceCategoryID() , prices[0].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[0].getID(), depAddresses[0].getID()) ) );
+        }
+      }else {
+        Currency currency;
+
+        String stampTxt1 = "";
+        String stampTxt2 = "";
+
+        int pRow = 1;
+        for (int l = 0; l < depAddresses.length; l++) {
+          departureFromTextBold = getBoldText(depAddresses[l].getName());
+            departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+          pTable.add(departureFromTextBold, 1, pRow);
+          for (int i = 0; i < timeframes.length; i++) {
+            prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddresses[l].getID(), true);
+            stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+            if (timeframes[i].getIfYearly()) {
+              try {
+                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+              }catch (NumberFormatException n) {}
+            }
+            timeframeTextBold = getText("");
+              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            pTable.add(timeframeTextBold,2,pRow);
+
+            if (prices.length == 0) {
+              ++pRow;
+            }
+            for (int j = 0; j < prices.length; j++) {
+              currency = new Currency(prices[j].getCurrencyId());
+              nameOfCategory = getText(prices[j].getPriceCategory().getName());
+                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              try {
+                priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddresses[l].getID()) ) );
+                currencyText = getBoldText(currency.getCurrencyAbbreviation());
+                pTable.add(currencyText,5,pRow);
+              }catch (ProductPriceException p) {
+                priceText.setText("T - rangt upp sett");
+              }
+
+              pTable.add(nameOfCategory,3,pRow);
+              pTable.add(priceText,4,pRow);
+              ++pRow;
+            }
+
+          }
+        }
+
+        pTable.setColumnAlignment(1,"left");
+        pTable.setColumnAlignment(2,"left");
+        pTable.setColumnAlignment(3,"left");
+        pTable.setColumnAlignment(4,"right");
+        pTable.setColumnAlignment(5,"left");
+        pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return pTable;
+  }
+*/
 
 /*
   public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException {

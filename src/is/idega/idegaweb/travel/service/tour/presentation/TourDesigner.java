@@ -230,13 +230,18 @@ public class TourDesigner extends TravelManager {
       ++row;
 
       ImageInserter imageInserter = new ImageInserter("design_image_id");
+      imageInserter.setHasUseBox(true, "use_image_id");
       String imageId = iwc.getParameter("design_image_id");
       if (service != null) {
           Product product = service.getProduct();
           if (imageId != null) {
-            imageInserter = new ImageInserter(Integer.parseInt(imageId), "design_image_id");
+            imageInserter.setImageId(Integer.parseInt(imageId));
+            imageInserter.setSelected(true);
+            //imageInserter = new ImageInserter(Integer.parseInt(imageId), "design_image_id");
           }else if (product.getFileId() != -1) {
-            imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
+            imageInserter.setImageId(product.getFileId());
+            imageInserter.setSelected(true);
+            //imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
           }
       }
         //imageInserter.setWindowToReload(true);
@@ -544,6 +549,8 @@ public class TourDesigner extends TravelManager {
       String kilometers = iwc.getParameter("kilometers");
       String estSeats = iwc.getParameter("estimated_seats");
       String discountType = iwc.getParameter("discountType");
+
+      String useImageId = iwc.getParameter("use_image_id");
 /*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";
@@ -677,7 +684,12 @@ public class TourDesigner extends TravelManager {
             if (timeframeId == null) timeframeId = "-1";
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
             serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,number, description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
+            if (useImageId == null) {
+              Product product  = ProductBusiness.getProduct(serviceId);
+              ProductEditorBusiness.getInstance().dropImage(product, true);
+            }
         }
+
 
         /**
          * @todo TravelStockroomBusiness.removeServiceDayHashtable....

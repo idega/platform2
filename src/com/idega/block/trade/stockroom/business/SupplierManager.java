@@ -240,6 +240,10 @@ public class SupplierManager {
     }
   }
 
+  public static List getUsersIncludingResellers(Supplier supplier) {
+    return getUsersIncludingResellers(supplier, false);
+  }
+
   public static List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) {
     List users = getUsers(supplier);
     List temp;
@@ -253,15 +257,20 @@ public class SupplierManager {
     return users;
   }
 
-  public static List getUsersIncludingResellers(Supplier supplier) {
-    List users = getUsers(supplier);
+  public static List getUsersIncludingResellers(Supplier supplier, boolean includeSupplierUsers) {
+    List users = new Vector();
+    if (includeSupplierUsers) {
+      users = getUsers(supplier);
+    }
     List temp;
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
     Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
     while (resellers.hasNext()) {
-      temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next());
-      if (temp != null)
-      users.addAll(temp);
+      temp = ResellerManager.getUsers((Reseller)resellers.next());
+//      temp = ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next());
+      if (temp != null) {
+        users.addAll(temp);
+      }
     }
     return users;
   }

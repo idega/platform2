@@ -54,6 +54,12 @@ public class HotelPickupReporter extends TravelManager {
     return getHotelPickupReport(iwc, products, stamp);
   }
 
+  public Table getHotelPickupReport(IWContext iwc, Product product, idegaTimestamp stamp) {
+    List list = new Vector();
+    list.add(product);
+    return getHotelPickupReport(iwc, list, stamp);
+  }
+
   public Table getHotelPickupReport(IWContext iwc, List products, idegaTimestamp stamp) {
     initialize(iwc);
     Table table = new Table();
@@ -158,7 +164,8 @@ public class HotelPickupReporter extends TravelManager {
               if (tBooking.getRoomNumber() != null) {
                 bookingRoomNumberTxt = (Text) super.smallText.clone();
                   bookingRoomNumberTxt.setFontColor(super.BLACK);
-                table.add(tBooking.getRoomNumber(), 5, row);
+                  bookingRoomNumberTxt.setText(tBooking.getRoomNumber());
+                table.add(bookingRoomNumberTxt, 5, row);
               }else {
                 table.add(Text.NON_BREAKING_SPACE, 5, row);
               }

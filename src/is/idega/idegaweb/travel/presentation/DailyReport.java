@@ -284,9 +284,13 @@ public class DailyReport extends TravelManager {
 
 
       Text headerText = (Text) theBoldText.clone();
-          headerText.setFontColor(super.textColor);
+        headerText.setFontColor(super.textColor);
+        if (this.hotelPickupReport) {
+          headerText.setText(iwrb.getLocalizedString("travel.hotel_pickup_report","Hotel pick-up report"));
+        }else {
           headerText.setText(iwrb.getLocalizedString("travel.daily_report","Daily report"));
-          headerText.addToText(" : ");
+        }
+        headerText.addToText(" : ");
 
       Text timeText = (Text) theBoldText.clone();
           timeText.setText(stamp.getLocaleDate(iwc));
@@ -306,7 +310,15 @@ public class DailyReport extends TravelManager {
   }
 
   private Table getContentTable(IWContext iwc) {
+    if (this.hotelPickupReport) {
+      HotelPickupReporter hpr = new HotelPickupReporter();
+      return hpr.getHotelPickupReport(iwc, this.product, this.stamp);
+    }else {
+      return getBookingTable(iwc);
+    }
+  }
 
+  private Table getBookingTable(IWContext iwc) {
       int totalBookings = 0;
       int totalAttendance = 0;
       int totalAmount = 0;
@@ -974,16 +986,19 @@ public class DailyReport extends TravelManager {
       table.add(priceTxt, 5, row);
       table.setRowColor(row, super.backgroundColor);
 
+
+      Text pNumberTxt;
+      Text pNameTxt;
+      Text pTimeTxt;
+      Text pCountTxt;
+      Text pPriceTxt;
+
       Collections.sort(products, new ProductComparator(iOrderBy));
       for (int i = 0; i < products.size(); i++) {
         try {
         ++row;
         table.setRowColor(row, super.GRAY);
         prod = (Product) products.get(i);
-
-        table.add(prod.getNumber(), 1,row);
-        table.add(ProductBusiness.getProductName(prod),2, row);
-
         bookings = Booker.getBookings(prod.getID(), stamp);
         count = Booker.getNumberOfBookings(prod.getID(), stamp);
         price =  Booker.getBookingPrice(iwc, bookings);
@@ -991,10 +1006,23 @@ public class DailyReport extends TravelManager {
         totalCount += count;
         totalPrice += price;
 
+        pNumberTxt = (Text) super.theText.clone();
+        pNameTxt = (Text) super.theText.clone();
+        pTimeTxt = (Text) super.theText.clone();
+        pCountTxt = (Text) super.theText.clone();
+        pPriceTxt = (Text) super.theText.clone();
 
-        table.add(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()), 3, row);
-        table.add(Integer.toString(count), 4, row);
-        table.add(TextSoap.decimalFormat(price, 2), 5, row);
+        pNumberTxt.setText(prod.getNumber());
+        pNameTxt.setText(ProductBusiness.getProductName(prod));
+        pTimeTxt.setText(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()));
+        pCountTxt.setText(Integer.toString(count));
+        pPriceTxt.setText(TextSoap.decimalFormat(price, 2));
+
+        table.add(pNumberTxt, 1,row);
+        table.add(pNameTxt,2, row);
+        table.add(pTimeTxt, 3, row);
+        table.add(pCountTxt, 4, row);
+        table.add(pPriceTxt, 5, row);
 
         }catch (SQLException sql) {
           sql.printStackTrace(System.err);

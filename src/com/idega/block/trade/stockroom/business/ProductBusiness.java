@@ -145,6 +145,9 @@ public class ProductBusiness {
     return getProduct(product.getID());
   }
 
+  /**
+   * @deprecated
+   */
   public static String getProductName(Product product) {
     return getProductName(product, getSelectedLocaleId(IWContext.getInstance()));
   }
@@ -163,12 +166,40 @@ public class ProductBusiness {
     return getProductNameWithNumber(product, true);
   }
 
-  public static String getProductNameWithNumber(Product product, boolean numberInFrom) {
-    if (numberInFrom) {
-      return product.getNumber() + Text.NON_BREAKING_SPACE + getProductName(product);
+  public static String getProductNameWithNumber(Product product, int localeID) {
+    return getProductNameWithNumber(product, true, localeID);
+  }
+
+  public static String getProductNameWithNumber(Product product, boolean numberInFront) {
+    return getProductNameWithNumber(product, numberInFront, -1);
+  }
+
+  public static String getProductNameWithNumber(Product product, boolean numberInFront, int localeID) {
+    String returnString = "";
+
+    String number = product.getNumber();
+    String name = "";
+    if (localeID == -1) {
+      name =  getProductName(product);
     }else {
-      return getProductName(product) + Text.NON_BREAKING_SPACE + product.getNumber();
+      name = getProductName(product, localeID);
     }
+
+    if (numberInFront) {
+      if (!number.equals("")) {
+        returnString = number + " " + name;
+      }else {
+        returnString = name;
+      }
+    }else {
+      if (!number.equals("")) {
+        returnString = name + " " + number;
+      }else {
+        returnString = name;
+      }
+    }
+
+    return returnString;
   }
 
   public static String getProductTeaser(Product product) {
