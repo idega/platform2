@@ -30,7 +30,6 @@ public class EJBLegacyWizard extends EJBWizard{
     try{
       String className = args[0];
       EJBLegacyWizard instance = new EJBLegacyWizard(className);
-      instance.setWorkingDirectory(new File("."));
       instance.doJavaFileCreate();
     }
     catch(java.lang.ArrayIndexOutOfBoundsException e){
@@ -39,7 +38,8 @@ public class EJBLegacyWizard extends EJBWizard{
   }
 
   protected void setClassCreatorProperties(EJBWizardClassCreator inst){
-      inst.setToThrowRemoteExceptions(false);
-      //inst.setRemoteInterfaceSuperInterface("com.idega.data.IDOLegacyEntity");
+    super.setClassCreatorProperties(inst);
+    inst.setToThrowRemoteExceptions(false);
+    //inst.setRemoteInterfaceSuperInterface("com.idega.data.IDOLegacyEntity");
   }
 }

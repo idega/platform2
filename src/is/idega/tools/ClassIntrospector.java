@@ -28,12 +28,16 @@ public class ClassIntrospector {
   private static String EJB_FIND_START = "ejbFind";
   private static String EJB_HOME_START = "ejbHome";
   private static String EJB_CREATE_START = "ejbCreate";
+  private static String EJB_POST_CREATE_START = "ejbPostCreate";
 
   private static String GET_NAME_OF_MIDDLE_TABLE = "getNameOfMiddleTable";
   private boolean convertGenericEntityToIDOLegacyEntity=true;
-  private String beanSuffix = EJBWizard.entityBeanClassSuffix;
+  private String beanSuffix="";
+  private EJBWizard wizard;
 
-  public ClassIntrospector(Class sourceClass)throws Exception{
+  public ClassIntrospector(Class sourceClass,EJBWizard wizard)throws Exception{
+    this.wizard=wizard;
+    this.setBeanSuffix(wizard.getBeanSuffix());
     this.sourceClass = sourceClass;
     this.info = Introspector.getBeanInfo(sourceClass,sourceClass.getSuperclass());
     String name = sourceClass.getName().substring(sourceClass.getName().lastIndexOf(".")+1);
@@ -101,6 +105,10 @@ public class ClassIntrospector {
     return methods;
   }
 
+  public void setBeanSuffix(String beanSuffix){
+    this.beanSuffix=beanSuffix;
+  }
+
   public String[] getInterfaceMethods(){
     return getMethodsStringsFromMethodArray(getEntityInterfaceVisibleMethods());
   }
@@ -109,85 +117,13 @@ public class ClassIntrospector {
     return getMethodsStringsFromMethodArray(getFinderMethodsArray());
   }
 
-  public String[] getFinderMethodImplementations(){
-    String[] finderMethodStrings = this.getFinderMethods();
-    Method[] methods = this.getFinderMethodsArray();
-    int length = methods.length;
-    String[] returningMethods = new String[length];
-    for (int i = 0; i < length; i++) {
-      Method method = methods[i];
-      String methodString = null;
-      if(method.getReturnType().equals(java.util.Collection.class)){
-        methodString = finderMethodStrings[i]+"{\n";
-        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-        methodString += "\tjava.util.Collection ids = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-        methodString += "\treturn this.getEntityCollectionForPrimaryKeys(ids);\n";
-        methodString += "}\n";
-      }
-      else if(method.getReturnType().equals(java.util.Set.class)){
-        methodString = finderMethodStrings[i]+"{\n";
-        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-        methodString += "\tjava.util.Set ids = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-        methodString += "\treturn this.getEntitySetForPrimaryKeys(ids);\n";
-        methodString += "}\n";
-      }
-      else{
-        methodString = finderMethodStrings[i]+"{\n";
-        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-        methodString += "\tObject pk = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-        methodString += "\treturn this.findByPrimaryKey(pk);\n";
-        methodString += "}\n";
-      }
-      returningMethods[i]=methodString;
-    }
-    return returningMethods;
-  }
-
-  public String[] getHomeMethodImplementations(){
-    String[] finderMethodStrings = this.getHomeMethods();
-    Method[] methods = this.getHomeMethodsArray();
-    int length = methods.length;
-    String[] returningMethods = new String[length];
-    for (int i = 0; i < length; i++) {
-      Method method = methods[i];
-      String returnType = this.getClassParameterToString(method.getReturnType());
-      String methodString = finderMethodStrings[i]+"{\n";
-      methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-      methodString += "\t"+returnType+" theReturn = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-      methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-      methodString += "\treturn theReturn;\n";
-      methodString += "}\n";
-      returningMethods[i]=methodString;
-    }
-    return returningMethods;
-  }
-
   public String[] getHomeMethods(){
     return getMethodsStringsFromMethodArray(getHomeMethodsArray());
   }
 
 
-  public String[] getCreateMethodImplementations(){
-    String[] finderMethodStrings = this.getCreateMethods();
-    Method[] methods = this.getCreateMethodsArray();
-    int length = methods.length;
-    String[] returningMethods = new String[length];
-    for (int i = 0; i < length; i++) {
-      Method method = methods[i];
-      String methodString = finderMethodStrings[i]+"{\n";
-      methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-      methodString += "\tObject pk = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-      methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-      methodString += "\ttry{\n\t\treturn this.findByPrimaryKey(pk);\n\t}\n";
-      methodString += "\tcatch(javax.ejb.FinderException fe){\n\t\tthrow new com.idega.data.IDOCreateException(fe);\n\t}\n";
-      methodString += "}\n";
-
-      returningMethods[i]=methodString;
-    }
-    return returningMethods;
+  String getPostCreateMethodName(String ejbCreateMethodName){
+      return EJB_POST_CREATE_START+ejbCreateMethodName.substring(this.EJB_CREATE_START.length());
   }
 
   public String[] getCreateMethods(){
@@ -338,7 +274,7 @@ public class ClassIntrospector {
     return sourceClass.getInterfaces();
   }
 
-  private String getClassParameterToString(Class parameter){
+  String getClassParameterToString(Class parameter){
     String returnType = "";
     if(parameter.isArray()){
       //returnType=returnTypeClass.getComponentType().getName()+"[]";
@@ -370,15 +306,15 @@ public class ClassIntrospector {
   }
 
 
-  private Method[] getFinderMethodsArray(){
+  Method[] getFinderMethodsArray(){
     return this.getMethodsStartingWith(this.EJB_FIND_START);
   }
 
-  private Method[] getHomeMethodsArray(){
+  Method[] getHomeMethodsArray(){
     return this.getMethodsStartingWith(this.EJB_HOME_START);
   }
 
-  private Method[] getCreateMethodsArray(){
+  Method[] getCreateMethodsArray(){
     return this.getMethodsStartingWith(this.EJB_CREATE_START);
   }
 
@@ -407,7 +343,7 @@ public class ClassIntrospector {
     return this.shortName+beanSuffix;
   }
 
-  private String getParametersInForMethod(Method method){
+  String getParametersInForMethod(Method method){
     String theReturn = "";
     Class[] parameters = method.getParameterTypes();
     for (int i = 0; i < parameters.length; i++) {

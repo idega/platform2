@@ -19,21 +19,26 @@ public class EJBWizardClassCreator {
   private File workingDir;
   private String factorySuffix = "HomeImpl";
 
-  private String entityBeanClassSuffix = EJBWizard.entityBeanClassSuffix;
+  private String entityBeanClassSuffix = "";
+  private EJBWizard ejbWizard;
   protected boolean legacyIDO = true;
 
   private String factorySuperClass="com.idega.data.IDOFactory";
+  private String homeSuperInterface="com.idega.data.IDOHome";
   private String _remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
 
   private boolean throwRemoteExceptions=true;
   private boolean entityBeanClassAlreadyCreated=false;
 
-
-  public EJBWizardClassCreator(String originalClassName)throws Exception{
+  public EJBWizardClassCreator(String originalClassName,EJBWizard wizard)throws Exception{
+    this.ejbWizard=wizard;
+    this.setBeanSuffix(wizard.getBeanSuffix());
     initialize(originalClassName);
   }
 
-  public EJBWizardClassCreator(Class originalClass)throws Exception{
+  public EJBWizardClassCreator(Class originalClass,EJBWizard wizard)throws Exception{
+    this.ejbWizard=wizard;
+    this.setBeanSuffix(wizard.getBeanSuffix());
     initialize(originalClass);
   }
 
@@ -42,7 +47,8 @@ public class EJBWizardClassCreator {
       initialize(Class.forName(originalClassName));
     }
     catch(java.lang.NoClassDefFoundError e){
-      initialize(Class.forName(originalClass.getName()+entityBeanClassSuffix));
+      System.out.println("ClassNotFound:\""+originalClassName+"\"");
+      initialize(Class.forName(originalClassName+entityBeanClassSuffix));
     }
   }
 
@@ -53,7 +59,11 @@ public class EJBWizardClassCreator {
       entityBeanClassAlreadyCreated=true;
       beanClass = Class.forName(originalClass.getName()+entityBeanClassSuffix);
     }
-    this.introspector = new ClassIntrospector(beanClass);
+    this.introspector = new ClassIntrospector(beanClass,this.ejbWizard);
+  }
+
+  public void setBeanSuffix(String beanSuffix){
+    this.entityBeanClassSuffix=beanSuffix;
   }
 
   protected boolean throwRemoteExceptions(){
@@ -145,7 +155,7 @@ public class EJBWizardClassCreator {
       codeString+="package "+this.introspector.getPackage()+";\n\n";
     }
     codeString+="\npublic interface ";
-    codeString=codeString+getHomeName()+ " extends com.idega.data.IDOHome\n{\n";
+    codeString=codeString+getHomeName()+ " extends "+getHomeSuperInterface()+"\n{\n";
 
     /*String[] constructors=this.introspector.getConstructors();
     for (int i=0; i<constructors.length; i++)
@@ -169,24 +179,25 @@ public class EJBWizardClassCreator {
           }
           codeString+=";\n";
         }
-
-        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
-        if(throwRemoteExceptionsInHome()){
-          codeString+=", java.rmi.RemoteException";
-        }
-        codeString+=";\n";
-        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
-        if(throwRemoteExceptionsInHome()){
-          codeString+=", java.rmi.RemoteException";
-        }
-        codeString+=";\n";
-
-        if(legacyIDO){
-          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
+        if(ejbWizard.finderMethodsAllowed()){
+          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
           if(throwRemoteExceptionsInHome()){
             codeString+=", java.rmi.RemoteException";
           }
           codeString+=";\n";
+          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
+          if(throwRemoteExceptionsInHome()){
+            codeString+=", java.rmi.RemoteException";
+          }
+          codeString+=";\n";
+
+          if(legacyIDO){
+            codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
+            if(throwRemoteExceptionsInHome()){
+              codeString+=", java.rmi.RemoteException";
+            }
+            codeString+=";\n";
+          }
         }
 
       // -- create methods --
@@ -243,7 +254,7 @@ public class EJBWizardClassCreator {
       }
     }*/
 
-        codeString+=" protected Class getEntityInterfaceClass()";
+        /*codeString+=" protected Class getEntityInterfaceClass()";
         codeString+="{\n";
         codeString+="  return "+this.introspector.getShortName()+".class;";
         codeString+="\n }\n\n";
@@ -285,25 +296,35 @@ public class EJBWizardClassCreator {
           codeString+="\t\tthrow new java.sql.SQLException(fe.getMessage());\n";
           codeString+="\t}\n";
           codeString+="\n }\n\n";
+        }*/
+
+
+
+        //internal method implementations
+        String[] methods = ejbWizard.getInternalMethodImplementations(introspector);
+        for (int i = 0; i < methods.length; i++) {
+          codeString += methods[i];
+          codeString += "\n";
         }
 
         //Createmethod implementations
-        String[] methods = introspector.getCreateMethodImplementations();
+        methods = ejbWizard.getCreateMethodImplementations(introspector);
         for (int i = 0; i < methods.length; i++) {
           codeString += methods[i];
           codeString += "\n";
         }
 
-
-        //FinderMethod implementations
-        methods = introspector.getFinderMethodImplementations();
-        for (int i = 0; i < methods.length; i++) {
-          codeString += methods[i];
-          codeString += "\n";
+        if(ejbWizard.finderMethodsAllowed()){
+          //FinderMethod implementations
+          methods = ejbWizard.getFinderMethodImplementations(introspector);
+          for (int i = 0; i < methods.length; i++) {
+            codeString += methods[i];
+            codeString += "\n";
+          }
         }
 
         //HomeMethod implementations
-        methods = introspector.getHomeMethodImplementations();
+        methods = ejbWizard.getHomeMethodImplementations(introspector);
         for (int i = 0; i < methods.length; i++) {
           codeString += methods[i];
           codeString += "\n";
@@ -421,5 +442,13 @@ public class EJBWizardClassCreator {
       methodString += ";\n";
     }
     return methodString;
+  }
+
+  public String getHomeSuperInterface(){
+    return homeSuperInterface;
+  }
+
+  public void setHomeSuperInterface(String className){
+    this.homeSuperInterface=className;
   }
 }
