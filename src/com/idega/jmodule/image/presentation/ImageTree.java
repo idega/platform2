@@ -35,10 +35,10 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
       if ( catagory != null) {
         if (catagory.length > 0) {
           for (int i = 0 ; i < catagory.length ; i++ ) {
-            findNodes(items,catagory[i].getID(),1,new ImageCatagory(),1);
+            findNodes(items,catagory[i].getID(),1,GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageCatagory"),1);
 
             if ( showAll ) {
-              images = (ImageEntity[])catagory[i].findRelated(new ImageEntity());
+              images = (ImageEntity[])catagory[i].findRelated( GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity") );
 
               if (images != null) {
                 if (images.length > 0 ) {
@@ -46,7 +46,7 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
                     pos = intArr[1].intValue()+1;
                   for (int j = 0 ; j < images.length ; j++) {
                     if (images[j].getParentId()== -1 ) {
-                      findNodes(items,images[j].getID(),pos,new ImageEntity(),2);
+                      findNodes(items,images[j].getID(),pos,GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity"),2);
                     }
                   }
                 }
@@ -62,22 +62,16 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
     if (items.size() > 0) {
       String openCat = modinfo.getParameter("open_catagory_id");
-/*      Link remove = new Link("remove application");
-        remove.setFontColor("black");
-        remove.addParameter("image_tree_action","remove_applications");
-        add(remove);
-*/
+
       if (openCat == null) { openCat = "-3";}
         Table isTable = (Table) modinfo.getServletContext().getAttribute("image_tree_table"+openCat);
-        //debug
-        //Table isTable = null;
-       if (isTable != null) {
+
+        if (isTable != null) {
           returnTable = isTable;
         }
         else {
           returnTable = writeTable(items,modinfo);
         }
-
     }
 
     return returnTable;
@@ -257,7 +251,7 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
     }
 
 
-private void removeApplications(ModuleInfo modinfo) throws SQLException{
+private void refresh(ModuleInfo modinfo) throws SQLException{
     Table table;
     Vector vector;
     String test;
@@ -295,10 +289,6 @@ private void removeApplications(ModuleInfo modinfo) throws SQLException{
         }
     }
 
-
-public void refresh(ModuleInfo modinfo) throws Exception{
-  removeApplications(modinfo);
-}
 
 public void refresh(){
   this.refresh=true;

@@ -93,7 +93,7 @@ return ImageId;
 }
 
 
-public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws Throwable{
+public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws Exception{
 
   String action = modinfo.getRequest().getParameter("action");
   String scaling = modinfo.getRequest().getParameter("scale.x");
@@ -114,8 +114,8 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws T
 
           ImageEntity image = new ImageEntity( handler.getImageId() );
           image.delete();
-          modinfo.getSession().removeAttribute("image_in_session");
-          modinfo.getSession().removeAttribute("handler");
+          modinfo.removeSessionAttribute("image_in_session");
+          modinfo.removeSessionAttribute("handler");
           handler=null;
 
         }

@@ -15,15 +15,12 @@ import com.idega.util.text.*;
 public class ImageBrowser extends JModuleObject{
 
 private String width="100%";
+private String treeWidth = "170";
+
 private boolean showAll = false;
 private boolean refresh = false;
 private ImageTree tree = new ImageTree();
 private ImageViewer viewer = new ImageViewer();
-
-
-  public void main(ModuleInfo modinfo)throws Exception{
-    add(getBrowserTable(modinfo));
-  }
 
   public String getWidth(){
     return this.width;
@@ -31,6 +28,10 @@ private ImageViewer viewer = new ImageViewer();
 
   public void setWidth(String width){
     this.width =  width;
+  }
+
+  public void setTreeWidth(String width){
+    this.treeWidth =  width;
   }
 
   public void setShowAll(boolean showAll){
@@ -49,7 +50,7 @@ private ImageViewer viewer = new ImageViewer();
     return this.tree;
   }
 
-  private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
+  public void main(ModuleInfo modinfo)throws Exception{
 
     String mode = modinfo.getParameter("mode");
     String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
@@ -57,7 +58,6 @@ private ImageViewer viewer = new ImageViewer();
 
     Form categoryForm = new Form();
       categoryForm.add(new HiddenInput("mode","search"));
-      categoryForm.setMethod("GET");
 
     Table myTable = new Table(1,3);
       myTable.setWidth(getWidth());
@@ -94,7 +94,7 @@ private ImageViewer viewer = new ImageViewer();
       imageTable.add(tileTable,1,2);
 
 
-      tree.setWidth("150");
+      tree.setWidth(treeWidth);
       tree.setShowAll(showAll);
       if ( refresh ) {
         tree.refresh();
@@ -103,14 +103,14 @@ private ImageViewer viewer = new ImageViewer();
 
     imageTable.add(tree,1,1);
 
-    if ( mode.equalsIgnoreCase("image") ) {
+    if ( mode.equalsIgnoreCase("image") || (edit!=null) ) {
       viewer.limitImageWidth(true);
       viewer.setNumberOfDisplayedImages(9);
       viewer.setHeaderFooterColor("#336699");
       viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
     }
-    else if( mode.equalsIgnoreCase("search") && (edit==null) ){
+    else if( mode.equalsIgnoreCase("search") ){
       imageTable.add(getSearchResults(modinfo),3,1);
     }
 
@@ -121,7 +121,7 @@ private ImageViewer viewer = new ImageViewer();
 
     categoryForm.add(myTable);
 
-    return categoryForm;
+    add( categoryForm );
 
   }
 

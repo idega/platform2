@@ -16,6 +16,7 @@ import oracle.sql.*;
 import oracle.jdbc.driver.*;
 
 import com.idega.data.BlobInputStream;
+import com.idega.data.GenericEntity;
 import com.idega.util.database.ConnectionBroker;
 import com.idega.data.BlobWrapper;
 import com.idega.jmodule.client.imageModule;
@@ -55,9 +56,12 @@ private boolean keepProportions = false;
 private int brightness = 30;
 private KernelJAI kernel;
 private float sum = 9.0F;
+private String modifiedImageURL="";
 
 public ImageHandler( int imageId ) throws Exception{
-  getImageFromDatabase(imageId);
+  setImageId(imageId);
+  getImageFromDatabase();
+  updateOriginalInfo();
   setModifiedImageAsOriginal();
 }
 
@@ -74,7 +78,9 @@ public ImageHandler( PlanarImage originalImage, int ParentId ) throws Exception{
 
 //crappy constructor fix this!
 public ImageHandler( ImageEntity imageEntity ) throws Exception{
-  getImageFromDatabase( imageEntity.getID() );
+  setImageId( imageEntity.getID() );
+  getImageFromDatabase();
+  updateOriginalInfo();
   setModifiedImageAsOriginal();
 }
 
@@ -90,20 +96,8 @@ public void getImageFromFile(String fileName) throws Exception{
 
 }
 
-private void getImageFromDatabase(int imageId) throws Exception{
-  setImageId(imageId);
-  ImageEntity imageInfo = null;
-
-  System.out.println("ImageHandler: Image id is "+imageId);
-
-  imageInfo = new ImageEntity( imageId );
-  if( imageInfo== null)   System.out.println("ImageHandler: ImageInfo is NULL!");
-  System.out.println(imageInfo.getName());
-
-  setContentType( imageInfo.getContentType() );
-  setImageName( imageInfo.getName() );
-
- //BlobWrapper wrapper = imageInfo.getImageValue();
+private void getImageFromDatabase() throws Exception{
+  //BlobWrapper wrapper = imageInfo.getImageValue();
 /* BlobWrapper wrapper = new BlobWrapper(imageInfo,"image_value");
    if( wrapper== null)   System.out.println("ImageHandler: BlobWrapper is NULL!");
   BlobInputStream inputStream = wrapper.getBlobInputStream();
@@ -114,14 +108,13 @@ private void getImageFromDatabase(int imageId) throws Exception{
   ResultSet RS;
   InputStream inputStream = null;
 
-  Conn = imageInfo.getConnection();
+  Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
   Stmt = Conn.createStatement();
-  RS = Stmt.executeQuery("select image_value from image where image_id='"+imageId+"'");
+  RS = Stmt.executeQuery("select image_value from image where image_id='"+getImageId()+"'");
 
   while(RS.next()){
       inputStream = RS.getBinaryStream("image_value");
   }
-
 
   BufferedInputStream bufStream = getBufferedInputStream(inputStream);
   MemoryCacheSeekableStream memStream = getMemoryCacheSeekableStream(bufStream);
@@ -131,14 +124,6 @@ private void getImageFromDatabase(int imageId) throws Exception{
   setWidth(originalImage.getWidth());
   setHeight(originalImage.getHeight());
 
-  //update the original entity
-  //Debug for now...
-  imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
-  imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
-  imageInfo.update();
-
-
-
   System.out.println("ImageHandler: Before closing memStream");
   memStream.close();
   System.out.println("ImageHandler: Before closing bufferstream");
@@ -146,18 +131,21 @@ private void getImageFromDatabase(int imageId) throws Exception{
   System.out.println("ImageHandler: Before closing inputstream");
   inputStream.close();//closes the blobinputstream and closes misc stmt and connections
 
-
-
-  if( Stmt!=null ) Stmt.close();
-
   if( RS!=null ) RS.close();
-  if( Conn!=null ) imageInfo.freeConnection(Conn);
+  if( Stmt!=null ) Stmt.close();
+  if( Conn!=null ) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
 
+  System.out.println("ImageHandler: DONE!");
 
+}
 
-
-      System.out.println("ImageHandler: DONE!");
-
+private void updateOriginalInfo() throws SQLException{
+  ImageEntity imageInfo = new ImageEntity( imageId , false);
+  setContentType( imageInfo.getContentType() );
+  setImageName( imageInfo.getName() );
+  imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
+  imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
+  imageInfo.update();
 }
 
 private synchronized BufferedInputStream getBufferedInputStream(InputStream inputStream){
@@ -359,7 +347,9 @@ private float getQuality(){
 }
 
 public com.idega.jmodule.object.Image getModifiedImageAsImageObject(ModuleInfo modinfo) throws Exception{
-  writeModifiedImageToFile(modinfo.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg");//temporary storage
+
+  modifiedImageURL = modinfo.getServletContext().getRealPath("/")+"/pics/ModifiedImagetemp.jpg";
+  writeModifiedImageToFile(modifiedImageURL);//temporary storage
   //InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
 return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.getImageName(),this.getModifiedWidth(),this.getModifiedHeight());
 
@@ -369,10 +359,10 @@ return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.get
 
 public void writeModifiedImageToDatabase() throws Exception{
 
-  writeModifiedImageToFile("/pics/ModifiedImagetemp.jpg");//temporary storage
+  writeModifiedImageToFile(modifiedImageURL);//temporary storage
 
   //debug change so that more than one can use this at once
-  InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
+  InputStream input = new FileInputStream(modifiedImageURL);
   ImageEntity entity = new ImageEntity();
 
   Connection Conn = null;

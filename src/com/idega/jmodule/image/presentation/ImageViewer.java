@@ -16,11 +16,12 @@ import java.util.*;
 import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
-import	com.idega.jmodule.image.data.*;
-import	com.idega.jmodule.image.business.*;
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.jmodule.image.data.*;
+import com.idega.jmodule.image.business.*;
 import com.idega.util.text.*;
+import com.idega.data.GenericEntity;
 import com.oreilly.servlet.MultipartRequest;
 
 
@@ -78,12 +79,10 @@ public ImageViewer(){
 }
 
 public ImageViewer(int categoryId){
-  this();
   this.categoryId=categoryId;
 }
 
 public ImageViewer(ImageEntity[] entities){
-  this();
   this.entities=entities;
 }
 
@@ -565,6 +564,8 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Link delete = new Link(new Image("/pics/jmodules/image/buttons/delete.gif","Delete the image"));
   delete.addParameter("action","delete");
   delete.addParameter("edit","true");
+  delete.addParameter("refresh","true");
+
   toolbarBelow.add(delete,1,1);
 
   Link gray = new Link(new Image("/pics/jmodules/image/buttons/grayscale.gif","Convert the image to grayscale"));
@@ -587,7 +588,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   invert.addParameter("edit","true");
   toolbarBelow.add(invert,1,1);
 
-  Text widthtext = new Text("Width:<br>");
+  Text widthtext = new Text("Width:"+Text.getBreak());
   widthtext.setFontSize(1);
   toolbarBelow.add(widthtext,1,2);
 //debug
@@ -596,7 +597,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   widthInput.setSize(5);
   toolbarBelow.add(widthInput,1,2);
 
-  Text heighttext = new Text("Height:<br>");
+  Text heighttext = new Text("Height:"+Text.getBreak());
   heighttext.setFontSize(1);
   toolbarBelow.add(heighttext,2,2);
 //debug
@@ -606,7 +607,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   toolbarBelow.add(heightInput,2,2);
 
 
-  Text con = new Text("<br>Constrain?");
+  Text con = new Text(Text.getBreak()+"Constrain?");
   con.setFontSize(1);
   toolbarBelow.add(con,3,2);
   CheckBox constrained = new CheckBox("constraint","true");
@@ -621,7 +622,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the Image"));
   save.addParameter("action","save");
   save.addParameter("edit","true");
-   save.addParameter("refresh","true");
+  save.addParameter("refresh","true");
   toolbarBelow.add(save,4,1);
 
 /*
@@ -659,15 +660,11 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
 
 
   imageTable.add(toolbarRight,2,1);*/
-  //ShadowBox below = new ShadowBox();
- // below.add(toolbarBelow);
+
   imageTable.add(toolbarBelow,1,2);
   imageTable.mergeCells(1,2,2,2);
 
-  //ShadowBox box = new ShadowBox();
-  //box.add(new Text("<nobr>"));
   if( handler != null) {
-
   //debug
     Image myndin = handler.getModifiedImageAsImageObject(modinfo);
     int percent = 100;
@@ -679,14 +676,12 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
 
     imageTable.add( myndin ,1,1);
 
-    Text percentText = new Text("<br>Percent:<br>");
+    Text percentText = new Text(Text.getBreak()+"Percent:"+Text.getBreak());
     percentText.setFontSize(1);
     imageTable.add(percentText,1,1);
     TextInput percentInput = new TextInput("percent",""+percent);
     percentInput.setSize(4);
     imageTable.add(percentInput,1,1);
-
-
 
   }
 
@@ -856,14 +851,14 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
 
   String whichButton = modinfo.getParameter("submit");
   String ImageId = modinfo.getParameter("image_id");
-  String image_in_session = (String) modinfo.getSessionAttribute("image_in_session");
-  com.idega.jmodule.image.business.ImageHandler handler = (com.idega.jmodule.image.business.ImageHandler) modinfo.getSessionAttribute("handler");
+  String imageInSession = (String) modinfo.getSessionAttribute("image_in_session");
+  ImageHandler handler = (ImageHandler) modinfo.getSessionAttribute("handler");
 
-  if (image_in_session!=null){
+  if (imageInSession!=null){
     if (ImageId != null) {
-      if( !ImageId.equalsIgnoreCase(image_in_session) ){
+      if( !ImageId.equalsIgnoreCase(imageInSession) ){
         modinfo.setSessionAttribute("image_in_session",ImageId);
-        handler = new com.idega.jmodule.image.business.ImageHandler(Integer.parseInt(ImageId));
+        handler = new ImageHandler(Integer.parseInt(ImageId));
         modinfo.setSessionAttribute("handler",handler);
 
       }
@@ -871,7 +866,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
     }
     else {
-      ImageId = image_in_session;
+      ImageId = imageInSession;
       ImageBusiness.handleEvent(modinfo,handler);
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
     }
@@ -879,7 +874,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
    else{
     if( ImageId!=null ) {
       modinfo.setSessionAttribute("image_in_session",ImageId);
-      handler = new com.idega.jmodule.image.business.ImageHandler(Integer.parseInt(ImageId));
+      handler = new ImageHandler(Integer.parseInt(ImageId));
       modinfo.setSessionAttribute("handler",handler);
       ImageBusiness.handleEvent(modinfo,handler);
       outerTable.add(getEditorForm(handler,ImageId,modinfo),1,2);
@@ -892,7 +887,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
 
  try {
 
-  Conn = (new ImageEntity()).getConnection();
+  Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
 
     if (Conn != null) {
         if (whichButton!=null && !(whichButton.equals(""))){
@@ -955,7 +950,7 @@ public void getEditor(ModuleInfo modinfo) throws Throwable{
           add(E.getMessage());
   }
   finally{
-    if( Conn!=null) freeConnection(Conn);
+    if( Conn!=null) GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").freeConnection(Conn);
   }
 
 

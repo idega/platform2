@@ -5,7 +5,7 @@ import com.idega.data.*;
 
 
 public class ImageEntity extends GenericEntity{
-  private boolean loadImageValue = false;
+  private boolean loadImageValue = true;
 
 	public ImageEntity(){
 		super();
@@ -24,8 +24,8 @@ public class ImageEntity extends GenericEntity{
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","Image type",true,true,"java.lang.String");
 
-		//if( loadImageValue ) addAttribute("image_value","The image",false,false,"java.sql.Blob");
-                addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
+		//if( loadImageValue ) addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
+                //addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
                 addAttribute("image_name","Image name",true,true,"java.lang.String");
 		addAttribute("date_added","Date added or changed",true,true,"java.sql.Timestamp");
 		addAttribute("from_file","Image from file?",true,true,"java.lang.Boolean");
