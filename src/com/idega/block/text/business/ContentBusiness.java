@@ -32,9 +32,14 @@ public class ContentBusiness {
 
 	public static boolean addFileToContent(int iContentId, int iICFileId) {
 		try {
-			Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
-			content.addFileToContent((ICFile)((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
-			return true;
+			if (iContentId > 0 && iICFileId > 0) {
+				Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+				content.addFileToContent((ICFile)((com.idega.core.file.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
