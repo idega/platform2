@@ -66,6 +66,7 @@ public class ClubSelector extends Block {
 		super();
 		this.setToDebugParameters(true);
 		addToParamsToMaintainList(PARAM_CLUB_ID);
+		addToParamsToMaintainList(WorkReportWindow.ACTION);
 	}
 
 	/**
