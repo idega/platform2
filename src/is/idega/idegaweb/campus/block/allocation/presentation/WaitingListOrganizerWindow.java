@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -99,7 +100,34 @@ public class WaitingListOrganizerWindow extends Window {
 		
 		Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId, complexId);
 		if (L != null) {
-				
+			WaitingList currentListEntry = null;
+			Integer beforeOrder = null;
+			Integer afterOrder = null;
+			Integer lastOrder = null;
+			int count = 1;
+			if(moveTo <= L.size()){
+				for (Iterator iter = L.iterator(); iter.hasNext();) {
+					WaitingList entry = (WaitingList) iter.next();
+					if(count == moveTo){
+						afterOrder = entry.getOrder();
+						beforeOrder = lastOrder;
+					}
+					if(String.valueOf(id).equals(entry.getPrimaryKey().toString())){
+						currentListEntry = entry;
+					}
+					lastOrder = entry.getOrder();
+					count++;
+				}
+				// update order number
+				if(currentListEntry!=null){
+					// TODO move to business
+					if(beforeOrder !=null && afterOrder!=null){
+						int order = (int) (afterOrder.intValue()+beforeOrder.intValue())/2;
+						currentListEntry.setOrder(order);
+						currentListEntry.store();
+					}
+				}
+			}
 		}		
 		
 		return false;
@@ -108,7 +136,7 @@ public class WaitingListOrganizerWindow extends Window {
 	protected PresentationObject getRenumberTable(IWContext iwc) {
 		int complexId = Integer.parseInt(iwc.getParameter(COMPLEX_ID));
 		int aprtTypeId = Integer.parseInt(iwc.getParameter(APARTMENT_TYPE_ID));
-		int wlOrder = Integer.parseInt(iwc.getParameter(WL_ORDER));
+		//int wlOrder = Integer.parseInt(iwc.getParameter(WL_ORDER));
 		int onList = Integer.parseInt(iwc.getParameter(NUMBER_ON_LIST));
 		int max = Integer.parseInt(iwc.getParameter(MAX_LIST));
 		int id = Integer.parseInt(iwc.getParameter(WL_ID));
@@ -119,10 +147,10 @@ public class WaitingListOrganizerWindow extends Window {
 		form.maintainParameter(WL_ID);
 		DataTable table = new DataTable();
 		table.setTitlesVertical(true);
-		table.add(Edit.formatText("Nafn"),1,1);
-		table.add(Edit.formatText("Nr. á lista"),1,2);
-		table.add(Edit.formatText("Fj. á lista"),1,3);
-		table.add(Edit.formatText("Færa í sæti"),1,4);
+		table.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,1);
+		table.add(Edit.formatText(iwrb.getLocalizedString("no_on_list","No. On list")),1,2);
+		table.add(Edit.formatText(iwrb.getLocalizedString("list_count","List count")),1,3);
+		table.add(Edit.formatText(iwrb.getLocalizedString("move_to_no","Move to No.")),1,4);
 
 		WaitingList item = null;
 		Applicant applicant = null;
@@ -141,10 +169,10 @@ public class WaitingListOrganizerWindow extends Window {
 		Edit.setStyle(input);
 		table.add(input,2,4);
 		
-		table.addTitle("Færa fólk á biðlista");
+		table.addTitle(iwrb.getLocalizedString("move_person_on_waitinglist","Move person on waitinglist"));
 		
-		SubmitButton ok = new SubmitButton("move","Færa");
-		SubmitButton cancel = new SubmitButton("cancel","Hætta við");
+		SubmitButton ok = new SubmitButton("move",iwrb.getLocalizedString("move","Move"));
+		SubmitButton cancel = new SubmitButton("cancel",iwrb.getLocalizedString("cancel","Cancel"));
 		table.addButton(ok);
 		table.addButton(cancel);
 		
