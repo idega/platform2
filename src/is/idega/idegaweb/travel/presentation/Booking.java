@@ -539,6 +539,7 @@ public class Booking extends TravelManager {
 //          sm.setInActiveCellColor("#B1B1E5");
 //          sm.useColorToday(true);
           sm.setColorToday(colorForToday);
+          sm.setSelectedHighlighted(false);
 
           sm.setDayFontColor(idegaTimestamp.RightNow(),super.backgroundColor);
 
