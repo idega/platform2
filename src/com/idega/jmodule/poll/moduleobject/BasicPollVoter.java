@@ -57,6 +57,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
 protected IWResourceBundle iwrb;
 protected IWBundle iwb;
 
+protected Image voteImage;
+protected Image collectionImage;
+
+
 
 
 private String header_color = "#FFFFFF";
@@ -269,6 +273,9 @@ private String color_2 = null;
 	public void main(ModuleInfo modinfo)throws Exception{
           iwrb = getResourceBundle(modinfo);
           iwb = getBundle(modinfo);
+
+          this.voteImage = iwrb.getImage("vote.gif");
+          this.otherPollsImage = iwrb.getImage("vote_history.gif");
 
           this.isAdmin=isAdministrator(modinfo);
 
@@ -661,7 +668,7 @@ private String color_2 = null;
 
                                       if (this.otherPollsImage == null) {
                                        if(this.otherPollsImageUrl == null){
-                                          otherText = new Text("Fyrri kannanir");
+                                          otherText = new Text(iwrb.getLocalizedString("poll.past_results","Past results"));
                                               otherText.setFontSize(1);
                                        }else{
                                          otherPollsImage = iwrb.getImage(otherPollsImageUrl);
@@ -711,18 +718,24 @@ private String color_2 = null;
                                 form.add(table);
 
 
-				if ( submitButtonURL != null ) {
-                                    /*
-                                    Link theLink = new Link(new Image(submitButtonURL,""),gluggi);
-                                        theLink.setToFormSubmit(form);
-                                    table.add(theLink,2,3);
-                                    */
 
-                                    table.add(new SubmitButton(iwrb.getImage(submitButtonURL),"Kjósa"),2,3);
-				}
-				else {
-					table.add(new SubmitButton(submitButtonText),2,3);
-				}
+                                if ( voteImage != null) {
+                                    table.add(new SubmitButton(voteImage,iwrb.getLocalizedString("poll.vote","Vote")),2,3);
+                                }
+                                else {
+                                    if ( submitButtonURL != null ) {
+                                        /*
+                                        Link theLink = new Link(new Image(submitButtonURL,""),gluggi);
+                                            theLink.setToFormSubmit(form);
+                                        table.add(theLink,2,3);
+                                        */
+
+                                        table.add(new SubmitButton(iwrb.getImage(submitButtonURL),"Kjósa"),2,3);
+                                    }
+                                    else {
+                                            table.add(new SubmitButton(submitButtonText),2,3);
+                                    }
+                                }
                                 //table.setVerticalAlignment(2,3,"middle");
 				table.add(new Parameter("idega_poll_voter","true"));
 				table.add(new Parameter("result_poll_id",""+poll.getID()));
@@ -878,5 +891,11 @@ private String color_2 = null;
 		this.headerFontFace=headerFontFace;
 
 	}
+
+
+        public void setVoteImage(Image voteImage) {
+            this.voteImage = voteImage;
+        }
+
 
 }
