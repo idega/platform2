@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.46 2003/11/01 14:02:05 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.47 2003/11/01 14:15:38 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -655,7 +655,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public boolean getIfCanSendEmail() {
-		boolean canSend = true;
+		boolean canSend = false;
 		IWPropertyList propertyList = getIWApplicationContext().getSystemProperties().getProperties("mail_properties");
 		if (propertyList != null) {
 			String property = propertyList.getProperty("can_send_email");
