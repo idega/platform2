@@ -162,8 +162,8 @@ private void drawTable() throws IOException,SQLException {
         String noRounds = iwrb.getLocalizedString("handicap.no_round","No rounds registered");
         Text cardTotalText = new Text(cardText);
                 if ( scoreCards2.length > 0 ) {
-                        if ( cardText.substring(cardText.length()-1,cardText.length()).equals("1") ) { cardTotalText.addToText(iwrb.getLocalizedString("handicap.round"," round")); }
-                        else { cardTotalText.addToText(iwrb.getLocalizedString("handicap.rounds"," rounds")); }
+                        if ( cardText.substring(cardText.length()-1,cardText.length()).equals("1") ) { cardTotalText.addToText(" "+iwrb.getLocalizedString("handicap.round","round")); }
+                        else { cardTotalText.addToText(" "+iwrb.getLocalizedString("handicap.rounds","rounds")); }
                 }
                 if ( scoreCards2.length < 1 ) { cardTotalText = new Text(noRounds); }
                 cardTotalText.setFontSize(2);
@@ -185,7 +185,7 @@ private void drawTable() throws IOException,SQLException {
                         idegaTimestamp scoreTime = new idegaTimestamp(scoreCards2[0].getScorecardDate());
                         Field fieldId = new Field(scoreCards2[0].getFieldID());
 
-                        pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+iwrb.getLocalizedString("handicap.points"," points")+"  -  "+fieldId.getName()+", "+scoreTime.getISLDate());
+                        pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints())+" "+iwrb.getLocalizedString("handicap.points","points")+"  -  "+fieldId.getName()+", "+scoreTime.getISLDate());
                 }
                 else {
                         pointsText = new Text(noRounds);
@@ -205,7 +205,7 @@ private void drawTable() throws IOException,SQLException {
 
                         String averagePoints = TextSoap.decimalFormat(String.valueOf((punktar/(float) scoreCards.length)),2);
 
-                        averageText = new Text(averagePoints+iwrb.getLocalizedString("handicap.points"," points"));
+                        averageText = new Text(averagePoints+" "+iwrb.getLocalizedString("handicap.points","points"));
                 }
                 else {
                         averageText = new Text(noRounds);
@@ -287,6 +287,7 @@ private void drawTable() throws IOException,SQLException {
                         memberImage = iwrb.getImage("/member/x2.gif");
                 }
               memberImage.setAttribute("hspace","10");
+              memberImage.setMaxImageWidth(150);
 
         imageTable.add(memberImage);
 
