@@ -1,5 +1,5 @@
 /*
- * $Id: ClubHandler.java,v 1.1 2005/02/07 11:20:28 laddi Exp $
+ * $Id: ClubHandler.java,v 1.2 2005/02/07 13:23:09 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -27,18 +27,23 @@ import com.idega.presentation.ui.DropdownMenu;
 
 
 /**
- * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 13:23:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ClubHandler extends DropdownMenu implements InputHandler {
 
 	public void main(IWContext iwc) throws Exception {
 		UnionHome home = (UnionHome) IDOLookup.getHomeLegacy(Union.class);
 
-		Union mainUnion = home.findByPrimaryKey(Integer.parseInt(AccessControl.getGolfUnionOfClubAdmin(iwc)));
-		if (mainUnion.getUnionType().equalsIgnoreCase("golf_club") || mainUnion.getUnionType().equalsIgnoreCase("extra_club")) {
+		Union mainUnion = null;
+		String unionID = AccessControl.getGolfUnionOfClubAdmin(iwc);
+		if (unionID != null) {
+			mainUnion = home.findByPrimaryKey(Integer.parseInt(unionID));
+		}
+
+		if (mainUnion != null && (mainUnion.getUnionType().equalsIgnoreCase("golf_club") || mainUnion.getUnionType().equalsIgnoreCase("extra_club"))) {
 			addMenuElement(mainUnion.getPrimaryKey().toString(), mainUnion.getAbbrevation());
 		}
 		else {
