@@ -397,8 +397,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				}
 				//If person has a spouse, it is also registered as possible parent
 				natReg = natRegBus.getEntryBySSN(user.getPersonalID());
-				spouseSSN = natReg.getSpouseSSN().trim();
-				if (spouseSSN != null && !"".equals(spouseSSN)) {
+				spouseSSN = natReg.getSpouseSSN();
+				if (spouseSSN != null && !"".equals(spouseSSN.trim())) {
 					parents.add(user);
 					try {
 						User spouse = uHome.findByPersonalID(spouseSSN);
