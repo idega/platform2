@@ -14,4 +14,5 @@ public class RegSpecConstant {
 	public static final String MAXLIMIT ="regspec.maxtaxa";
 	public static final String SUBVENTION ="regspec.subvention";
 	public static final String RESOURCE = "cacc_main_rule.resurs";
+	public static final String CHECKTAXA ="z_cacc_reg_spec.checktaxa";
 }
