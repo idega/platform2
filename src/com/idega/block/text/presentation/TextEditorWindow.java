@@ -127,14 +127,17 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
     if(iwc.isParameterSet(actClose)|| iwc.isParameterSet(actClose+".x")){
       if (chooserParameterName != null) {
-				getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + sTextId + "','" + sTextId + "')");
+      	System.out.println("TextEditorWindow : "+chooserParameterName);
+      	System.out.println("SELECT_FUNCTION_NAME : "+SELECT_FUNCTION_NAME);
+      	System.out.println("sTextId : "+sTextId);
+				getPage(iwc).setOnLoad(SELECT_FUNCTION_NAME + "('" + sTextId + "','" + sTextId + "')");
       }
-      else {
+      //else {
 	      if (parentReload) {
 	        setParentToReload();
 	      }
 	      close();
-      }
+      //}
     }
     else{
     // LocaleHandling
