@@ -1,9 +1,12 @@
 package se.idega.idegaweb.commune.business;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
+
 import javax.ejb.*;
 
 import com.idega.block.school.data.School;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 public interface CommuneUserBusiness extends com.idega.business.IBOService
@@ -23,5 +26,18 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService
    * Creates a new Administrator whith a with a firstname,middlename, lastname and school where middlename  can be null
    */
   public User createProviderAdministrator(String firstname, String middlename, String lastname,School school) throws javax.ejb.FinderException,CreateException,RemoteException;
+
+	/**
+	* Returns or creates (if not available) the default usergroup all commune administors have as their primary group.
+	* @throws CreateException if it failed to create the group.
+	* @throws FinderException if it failed to locate the group.
+	*/
+	public Group getRootCommuneAdministratorGroup() throws CreateException, FinderException, RemoteException;
+	/**
+	 * Gets all the users that have the CommuneAdministrator group as its primary group.
+	* @return Collection of com.idega.user.data.User objects with all the users in the CommuneAdministrators group.
+	* @throws FinderException if it failed to locate the group or its users.
+	*/
+	public Collection getAllCommuneAdministrators() throws FinderException,RemoteException;
 
 }
