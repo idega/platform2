@@ -74,6 +74,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     setHeight(650);
     setResizable(true);
     setTitle("Product Editor");
+    setScrollbar(true);
   }
 
 
@@ -85,9 +86,9 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (action == null || action.equals("")) {
       String delImg = iwc.getParameter(PAR_DEL_FILE);
       if (delImg != null && !delImg.equals("")) {
-        try {
-          _business.removeImage(_product, Integer.parseInt(delImg));
-        }catch (NumberFormatException nfe) {}
+	try {
+	  _business.removeImage(_product, Integer.parseInt(delImg));
+	}catch (NumberFormatException nfe) {}
       }
 
       displayForm(iwc);
@@ -97,7 +98,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       displayForm(iwc);
     }else if (action.equals(this.PAR_SAVE)) {
       if (saveProduct(iwc)) {
-        displayForm(iwc);
+	displayForm(iwc);
       }else {
 
       }
@@ -105,14 +106,14 @@ public class ProductEditorWindow extends IWAdminWindow {
       verifyDelete(iwc);
     }else if (action.equals(this.PAR_DEL_VERIFIED)) {
       if (_business.deleteProduct(_product)) {
-        closeWindow();
+	closeWindow();
       }
     }else if (action.equals(this.PAR_CLOSE)) {
       closeWindow();
     }else if (action.equals(this.PAR_ADD_FILE)) {
       String imageId = iwc.getParameter(PAR_IMAGE);
       if (imageId != null) {
-        _business.addImage(_product, Integer.parseInt(imageId));
+	_business.addImage(_product, Integer.parseInt(imageId));
       }
       saveProduct(iwc);
       displayForm(iwc);
@@ -133,7 +134,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       String sProductId = iwc.getParameter(this.PRODUCT_ID);
       _productId = Integer.parseInt(sProductId);
       if (_productId != -1) {
-        _product = ProductBusiness.getProduct(_productId);
+	_product = ProductBusiness.getProduct(_productId);
       }
     }catch (Exception e) {
       //e.printStackTrace(System.err);
@@ -144,7 +145,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     String pCatObjId = iwc.getParameter(this.PRODUCT_CATALOG_OBJECT_INSTANCE_ID);
     if (pCatObjId != null) {
       try {
-        this._catalogICObjectInstanceId = Integer.parseInt(pCatObjId);
+	this._catalogICObjectInstanceId = Integer.parseInt(pCatObjId);
       }catch (NumberFormatException n) {n.printStackTrace(System.err);}
     }
 
@@ -201,10 +202,10 @@ public class ProductEditorWindow extends IWAdminWindow {
       teaser.setContent(ProductBusiness.getProductTeaser(_product, iLocaleID));
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
       if (pPrice != null) {
-        price.setContent(Integer.toString((int) pPrice.getPrice()));
-        _currencies.setSelectedElement(Integer.toString(pPrice.getCurrencyId()));
+	price.setContent(Integer.toString((int) pPrice.getPrice()));
+	_currencies.setSelectedElement(Integer.toString(pPrice.getCurrencyId()));
       }else {
-        price.setContent("0");
+	price.setContent("0");
       }
     }
 
@@ -219,9 +220,9 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     Table topTable = new Table(5, 2);
       topTable.setCellpaddingAndCellspacing(0);
-        super.setStyle(price);
-        super.setStyle(_currencies);
-        super.setStyle(number);
+	super.setStyle(price);
+	super.setStyle(_currencies);
+	super.setStyle(number);
 
     topTable.add(super.formatText(iwrb.getLocalizedString("item_number","Item number")), 1, 1);
     topTable.add(super.formatText(Text.NON_BREAKING_SPACE), 2, 1);
@@ -284,36 +285,36 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     if (!name.equals("")) {
       if (_product == null) {
-        try {
-          _productId = ProductBusiness.createProduct(null, name, number, description, true, iLocaleID);
-          _product = ProductBusiness.getProduct(_productId);
-          _business.setCategories(_product, categories);
-          ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
-          if (_business.setPrice(_product, price, currency)) {
-          }else {
-            super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
-          }
-          returner = true;
-        }catch (Exception e) {
-          returner = false;
-          e.printStackTrace(System.err);
-        }
+	try {
+	  _productId = ProductBusiness.createProduct(null, name, number, description, true, iLocaleID);
+	  _product = ProductBusiness.getProduct(_productId);
+	  _business.setCategories(_product, categories);
+	  ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
+	  if (_business.setPrice(_product, price, currency)) {
+	  }else {
+	    System.out.println(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
+	  }
+	  returner = true;
+	}catch (Exception e) {
+	  returner = false;
+	  e.printStackTrace(System.err);
+	}
       }else {
-        try {
-          _product = ProductBusiness.getProduct(ProductBusiness.updateProduct(this._productId, null, name, number, description, true, iLocaleID));
+	try {
+	  _product = ProductBusiness.getProduct(ProductBusiness.updateProduct(this._productId, null, name, number, description, true, iLocaleID));
 
-          _business.setThumbnail(_product, Integer.parseInt(thumbnailId));
-          _business.setCategories(_product, categories);
-          ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
-          if (_business.setPrice(_product, price, currency)) {
-          }else {
-            super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
-          }
-          returner = true;
-        }catch (Exception e) {
-          returner = false;
-          e.printStackTrace(System.err);
-        }
+	  _business.setThumbnail(_product, Integer.parseInt(thumbnailId));
+	  _business.setCategories(_product, categories);
+	  ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
+	  if (_business.setPrice(_product, price, currency)) {
+	  }else {
+	    System.out.println(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
+	  }
+	  returner = true;
+	}catch (Exception e) {
+	  returner = false;
+	  e.printStackTrace(System.err);
+	}
       }
     }
 
@@ -372,31 +373,31 @@ public class ProductEditorWindow extends IWAdminWindow {
       ++imgRow;
 
       while(I.hasNext()){
-        try {
-          Image immi = _business.getImage(I.next());
-          int immiId = immi.getImageID(iwc);
-          immi.setMaxImageWidth(50);
+	try {
+	  Image immi = _business.getImage(I.next());
+	  int immiId = immi.getImageID(iwc);
+	  immi.setMaxImageWidth(50);
 
-          Link edit = ImageAttributeSetter.getLink(core.getImage("/shared/edit.gif"),immiId,imageAttributeKey);
-          SubmitButton delete = new SubmitButton(core.getImage("/shared/delete.gif"), PAR_DEL_FILE, Integer.toString(immiId));
-          radio = new RadioButton(PAR_IMAGE_THUMBNAIL, Integer.toString(immiId));
-          if (imageId == immiId) {
-            radio.setSelected();
-          }
+	  Link edit = ImageAttributeSetter.getLink(core.getImage("/shared/edit.gif"),immiId,imageAttributeKey);
+	  SubmitButton delete = new SubmitButton(core.getImage("/shared/delete.gif"), PAR_DEL_FILE, Integer.toString(immiId));
+	  radio = new RadioButton(PAR_IMAGE_THUMBNAIL, Integer.toString(immiId));
+	  if (imageId == immiId) {
+	    radio.setSelected();
+	  }
 
-          imageTable.add(radio, 1 ,imgRow);
-          imageTable.add(immi,2,imgRow);
-          imageTable.add(edit,3,imgRow);
-          imageTable.add(delete,4,imgRow);
-          imgRow++;
-        }
-        catch (Exception ex) {
+	  imageTable.add(radio, 1 ,imgRow);
+	  imageTable.add(immi,2,imgRow);
+	  imageTable.add(edit,3,imgRow);
+	  imageTable.add(delete,4,imgRow);
+	  imgRow++;
+	}
+	catch (Exception ex) {
 
-        }
+	}
       }
       radio = new RadioButton(PAR_IMAGE_THUMBNAIL, "-1");
       if (imageId == -1) {
-        radio.setSelected();
+	radio.setSelected();
       }
       imageTable.add(radio, 1,imgRow);
       imageTable.add(formatText(iwrb.getLocalizedString("no_thumbnail","No thumbnail")), 2, imgRow);
