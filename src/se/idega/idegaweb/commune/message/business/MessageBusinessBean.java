@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.35 2003/03/06 01:25:44 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.36 2003/03/06 10:27:29 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.data.Email;
@@ -173,6 +174,14 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public Message createUserMessage(User user, String subject, String body) {
+		return createUserMessage(null, user, subject, body, true);
+	}
+	
+	public Message createUserMessage(User user, String subject, String body, boolean sendLetter) {
+		return createUserMessage(null, user, subject, body, sendLetter);
+	}
+	
+	public Message createUserMessage(Case parentCase, User user, String subject, String body, boolean sendLetter) {
 		try {
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(user);
@@ -180,7 +189,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			boolean canSendEmail = getIfCanSendEmail();
 			
 			if (sendToBox) {
-				message = createMessage(getTypeUserMessage(), user, subject, body);
+				message = createMessage(getTypeUserMessage(), user, subject, body, parentCase);
 			}
 			if (sendMail) {
 				boolean sendEmail = false;
@@ -200,11 +209,13 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 						}
 				}
 				else {
-					createPrintedLetterMessage(user, subject, body);
+					if (sendLetter)
+						createPrintedLetterMessage(user, subject, body);
 				}
 			}
 			else {
-				createPrintedLetterMessage(user, subject, body);
+				if (sendLetter)
+					createPrintedLetterMessage(user, subject, body);
 			}
 			//return message;
 			return message;
@@ -448,11 +459,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	private Message createMessage(String messageType, User user, String subject, String body) throws CreateException, RemoteException {
+		return createMessage(messageType, user, subject, body, null);
+	}
+	
+	private Message createMessage(String messageType, User user, String subject, String body, Case parentCase) throws CreateException, RemoteException {
 		MessageHome home = this.getMessageHome(messageType);
 		Message message = home.create();
 		message.setOwner(user);
 		message.setSubject(subject);
 		message.setBody(body);
+		if (parentCase != null)
+			message.setParentCase(parentCase);
 		try {
 			message.store();
 		}

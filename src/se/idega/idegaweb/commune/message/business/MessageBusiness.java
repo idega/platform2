@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.ejb.*;
 
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.data.Case;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -57,4 +58,6 @@ public interface MessageBusiness extends CaseBusiness
  public void flagMessagesAsInactive(User performer, String[] msgKeys)throws RemoteException,FinderException;
  public void flagMessagesWithStatus(User performer, String[] msgKeys,String status)throws RemoteException,FinderException;
  public void flagMessageWithStatus(User performer,Message message,String status)throws RemoteException;  
+ public Message createUserMessage(Case parentCase, User user, String subject, String body, boolean sendLetter);
+ public Message createUserMessage(User user, String subject, String body, boolean sendLetter);
 }
