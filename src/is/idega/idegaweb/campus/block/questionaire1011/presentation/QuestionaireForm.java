@@ -102,7 +102,7 @@ public class QuestionaireForm extends Block {
 			QuestionaireBusiness b = getQuestionaireBusiness(iwc);
 			IWResourceBundle iwrb = getResourceBundle(iwc);
 			
-			User current = iwc.getUser();
+/*			User current = iwc.getUser();
 			if (current == null) {
 				add(Edit.headerText(iwrb.getLocalizedString(ERROR_NO_USER)));
 				return;
@@ -113,7 +113,7 @@ public class QuestionaireForm extends Block {
 				add(Edit.headerText(iwrb.getLocalizedString(MSG_ALREADY_ANSWERED)));
 				
 				return;
-			}
+			}*/
 			
 			if (iwc.isParameterSet(SUBMIT_ANSWER)) {
 				boolean ok = checkAndStoreAnswers(iwc);
