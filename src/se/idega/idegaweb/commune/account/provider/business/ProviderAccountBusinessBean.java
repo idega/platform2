@@ -196,9 +196,12 @@ public class ProviderAccountBusinessBean
 		String address = appl.getAddress();
 		String phone = appl.getPhone();
 		String zipcode = "";
-		String ziparea = "";
-		int school_type = -1;
-		int school_area = -1;
+		String ziparea = "NACKA";
+		/**
+		 * @todo: Remove hardcoding
+		 */
+		int school_type = 1;
+		int school_area = 1;
 		School school = getSchoolBusiness().createSchool(providerName,address,phone,zipcode,ziparea,school_type);
 		return school;
 	}
