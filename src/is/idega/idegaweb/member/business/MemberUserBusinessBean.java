@@ -1,18 +1,19 @@
 package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.mail.MessagingException;
 
+import com.idega.core.data.Email;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserBusinessBean;
@@ -20,7 +21,6 @@ import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.idega.core.data.Email;
 
 /**
  * Description:	Use this business class to handle member information
@@ -256,6 +256,9 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		return groups;
 	}
 	
+	/*
+	 * Return a list og League groups if the user has a league as a top node.
+	 */
 	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException{
 		Collection tops = getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwuc);
 		List list = new Vector();
@@ -270,11 +273,51 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			
 		}
 		return list;
-		
-		
 	}
 	
+	/*
+	 * Returns a list of all the clubs the user is a member of.
+	 */
+	public List getClubListForUser(User user) throws NoClubFoundException,RemoteException{
+		Collection parents = getGroupBusiness().getParentGroupsRecursive(user);
+		List list = new Vector();
+		if(parents!=null && !parents.isEmpty()){
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				Group group = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB.equals(group.getGroupType())){
+					list.add(group);
+				}
+			}
+		}
+		
+		if(list.isEmpty()){
+			//if no club is found we throw the exception
+			throw new NoClubFoundException(user.getName());
+		}
+		else return list;
+	}
 	
+	/*
+		* Returns the club that is a parent for this group.
+	 */
+	public Group getClubforGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException{
+		Collection parents = getGroupBusiness().getParentGroupsRecursive(group);
+
+		if(parents!=null && !parents.isEmpty()){
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				Group parentGroup = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB.equals(parentGroup.getGroupType())){
+					return parentGroup;//there should only be one
+				}
+			}
+		}
+		
+		//if no club is found we throw the exception
+		throw new NoClubFoundException(group.getName());
+		
+	}
 	
 	
 	

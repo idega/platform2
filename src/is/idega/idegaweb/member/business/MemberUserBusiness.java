@@ -32,4 +32,7 @@ public interface MemberUserBusiness extends IBOService,UserBusiness
 	 */
 	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException;
 	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody, IWUserContext iwuc) throws MessagingException;
+	public Group getClubforGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException;
+	
+	public List getClubListForUser(User user) throws NoClubFoundException,RemoteException;
 }
