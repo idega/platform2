@@ -451,12 +451,11 @@ public class MessengerApplet extends Applet implements ActionListener{
   paint(g);
  }
 
-  public void paint(Graphics g) {
+  public synchronized void paint(Graphics g) {
   //use the update method
   //    super.paint(g);
     g.drawString("test",150,150);
     System.out.println("IN Paint");
-
     if(isfirstRun){
          cycler.start();
       isfirstRun=false;
