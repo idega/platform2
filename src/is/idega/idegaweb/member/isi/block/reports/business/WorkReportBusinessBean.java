@@ -424,6 +424,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		else {
 			report.setAsActive();
 		}
+		
+		if (IWMemberConstants.META_DATA_CLUB_STATE_COMPETITION_BAN.equals(status)) {
+			report.setStatus(WorkReportConstants.WR_STATUS_COMPETITION_BAN);
+		}
+		
 		String club_type = club.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
 		report.setType(club_type);
 		String club_in_umfi = club.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
@@ -450,6 +455,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			else if(club.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){			
 				report.setRegionalUnionNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+				//also for league report.setMembersPartDone(true);
+				
 				String abbr = club.getAbbrevation();
 				if (abbr == null || "".equals(abbr)) {
 					abbr = club.getShortName();
