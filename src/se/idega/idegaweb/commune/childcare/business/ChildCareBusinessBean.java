@@ -1184,11 +1184,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			contract.setValidFrom(fromDate);
 			contract.setValidTo(endDate);
-			if (endDate == null) {
-				contract.setStatus("T");
+			if (endDate != null) {
+				contract.setStatusTerminated();
 			}
 			else {
-				contract.setStatus("C");
+				contract.setStatusCreated();
 			}
 			contract.store();
 			contract.addFileToContract(contractFile);
