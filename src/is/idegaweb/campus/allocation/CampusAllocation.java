@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.4 2001/07/12 10:33:14 aron Exp $
+ * $Id: CampusAllocation.java,v 1.5 2001/07/12 10:48:26 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ public class CampusAllocation extends KeyEditor{
   }
 
   public ModuleObject makeSubjectTable(){
-    List L = ApplicationFinder.listOfSubject();
+    //List L = ApplicationFinder.listOfSubject();
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
@@ -60,8 +60,12 @@ public class CampusAllocation extends KeyEditor{
     Table Right = new Table();
       Right.setCellpadding(0);
       Right.setCellspacing(0);
-    Frame.add(Left,1,1);
+    Form myForm = new Form();
+    myForm.add(Left);
+    Frame.add(myForm,1,1);
+    Frame.setWidth(2,"40");
     Frame.add(Right,3,1);
+/*
     if(L != null){
       String sParameter = "app_sub_id";
       ApplicationSubject AS;
@@ -70,18 +74,20 @@ public class CampusAllocation extends KeyEditor{
         AS = (ApplicationSubject) L.get(i);
         RadioButton R = new RadioButton(sParameter,String.valueOf(AS.getID()));
         Left.add(R,1,i+1);
-        Left.add(AS.getName(),2,i+1);
+        Left.add(AS.getDescription(),2,i+1);
       }
     }
     else{
       Left.add(new Text("Ekkert úthlutunartímabil til"));
     }
-    Link Approve = new Link("Samþykkja nýskráðar umsóknir");
-    Link Contracts = new Link("Samningar");
-    Link Waitinglist = new Link("Biðlistar");
-    Link RoughOrder = new Link("Grófraða úthlutun");
-    Link Allocate = new Link("Úthluta");
-    Link Subject = new Link("Nýtt umsóknartímabil");
+*/
+
+    Link Approve = new Link("Samþykkja nýskráðar umsóknir","/allocation/approve.jsp");
+    Link Contracts = new Link("Samningar","/allocation/contracts.jsp");
+    Link Waitinglist = new Link("Biðlistar","/allocation/waitinglists.jsp");
+    Link RoughOrder = new Link("Grófraða úthlutun","/allocation/roughorder.jsp");
+    Link Allocate = new Link("Úthluta","/allocation/allocation.jsp");
+    Link Subject = new Link("Nýtt umsóknartímabil","/allocation/subject.jsp");
 
     Right.add(Approve,1,1);
     Right.add(Contracts,1,2);
@@ -91,6 +97,5 @@ public class CampusAllocation extends KeyEditor{
     Right.add(Subject,1,6);
 
     return Frame;
-
   }
 }
