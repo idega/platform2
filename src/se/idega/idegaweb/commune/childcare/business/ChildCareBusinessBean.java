@@ -518,22 +518,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public void sendMessageToProvider(ChildCareApplication application, String subject, String message, User sender) throws RemoteException {
 		Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
-		Object[] arguments = { application.getChild().getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString() };
-		
-		if (users != null) {
-			MessageBusiness messageBiz = getMessageBusiness();
-			Iterator it = users.iterator();
-			while (it.hasNext()) {
-				SchoolUser providerUser = (SchoolUser) it.next();
-				messageBiz.createUserMessage(application,providerUser.getUser(), sender, subject, MessageFormat.format(message, arguments), false);
-			}
-		}
-		else
-			System.out.println("Got no users for provider " + application.getProviderId());
-	}
-	
-	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
-		Collection users = getSchoolBusiness().getSchoolUsers(application.getProvider());
 		User child = application.getChild();
 		Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID() };
 		
@@ -542,11 +526,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator it = users.iterator();
 			while (it.hasNext()) {
 				SchoolUser providerUser = (SchoolUser) it.next();
-				messageBiz.createUserMessage(application,providerUser.getUser(), subject, MessageFormat.format(message, arguments), false);
+				User user = providerUser.getUser();
+				System.out.println("School user: "+user.getName());
+				messageBiz.createUserMessage(application, user, sender, subject, MessageFormat.format(message, arguments), false);
 			}
 		}
 		else
 			System.out.println("Got no users for provider " + application.getProviderId());
+	}
+	
+	private void sendMessageToProvider(ChildCareApplication application, String subject, String message) throws RemoteException {
+		sendMessageToProvider(application, subject, message, null);
 	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
@@ -2585,7 +2575,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -2594,7 +2584,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
@@ -2603,7 +2593,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
 		try {
-			return getCaseLogsByCaseAndDatesAndStatusChange("MBANBOP", fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
+			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
 		}
 		catch (FinderException e) {
 			return new ArrayList();
