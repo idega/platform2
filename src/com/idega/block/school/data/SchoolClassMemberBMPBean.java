@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/24 06:46:50 $ by $Author: laddi $
- * @version $Revision: 1.117 $
+ *         Last modified: $Date: 2004/07/01 07:35:36 $ by $Author: laddi $
+ * @version $Revision: 1.118 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -319,11 +319,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public Collection ejbFindBySchoolClassAndYear(int schoolClassID, int schoolYearID) throws FinderException {
 		IDOQuery sql = idoQuery();
-		String today = (new Date(System.currentTimeMillis())).toString();
 		sql.appendSelectAllFrom(getEntityName()).appendWhereEquals(SCHOOLCLASS, schoolClassID);
 		if (schoolYearID != -1)
 			sql.appendAndEquals(SCHOOL_YEAR, schoolYearID);
-		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE + " is null").appendOr().append(REMOVED_DATE).appendGreaterThanSign().append("'" + today + "'").appendRightParenthesis();
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}
