@@ -91,11 +91,12 @@ public class NewsFormatter {
     return newsString;
   }
 
-  public static  String getInfoText(NwNews news,Content content,String sCategory, Locale locale, boolean showOnlyDates,boolean showTime,boolean showTimeFirst){
+  public static  String getInfoText(NwNews news,Content content,String sCategory, Locale locale, boolean showOnlyDates,boolean showTime,boolean showTimeFirst,boolean showUpdated){
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,locale);
 		DateFormat dt = DateFormat.getTimeInstance(DateFormat.SHORT,locale);
-    String NewsDate = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
-		String NewsTime = content.getLastUpdated()!=null?dt.format((java.util.Date)content.getLastUpdated()):null;
+	java.util.Date newsDate = showUpdated?content.getLastUpdated():content.getCreated();
+    String NewsDate = newsDate!=null?df.format(newsDate):null;
+	String NewsTime = newsDate!=null?dt.format(newsDate):null;
     StringBuffer info = new StringBuffer();
     String spacer = " | ";
     if(showOnlyDates && NewsDate != null){

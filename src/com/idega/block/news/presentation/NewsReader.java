@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.98 2002/06/14 12:00:32 aron Exp $
+ * $Id: NewsReader.java,v 1.99 2002/07/30 15:47:14 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -83,6 +83,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   private boolean showOnlyDates = false;
   private boolean showTime = true;
   private boolean showInfo = true;
+  private boolean showUpdatedDate = false;
   private boolean showTimeFirst = false;
   private boolean headlineAsLink = false;
   private boolean showHeadlineImage = false;
@@ -351,7 +352,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     ContentHelper contentHelper = newsHelper.getContentHelper();
     NwNews news = newsHelper.getNwNews();
     LocalizedText locText = contentHelper.getLocalizedText(locale);
-    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(),locale,showOnlyDates,showTime,showTimeFirst);
+    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(),locale,showOnlyDates,showTime,showTimeFirst,showUpdatedDate);
 
     String sNewsBody = "";
     String sHeadline = "";
@@ -597,7 +598,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     Text headLine = new Text(sHeadline);
     Text teaser = new Text(sTeaser);
 
-    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(),locale,showOnlyDates,showTime,showTimeFirst);
+    Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(),locale,showOnlyDates,showTime,showTimeFirst,showUpdatedDate);
     if(newsInfo !=null)
       newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
@@ -826,9 +827,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
     return links;
   }
 
-  private Text getInfoText(NwNews nwNews,Content content ,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst){
+  private Text getInfoText(NwNews nwNews,Content content ,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst,boolean showUpdatedDate){
     if(showInfo)
-      return new Text(NewsFormatter.getInfoText(nwNews,content,"",locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst) );
+      return new Text(NewsFormatter.getInfoText(nwNews,content,"",locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst,showUpdatedDate) );
     else
       return null;
   }
@@ -1094,6 +1095,10 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
   public void setShowTimeFirst(boolean showTimeFirst) {
     this.showTimeFirst=showTimeFirst;
+  }
+  
+  public void setShowUpdatedDate(boolean showUpdatedDate) {
+    this.showUpdatedDate=showUpdatedDate;
   }
   public void setShowInfo(boolean showInfo) {
     this.showInfo=showInfo;
