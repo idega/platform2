@@ -1738,7 +1738,10 @@ public class TourBookingForm extends TravelManager {
             debug("SaveSan 6.1.1");
             User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
             debug("SaveSan 6.1.2");
-            Reseller res = ResellerManager.getReseller(user);
+            Reseller res = null;
+            if (user != null) {
+              res = ResellerManager.getReseller(user);
+            }
             debug("SaveSan 6.1.3");
             if (res != null) {
             debug("SaveSan 6.2.1");
