@@ -15,6 +15,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
+import is.idega.idegaweb.member.presentation.UserRelationConnector;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.io.File;
@@ -49,6 +50,7 @@ import com.idega.core.data.PhoneType;
 import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
@@ -238,13 +240,30 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		catch (FinderException e) {
 			return null;
 		}
-		
+    return createWorkReportMember(reportID, user);
+  }
+	
+  public WorkReportMember createWorkReportMember(int reportID, Integer userId) 	throws CreateException {
+    User user = null;
+    try {
+      user = getUser(userId);
+    }
+    catch (EJBException e) {
+      System.err.println("[WorkReportBusiness]: User could not be found. Message is: " +
+        e.getMessage());
+      e.printStackTrace(System.err);
+      return null;
+    }
+    return createWorkReportMember(reportID, user);
+  }
+    
+  public WorkReportMember createWorkReportMember(int reportID, User user) throws CreateException {
 		Age age = new Age(user.getDateOfBirth());
 
 		WorkReportMember member = getWorkReportMemberHome().create();
 		member.setReportId(reportID);
 		member.setName(user.getName());
-		member.setPersonalId(personalID);
+		member.setPersonalId(user.getPersonalID());
 		member.setAge(age.getYears());
 		member.setDateOfBirth( (new IWTimestamp(user.getDateOfBirth())).getTimestamp() );
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
@@ -1209,7 +1228,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 
   
-  public boolean createWorkReportBoardData(int workReportId) {
+  public boolean createWorkReportData(int workReportId) {
     // get year and club id from work report
     WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
     WorkReport workReport = getWorkReportById(workReportId);
@@ -1262,7 +1281,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();
-      if (createWorkReportDataWithoutAnyChecks(workReportId, clubId, groupBusiness)) {
+      if (createWorkReportBoardDataWithoutAnyChecks(workReportId, clubId, groupBusiness) &&
+          createWorkReportMemberDataWithoutAnyChecks(workReportId, clubId, groupBusiness)) {
         // mark the sucessfull creation
         workReport.setCreationFromDatabaseDone(true);
         workReport.store();
@@ -1291,16 +1311,30 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
   }
    
-  private boolean createWorkReportDataWithoutAnyChecks(int workReportId, int clubId, GroupBusiness groupBusiness)  {
+  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int clubId, GroupBusiness groupBusiness)  {
     Map idExistingMemberMap = new HashMap();
     // find all existing work report members
     Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
-    // create a map with ids as keys and members as values
+    // create a map with user ids as keys and leagues as values
     Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
     while (existingWorkReportBoardMembersIterator.hasNext()) {
       WorkReportBoardMember member = (WorkReportBoardMember) existingWorkReportBoardMembersIterator.next();
-      Integer id = (Integer) member.getPrimaryKey();
-      idExistingMemberMap.put(id, member);
+      Integer userId = new Integer(member.getUserId());
+      Collection memberLeagues = (Collection) idExistingMemberMap.get(userId);
+      if (memberLeagues == null)  {
+        memberLeagues = new ArrayList();
+        idExistingMemberMap.put(userId, memberLeagues);
+      }
+      WorkReportGroup league = null;
+      try {
+        league = member.getLeague();
+        memberLeagues.add(league);
+      }
+      catch (IDOException ex) {
+        System.err.println("[WorkreportBusiness]: Can't retrieve league. Message is: " +
+          ex.getMessage());
+        ex.printStackTrace(System.err);
+      }
     }
     
     // get all children of the club group (not recursively)
@@ -1328,8 +1362,26 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       String groupType = group.getGroupType();
       boolean isCommittee = false;
       boolean isDivision = false; 
-      if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(groupType)) { 
-        isCommittee = true;
+      if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType)) { 
+        // go further down, we are looking for the main committee
+        try {
+          Collection committeeChildren = group.getChildGroups();
+          Iterator committeeChildrenIterator = committeeChildren.iterator();
+          while (committeeChildrenIterator.hasNext()) {
+            Group child = (Group) committeeChildrenIterator.next();
+            String childGroupType = child.getGroupType();
+            if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType))  {
+              // change the value of the external loop variable group
+              group = child;
+              isCommittee = true;
+            }
+          }
+        }
+        catch (EJBException ex) {
+          System.err.println("[WorkReportBusiness]: Can't retrieve children of group. Message is: " +
+            ex.getMessage());
+          ex.printStackTrace(System.err);
+        }
       }
       else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
         isDivision = true;
@@ -1459,31 +1511,86 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     while (userIterator.hasNext())  {
       User user = (User) userIterator.next();
       Integer primaryKeyUser = (Integer) user.getPrimaryKey();
-      // ! do not create more than one work report member for the same user !
-      WorkReportBoardMember member = (WorkReportBoardMember) idExistingMemberMap.get(primaryKeyUser);
-      if (member == null) {
-        try {
-          // create WorkReportBoardMember
-          member = createWorkReportBoardMember(workReportId, user);
-          Integer id = (Integer) member.getPrimaryKey();
-          // add the new one to the existing ones
-          idExistingMemberMap.put(id, member);
+      // create a member per league (that is one user can have one or many members)
+      Collection memberLeagues = (Collection) idExistingMemberMap.get(primaryKeyUser);
+      // note: league can be null
+      if (memberLeagues != null && (memberLeagues.contains(league)))  {
+          // nothing to do
+        return true;
+      }
+      try {
+        // create WorkReportBoardMember
+        WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user);
+        if (league != null) {
+          addWorkReportGroupToEntity(league, member);
         }
-        catch (CreateException createEx)  {
-          System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: "+ 
-          createEx.getMessage());
-          createEx.printStackTrace(System.err);
+        // add the new one to the existing ones
+        if (memberLeagues == null)  {
+          memberLeagues = new ArrayList();
+          memberLeagues.add(league);
+          idExistingMemberMap.put(primaryKeyUser, memberLeagues);
+        }
+        else {
+          memberLeagues.add(league);
         }
       }
-      if (member != null && league != null) {
-        // add the league to the new work report member 
-        // (zero to many relation ship) 
-        addWorkReportGroupToEntity(league, member);
+      catch (CreateException createEx)  {
+        System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: "+ 
+          createEx.getMessage());
+        createEx.printStackTrace(System.err);
       }
     }
     return true;
   }
       
- 
+  private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) {
+    Collection idExistingMember = new ArrayList();
+    // find all existing work report members
+    Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
+    // create a collection with user ids
+    Iterator existingWorkReportMembersIterator = existingWorkReportMembers.iterator();
+    while (existingWorkReportMembersIterator.hasNext())   {
+      WorkReportMember workReportMember = (WorkReportMember) existingWorkReportMembersIterator.next();
+      Integer userId = new Integer(workReportMember.getUserId());
+      idExistingMember.add(userId);
+    }
+    Collection childGroups;
+    try {
+      String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
+      ArrayList groupTypes = new ArrayList();
+      groupTypes.add(userGroupRepresentive);
+      childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId, groupTypes , false);
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBoardBusiness]: Can't get child groups. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
+    }
+    Iterator childGroupsIterator = childGroups.iterator();
+    while (childGroupsIterator.hasNext()) {
+      Group child = (Group) childGroupsIterator.next();
+      Integer primaryKey = (Integer) child.getPrimaryKey();
+      if (! idExistingMember.contains(primaryKey))  {
+        try {
+          createWorkReportMember(workReportId, primaryKey);
+          idExistingMember.add(primaryKey);
+        }
+        catch (CreateException ex)  {
+          System.err.println("[WorkReportBusiness]: Can't create member. Message is: " +
+            ex.getMessage());
+          ex.printStackTrace(System.err);
+        }
+      }
+    }
+    return true;
+  }
+    
+   
+
+
+    
+    
 	
 }//end of class

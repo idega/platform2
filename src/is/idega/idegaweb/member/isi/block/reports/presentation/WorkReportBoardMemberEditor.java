@@ -227,7 +227,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
       // create data from the database
-      workReportBusiness.createWorkReportBoardData(getWorkReportId());
+      workReportBusiness.createWorkReportData(getWorkReportId());
     } catch (RemoteException ex) {
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
