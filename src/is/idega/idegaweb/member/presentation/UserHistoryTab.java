@@ -1,7 +1,9 @@
 package is.idega.idegaweb.member.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import com.idega.event.IWLinkEvent;
@@ -121,7 +123,7 @@ public class UserHistoryTab extends UserTab {
 		
 		Collection groupRelations = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
 		if(checkNeeded) {
-			filterGroupRelations(iwc, groupRelations, user);
+			groupRelations = getFilteredGroupRelations(iwc, Collections.unmodifiableCollection(groupRelations), user);
 		}
 		if (groupRelations != null) {
 			iwc.setSessionAttribute(
@@ -135,7 +137,7 @@ public class UserHistoryTab extends UserTab {
 		
 		Collection statuses = ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(getUserId());
 		if(checkNeeded) {
-			filterStatuses(iwc, statuses, user);
+			statuses = getFilteredStatuses(iwc, Collections.unmodifiableCollection(statuses), user);
 		}
 		if (statuses != null) {
 			iwc.setSessionAttribute(
@@ -149,7 +151,8 @@ public class UserHistoryTab extends UserTab {
 		
 	}
 	
-	private void filterStatuses(IWContext iwc, Collection statuses, User user) {
+	private Collection getFilteredStatuses(IWContext iwc, Collection statuses, User user) {
+		Collection result = new ArrayList();
 		UserBusiness userBusiness = this.getUserBusiness(iwc);
 		Iterator statusIter = statuses.iterator();
 		while(statusIter.hasNext()) {
@@ -161,14 +164,18 @@ public class UserHistoryTab extends UserTab {
 				System.out.println("Could not check if group in user status is a descendant of a users top group, status for group not shown");
 				e.printStackTrace();
 			}
-			if(!ok) {
+			if(ok) {
+				result.add(status);
+			} else {
 				System.out.println("User status in group " + status.getGroup().getName() + " not shown");
-				statuses.remove(status);
 			}
 		}
+		
+		return result;
 	}
 	
-	private void filterGroupRelations(IWContext iwc, Collection groupRelations, User user) {
+	private Collection getFilteredGroupRelations(IWContext iwc, Collection groupRelations, User user) {
+		Collection result = new ArrayList();
 		UserBusiness userBusiness = this.getUserBusiness(iwc);
 		Iterator groupRelationIter = groupRelations.iterator();
 		while(groupRelationIter.hasNext()) {
@@ -181,11 +188,14 @@ public class UserHistoryTab extends UserTab {
 				System.out.println("Could not check if groups in relation were descendants of a users top group, group relation not shown");
 				e.printStackTrace();
 			}
-			if(!ok) {
+			if(ok) {
+				result.add(rel);
+			} else {
 				System.out.println("Group relation between " + rel.getGroup().getName() + " and " + rel.getRelatedGroup().getName() + " not shown");
-				groupRelations.remove(rel);
 			}
 		}
+		
+		return result;
 	}
 	
 	public Help getHelpButton() {
