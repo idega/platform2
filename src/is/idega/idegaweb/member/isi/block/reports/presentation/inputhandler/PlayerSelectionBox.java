@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.data.ICTreeNode;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 
@@ -65,7 +66,12 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	protected String getNameForGroup(Group group) {
 	    if (group == null) return null;
 	    
-		return super.getNameForGroup(group)+" ("+group.getParentNode().getNodeName()+")";
+	    ICTreeNode parentNode = group.getParentNode();
+	    String parentNodeString = "";
+	    if (parentNode != null) {
+	        parentNodeString = " ("+parentNode.getNodeName()+")";
+	    }
+		return super.getNameForGroup(group)+ parentNodeString;
 	}
 	
 	private void getClubPlayers(Collection divisions, Group group) {
