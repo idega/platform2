@@ -16,10 +16,12 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.IDOLookup;
 import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 
 /**
  * Title: LoginBusiness Description: Copyright: Copyright (c) 2000-2001 idega.is
@@ -30,7 +32,7 @@ import com.idega.presentation.IWContext;
  * @version 1.1
  */
 
-public class LoginBusiness implements IWPageEventListener {
+public class LoginBusiness extends LoginBusinessBean implements IWPageEventListener {
 
 	public static String UserAttributeParameter = "member_login";
 	public static String UserAccessAttributeParameter = "member_access";
@@ -50,7 +52,7 @@ public class LoginBusiness implements IWPageEventListener {
 		modinfo.setSessionAttribute(LoginStateParameter, state);
 	}
 
-	public static String internalGetState(IWContext modinfo) {
+	public static String internalGetStateString(IWContext modinfo) {
 		return (String) modinfo.getSessionAttribute(LoginStateParameter);
 	}
 
@@ -119,34 +121,69 @@ public class LoginBusiness implements IWPageEventListener {
 	private boolean verifyPassword(IWContext modinfo, String login, String password) throws IOException, SQLException {
 		boolean returner = false;
 		LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("user_login", login);
-
+		MemberHome mh = ((MemberHome) IDOLookup.getHomeLegacy(Member.class));
+		
 		for (int i = 0; i < login_table.length; i++) {
 			if (login_table[i].getUserPassword().equals(password)) {
 				try {
-					modinfo.getSession().setAttribute(UserAttributeParameter, ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(login_table[i].getMemberId()));
+					Member member = mh.findByPrimaryKey(login_table[i].getMemberId());
+					modinfo.getSession().setAttribute(UserAttributeParameter, member);
+				
+					returner = true;
+					
+					User user = member.getICUser();
+	                if(user!=null) {
+	                		try {
+							logInAsAnotherUser(modinfo,user);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+	                }
+	                
+	                break;
 				}
 				catch (FinderException fe) {
 					throw new SQLException(fe.getMessage());
 				}
-				returner = true;
 			}
 		}
+		
+        if(!returner) {
+	    		//New login
+	    		boolean newLogin = logInUser(modinfo,login,password);
+	    		if(newLogin) {
+	    			try {
+					Member m = mh.findMemberByIWMemberSystemUser(modinfo.getCurrentUser());
+					modinfo.setSessionAttribute(UserAttributeParameter,m);
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+	    		}
+        }
+
+        
 		if (isAdmin(modinfo)) {
 			modinfo.getSession().setAttribute(UserAccessAttributeParameter, "admin");
 		}
-		/*
-		 * if (isDeveloper(modinfo)) {
-		 * modinfo.getSession().setAttribute("member_access","developer"); } if
-		 * (isClubAdmin(modinfo)) {
-		 * modinfo.getSession().setAttribute("member_access","club_admin"); } if
-		 * (isUser(modinfo)) {
-		 * modinfo.getSession().setAttribute("member_access","user"); }
-		 */
+
 		return returner;
 	}
 
-	private void logOut(IWContext modinfo) throws Exception {
+	protected void logOut(IWContext modinfo) throws Exception {
 		//System.out.print("inside logOut");
+		
+		try {
+			super.logOut(modinfo);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			super.logOut(modinfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		modinfo.removeSessionAttribute(UserAttributeParameter);
 		if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
 			modinfo.removeSessionAttribute(UserAccessAttributeParameter);

@@ -685,7 +685,7 @@ public static String controlParameter;
 
 
         public String internalGetState(IWContext modinfo){
-            return LoginBusiness.internalGetState(modinfo);
+            return LoginBusiness.internalGetStateString(modinfo);
         }
 
 

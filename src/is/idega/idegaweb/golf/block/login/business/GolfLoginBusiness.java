@@ -14,6 +14,8 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.genericentity.Group;
@@ -21,6 +23,7 @@ import com.idega.event.IWPageEventListener;
 import com.idega.event.IWPresentationEvent;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 
 /**
  * Title: GolfLoginBusiness Description: Copyright: Copyright (c) 2000-2001 idega.is
@@ -31,7 +34,7 @@ import com.idega.presentation.IWContext;
  * @version 1.1
  */
 
-public class GolfLoginBusiness implements IWPageEventListener {
+public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventListener {
 
     public final static String PRM_PRIFIX = "golf_";
     public static String UserAttributeParameter = "member_login";
@@ -55,7 +58,7 @@ public class GolfLoginBusiness implements IWPageEventListener {
         modinfo.setSessionAttribute(LoginStateParameter, state);
     }
 
-    public static String internalGetState(IWContext modinfo) {
+    public static String internalGetStateString(IWContext modinfo) {
 
         return (String) modinfo.getSessionAttribute(LoginStateParameter);
     }
@@ -178,18 +181,41 @@ public class GolfLoginBusiness implements IWPageEventListener {
         return login;
     }
 
-    private boolean verifyPassword(IWContext modinfo, String login, String password) throws SQLException, FinderException {
+    private boolean verifyPassword(IWContext modinfo, String login, String password) throws Exception, FinderException {
         boolean returner = false;
         LoginTable[] login_table = (LoginTable[]) ((LoginTable) IDOLookup.instanciateEntity(LoginTable.class)).findAllByColumn("user_login", login);
-
+        MemberHome mh = ((MemberHome) IDOLookup.getHomeLegacy(Member.class));
+        
         for (int i = 0; i < login_table.length; i++) {
             if (login_table[i].getUserPassword().equals(password)) {
-                //modinfo.getSession().setAttribute("member_login",new
-                // Member(login_table[i].getMemberId()) );
-                modinfo.setSessionAttribute(UserAttributeParameter, ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(login_table[i].getMemberId()));
+            		Member member = mh.findByPrimaryKey(login_table[i].getMemberId());
+                modinfo.setSessionAttribute(UserAttributeParameter, member);
                 returner = true;
+                
+                //new login
+                User user = member.getICUser();
+                if(user!=null) {
+                		logInAsAnotherUser(modinfo,user);
+                }
+                
+                break;
             }
         }
+        
+        if(!returner) {
+        		//New login
+        		boolean newLogin = logInUser(modinfo,login,password);
+        		if(newLogin) {
+        			try {
+					Member m = mh.findMemberByIWMemberSystemUser(modinfo.getCurrentUser());
+					modinfo.setSessionAttribute(UserAttributeParameter,m);
+					returner=true;
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+        		}
+        }
+        
         if (isAdmin(modinfo)) {
             modinfo.getSession().setAttribute(UserAccessAttributeParameter, "admin");
         }
@@ -221,6 +247,11 @@ public class GolfLoginBusiness implements IWPageEventListener {
     }
 
     public void logOut(IWContext modinfo) throws Exception {
+    		try {
+			super.logOut(modinfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         logOut2(modinfo);
     }
 

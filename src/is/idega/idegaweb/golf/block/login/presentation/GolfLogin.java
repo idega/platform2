@@ -172,7 +172,7 @@ public class GolfLogin extends GolfBlock {
 	}
 
 	public String internalGetState(IWContext modinfo) {
-		return GolfLoginBusiness.internalGetState(modinfo);
+		return GolfLoginBusiness.internalGetStateString(modinfo);
 	}
 
 	private void isLoggedOn(IWContext modinfo) {
