@@ -95,6 +95,23 @@ public class SSNChecker {
 		return ssn;
 	}	
 	
+	public boolean isFemale(String ssn) {
+		ssn = trimSSN(ssn);
+		if (ssn.length() != 10) 
+			return false;
+	
+		int sex = ssn.charAt(8) - '0';
+			
+		if (sex % 2 == 0)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isMale(String ssn) {
+		return !isFemale(ssn);
+	}
+	
 	public static void main(String blabla[]) {
 		SSNChecker checker = SSNChecker.getInstance();
 		
