@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
+import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.SchoolArea;

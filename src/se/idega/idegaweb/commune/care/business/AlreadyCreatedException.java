@@ -1,7 +1,7 @@
 /*
  * Created on 20.6.2003
  */
-package se.idega.idegaweb.commune.block.importer.business;
+package se.idega.idegaweb.commune.care.business;
 
 /**
  * @author laddi
