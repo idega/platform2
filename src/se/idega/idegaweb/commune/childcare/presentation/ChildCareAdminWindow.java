@@ -770,7 +770,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, archive.getChild());
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, helper.getApplication().getChild());
 				if (helper.getCurrentCareTimeHours() != null)
 					menu.setSelectedElement(helper.getCurrentCareTimeHours());
 				table.add(menu, 1, row++);
