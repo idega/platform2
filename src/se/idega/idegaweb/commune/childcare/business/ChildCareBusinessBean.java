@@ -1741,7 +1741,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return removeFromQueue(application, user, null);
 	}
 
-	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) throws RemoteException {
+	private boolean removeFromQueue(ChildCareApplication application, User user, int[] providerIDs) {
 		if (providerIDs != null) {
 			for (int i = 0; i < providerIDs.length; i++) {
 				if (application.getProviderId() == providerIDs[i]) { return false; }
@@ -2034,7 +2034,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
      * @param defaultContractChangedBody
 	 * @throws RemoteException
      */
-    private void createMessagesForParentsOnContractCreation( ChildCareApplication application, Locale locale, boolean hasBankId) throws RemoteException {
+    private void createMessagesForParentsOnContractCreation( ChildCareApplication application, Locale locale, boolean hasBankId) {
         String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
         String defaultContractCreatedBody = hasBankId ? "Your child care contract for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
         	String subject = getLocalizedString("child_care.contract_created_subject", "A child care contract has been created", locale);
@@ -2042,7 +2042,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         	sendMessageToParents(application, subject, body);
     }
     
-    private void createMessagesForParentsOnContractCareTimeAlter(ChildCareApplication application, Locale locale,  boolean hasBankId) throws RemoteException {
+    private void createMessagesForParentsOnContractCareTimeAlter(ChildCareApplication application, Locale locale,  boolean hasBankId) {
         String localizeBankIdPrefix = hasBankId ? "_bankId" : "";
         String defaultContractChangedBody = hasBankId ? "Your child care contract with altered care time for {0} has been created. " + "Please sign the contract.\n\nWith best regards,\n{1}" : "Your child care contract with altered care time for {0} has been created and will be sent to you in a few days. " + "Please write in the desired care time, sign it and then return the contract to us.\n\nWith best regards,\n{1}";
         String subject = getLocalizedString("child_care.alter_caretime_subject", "A contract with changed care time has been created", locale);
