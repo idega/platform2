@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu;
@@ -38,6 +39,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title: WorkReportStatsBusinessBean Description: The business bean for generating statistical report on the workreport data. Copyright: Copyright
@@ -231,7 +233,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -441,7 +443,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -588,7 +590,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -715,7 +717,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -924,7 +926,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 		
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1075,7 +1077,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1170,7 +1172,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1318,7 +1320,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1457,7 +1459,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1563,7 +1565,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1699,7 +1701,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 	
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -1850,7 +1852,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2003,7 +2005,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2156,7 +2158,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
@@ -2306,7 +2308,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 	
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -2451,7 +2453,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut(TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"),"GMT"));
 		
 		//PARAMETERS and FIELDS
 		ReportableField leagueString = new ReportableField(FIELD_NAME_LEAGUE_NAME, String.class);
@@ -2469,6 +2471,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField clubType = new ReportableField(FIELD_NAME_CLUB_TYPE, String.class);
 		clubType.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_TYPE, "Club type"), currentLocale);
 		reportCollection.addField(clubType);
+		
+		ReportableField dummyOrderingField = new ReportableField(FIELD_NAME_CLUB_TYPE, String.class);
+		reportCollection.addField(dummyOrderingField);
 		
 		//selected year stuff
 		//tekjur
@@ -2534,10 +2539,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//get the data
 		Collection reports = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
 		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, true);
-		
-		//gera map sem heldur utan um allstï¿½lur fyrir ï¿½ll fï¿½lï¿½g sem ekki hafa hï¿½sta flokk
-		//gera map fyrir ï¿½ll fï¿½lï¿½g meï¿½ hï¿½sta flokk
+
 		Map recordsMapKeyedByLeagueIdentifierAndClubsName = new TreeMap();
+		
 		
 		
 		Iterator iter = reports.iterator();
@@ -2589,7 +2593,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData = new ReportableData();
 						regData.addData(leagueString, leagueIdentifier);
 						regData.addData(clubName, groupName);
-						regData.addData(regionalUnionAbbreviation, getRegionalUnionIdentifier(report));
+						regData.addData(regionalUnionAbbreviation, regionalUnionIdentifier);
 						regData.addData(clubType, getClubTypeString(report));
 						
 						regData.addData(income, new Integer(0));
@@ -2607,6 +2611,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData.addData(comparingRigidMoney, new Integer(0));
 						regData.addData(comparingDebts, new Integer(0));
 						regData.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						
+						regData.addData(dummyOrderingField,"A");
 					}
 					
 					//getWorkReportBusiness().getWorkReportClubAccountRecordHome().
@@ -2632,7 +2638,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					int debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_92000");
 					addToIntegerCount(debts,regData,debtsTotal);
 					//rollingmoney minus debts
-					addToIntegerCount(rollingMoneyMinusDebts,regData,rollingMoneyTotal-debtsTotal);
+					addToIntegerCount(rollingMoneyMinusDebts,regData,(rollingMoneyTotal-debtsTotal));
 					
 					//Amounts for comparingYear
 					if(comparingReportId!=-1 && comparingWrGroupId!=-1){//just zero's otherwise
@@ -2654,18 +2660,184 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_92000");
 						addToIntegerCount(comparingDebts,regData,comparingDebtsTotal);
 						//rollingmoney minus debts
-						addToIntegerCount(comparingRollingMoneyMinusDebts,regData,comparingRollingMoneyTotal-comparingDebtsTotal);
+						addToIntegerCount(comparingRollingMoneyMinusDebts,regData,(comparingRollingMoneyTotal-comparingDebtsTotal));
 					}
 					
 					recordsMapKeyedByLeagueIdentifierAndClubsName.put(mapKey,regData);
 					
-					//decide to what sum row we want to add this records stats
 					
+					//Get and display the report for the league itself
+					/*
+					WorkReport leagueReport = null;
+					try{
+						leagueReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(league.getGroupId().intValue(),league.getYearOfReport().intValue());
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
 					
-					//TODO ADD EXTRA SUMMARY FIELDS
-					//ALWAYS ADD TO THE TOTAL IF NOT A SPECIAL CLUB
-					//GET A WORKREPORTDIVISION BOARD FOR SPECIAL CLUBS
-					//GET THE LEAGUES WORK REPORT
+					WorkReport leagueReport = null;
+					try{
+						leagueReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(league.getGroupId().intValue(),league.getYearOfReport().intValue());
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
+					*/
+					
+					//SUM DATA STARTS
+					WorkReportDivisionBoard division = null;
+					try{
+						division = getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId,wrGroupId);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+					}
+					
+					if(division!=null && division.hasNationalLeague()){
+						String divMapKey = leagueIdentifier+"hasNationalLeagueSum";
+						ReportableData divDataSum = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(divMapKey);
+						if(divDataSum==null){//initialize
+							divDataSum = new ReportableData();
+							divDataSum.addData(leagueString, leagueIdentifier);
+							divDataSum.addData(clubName, "Félög með efstudeild");
+							divDataSum.addData(regionalUnionAbbreviation, "");
+							divDataSum.addData(clubType,"");
+						
+							divDataSum.addData(income, new Integer(0));
+							divDataSum.addData(expenses, new Integer(0));
+							divDataSum.addData(incomeMinusExpenses,new Integer(0));
+							divDataSum.addData(rollingMoney, new Integer(0));
+							divDataSum.addData(rigidMoney, new Integer(0));
+							divDataSum.addData(debts, new Integer(0));
+							divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+						
+							divDataSum.addData(comparingIncome, new Integer(0));
+							divDataSum.addData(comparingExpenses, new Integer(0));
+							divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
+							divDataSum.addData(comparingRollingMoney, new Integer(0));
+							divDataSum.addData(comparingRigidMoney, new Integer(0));
+							divDataSum.addData(comparingDebts, new Integer(0));
+							divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						
+							divDataSum.addData(dummyOrderingField,"C");
+						}
+						
+						addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+						
+						
+						recordsMapKeyedByLeagueIdentifierAndClubsName.put(divMapKey,divDataSum);
+						
+					}
+					else{//add to the total
+						String noDivMapKey = leagueIdentifier+"DoesNotHaveNationalLeagueSum";
+						ReportableData divDataSum = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(noDivMapKey);
+						if(divDataSum==null){//initialize
+							divDataSum = new ReportableData();
+							divDataSum.addData(leagueString, leagueIdentifier);
+							divDataSum.addData(clubName, "Félög án efstudeildar");
+							divDataSum.addData(regionalUnionAbbreviation, "");
+							divDataSum.addData(clubType,"");
+						
+							divDataSum.addData(income, new Integer(0));
+							divDataSum.addData(expenses, new Integer(0));
+							divDataSum.addData(incomeMinusExpenses,new Integer(0));
+							divDataSum.addData(rollingMoney, new Integer(0));
+							divDataSum.addData(rigidMoney, new Integer(0));
+							divDataSum.addData(debts, new Integer(0));
+							divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+						
+							divDataSum.addData(comparingIncome, new Integer(0));
+							divDataSum.addData(comparingExpenses, new Integer(0));
+							divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
+							divDataSum.addData(comparingRollingMoney, new Integer(0));
+							divDataSum.addData(comparingRigidMoney, new Integer(0));
+							divDataSum.addData(comparingDebts, new Integer(0));
+							divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+						
+							divDataSum.addData(dummyOrderingField,"D");
+						}
+						
+						addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+						addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+						
+						
+						recordsMapKeyedByLeagueIdentifierAndClubsName.put(noDivMapKey,divDataSum);
+						
+					}
+					
+					//ALL SUM
+					String allSumKey = leagueIdentifier+"ALLSUM";
+					ReportableData divDataSum = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(allSumKey);
+					if(divDataSum==null){//initialize
+						divDataSum = new ReportableData();
+						divDataSum.addData(leagueString, leagueIdentifier);
+						divDataSum.addData(clubName, "Samtals");
+						divDataSum.addData(regionalUnionAbbreviation, "");
+						divDataSum.addData(clubType,"");
+
+						divDataSum.addData(income, new Integer(0));
+						divDataSum.addData(expenses, new Integer(0));
+						divDataSum.addData(incomeMinusExpenses,new Integer(0));
+						divDataSum.addData(rollingMoney, new Integer(0));
+						divDataSum.addData(rigidMoney, new Integer(0));
+						divDataSum.addData(debts, new Integer(0));
+						divDataSum.addData(rollingMoneyMinusDebts,new Integer(0));
+
+						divDataSum.addData(comparingIncome, new Integer(0));
+						divDataSum.addData(comparingExpenses, new Integer(0));
+						divDataSum.addData(comparingIncomeMinusExpenses,new Integer(0));
+						divDataSum.addData(comparingRollingMoney, new Integer(0));
+						divDataSum.addData(comparingRigidMoney, new Integer(0));
+						divDataSum.addData(comparingDebts, new Integer(0));
+						divDataSum.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+
+						divDataSum.addData(dummyOrderingField,"E");
+					}
+
+					addToIntegerCountFromFieldInAnotherReportableData(income,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(expenses,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(incomeMinusExpenses,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoney,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rigidMoney,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(debts,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(rollingMoneyMinusDebts,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncome,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingExpenses,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingIncomeMinusExpenses,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoney,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRigidMoney,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingDebts,divDataSum,regData);
+					addToIntegerCountFromFieldInAnotherReportableData(comparingRollingMoneyMinusDebts,divDataSum,regData);
+
+
+					recordsMapKeyedByLeagueIdentifierAndClubsName.put(allSumKey,divDataSum);
+
 					
 
 					
@@ -2688,7 +2860,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		reportCollection.addAll(recordsMapKeyedByLeagueIdentifierAndClubsName.values());
 		
-		ReportableField[] sortFields = new ReportableField[] {leagueString,regionalUnionAbbreviation,clubName};
+		ReportableField[] sortFields = new ReportableField[] {leagueString,regionalUnionAbbreviation,clubName,dummyOrderingField};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 
@@ -2719,7 +2891,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -2850,7 +3022,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
 		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
@@ -3111,7 +3283,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -3239,7 +3411,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 	
@@ -3475,7 +3647,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 
@@ -3715,7 +3887,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 
@@ -3894,7 +4066,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 
@@ -4010,7 +4182,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4098,7 +4270,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4213,7 +4385,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4367,7 +4539,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				"workreportreport",
 				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
 				"label",
-				(new IWTimestamp()).getLocaleDateAndTime(currentLocale));
+				TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
 
 		//PARAMETERS that are also FIELDS
 		
@@ -4560,6 +4732,20 @@ private ReportableData addToIntegerCount(ReportableField reportableField, Report
 				count = new Integer(0);
 			}
 		}
+		reportableData.addData(reportableField,count);//swap
+	}
+	
+	return reportableData;
+}
+
+private ReportableData addToIntegerCountFromFieldInAnotherReportableData(ReportableField reportableField, ReportableData reportableData, ReportableData dataToGetCountFrom) {
+	if(reportableData!=null && dataToGetCountFrom!=null){//update count
+		Integer count = (Integer)dataToGetCountFrom.getFieldValue(reportableField);
+		Integer oldCount = (Integer)reportableData.getFieldValue(reportableField);
+		if(count!=null && oldCount!=null) {
+			count = new Integer(oldCount.intValue()+count.intValue());
+		} 
+		
 		reportableData.addData(reportableField,count);//swap
 	}
 	
