@@ -459,7 +459,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	protected InputContainer getInputContainer(String textKey,String defaultTextValue,PresentationObject inputObject){
 		Text tText = this.getLocalizedSmallText(textKey,defaultTextValue);
 		InputContainer iCont = new InputContainer(tText,inputObject);
-		iCont.setCellWith(100);
+		iCont.setCellWidth(200);
 		return iCont;
 	}
 	
