@@ -80,11 +80,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/05 13:56:47 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/05 21:47:58 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.95 $
+ * @version $Revision: 1.96 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -184,11 +184,11 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		link2.addParameter (POSTING_KEY, true + "");
 		int row = 1;
 		final Table htmlTable = createTable (1);
-		htmlTable.add ("<ul><li>", 1, row);
-		htmlTable.add (link1, 1, row);
-		htmlTable.add ("</li><li>", 1, row);
-		htmlTable.add (link2, 1, row);
-		htmlTable.add ("</li></ul>", 1, row++);
+		htmlTable.add ("<li>", 1, row);
+		htmlTable.add (link1, 1, row++);
+		htmlTable.add ("<li>", 1, row);
+		htmlTable.add (link2, 1, row++);
+
 		htmlTable.setHeight (row++, 12);
 		addCancelButton (htmlTable, 1, row++, ACTION_SHOW_PAYMENT);
 		final Form form = new Form ();
