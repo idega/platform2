@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.5 2001/08/28 18:56:55 laddi Exp $
+ * $Id: CampusPage.java,v 1.6 2001/08/29 22:27:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.block.application.presentation.ReferenceNumber;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.interfaceobject.Window;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.textObject.Link;
 import is.idegaweb.campus.service.Menu;
@@ -79,6 +80,18 @@ public class CampusPage extends MainPage{
     ref.setSubmitButtonAlignment("right");
     ref.addHelpButton();
 
+    Window idegaWindow = new Window("Idega","http://www.idega.is");
+      idegaWindow.setMenubar(true);
+      idegaWindow.setResizable(true);
+      idegaWindow.setScrollbar(true);
+      idegaWindow.setToolbar(true);
+      idegaWindow.setTitlebar(true);
+      idegaWindow.setStatus(true);
+      idegaWindow.setHeight(600);
+      idegaWindow.setWidth(800);
+    Link idegaLink = new Link(new TitleIcons(TitleIcons.IDEGALOGO),idegaWindow);
+
+
     addMenuTitle(new TitleIcons(TitleIcons.MAINMENU));
     addRightTitle(new TitleIcons(TitleIcons.LOGIN));
     addTopLeft(new Menu());
@@ -86,6 +99,7 @@ public class CampusPage extends MainPage{
     addTopRightDivider();
     addTopRight(ref);
     addTopRightDivider();
+    addTopRight(idegaLink);
     addMainTitle(new Title());
     addTabs(new Tabber());
   }
