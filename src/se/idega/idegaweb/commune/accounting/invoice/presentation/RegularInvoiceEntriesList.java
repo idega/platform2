@@ -618,9 +618,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		searcher.setUniqueIdentifier("");
 		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
-//		searcher.setHeaderFontStyleName (getHeaderFontStyle());		
-		
-//		searcher.setTextFontStyle(getTextFontStyle());
+		searcher.setHeaderFontStyle (getSmallHeaderFontStyle ());		
+
 
 		if (iwc.getParameter(PAR_SEEK_FROM) != null){
 			searcher.maintainParameter(new Parameter(PAR_SEEK_FROM, iwc.getParameter(PAR_SEEK_FROM)));		

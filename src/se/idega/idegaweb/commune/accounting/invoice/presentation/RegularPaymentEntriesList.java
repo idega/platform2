@@ -644,6 +644,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		searcher.maintainParameter(new Parameter(PAR_OWN_POSTING, " "));		
 		searcher.maintainParameter(new Parameter(PAR_DOUBLE_ENTRY_ACCOUNT, " "));		
 		searcher.setToFormSubmit(true);
+		searcher.setHeaderFontStyle (getSmallHeaderFontStyle ());		
 
 		String pk = iwc.getParameter(PAR_PK);
 		

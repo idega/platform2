@@ -58,11 +58,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/03/12 12:21:56 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/16 11:46:33 $ by $Author: roar $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -531,6 +531,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		searcher.setConstrainToUniqueSearch(false);
 		searcher.maintainParameter(new Parameter(PAR_EDIT_FROM_SCREEN, " "));
 		searcher.setToFormSubmit(true);
+		searcher.setHeaderFontStyle (getSmallHeaderFontStyle ());		
 
 		try{
 			searcher.process(iwc);	
