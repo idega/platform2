@@ -916,6 +916,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 		
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
+		if(application!=null){
+		
 		boolean canCancel = getBusiness().canCancelContract(((Integer)application.getPrimaryKey()).intValue());
 		
 		if (canCancel) {
@@ -963,6 +965,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		else {
 			table.add(getSmallErrorText(localize("child_care.must_remove_future_contracts", "Future contracts must be removed before cancel is possible.")), 1, row++);
+		}
+		}
+		else{
+		    table.add(getSmallErrorText(localize("child_care.no_application_found", "No childcare application found.")), 1, row++);
 		}
 
 		table.add(close, 1, row);
