@@ -162,7 +162,7 @@ public String language = "IS";
                         Flash flashHeader = new Flash("/flash/header.swf",628,278);
                               header.add(flashHeader,1,1);
 
-                        Flash flash = new Flash("http://clarke.idega.is/theTicker.swt",524,13);
+                        Flash flash = new Flash("http://jgenerator.sidan.is/theTicker.swt",524,13);
                               outerTable.add(flash,2,1);
 
                 Paragraph idegaParagraph = new Paragraph("center","idega","idega");
