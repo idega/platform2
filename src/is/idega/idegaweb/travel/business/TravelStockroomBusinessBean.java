@@ -1315,16 +1315,22 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 							int iBookingExtra = getBooker().getBookingsTotalCountByOthersInPool(product, stamp);
 							
 							IWTimestamp date = new IWTimestamp(stamp.getDay(), stamp.getMonth(), stamp.getYear());
-							DayInfo dayInfo = ((DayInfoHome) IDOLookup.getHome(DayInfo.class)).findBySupplyPoolIdAndDate(supplyPoolId.intValue(),date.getDate());
-							if(dayInfo != null) {
-								int count = dayInfo.getCount();
-								count -= iBookingExtra; 
-								return count;
+							try {
+								DayInfo dayInfo = ((DayInfoHome) IDOLookup.getHome(DayInfo.class)).findBySupplyPoolIdAndDate(supplyPoolId.intValue(),date.getDate());
+								if(dayInfo != null) {
+									int count = dayInfo.getCount();
+									count -= iBookingExtra; 
+									returner = new Integer( count );
+								}
+							} catch (FinderException e) {
+								//e.printStackTrace();
 							}
 
-							int max = pDay.getMax();
-							max -= iBookingExtra;
-							returner = new Integer(max);
+							if (returner == null) {
+								int max = pDay.getMax();
+								max -= iBookingExtra;
+								returner = new Integer(max);
+							}
 						} catch (FinderException fe) {
 							//fe.printStackTrace();
 						} catch (Exception e) {
