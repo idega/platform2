@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.68 2003/11/23 23:42:31 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.69 2003/11/24 14:07:43 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -432,7 +432,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 
 		//If there are no conditions on the rule then the rule does satisfies the conditions
-		if (cond != null || cond.isEmpty())
+		if (cond == null || cond.isEmpty())
 			return 1;
 
 		//Go through each condition sent in and try to see if the rule satisfies the conditions it needs
@@ -1595,7 +1595,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					flowID = ((Integer) pfType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
 				flowID = -1;
 			}
 
@@ -1605,7 +1604,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					condTypeID = ((Integer) cType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
 				condTypeID = -1;
 			}
 
