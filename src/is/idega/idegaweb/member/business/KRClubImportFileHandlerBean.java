@@ -116,7 +116,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
         count++;
 
 		
-           if( ! processRecord(item) ) failedRecords.add(item);
+        if( ! processRecord(item) ) failedRecords.add(item);
 
         if( (count % 100) == 0 ){
           System.out.println("KRClubFileHandler processing RECORD ["+count+"] time: "+IWTimestamp.getTimestampRightNow().toString());
@@ -211,6 +211,8 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
       return false;
     }
 
+
+try{
     /**
      * addresses
      */
@@ -218,10 +220,11 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
 
       String addressLine =  getUserProperty(this.COLUMN_ADDRESS);
       if( (addressLine!=null) ){
-        try{
+   
 
         String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
         String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
+        
         
         String postalCode = getUserProperty(COLUMN_POSTAL_CODE);
         String postalName = getUserProperty(COLUMN_POSTAL_CODE_NAME);
@@ -252,7 +255,7 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
         
         //address.setCity("Reykjavik");
         address.setStreetName(streetName);
-        address.setStreetNumber(streetNumber);
+        if( streetNumber!=null ) address.setStreetNumber(streetNumber);
 
         address.store();
 
@@ -260,6 +263,11 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
           user.addAddress(address);
         }
         
+       
+
+
+   }//if ends
+
         
         //phone
 		//@todo look for the phone first to avoid duplicated
@@ -362,17 +370,14 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
         	}	
         	
         	
-        }
+        }    
         
-
+        
     }
      catch(Exception e){
       e.printStackTrace();
       return false;
     }
-   }//if ends
-
-    
 
     /**
      * Save the user to the database
