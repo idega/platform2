@@ -801,7 +801,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			styleBold.setFont(font);			
 			HSSFCell cell = row.createCell((short)0);
 			double divide = 100;
-			double roundedTotalAmount = ((double)(Math.round(totalAmount*100)))/divide;
+			double roundedTotalAmount = (Math.round(totalAmount*100))/divide;
 			//double difference = totalAmount-roundedTotalAmount; 
 			cell.setCellValue("Totalt barnomsorgscheck att utbetala "+roundedTotalAmount);
 			cell.setCellStyle(styleBold);
