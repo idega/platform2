@@ -4725,7 +4725,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				} else if (today.getMonth() == 8 && today.getDay() >= 15) {
 					childYears++;
 				}
-				if (childYears >= 4 || childYears <= 6) {
+				if (childYears >= 4) {
 					list.add(ct);
 				}				
 			} else if (ct.getCode().equals(CareTimeBMPBean.CODE_FSKDEL)) {
@@ -4737,7 +4737,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				} else if (today.getMonth() == 8 && today.getDay() >= 15) {
 					childYears++;
 				}
-				if (childYears >= 4 || childYears <= 5) {
+				if (childYears >= 4) {
 					list.add(ct);
 				}				
 			}
