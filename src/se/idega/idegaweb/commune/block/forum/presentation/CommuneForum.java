@@ -124,7 +124,7 @@ public class CommuneForum extends Forum {
 					Timestamp stamp = topic.getInvalidationDate();
 					
 					if (stamp!=null) {
-						table.add(getFormattedDate(new IWTimestamp(stamp.getTime()),iwc),5,row);
+						table.add(formatText(new IWTimestamp(stamp.getTime()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), _textStyle), 5, row);
 					}
 					
 					try {
@@ -145,7 +145,7 @@ public class CommuneForum extends Forum {
 					
 					if (isModerator || iwc.hasEditPermission(this)) {
 						table.setColumns(7);
-						Link editTopic = new Link(_iwrb.getLocalizedString("edit_topic","Edit"));
+						Link editTopic = new Link(_iwcb.getImage("shared/edit.gif"));
 						editTopic.setAsImageButton(true);
 						editTopic.setWindowToOpen(CommuneForumTopicWindow.class);
 						editTopic.addParameter(CommuneForumTopicEditor.PARAMETER_TOPIC_ID, topic.getID());

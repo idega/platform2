@@ -114,8 +114,9 @@ public class CommuneForumTopicEditor extends CommuneBlock {
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setRows(5);
 		if (category.getDescription() != null)
-			textArea.setDescription(category.getDescription());
+			textArea.setContent(category.getDescription());
 
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.add(getSmallHeader(localize("forum.description", "Description")+":"), 1, row);
 		table.add(textArea, 2, row++);
 
