@@ -12,6 +12,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	private static final String ENTITY_NAME = "cacc_invoice_record";
 
 	private static final String COLUMN_PAYMENT_HEADER = "payment_header";
+	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_PAYMENT_TEXT = "pament_text";
 	private static final String COLUMN_DATE_CREATED = "date_created";
 	private static final String COLUMN_CREATED_BY = "created_by";
@@ -37,6 +38,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_PAYMENT_HEADER, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_STATUS, "", true, true, java.lang.Character.class);
 		addAttribute(COLUMN_PAYMENT_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CREATED_BY, "", true, true, java.lang.String.class, 1000);
@@ -54,6 +56,9 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 	public int getPaymentHeader() {
 		return getIntColumnValue(COLUMN_PAYMENT_HEADER);
+	}
+	public char getStatus() {
+		return getCharColumnValue(COLUMN_STATUS);
 	}
 	public String getPaymentText() {
 		return getStringColumnValue(COLUMN_PAYMENT_TEXT);
@@ -95,6 +100,9 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 
 	public void setPaymentHeader(int i) {
 		setColumn(COLUMN_PAYMENT_HEADER, i);
+	}
+	public void setStatus(char c) {
+		setColumn(COLUMN_PAYMENT_TEXT, c);
 	}
 	public void setPaymentText(String s) {
 		setColumn(COLUMN_PAYMENT_TEXT, s);

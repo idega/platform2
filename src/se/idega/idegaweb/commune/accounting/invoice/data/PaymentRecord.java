@@ -15,6 +15,7 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public int getPaymentHeader();
  public java.lang.String getPaymentText();
  public java.lang.String getRuleSpecType();
+ public char getStatus();
  public int getVATType();
  public void initializeAttributes();
  public void setAmount(float p0);
@@ -29,5 +30,6 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public void setPaymentHeader(int p0);
  public void setPaymentText(java.lang.String p0);
  public void setRuleSpecType(java.lang.String p0);
+ public void setStatus(char p0);
  public void setVATType(int p0);
 }

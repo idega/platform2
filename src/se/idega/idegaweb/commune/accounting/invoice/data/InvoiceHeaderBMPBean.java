@@ -21,7 +21,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_SCHOOL_CATEGORY_ID = "main_school_category_id";
 	private static final String COLUMN_PERIOD = "period";
 	private static final String COLUMN_CUSTODIAN_ID = "custodian_id";	//Invoice receiver
-//	private static final String COLUMN_REFERENCE = "reference";			//Probably forgotten to remove from req. spec.
 	private static final String COLUMN_STATUS = "status";
 	private static final String COLUMN_DATE_CREATED = "date_created";
 	private static final String COLUMN_DATE_ADJUSTED = "date_adjusted";
@@ -31,12 +30,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	private static final String COLUMN_OWN_POSTING = "own_postiong";
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	
-	private static final char STATUS_BASE = 'U';		//Underlag
-	private static final char STATUS_PRELIMINARY = 'P';
-	private static final char STATUS_TEST = 'T';
-	private static final char STATUS_LOCKED = 'L';
-	private static final char STATUS_HISTORY = 'H';
-
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
@@ -51,7 +44,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
-//		addAttribute(COLUMN_REFERENCE, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_DATE_ADJUSTED, "", true, true, java.sql.Date.class);
@@ -73,9 +65,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public int getCustodianId() {
 		return getIntColumnValue(COLUMN_CUSTODIAN_ID);
 	}
-//	public int getReference() {
-//		return getIntColumnValue(COLUMN_REFERENCE);
-//	}
 	public char getStatus() {
 		return getCharColumnValue(COLUMN_STATUS);
 	}
@@ -117,13 +106,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void setCustodianId(User u) {
 		setColumn(COLUMN_CUSTODIAN_ID, u);
 	}
-//	public void setReference(int i) {
-//		setColumn(COLUMN_REFERENCE, i);
-//	}
-//	public void setReference(School s) {
-//		setColumn(COLUMN_REFERENCE, s);
-//	}
-	
 	public void setStatus(char c) {
 		setColumn(COLUMN_STATUS, c);
 	}
@@ -149,22 +131,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		setColumn(COLUMN_DOUBLE_POSTING, s);
 	}
 	
-	public char getStatusBase(){
-		return STATUS_BASE;
-	}
-	public char getStatusPreliminary(){
-		return STATUS_PRELIMINARY;
-	}
-	public char getStatusTest(){
-		return STATUS_TEST;
-	}
-	public char getStatusLocked(){
-		return STATUS_LOCKED;
-	}
-	public char getStatusHistory(){
-		return STATUS_HISTORY;
-	}
-
 	public Integer ejbFindByCustodian(User custodian) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
