@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.70 2005/03/19 16:38:22 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.71 2005/04/06 09:27:52 laddi Exp $
+ * Created on 6.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.block.school.data;
 import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFactory;
 import com.idega.data.IDOLookupException;
@@ -23,10 +24,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO laddi Describe Type SchoolClassMemberHomeImpl
  * </p>
- *  Last modified: $Date: 2005/03/19 16:38:22 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/06 09:27:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -560,6 +561,15 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 				managementType, communeId, seasonId);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public int getNumberOfPlacingsAtSchool(School school, SchoolSeason season, SchoolYear department,
+			SchoolStudyPath instrument, String types, Commune commune) throws IDOException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		int theReturn = ((SchoolClassMemberBMPBean) entity).ejbHomeGetNumberOfPlacingsAtSchool(school, season, department,
+				instrument, types, commune);
+		this.idoCheckInPooledEntity(entity);
+		return theReturn;
 	}
 
 	public Collection getInvoiceIntervalTypes() {

@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.70 2005/03/19 16:38:21 laddi Exp $
- * Created on 19.3.2005
+ * $Id: SchoolClassMemberHome.java,v 1.71 2005/04/06 09:27:52 laddi Exp $
+ * Created on 6.4.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.block.school.data;
 import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOException;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookupException;
@@ -23,10 +24,10 @@ import com.idega.user.data.User;
  * <p>
  * TODO laddi Describe Type SchoolClassMemberHome
  * </p>
- *  Last modified: $Date: 2005/03/19 16:38:21 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/04/06 09:27:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -391,6 +392,12 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 */
 	public Collection findByCategorydManagementCommune(String category, String managementType, int communeId, int seasonId)
 			throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetNumberOfPlacingsAtSchool
+	 */
+	public int getNumberOfPlacingsAtSchool(School school, SchoolSeason season, SchoolYear department,
+			SchoolStudyPath instrument, String types, Commune commune) throws IDOException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbHomeGetInvoiceIntervalTypes

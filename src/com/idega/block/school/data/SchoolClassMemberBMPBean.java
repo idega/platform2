@@ -5,11 +5,12 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressBMPBean;
+import com.idega.core.location.data.AddressTypeBMPBean;
 import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOCompositePrimaryKeyException;
@@ -22,7 +23,9 @@ import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.Column;
+import com.idega.data.query.CountColumn;
 import com.idega.data.query.Criteria;
+import com.idega.data.query.InCriteria;
 import com.idega.data.query.JoinCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.OR;
@@ -51,8 +54,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/03/19 16:38:21 $ by $Author: laddi $
- * @version $Revision: 1.131 $
+ *         Last modified: $Date: 2005/04/06 09:27:52 $ by $Author: laddi $
+ * @version $Revision: 1.132 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1637,6 +1640,62 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		query.appendAndEqualsQuoted("s.management_type", managementType);
 
 		return idoFindPKsByQuery(query);
+	}
+
+	public int ejbHomeGetNumberOfPlacingsAtSchool(School school, SchoolSeason season, SchoolYear department, SchoolStudyPath instrument, String types, Commune commune) throws IDOException {
+		Table student = new Table(this, "m");
+		Table schoolClass = new Table(SchoolClass.class, "s");
+		Table instruments = new Table(SchoolStudyPath.class, "sp");
+		Table user = new Table(User.class);
+		Table address = new Table(Address.class);
+		Table postal = new Table(PostalCode.class);
+		
+		SelectQuery query = new SelectQuery(student);
+		query.addColumn(new CountColumn(student, this.getIDColumnName()));
+		try {
+			query.addJoin(student, schoolClass);
+		}
+		catch (IDORelationshipException ile) {
+			throw new IDOException(ile.getMessage());
+		}
+		if (instrument != null) {
+			try {
+				query.addManyToManyJoin(student, instruments, "csp");
+			}
+			catch (IDORelationshipException ile) {
+				throw new IDOException(ile.getMessage());
+			}
+		}
+		
+		if (school != null) {
+			query.addCriteria(new MatchCriteria(schoolClass, "sch_school_id", MatchCriteria.EQUALS, school));
+		}
+		if (season != null) {
+			query.addCriteria(new MatchCriteria(schoolClass, "sch_school_season_id", MatchCriteria.EQUALS, season));
+		}
+		if (department != null) {
+			query.addCriteria(new MatchCriteria(student, SCHOOL_YEAR, MatchCriteria.EQUALS, department));
+		}
+		if (instrument != null) {
+			try {
+				query.addCriteria(new MatchCriteria(instruments, instruments.getPrimaryKeyColumnName(), MatchCriteria.EQUALS, instrument));
+			}
+			catch (IDOCompositePrimaryKeyException icpke) {
+				throw new IDOException(icpke.getMessage());
+			}
+		}
+		if (types != null) {
+			query.addCriteria(new InCriteria(student, SCHOOL_TYPE, types));
+		}
+		if (commune != null) {
+			query.addJoin(student, user);
+			query.addJoin(user, address);
+			query.addJoin(address, postal);
+			query.addCriteria(new MatchCriteria(address, AddressBMPBean.getColumnNameAddressTypeId(), MatchCriteria.EQUALS, AddressTypeBMPBean.ADDRESS_1));
+			query.addCriteria(new MatchCriteria(postal, "ic_commune_id", MatchCriteria.EQUALS, commune));
+		}
+		
+		return idoGetNumberOfRecords(query);
 	}
 
 	/**
