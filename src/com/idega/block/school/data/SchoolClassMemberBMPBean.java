@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/07/02 07:44:37 $ by $Author: laddi $
- * @version $Revision: 1.120 $
+ *         Last modified: $Date: 2004/09/15 09:34:09 $ by $Author: gummi $
+ * @version $Revision: 1.121 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1249,7 +1249,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 				query.append(variables[1]);
 				query.append(".");
 				query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_STATUS).getSQLFieldName());
-				query.appendInArrayWithSingleQuotes(relationStatus);
+				if(relationStatus.length==1){
+					query.appendEqualSign().appendWithinSingleQuotes(relationStatus[0]);
+				} else {
+					query.appendInArrayWithSingleQuotes(relationStatus);
+				}
 			}
 
 			query.appendAnd();
@@ -1271,7 +1275,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			query.append(".IC_USER_ID");
 			query.appendEqualSign();
 			query.append(variables[4]);
-			query.append(".ic_address_id");
+			query.append(".IC_USER_ID");
 
 			query.appendAnd();
 			query.append(variables[4]);
