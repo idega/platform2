@@ -123,6 +123,7 @@ public class ContractReSignWindow extends Window{
         boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
+          T.add(new HiddenInput("us_id",String.valueOf(eContract.getUserId().intValue())),1,row);
           T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
           T.add(Edit.formatText(user.getName()),2,row);
           row++;
@@ -198,6 +199,7 @@ public class ContractReSignWindow extends Window{
   private void doReSignContract(IWContext iwc){
 
     int id = Integer.parseInt(iwc.getParameter("contract_id"));
+    int usid = Integer.parseInt(iwc.getParameter("us_id"));
     String sInfo = iwc.getParameter("resign_info");
     if(sInfo == null)
       sInfo = "";
@@ -210,7 +212,7 @@ public class ContractReSignWindow extends Window{
       ContractBusiness.endContract(id,movDate,sInfo,datesync);
 
     }
-    else if(eUser !=null){
+    else if(eUser !=null && usid == eUser.getID()){
       ContractBusiness.resignContract(id,movDate,sInfo,datesync);
 
     }

@@ -96,14 +96,9 @@ public class CampusContracts extends Block{
 
     if(isAdmin){
         add(statusForm());
-        if(iwc.getParameter("sign")!=null){
-          doSignContract(iwc);
-          add(getContractTable(iwc));
+        if(iwc.getParameter("garbage")!=null){
+          doGarbageContract(iwc);
         }
-        else if(iwc.getParameter("signed_id")!=null){
-          add(getSignatureTable(iwc));
-        }
-        else
           add(getContractTable(iwc));
       }
 
@@ -278,6 +273,8 @@ public class CampusContracts extends Block{
     Image resignImage = iwb.getImage("/scissors.gif");
     Image keyImage = iwb.getImage("/key.gif");
     Image nokeyImage = iwb.getImage("/nokey.gif");
+    Image garbageImage = iwb.getImage("/trashcan.gif");
+    boolean garbage = false;
     int row = 1;
     int col = 1;
     DataTable T = new DataTable();
@@ -285,7 +282,12 @@ public class CampusContracts extends Block{
     T.setTitlesHorizontal(true);
     T.setWidth("100%");
     T.add(Edit.formatText("#"),col++,1);
-    T.add((printImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("print","Print")
+    if(sGlobalStatus.equals(Contract.statusEnded) || sGlobalStatus.equals(Contract.statusResigned) || sGlobalStatus.equals(Contract.statusRejected)){
+      T.add((garbageImage),col++,1);
+      garbage = true;
+    }
+    else
+      T.add((printImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("print","Print")
     T.add((resignImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
     T.add((registerImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
     //col = 4;
@@ -318,7 +320,10 @@ public class CampusContracts extends Block{
           A = new Apartment(C.getApartmentId().intValue());
           T.add(getEditLink(Edit.formatText(i+1),C.getID()),col++,row);
           //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
-          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
+          if(garbage)
+            T.add(getGarbageLink(garbageImage,C.getID()),col++,row);
+          else
+            T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
           if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
@@ -379,11 +384,11 @@ public class CampusContracts extends Block{
     }
   }
 
-  private void doSignContract(IWContext iwc){
-    int id = Integer.parseInt(iwc.getParameter("signed_id"));
+  private void doGarbageContract(IWContext iwc){
+    int id = Integer.parseInt(iwc.getParameter("garbage"));
     try {
       Contract eContract = new Contract(id);
-      eContract.setStatusSigned();
+      eContract.setStatusGarbage();
       eContract.update();
     }
     catch (SQLException ex) {
@@ -412,7 +417,9 @@ public class CampusContracts extends Block{
       case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
       case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
       case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
+      case 'U': r = iwrb.getLocalizedString("resigned","Resigned");   break;
       case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
+      case 'G': r = iwrb.getLocalizedString("garbaged","Canned");  break;
     }
     return r;
   }
@@ -423,7 +430,7 @@ public class CampusContracts extends Block{
     drp.addMenuElement("P",getStatus("P"));
     drp.addMenuElement("S",getStatus("S"));
     drp.addMenuElement("R",getStatus("R"));
-    drp.addMenuElement("T",getStatus("T"));
+    drp.addMenuElement("U",getStatus("U"));
     drp.addMenuElement("E",getStatus("E"));
     drp.setSelectedElement(selected);
     return drp;
@@ -477,6 +484,12 @@ public class CampusContracts extends Block{
     Link L = new Link(MO);
 		L.setWindowToOpen(ContractFilerWindow.class);
     L.addParameter(ContractFiler.prmManyIds,ids);
+    return L;
+  }
+
+   public Link getGarbageLink(PresentationObject MO,int contractId){
+    Link L = new Link(MO);
+    L.addParameter("garbage",contractId);
     return L;
   }
 
