@@ -19,56 +19,55 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/08/29 14:06:39 $ by $Author: staffan $
+ * Last modified: $Date: 2003/09/02 15:58:07 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
  */
 public class InvoiceByCompensationView extends CommuneBlock {
+    private static final String PREFIX = "CompByInv_";
 
     private static final String BACK_DEFAULT = "Tillbaka";
-    private static final String BACK_KEY = "CompByInv_back";
+    private static final String BACK_KEY = PREFIX + "back";
     private static final String CANCEL_DEFAULT = "Avbryt";
-    private static final String CANCEL_KEY = "CompByInv_cancel";
+    private static final String CANCEL_KEY = PREFIX + "cancel";
     private static final String COMPENSATIONBYINVOICE_DEFAULT
         = "Ersättning mot faktura";
     private static final String COMPENSATIONBYINVOICE_KEY
-        = "CompByInv_compensationByInvoice";
-    private static final String INVOICEINTERVAL_DEFAULT
-        = "Fakturaintervall";
+        = PREFIX + "compensationByInvoice";
+    private static final String INVOICEINTERVAL_DEFAULT = "Fakturaintervall";
     private static final String INVOICEINTERVAL_KEY
-        = "CompByInv_invoiceInterval";
+        = PREFIX + "invoiceInterval";
     private static final String ISUPDATED_DEFAULT = " är nu ändrad till ";
-    private static final String ISUPDATED_KEY = "CompByInv_isUpdated";
+    private static final String ISUPDATED_KEY = PREFIX + "isUpdated";
     private static final String LATESTINVOICEDATE_DEFAULT
         = "Senaste fakturadatum";
     private static final String LATESTINVOICEDATE_KEY
-        = "CompByInv_latestInvoiceDate";
+        = PREFIX + "latestInvoiceDate";
     private static final String MAINACTIVITY_DEFAULT = "Huvudverksamhet";
-    private static final String MAINACTIVITY_KEY = "CompByInv_mainActivity";
-    private static final String MEMBERID_KEY = "CompByInv_memberId";
+    private static final String MAINACTIVITY_KEY = PREFIX + "mainActivity";
+    private static final String MEMBERID_KEY = PREFIX + "memberId";
     private static final String NAME_DEFAULT = "Namn";
-    private static final String NAME_KEY = "CompByInv_name";
+    private static final String NAME_KEY = PREFIX + "name";
     private static final String PROVIDER_DEFAULT = "Anordnare";
-    private static final String PROVIDER_KEY = "CompByInv_provider";
+    private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SAVE_DEFAULT = "Spara";
-    private static final String SAVE_KEY = "CompByInv_save";
+    private static final String SAVE_KEY = PREFIX + "save";
     private static final String SCHOOL_DEFAULT = "Skola";
-    private static final String SCHOOL_KEY = "CompByInv_school";
+    private static final String SCHOOL_KEY = PREFIX + "school";
     private static final String SSN_DEFAULT = "Personnummer";
-    private static final String SSN_KEY = "CompByInv_ssn";
+    private static final String SSN_KEY = PREFIX + "ssn";
     private static final String WRONGDATEFORMAT_DEFAULT
         = "Felaktigt datumformat";
     private static final String WRONGDATEFORMAT_KEY
-        = "CompByInv_wrongDateFormat";
+        = PREFIX + "wrongDateFormat";
 
-    private static final String ACTION_KEY = "CompByInv_action";
-    private static final String ACTION_SAVE_KEY = "CompByInv_actionSave";
-    private static final String ACTION_SHOWUSER_KEY
-        = "CompByInv_actionShowUser";
+    private static final String ACTION_KEY = PREFIX + "action";
+    private static final String ACTION_SAVE_KEY = PREFIX + "actionSave";
+    private static final String ACTION_SHOWUSER_KEY = PREFIX + "actionShowUser";
 
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
