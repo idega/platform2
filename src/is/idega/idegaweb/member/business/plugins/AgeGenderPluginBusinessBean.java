@@ -247,7 +247,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException {
-		return null;
+		return new ArrayList();
 	}
 
 	/**
