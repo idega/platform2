@@ -47,7 +47,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_PAYMENT_HEADER, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_PAYMENT_TEXT, "", true, true, java.lang.String.class, 1000);
