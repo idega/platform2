@@ -212,20 +212,21 @@ public class Member extends com.idega.data.genericentity.Member {
   public int getMainUnionID() throws SQLException {
     int skilari=1;
 
-    Union[] union = (Union[]) this.findRelated(new Union());
+    UnionMemberInfo[] union = (UnionMemberInfo[]) UnionMemberInfo.getStaticInstance("com.idega.projects.golf.entity.UnionMemberInfo").findAll("select * from union_member_info where member_id = "+this.getID());
 
     for( int i=0; i < union.length ; i++ ){
-      UnionMemberInfo uni = this.getUnionMemberInfo(union[i].getID());
-      if(uni!=null){
-        String type = uni.getMembershipType();
-        if( "main".equalsIgnoreCase(type) ) skilari = union[i].getID();
-      }
-      //else if( (uni==null) && (union.length==1) ){
-        else{
-        //for club admins that do not have a unionMemberInfo
-        skilari =  union[0].getID();
+      if( "main".equalsIgnoreCase(union[i].getMembershipType()) && "A".equalsIgnoreCase(union[i].getMemberStatus())) {
+        skilari = union[i].getUnionID();
       }
     }
+
+    if ( union.length == 0 ) {
+      Union[] unionMember = (Union[]) this.findRelated(new Union());
+      if ( unionMember.length > 0 ) {
+        skilari = unionMember[0].getID();
+      }
+    }
+
     return skilari;
   }
 
