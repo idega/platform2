@@ -79,6 +79,7 @@ private boolean _showMobilePhone;
 private String _imageWidth;
 private String _imageHeight;
 private String _nameWidth;
+private String _attributesWidth;
 
 private String _width;
 private String _linkStyle;
@@ -465,8 +466,8 @@ private Table _myTable;
     }
 
     textTable.setWidth(1,"100");
-    if ( _nameWidth != null )
-      textTable.setWidth(1,_nameWidth);
+    if ( _attributesWidth != null )
+      textTable.setWidth(1,_attributesWidth);
     textTable.setColumnVerticalAlignment(1,"top");
     textTable.setColumnVerticalAlignment(2,"top");
     userTable.setColumnVerticalAlignment(1,"top");
@@ -729,6 +730,10 @@ private Table _myTable;
 
   public void setNameWidth(String width) {
     _nameWidth = width;
+  }
+
+  public void setAttributesWidth(String width) {
+    _attributesWidth = width;
   }
 
   public void setTextStyle(String style) {
