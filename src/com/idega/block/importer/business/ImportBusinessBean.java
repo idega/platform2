@@ -199,11 +199,11 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 		{
 			reportFilename = reportFilename.substring(i+1);
 		}
-		i = reportFilename.lastIndexOf('.');
-		if(i>0)
-		{
-			reportFilename = reportFilename.substring(0,i);
-		}
+//		i = reportFilename.lastIndexOf('.');
+//		if(i>0)
+//		{
+//			reportFilename = reportFilename.substring(0,i);
+//		}
 		reportFilename = reportFilename+".report";
 		
 		ICFile reportFile = null;
