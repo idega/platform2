@@ -581,14 +581,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       return;
     }
     Integer accountKey;
-    try {
-      accountKey = new Integer(pathShortKey.toString());
-    }
-    catch (NumberFormatException ex) {
+    accountKey = (Integer) accountKeyNamePrimaryKey.get(pathShortKey);
+    if (accountKey == null) {
       String message =
-        "[WorkReportAccountEditor]: Can't convert pathShortKey to an integer value.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
+        "[WorkReportAccountEditor]: Can't find corresponding primary key to pathShortKey.";
+      System.err.println(message);
       // give up
       return;
     }
