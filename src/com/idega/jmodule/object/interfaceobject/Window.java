@@ -79,6 +79,14 @@ public Window(String name, int width, int height, String url){
 	setSettings();
 }
 
+public Window(String name,String classToInstanciate,String template){
+	this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
+}
+
+public Window(String name,Class classToInstanciate,Class template){
+	this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
+}
+
 private void setSettings(){
         setID();
 	setToolbar(false);

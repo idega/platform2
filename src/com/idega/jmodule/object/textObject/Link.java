@@ -243,7 +243,8 @@ public void addParameter(String ParameterName, String ParameterValue){
   if( (ParameterName!=null) && (ParameterValue!=null)){
     if( parameterString==null ){
       parameterString = new StringBuffer();
-      parameterString.append("?");
+      //parameterString.append("?");
+      parameterString.append("&");
     }
     else parameterString.append("&");
 
@@ -494,18 +495,31 @@ public String getParameterString(ModuleInfo modinfo,String URL){
           /**
           *Temporary solution??? :// in link then no idega_session_id
           */
-          if (addSessionId && (!modinfo.isSearchEngine()) ){
-            if ( parameterString.toString().indexOf("?") == -1 ){
-              parameterString.append("?");
+          if(URL.indexOf("?")==-1){
+            if (addSessionId && (!modinfo.isSearchEngine()) ){
+              if ( parameterString.toString().indexOf("?") == -1 ) {
+                //parameterString.append("?");
+                parameterString.insert(0,'?');
+              }
+              //else{
+               parameterString.append("&");
+              //}
+
+              if(URL.indexOf("://") == -1){
+                parameterString.append("idega_session_id=");
+                parameterString.append(modinfo.getSession().getId());
+              }
             }
-            else{
-             parameterString.append("&");
+	        }
+          else{
+            if (addSessionId && (!modinfo.isSearchEngine()) ){
+              parameterString.append("&");
+              if(URL.indexOf("://") == -1){
+                parameterString.append("idega_session_id=");
+                parameterString.append(modinfo.getSession().getId());
+              }
             }
 
-            if(URL.indexOf("://") == -1){
-              parameterString.append("idega_session_id=");
-              parameterString.append(modinfo.getSession().getId());
-            }
           }
 
           return parameterString.toString();
