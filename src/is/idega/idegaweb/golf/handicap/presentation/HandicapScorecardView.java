@@ -99,6 +99,7 @@ public class HandicapScorecardView extends GolfWindow {
 			int par_total = 0;
 			int bogey_total = 0;
 			int dbogey_total = 0;
+			int parThrees = 0;
 			String litur = "";
 
 			for (int a = 0; a < stroke.length; a++) {
@@ -140,6 +141,9 @@ public class HandicapScorecardView extends GolfWindow {
 
 				int par = stroke[a].getHolePar();
 				total_par += par;
+				if (par == 3) {
+					++parThrees;
+				}
 
 				int handicap = stroke[a].getHoleHandicap();
 
@@ -335,7 +339,8 @@ public class HandicapScorecardView extends GolfWindow {
 			infoTable.setColumnAlignment(3, "center");
 			infoTable.setRowAlignment(1, "center");
 
-			Statistic[] statistic = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select statistic.* from statistic,tee where tee.tee_id = statistic.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
+			Statistic[] statistic = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select * from statistic where scorecard_id = " + scorecard_id);
+//			Statistic[] statistic = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select statistic.* from statistic,tee where tee.tee_id = statistic.tee_id and scorecard_id = " + scorecard_id + " order by hole_number");
 
 			int total_fairway = 0;
 			int total_greens = 0;
@@ -344,17 +349,21 @@ public class HandicapScorecardView extends GolfWindow {
 			for (int a = 0; a < statistic.length; a++) {
 
 				int fairway_hit = statistic[a].getFairway();
-				total_fairway += fairway_hit;
+				if (fairway_hit > 0) {
+					total_fairway += fairway_hit;
+				}
 
 				int greens_hit = statistic[a].getGreens();
-				total_greens += greens_hit;
+				if (greens_hit > 0) {
+					total_greens += greens_hit;
+				}
 
 				int nr_putts = statistic[a].getPutts();
 				total_putts += nr_putts;
 
 			}
 
-			Text totalFairwayText = getSmallText(total_fairway + "/" + (statistic.length - 4));
+			Text totalFairwayText = getSmallText(total_fairway + "/" + (statistic.length - parThrees));
 			Text totalGreensText = getSmallText(total_greens + "/" + statistic.length);
 			Text totalPuttsText = getSmallText(String.valueOf(total_putts));
 
@@ -373,7 +382,7 @@ public class HandicapScorecardView extends GolfWindow {
 			String medalputts = "";
 
 			if (total_fairway != 0) {
-				medalfairway = scaleDecimals(String.valueOf((double) total_fairway / (statistic.length - 4) * 100), 2);
+				medalfairway = scaleDecimals(String.valueOf((double) total_fairway / (statistic.length - parThrees) * 100), 2);
 			}
 
 			if (total_greens != 0) {
