@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.6 2003/08/25 15:41:53 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.7 2003/08/28 08:50:42 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,17 +22,18 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/25 15:41:53 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/28 08:50:42 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
 	private final static String KP = "vat_error."; // key prefix 
 
 	public final static String KEY_DATE_FORMAT = KP + "date_format";
-	public final static String KEY_PERIOD_VALUES = KP + "period_value";
+	public final static String KEY_SEARCH_PERIOD_VALUES = KP + "search_period_values";
+	public final static String KEY_PERIOD_VALUES = KP + "period_values";
 	public final static String KEY_FROM_DATE_MISSING = KP + "from_date_missing";
 	public final static String KEY_TO_DATE_MISSING = KP + "to_date_missing";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
@@ -45,7 +46,8 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_CANNOT_FIND_VAT_REGULATION = KP + "cannot_find_vat_regulation";
 
 	public final static String DEFAULT_DATE_FORMAT = "Datum mŒste anges pŒ formen MM, MMDD, eller MMDD.";
-	public final static String DEFAULT_PERIOD_VALUES = "Sškperiodens startdatum mŒste vara mindre eller lika med slutdatum.";
+	public final static String DEFAULT_SEARCH_PERIOD_VALUES = "Sškperiodens startdatum mŒste vara mindre eller lika med slutdatum.";
+	public final static String DEFAULT_PERIOD_VALUES = "Periodens startdatum mŒste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_FROM_DATE_MISSING = "Periodens startdatum mŒste fyllas i.";
 	public final static String DEFAULT_TO_DATE_MISSING = "Periodens slutdatum mŒste fyllas i.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "BenŠmning av momssatsen mŒste fyllas i.";
@@ -119,7 +121,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			
 			if ((periodFrom != null) && (periodTo != null)) {
 				if (periodFrom.getTime() > periodTo.getTime()) {
-					throw new VATException(KEY_PERIOD_VALUES, DEFAULT_PERIOD_VALUES);
+					throw new VATException(KEY_SEARCH_PERIOD_VALUES, DEFAULT_SEARCH_PERIOD_VALUES);
 				}
 			}
 
@@ -175,6 +177,10 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			if (periodTo == null) {
 				throw new VATException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
 			}
+		}
+		
+		if (periodFrom.getTime() > periodTo.getTime()) {
+			throw new VATException(KEY_PERIOD_VALUES, DEFAULT_PERIOD_VALUES);
 		}
 
 		// Description
