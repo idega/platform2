@@ -375,5 +375,12 @@ public int getNumberOfUsersNotAssignedToClassOnGivenDate(com.idega.user.data.Gro
 	return theReturn;
 }
 
+public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(com.idega.user.data.Group p0,java.sql.Date p1,com.idega.block.school.data.SchoolSeason p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((SchoolClassMemberBMPBean)entity).ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDateNew(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

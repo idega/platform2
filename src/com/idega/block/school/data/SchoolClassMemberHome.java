@@ -56,5 +56,6 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public int getNumberOfPlacings(int p0)throws com.idega.data.IDOException;
  public int getNumberOfPlacingsAtSchool(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfUsersNotAssignedToClassOnGivenDate(com.idega.user.data.Group p0,java.sql.Date p1,java.util.Collection p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;
-
+ public int getNumberOfUsersNotAssignedToClassOnGivenDateNew(com.idega.user.data.Group p0,java.sql.Date p1,com.idega.block.school.data.SchoolSeason p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;
+ 
 }

@@ -27,8 +27,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/17 13:38:25 $ by $Author: staffan $
- * @version $Revision: 1.100 $
+ * Last modified: $Date: 2004/03/24 11:27:30 $ by $Author: joakim $
+ * @version $Revision: 1.101 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1172,8 +1172,140 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return -1;
 	}
-	 
-    public Collection ejbFindAllByUserAndPeriodAndSchoolCategory
+
+	/**
+	 * The above function will fail because there are too many items generated in
+	 * subQuery.appendInCollection(classes) . This function does the same thing, but creates
+	 * another subquery instead of the list of classes as above.
+	 */
+	public int ejbHomeGetNumberOfUsersNotAssignedToClassOnGivenDateNew(Group citizenGroup, Date date, SchoolSeason schoolSeason, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException{
+		try {
+			
+			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
+			String usrIdColumn = usrDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
+			IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+
+			IDOEntityDefinition schoolClassDef = IDOLookup.getEntityDefinitionForClass(SchoolClass.class);
+			String schoolClassIdColumn = schoolClassDef.getPrimaryKeyDefinition().getField().getSQLFieldName();
+			
+			IDOEntityField dateOfBirth = usrDef.findFieldByUniqueName(User.FIELD_DATE_OF_BIRTH);
+
+			//relationStatus could be as parameter to this method
+			String[] relationStatus = new String[1];
+			relationStatus[0] = GroupRelation.STATUS_ACTIVE;
+			
+			String[] tables = new String[2];
+			String[] variables = new String[2];
+			//table name
+			tables[0] = usrDef.getSQLTableName();
+			//	as variable
+			variables[0] = "u";
+			//table name
+			tables[1] = grRelDef.getSQLTableName();
+			//	as variable
+			variables[1] = "gr_rel";
+
+			IDOQuery query = this.idoQuery();
+			
+			query.appendSelectCount();
+			//from
+			query.appendFrom(tables,variables);
+			//where
+			query.appendWhere();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(citizenGroup.getPrimaryKey());
+			//and
+			query.appendAnd();
+			query.append(variables[1]);
+			query.append(".");
+			query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_RELATED_GROUP).getSQLFieldName());
+			query.appendEqualSign();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(usrIdColumn);
+			
+			
+			//and if relationstatus
+			if(relationStatus!= null){
+				//and
+				query.appendAnd();
+				query.append(variables[1]);
+				query.append(".");
+				query.append(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_STATUS).getSQLFieldName());
+				query.appendInArrayWithSingleQuotes(relationStatus);		
+			}
+			
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(dateOfBirth);
+			query.appendGreaterThanOrEqualsSign();
+			query.append(firstDateOfBirth);
+			
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(dateOfBirth);
+			query.appendLessThanOrEqualsSign();
+			query.append(lastDateOfBirth);
+			
+			query.appendAnd();
+			query.append(variables[0]);
+			query.append(".");
+			query.append(usrIdColumn);
+			
+			IDOQuery subQuery = this.idoQuery();
+			
+			subQuery.appendSelect();
+			subQuery.append(" usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendFrom();
+			subQuery.append(this.getEntityName());
+			subQuery.append(" cm, ");
+			subQuery.append(usrDef.getSQLTableName());
+			subQuery.append(" usr ");
+			subQuery.appendWhere();
+			subQuery.append("usr.");
+			subQuery.append(usrIdColumn);
+			subQuery.appendEqualSign();
+			subQuery.append("cm.");
+			subQuery.append(MEMBER);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(REGISTER_DATE);
+			subQuery.appendLessThanOrEqualsSign();
+			subQuery.append(date);
+			
+			subQuery.appendAnd();
+			subQuery.append("cm.");
+			subQuery.append(SCHOOLCLASS);
+			
+			IDOQuery subSubQuery = this.idoQuery();
+			
+			subSubQuery.appendSelect();
+			subSubQuery.append(schoolClassIdColumn);		//" SCH_SCHOOL_CLASS_ID "
+			subSubQuery.appendFrom();
+			subSubQuery.append(schoolClassDef.getSQLTableName());
+			subSubQuery.appendWhereEquals("SCH_SCHOOL_SEASON_ID",schoolSeason.getPrimaryKey().toString());
+		
+			subQuery.appendIn(subSubQuery);
+			query.appendNotIn(subQuery);
+			
+			System.out.println("SQL -> "+this.getClass()+":"+query);
+			
+			return idoGetNumberOfRecords(query);
+		} catch (IDOCompositePrimaryKeyException e) {
+			e.printStackTrace();
+		} 
+		
+		return -1;
+	}
+	
+	public Collection ejbFindAllByUserAndPeriodAndSchoolCategory
         (User child, Date period, SchoolCategory category)
         throws FinderException {
 		final IDOQuery sql = idoQuery ();
