@@ -3084,9 +3084,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
-	
-	
-	
 	/*
 	 * Report B12.5.1 of the ISI Specs
 	 */
@@ -3146,17 +3143,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//the club
 			WorkReport report = (WorkReport) iter.next();
 			String cName = report.getGroupName();
-			System.out.print("Processing club " + cName);
+			//System.out.print("Processing club " + cName);
 
 			boolean showClub = showClubType(report, type) && showClubStatus(report, status);
 			if(!showClub) {
-				System.out.println(" (skipped)");
+				//System.out.println(" (skipped)");
 				continue;
 			}
-			System.out.println();
+			if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(report.getGroupType())) {
+				// don't show leagues
+				continue;
+			}
+			//System.out.println();
 			
 			String reportStatus = report.getStatus();
-			System.out.println("Status of report is " + reportStatus);
+			//System.out.println("Status of report is " + reportStatus);
 			String statusString = "";
 			if(WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
 				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_DONE, "Done");
@@ -3372,6 +3373,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//the club
 			WorkReport report = (WorkReport) iter.next();
 			String cName = report.getGroupName();
+			
+			if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(report.getGroupType())) {
+				// don't show leagues
+				continue;
+			}
 			
 			// fetch club info
 			int totalWomenMembersUnder = 0;
@@ -4052,7 +4058,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			double mChange = getChange((double) mNow, (double) mLast);
 			rd.addData(membersAnnualChangePercent, mChange<0.0?"":Integer.toString((int)mChange));
 			double mwn = ((double)mMissing)/((double)mLastYearTotal)*100.0;
-					
+			
 			String value = (mwn<0.0)?"":format.format(mwn);
 			rd.addData(membersAnnualChangePercentOfTotal, value);
 			
@@ -4960,7 +4966,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	
 	private boolean showClubStatus(WorkReport report, String status) {
 		String reportStatus = report.getStatus();
-		System.out.println("report status is \"" + reportStatus + "\", chosen status is \"" + status + "\"");
 		boolean show = true;
 		if(status!=null && status.trim().length()>0 && !status.equals(WorkReportStatusDropDownMenu.STATUS_ALL)) {
 			show = false;
