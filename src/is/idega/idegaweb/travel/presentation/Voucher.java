@@ -376,6 +376,9 @@ public abstract class Voucher extends TravelManager {
       }catch (SQLException sql) {
         error = true;
         sql.printStackTrace(System.err);
+      }catch (Exception e) {
+      	error = true;
+      	e.printStackTrace(System.err);
       }
 
       if (error) {
