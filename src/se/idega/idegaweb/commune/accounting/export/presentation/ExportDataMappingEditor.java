@@ -61,7 +61,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		Script script = new Script();
 		script.addFunction("validateForm", getValidateFormScript());
 
-		Table table = new Table(3, 25);
+		Table table = new Table(3, 29);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 12);
