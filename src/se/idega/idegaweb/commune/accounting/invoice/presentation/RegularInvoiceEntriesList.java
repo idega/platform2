@@ -14,7 +14,6 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
-import com.idega.user.business.UserBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -460,10 +459,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}		
-	
-	protected UserBusiness getUserBusiness(IWApplicationContext iwc) throws RemoteException {
-		return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
-	}	
 	
 	
 
