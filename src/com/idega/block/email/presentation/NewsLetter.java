@@ -79,6 +79,7 @@ public class NewsLetter extends CategoryBlock {
 	private boolean _submitBelowTopics = false;
 
 	private String _spaceBetween = "2";
+	private int _spaceBeforeButtons = 12;
 
 	private int archivePage = -1;
 
@@ -139,6 +140,7 @@ public class NewsLetter extends CategoryBlock {
 		Table T = new Table();
 		T.setCellpaddingAndCellspacing(0);
 		T.setColor(_bgColor);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 		int categoryID = getCategoryId();
 
@@ -171,11 +173,13 @@ public class NewsLetter extends CategoryBlock {
 				}
 
 				if (obj != null) {
-					T.setHeight(row++, 3);
-					T.add(obj, 1, row);
+					T.setHeight(row++, 6);
+					T.add(obj, 1, row++);
 				}
 				if (_submitBelowTopics) {
-					T.setHeight(row++, 12);
+					if (_spaceBeforeButtons > 0) {
+						T.setHeight(row++, _spaceBeforeButtons);
+					}
 					T.add(getButtonsBelowTable(F, iwc), 1, row);
 				}
 
@@ -231,6 +235,7 @@ public class NewsLetter extends CategoryBlock {
 		Table T = new Table();
 		T.setCellpaddingAndCellspacing(0);
 		T.setColor(_bgColor);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		TextInput email = new TextInput("nl_email");
 		email.setStyleAttribute(_inputStyle);
 		if (_inputLength != 0) {
@@ -680,5 +685,11 @@ public class NewsLetter extends CategoryBlock {
 	public void setUseLinks(boolean useLinks) {
 		this.useLinks = useLinks;
 		this.useButtons = !useLinks;
+	}
+	/**
+	 * @param space The spacing to set.
+	 */
+	public void setSaceBeforeButtons(int spacing) {
+		_spaceBeforeButtons = spacing;
 	}
 }
