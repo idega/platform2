@@ -177,7 +177,8 @@ public class UserEditor extends Block {
 	private boolean warnIfPostalExists = false;
 	private boolean warnIfPersonalIDIsIllegal =true;
 	private boolean showSeperators = true;
-    private boolean showDefaultCommuneOption = false;
+	protected boolean showDefaultCommuneOption = false;
+	
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
