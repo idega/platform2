@@ -171,7 +171,12 @@ public class ChildCareChildContracts extends ChildCareBlock {
 				terminated = null;
 			}
 			if (contract.getValidFromDate() != null) {
-				validFrom = new IWTimestamp(contract.getValidFromDate());
+				if (!iter.hasNext()) {
+					validFrom = new IWTimestamp(member.getRegisterDate());
+				}
+				else {
+					validFrom = new IWTimestamp(contract.getValidFromDate());
+				}
 				try {
 					logs = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDates(member, validFrom.getDate(), terminated != null ? terminated.getDate() : null);
 					if (logs.isEmpty()) {
@@ -216,21 +221,21 @@ public class ChildCareChildContracts extends ChildCareBlock {
 					SchoolClassMemberLog log = (SchoolClassMemberLog) iterator.next();
 					IWTimestamp startDate = null;
 					IWTimestamp endDate = null;
-					if (first) {
+					if (!iterator.hasNext()) {
 						startDate = new IWTimestamp(contract.getValidFromDate());
-						first = false;
 					}
 					else {
 						startDate = new IWTimestamp(log.getStartDate());
 					}
 					
-					if (!iterator.hasNext()) {
+					if (first) {
 						if (contract.getTerminatedDate() != null) {
 							endDate = contract.getTerminatedDate() != null ? new IWTimestamp(contract.getTerminatedDate()) : null;
 						}
 						else {
 							endDate = log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null;
 						}
+						first = false;
 					}
 					else {
 						endDate = log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null;
