@@ -10,7 +10,7 @@ public interface ServiceSearchBusiness extends com.idega.business.IBOService
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine findByCode(java.lang.String p0) throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine findByName(java.lang.String p0) throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.business.TravelStockroomBusiness getBusiness(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getErrorFormFields(com.idega.presentation.IWContext p0,java.lang.String p1) throws java.rmi.RemoteException;
+ public java.util.List getErrorFormFields(com.idega.presentation.IWContext p0,java.lang.String p1, boolean useCVC) throws java.rmi.RemoteException;
  public com.idega.core.accesscontrol.data.PermissionGroup getPermissionGroup(is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine p0) throws java.rmi.RemoteException;
  public com.idega.presentation.ui.DropdownMenu getPostalCodeDropdown(com.idega.idegaweb.IWResourceBundle p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.lang.Object[] getPostalCodeIds(com.idega.presentation.IWContext p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;

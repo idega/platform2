@@ -27,6 +27,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
@@ -220,15 +221,17 @@ public class BookingRefunder extends TravelBlock {
       error = true;
     }
     
-    ++row;
-    table.add(ccCVC, 2, row);
-    table.add(cvc, 3, row);
-    table.setAlignment(3, row, "right");
-    try {
-    		Integer.parseInt(cvc);
-    } catch (NumberFormatException e) {
-    		table.add(notANumber, 4, row);
-    		error = true;
+    if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
+	    ++row;
+	    table.add(ccCVC, 2, row);
+	    table.add(cvc, 3, row);
+	    table.setAlignment(3, row, "right");
+	    try {
+	    		Integer.parseInt(cvc);
+	    } catch (NumberFormatException e) {
+	    		table.add(notANumber, 4, row);
+	    		error = true;
+	    }
     }
 
 
@@ -306,9 +309,15 @@ public class BookingRefunder extends TravelBlock {
 	    //table.add(amount, 2, row);
 	    //table.setRowColor(row, GRAY);
 
-	    ++row;
-	    table.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1,row);
-	    table.add(cvc, 2,row);
+	    if (getCreditCardBusiness(iwc).getUseCVC(ccClient)) {
+		    ++row;
+		    table.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1,row);
+		    table.add(cvc, 2,row);
+				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
+				if (cvcLink != null) {
+					table.add(cvcLink, 2, row);
+				}
+	    }
 	    //table.setRowColor(row, GRAY);
 	    
 	    ++row;

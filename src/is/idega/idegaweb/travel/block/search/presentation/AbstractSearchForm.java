@@ -27,6 +27,7 @@ import javax.mail.MessagingException;
 
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.TPosException;
+import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.block.trade.data.Currency;
@@ -73,6 +74,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
+import com.sun.rsasign.s;
 
 /**
  * @author gimmi
@@ -131,7 +133,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected String width;
 	protected String formInputStyle;
 	protected Image windowHeaderImage;
-	
+	protected boolean cvcIsUsed = true;
 	protected IWResourceBundle iwrb;
 	protected IWBundle bundle;
 	protected ServiceSearchEngine engine = null;
@@ -179,6 +181,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 		
 		definedProduct = getProduct();
+		if (definedProduct != null) {
+			cvcIsUsed = getCreditCardBusiness(iwc).getUseCVC(definedProduct.getSupplier(), IWTimestamp.RightNow());
+		}
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -376,7 +381,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		} else if ( action.equals(this.ACTION_BOOKING_FORM)) {
 			STATE = STATE_SHOW_BOOKING_FORM;
 		} else if (action.equals(ACTION_CONFIRM)) {
-			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey());
+			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey(), cvcIsUsed);
 			if (errorFields == null || errorFields.isEmpty() ) {
 				STATE = STATE_CHECK_BOOKING;
 			} else {
@@ -501,7 +506,9 @@ public abstract class AbstractSearchForm extends TravelBlock{
 
 		TextInput postalC = new TextInput(PARAMETER_POSTAL_CODE);
 		postalC.setSize(6);
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,new TextInput(PARAMETER_CITY)});
+		TextInput city = new TextInput(PARAMETER_CITY);
+		city.setSize(18);
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.street","Street"),iwrb.getLocalizedString("travel.search.postal_code","Postal Code"), iwrb.getLocalizedString("travel.search.city","City")}, new PresentationObject[]{new TextInput(PARAMETER_STREET), postalC,city});
 
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.country","Country"), iwrb.getLocalizedString("travel.search.email","Email")}, new PresentationObject[]{new TextInput(PARAMETER_COUNTRY), new TextInput(PARAMETER_EMAIL)});
 		formTable.mergeCells(2, (row-1), 3, (row-1));
@@ -514,7 +521,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		expYear.setMaxlength(2);
 		TextInput expCVC = new TextInput(PARAMETER_CC_CVC);
 		expCVC.setSize(5);
-		expCVC.setMaxlength(3);
+		expCVC.setMaxlength(4);
 
 		if ( errorFields != null && errorFields.contains(PARAMETER_CC_NUMBER)) {
 			formTable.add(getErrorText("* "), 1, row);
@@ -539,18 +546,23 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		ccTable.setColumnWidth(2, "8");
 		formTable.add(ccTable, 1, row);
 		
-		Table ccTable2 = new Table();
-		ccTable2.setCellpaddingAndCellspacing(0);
-		if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
-			ccTable2.add(getErrorText("* "), 1, 1);
+		
+		if (cvcIsUsed) {
+			Table ccTable2 = new Table();
+			ccTable2.setCellpaddingAndCellspacing(0);
+			if ( errorFields != null && errorFields.contains(PARAMETER_CC_CVC)) {
+				ccTable2.add(getErrorText("* "), 1, 1);
+			}
+			ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
+			ccTable2.add(expCVC, 1, 2);
+			Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, getText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?")));
+			if (cvcLink != null) {
+				ccTable2.add(cvcLink, 1, 2);
+			}
+			formTable.mergeCells(2, row, 3, row);
+			formTable.add(ccTable2, 2, row);
 		}
-		ccTable2.add(getText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")), 1, 1);
-		ccTable2.add(expCVC, 1, 2);
-		formTable.mergeCells(2, row, 3, row);
-		formTable.add(ccTable2, 2, row);
-		
 		++row;
-		
 		
 		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.credit_card_number","Credit card number")}, new PresentationObject[]{new TextInput(PARAMETER_CC_NUMBER)});
 		//addInputLine(new String[]{iwrb.getLocalizedString("travel.search.expires_month","Expires month"), iwrb.getLocalizedString("travel.search.expires_year","Expires year"), iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)")}, new PresentationObject[]{expMonth,expYear, expCVC});

@@ -628,7 +628,7 @@ public class CarRentalBookingForm extends BookingForm {
 			  table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			  table.add(comment, 2, row);
 	
-				row = addCreditcardInputForm(table, row);
+				row = addCreditcardInputForm(iwc, table, row);
 	
 			if (_booking != null) {
 			  form.addParameter(this.parameterBookingId,_booking.getID());

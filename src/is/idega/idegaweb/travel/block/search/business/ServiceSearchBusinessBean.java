@@ -195,7 +195,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return postalCodeIds;
 	}
 
-	public List getErrorFormFields(IWContext iwc, String categoryKey) {
+	public List getErrorFormFields(IWContext iwc, String categoryKey, boolean useCVC) {
 		List list = new Vector();
 		String firstName = iwc.getParameter(AbstractSearchForm.PARAMETER_FIRST_NAME);
 		String lastName = iwc.getParameter(AbstractSearchForm.PARAMETER_LAST_NAME);
@@ -239,7 +239,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		if (ccYear == null || ccYear.equals("")) {
 			list.add(AbstractSearchForm.PARAMETER_CC_YEAR);
 		}
-		if (ccCVC == null || ccCVC.equals("")) {
+		if (useCVC && (ccCVC == null || ccCVC.equals(""))) {
 			list.add(AbstractSearchForm.PARAMETER_CC_CVC);
 		}
 		String productId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_ID);

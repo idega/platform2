@@ -6,6 +6,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Window;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -19,10 +20,11 @@ public class LinkGenerator extends TravelWindow {
 
 	public static final String PROPERTY_SERVER_NAME = "server_name";
 	public static final String PROPERTY_REFUNDER_PAGE_ID = "refunder_form_page_id";
+	public static final String PROPERTY_CVC_EXPLANATION_PAGE = "cvc_explanation_page";
   public static String parameterProductId = "linkGeneratorProductId";
-  //private static String http = "http";
+  private static String http = "http";
   private static Class defaultClass = PublicBooking.class;
-  private static String http = "https";
+  //private static String http = "https";
 
   public LinkGenerator() {
     super.setWidth(600);
@@ -68,24 +70,7 @@ public class LinkGenerator extends TravelWindow {
   }
 
   public static String getUrlToRefunderPage(IWContext iwc, String refNumber) {
-	  	IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
-	  	IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
-	  	
-	  	String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
-	  	String pageID = iwb.getProperty(PROPERTY_REFUNDER_PAGE_ID);
-	  	if (serverName == null) {
-	  		serverName = iwc.getServerName();
-	  	}
-	  	if (pageID == null) {
-	  		return "";
-	  	}
-	  	
-	  	StringBuffer text = new StringBuffer(http+"://"+serverName);
-    if (!http.equals("https")) {
-      text.append(":"+iwc.getServerPort());
-    }
-    
-    text.append(iwc.getIWMainApplication().getBuilderServletURI()+"?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+	  	StringBuffer text = getUrlToPage(iwc, PROPERTY_REFUNDER_PAGE_ID);
     
     if (refNumber != null) {
     		text.append("&"+BookingRefunder.PARAMETER_EMAILED_REFERENCE_NUMBER+"="+refNumber);
@@ -94,7 +79,33 @@ public class LinkGenerator extends TravelWindow {
     return text.toString();
   }
   
-  public static Link getLinkToRefunderForm(IWContext iwc) {
+	private static StringBuffer getUrlToPage(IWContext iwc, String bundleParameterToPage) {
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	
+		String pageID = null;
+		if (bundleParameterToPage != null) {
+			pageID = iwb.getProperty(bundleParameterToPage);
+		}
+		String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
+		if (serverName == null) {
+			serverName = iwc.getServerName();
+		}
+
+		
+		StringBuffer text = new StringBuffer(http+"://"+serverName);
+	   if (!http.equals("https")) {
+	     text.append(":"+iwc.getServerPort());
+	   }
+	   
+	   text.append(iwc.getIWMainApplication().getBuilderServletURI());
+	   if (pageID != null) {
+	   	text.append("?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+	   }
+		return text;
+	}
+
+public static Link getLinkToRefunderForm(IWContext iwc) {
   		return new Link("Test", getUrlToRefunderPage(iwc, null));
   }
     
@@ -123,4 +134,22 @@ public class LinkGenerator extends TravelWindow {
 //    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
     return text.toString();
   }
+  
+  public static Link getLinkCVCExplanationPage(IWContext iwc, Text text) {
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
+		IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
+	
+		String pageID = iwb.getProperty(PROPERTY_CVC_EXPLANATION_PAGE);
+		StringBuffer url = getUrlToPage(iwc,null);
+  		Window window = new Window(text.getText(), 400, 500, url.toString());
+  		
+		Link link = new Link(text, window);
+		if (pageID != null) {
+			link.setPage(Integer.parseInt(pageID));
+		}
+  		link.setTarget(Link.TARGET_BLANK_WINDOW);
+
+  		return link;
+	}
+  
 }

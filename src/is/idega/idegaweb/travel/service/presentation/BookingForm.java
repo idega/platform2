@@ -11,6 +11,7 @@ import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 
@@ -28,8 +29,8 @@ import javax.ejb.RemoveException;
 import javax.mail.MessagingException;
 
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
-import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.CreditCardClient;
+import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
@@ -45,9 +46,6 @@ import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
@@ -108,6 +106,8 @@ public abstract class BookingForm extends TravelManager{
   protected Booking _booking;
   protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
   protected boolean _multipleBookings = false;
+  protected boolean useCVC = true;
+  protected CreditCardMerchant ccMerchant = null;
 
 	public static final String PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION = "error_email";
 	public static final String PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION = "error_email_cc";
@@ -155,7 +155,7 @@ public abstract class BookingForm extends TravelManager{
 	protected int pWidthCenter = 60;
 	protected int pWidthRight = 75;
 	// TODO see if this is used somewhere 
-	public CreditCardClient creditCardClient;
+	//public CreditCardClient creditCardClient;
 	protected boolean orderAddresses = false;
 
   protected boolean _useInquiryForm = false;
@@ -169,22 +169,27 @@ public abstract class BookingForm extends TravelManager{
     supplier = super.getSupplier();
     _reseller = super.getReseller();
     if ((_reseller != null) && (product != null)){
-	  	_contract = getContractBusiness(iwc).getContract(_reseller, product);
+    		_contract = getContractBusiness(iwc).getContract(_reseller, product);
 	    _contractId = ((Integer) _contract.getPrimaryKey()).intValue();
     }
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     if (sBookingId != null) {
-    	try {
-        int bookingId = Integer.parseInt(sBookingId);
-        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-        _multipleBookingNumber = getBooker(iwc).getMultipleBookingNumber((GeneralBooking)_booking);
-        if (_multipleBookingNumber[1] > 1 ) {
-        		_multipleBookings = true;
-        }
-    	}catch (FinderException fe) {
-    		/** not handled */	
-    	}
+	    	try {
+	        int bookingId = Integer.parseInt(sBookingId);
+	        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+	        _multipleBookingNumber = getBooker(iwc).getMultipleBookingNumber((GeneralBooking)_booking);
+	        if (_multipleBookingNumber[1] > 1 ) {
+	        		_multipleBookings = true;
+	        }
+	    	}catch (FinderException fe) {
+	    		/** not handled */	
+	    	}
     }  
+    
+		Supplier supp = product.getSupplier();
+		ccMerchant = getCreditCardBusiness(iwc).getCreditCardMerchant(supp, IWTimestamp.RightNow());
+		useCVC = getCreditCardBusiness(iwc).getUseCVC(ccMerchant);
+
     setTimestamp(iwc);
   }
 
@@ -198,6 +203,7 @@ public abstract class BookingForm extends TravelManager{
 
   public void main(IWContext iwc)throws Exception {
     super.main(iwc);
+    
   }
 
 
@@ -624,7 +630,7 @@ public abstract class BookingForm extends TravelManager{
           table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
           table.add(comment, 2, row);
 
-				row = addCreditcardInputForm(table, row);
+				row = addCreditcardInputForm(iwc, table, row);
         
 
 
@@ -664,7 +670,7 @@ public abstract class BookingForm extends TravelManager{
     return form;
   }
 
-	protected int addCreditcardInputForm(Table table, int row) {
+	protected int addCreditcardInputForm(IWContext iwc, Table table, int row) {
 		// Virkar, vantar HTTPS
 		
 		  TextInput ccNumber = new TextInput(this.parameterCCNumber);
@@ -677,7 +683,7 @@ public abstract class BookingForm extends TravelManager{
 		    ccYear.setMaxlength(2);
 		    ccYear.setLength(3);
 		  TextInput ccCVC = new TextInput(this.parameterCCCVC);
-		  ccCVC.setMaxlength(3);
+		  ccCVC.setMaxlength(4);
 		  ccCVC.setLength(5);
 		  Text ccText = (Text) theText.clone();
 		    ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
@@ -687,6 +693,9 @@ public abstract class BookingForm extends TravelManager{
 		
 		  Text ccCV = (Text) theText.clone();
 		  ccCV.setText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
+		  
+		  Text ccExp = (Text) theText.clone();
+		  ccExp.setText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?"));
 
 		    
 		  Text ccSlash = (Text) theText.clone();
@@ -702,9 +711,15 @@ public abstract class BookingForm extends TravelManager{
 		  table.add(ccSlash,2,row);
 		  table.add(ccYear,2,row);
 		  
-		  ++row;
-		  table.add(ccCV, 1, row);
-		  table.add(ccCVC, 2, row);
+		  if (useCVC) {
+			  ++row;
+			  table.add(ccCV, 1, row);
+			  table.add(ccCVC, 2, row);
+				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, ccExp);
+				if (cvcLink != null) {
+					table.add(cvcLink, 2, row);
+				}
+		  }
 		return row;
 	}
   
@@ -1916,12 +1931,12 @@ public abstract class BookingForm extends TravelManager{
                   try {
                   	ppID = getProductPriceID(iwc, pPrices[i], new IWTimestamp(booking.getBookingDate()), timeframes, iAddressId, onlineOnly, key);
                   	prodPrick = ppHome.findByPrimaryKey(ppID);
-                  	System.out.println("ProductPrice = "+ prodPrick.getPrice());
+                  	//System.out.println("ProductPrice = "+ prodPrick.getPrice());
                   } catch (ProductPriceException p) {
                   	System.out.println("... ppID error");
                   	ppID = pPrices[i].getID();
                   }
-                  System.out.println("... ppID = "+ppID);
+                  //System.out.println("... ppID = "+ppID);
                   bEntry.setProductPriceId(ppID);
                   bEntry.setBookingId(bookingIds[k]);
                   bEntry.setCount(manys[i]);
@@ -1937,7 +1952,7 @@ public abstract class BookingForm extends TravelManager{
                   	System.out.println("MppID error");
                   	ppID = misc[i].getID();
                   }
-                  System.out.println("MppID = "+ppID);
+                  //System.out.println("MppID = "+ppID);
                   bEntry.setProductPriceId(misc[i].getID());
                   bEntry.setBookingId(bookingIds[k]);
                   bEntry.setCount(manyMiscs[i]);
@@ -2911,7 +2926,7 @@ public abstract class BookingForm extends TravelManager{
 		ccYear.setMaxlength(2);
 		ccYear.setLength(3);
 		TextInput ccCVC = new TextInput(this.parameterCCCVC);
-		ccCVC.setMaxlength(3);
+		ccCVC.setMaxlength(4);
 		ccCVC.setLength(5);
 
 		Text ccText = (Text) theText.clone();
@@ -2926,19 +2941,21 @@ public abstract class BookingForm extends TravelManager{
 		ccCV.setText(iwrb.getLocalizedString("travel.cc.cvc","Cardholder Verification Code (CVC)"));
 		ccCV.addToText(star);
 
+		Text ccExp = (Text) theText.clone();
+	  ccExp.setText(iwrb.getLocalizedString("cc.what_is_cvc","What is CVC?"));
+
 		Text ccSlash = (Text) theText.clone();
 		ccSlash.setText(" / ");
 
 
-		// CREDITCARD STUFF
+		// CREDITCARD STUFF		
 		if (this._useInquiryForm) {
 		  table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
 		}else {
 			
 			Collection imgs = null;
 			try {
-				Supplier supp = ((SupplierHome) IDOLookup.getHome(Supplier.class)).findByPrimaryKey(product.getSupplierId());
-				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(supp, IWTimestamp.RightNow()));
+				imgs = getCreditCardBusiness(iwc).getCreditCardTypeImages(getCreditCardBusiness(iwc).getCreditCardClient(ccMerchant));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -2952,9 +2969,9 @@ public abstract class BookingForm extends TravelManager{
 		  subHeader.setFontColor(WHITE);
 		  subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
 		  subHeader.addToText(Text.NON_BREAKING_SPACE);
-		  Text starTextTwo = (Text) theText.clone();
-		  starTextTwo.setFontColor(WHITE);
-		  starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_and_americanexpress_only","Visa, Eurocard and American Express only.")+")");
+		  //Text starTextTwo = (Text) theText.clone();
+		  //starTextTwo.setFontColor(WHITE);
+		  //starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_and_americanexpress_only","Visa, Eurocard and American Express only.")+")");
 		  
 		  table.add(subHeader,1,row);
 		  //table.add(starTextTwo,1,row);
@@ -2987,13 +3004,19 @@ public abstract class BookingForm extends TravelManager{
 		  
 		  table.setAlignment(1,row,"right");
 
-		  ++row;
-		  table.mergeCells(1, row, 2, row);
-		  table.mergeCells(3, row, 6, row);
-		  table.add(ccCV, 1, row);
-		  table.add(ccCVC, 3, row);
-		  table.setAlignment(1,row,"right");
+		  if (useCVC) {
+		  		++row;
+				Link cvcLink = LinkGenerator.getLinkCVCExplanationPage(iwc, ccExp);
 
+				table.mergeCells(1, row, 2, row);
+			  table.mergeCells(3, row, 6, row);
+			  table.add(ccCV, 1, row);
+			  table.add(ccCVC, 3, row);
+				if (cvcLink != null) {
+					table.add(cvcLink, 3, row);
+				}
+			  table.setAlignment(1,row,"right");
+		  }
 		}
 		return row;
 	}
@@ -3040,26 +3063,30 @@ public abstract class BookingForm extends TravelManager{
     table.add(txtCVC,1,row);
     table.add(getBoldTextWhite(ccCVC), 2, row);
     
-    if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2 || ccCVC.length() != 3) {
 	    	if (ccNumber.length() < 13 || ccNumber.length() > 19) {
 	    		txtNumber.setFontColor(errorColor);
+	        valid = false;
 	    	}
 	    	if (ccMonth.length() != 2) {
 	    		txtMonth.setFontColor(errorColor);
+	        valid = false;
 	    	}
 	    	if (ccYear.length() != 2) {
 	    		txtYear.setFontColor(errorColor);
+	        valid = false;
 	    	}
-	    	if (ccCVC.length() != 3) {
+	    	if (useCVC && ccCVC.length() != 3) {
 	    		txtCVC.setFontColor(errorColor);
+	        valid = false;
 	    	}
-      valid = false;
-      Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
+
+	    	if ( !valid ) {
+	    		Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
         ccError.setFontColor(errorColor);
-      ++row;
-      table.mergeCells(1, row, 2, row);
-      table.add(ccError, 1, row);
-    }
+	      ++row;
+	      table.mergeCells(1, row, 2, row);
+	      table.add(ccError, 1, row);
+	    	}
     return valid;
   }
 
