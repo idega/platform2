@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
@@ -27,10 +28,13 @@ import com.idega.user.data.Group;
 public class GroupSelectionBox extends SelectionBox implements InputHandler {
 
 	private String groupType = null;
+	private Map metaDataMap = null;
 	protected GroupBusiness groupBiz = null;
 	private boolean useShortName = false;
 	private String displayNameSeperator = ",";
+
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
 	 * 
@@ -53,6 +57,24 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	public GroupSelectionBox(String name, String groupType) {
 		super(name);
 		this.groupType = groupType;
+	}
+	
+	/**
+	 * Creates a new <code>GroupSelectionBox</code> with all groups of
+	 * specified type.
+	 * 
+	 * @param name
+	 *            The name of the <code>GroupSelectionBox</code>
+	 * @param groupType
+	 *            The type of group to populate the selection box with
+	 * @param metaDataMap
+	 *            a map of key-values to match group metadata (the key is a string from IWMemberConstants)	 
+	 */
+	public GroupSelectionBox(String name, String groupType, Map metaDataMap) {
+		super(name);
+		this.groupType = groupType;
+		this.metaDataMap = metaDataMap;
+		System.out.println("Metadata map set to: " + metaDataMap);
 	}
 
 	public GroupSelectionBox() {
@@ -85,13 +107,33 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 					String name = null;
 					name = getNameForGroup(group);
 
-					addMenuElement(group.getPrimaryKey().toString(), name);
+					boolean showGroup = true;
+					if(metaDataMap!=null && metaDataMap.size()>0) {
+						showGroup = checkMetaData(group, metaDataMap);
+					}
+					if(showGroup) {
+						addMenuElement(group.getPrimaryKey().toString(), name);
+					}
 				}
 			}
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private boolean checkMetaData(Group group, Map metaData) {
+		Iterator keyIter = metaData.keySet().iterator();
+		while(keyIter.hasNext()) {
+			String key = (String) keyIter.next();
+			String value = (String) metaData.get(key);
+			String groupValue = group.getMetaData(key);
+			boolean isEqual = groupValue==value || (groupValue!=null && groupValue.equalsIgnoreCase(value));
+			if(!isEqual) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private String getNameForGroup(Group group) {
