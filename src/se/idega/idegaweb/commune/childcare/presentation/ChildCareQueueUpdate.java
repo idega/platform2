@@ -204,6 +204,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText("("+queuePosition+")"), column++, row);
 			table.add(select, column++, row++);
+			if (!iter.hasNext())
+				select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
 		}
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
@@ -226,8 +228,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		form.add(buttonTable);
 		
 		SubmitButton next = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.next","Next"), PARAMETER_STAGE, String.valueOf(STAGE_TWO)));
-		if (select != null)
-			next.setToEnableWhenChecked(select);
+		/*if (select != null)
+			next.setToEnableWhenChecked(select);*/
 		buttonTable.add(next, 2, 1);
 		
 		return form;
@@ -358,10 +360,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	
 	private Text getStageText() {
 		if (_hasPlacing) {
-			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 		else {
-			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 	}
 	
