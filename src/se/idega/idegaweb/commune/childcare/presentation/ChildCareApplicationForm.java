@@ -326,7 +326,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-				done = business.insertApplications(_user, _valProvider, _valDate, new Integer(checkId).intValue(), new Integer(childId).intValue(), subject, message);
+				done = business.insertApplications(_user, _valProvider, _valDate, new Integer(checkId).intValue(), new Integer(childId).intValue(), subject, message, false);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
