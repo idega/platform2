@@ -44,8 +44,10 @@ public class ReportWriter implements MediaWritable {
       eReportInfo = ReportFinder.getReportInfo(Integer.parseInt(req.getParameter(prmReportInfoId)));
       if(eReportInfo.getType().equals("sticker"))
         buffer = StickerReport.writeStickerList(eReport,eReportInfo);
+      else if(eReportInfo.getType().equals("columns"))
+        System.err.println("not sticker could it be "+eReportInfo.getType());
       else
-        System.err.println("not sticker could it be"+eReportInfo.getType());
+        System.err.println("not sticker could it be "+eReportInfo.getType());
     }
   }
 

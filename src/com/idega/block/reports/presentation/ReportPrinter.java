@@ -96,9 +96,12 @@ public class ReportPrinter extends Block implements Reports{
     row++;
     List infos = ReportFinder.listOfReportInfo(null);
     List repinfos = ReportFinder.listOfRelatedReportInfo(report);
-    List unsaved = new Vector(infos);
-    if(repinfos!=null)
-      unsaved.removeAll(repinfos);
+    List unsaved = null;
+    if(infos!=null){
+    unsaved = new Vector(infos);
+      if(repinfos!=null)
+        unsaved.removeAll(repinfos);
+    }
     boolean formAdded = false;
     ReportInfo info;
     String type;

@@ -129,11 +129,10 @@ public class Reporter extends CategoryBlock implements IWBlock,Reports{
       T.add(text,1,1);
       T.add(T.getTransparentCell(iwc),1,1);
 
-      Link change = new Link(core.getImage("/shared/edit.gif","edit"));
-      change.setWindowToOpen(ReportEditorWindow.class);
-      change.addParameter(ReportEditorWindow.prmCategoryId,iCategoryId);
-      //change.addParameter(ReportEditorWindow.prmObjInstId,getICObjectInstanceID());
-      T.add(change,1,1);
+
+      Link category = getCategoryLink();
+      category.setImage(core.getImage("/shared/detach.gif","detach"));
+      T.add(category,1,1);
 
       if ( enableDelete ) {
         T.add(T.getTransparentCell(iwc),1,1);
