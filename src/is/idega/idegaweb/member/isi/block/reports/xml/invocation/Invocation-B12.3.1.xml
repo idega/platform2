@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE invoke >
+<invoke>
+<method_description name="getPlayerStatisticsForRegionalUnionsByYearRegionalUnionsUMFIUnionsAndClubTypesFilter">
+<class_description class="is.idega.idegaweb.member.isi.block.reports.business.WorkReportStatsBusiness" default_display_name="WorkReportStatsBusiness" type="IBOSessionBean">
+</class_description>
+<input>
+	<class_description class="java.lang.Integer" default_display_name="Work report year" name="workReportYear">
+		<localized_name name="Ár" locale="is_IS"/>
+		<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportYearDropDownMenu" />
+	</class_description>
+	<class_description class="java.util.Collection" default_display_name="Clubs" name="clubs">
+		<localized_name name="Félög" locale="is_IS"/>
+		<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubSelectionBox" />
+	</class_description>
+	<class_description class="java.util.Collection" default_display_name="UMFI Clubs" name="umficlubs">
+		<localized_name name="Ungmennafélög" locale="is_IS"/>
+		<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.UMFIClubSelectionBox" />
+	</class_description>
+	<class_description class="java.lang.String" default_display_name="Club types" name="clubtypes">
+		<localized_name name="Gerð félags" locale="is_IS"/>
+		<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu" />
+	</class_description>
+</input>
+<output>
+<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="">
+</class_description>
+</output>
+</method_description>
+</invoke>
