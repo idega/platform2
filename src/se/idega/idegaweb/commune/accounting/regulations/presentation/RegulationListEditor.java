@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.14 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.15 2003/10/10 14:31:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,7 +10,7 @@
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
+//import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,15 +44,14 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.14 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.15 2003/10/10 14:31:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	//private final static int ACTION_EDIT = 1;
 	private final static int ACTION_SAVE = 2;
 	private final static int ACTION_CANCEL = 3;
 	private final static String COLUMN_WIDTH = "100";
@@ -71,14 +70,19 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_HEADER_VAT_REGULATION = PP + "header_vat_regulation";
 	private final static String KEY_HEADER_SPECIAL_CALCULATION = PP + "header_special_calculation";
 	private final static String KEY_HEADER_DISCOUNT = PP + "header_discount";
-
-	private final static String KEY_CONDITION_HEADER = PP + "condition_header";
-	//private final static String KEY_INTERVAL_HEADER = PP + "intervall_header";
+	
 	private final static String KEY_CONDITION_TYPE_HEADER = PP + "condition_type_header";
 	private final static String KEY_REG_SPEC_TYPE_HEADER = PP + "reg_spec_type_header";
 	private final static String KEY_CONDITION_ORDER_HEADER = PP + "condition_order_header";
+	private final static String KEY_CONDITION_HEADER = PP + "condition_header";
 	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header";
-
+	private final static String KEY_MENU_REG_SPEC_HEADER = PP + "menu_reg_spec_header";
+	private final static String KEY_MENU_SPEC_CALC_HEADER = PP + "menu_spec_calc_header";
+	private final static String KEY_MENU_VAT_HEADER = PP + "menu_vat_header";	
+	private final static String KEY_MENU_VAT_RULE_HEADER = PP + "menu_vat_rule_header";
+	private final static String KEY_MENU_COND_TYPE_HEADER = PP + "menu_cond_type_header";
+	private final static String KEY_MENU_PAY_FLOW_HEADER = PP + "menu_pay_flow_header";
+		
 	private final static String KEY_FROM_DATE = PP + "from_date";
 	private final static String KEY_TO_DATE = PP + "to_date";
 	private final static String KEY_CHANGE_DATE = PP + "change_date";
@@ -98,10 +102,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String PARAM_MODE_COPY = "mode_copy";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_CHANGED_SIGN = "param_signed";
-	//private final static String PARAM_CHANGED_DATE = "param_changed_date";
-	
-	//private final static String PARAM_OPERATION_ID = "param_operation_id";
-	//private final static String PARAM_PAYMENT_FLOW_TYPE_ID = "param_payment_flow_type_id";	 
+
 	private final static String PARAM_CONDITION_ORDER= "param_condition_order";	 
 	
 	private final static String PARAM_SELECTOR_MAIN_OPERATION = "param_main_oper_sel";
@@ -262,7 +263,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private void viewMainForm(IWContext iwc, String error) {
 		ApplicationForm app = new ApplicationForm(this);
 		Regulation r = getThisRegulation(iwc);
-		Table topPanel = getTopPanel(iwc, r);		
+		Table topPanel = getTopPanel(iwc, r, error);		
 		Table regulationForm = getRegulationForm(iwc, r);
 		Table bottomPanel = new Table();
 		ButtonPanel buttonPanel = new ButtonPanel(this);
@@ -276,6 +277,7 @@ public class RegulationListEditor extends AccountingBlock {
 		app.setSearchPanel(topPanel);
 		app.setMainPanel(regulationForm);
 		app.setButtonPanel(bottomPanel);
+
 		if(iwc.isParameterSet(RegulationList.PARAM_RETURN_FROM_DATE)) {
 			app.addHiddenInput(RegulationList.PARAM_RETURN_FROM_DATE, iwc.getParameter(RegulationList.PARAM_RETURN_FROM_DATE));
 		}
@@ -284,9 +286,6 @@ public class RegulationListEditor extends AccountingBlock {
 		}
 		add(app);		
 
-		if (error.length() != 0) {
-			add(getSmallErrorText(error));
-		}
 	}
 
 
@@ -297,10 +296,11 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation#
 	 * @return table panel
 	 */
-	private Table getTopPanel(IWContext iwc, Regulation r) {
+	private Table getTopPanel(IWContext iwc, Regulation r, String error) {
 
 		Table table = new Table();
-		table.setWidth("75%");
+		table.setWidth("80%");
+		int row;
 		User user = iwc.getCurrentUser();
 		String userName = "";
 		String mainOpPK = (String) _pMap.get(PARAM_SELECTOR_MAIN_OPERATION);
@@ -333,68 +333,79 @@ public class RegulationListEditor extends AccountingBlock {
 		
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
 		//Date dd = new Date(System.currentTimeMillis());
+		int startRow = 1;
+		if (error.length() != 0) {
+			table.add(getErrorText(error), 1, startRow);
+			table.mergeCells(1, startRow, 3, startRow);
+			startRow++;
+		}
+		row = startRow;	
+		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, row++);
+		table.add(getLocalizedLabel(KEY_HEADER_NAME, "Benämning"), 1, row++);
+		table.add(getLocalizedLabel(KEY_HEADER_AMOUNT, "Månadsbelopp"), 1, row++);
+		table.add(getLocalizedLabel(KEY_HEADER_DISCOUNT, "Rabattsats"), 1, row++);
+		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,row++);
+		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,row++);
 
-		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
-		table.add(getLocalizedLabel(KEY_HEADER_NAME, "Benämning"), 1, 2);
-		table.add(getLocalizedLabel(KEY_HEADER_AMOUNT, "Månadsbelopp"), 1, 3);
-		table.add(getLocalizedLabel(KEY_HEADER_DISCOUNT, "Rabattsats"), 1, 4);
-		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,5);
-		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,6);
+		row = startRow;	
 
-		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, 1);
+		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, row++);
 		
 		table.add(getTextInput(PARAM_NAME, r != null ? r.getName() : 
-				(String) _pMap.get(PARAM_NAME), 200, 40), 2, 2);
+				(String) _pMap.get(PARAM_NAME), 200, 40), 2, row++);
 				
 		table.add(getTextInput(PARAM_AMOUNT, r != null ? 
 				formatCash(r.getAmount()) : 
-				(String) _pMap.get(PARAM_AMOUNT), 60, 10), 2, 3);
+				(String) _pMap.get(PARAM_AMOUNT), 60, 10), 2, row++);
 				
 		table.add(getTextInput(PARAM_DISCOUNT, r != null ? ""+r.getDiscount() : 
-				(String) _pMap.get(PARAM_DISCOUNT), 40, 5), 2, 4);
-				
-		table.add(getSmallText("%"), 2, 4);
+				(String) _pMap.get(PARAM_DISCOUNT), 40, 5), 2, row);
+		table.add(getSmallText("%"), 2, row++);
 		
 		table.add(getTextInput(PARAM_PERIOD_FROM, (formatDate(r != null ? 
 				r.getPeriodFrom() : 
 				parseDate((String) _pMap.get(PARAM_PERIOD_FROM)), 4)), 
-				40, 4), 2, 5);
+				40, 4), 2, row++);
 				
-		table.add(getText(formatDate(r != null ? r.getChangedDate(): rightNow, 6)), 2, 6);
+		String dts = formatDate(r != null ? r.getChangedDate(): rightNow, 6);	
+		table.add(getText(r != null ? dts : ""), 2, row++);
 
-		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW, "Ström"),3 ,1);
-		table.add("", 3, 2);
-		table.add("", 3, 3);
-		table.add("", 3, 4);
-		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,5);
-		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,6);
+		row = startRow;	
 
-		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, payStreamPK), 4, 1);
-		table.add("", 4, 2);
-		table.add("", 4, 3);
-		table.add("", 4, 4);
+		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW, "Ström"),3 ,row++);
+		table.add("", 3, row++);
+		table.add("", 3, row++);
+		table.add("", 3, row++);
+		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,row++);
+		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,row++);
+
+		row = startRow;	
+
+		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, payStreamPK), 4, row++);
+		table.add("", 4, row++);
+		table.add("", 4, row++);
+		table.add("", 4, row++);
 		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null ? 
 				r.getPeriodTo() : 
 				parseDate((String) _pMap.get(PARAM_PERIOD_TO)), 4)),
-				40, 4), 4, 5);
-				
-		table.add(""+userName, 4, 6);
+				40, 4), 4, row++);
+		table.add(getText(r != null ? r.getChangedSign() : ""), 4, row++);
 		table.add(new HiddenInput(PARAM_CHANGED_SIGN, ""+userName));
 
-		table.add(getLocalizedLabel(KEY_CONDITION_TYPE_HEADER, "Villkorstyp"), 1, 7);
-		table.add(getLocalizedLabel(KEY_REG_SPEC_TYPE_HEADER, "Regelspec.typ"), 1, 8);
-		table.add(conditionTypeSelector(iwc, PARAM_SELECTOR_CONDITION_TYPE, condTypePK), 2, 7);
-		table.add(regSpecTypeSelector(iwc, PARAM_SELECTOR_REG_SPEC_TYPE, regSpecTypePK), 2, 8);
-		table.add(getLocalizedLabel(KEY_CONDITION_ORDER_HEADER, "Villkorsordning"), 3, 7);
+		table.add(getLocalizedLabel(KEY_CONDITION_TYPE_HEADER, "Villkorstyp"), 1, row);
+		table.add(getLocalizedLabel(KEY_REG_SPEC_TYPE_HEADER, "Regelspec.typ"), 1, row+1);
+		table.add(conditionTypeSelector(iwc, PARAM_SELECTOR_CONDITION_TYPE, condTypePK), 2, row);
+		table.add(regSpecTypeSelector(iwc, PARAM_SELECTOR_REG_SPEC_TYPE, regSpecTypePK), 2, row+1);
+		table.add(getLocalizedLabel(KEY_CONDITION_ORDER_HEADER, "Villkorsordning"), 3, row);
 	
 		if (r != null) {
 			table.add(getTextInput(PARAM_CONDITION_ORDER, r.getConditionOrder() != null ? 
 					""+r.getConditionOrder().intValue() : 
 					(String) _pMap.get(PARAM_CONDITION_ORDER), 
-					40, 4), 4, 7);
+					40, 4), 4, row);
 		} else {
 			table.add(getTextInput(PARAM_CONDITION_ORDER, 
-					(String) _pMap.get(PARAM_CONDITION_ORDER), 40, 4), 4, 7);
+					(String) _pMap.get(PARAM_CONDITION_ORDER), 40, 4), 4, row);
 		}
 
 		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
@@ -531,6 +542,7 @@ public class RegulationListEditor extends AccountingBlock {
 				getDropdownMenuLocalized(name, getRegulationBusiness(iwc).findAllRegulationSpecTypes(), 
 				"getLocalizationKey"));
 			menu.setSelectedElement(refIndex);
+			menu.addMenuElementFirst("0", localize(KEY_MENU_REG_SPEC_HEADER, "Välj regelspecificationstyp"));
 		} catch (Exception e) {
 		}
 		return menu;
@@ -553,6 +565,7 @@ public class RegulationListEditor extends AccountingBlock {
 				getDropdownMenuLocalized(name, getRegulationBusiness(iwc).findAllSpecialCalculationTypes(), 
 				"getLocalizationKey"));
 			menu.setSelectedElement(refIndex);
+			menu.addMenuElementFirst("0", localize(KEY_MENU_SPEC_CALC_HEADER, "Välj specialberäkning"));
 		} catch (Exception e) {
 			menu = new DropdownMenu();
 			menu.addMenuElement(0, e.getMessage());	
@@ -576,6 +589,7 @@ public class RegulationListEditor extends AccountingBlock {
 				menu = (DropdownMenu) getStyledInterface(
 				getDropdownMenuLocalized(name, getRegulationBusiness(iwc).findAllVATRules(), 
 				"getLocalizationKey"));
+			menu.addMenuElementFirst("0", localize(KEY_MENU_VAT_RULE_HEADER, "Välj momsregel"));
 			menu.setSelectedElement(refIndex);
 		} catch (Exception e) {
 		}
@@ -595,6 +609,7 @@ public class RegulationListEditor extends AccountingBlock {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		menu.addMenuElement(1, localize(KEY_VAT_YES, "Ja"));
 		menu.addMenuElement(2, localize(KEY_VAT_NO, "Nej"));
+		menu.addMenuElementFirst("0", localize(KEY_MENU_VAT_HEADER, "Välj"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -615,6 +630,7 @@ public class RegulationListEditor extends AccountingBlock {
 			menu = (DropdownMenu) getStyledInterface(
 			getDropdownMenuLocalized(name, getRegulationBusiness(iwc).findAllConditionTypes(), 
 			"getLocalizationKey"));
+			menu.addMenuElementFirst("0", localize(KEY_MENU_COND_TYPE_HEADER, "Välj villkorstyp"));
 			menu.setSelectedElement(refIndex);
 		} catch (Exception e) {
 		}
@@ -696,7 +712,7 @@ public class RegulationListEditor extends AccountingBlock {
 				getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolCategories(),"getLocalizationKey"));
 		} catch (Exception e) {
 		}
-		menu.addMenuElementFirst("0", localize(KEY_MENU_OPERATION_HEADER, "Välj Huvudverksamhet"));
+		menu.addMenuElementFirst("0", localize(KEY_MENU_OPERATION_HEADER, "Ingen Huvudverksamhet vald"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -719,6 +735,7 @@ public class RegulationListEditor extends AccountingBlock {
 					"getLocalizationKey"));
 		} catch (Exception e) {
 		}
+		menu.addMenuElementFirst("0", localize(KEY_MENU_PAY_FLOW_HEADER, "Välj ström"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -748,23 +765,23 @@ public class RegulationListEditor extends AccountingBlock {
 	}
 
 	private void setDefaultParameters() {
-		String ds = formatDate(new Date(System.currentTimeMillis()), 4);
+	//	String ds = formatDate(new Date(System.currentTimeMillis()), 4);
 		if(_pMap == null) {
 			_pMap = new HashMap();
 		}
 		if(!_pMap.containsKey(PARAM_PERIOD_FROM)) {
-			_pMap.put(PARAM_PERIOD_FROM, ds );
-			_pMap.put(PARAM_PERIOD_TO, ds);
+			_pMap.put(PARAM_PERIOD_FROM, "" );
+			_pMap.put(PARAM_PERIOD_TO, "");
 			_pMap.put(PARAM_NAME, "");
 			_pMap.put(PARAM_AMOUNT, "0");
 			_pMap.put(PARAM_CONDITION_ORDER, "");
 			_pMap.put(PARAM_SELECTOR_MAIN_OPERATION, "0");
-			_pMap.put(PARAM_SELECTOR_PAYMENT_FLOW_TYPE, "1");
-			_pMap.put(PARAM_SELECTOR_VAT_ELIGIBLE, "1");
-			_pMap.put(PARAM_SELECTOR_REG_SPEC_TYPE, "1");
-			_pMap.put(PARAM_SELECTOR_CONDITION_TYPE, "1");
-			_pMap.put(PARAM_SELECTOR_SPECIAL_CALCULATION, "1");
-			_pMap.put(PARAM_SELECTOR_VAT_RULE, "1");
+			_pMap.put(PARAM_SELECTOR_PAYMENT_FLOW_TYPE, "0");
+			_pMap.put(PARAM_SELECTOR_VAT_ELIGIBLE, "0");
+			_pMap.put(PARAM_SELECTOR_REG_SPEC_TYPE, "0");
+			_pMap.put(PARAM_SELECTOR_CONDITION_TYPE, "0");
+			_pMap.put(PARAM_SELECTOR_SPECIAL_CALCULATION, "0");
+			_pMap.put(PARAM_SELECTOR_VAT_RULE, "0");
 			_pMap.put(PARAM_CHANGED_SIGN, "");
 			_pMap.put(PARAM_DISCOUNT, "");
 		}

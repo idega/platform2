@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.41 2003/10/09 21:21:57 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.42 2003/10/10 14:31:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -76,7 +76,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String KEY_ERROR_PARAM_MAIN_OPERATION = "main_op_error";
 	public final static String KEY_ERROR_PARAM_REG_SPEC_EMPTY = "reg_spec_empty";
 	public final static String KEY_ERROR_PARAM_OVERLAP = "overlap_error";
-	
+	public final static String KEY_ERROR_PARAM_DATE_MISSING = "missing_date_error";
+	public final static String KEY_ERROR_PARAM_PAYMENT_FLOW_TYPE = "payment_flow_error";
+	public final static String KEY_ERROR_PARAM_CONDITION_TYPE = "condition_type_error";
+	public final static String KEY_ERROR_REG_SPEC_TYPE = "reg_spec_type_error";
+	public final static String KEY_ERROR_VAT_ELIGIBLE =	"vat_eligible_error";		
 	public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.accounting.presentation.AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER;
 	}
@@ -105,8 +109,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public int saveRegulation(
 				String regID,
-				Date periodeFrom, 
-				Date periodeTo,
+				Date periodFrom, 
+				Date periodTo,
 				String name,
 				String amount,
 				String conditionOrder,
@@ -131,18 +135,50 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		Integer specialCalculationID = null;  
 		Integer vatRuleID = null;
 
+//		verify that 
+//		"från datum", 
+//		"tom datum", 
+//		"villkorstyp", 
+//		"villkorsordning", 
+//		"regelspecificeringstyp", 
+//		"momsersättning" have values when push SAVE-button.
+
+
 		if (operation.compareTo("0") == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_MAIN_OPERATION, "Huvudverksamhet måste väljas");			
 		}
-		
-		if (periodeFrom.after(periodeTo)) {
-			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
+
+		if (paymentFlowType.compareTo("0") == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_PAYMENT_FLOW_TYPE, "Ström måste väljas");			
 		}
+
 		if (name.length() == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_NAME_EMPTY, "Namn saknas!");			
 		}
+
+		if (periodTo == null || periodFrom == null) {
+			throw new RegulationException(KEY_ERROR_PARAM_DATE_MISSING, "Datum saknas!");			
+		}
+
+		if (conditionType.compareTo("0") == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_CONDITION_TYPE, "Villkorstyp måste väljas");			
+		}
+
 		if (conditionOrder.length() == 0) {
 			throw new RegulationException(KEY_ERROR_PARAM_ORDER_EMPTY, "Villkorsordning saknas!");			
+		}
+
+		if (regSpecType.compareTo("0") == 0) {
+			throw new RegulationException(KEY_ERROR_REG_SPEC_TYPE, "Regelspecificationstyp måste väljas");			
+		}
+
+		if (vatEligible.compareTo("0") == 0) {
+			throw new RegulationException(KEY_ERROR_VAT_ELIGIBLE, "Momsersättning måste väljas");			
+		}
+
+		
+		if (periodFrom.after(periodTo)) {
+			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
 		}
 
 		try {
@@ -191,7 +227,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			r = null;
 		}
 
-		if (isRegulationOverlap(name, periodeFrom, periodeTo, r)) {
+		if (isRegulationOverlap(name, periodFrom, periodTo, r)) {
 				throw new RegulationException(KEY_ERROR_PARAM_OVERLAP, "Överlappande perioder");			
 		}
 		
@@ -199,8 +235,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			if (r == null) {
 				r = home.create();
 			}
-			r.setPeriodFrom(periodeFrom);
-			r.setPeriodTo(periodeTo);
+			r.setPeriodFrom(periodFrom);
+			r.setPeriodTo(periodTo);
 			r.setName(name);
 			r.setAmount(amountVal);
 			r.setDiscount(discountVal);

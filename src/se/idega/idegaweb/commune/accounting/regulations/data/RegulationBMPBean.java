@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.11 2003/10/10 14:31:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.11 2003/10/10 14:31:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -138,13 +138,56 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public void setLocalizationKey(String name) { setColumn(COLUMN_NAME, name); }	
 	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
 	public void setConditionOrder(int value) { setColumn(COLUMN_CONDITION_ORDER, value); }	
-	public void setVATEligible(int value) { setColumn(COLUMN_VAT_ELIGIBLE, value); }	
-	public void setOperation(String value) { setColumn(COLUMN_OPERATION_ID, value); }	
-	public void setPaymentFlowType(int value) { setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, value); }	
-	public void setRegSpecType(int value) { setColumn(COLUMN_REG_SPEC_TYPE_ID, value); }	
-	public void setConditionType(int value) { setColumn(COLUMN_CONDITION_TYPE_ID, value); }	
-	public void setSpecialCalculation(int value) { setColumn(COLUMN_SPECIAL_CALCULATION_ID, value); }	
-	public void setVATRegulation(int value) { setColumn(COLUMN_VAT_RULE_ID, value); }	
+
+	public void setOperation(String id) { 
+		if (id.compareTo("0") != 0) {
+			setColumn(COLUMN_OPERATION_ID, id); 
+		} else {
+			removeFromColumn(COLUMN_OPERATION_ID);
+		}
+	}
+	public void setPaymentFlowType(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, id);
+		} else {
+			removeFromColumn(COLUMN_PAYMENT_FLOW_TYPE_ID);
+		}			 
+	}
+	public void setConditionType(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_CONDITION_TYPE_ID, id);
+		} else {
+			removeFromColumn(COLUMN_CONDITION_TYPE_ID);
+		}			 
+	}
+	public void setRegSpecType(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_REG_SPEC_TYPE_ID, id);
+		} else {
+			removeFromColumn(COLUMN_REG_SPEC_TYPE_ID);
+		}			 
+	}
+	public void setSpecialCalculation(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_SPECIAL_CALCULATION_ID, id);
+		} else {
+			removeFromColumn(COLUMN_SPECIAL_CALCULATION_ID);
+		}			 
+	}
+	public void setVATEligible(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_VAT_ELIGIBLE, id);
+		} else {
+			removeFromColumn(COLUMN_VAT_ELIGIBLE);
+		}			 
+	}
+	public void setVATRegulation(int id) { 
+		if (id != 0) { 
+			setColumn(COLUMN_VAT_RULE_ID, id);
+		} else {
+			removeFromColumn(COLUMN_VAT_RULE_ID);
+		}			 
+	}
 
 	public Collection ejbFindAllRegulations() throws FinderException {
 		IDOQuery sql = idoQuery();
