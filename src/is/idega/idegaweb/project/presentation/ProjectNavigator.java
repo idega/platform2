@@ -312,7 +312,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
         Iterator iter = l.iterator();
         while (iter.hasNext()) {
           PageLink item = (PageLink)iter.next();
-          boolean remove = !iwc.getAccessController().hasPermission(AccessController._PERMISSIONKEY_VIEW,AccessController._CATEGORY_PAGE_INSTANCE,Integer.toString(item.getPageId()),iwc);
+          boolean remove = !iwc.getAccessController().hasPermission(AccessController.PERMISSION_KEY_VIEW,AccessController.CATEGORY_PAGE_INSTANCE,Integer.toString(item.getPageId()),iwc);
           if(remove){
             iter.remove();
           }
