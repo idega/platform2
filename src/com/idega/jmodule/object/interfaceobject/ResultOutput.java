@@ -110,9 +110,8 @@ public class ResultOutput extends ModuleObjectContainer {
       for ( int a = 0; a < list.size(); a++ ) {
         TextInput text = (TextInput) list.get(a);
           text.setOnChange(functionName+"(this.form)");
-        moduleObjects.add(text);
       }
-
+      moduleObjects.add(temp);
     }
   }
 
