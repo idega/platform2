@@ -279,6 +279,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 			table.add(getHeader(_iwrb.getLocalizedString("school.open_hours", "Open hours")+":"), 1, row);
 			++row;
 			table.add(getText(open_hours), 1, row);
+			++row;
 		}
 
 //		Moved the management type here  (Kelly)
@@ -290,6 +291,11 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 			 }
 		
 			 if (manType != null) {
+				if (useBreak) {
+					++row;
+					table.setHeight(row, _spaceBetween);
+					++row;
+				}
 				 table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 				 ++row;
 				 table.add(getText(manType), 1, row);
