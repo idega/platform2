@@ -236,7 +236,7 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) {
+	public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) {
 		vacation.setSalaryCompensation(hasCompensation);
 		changeCaseStatus(vacation, getCaseStatusGranted().getStatus(), comment, performer, null);
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
@@ -255,7 +255,6 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 			Map extraInfo = getExtraVacationTypeInformation(type);
 			Collection times = getVacationTimes(vacation);
 			File attachment = null;
-			
 			StringBuffer metadata = new StringBuffer();
 			if (extraInfo != null && extraInfo.size() > 0) {
 				Iterator iter = extraInfo.keySet().iterator();
@@ -277,7 +276,8 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
 							try {
 								ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(value));
-								attachment = FileUtil.streamToFile(file.getFileValue(), getBundle().getResourcesRealPath(), file.getName());
+								attachment = FileUtil.streamToFile(file.getFileValue(), getBundle().getResourcesRealPath(),
+										file.getName());
 							}
 							catch (IDOLookupException ile) {
 								throw new IBORuntimeException(ile);
@@ -292,7 +292,6 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					}
 				}
 			}
-			
 			StringBuffer hoursAndDays = new StringBuffer();
 			if (times.size() > 0) {
 				hoursAndDays.append(getLocalizedString("vacation.time.week", "Week")).append("\t\t");
@@ -317,7 +316,6 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					hoursAndDays.append("\n");
 				}
 			}
-			
 			StringBuffer logBuffer = new StringBuffer();
 			logBuffer.append(getLocalizedString("vacation.message_to_employee", "Messages to employee")).append(":\n");
 			Collection logs = getLogs(vacation);
@@ -327,19 +325,18 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					CaseLog log = (CaseLog) iter.next();
 					User commenter = log.getPerformer();
 					String logComment = log.getComment();
-					
 					logBuffer.append(logComment).append("\n").append("- ").append(commenter.getName());
 					if (iter.hasNext()) {
 						logBuffer.append("\n\n");
 					}
 				}
 			}
-
 			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale),
 					getLocalizedString(type.getLocalizedKey(), type.getTypeName()),
 					from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT),
-					parish != null ? parish.getName() : "xxx", hoursAndDays.toString(), 
-					vacationComment, created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString(), supervisor.getName()};
+					parish != null ? parish.getName() : "xxx", hoursAndDays.toString(), vacationComment,
+					created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString(),
+					supervisor != null ? supervisor.getName() : "-" };
 			sendMessage(
 					email,
 					cc,
@@ -350,7 +347,9 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nThe vacation period is:\nfrom\t {3} to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
 							arguments), attachment);
 		}
-	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
+	}
+
+	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
 		changeCaseStatus(vacation, getCaseStatusDenied().getStatus(), comment, performer, null);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.10 2005/03/10 09:10:47 laddi Exp $
+ * $Id: MeetingReportCertifier.java,v 1.11 2005/03/30 08:14:37 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -115,7 +115,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		Group conGroup = meetingFee.getCongregationGroup();
 		String conGroupName = conGroup.getName();
 		User speaker = getBusiness(iwc).getSupervisor(conGroup);
-		String speakerName = speaker.getName();
+		String speakerName = speaker != null ? speaker.getName() : "-";
 		String location = meetingFee.getInCommune() ? getResourceBundle().getLocalizedString("meeting.fee.in_commune", "In commune") : getResourceBundle().getLocalizedString("meeting.fee.outside_of_commune", "Outside of commune");
 		IWTimestamp meetingDate = new IWTimestamp(meetingFee.getMeetingDate());
 		String comment = meetingFee.getComment();
