@@ -212,8 +212,10 @@ public class ResultsCollector {
         fieldPar_ += ((Integer)par_.elementAt(i)).intValue();
       }
 
-      if ( resultType_ == TOTALSTROKESWITHHANDICAP )
+      if ( resultType_ == TOTALSTROKESWITHHANDICAP ) {
         roundTotal -= (int) handicap_;
+      }
+
       roundScore_.add(new Integer(roundTotal));
       int multiplier = size / holes_;
       totalStrokesWithHandicap_ = (int) ((double)totalStrokes_ - ((double)multiplier * handicap_));
@@ -221,9 +223,11 @@ public class ResultsCollector {
 
       last_ = ((Double)strokes_.elementAt(size-1)).doubleValue();
 
-      lastNine_ = lastNine_ - handicap_ / 2;
-      lastSix_ = lastSix_ - handicap_ / 3;
-      lastThree_ = lastThree_ - handicap_ / 6;
+      if ( resultType_ == TOTALSTROKESWITHHANDICAP ) {
+        lastNine_ = lastNine_ - handicap_ / 2;
+        lastSix_ = lastSix_ - handicap_ / 3;
+        lastThree_ = lastThree_ - handicap_ / 6;
+      }
     }
   }
 
