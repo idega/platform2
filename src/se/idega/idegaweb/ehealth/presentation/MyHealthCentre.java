@@ -13,7 +13,6 @@ import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;

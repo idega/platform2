@@ -58,13 +58,13 @@ public class ChangeHealthCentre extends EHealthBlock {
 		if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
-		add(getDoctorForm(iwc));
+		add(getDoctorForm());
 		
 	}
 	
 	
 	
-	public PresentationObject getDoctorForm(IWContext iwc) throws java.rmi.RemoteException {
+	public PresentationObject getDoctorForm()  {
 		
 		Form myForm = new Form();
 		myForm.setName(prmForm);
@@ -171,8 +171,6 @@ public class ChangeHealthCentre extends EHealthBlock {
 		tableHCentre.setHeight(1, 5, "25");
 		
 		
-		
-		int row = 1;
 		
 		Age age = null;
 		if (user != null && user.getDateOfBirth() != null)

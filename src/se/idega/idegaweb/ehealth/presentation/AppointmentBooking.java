@@ -7,6 +7,10 @@
 package se.idega.idegaweb.ehealth.presentation;
 
 
+import se.idega.util.PIDChecker;
+
+import com.idega.business.IBOLookup;
+import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
@@ -14,17 +18,14 @@ import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TimeInput;
-import com.idega.presentation.ui.TimestampInput;
-import com.idega.util.CalendarMonth;
-import com.idega.util.IWTimestamp;
+import com.idega.user.business.UserBusiness;
+import com.idega.util.Age;
 
 
 
@@ -34,10 +35,10 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class VisitBookingOlders extends EHealthBlock {
+public class AppointmentBooking extends EHealthBlock {
 	
 	private String prefix = "visit_booking_";
-	private String prmForm = prefix + "the_frm";
+	private String prmForm = prefix + "form_visit";
 	private String prmInform = prefix + "info_channel";
 	private String prmReason = prefix + "reason";
 	private String prmClear = prefix + "clear";
@@ -52,13 +53,20 @@ public class VisitBookingOlders extends EHealthBlock {
 	private String prmVisitReason = prefix + "visit_reason";
 	private String prmSelect = prefix + "select";
 	private String prmConfirm = prefix + "confirm";
+	private String prmSend = prefix + "send";
 	
-	
+	private int userID = -1;
+	private User user;
 
 	public void main(IWContext iwc) throws Exception {
 		
-		add(getVisitForm(iwc));
 		
+		userID = iwc.getUserId();
+		
+		if (userID > 0) {
+			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
+		}
+		add(getVisitForm(iwc));
 		
 	}
 	
@@ -66,7 +74,7 @@ public class VisitBookingOlders extends EHealthBlock {
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
 	public PresentationObject getVisitForm(IWContext iwc) throws java.rmi.RemoteException {
 		Form myForm = new Form();
-		myForm.setName("form_visit");
+		myForm.setName(prmForm);
 		
 		Table table = new Table(1, 12);
 		table.setCellpadding(0);
@@ -91,6 +99,15 @@ public class VisitBookingOlders extends EHealthBlock {
 		myForm.add(table);
 		int row = 1;
 		
+		Age age = null;
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+	
+		
+		
+		if (age != null && age.getYears() >= 70){
 		Page pVisit = this.getParentPage();
 		if (pVisit != null) {
 			Script S = pVisit.getAssociatedScript();
@@ -101,7 +118,8 @@ public class VisitBookingOlders extends EHealthBlock {
 				timeScript = new Script();
 				myForm.setAssociatedFormScript(timeScript);
 			}
-			
+		}	
+		}
 			
 			Text chooseWay = getLocalizedText(prmCooseWay,"Choose way: ");
 			Text email = getLocalizedText(prmEmail,"Email ");
@@ -116,6 +134,7 @@ public class VisitBookingOlders extends EHealthBlock {
 			table.add(sms, 1, row);
 			table.add(cbSMS, 1, row++);
 			
+			table.setHeight(1, row, "20");
 			table.add(getLocalizedText(prmHeadingCase,"Heading/case"), 1, row++);
 			
 			TextInput textSubject  = (TextInput) getStyledInterface(new TextInput(prmInform));
@@ -123,6 +142,7 @@ public class VisitBookingOlders extends EHealthBlock {
 			textSubject.setStyleClass("lul_text");
 			
 			table.add(textSubject, 1, row++);
+			table.setHeight(1, row, "20");	
 			table.add(getLocalizedText(prmVisitReason,"Reason for visit"), 1, row++);
 			
 			TextArea textReason = (TextArea) getStyledInterface(new TextArea(prmReason));
@@ -130,16 +150,18 @@ public class VisitBookingOlders extends EHealthBlock {
 			
 			table.add(textReason, 1, row++);	
 			
-			SubmitButton btnClear = (SubmitButton) getStyledInterface(new SubmitButton(prmClear));
+		
+			ResetButton btnClear = (ResetButton ) getStyledInterface(new ResetButton (prmClear));
 			btnClear.setStyleClass("lul_form");
 			btnClear.setValue(localize(prmClear,"Clear"));
 			
+			
 			table.add(btnClear, 1, row);
-			table.setHeight(1, row++, "40");
+			table.setHeight(1, row++, "25");
 			
 			//DatePicker dp = new DatePicker("date");		
 			//table.add(dp, 1, row++);
-						
+			if (age != null && age.getYears() >= 70){		
 			DropdownMenu dropMonth = new DropdownMenu(prmMonth);
 			dropMonth.addMenuElementFirst("-1", "Välj månad");
 			dropMonth.addMenuElement( 1, "Januari");
@@ -157,7 +179,7 @@ public class VisitBookingOlders extends EHealthBlock {
 			
 			dropMonth.setStyleClass("lul_form");
 			table.add(dropMonth, 1, row);
-			table.setHeight(1, row++, "25");
+			table.setHeight(1, row++, "35");
 			
 			DropdownMenu dropDay = new DropdownMenu(prmDay);
 			dropDay.addMenuElementFirst("-1", "Välj dag");
@@ -218,25 +240,30 @@ public class VisitBookingOlders extends EHealthBlock {
 			SubmitButton selectDate = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
 			selectDate.setOnClick("setTime(); return false");
 			selectDate.setValue(localize(prmSelect,"Select"));
-			
 			selectDate.setStyleClass("lul_form");
+			
 			table.add(selectDate, 1, row);
 			table.setHeight(1, row++, "25");
 			
 			String div = "<div id='divShowTime' name='divShowTime' style='width:400px; height:30px; vertical-align:bottom;'></div>";
 			table.add(div, 1, row);
 			table.setHeight(1, row++, "30");
-			
+			}
 			SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
 			
-			confirm.setValue(localize(prmConfirm,"Confirm"));
+			if (age != null && age.getYears() >= 70)
+				confirm.setValue(localize(prmConfirm,"Confirm"));
+			else
+				confirm.setValue(localize(prmSend,"Send"));
+			
 			confirm.setStyleClass("lul_form");
+			confirm.setOnClick("alert('Bokningen har skickats!');");
 			
 			table.add(confirm, 1, row);
 			table.setHeight(1, row, "30");
 			
 			
-		}
+		
 		return myForm;
 	}
 	
@@ -248,7 +275,7 @@ public class VisitBookingOlders extends EHealthBlock {
 		s.append("var month = document.form_visit.elements['visit_booking_month'].options[document.form_visit.elements['visit_booking_month'].selectedIndex];").append(" \n\t");
 		s.append("var time = document.form_visit.elements['visit_booking_time'].options[document.form_visit.elements['visit_booking_time'].selectedIndex];").append(" \n\t");
 		s.append("if (day.value != -1 && month.value != -1 && time.value != -1){").append(" \n\t");
-		s.append("document.all.divShowTime.innerHTML = 'Du har valt den ' + day.text + ' '  + month.text + ', kl ' + time.text").append("} \n\t");
+		s.append("document.all.divShowTime.innerHTML = '<br>Du har valt den ' + day.text + ' '  + month.text + ', kl ' + time.text").append("} \n\t");
 		s.append("return false;").append(" \n\t");
 		
 		s.append("}").append("\n\t\t\t");

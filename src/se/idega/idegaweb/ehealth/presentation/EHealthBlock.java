@@ -41,7 +41,7 @@ public class EHealthBlock extends Block {
 	public final static String STYLENAME_CHECKBOX = "CheckBox";
 	public final static String STYLENAME_INTERFACE = "Interface";
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
-	
+	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
 	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -77,15 +77,7 @@ public class EHealthBlock extends Block {
 		return this.iwb;
 	}
 	
-	private String getProperty(String propertyName, String nullValue) {
-		IWPropertyList property = getIWApplicationContext().getSystemProperties().getProperties("layout_settings");	
-		if (property != null) {
-			String propertyValue = property.getProperty(propertyName);
-			if (propertyValue != null)
-				return propertyValue;
-		}
-		return nullValue;
-	}
+	
 	public String localize(String textKey, String defaultText) {
 		if (iwrb == null) {
 			return defaultText;
@@ -108,6 +100,14 @@ public class EHealthBlock extends Block {
 
 	public Text getLocalizedText(String s, String d) {
 		return getText(localize(s, d));
+	}
+	
+	public Text getLocalizedSmallHeader(String s, String d) {
+		return getSmallHeader(localize(s, d));
+	}
+	
+	public Text getSmallHeader(String s) {
+		return getStyleText(s, STYLENAME_SMALL_HEADER);
 	}
 	
 	/**
@@ -152,6 +152,19 @@ public class EHealthBlock extends Block {
 		return image;
 	}
 	
+	/**
+	 * @param iwc
+	 * @param 
+	 * @return
+	 */
+	public PresentationObject getPrintIcon(IWContext iwc)
+	{
+		//TODO Display a PDF link if possible
+		Image image = getBundle(iwc).getImage("printIcon.gif");
+		return image;
+	}
+	
+		
 	public boolean isCommuneAdministrator(IWContext iwc) {
 		try {
 			if (isAdministrator(iwc))
